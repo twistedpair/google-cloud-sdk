@@ -329,6 +329,7 @@ PRIMARY_LOGS_OPTIONS = [
     ADDON_MANAGER,
 ]
 PLACEMENT_OPTIONS = ['UNSPECIFIED', 'COMPACT']
+LOCATION_POLICY_OPTIONS = ['BALANCED', 'ANY']
 
 
 def CheckResponse(response):
@@ -480,6 +481,7 @@ class CreateClusterOptions(object):
       enable_autoscaling=None,
       min_nodes=None,
       max_nodes=None,
+      location_policy=None,
       image_type=None,
       image=None,
       image_project=None,
@@ -603,6 +605,7 @@ class CreateClusterOptions(object):
       stack_type=None,
       ipv6_access_type=None,
       enable_workload_config_audit=None,
+      pod_autoscaling_direct_metrics_opt_in=None,
   ):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
@@ -638,6 +641,7 @@ class CreateClusterOptions(object):
     self.enable_autoscaling = enable_autoscaling
     self.min_nodes = min_nodes
     self.max_nodes = max_nodes
+    self.location_policy = location_policy
     self.image_type = image_type
     self.image = image
     self.image_project = image_project
@@ -761,6 +765,7 @@ class CreateClusterOptions(object):
     self.stack_type = stack_type
     self.ipv6_access_type = ipv6_access_type
     self.enable_workload_config_audit = enable_workload_config_audit
+    self.pod_autoscaling_direct_metrics_opt_in = pod_autoscaling_direct_metrics_opt_in
 
 
 class UpdateClusterOptions(object):
@@ -791,6 +796,7 @@ class UpdateClusterOptions(object):
       enable_autoscaling=None,
       min_nodes=None,
       max_nodes=None,
+      location_policy=None,
       image_type=None,
       image=None,
       image_project=None,
@@ -863,6 +869,7 @@ class UpdateClusterOptions(object):
       maintenance_interval=None,
       dataplane_v2=None,
       enable_workload_config_audit=None,
+      pod_autoscaling_direct_metrics_opt_in=None,
   ):
     self.version = version
     self.update_master = bool(update_master)
@@ -887,6 +894,7 @@ class UpdateClusterOptions(object):
     self.enable_autoscaling = enable_autoscaling
     self.min_nodes = min_nodes
     self.max_nodes = max_nodes
+    self.location_policy = location_policy
     self.image_type = image_type
     self.image = image
     self.image_project = image_project
@@ -960,6 +968,7 @@ class UpdateClusterOptions(object):
     self.maintenance_interval = maintenance_interval
     self.dataplane_v2 = dataplane_v2
     self.enable_workload_config_audit = enable_workload_config_audit
+    self.pod_autoscaling_direct_metrics_opt_in = pod_autoscaling_direct_metrics_opt_in
 
 
 class SetMasterAuthOptions(object):
@@ -1000,6 +1009,7 @@ class CreateNodePoolOptions(object):
                enable_autoscaling=None,
                max_nodes=None,
                min_nodes=None,
+               location_policy=None,
                enable_autoprovisioning=None,
                image_type=None,
                image=None,
@@ -1061,6 +1071,7 @@ class CreateNodePoolOptions(object):
     self.min_nodes = min_nodes
     self.enable_autoprovisioning = enable_autoprovisioning
     self.image_type = image_type
+    self.location_policy = location_policy
     self.image = image
     self.image_project = image_project
     self.image_family = image_family
@@ -1114,6 +1125,7 @@ class UpdateNodePoolOptions(object):
                enable_autoscaling=None,
                max_nodes=None,
                min_nodes=None,
+               location_policy=None,
                enable_autoprovisioning=None,
                workload_metadata=None,
                workload_metadata_from_node=None,
@@ -1139,6 +1151,7 @@ class UpdateNodePoolOptions(object):
     self.enable_autoscaling = enable_autoscaling
     self.max_nodes = max_nodes
     self.min_nodes = min_nodes
+    self.location_policy = location_policy
     self.enable_autoprovisioning = enable_autoprovisioning
     self.workload_metadata = workload_metadata
     self.workload_metadata_from_node = workload_metadata_from_node
@@ -1163,7 +1176,8 @@ class UpdateNodePoolOptions(object):
   def IsAutoscalingUpdate(self):
     return (self.enable_autoscaling is not None or self.max_nodes is not None or
             self.min_nodes is not None or
-            self.enable_autoprovisioning is not None)
+            self.enable_autoprovisioning is not None or
+            self.location_policy is not None)
 
   def IsNodePoolManagementUpdate(self):
     return (self.enable_autorepair is not None or
@@ -1694,6 +1708,11 @@ class APIAdapter(object):
             self.messages.WorkloadConfig.AuditModeValueValuesEnum.DISABLED)
       cluster.protectConfig = protect_config
 
+    if options.pod_autoscaling_direct_metrics_opt_in is not None:
+      pod_autoscaling_config = self.messages.PodAutoscaling(
+          directMetricsOptIn=options.pod_autoscaling_direct_metrics_opt_in)
+      cluster.podAutoscaling = pod_autoscaling_config
+
     return cluster
 
   def ParseNodeConfig(self, options):
@@ -1805,6 +1824,8 @@ class APIAdapter(object):
             enabled=options.enable_autoscaling,
             minNodeCount=options.min_nodes,
             maxNodeCount=options.max_nodes)
+        pool.autoscaling.locationPolicy = LocationPolicyEnumFromString(
+            self.messages, options.location_policy)
       if options.max_pods_per_node:
         if not options.enable_ip_alias:
           raise util.Error(MAX_PODS_PER_NODE_WITHOUT_IP_ALIAS_ERROR_MSG)
@@ -2436,6 +2457,9 @@ class APIAdapter(object):
       if options.enable_autoscaling:
         autoscaling.minNodeCount = options.min_nodes
         autoscaling.maxNodeCount = options.max_nodes
+        if options.location_policy is not None:
+          autoscaling.locationPolicy = LocationPolicyEnumFromString(
+              self.messages, options.location_policy)
       update = self.messages.ClusterUpdate(
           desiredNodePoolId=options.node_pool,
           desiredNodePoolAutoscaling=autoscaling)
@@ -2628,6 +2652,12 @@ class APIAdapter(object):
         protect_config.workloadConfig.auditMode = (
             self.messages.WorkloadConfig.AuditModeValueValuesEnum.DISABLED)
       update = self.messages.ClusterUpdate(desiredProtectConfig=protect_config)
+
+    if options.pod_autoscaling_direct_metrics_opt_in is not None:
+      pod_autoscaling_config = self.messages.PodAutoscaling(
+          directMetricsOptIn=options.pod_autoscaling_direct_metrics_opt_in)
+      update = self.messages.ClusterUpdate(
+          desiredPodAutoscaling=pod_autoscaling_config)
 
     return update
 
@@ -3081,6 +3111,8 @@ class APIAdapter(object):
       pool.autoscaling.enabled = options.enable_autoscaling
       pool.autoscaling.minNodeCount = options.min_nodes
       pool.autoscaling.maxNodeCount = options.max_nodes
+      pool.autoscaling.locationPolicy = LocationPolicyEnumFromString(
+          self.messages, options.location_policy)
 
     if options.enable_autoprovisioning:
       pool.autoscaling.autoprovisioned = options.enable_autoprovisioning
@@ -3183,6 +3215,7 @@ class APIAdapter(object):
         autoscaling.minNodeCount = 0
         autoscaling.maxNodeCount = 0
         autoscaling.autoprovisioned = False
+        autoscaling.locationPolicy = self.messages.NodePoolAutoscaling.LocationPolicyValueValuesEnum.LOCATION_POLICY_UNSPECIFIED
     if options.enable_autoprovisioning is not None:
       autoscaling.autoprovisioned = options.enable_autoprovisioning
       if autoscaling.autoprovisioned:
@@ -3192,6 +3225,9 @@ class APIAdapter(object):
       autoscaling.maxNodeCount = options.max_nodes
     if options.min_nodes is not None:
       autoscaling.minNodeCount = options.min_nodes
+    if options.location_policy is not None:
+      autoscaling.locationPolicy = LocationPolicyEnumFromString(
+          self.messages, options.location_policy)
     return autoscaling
 
   def UpdateBlueGreenSettings(self, upgrade_settings, options):
@@ -4844,6 +4880,8 @@ class V1Alpha1Adapter(V1Beta1Adapter):
             enabled=options.enable_autoscaling,
             minNodeCount=options.min_nodes,
             maxNodeCount=options.max_nodes)
+        pool.autoscaling.locationPolicy = LocationPolicyEnumFromString(
+            self.messages, options.location_policy)
       if options.max_pods_per_node:
         if not options.enable_ip_alias:
           raise util.Error(MAX_PODS_PER_NODE_WITHOUT_IP_ALIAS_ERROR_MSG)
@@ -5308,6 +5346,15 @@ def _AddPSCPrivateClustersOptionsToClusterForCreateCluster(
       items.append(messages.CrossConnectItem(subnetwork=subnetwork))
     cluster.privateClusterConfig.crossConnectConfig = messages.CrossConnectConfig(
         items=items)
+
+
+def LocationPolicyEnumFromString(messages, location_policy):
+  location_policy_enum = messages.NodePoolAutoscaling.LocationPolicyValueValuesEnum.LOCATION_POLICY_UNSPECIFIED
+  if location_policy == 'BALANCED':
+    location_policy_enum = messages.NodePoolAutoscaling.LocationPolicyValueValuesEnum.BALANCED
+  elif location_policy == 'ANY':
+    location_policy_enum = messages.NodePoolAutoscaling.LocationPolicyValueValuesEnum.ANY
+  return location_policy_enum
 
 
 def ProjectLocation(project, location):

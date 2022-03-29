@@ -97,6 +97,10 @@ class NodePoolsClient(object):
         iops=iops,
         kmsKeyArn=kms_key_arn)
 
+  def _CreateAwsInstancePlacement(self, instance_placement_key):
+    msg = 'GoogleCloudGkemulticloud{}AwsInstancePlacement'.format(self.version)
+    return getattr(self.messages, msg)(tenancy=instance_placement_key)
+
   def Create(self, node_pool_ref, args):
     """Create an AWS node pool."""
     validate_only = getattr(args, 'validate_only', False)
@@ -128,7 +132,9 @@ class NodePoolsClient(object):
     if args.config_encryption_kms_key_arn:
       config.configEncryption = self._CreateAwsConfigEncryption(
           args.config_encryption_kms_key_arn)
-
+    if args.instance_placement:
+      config.instancePlacement = self._CreateAwsInstancePlacement(
+          args.instance_placement)
     root_volume = self._AddAwsNodePoolRootVolume(config)
     root_volume.sizeGib = args.root_volume_size
     root_volume.volumeType = args.root_volume_type
@@ -151,6 +157,9 @@ class NodePoolsClient(object):
       config.labels = type(config).LabelsValue(additionalProperties=[
           label_type(key=k, value=v) for k, v in args.node_labels.items()
       ])
+
+    if args.image_type:
+      config.imageType = args.image_type
 
     return self.service.Create(req)
 

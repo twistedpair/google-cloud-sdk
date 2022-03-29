@@ -137,13 +137,13 @@ class Cluster(_messages.Message):
     StateValueValuesEnum: Output only. State of the resource.
 
   Messages:
-    LabelsValue: Labels are a way to attach lightweight metadata to resources
-      for filtering and querying resource data. No more than 64 user labels
-      can be associated with each resource. Label keys and values can be no
-      longer than 63 characters, can only contain lowercase letters, numeric
-      characters, underscores and dashes, where label keys must start with a
-      letter and international characters are allowed. The empty string is a
-      valid value. Labels are set on creation and updated like any other
+    LabelsValue: Deprecated: Labels are a way to attach lightweight metadata
+      to resources for filtering and querying resource data. No more than 64
+      user labels can be associated with each resource. Label keys and values
+      can be no longer than 63 characters, can only contain lowercase letters,
+      numeric characters, underscores and dashes, where label keys must start
+      with a letter and international characters are allowed. The empty string
+      is a valid value. Labels are set on creation and updated like any other
       field. Specifically, to add a new label, you would need to provide all
       of the existing labels along with the new label. If you only provide a
       map with the new label, all of the old labels will be removed (probably
@@ -152,13 +152,13 @@ class Cluster(_messages.Message):
   Fields:
     createTime: Output only. Creation time of this resource in RFC3339 text
       format.
-    labels: Labels are a way to attach lightweight metadata to resources for
-      filtering and querying resource data. No more than 64 user labels can be
-      associated with each resource. Label keys and values can be no longer
-      than 63 characters, can only contain lowercase letters, numeric
-      characters, underscores and dashes, where label keys must start with a
-      letter and international characters are allowed. The empty string is a
-      valid value. Labels are set on creation and updated like any other
+    labels: Deprecated: Labels are a way to attach lightweight metadata to
+      resources for filtering and querying resource data. No more than 64 user
+      labels can be associated with each resource. Label keys and values can
+      be no longer than 63 characters, can only contain lowercase letters,
+      numeric characters, underscores and dashes, where label keys must start
+      with a letter and international characters are allowed. The empty string
+      is a valid value. Labels are set on creation and updated like any other
       field. Specifically, to add a new label, you would need to provide all
       of the existing labels along with the new label. If you only provide a
       map with the new label, all of the old labels will be removed (probably
@@ -206,16 +206,17 @@ class Cluster(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Labels are a way to attach lightweight metadata to resources for
-    filtering and querying resource data. No more than 64 user labels can be
-    associated with each resource. Label keys and values can be no longer than
-    63 characters, can only contain lowercase letters, numeric characters,
-    underscores and dashes, where label keys must start with a letter and
-    international characters are allowed. The empty string is a valid value.
-    Labels are set on creation and updated like any other field. Specifically,
-    to add a new label, you would need to provide all of the existing labels
-    along with the new label. If you only provide a map with the new label,
-    all of the old labels will be removed (probably not what is desired).
+    r"""Deprecated: Labels are a way to attach lightweight metadata to
+    resources for filtering and querying resource data. No more than 64 user
+    labels can be associated with each resource. Label keys and values can be
+    no longer than 63 characters, can only contain lowercase letters, numeric
+    characters, underscores and dashes, where label keys must start with a
+    letter and international characters are allowed. The empty string is a
+    valid value. Labels are set on creation and updated like any other field.
+    Specifically, to add a new label, you would need to provide all of the
+    existing labels along with the new label. If you only provide a map with
+    the new label, all of the old labels will be removed (probably not what is
+    desired).
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -265,8 +266,7 @@ class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
   or the response type of an API method. For instance: service Foo { rpc
-  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
-  representation for `Empty` is empty JSON object `{}`.
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
 
 
@@ -316,17 +316,17 @@ class ExternalAccessRule(_messages.Message):
     StateValueValuesEnum: Output only. The state of the resource.
 
   Messages:
-    LabelsValue: Labels are a way to attach lightweight metadata to resources
-      for filtering and querying resource data. No more than 64 user labels
-      can be associated with each resource. Label keys and values can be no
-      longer than 63 characters, can only contain lowercase letters, numeric
-      characters, underscores and dashes, where label keys must start with a
-      letter and international characters are allowed. The empty string is a
-      valid value. Labels are set on creation and updated like any other
+    LabelsValue: Deprecated: Labels are a way to attach lightweight metadata
+      to resources for filtering and querying resource data. No more than 64
+      user labels can be associated with each resource. Label keys and values
+      can be no longer than 63 characters, can only contain lowercase letters,
+      numeric characters, underscores and dashes, where label keys must start
+      with a letter and international characters are allowed. The empty string
+      is a valid value. Labels are set on creation and updated like any other
       field. Specifically, to add a new label, you would need to provide all
       of the existing labels along with the new label. If you only provide a
-      map with the new label, all of the old labels are removed (probably not
-      what is desired).
+      map with the new label, all of the old labels will be removed (probably
+      not what is desired).
 
   Fields:
     action: The action that the external access rule performs.
@@ -347,17 +347,17 @@ class ExternalAccessRule(_messages.Message):
     ipProtocol: The IP protocol to which the external access rule applies.
       This value can be one of the following three protocol strings: `tcp`,
       `udp`, or `icmp`.
-    labels: Labels are a way to attach lightweight metadata to resources for
-      filtering and querying resource data. No more than 64 user labels can be
-      associated with each resource. Label keys and values can be no longer
-      than 63 characters, can only contain lowercase letters, numeric
-      characters, underscores and dashes, where label keys must start with a
-      letter and international characters are allowed. The empty string is a
-      valid value. Labels are set on creation and updated like any other
+    labels: Deprecated: Labels are a way to attach lightweight metadata to
+      resources for filtering and querying resource data. No more than 64 user
+      labels can be associated with each resource. Label keys and values can
+      be no longer than 63 characters, can only contain lowercase letters,
+      numeric characters, underscores and dashes, where label keys must start
+      with a letter and international characters are allowed. The empty string
+      is a valid value. Labels are set on creation and updated like any other
       field. Specifically, to add a new label, you would need to provide all
       of the existing labels along with the new label. If you only provide a
-      map with the new label, all of the old labels are removed (probably not
-      what is desired).
+      map with the new label, all of the old labels will be removed (probably
+      not what is desired).
     name: Output only. The resource name of this external access rule.
       Resource names are schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
@@ -417,16 +417,17 @@ class ExternalAccessRule(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Labels are a way to attach lightweight metadata to resources for
-    filtering and querying resource data. No more than 64 user labels can be
-    associated with each resource. Label keys and values can be no longer than
-    63 characters, can only contain lowercase letters, numeric characters,
-    underscores and dashes, where label keys must start with a letter and
-    international characters are allowed. The empty string is a valid value.
-    Labels are set on creation and updated like any other field. Specifically,
-    to add a new label, you would need to provide all of the existing labels
-    along with the new label. If you only provide a map with the new label,
-    all of the old labels are removed (probably not what is desired).
+    r"""Deprecated: Labels are a way to attach lightweight metadata to
+    resources for filtering and querying resource data. No more than 64 user
+    labels can be associated with each resource. Label keys and values can be
+    no longer than 63 characters, can only contain lowercase letters, numeric
+    characters, underscores and dashes, where label keys must start with a
+    letter and international characters are allowed. The empty string is a
+    valid value. Labels are set on creation and updated like any other field.
+    Specifically, to add a new label, you would need to provide all of the
+    existing labels along with the new label. If you only provide a map with
+    the new label, all of the old labels will be removed (probably not what is
+    desired).
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -472,13 +473,13 @@ class ExternalAddress(_messages.Message):
     StateValueValuesEnum: Output only. The state of the resource.
 
   Messages:
-    LabelsValue: Labels are a way to attach lightweight metadata to resources
-      for filtering and querying resource data. No more than 64 user labels
-      can be associated with each resource. Label keys and values can be no
-      longer than 63 characters, can only contain lowercase letters, numeric
-      characters, underscores and dashes, where label keys must start with a
-      letter and international characters are allowed. The empty string is a
-      valid value. Labels are set on creation and updated like any other
+    LabelsValue: Deprecated: Labels are a way to attach lightweight metadata
+      to resources for filtering and querying resource data. No more than 64
+      user labels can be associated with each resource. Label keys and values
+      can be no longer than 63 characters, can only contain lowercase letters,
+      numeric characters, underscores and dashes, where label keys must start
+      with a letter and international characters are allowed. The empty string
+      is a valid value. Labels are set on creation and updated like any other
       field. Specifically, to add a new label, you would need to provide all
       of the existing labels along with the new label. If you only provide a
       map with the new label, all of the old labels will be removed (probably
@@ -491,13 +492,13 @@ class ExternalAddress(_messages.Message):
     displayName: User-provided name for this resource.
     externalIp: Output only. The external IP address of a workload VM.
     internalIp: The internal IP address of a workload VM.
-    labels: Labels are a way to attach lightweight metadata to resources for
-      filtering and querying resource data. No more than 64 user labels can be
-      associated with each resource. Label keys and values can be no longer
-      than 63 characters, can only contain lowercase letters, numeric
-      characters, underscores and dashes, where label keys must start with a
-      letter and international characters are allowed. The empty string is a
-      valid value. Labels are set on creation and updated like any other
+    labels: Deprecated: Labels are a way to attach lightweight metadata to
+      resources for filtering and querying resource data. No more than 64 user
+      labels can be associated with each resource. Label keys and values can
+      be no longer than 63 characters, can only contain lowercase letters,
+      numeric characters, underscores and dashes, where label keys must start
+      with a letter and international characters are allowed. The empty string
+      is a valid value. Labels are set on creation and updated like any other
       field. Specifically, to add a new label, you would need to provide all
       of the existing labels along with the new label. If you only provide a
       map with the new label, all of the old labels will be removed (probably
@@ -531,16 +532,17 @@ class ExternalAddress(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Labels are a way to attach lightweight metadata to resources for
-    filtering and querying resource data. No more than 64 user labels can be
-    associated with each resource. Label keys and values can be no longer than
-    63 characters, can only contain lowercase letters, numeric characters,
-    underscores and dashes, where label keys must start with a letter and
-    international characters are allowed. The empty string is a valid value.
-    Labels are set on creation and updated like any other field. Specifically,
-    to add a new label, you would need to provide all of the existing labels
-    along with the new label. If you only provide a map with the new label,
-    all of the old labels will be removed (probably not what is desired).
+    r"""Deprecated: Labels are a way to attach lightweight metadata to
+    resources for filtering and querying resource data. No more than 64 user
+    labels can be associated with each resource. Label keys and values can be
+    no longer than 63 characters, can only contain lowercase letters, numeric
+    characters, underscores and dashes, where label keys must start with a
+    letter and international characters are allowed. The empty string is a
+    valid value. Labels are set on creation and updated like any other field.
+    Specifically, to add a new label, you would need to provide all of the
+    existing labels along with the new label. If you only provide a map with
+    the new label, all of the old labels will be removed (probably not what is
+    desired).
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -759,6 +761,21 @@ class ListLocationsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class ListNetworkPeeringsResponse(_messages.Message):
+  r"""Response message for VmwareEngine.ListNetworkPeerings
+
+  Fields:
+    networkPeerings: A list of VPC network peerings.
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    unreachable: Unreachable resources.
+  """
+
+  networkPeerings = _messages.MessageField('NetworkPeering', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
 class ListNetworkPoliciesResponse(_messages.Message):
   r"""Response message for VmwareEngine.ListNetworkPolicies
 
@@ -802,6 +819,19 @@ class ListOperationsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+
+
+class ListPeeringRoutesResponse(_messages.Message):
+  r"""Response message for VmwareEngine.ListPeeringRoutes
+
+  Fields:
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    peeringRoutes: A list of peering routes.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  peeringRoutes = _messages.MessageField('PeeringRoute', 2, repeated=True)
 
 
 class ListPrivateCloudsResponse(_messages.Message):
@@ -974,6 +1004,124 @@ class NetworkConfig(_messages.Message):
   vmwareEngineNetwork = _messages.StringField(5)
 
 
+class NetworkPeering(_messages.Message):
+  r"""Details of a VPC network peering.
+
+  Enums:
+    PeerNetworkTypeValueValuesEnum: Required. The type of the VPC network to
+      peer with the VMware Engine service network.
+    StateValueValuesEnum: Output only. State of the VPC network peering. This
+      field has a value of 'ACTIVE' when there's a matching configuration in
+      the peer network. New values may be added to this enum when appropriate.
+
+  Fields:
+    createTime: Output only. Creation time of this resource in RFC3339 text
+      format.
+    exchangeSubnetRoutes: Optional. True if full mesh connectivity is created
+      and managed automatically between peered VPC networks; false otherwise.
+      Currently this field is always true because Google Compute Engine
+      automatically creates and manages subnetwork routes between two VPC
+      networks when peering state is 'ACTIVE'.
+    exportCustomRoutes: Optional. True if custom routes are exported to the
+      peered VPC network; false otherwise. The default value is true.
+    exportCustomRoutesWithPublicIp: Optional. True if all subnet routes with a
+      public IP address range are exported; false otherwise. The default value
+      is true. IPv4 special-use ranges
+      (https://en.wikipedia.org/wiki/IPv4#Special_addresses) are always
+      exported to peers and are not controlled by this field.
+    importCustomRoutes: Optional. True if custom routes are imported from the
+      peered VPC network; false otherwise. The default value is true.
+    importCustomRoutesWithPublicIp: Optional. True if all subnet routes with
+      public IP address range are imported; false otherwise. The default value
+      is true. IPv4 special-use ranges
+      (https://en.wikipedia.org/wiki/IPv4#Special_addresses) are always
+      imported to peers and are not controlled by this field.
+    name: Output only. The resource name of the VPC network peering. Resource
+      names are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/global/networkPeerings/my-peering`
+    peerMtu: Optional. Maximum transmission unit (MTU) in bytes.
+    peerNetwork: Required. The relative resource name of the VPC network to
+      peer with the VMware Engine service network. This network can be a
+      consumer VPC network or another producer service VPC network. Specify
+      the name in the following form:
+      `projects/{project}/global/networks/{network_id}` where `{project}` can
+      either be a project number or a project ID.
+    peerNetworkType: Required. The type of the VPC network to peer with the
+      VMware Engine service network.
+    state: Output only. State of the VPC network peering. This field has a
+      value of 'ACTIVE' when there's a matching configuration in the peer
+      network. New values may be added to this enum when appropriate.
+    stateDetails: Output only. Output Only. Details about the current state of
+      the VPC network peering.
+    uid: Output only. System-generated unique identifier for the resource.
+    updateTime: Output only. Last update time of this resource in RFC3339 text
+      format.
+    vmwareEngineNetwork: Required. The relative resource name of the VMware
+      Engine network. Specify the name in the following form: `projects/{proje
+      ct}/locations/{location}/vmwareEngineNetworks/{vmware_engine_network_id}
+      ` where `{project}` can either be a project number or a project ID.
+  """
+
+  class PeerNetworkTypeValueValuesEnum(_messages.Enum):
+    r"""Required. The type of the VPC network to peer with the VMware Engine
+    service network.
+
+    Values:
+      PEER_NETWORK_TYPE_UNSPECIFIED: Unspecified
+      STANDARD: Peering connection used for connecting to another VPC network
+        established by the same user. For example, a peering connection to
+        another VPC network in the same project or to an on-premises network.
+      VMWARE_ENGINE_NETWORK: Peering connection used for connecting to another
+        VMware Engine network.
+      PRIVATE_SERVICES_ACCESS: Peering connection used for establishing
+        [private services access](https://cloud.google.com/vpc/docs/private-
+        services-access).
+      NETAPP_CLOUD_VOLUMES: Peering connection used for connecting to NetApp
+        Cloud Volumes.
+    """
+    PEER_NETWORK_TYPE_UNSPECIFIED = 0
+    STANDARD = 1
+    VMWARE_ENGINE_NETWORK = 2
+    PRIVATE_SERVICES_ACCESS = 3
+    NETAPP_CLOUD_VOLUMES = 4
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. State of the VPC network peering. This field has a value
+    of 'ACTIVE' when there's a matching configuration in the peer network. New
+    values may be added to this enum when appropriate.
+
+    Values:
+      STATE_UNSPECIFIED: Unspecified VPC network peering state. This is the
+        default value.
+      INACTIVE: The peering is not active.
+      ACTIVE: The peering is active.
+      CREATING: The peering is being created.
+      DELETING: The peering is being deleted.
+    """
+    STATE_UNSPECIFIED = 0
+    INACTIVE = 1
+    ACTIVE = 2
+    CREATING = 3
+    DELETING = 4
+
+  createTime = _messages.StringField(1)
+  exchangeSubnetRoutes = _messages.BooleanField(2)
+  exportCustomRoutes = _messages.BooleanField(3)
+  exportCustomRoutesWithPublicIp = _messages.BooleanField(4)
+  importCustomRoutes = _messages.BooleanField(5)
+  importCustomRoutesWithPublicIp = _messages.BooleanField(6)
+  name = _messages.StringField(7)
+  peerMtu = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  peerNetwork = _messages.StringField(9)
+  peerNetworkType = _messages.EnumField('PeerNetworkTypeValueValuesEnum', 10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  stateDetails = _messages.StringField(12)
+  uid = _messages.StringField(13)
+  updateTime = _messages.StringField(14)
+  vmwareEngineNetwork = _messages.StringField(15)
+
+
 class NetworkPolicy(_messages.Message):
   r"""Represents a network policy resource. Network policies are regional
   resources. You can use a network policy to enable or disable internet access
@@ -982,13 +1130,13 @@ class NetworkPolicy(_messages.Message):
   all private clouds in the VPC network associated with the policy.
 
   Messages:
-    LabelsValue: Labels are a way to attach lightweight metadata to resources
-      for filtering and querying resource data. No more than 64 user labels
-      can be associated with each resource. Label keys and values can be no
-      longer than 63 characters, can only contain lowercase letters, numeric
-      characters, underscores and dashes, where label keys must start with a
-      letter and international characters are allowed. The empty string is a
-      valid value. Labels are set on creation and updated like any other
+    LabelsValue: Deprecated: Labels are a way to attach lightweight metadata
+      to resources for filtering and querying resource data. No more than 64
+      user labels can be associated with each resource. Label keys and values
+      can be no longer than 63 characters, can only contain lowercase letters,
+      numeric characters, underscores and dashes, where label keys must start
+      with a letter and international characters are allowed. The empty string
+      is a valid value. Labels are set on creation and updated like any other
       field. Specifically, to add a new label, you would need to provide all
       of the existing labels along with the new label. If you only provide a
       map with the new label, all of the old labels will be removed (probably
@@ -1008,13 +1156,13 @@ class NetworkPolicy(_messages.Message):
       `internet_access` is also enabled.
     internetAccess: Network service that allows VMware workloads to access the
       internet.
-    labels: Labels are a way to attach lightweight metadata to resources for
-      filtering and querying resource data. No more than 64 user labels can be
-      associated with each resource. Label keys and values can be no longer
-      than 63 characters, can only contain lowercase letters, numeric
-      characters, underscores and dashes, where label keys must start with a
-      letter and international characters are allowed. The empty string is a
-      valid value. Labels are set on creation and updated like any other
+    labels: Deprecated: Labels are a way to attach lightweight metadata to
+      resources for filtering and querying resource data. No more than 64 user
+      labels can be associated with each resource. Label keys and values can
+      be no longer than 63 characters, can only contain lowercase letters,
+      numeric characters, underscores and dashes, where label keys must start
+      with a letter and international characters are allowed. The empty string
+      is a valid value. Labels are set on creation and updated like any other
       field. Specifically, to add a new label, you would need to provide all
       of the existing labels along with the new label. If you only provide a
       map with the new label, all of the old labels will be removed (probably
@@ -1042,16 +1190,17 @@ class NetworkPolicy(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Labels are a way to attach lightweight metadata to resources for
-    filtering and querying resource data. No more than 64 user labels can be
-    associated with each resource. Label keys and values can be no longer than
-    63 characters, can only contain lowercase letters, numeric characters,
-    underscores and dashes, where label keys must start with a letter and
-    international characters are allowed. The empty string is a valid value.
-    Labels are set on creation and updated like any other field. Specifically,
-    to add a new label, you would need to provide all of the existing labels
-    along with the new label. If you only provide a map with the new label,
-    all of the old labels will be removed (probably not what is desired).
+    r"""Deprecated: Labels are a way to attach lightweight metadata to
+    resources for filtering and querying resource data. No more than 64 user
+    labels can be associated with each resource. Label keys and values can be
+    no longer than 63 characters, can only contain lowercase letters, numeric
+    characters, underscores and dashes, where label keys must start with a
+    letter and international characters are allowed. The empty string is a
+    valid value. Labels are set on creation and updated like any other field.
+    Specifically, to add a new label, you would need to provide all of the
+    existing labels along with the new label. If you only provide a map with
+    the new label, all of the old labels will be removed (probably not what is
+    desired).
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -1324,6 +1473,52 @@ class OperationMetadata(_messages.Message):
   verb = _messages.StringField(7)
 
 
+class PeeringRoute(_messages.Message):
+  r"""Exchanged VPC network peering route.
+
+  Enums:
+    TypeValueValuesEnum: Output only. Type of the route in the peer VPC
+      network.
+
+  Fields:
+    destRange: Output only. Destination range of the peering route in CIDR
+      notation.
+    imported: Output only. True if the peering route has been imported from a
+      peered VPC network; false otherwise. The import happens if the field
+      `NetworkPeering.importCustomRoutes` is true for this network,
+      `NetworkPeering.exportCustomRoutes` is true for the peer VPC network,
+      and the import does not result in a route conflict.
+    nextHopRegion: Output only. Region containing the next hop of the peering
+      route. This field only applies to dynamic routes in the peer VPC
+      network.
+    priority: Output only. The priority of the peering route.
+    type: Output only. Type of the route in the peer VPC network.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Output only. Type of the route in the peer VPC network.
+
+    Values:
+      TYPE_UNSPECIFIED: Unspecified peering route type. This is the default
+        value.
+      DYNAMIC_PEERING_ROUTE: Dynamic routes in the peer network.
+      STATIC_PEERING_ROUTE: Static routes in the peer network.
+      SUBNET_PEERING_ROUTE: Created, updated, and removed automatically by
+        Google Cloud when subnets are created, modified, or deleted in the
+        peer network.
+    """
+    TYPE_UNSPECIFIED = 0
+    DYNAMIC_PEERING_ROUTE = 1
+    STATIC_PEERING_ROUTE = 2
+    SUBNET_PEERING_ROUTE = 3
+
+  destRange = _messages.StringField(1)
+  imported = _messages.BooleanField(2)
+  nextHopRegion = _messages.StringField(3)
+  priority = _messages.IntegerField(4)
+  type = _messages.EnumField('TypeValueValuesEnum', 5)
+
+
 class Policy(_messages.Message):
   r"""An Identity and Access Management (IAM) policy, which specifies access
   controls for Google Cloud resources. A `Policy` is a collection of
@@ -1410,13 +1605,13 @@ class PrivateCloud(_messages.Message):
       be added to this enum when appropriate.
 
   Messages:
-    LabelsValue: Labels are a way to attach lightweight metadata to resources
-      for filtering and querying resource data. No more than 64 user labels
-      can be associated with each resource. Label keys and values can be no
-      longer than 63 characters, can only contain lowercase letters, numeric
-      characters, underscores and dashes, where label keys must start with a
-      letter and international characters are allowed. The empty string is a
-      valid value. Labels are set on creation and updated like any other
+    LabelsValue: Deprecated: Labels are a way to attach lightweight metadata
+      to resources for filtering and querying resource data. No more than 64
+      user labels can be associated with each resource. Label keys and values
+      can be no longer than 63 characters, can only contain lowercase letters,
+      numeric characters, underscores and dashes, where label keys must start
+      with a letter and international characters are allowed. The empty string
+      is a valid value. Labels are set on creation and updated like any other
       field. Specifically, to add a new label, you would need to provide all
       of the existing labels along with the new label. If you only provide a
       map with the new label, all of the old labels will be removed (probably
@@ -1431,13 +1626,13 @@ class PrivateCloud(_messages.Message):
     expireTime: Output only. Planned deletion time of this resource in RFC3339
       text format.
     hcx: Output only. HCX appliance.
-    labels: Labels are a way to attach lightweight metadata to resources for
-      filtering and querying resource data. No more than 64 user labels can be
-      associated with each resource. Label keys and values can be no longer
-      than 63 characters, can only contain lowercase letters, numeric
-      characters, underscores and dashes, where label keys must start with a
-      letter and international characters are allowed. The empty string is a
-      valid value. Labels are set on creation and updated like any other
+    labels: Deprecated: Labels are a way to attach lightweight metadata to
+      resources for filtering and querying resource data. No more than 64 user
+      labels can be associated with each resource. Label keys and values can
+      be no longer than 63 characters, can only contain lowercase letters,
+      numeric characters, underscores and dashes, where label keys must start
+      with a letter and international characters are allowed. The empty string
+      is a valid value. Labels are set on creation and updated like any other
       field. Specifically, to add a new label, you would need to provide all
       of the existing labels along with the new label. If you only provide a
       map with the new label, all of the old labels will be removed (probably
@@ -1485,16 +1680,17 @@ class PrivateCloud(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Labels are a way to attach lightweight metadata to resources for
-    filtering and querying resource data. No more than 64 user labels can be
-    associated with each resource. Label keys and values can be no longer than
-    63 characters, can only contain lowercase letters, numeric characters,
-    underscores and dashes, where label keys must start with a letter and
-    international characters are allowed. The empty string is a valid value.
-    Labels are set on creation and updated like any other field. Specifically,
-    to add a new label, you would need to provide all of the existing labels
-    along with the new label. If you only provide a map with the new label,
-    all of the old labels will be removed (probably not what is desired).
+    r"""Deprecated: Labels are a way to attach lightweight metadata to
+    resources for filtering and querying resource data. No more than 64 user
+    labels can be associated with each resource. Label keys and values can be
+    no longer than 63 characters, can only contain lowercase letters, numeric
+    characters, underscores and dashes, where label keys must start with a
+    letter and international characters are allowed. The empty string is a
+    valid value. Labels are set on creation and updated like any other field.
+    Specifically, to add a new label, you would need to provide all of the
+    existing labels along with the new label. If you only provide a map with
+    the new label, all of the old labels will be removed (probably not what is
+    desired).
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -1784,13 +1980,13 @@ class VmwareEngineNetwork(_messages.Message):
     TypeValueValuesEnum: Required. VMware Engine network type.
 
   Messages:
-    LabelsValue: Labels are a way to attach lightweight metadata to resources
-      for filtering and querying resource data. No more than 64 user labels
-      can be associated with each resource. Label keys and values can be no
-      longer than 63 characters, can only contain lowercase letters, numeric
-      characters, underscores and dashes, where label keys must start with a
-      letter and international characters are allowed. The empty string is a
-      valid value. Labels are set on creation and updated like any other
+    LabelsValue: Deprecated: Labels are a way to attach lightweight metadata
+      to resources for filtering and querying resource data. No more than 64
+      user labels can be associated with each resource. Label keys and values
+      can be no longer than 63 characters, can only contain lowercase letters,
+      numeric characters, underscores and dashes, where label keys must start
+      with a letter and international characters are allowed. The empty string
+      is a valid value. Labels are set on creation and updated like any other
       field. Specifically, to add a new label, you would need to provide all
       of the existing labels along with the new label. If you only provide a
       map with the new label, all of the old labels will be removed (probably
@@ -1804,13 +2000,13 @@ class VmwareEngineNetwork(_messages.Message):
       that the user-provided value is up to date before the server processes a
       request. The server computes checksums based on the value of other
       fields in the request.
-    labels: Labels are a way to attach lightweight metadata to resources for
-      filtering and querying resource data. No more than 64 user labels can be
-      associated with each resource. Label keys and values can be no longer
-      than 63 characters, can only contain lowercase letters, numeric
-      characters, underscores and dashes, where label keys must start with a
-      letter and international characters are allowed. The empty string is a
-      valid value. Labels are set on creation and updated like any other
+    labels: Deprecated: Labels are a way to attach lightweight metadata to
+      resources for filtering and querying resource data. No more than 64 user
+      labels can be associated with each resource. Label keys and values can
+      be no longer than 63 characters, can only contain lowercase letters,
+      numeric characters, underscores and dashes, where label keys must start
+      with a letter and international characters are allowed. The empty string
+      is a valid value. Labels are set on creation and updated like any other
       field. Specifically, to add a new label, you would need to provide all
       of the existing labels along with the new label. If you only provide a
       map with the new label, all of the old labels will be removed (probably
@@ -1862,16 +2058,17 @@ class VmwareEngineNetwork(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Labels are a way to attach lightweight metadata to resources for
-    filtering and querying resource data. No more than 64 user labels can be
-    associated with each resource. Label keys and values can be no longer than
-    63 characters, can only contain lowercase letters, numeric characters,
-    underscores and dashes, where label keys must start with a letter and
-    international characters are allowed. The empty string is a valid value.
-    Labels are set on creation and updated like any other field. Specifically,
-    to add a new label, you would need to provide all of the existing labels
-    along with the new label. If you only provide a map with the new label,
-    all of the old labels will be removed (probably not what is desired).
+    r"""Deprecated: Labels are a way to attach lightweight metadata to
+    resources for filtering and querying resource data. No more than 64 user
+    labels can be associated with each resource. Label keys and values can be
+    no longer than 63 characters, can only contain lowercase letters, numeric
+    characters, underscores and dashes, where label keys must start with a
+    letter and international characters are allowed. The empty string is a
+    valid value. Labels are set on creation and updated like any other field.
+    Specifically, to add a new label, you would need to provide all of the
+    existing labels along with the new label. If you only provide a map with
+    the new label, all of the old labels will be removed (probably not what is
+    desired).
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -1913,6 +2110,152 @@ class VmwareengineProjectsLocationsGetRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class VmwareengineProjectsLocationsGlobalNetworkPeeringsCreateRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsGlobalNetworkPeeringsCreateRequest
+  object.
+
+  Fields:
+    networkPeering: A NetworkPeering resource to be passed as the request
+      body.
+    networkPeeringId: Required. The user-provided identifier of the new
+      `NetworkPeering`. This identifier must be unique among `NetworkPeering`
+      resources within the parent and becomes the final token in the name URI.
+      The identifier must meet the following requirements: * Only contains
+      1-63 alphanumeric characters and hyphens * Begins with an alphabetical
+      character * Ends with a non-hyphen character * Not formatted as a UUID *
+      Complies with [RFC 1034](https://datatracker.ietf.org/doc/html/rfc1034)
+      (section 3.5)
+    parent: Required. The resource name of the location to create the new
+      network peering in. This value is always `global`, because
+      `NetworkPeering` is a global resource. Resource names are schemeless
+      URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/global`
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server
+      guarantees that a request doesn't result in creation of duplicate
+      commitments for at least 60 minutes. For example, consider a situation
+      where you make an initial request and the request times out. If you make
+      the request again with the same request ID, the server can check if
+      original operation with the same request ID was received, and if so,
+      will ignore the second request. This prevents clients from accidentally
+      creating duplicate commitments. The request ID must be a valid UUID with
+      the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  networkPeering = _messages.MessageField('NetworkPeering', 1)
+  networkPeeringId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class VmwareengineProjectsLocationsGlobalNetworkPeeringsDeleteRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsGlobalNetworkPeeringsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The resource name of the VPC network peering to be
+      deleted. Resource names are schemeless URIs that follow the conventions
+      in https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/global/networkPeerings/my-peering`
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server
+      guarantees that a request doesn't result in creation of duplicate
+      commitments for at least 60 minutes. For example, consider a situation
+      where you make an initial request and the request times out. If you make
+      the request again with the same request ID, the server can check if
+      original operation with the same request ID was received, and if so,
+      will ignore the second request. This prevents clients from accidentally
+      creating duplicate commitments. The request ID must be a valid UUID with
+      the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class VmwareengineProjectsLocationsGlobalNetworkPeeringsGetRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsGlobalNetworkPeeringsGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the VPC network peering to retrieve.
+      Resource names are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/global/networkPeerings/my-peering`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class VmwareengineProjectsLocationsGlobalNetworkPeeringsListRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsGlobalNetworkPeeringsListRequest object.
+
+  Fields:
+    filter: A filter expression that matches resources returned in the
+      response. The expression must specify the field name, a comparison
+      operator, and the value that you want to use for filtering. The value
+      must be a string, a number, or a boolean. The comparison operator must
+      be `=`, `!=`, `>`, or `<`. For example, if you are filtering a list of
+      VPC network peerings, you can exclude the ones named `example-peering`
+      by specifying `name != "example-peering"`. To filter on multiple
+      expressions, provide each separate expression within parentheses. For
+      example: ``` (name = "example-peering") (createTime >
+      "2021-04-12T08:15:10.40Z") ``` By default, each expression is an `AND`
+      expression. However, you can include `AND` and `OR` expressions
+      explicitly. For example: ``` (name = "example-peering-1") AND
+      (createTime > "2021-04-12T08:15:10.40Z") OR (name = "example-peering-2")
+      ```
+    orderBy: Sorts list results by a certain order. By default, returned
+      results are ordered by `name` in ascending order. You can also sort
+      results in descending order based on the `name` value using
+      `orderBy="name desc"`. Currently, only ordering by `name` is supported.
+    pageSize: The maximum number of VPC network peerings to return in one
+      page. The maximum value of this field is 25.
+    pageToken: A page token, received from a previous `ListNetworkPeerings`
+      call. Provide this to retrieve the subsequent page. When paginating, all
+      other parameters provided to `ListNetworkPeerings` must match the call
+      that provided the page token.
+    parent: Required. The resource name of the location (global) to query for
+      network peerings. Resource names are schemeless URIs that follow the
+      conventions in https://cloud.google.com/apis/design/resource_names. For
+      example: `projects/my-project/locations/global`
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class VmwareengineProjectsLocationsGlobalNetworkPeeringsPeeringRoutesListRequest(_messages.Message):
+  r"""A
+  VmwareengineProjectsLocationsGlobalNetworkPeeringsPeeringRoutesListRequest
+  object.
+
+  Fields:
+    pageSize: The maximum number of peering routes to return in one page. The
+      service may return fewer than this value. The maximum value is 25.
+    pageToken: A page token, received from a previous `ListPeeringRoutes`
+      call. Provide this to retrieve the subsequent page. When paginating, all
+      other parameters provided to `ListPeeringRoutes` must match the call
+      that provided the page token.
+    parent: Required. The resource name of the VPC network peering to retrieve
+      peering routes from. Resource names are schemeless URIs that follow the
+      conventions in https://cloud.google.com/apis/design/resource_names. For
+      example: `projects/my-project/locations/global/networkPeerings/my-
+      peering`
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class VmwareengineProjectsLocationsListRequest(_messages.Message):
@@ -3406,7 +3749,7 @@ class VmwareengineProjectsLocationsVmwareEngineNetworksPatchRequest(_messages.Me
       fields specified in the `update_mask` are relative to the resource, not
       the full request. A field will be overwritten if it is in the mask. If
       the user does not provide a mask then all fields will be overwritten.
-      Only the following fields can be updated: `labels`, `description`.
+      Only the following fields can be updated: `description`.
     vmwareEngineNetwork: A VmwareEngineNetwork resource to be passed as the
       request body.
   """

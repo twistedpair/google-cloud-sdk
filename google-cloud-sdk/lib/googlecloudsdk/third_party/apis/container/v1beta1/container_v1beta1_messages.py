@@ -564,6 +564,7 @@ class Cluster(_messages.Message):
     nodePools: The node pools associated with this cluster. This field should
       not be set if "node_config" or "initial_node_count" are specified.
     notificationConfig: Notification configuration of the cluster.
+    podAutoscaling: The config for pod autoscaling.
     podSecurityPolicyConfig: Configuration for the PodSecurityPolicy feature.
     privateCluster: If this is a private cluster setup. Private clusters are
       clusters that, by default have no external IP addresses on the nodes and
@@ -720,28 +721,29 @@ class Cluster(_messages.Message):
   nodePoolDefaults = _messages.MessageField('NodePoolDefaults', 52)
   nodePools = _messages.MessageField('NodePool', 53, repeated=True)
   notificationConfig = _messages.MessageField('NotificationConfig', 54)
-  podSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 55)
-  privateCluster = _messages.BooleanField(56)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 57)
-  protectConfig = _messages.MessageField('ProtectConfig', 58)
-  releaseChannel = _messages.MessageField('ReleaseChannel', 59)
-  resourceLabels = _messages.MessageField('ResourceLabelsValue', 60)
-  resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 61)
-  selfLink = _messages.StringField(62)
-  servicesIpv4Cidr = _messages.StringField(63)
-  shieldedNodes = _messages.MessageField('ShieldedNodes', 64)
-  status = _messages.EnumField('StatusValueValuesEnum', 65)
-  statusMessage = _messages.StringField(66)
-  subnetwork = _messages.StringField(67)
-  tpuConfig = _messages.MessageField('TpuConfig', 68)
-  tpuIpv4CidrBlock = _messages.StringField(69)
-  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 70)
-  workloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 71)
-  workloadCertificates = _messages.MessageField('WorkloadCertificates', 72)
-  workloadConfig = _messages.MessageField('WorkloadConfig', 73)
-  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 74)
-  workloadMonitoringEnabledEap = _messages.BooleanField(75)
-  zone = _messages.StringField(76)
+  podAutoscaling = _messages.MessageField('PodAutoscaling', 55)
+  podSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 56)
+  privateCluster = _messages.BooleanField(57)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 58)
+  protectConfig = _messages.MessageField('ProtectConfig', 59)
+  releaseChannel = _messages.MessageField('ReleaseChannel', 60)
+  resourceLabels = _messages.MessageField('ResourceLabelsValue', 61)
+  resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 62)
+  selfLink = _messages.StringField(63)
+  servicesIpv4Cidr = _messages.StringField(64)
+  shieldedNodes = _messages.MessageField('ShieldedNodes', 65)
+  status = _messages.EnumField('StatusValueValuesEnum', 66)
+  statusMessage = _messages.StringField(67)
+  subnetwork = _messages.StringField(68)
+  tpuConfig = _messages.MessageField('TpuConfig', 69)
+  tpuIpv4CidrBlock = _messages.StringField(70)
+  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 71)
+  workloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 72)
+  workloadCertificates = _messages.MessageField('WorkloadCertificates', 73)
+  workloadConfig = _messages.MessageField('WorkloadConfig', 74)
+  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 75)
+  workloadMonitoringEnabledEap = _messages.BooleanField(76)
+  zone = _messages.StringField(77)
 
 
 class ClusterAutoscaling(_messages.Message):
@@ -922,6 +924,7 @@ class ClusterUpdate(_messages.Message):
       version - "1.X.Y-gke.N": picks an explicit Kubernetes version - "-":
       picks the Kubernetes master version
     desiredNotificationConfig: The desired notification configuration.
+    desiredPodAutoscaling: The desired config for pod autoscaling.
     desiredPodSecurityPolicyConfig: The desired configuration options for the
       PodSecurityPolicy feature.
     desiredPrivateClusterConfig: The desired private cluster configuration.
@@ -1026,22 +1029,23 @@ class ClusterUpdate(_messages.Message):
   desiredNodePoolId = _messages.StringField(36)
   desiredNodeVersion = _messages.StringField(37)
   desiredNotificationConfig = _messages.MessageField('NotificationConfig', 38)
-  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 39)
-  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 40)
-  desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 41)
-  desiredProtectConfig = _messages.MessageField('ProtectConfig', 42)
-  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 43)
-  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 44)
-  desiredServiceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 45)
-  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 46)
-  desiredStableFleetConfig = _messages.MessageField('StableFleetConfig', 47)
-  desiredTpuConfig = _messages.MessageField('TpuConfig', 48)
-  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 49)
-  desiredWorkloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 50)
-  desiredWorkloadCertificates = _messages.MessageField('WorkloadCertificates', 51)
-  desiredWorkloadConfig = _messages.MessageField('WorkloadConfig', 52)
-  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 53)
-  desiredWorkloadMonitoringEapConfig = _messages.MessageField('WorkloadMonitoringEapConfig', 54)
+  desiredPodAutoscaling = _messages.MessageField('PodAutoscaling', 39)
+  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 40)
+  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 41)
+  desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 42)
+  desiredProtectConfig = _messages.MessageField('ProtectConfig', 43)
+  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 44)
+  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 45)
+  desiredServiceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 46)
+  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 47)
+  desiredStableFleetConfig = _messages.MessageField('StableFleetConfig', 48)
+  desiredTpuConfig = _messages.MessageField('TpuConfig', 49)
+  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 50)
+  desiredWorkloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 51)
+  desiredWorkloadCertificates = _messages.MessageField('WorkloadCertificates', 52)
+  desiredWorkloadConfig = _messages.MessageField('WorkloadConfig', 53)
+  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 54)
+  desiredWorkloadMonitoringEapConfig = _messages.MessageField('WorkloadMonitoringEapConfig', 55)
 
 
 class CompleteIPRotationRequest(_messages.Message):
@@ -1860,8 +1864,7 @@ class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
   or the response type of an API method. For instance: service Foo { rpc
-  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
-  representation for `Empty` is empty JSON object `{}`.
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
 
 
@@ -3934,6 +3937,18 @@ class PlacementPolicy(_messages.Message):
     COMPACT = 1
 
   type = _messages.EnumField('TypeValueValuesEnum', 1)
+
+
+class PodAutoscaling(_messages.Message):
+  r"""PodAutoscaling is used for configuration of parameters for workload
+  autoscaling.
+
+  Fields:
+    directMetricsOptIn: Indicates the cluster has opted-into direct metrics
+      collection.
+  """
+
+  directMetricsOptIn = _messages.BooleanField(1)
 
 
 class PodCIDROverprovisionConfig(_messages.Message):

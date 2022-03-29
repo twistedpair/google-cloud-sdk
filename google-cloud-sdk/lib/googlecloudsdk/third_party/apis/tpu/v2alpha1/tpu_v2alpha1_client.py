@@ -42,6 +42,7 @@ class TpuV2alpha1(base_api.BaseApiClient):
     self.projects_locations_acceleratorTypes = self.ProjectsLocationsAcceleratorTypesService(self)
     self.projects_locations_nodes = self.ProjectsLocationsNodesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
+    self.projects_locations_queuedResources = self.ProjectsLocationsQueuedResourcesService(self)
     self.projects_locations_runtimeVersions = self.ProjectsLocationsRuntimeVersionsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
@@ -451,6 +452,124 @@ class TpuV2alpha1(base_api.BaseApiClient):
         request_field='',
         request_type_name='TpuProjectsLocationsOperationsListRequest',
         response_type_name='ListOperationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsQueuedResourcesService(base_api.BaseApiService):
+    """Service class for the projects_locations_queuedResources resource."""
+
+    _NAME = 'projects_locations_queuedResources'
+
+    def __init__(self, client):
+      super(TpuV2alpha1.ProjectsLocationsQueuedResourcesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a QueuedResource TPU instance.
+
+      Args:
+        request: (TpuProjectsLocationsQueuedResourcesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2alpha1/projects/{projectsId}/locations/{locationsId}/queuedResources',
+        http_method='POST',
+        method_id='tpu.projects.locations.queuedResources.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['queuedResourceId', 'requestId'],
+        relative_path='v2alpha1/{+parent}/queuedResources',
+        request_field='queuedResource',
+        request_type_name='TpuProjectsLocationsQueuedResourcesCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a QueuedResource TPU instance.
+
+      Args:
+        request: (TpuProjectsLocationsQueuedResourcesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2alpha1/projects/{projectsId}/locations/{locationsId}/queuedResources/{queuedResourcesId}',
+        http_method='DELETE',
+        method_id='tpu.projects.locations.queuedResources.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v2alpha1/{+name}',
+        request_field='',
+        request_type_name='TpuProjectsLocationsQueuedResourcesDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a queued resource.
+
+      Args:
+        request: (TpuProjectsLocationsQueuedResourcesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (QueuedResource) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2alpha1/projects/{projectsId}/locations/{locationsId}/queuedResources/{queuedResourcesId}',
+        http_method='GET',
+        method_id='tpu.projects.locations.queuedResources.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2alpha1/{+name}',
+        request_field='',
+        request_type_name='TpuProjectsLocationsQueuedResourcesGetRequest',
+        response_type_name='QueuedResource',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists queued resources.
+
+      Args:
+        request: (TpuProjectsLocationsQueuedResourcesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListQueuedResourcesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2alpha1/projects/{projectsId}/locations/{locationsId}/queuedResources',
+        http_method='GET',
+        method_id='tpu.projects.locations.queuedResources.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2alpha1/{+parent}/queuedResources',
+        request_field='',
+        request_type_name='TpuProjectsLocationsQueuedResourcesListRequest',
+        response_type_name='ListQueuedResourcesResponse',
         supports_download=False,
     )
 

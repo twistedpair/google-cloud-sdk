@@ -205,6 +205,13 @@ properties:
     - NOOP
     - POST_KEY_REVOCATION_ACTION_TYPE_UNSPECIFIED
     - SHUTDOWN
+  keyRevocationActionType:
+    description: KeyRevocationActionType of the instance.
+    type: string
+    enum:
+    - NONE
+    - STOP
+    - KEY_REVOCATION_ACTION_TYPE_UNSPECIFIED
   preservedStateSizeGb:
     description: |-
       Total amount of preserved state for SUSPENDED instances. Read-

@@ -77,7 +77,8 @@ def _MasterUpgradeMessage(name, server_conf, cluster, new_version):
       name, version_message, new_version_message))
 
 
-def _NodeUpgradeMessage(name, cluster, node_pool_name, new_version):
+def _NodeUpgradeMessage(name, cluster, node_pool_name, new_version,
+                        new_image_type):
   """Returns the prompt message during a node upgrade.
 
   Args:
@@ -86,13 +87,14 @@ def _NodeUpgradeMessage(name, cluster, node_pool_name, new_version):
     node_pool_name: str, the name of the node pool if the upgrade is for a
       specific node pool.
     new_version: str, the name of the new version, if given.
+    new_image_type: str, the name of the new image type, if given.
 
   Raises:
     NodePoolError: if the node pool name can't be found in the cluster.
 
   Returns:
     str, a message about which nodes in the cluster will be upgraded and
-        to which version.
+        to which version or image, if applicable.
   """
   node_message = 'All nodes'
   current_version = None
@@ -119,6 +121,18 @@ def _NodeUpgradeMessage(name, cluster, node_pool_name, new_version):
   else:
     new_version_message = 'the master version'
 
+  if new_image_type:
+    image_type = None
+    if cluster and node_pool_name:
+      image_type = _NodePoolFromCluster(cluster,
+                                        node_pool_name).config.imageType
+    if image_type:
+      return ('{} of cluster [{}] image will change from {} to {}.'.format(
+          node_message, name, image_type, new_image_type))
+    else:
+      return ('{} of cluster [{}] image will change to {}.'.format(
+          node_message, name, new_image_type))
+
   return ('{} of cluster [{}] will be upgraded from {} to {}.'.format(
       node_message, name, version_message, new_version_message))
 
@@ -128,7 +142,8 @@ def ClusterUpgradeMessage(name,
                           cluster=None,
                           master=False,
                           node_pool_name=None,
-                          new_version=None):
+                          new_version=None,
+                          new_image_type=None):
   """Get a message to print during gcloud container clusters upgrade.
 
   Args:
@@ -139,6 +154,7 @@ def ClusterUpgradeMessage(name,
     node_pool_name: str, the name of the node pool if the upgrade is for a
       specific node pool.
     new_version: str, the name of the new version, if given.
+    new_image_type: str, the name of the new node image type, if given.
 
   Raises:
     NodePoolError: if the node pool name can't be found in the cluster.
@@ -152,7 +168,7 @@ def ClusterUpgradeMessage(name,
                                             new_version)
   else:
     upgrade_message = _NodeUpgradeMessage(name, cluster, node_pool_name,
-                                          new_version)
+                                          new_version, new_image_type)
 
   return ('{} This operation is long-running and will block other operations '
           'on the cluster (including delete) until it has run to completion.'

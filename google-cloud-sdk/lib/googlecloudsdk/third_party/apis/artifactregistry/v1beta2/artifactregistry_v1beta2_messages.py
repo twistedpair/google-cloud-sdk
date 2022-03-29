@@ -607,8 +607,7 @@ class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
   or the response type of an API method. For instance: service Foo { rpc
-  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
-  representation for `Empty` is empty JSON object `{}`.
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
 
 
@@ -724,6 +723,10 @@ class ImportAptArtifactsGcsSource(_messages.Message):
   useWildcards = _messages.BooleanField(2)
 
 
+class ImportAptArtifactsMetadata(_messages.Message):
+  r"""The operation metadata for importing artifacts."""
+
+
 class ImportAptArtifactsRequest(_messages.Message):
   r"""The request to import new apt artifacts.
 
@@ -769,6 +772,10 @@ class ImportYumArtifactsGcsSource(_messages.Message):
 
   uris = _messages.StringField(1, repeated=True)
   useWildcards = _messages.BooleanField(2)
+
+
+class ImportYumArtifactsMetadata(_messages.Message):
+  r"""The operation metadata for importing artifacts."""
 
 
 class ImportYumArtifactsRequest(_messages.Message):

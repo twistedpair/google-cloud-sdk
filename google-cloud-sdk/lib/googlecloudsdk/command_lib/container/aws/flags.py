@@ -168,6 +168,25 @@ def AddConfigEncryptionKmsKeyArn(parser, required=True):
   _AddKmsKeyArn(parser, 'config-encryption', 'user data', required=required)
 
 
+def _TenancyEnumMapper():
+  return arg_utils.ChoiceEnumMapper(
+      '--instance-placement',
+      api_util.GetMessagesModule()
+      .GoogleCloudGkemulticloudV1AwsInstancePlacement.TenancyValueValuesEnum,
+      include_filter=lambda tenancy: 'UNSPECIFIED' not in tenancy,
+      help_str='Type of the tenancy.')
+
+
+def AddInstancePlacement(parser):
+  return _TenancyEnumMapper().choice_arg.AddToParser(parser)
+
+
+def GetInstancePlacement(args):
+  instance_placement = getattr(args, 'instance_placement', None)
+  if instance_placement is not None:
+    return _TenancyEnumMapper().GetEnumForChoice(args.instance_placement)
+
+
 def AddClearProxyConfig(parser):
   parser.add_argument(
       '--clear-proxy-config',

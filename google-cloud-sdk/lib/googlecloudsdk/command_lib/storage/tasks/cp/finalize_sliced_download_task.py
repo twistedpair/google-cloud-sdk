@@ -22,6 +22,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import tracker_file_util
 from googlecloudsdk.command_lib.storage.tasks import task
 from googlecloudsdk.command_lib.storage.tasks.cp import download_util
@@ -68,10 +69,14 @@ class FinalizeSlicedDownloadTask(task.Task):
 
   def execute(self, task_status_queue=None):
     """Validates and clean ups after sliced download."""
+    component_error_occurred = False
     for message in self.received_messages:
       if message.topic is task.Topic.ERROR:
         log.error(message.payload)
-        return
+        component_error_occurred = True
+    if component_error_occurred:
+      raise errors.Error(
+          'Failed to download one or more component of sliced download.')
 
     temporary_object_path = (
         self._temporary_destination_resource.storage_url.object_name)

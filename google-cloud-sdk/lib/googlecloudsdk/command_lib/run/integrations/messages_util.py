@@ -51,3 +51,34 @@ def GetCallToAction(integration_type, resource_config, resource_status):
       'config': resource_config,
       'status': resource_status
   })
+
+
+def GetDeleteErrorMessage(integration_name):
+  """Returns message when delete command fails.
+
+  Args:
+    integration_name: str, name of the integration.
+
+  Returns:
+    A formatted string of the error message.
+  """
+  return ('Deleting Integration [{}] failed, please rerun the delete command to'
+          ' try again.').format(integration_name)
+
+
+def CheckStatusMessage(release_track, integration_name):
+  """Message about check status with describe command.
+
+  Args:
+    release_track: Release track of the command being run.
+    integration_name: str, name of the integration
+
+  Returns:
+    A formatted string of the message.
+  """
+  track = release_track.prefix
+  if track:
+    track += ' '
+  return (
+      'You can check the status with `gcloud {}run integrations describe {}`'
+      .format(track, integration_name))

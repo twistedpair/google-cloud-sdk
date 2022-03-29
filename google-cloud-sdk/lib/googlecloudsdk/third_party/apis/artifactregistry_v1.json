@@ -369,7 +369,8 @@
             "NPM package format.",
             "APT package format.",
             "YUM package format.",
-            "Python package format."
+            "Python package format.",
+            "Kubeflow Pipelines package format."
           ],
           "enum": [
             "FORMAT_UNSPECIFIED",
@@ -378,7 +379,8 @@
             "NPM",
             "APT",
             "YUM",
-            "PYTHON"
+            "PYTHON",
+            "KFP"
           ]
         },
         "description": {
@@ -790,6 +792,58 @@
           ]
         }
       }
+    },
+    "ListLocationsResponse": {
+      "id": "ListLocationsResponse",
+      "description": "The response message for Locations.ListLocations.",
+      "type": "object",
+      "properties": {
+        "locations": {
+          "description": "A list of locations that matches the specified filter in the request.",
+          "type": "array",
+          "items": {
+            "$ref": "Location"
+          }
+        },
+        "nextPageToken": {
+          "description": "The standard List next-page token.",
+          "type": "string"
+        }
+      }
+    },
+    "Location": {
+      "id": "Location",
+      "description": "A resource that represents Google Cloud Platform location.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Resource name for the location, which may vary between implementations. For example: `\"projects\/example-project\/locations\/us-east1\"`",
+          "type": "string"
+        },
+        "locationId": {
+          "description": "The canonical id for this location. For example: `\"us-east1\"`.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The friendly name for this location, typically a nearby city name. For example, \"Tokyo\".",
+          "type": "string"
+        },
+        "labels": {
+          "description": "Cross-service attributes for the location. For example {\"cloud.googleapis.com\/region\": \"us-east1\"}",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "metadata": {
+          "description": "Service-specific metadata. For example the available capacity at the given location.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        }
+      }
     }
   },
   "resources": {
@@ -859,6 +913,77 @@
       ,
       "resources": {
         "locations": {
+          "methods": {
+            "list": {
+              "id": "artifactregistry.projects.locations.list",
+              "path": "v1/{+name}/locations",
+              "flatPath": "v1/projects/{projectsId}/locations",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "The resource that owns the locations collection, if applicable.",
+                  "pattern": "^projects\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "filter": {
+                  "description": "A filter to narrow down results to a preferred subset. The filtering language accepts strings like \"displayName=tokyo\", and is documented in more detail in [AIP-160](https:\/\/google.aip.dev\/160).",
+                  "location": "query",
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "The maximum number of results to return. If not set, the service selects a default.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "A page token received from the `next_page_token` field in the response. Send that page token to receive the subsequent page.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "ListLocationsResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/cloud-platform.read-only"
+              ],
+              "description": "Lists information about the supported locations for this service."
+            },
+            "get": {
+              "id": "artifactregistry.projects.locations.get",
+              "path": "v1/{+name}",
+              "flatPath": "v1/projects/{projectsId}/locations/{locationsId}",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Resource name for the location.",
+                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "Location"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/cloud-platform.read-only"
+              ],
+              "description": "Gets information about a location."
+            }
+          }
+          ,
           "resources": {
             "operations": {
               "methods": {

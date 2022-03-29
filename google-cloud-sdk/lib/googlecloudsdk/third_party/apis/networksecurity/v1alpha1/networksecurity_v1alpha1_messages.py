@@ -325,8 +325,7 @@ class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
   or the response type of an API method. For instance: service Foo { rpc
-  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
-  representation for `Empty` is empty JSON object `{}`.
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
 
 
@@ -2029,7 +2028,9 @@ class ServerTlsPolicy(_messages.Message):
       false. This setting is not exclusive of other encryption modes. For
       example, if `allow_open` and `mtls_policy` are set, server allows both
       plain text and mTLS connections. See documentation of other encryption
-      modes to confirm compatibility.
+      modes to confirm compatibility. Consider using it if you wish to upgrade
+      in place your deployment to TLS while having mixed TLS and non-TLS
+      traffic reaching port :80.
     createTime: Output only. The timestamp when the resource was created.
     description: Free-text description of the resource.
     labels: Set of label tags associated with the resource.

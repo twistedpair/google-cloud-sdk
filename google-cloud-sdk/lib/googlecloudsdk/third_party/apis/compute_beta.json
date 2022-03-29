@@ -4,7 +4,7 @@
   "id": "compute:beta",
   "name": "compute",
   "version": "beta",
-  "revision": "20220310",
+  "revision": "20220318",
   "title": "Compute Engine API",
   "description": "Creates and runs virtual machines on Google Cloud Platform. ",
   "ownerDomain": "google.com",
@@ -1209,6 +1209,10 @@
           "default": "compute#firewallPolicyRule",
           "type": "string"
         },
+        "ruleName": {
+          "description": "An optional name for the rule. This field is not a unique identifier and can be updated.",
+          "type": "string"
+        },
         "description": {
           "description": "An optional description for this resource.",
           "type": "string"
@@ -1305,6 +1309,34 @@
           "type": "array",
           "items": {
             "$ref": "FirewallPolicyRuleSecureTag"
+          }
+        },
+        "srcRegionCodes": {
+          "description": "Region codes whose IP addresses will be used to match for source of traffic. Should be specified as 2 letter country code defined as per ISO 3166 alpha-2 country codes. ex.\"US\" Maximum number of source region codes allowed is 5000.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "destRegionCodes": {
+          "description": "Region codes whose IP addresses will be used to match for destination of traffic. Should be specified as 2 letter country code defined as per ISO 3166 alpha-2 country codes. ex.\"US\" Maximum number of dest region codes allowed is 5000.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "destThreatIntelligences": {
+          "description": "Names of Network Threat Intelligence lists. The IPs in these lists will be matched against traffic destination.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "srcThreatIntelligences": {
+          "description": "Names of Network Threat Intelligence lists. The IPs in these lists will be matched against traffic source.",
+          "type": "array",
+          "items": {
+            "type": "string"
           }
         }
       }
@@ -2330,7 +2362,7 @@
       "type": "object",
       "properties": {
         "type": {
-          "description": "The ID of a supported feature. To add multiple values, use commas to separate values. Set to one or more of the following values: - VIRTIO_SCSI_MULTIQUEUE - WINDOWS - MULTI_IP_SUBNET - UEFI_COMPATIBLE - SECURE_BOOT - GVNIC - SEV_CAPABLE - SUSPEND_RESUME_COMPATIBLE - SEV_SNP_CAPABLE For more information, see Enabling guest operating system features.",
+          "description": "The ID of a supported feature. To add multiple values, use commas to separate values. Set to one or more of the following values: - VIRTIO_SCSI_MULTIQUEUE - WINDOWS - MULTI_IP_SUBNET - UEFI_COMPATIBLE - GVNIC - SEV_CAPABLE - SUSPEND_RESUME_COMPATIBLE - SEV_SNP_CAPABLE For more information, see Enabling guest operating system features.",
           "type": "string",
           "enumDescriptions": [
             "",
@@ -2417,7 +2449,7 @@
       "type": "object",
       "properties": {
         "labels": {
-          "description": "A list of labels to apply for this resource. Each label key & value must comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash. For example, \"webserver-frontend\": \"images\". A label value can also be empty (e.g. \"my-label\": \"\").",
+          "description": "A list of labels to apply for this resource. Each label must comply with the requirements for labels. For example, \"webserver-frontend\": \"images\". A label value can also be empty (e.g. \"my-label\": \"\").",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -4495,6 +4527,11 @@
         },
         "threadsPerCore": {
           "description": "The number of threads per physical core. To disable simultaneous multithreading (SMT) set this to 1. If unset, the maximum number of threads supported per core by the underlying processor is assumed.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "visibleCoreCount": {
+          "description": "The number of physical cores to expose to an instance. Multiply by the number of threads per core to compute the total number of virtual CPUs to expose to the instance. If unset, the number of cores is inferred from the instance's nominal CPU count and the underlying platform's SMT width.",
           "type": "integer",
           "format": "int32"
         },
@@ -11588,6 +11625,13 @@
           "items": {
             "type": "string"
           }
+        },
+        "localityLbPolicies": {
+          "description": "A list of locality load balancing policies to be used in order of preference. Either the policy or the customPolicy field should be set. Overrides any value set in the localityLbPolicy field. localityLbPolicies is only supported when the BackendService is referenced by a URL Map that is referenced by a target gRPC proxy that has the validateForProxyless field set to true.",
+          "type": "array",
+          "items": {
+            "$ref": "BackendServiceLocalityLoadBalancingPolicyConfig"
+          }
         }
       }
     },
@@ -12129,6 +12173,65 @@
         "enableStrongAffinity": {
           "description": "Enable Strong Session Affinity for Network Load Balancing. This option is not available publicly.",
           "type": "boolean"
+        }
+      }
+    },
+    "BackendServiceLocalityLoadBalancingPolicyConfig": {
+      "id": "BackendServiceLocalityLoadBalancingPolicyConfig",
+      "description": "Container for either a built-in LB policy supported by gRPC or Envoy or a custom one implemented by the end user.",
+      "type": "object",
+      "properties": {
+        "policy": {
+          "$ref": "BackendServiceLocalityLoadBalancingPolicyConfigPolicy"
+        },
+        "customPolicy": {
+          "$ref": "BackendServiceLocalityLoadBalancingPolicyConfigCustomPolicy"
+        }
+      }
+    },
+    "BackendServiceLocalityLoadBalancingPolicyConfigPolicy": {
+      "id": "BackendServiceLocalityLoadBalancingPolicyConfigPolicy",
+      "description": "The configuration for a built-in load balancing policy.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The name of a locality load balancer policy to be used. The value should be one of the predefined ones as supported by localityLbPolicy, although at the moment only ROUND_ROBIN is supported. This field should only be populated when the customPolicy field is not used. Note that specifying the same policy more than once for a backend is not a valid configuration and will be rejected.",
+          "type": "string",
+          "enumDescriptions": [
+            "",
+            "An O(1) algorithm which selects two random healthy hosts and picks the host which has fewer active requests.",
+            "This algorithm implements consistent hashing to backends. Maglev can be used as a drop in replacement for the ring hash load balancer. Maglev is not as stable as ring hash but has faster table lookup build times and host selection times. For more information about Maglev, see https:\/\/ai.google\/research\/pubs\/pub44824",
+            "Backend host is selected based on the client connection metadata, i.e., connections are opened to the same address as the destination address of the incoming connection before the connection was redirected to the load balancer.",
+            "The load balancer selects a random healthy host.",
+            "The ring\/modulo hash load balancer implements consistent hashing to backends. The algorithm has the property that the addition\/removal of a host from a set of N hosts only affects 1\/N of the requests.",
+            "This is a simple policy in which each healthy backend is selected in round robin order. This is the default.",
+            "Per-instance weighted Load Balancing via health check reported weights. If set, the Backend Service must configure a non legacy HTTP-based Health Check, and health check replies are expected to contain non-standard HTTP response header field X-Load-Balancing-Endpoint-Weight to specify the per-instance weights. If set, Load Balancing is weighted based on the per-instance weights reported in the last processed health check replies, as long as every instance either reported a valid weight or had UNAVAILABLE_WEIGHT. Otherwise, Load Balancing remains equal-weight. This option is only supported in Network Load Balancing."
+          ],
+          "enum": [
+            "INVALID_LB_POLICY",
+            "LEAST_REQUEST",
+            "MAGLEV",
+            "ORIGINAL_DESTINATION",
+            "RANDOM",
+            "RING_HASH",
+            "ROUND_ROBIN",
+            "WEIGHTED_MAGLEV"
+          ]
+        }
+      }
+    },
+    "BackendServiceLocalityLoadBalancingPolicyConfigCustomPolicy": {
+      "id": "BackendServiceLocalityLoadBalancingPolicyConfigCustomPolicy",
+      "description": "The configuration for a custom policy implemented by the user and deployed with the client.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Identifies the custom policy. The value should match the type the custom implementation is registered with on the gRPC clients. It should follow protocol buffer message naming conventions and include the full path (e.g. myorg.CustomLbPolicy). The maximum length is 256 characters. Note that specifying the same custom policy more than once for a backend is not a valid configuration and will be rejected.",
+          "type": "string"
+        },
+        "data": {
+          "description": "An optional, arbitrary JSON object with configuration data, understood by a locally installed custom policy implementation.",
+          "type": "string"
         }
       }
     },
@@ -19761,7 +19864,7 @@
       "type": "object",
       "properties": {
         "platform": {
-          "description": "The platform of the backend target(s) of this NEG. Possible values include: 1. API Gateway: apigateway.googleapis.com 2. App Engine: appengine.googleapis.com 3. Cloud Functions: cloudfunctions.googleapis.com 4. Cloud Run: run.googleapis.com ",
+          "description": "The platform of the backend target(s) of this NEG. The only supported value is API Gateway: apigateway.googleapis.com.",
           "type": "string"
         },
         "resource": {

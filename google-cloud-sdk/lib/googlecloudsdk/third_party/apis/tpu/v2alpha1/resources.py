@@ -73,6 +73,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_QUEUEDRESOURCES = (
+      'projects.locations.queuedResources',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/queuedResources/'
+              '{queuedResourcesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_RUNTIMEVERSIONS = (
       'projects.locations.runtimeVersions',
       '{+name}',

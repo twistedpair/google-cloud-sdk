@@ -459,6 +459,9 @@ class Paths(object):
     if not account:
       account = 'default'
 
+    # Colons in folders and filenames cause problems. Remove them.
+    account = account.replace(':', '')
+
     # some file/directory names are reserved on Windows
     # https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file
     # This will handle common cases where these are email prefixes

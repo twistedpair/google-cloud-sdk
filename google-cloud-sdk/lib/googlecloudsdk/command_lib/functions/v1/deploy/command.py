@@ -30,6 +30,7 @@ from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.calliope.arg_parsers import ArgumentTypeError
 from googlecloudsdk.command_lib.functions import flags
 from googlecloudsdk.command_lib.functions import secrets_config
+from googlecloudsdk.command_lib.functions.v1.deploy import enum_util
 from googlecloudsdk.command_lib.functions.v1.deploy import labels_util
 from googlecloudsdk.command_lib.functions.v1.deploy import source_util
 from googlecloudsdk.command_lib.functions.v1.deploy import trigger_util
@@ -173,7 +174,7 @@ def _ApplySecretsArgsToFunction(function, args):
   return updated_fields
 
 
-def _ApplyCMEKArgsToFunction(function_ref, function, args, release_track):
+def _ApplyCMEKArgsToFunction(function_ref, function, args):
   """Configures CMEK related fields for the Cloud Function.
 
   It sets or clears the kms_key_name and docker_repository fields based on the
@@ -183,7 +184,6 @@ def _ApplyCMEKArgsToFunction(function_ref, function, args, release_track):
     function_ref: Function resource.
     function: Cloud function message to be configured.
     args: All CLI arguments.
-    release_track: gcloud release track.
 
   Returns:
     updated_fields: update mask containing the list of fields to be updated.
@@ -195,34 +195,67 @@ def _ApplyCMEKArgsToFunction(function_ref, function, args, release_track):
       key is configured.
   """
   updated_fields = []
-  if (release_track == calliope_base.ReleaseTrack.ALPHA or
-      release_track == calliope_base.ReleaseTrack.BETA):
-    if args.IsSpecified('kms_key') or args.IsSpecified('clear_kms_key'):
-      old_kms_key = function.kmsKeyName
-      function.kmsKeyName = (None if args.clear_kms_key else args.kms_key)
-      if function.kmsKeyName != old_kms_key:
-        if function.kmsKeyName:
-          api_util.ValidateKMSKeyForFunction(function.kmsKeyName, function_ref)
-        updated_fields.append('kmsKeyName')
-    if args.IsSpecified('docker_repository') or args.IsSpecified(
-        'clear_docker_repository'):
-      old_docker_repository = function.dockerRepository
-      function.dockerRepository = (None if args.clear_docker_repository else
-                                   args.docker_repository)
-      if function.dockerRepository != old_docker_repository:
-        if function.dockerRepository:
-          api_util.ValidateDockerRepositoryForFunction(
-              function.dockerRepository, function_ref)
-        updated_fields.append('dockerRepository')
-    if function.kmsKeyName and not function.dockerRepository:
-      raise calliope_exceptions.RequiredArgumentException(
-          '--docker-repository',
-          'A Docker repository must be specified when a KMS key is configured '
-          'for the function.')
+  if args.IsSpecified('kms_key') or args.IsSpecified('clear_kms_key'):
+    old_kms_key = function.kmsKeyName
+    function.kmsKeyName = (None if args.clear_kms_key else args.kms_key)
+    if function.kmsKeyName != old_kms_key:
+      if function.kmsKeyName:
+        api_util.ValidateKMSKeyForFunction(function.kmsKeyName, function_ref)
+      updated_fields.append('kmsKeyName')
+  if args.IsSpecified('docker_repository') or args.IsSpecified(
+      'clear_docker_repository'):
+    old_docker_repository = function.dockerRepository
+    function.dockerRepository = (None if args.clear_docker_repository else
+                                 args.docker_repository)
+    if function.dockerRepository != old_docker_repository:
+      if function.dockerRepository:
+        api_util.ValidateDockerRepositoryForFunction(
+            function.dockerRepository, function_ref)
+      updated_fields.append('dockerRepository')
+  if function.kmsKeyName and not function.dockerRepository:
+    raise calliope_exceptions.RequiredArgumentException(
+        '--docker-repository',
+        'A Docker repository must be specified when a KMS key is configured '
+        'for the function.')
   return updated_fields
 
 
-def _GetActiveKMSKey(function, args, release_track):
+def _ApplyDockerRegistryArgsToFunction(function, args, release_track):
+  """Populates the docker_registry field of a Cloud Function message.
+
+  Args:
+    function: Cloud function message to be checked and populated.
+    args: All CLI arguments.
+    release_track: gcloud release track.
+
+  Returns:
+    updated_fields: update mask containing the list of fields to be updated.
+
+  Raises:
+    InvalidArgumentException: If Container Registry is specified for a CMEK
+    deployment (CMEK is only supported by Artifact Registry).
+  """
+  updated_fields = []
+  if (release_track != calliope_base.ReleaseTrack.ALPHA and
+      release_track != calliope_base.ReleaseTrack.BETA):
+    return updated_fields
+  if args.IsSpecified('docker_registry'):
+    kms_key = function.kmsKeyName
+    if args.IsSpecified('kms_key') or args.IsSpecified('clear_kms_key'):
+      kms_key = (None if args.clear_kms_key else args.kms_key)
+    if kms_key is not None and args.docker_registry == 'container-registry':
+      raise calliope_exceptions.InvalidArgumentException(
+          '--docker-registry',
+          'CMEK deployments are not supported by Container Registry.'
+          'Please either use Artifact Registry or do not specify a KMS key '
+          'for the function (you may need to clear it).')
+    function.dockerRegistry = enum_util.ParseDockerRegistry(
+        args.docker_registry)
+    updated_fields.append('docker_registry')
+  return updated_fields
+
+
+def _GetActiveKMSKey(function, args):
   """Retrieves the KMS key for the function.
 
   This is either the KMS key provided via the kms-key flag or the KMS key
@@ -231,17 +264,13 @@ def _GetActiveKMSKey(function, args, release_track):
   Args:
     function: existing cloud function if any.
     args: CLI arguments.
-    release_track: gcloud release track.
 
   Returns:
     kms_key: KMS key if any.
   """
-  kms_key = None
-  if (release_track == calliope_base.ReleaseTrack.ALPHA or
-      release_track == calliope_base.ReleaseTrack.BETA):
-    kms_key = function.kmsKeyName
-    if args.IsSpecified('kms_key') or args.IsSpecified('clear_kms_key'):
-      kms_key = (None if args.clear_kms_key else args.kms_key)
+  kms_key = function.kmsKeyName
+  if args.IsSpecified('kms_key') or args.IsSpecified('clear_kms_key'):
+    kms_key = (None if args.clear_kms_key else args.kms_key)
   return kms_key
 
 
@@ -424,7 +453,7 @@ def Run(args, track=None, enable_runtime=True):
     function.httpsTrigger.securityLevel = security_level_enum
     updated_fields.append('httpsTrigger.securityLevel')
 
-  kms_key = _GetActiveKMSKey(function, args, track)
+  kms_key = _GetActiveKMSKey(function, args)
 
   # Populate source properties of function based on source args.
   # Only Add source to function if its explicitly provided, a new function,
@@ -456,7 +485,12 @@ def Run(args, track=None, enable_runtime=True):
 
   # Applies CMEK args to function
   updated_fields.extend(
-      _ApplyCMEKArgsToFunction(function_ref, function, args, track))
+      _ApplyCMEKArgsToFunction(function_ref, function, args))
+
+  # Applies remaining Artifact Registry args to the function. Note that one of
+  # them, docker_repository, was already added as part of CMEK
+  updated_fields.extend(
+      _ApplyDockerRegistryArgsToFunction(function, args, track))
 
   if is_new_function:
     if (function.httpsTrigger and not ensure_all_users_invoke and

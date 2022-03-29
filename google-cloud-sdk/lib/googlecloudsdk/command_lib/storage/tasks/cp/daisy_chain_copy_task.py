@@ -36,6 +36,7 @@ from googlecloudsdk.command_lib.storage import progress_callbacks
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage.tasks import task
 from googlecloudsdk.command_lib.storage.tasks import task_status
+from googlecloudsdk.command_lib.storage.tasks.cp import copy_util
 from googlecloudsdk.command_lib.storage.tasks.cp import upload_util
 from googlecloudsdk.command_lib.storage.tasks.rm import delete_object_task
 from googlecloudsdk.core import log
@@ -108,7 +109,8 @@ class _ReadableStream:
 
   def __init__(self, buffer_queue, buffer_condition, shutdown_event,
                end_position, restart_download_callback,
-               progress_callback=None):
+               progress_callback=None,
+               seekable=True):
     """Initializes ReadableStream.
 
     Args:
@@ -124,6 +126,7 @@ class _ReadableStream:
         BufferController.restart_download function.
       progress_callback (progress_callbacks.FilesAndBytesProgressCallback):
         Accepts processed bytes and submits progress info for aggregation.
+      seekable (bool): Value for the "seekable" method call.
     """
     self._buffer_queue = buffer_queue
     self._buffer_condition = buffer_condition
@@ -134,6 +137,7 @@ class _ReadableStream:
     self._progress_callback = progress_callback
     self._restart_download_callback = restart_download_callback
     self._bytes_read_since_last_progress_callback = 0
+    self._seekable = seekable
 
   def _restart_download(self, offset):
     self._restart_download_callback(offset)
@@ -271,9 +275,8 @@ class _ReadableStream:
     return self._position
 
   def seekable(self):
-    """Returns True, since the stream is seekable."""
-    del self  # Unused.
-    return True
+    """Returns True if the stream should be treated as a seekable stream."""
+    return self._seekable
 
   def tell(self):
     """Returns the current position."""
@@ -306,13 +309,15 @@ class BufferController:
       termination of the operation.
   """
 
-  def __init__(self, source_resource, user_request_args=None,
+  def __init__(self, source_resource, destination_scheme,
+               user_request_args=None,
                progress_callback=None):
     """Initializes BufferController.
 
     Args:
       source_resource (resource_reference.ObjectResource): Must
         contain the full object path of existing object.
+      destination_scheme (storage_url.ProviderPrefix): The destination provider.
       user_request_args (UserRequestArgs|None): Values for RequestConfig.
       progress_callback (progress_callbacks.FilesAndBytesProgressCallback):
         Accepts processed bytes and submits progress info for aggregation.
@@ -325,6 +330,8 @@ class BufferController:
     self.writable_stream = _WritableStream(self.buffer_queue,
                                            self.buffer_condition,
                                            self.shutdown_event)
+
+    destination_capabilities = api_factory.get_capabilities(destination_scheme)
     self.readable_stream = _ReadableStream(
         self.buffer_queue,
         self.buffer_condition,
@@ -332,7 +339,8 @@ class BufferController:
         self._source_resource.size,
         restart_download_callback=self.restart_download,
         progress_callback=progress_callback,
-    )
+        seekable=(cloud_api.Capability.DAISY_CHAIN_SEEKABLE_UPLOAD_STREAM
+                  in destination_capabilities))
     self._download_thread = None
     self.exception_raised = None
 
@@ -464,6 +472,15 @@ class DaisyChainCopyTask(task.Task):
   def execute(self, task_status_queue=None):
     """Copies file by downloading and uploading in parallel."""
     # TODO (b/168712813): Add option to use the Data Transfer component.
+    destination_client = api_factory.get_api(
+        self._destination_resource.storage_url.scheme)
+    if copy_util.check_for_cloud_clobber(self._user_request_args,
+                                         destination_client,
+                                         self._destination_resource):
+      log.status.Print(
+          copy_util.get_no_clobber_message(
+              self._destination_resource.storage_url))
+      return
 
     progress_callback = progress_callbacks.FilesAndBytesProgressCallback(
         status_queue=task_status_queue,
@@ -475,9 +492,12 @@ class DaisyChainCopyTask(task.Task):
         process_id=os.getpid(),
         thread_id=threading.get_ident(),
     )
-    buffer_controller = BufferController(self._source_resource,
-                                         self._user_request_args,
-                                         progress_callback)
+
+    buffer_controller = BufferController(
+        self._source_resource,
+        self._destination_resource.storage_url.scheme,
+        self._user_request_args,
+        progress_callback)
 
     # Perform download in a separate thread so that upload can be performed
     # simultaneously.
@@ -487,8 +507,6 @@ class DaisyChainCopyTask(task.Task):
         self._source_resource.content_type or
         request_config_factory.DEFAULT_CONTENT_TYPE)
 
-    destination_client = api_factory.get_api(
-        self._destination_resource.storage_url.scheme)
     request_config = request_config_factory.get_request_config(
         self._destination_resource.storage_url,
         content_type=content_type,

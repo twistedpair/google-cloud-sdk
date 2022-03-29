@@ -43,10 +43,13 @@ class Collections(enum.Enum):
   )
   PROJECTS_INSTANCECONFIGS_OPERATIONS = (
       'projects.instanceConfigs.operations',
-      'projects/{projectsId}/instanceConfigs/{instanceConfigsId}/operations/'
-      '{operationsId}',
-      {},
-      ['projectsId', 'instanceConfigsId', 'operationsId'],
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/instanceConfigs/{instanceConfigsId}/'
+              'operations/{operationsId}',
+      },
+      ['name'],
       True
   )
   PROJECTS_INSTANCES = (

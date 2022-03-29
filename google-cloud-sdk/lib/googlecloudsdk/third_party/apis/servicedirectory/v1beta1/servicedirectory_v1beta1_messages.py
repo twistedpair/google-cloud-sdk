@@ -15,17 +15,6 @@ from apitools.base.py import extra_types
 package = 'servicedirectory'
 
 
-class Attributes(_messages.Message):
-  r"""Attributes associated with Namespace.
-
-  Fields:
-    cloudDnsManagedZones: Output only. List of Cloud DNS ManagedZones that
-      this namespace is associated with.
-  """
-
-  cloudDnsManagedZones = _messages.StringField(1, repeated=True)
-
-
 class AuditConfig(_messages.Message):
   r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
@@ -404,8 +393,7 @@ class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
   or the response type of an API method. For instance: service Foo { rpc
-  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
-  representation for `Empty` is empty JSON object `{}`.
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
 
 
@@ -435,6 +423,7 @@ class Endpoint(_messages.Message):
     address: Optional. An IPv4 or IPv6 address. Service Directory rejects bad
       addresses like: * `8.8.8` * `8.8.8.8:53` * `test:bad:address` * `[::1]`
       * `[::1]:8080` Limited to 45 characters.
+    attributes: Optional. Attributes associated with this Endpoint.
     createTime: Output only. The timestamp when the endpoint was created.
     metadata: Optional. Metadata for the endpoint. This data can be consumed
       by service clients. Restrictions: * The entire metadata dictionary may
@@ -502,13 +491,29 @@ class Endpoint(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   address = _messages.StringField(1)
-  createTime = _messages.StringField(2)
-  metadata = _messages.MessageField('MetadataValue', 3)
-  name = _messages.StringField(4)
-  network = _messages.StringField(5)
-  port = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  uid = _messages.StringField(7)
-  updateTime = _messages.StringField(8)
+  attributes = _messages.MessageField('EndpointAttributes', 2)
+  createTime = _messages.StringField(3)
+  metadata = _messages.MessageField('MetadataValue', 4)
+  name = _messages.StringField(5)
+  network = _messages.StringField(6)
+  port = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  uid = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
+
+
+class EndpointAttributes(_messages.Message):
+  r"""Attributes associated with endpoints.
+
+  Fields:
+    originResource: Optional. Reference to the underlying resource that this
+      endpoint represents. This should be the full name of the resource that
+      this endpoint was created from.
+    zone: Optional. GCP zone of the underlying resource. Meant to be populated
+      only for zonal resources, left unset for others.
+  """
+
+  originResource = _messages.StringField(1)
+  zone = _messages.StringField(2)
 
 
 class Expr(_messages.Message):
@@ -774,12 +779,23 @@ class Namespace(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  attributes = _messages.MessageField('Attributes', 1)
+  attributes = _messages.MessageField('NamespaceAttributes', 1)
   createTime = _messages.StringField(2)
   labels = _messages.MessageField('LabelsValue', 3)
   name = _messages.StringField(4)
   uid = _messages.StringField(5)
   updateTime = _messages.StringField(6)
+
+
+class NamespaceAttributes(_messages.Message):
+  r"""Attributes associated with Namespace.
+
+  Fields:
+    cloudDnsManagedZones: Output only. List of Cloud DNS ManagedZones that
+      this namespace is associated with.
+  """
+
+  cloudDnsManagedZones = _messages.StringField(1, repeated=True)
 
 
 class Policy(_messages.Message):

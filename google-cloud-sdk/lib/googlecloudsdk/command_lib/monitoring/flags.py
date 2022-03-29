@@ -19,7 +19,9 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.command_lib.monitoring import completers
 from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.command_lib.util.args import repeated
 
@@ -127,6 +129,7 @@ def AddFieldsFlagsWithMutuallyExclusiveSettings(parser,
                                                 add_settings_func,
                                                 fields_choices=None,
                                                 **kwargs):
+  """Adds fields flags with mutually excludisve settings."""
   update_group = parser.add_group(mutex=True)
   update_group.add_argument(
       '--fields',
@@ -137,6 +140,7 @@ def AddFieldsFlagsWithMutuallyExclusiveSettings(parser,
 
 
 def ValidateAlertPolicyUpdateArgs(args):
+  """Validate alert policy update args."""
   if args.fields and not (args.policy or args.policy_from_file):
     raise exceptions.OneOfArgumentsRequiredException(
         ['--policy', '--policy-from-file'],
@@ -217,6 +221,7 @@ def AddUpdateableConditionFlags(parser):
 
 
 def ValidateNotificationChannelUpdateArgs(args):
+  """Validate notification channel update args."""
   if (args.fields and
       not (args.channel_content or args.channel_content_from_file)):
     raise exceptions.OneOfArgumentsRequiredException(
@@ -263,6 +268,7 @@ def AddNotificationChannelSettingFlags(parser, update=False):
 
 def AddCreateLabelsFlag(parser, labels_name, resource_name, extra_message='',
                         validate_values=True):
+  """Add create labels flags."""
   extra_message += ('If the {0} was given as a JSON/YAML object from a string '
                     'or file, this flag will replace the labels value '
                     'in the given {0}.'.format(resource_name))
@@ -274,6 +280,7 @@ def AddCreateLabelsFlag(parser, labels_name, resource_name, extra_message='',
 
 def AddUpdateLabelsFlags(labels_name, parser, group_text='',
                          validate_values=True):
+  """Add update labels flags."""
   labels_group = parser.add_group(group_text)
   labels_util.GetUpdateLabelsFlag(
       '', labels_name=labels_name,
@@ -283,3 +290,13 @@ def AddUpdateLabelsFlags(labels_name, parser, group_text='',
       '', labels_name=labels_name).AddToParser(remove_group)
   labels_util.GetClearLabelsFlag(
       labels_name=labels_name).AddToParser(remove_group)
+
+
+def GetMonitoredProjectIDNumberFlag(verb):
+  """Flag for managing a monitored project."""
+  return base.Argument(
+      'monitored_project',
+      metavar='MONITORED_PROJECT_ID_OR_NUMBER',
+      completer=completers.MonitoredProjectCompleter,
+      help='Monitored project ID or number for the project you want to {0}.'
+      .format(verb))

@@ -192,7 +192,7 @@
     },
     "Empty": {
       "id": "Empty",
-      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON representation for `Empty` is empty JSON object `{}`.",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }",
       "type": "object",
       "properties": {
       }
@@ -304,7 +304,7 @@
             "Vulnerability: A critical vulnerability is easily discoverable by an external actor, exploitable, and results in the direct ability to execute arbitrary code, exfiltrate data, and otherwise gain additional access and privileges to cloud resources and workloads. Examples include publicly accessible unprotected user data, public SSH access with weak or no passwords, etc. Threat: Indicates a threat that is able to access, modify, or delete data or execute unauthorized code within existing resources.",
             "Vulnerability: A high risk vulnerability can be easily discovered and exploited in combination with other vulnerabilities in order to gain direct access and the ability to execute arbitrary code, exfiltrate data, and otherwise gain additional access and privileges to cloud resources and workloads. An example is a database with weak or no passwords that is only accessible internally. This database could easily be compromised by an actor that had access to the internal network. Threat: Indicates a threat that is able to create new computational resources in an environment but not able to access data or execute code in existing resources.",
             "Vulnerability: A medium risk vulnerability could be used by an actor to gain access to resources or privileges that enable them to eventually (through multiple steps or a complex exploit) gain access and the ability to execute arbitrary code or exfiltrate data. An example is a service account with access to more projects than it should have. If an actor gains access to the service account, they could potentially use that access to manipulate a project the service account was not intended to. Threat: Indicates a threat that is able to cause operational impact but may not access data or execute unauthorized code.",
-            "Vulnerability: A low risk vulnerability hampers a security organization\u2019s ability to detect vulnerabilities or active threats in their deployment, or prevents the root cause investigation of security issues. An example is monitoring and logs being disabled for resource configurations and access. Threat: Indicates a threat that has obtained minimal access to an environment but is not able to access data, execute code, or create resources."
+            "Vulnerability: A low risk vulnerability hampers a security organization's ability to detect vulnerabilities or active threats in their deployment, or prevents the root cause investigation of security issues. An example is monitoring and logs being disabled for resource configurations and access. Threat: Indicates a threat that has obtained minimal access to an environment but is not able to access data, execute code, or create resources."
           ],
           "enum": [
             "SEVERITY_UNSPECIFIED",
@@ -319,7 +319,7 @@
           "type": "string"
         },
         "mute": {
-          "description": "Indicates the mute state of a finding (either unspecified, muted, unmuted or undefined). Unlike other attributes of a finding, a finding provider shouldn't set the value of mute.",
+          "description": "Indicates the mute state of a finding (either muted, unmuted or undefined). Unlike other attributes of a finding, a finding provider shouldn't set the value of mute.",
           "type": "string",
           "enumDescriptions": [
             "Unspecified.",
@@ -1639,12 +1639,20 @@
           "description": "The full resource name of the resource. See: https:\/\/cloud.google.com\/apis\/design\/resource_names#full_resource_name",
           "type": "string"
         },
+        "displayName": {
+          "description": "The human readable name of the resource.",
+          "type": "string"
+        },
+        "type": {
+          "description": "The full resource type of the resource.",
+          "type": "string"
+        },
         "projectName": {
           "description": "The full resource name of project that the resource belongs to.",
           "type": "string"
         },
         "projectDisplayName": {
-          "description": "The project id that the resource belongs to.",
+          "description": "The project ID that the resource belongs to.",
           "type": "string"
         },
         "parentName": {
@@ -1655,20 +1663,12 @@
           "description": "The human readable name of resource's parent.",
           "type": "string"
         },
-        "type": {
-          "description": "The full resource type of the resource.",
-          "type": "string"
-        },
         "folders": {
           "description": "Contains a Folder message for each folder in the assets ancestry. The first folder is the deepest nested folder, and the last folder is the folder directly under the Organization.",
           "type": "array",
           "items": {
             "$ref": "Folder"
           }
-        },
-        "displayName": {
-          "description": "The human readable name of the resource.",
-          "type": "string"
         }
       }
     },
@@ -1907,12 +1907,20 @@
           "description": "The full resource name of the resource. See: https:\/\/cloud.google.com\/apis\/design\/resource_names#full_resource_name",
           "type": "string"
         },
+        "displayName": {
+          "description": "The human readable name of the resource.",
+          "type": "string"
+        },
+        "type": {
+          "description": "The full resource type of the resource.",
+          "type": "string"
+        },
         "project": {
           "description": "The full resource name of project that the resource belongs to.",
           "type": "string"
         },
         "projectDisplayName": {
-          "description": "The project id that the resource belongs to.",
+          "description": "The project ID that the resource belongs to.",
           "type": "string"
         },
         "parent": {
@@ -1923,10 +1931,6 @@
           "description": "The human readable name of resource's parent.",
           "type": "string"
         },
-        "type": {
-          "description": "The full resource type of the resource.",
-          "type": "string"
-        },
         "folders": {
           "description": "Output only. Contains a Folder message for each folder in the assets ancestry. The first folder is the deepest nested folder, and the last folder is the folder directly under the Organization.",
           "readOnly": true,
@@ -1934,10 +1938,6 @@
           "items": {
             "$ref": "Folder"
           }
-        },
-        "displayName": {
-          "description": "The human readable name of the resource.",
-          "type": "string"
         }
       }
     },
@@ -2637,7 +2637,7 @@
                   "format": "google-fieldmask"
                 },
                 "startTime": {
-                  "description": "The time at which the updated SecurityMarks take effect. If not set uses current server time. Updates will be applied to the SecurityMarks that are active immediately preceding this time. Must be smaller or equal to the server time.",
+                  "description": "The time at which the updated SecurityMarks take effect. If not set uses current server time. Updates will be applied to the SecurityMarks that are active immediately preceding this time. Must be earlier or equal to the server time.",
                   "location": "query",
                   "type": "string",
                   "format": "google-datetime"
@@ -2904,7 +2904,7 @@
                       "format": "google-fieldmask"
                     },
                     "startTime": {
-                      "description": "The time at which the updated SecurityMarks take effect. If not set uses current server time. Updates will be applied to the SecurityMarks that are active immediately preceding this time. Must be smaller or equal to the server time.",
+                      "description": "The time at which the updated SecurityMarks take effect. If not set uses current server time. Updates will be applied to the SecurityMarks that are active immediately preceding this time. Must be earlier or equal to the server time.",
                       "location": "query",
                       "type": "string",
                       "format": "google-datetime"
@@ -3433,7 +3433,7 @@
                   "format": "google-fieldmask"
                 },
                 "startTime": {
-                  "description": "The time at which the updated SecurityMarks take effect. If not set uses current server time. Updates will be applied to the SecurityMarks that are active immediately preceding this time. Must be smaller or equal to the server time.",
+                  "description": "The time at which the updated SecurityMarks take effect. If not set uses current server time. Updates will be applied to the SecurityMarks that are active immediately preceding this time. Must be earlier or equal to the server time.",
                   "location": "query",
                   "type": "string",
                   "format": "google-datetime"
@@ -3700,7 +3700,7 @@
                       "format": "google-fieldmask"
                     },
                     "startTime": {
-                      "description": "The time at which the updated SecurityMarks take effect. If not set uses current server time. Updates will be applied to the SecurityMarks that are active immediately preceding this time. Must be smaller or equal to the server time.",
+                      "description": "The time at which the updated SecurityMarks take effect. If not set uses current server time. Updates will be applied to the SecurityMarks that are active immediately preceding this time. Must be earlier or equal to the server time.",
                       "location": "query",
                       "type": "string",
                       "format": "google-datetime"
@@ -4432,7 +4432,7 @@
                       "format": "google-fieldmask"
                     },
                     "startTime": {
-                      "description": "The time at which the updated SecurityMarks take effect. If not set uses current server time. Updates will be applied to the SecurityMarks that are active immediately preceding this time. Must be smaller or equal to the server time.",
+                      "description": "The time at which the updated SecurityMarks take effect. If not set uses current server time. Updates will be applied to the SecurityMarks that are active immediately preceding this time. Must be earlier or equal to the server time.",
                       "location": "query",
                       "type": "string",
                       "format": "google-datetime"
@@ -5110,7 +5110,7 @@
                   "format": "google-fieldmask"
                 },
                 "startTime": {
-                  "description": "The time at which the updated SecurityMarks take effect. If not set uses current server time. Updates will be applied to the SecurityMarks that are active immediately preceding this time. Must be smaller or equal to the server time.",
+                  "description": "The time at which the updated SecurityMarks take effect. If not set uses current server time. Updates will be applied to the SecurityMarks that are active immediately preceding this time. Must be earlier or equal to the server time.",
                   "location": "query",
                   "type": "string",
                   "format": "google-datetime"

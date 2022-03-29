@@ -35,7 +35,7 @@ def SetInitProjectPath(ref, args, request):
 
 
 def SetParentCollection(ref, args, request):
-  """Set parent collection to global for created resources.
+  """Set parent collection with location for created resources.
 
   Args:
     ref: reference to the membership object.
@@ -46,5 +46,5 @@ def SetParentCollection(ref, args, request):
     modified request
   """
   del ref, args  # Unused.
-  request.parent = request.parent + '/locations/global'
+  request.parent = request.parent + '/locations/-'
   return request

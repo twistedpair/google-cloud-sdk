@@ -19,9 +19,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from apitools.base.py import encoding
 from googlecloudsdk.api_lib.util import apis
-from googlecloudsdk.core.util import files
 
 
 def GetClientInstance(version='v1alpha1', no_http=False):
@@ -47,7 +45,7 @@ class JobsClient(object):
     create_req = create_req_type(
         jobId=job_id,
         parent=location_ref.RelativeName(),
-        job=self._CreateJobMessage(job_config))
+        job=job_config)
     return self.service.Create(create_req)
 
   def Get(self, job_ref):
@@ -61,9 +59,3 @@ class JobsClient(object):
         self.messages.BatchProjectsLocationsJobsDeleteRequest)
     delete_req = delete_req_type(name=job_ref.RelativeName())
     return self.service.Delete(delete_req)
-
-  # TODO(b/216858129): add HEREDOC support.
-  def _CreateJobMessage(self, config):
-    """Construct the job proto with the config input."""
-    file_contents = files.ReadFileContents(config)
-    return encoding.JsonToMessage(self.messages.Job, file_contents)

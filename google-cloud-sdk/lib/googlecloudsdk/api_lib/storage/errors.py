@@ -18,8 +18,19 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import re
+
 from googlecloudsdk.api_lib.util import exceptions as api_exceptions
+from googlecloudsdk.api_lib.util import resource
 from googlecloudsdk.core import exceptions as core_exceptions
+
+from six.moves import urllib
+
+
+# For a string /b/bucket-name/o/obj.txt?alt=json, this should match
+# b/bucket-name/o/obj.txt
+OBJECT_RESOURCE_PATH_PATTERN = re.compile(
+    r'b/(?P<bucket>.*)/o/(?P<object>.*?)(\?|$)')
 
 
 class CloudApiError(core_exceptions.Error):
@@ -59,7 +70,30 @@ class GcsNotFoundError(GcsApiError, NotFoundError):
   def __init__(self, error, *args, **kwargs):
     del args, kwargs  # Unused.
     super(GcsNotFoundError, self).__init__(
-        error, error_format='{instance_name} not found: {status_code}.')
+        # status_code should be 404, but it's better to rely on the code
+        # present in the error message, just in case this class is used
+        # incorrectly for a different error.
+        error, error_format='gs://{instance_name} not found: {status_code}.')
+
+    if not error.url:
+      return
+
+    # Parsing 'instance_name' here because it is not parsed correctly
+    # by gcloud's exceptions.py module. See b/225168232.
+    _, _, resource_path = resource.SplitDefaultEndpointUrl(error.url)
+    # For an object, resource_path will be of the form b/bucket/o/object
+    match = OBJECT_RESOURCE_PATH_PATTERN.search(resource_path)
+    if match:
+      params = urllib.parse.parse_qs(resource_path)
+      if 'generation' in params:
+        generation_string = '#' + params['generation'][0]
+      else:
+        # Ideally, a generation is always present for an object, but this is
+        # just a safeguard against unexpected formats.
+        generation_string = ''
+      # Overwrite the instance_name field if it is a GCS object.
+      self.payload.instance_name = '{}/{}{}'.format(
+          match.group('bucket'), match.group('object'), generation_string)
 
 
 class S3ErrorPayload(api_exceptions.FormattableErrorPayload):

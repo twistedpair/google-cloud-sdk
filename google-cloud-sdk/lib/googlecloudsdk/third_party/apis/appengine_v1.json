@@ -562,6 +562,10 @@
           "description": "Whether to deploy this version in a container on a virtual machine.",
           "type": "boolean"
         },
+        "appEngineApis": {
+          "description": "app_engine_apis allows second generation runtimes to access the App Engine APIs.",
+          "type": "boolean"
+        },
         "betaSettings": {
           "description": "Metadata settings that are supplied to this version to enable beta runtime features.",
           "type": "object",
@@ -1762,7 +1766,7 @@
     },
     "Empty": {
       "id": "Empty",
-      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON representation for Empty is empty JSON object {}.",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } ",
       "type": "object",
       "properties": {
       }

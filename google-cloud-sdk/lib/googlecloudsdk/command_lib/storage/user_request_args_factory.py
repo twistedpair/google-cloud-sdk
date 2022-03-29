@@ -24,6 +24,7 @@ from googlecloudsdk.core.util import debug_output
 
 
 CLEAR = '_CLEAR'
+GZIP_IN_FLIGHT_ALL = '_GZIP_IN_FLIGHT_ALL'
 
 
 class MetadataType(enum.Enum):
@@ -148,14 +149,18 @@ class _UserRequestArgs:
   """
 
   def __init__(self,
+               gzip_in_flight=None,
                max_bytes_per_call=None,
+               no_clobber=None,
                precondition_generation_match=None,
                precondition_metageneration_match=None,
                predefined_acl_string=None,
                predefined_default_acl_string=None,
                resource_args=None):
     """Sets properties."""
+    self.gzip_in_flight = gzip_in_flight
     self.max_bytes_per_call = max_bytes_per_call
+    self.no_clobber = no_clobber
     self.precondition_generation_match = precondition_generation_match
     self.precondition_metageneration_match = precondition_metageneration_match
     self.predefined_acl_string = predefined_acl_string
@@ -165,7 +170,9 @@ class _UserRequestArgs:
   def __eq__(self, other):
     if not isinstance(other, type(self)):
       return NotImplemented
-    return (self.max_bytes_per_call == other.max_bytes_per_call and
+    return (self.gzip_in_flight == other.gzip_in_flight and
+            self.max_bytes_per_call == other.max_bytes_per_call and
+            self.no_clobber == other.no_clobber and
             self.precondition_generation_match
             == other.precondition_generation_match and
             self.precondition_metageneration_match
@@ -267,7 +274,14 @@ def get_user_request_args_from_command_args(args, metadata_type=None):
           md5_hash=md5_hash,
           storage_class=storage_class)
 
+  if getattr(args, 'gzip_in_flight_all', None):
+    gzip_in_flight = GZIP_IN_FLIGHT_ALL
+  else:
+    gzip_in_flight = getattr(args, 'gzip_in_flight_extensions', None)
+
   return _UserRequestArgs(
+      gzip_in_flight=gzip_in_flight,
+      no_clobber=getattr(args, 'no_clobber', None),
       precondition_generation_match=getattr(args, 'if_generation_match', None),
       precondition_metageneration_match=getattr(args, 'if_metageneration_match',
                                                 None),

@@ -18,8 +18,11 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import re
+
 from apitools.base.py import encoding
 from googlecloudsdk.calliope import exceptions as calliope_exc
+from googlecloudsdk.command_lib.projects import util as projects_util
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.core import exceptions
@@ -46,6 +49,10 @@ class ConditionNotFoundError(exceptions.Error):
 
 class ConflictingFieldsError(exceptions.Error):
   """Inidicates that the JSON or YAML string have conflicting fields."""
+
+
+class MonitoredProjectNameError(exceptions.Error):
+  """Inidicates that an invalid Monitored Project name has been specified."""
 
 
 def ValidateUpdateArgsSpecified(args, update_arg_dests, resource):
@@ -100,6 +107,7 @@ def GetBasePolicyMessageFromArgs(args, policy_class):
 
 def CheckConditionArgs(args):
   """Checks if condition arguments exist and are specified correctly.
+
   Args:
     args: argparse.Namespace, the parsed arguments.
   Returns:
@@ -242,8 +250,8 @@ def ModifyAlertPolicy(base_policy, messages, display_name=None, combiner=None,
 
   if combiner is not None:
     field_masks.append('combiner')
-    combiner = arg_utils.ChoiceToEnum(combiner, base_policy.CombinerValueValuesEnum,
-                                      item_type='combiner')
+    combiner = arg_utils.ChoiceToEnum(
+        combiner, base_policy.CombinerValueValuesEnum, item_type='combiner')
     base_policy.combiner = combiner
 
 
@@ -427,3 +435,37 @@ def ProcessUpdateLabels(args, labels_name, labels_cls, orig_labels):
     return None
 
   return labels_diff.Apply(labels_cls, orig_labels).GetOrNone()
+
+
+def ParseMonitoredProject(monitored_project_name):
+  """Returns the metrics scope and monitored project.
+
+  Parse the specified monitored project name and return the metrics scope and
+  monitored project.
+
+  Args:
+    monitored_project_name: The name of the monitored project to create/delete.
+
+  Raises:
+    MonitoredProjectNameError: If an invalid monitored project name is
+    specified.
+
+  Returns:
+     (metrics_scope_def, monitored_project_def): Project parsed metrics scope
+       project id, Project parsed metrics scope project id
+  """
+  matched = re.match(
+      'locations/global/metricsScopes/([a-z0-9:\\-]+)/projects/([a-z0-9:\\-]+)',
+      monitored_project_name)
+  if bool(matched):
+    if matched.group(0) != monitored_project_name:
+      raise MonitoredProjectNameError(
+          'Invalid monitored project name has been specified.')
+    # full name
+    metrics_scope_def = projects_util.ParseProject(matched.group(1))
+    monitored_project_def = projects_util.ParseProject(matched.group(2))
+  else:
+    metrics_scope_def = projects_util.ParseProject(
+        properties.VALUES.core.project.Get(required=True))
+    monitored_project_def = projects_util.ParseProject(monitored_project_name)
+  return metrics_scope_def, monitored_project_def

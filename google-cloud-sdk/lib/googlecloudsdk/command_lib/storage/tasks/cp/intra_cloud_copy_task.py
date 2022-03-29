@@ -32,6 +32,7 @@ from googlecloudsdk.command_lib.storage import progress_callbacks
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage.tasks import task
 from googlecloudsdk.command_lib.storage.tasks import task_status
+from googlecloudsdk.command_lib.storage.tasks.cp import copy_util
 from googlecloudsdk.command_lib.storage.tasks.rm import delete_object_task
 from googlecloudsdk.core import log
 
@@ -77,6 +78,14 @@ class IntraCloudCopyTask(task.Task):
         self._destination_resource.storage_url.url_string)
 
   def execute(self, task_status_queue=None):
+    api_client = api_factory.get_api(self._source_resource.storage_url.scheme)
+    if copy_util.check_for_cloud_clobber(self._user_request_args, api_client,
+                                         self._destination_resource):
+      log.status.Print(
+          copy_util.get_no_clobber_message(
+              self._destination_resource.storage_url))
+      return
+
     progress_callback = progress_callbacks.FilesAndBytesProgressCallback(
         status_queue=task_status_queue,
         offset=0,
@@ -93,8 +102,7 @@ class IntraCloudCopyTask(task.Task):
         decryption_key_hash=self._source_resource.decryption_key_hash,
         user_request_args=self._user_request_args)
     # TODO(b/161900052): Support all of copy_object's parameters
-    provider = self._source_resource.storage_url.scheme
-    result_resource = api_factory.get_api(provider).copy_object(
+    result_resource = api_client.copy_object(
         self._source_resource,
         self._destination_resource,
         request_config,

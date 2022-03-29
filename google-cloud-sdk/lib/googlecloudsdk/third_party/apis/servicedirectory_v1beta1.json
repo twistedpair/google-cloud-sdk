@@ -287,6 +287,25 @@
           "description": "Output only. A globally unique identifier (in UUID4 format) for this endpoint.",
           "readOnly": true,
           "type": "string"
+        },
+        "attributes": {
+          "description": "Optional. Attributes associated with this Endpoint.",
+          "$ref": "EndpointAttributes"
+        }
+      }
+    },
+    "EndpointAttributes": {
+      "id": "EndpointAttributes",
+      "description": "Attributes associated with endpoints.",
+      "type": "object",
+      "properties": {
+        "originResource": {
+          "description": "Optional. Reference to the underlying resource that this endpoint represents. This should be the full name of the resource that this endpoint was created from.",
+          "type": "string"
+        },
+        "zone": {
+          "description": "Optional. GCP zone of the underlying resource. Meant to be populated only for zonal resources, left unset for others.",
+          "type": "string"
         }
       }
     },
@@ -340,12 +359,12 @@
         },
         "attributes": {
           "description": "Optional. Attributes associated with this Namespace.",
-          "$ref": "Attributes"
+          "$ref": "NamespaceAttributes"
         }
       }
     },
-    "Attributes": {
-      "id": "Attributes",
+    "NamespaceAttributes": {
+      "id": "NamespaceAttributes",
       "description": "Attributes associated with Namespace.",
       "type": "object",
       "properties": {
@@ -379,7 +398,7 @@
     },
     "Empty": {
       "id": "Empty",
-      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON representation for `Empty` is empty JSON object `{}`.",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }",
       "type": "object",
       "properties": {
       }

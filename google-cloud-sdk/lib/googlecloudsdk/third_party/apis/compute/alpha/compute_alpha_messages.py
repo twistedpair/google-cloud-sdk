@@ -3942,6 +3942,12 @@ class BackendService(_messages.Message):
     loadBalancingScheme: Specifies the load balancer type. A backend service
       created for one type of load balancer cannot be used with another. For
       more information, refer to Choosing a load balancer.
+    localityLbPolicies: A list of locality load balancing policies to be used
+      in order of preference. Either the policy or the customPolicy field
+      should be set. Overrides any value set in the localityLbPolicy field.
+      localityLbPolicies is only supported when the BackendService is
+      referenced by a URL Map that is referenced by a target gRPC proxy that
+      has the validateForProxyless field set to true.
     localityLbPolicy: The load balancing algorithm used within the scope of
       the locality. The possible values are: - ROUND_ROBIN: This is a simple
       policy in which each healthy backend is selected in round robin order.
@@ -4253,25 +4259,26 @@ class BackendService(_messages.Message):
   id = _messages.IntegerField(19, variant=_messages.Variant.UINT64)
   kind = _messages.StringField(20, default='compute#backendService')
   loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 21)
-  localityLbPolicy = _messages.EnumField('LocalityLbPolicyValueValuesEnum', 22)
-  logConfig = _messages.MessageField('BackendServiceLogConfig', 23)
-  maxStreamDuration = _messages.MessageField('Duration', 24)
-  name = _messages.StringField(25)
-  network = _messages.StringField(26)
-  outlierDetection = _messages.MessageField('OutlierDetection', 27)
-  port = _messages.IntegerField(28, variant=_messages.Variant.INT32)
-  portName = _messages.StringField(29)
-  protocol = _messages.EnumField('ProtocolValueValuesEnum', 30)
-  region = _messages.StringField(31)
-  securityPolicy = _messages.StringField(32)
-  securitySettings = _messages.MessageField('SecuritySettings', 33)
-  selfLink = _messages.StringField(34)
-  selfLinkWithId = _messages.StringField(35)
-  serviceBindings = _messages.StringField(36, repeated=True)
-  serviceLbPolicy = _messages.StringField(37)
-  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 38)
-  subsetting = _messages.MessageField('Subsetting', 39)
-  timeoutSec = _messages.IntegerField(40, variant=_messages.Variant.INT32)
+  localityLbPolicies = _messages.MessageField('BackendServiceLocalityLoadBalancingPolicyConfig', 22, repeated=True)
+  localityLbPolicy = _messages.EnumField('LocalityLbPolicyValueValuesEnum', 23)
+  logConfig = _messages.MessageField('BackendServiceLogConfig', 24)
+  maxStreamDuration = _messages.MessageField('Duration', 25)
+  name = _messages.StringField(26)
+  network = _messages.StringField(27)
+  outlierDetection = _messages.MessageField('OutlierDetection', 28)
+  port = _messages.IntegerField(29, variant=_messages.Variant.INT32)
+  portName = _messages.StringField(30)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 31)
+  region = _messages.StringField(32)
+  securityPolicy = _messages.StringField(33)
+  securitySettings = _messages.MessageField('SecuritySettings', 34)
+  selfLink = _messages.StringField(35)
+  selfLinkWithId = _messages.StringField(36)
+  serviceBindings = _messages.StringField(37, repeated=True)
+  serviceLbPolicy = _messages.StringField(38)
+  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 39)
+  subsetting = _messages.MessageField('Subsetting', 40)
+  timeoutSec = _messages.IntegerField(41, variant=_messages.Variant.INT32)
 
 
 class BackendServiceAggregatedList(_messages.Message):
@@ -5055,6 +5062,110 @@ class BackendServiceList(_messages.Message):
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
+
+
+class BackendServiceLocalityLoadBalancingPolicyConfig(_messages.Message):
+  r"""Container for either a built-in LB policy supported by gRPC or Envoy or
+  a custom one implemented by the end user.
+
+  Fields:
+    customPolicy: A
+      BackendServiceLocalityLoadBalancingPolicyConfigCustomPolicy attribute.
+    policy: A BackendServiceLocalityLoadBalancingPolicyConfigPolicy attribute.
+  """
+
+  customPolicy = _messages.MessageField('BackendServiceLocalityLoadBalancingPolicyConfigCustomPolicy', 1)
+  policy = _messages.MessageField('BackendServiceLocalityLoadBalancingPolicyConfigPolicy', 2)
+
+
+class BackendServiceLocalityLoadBalancingPolicyConfigCustomPolicy(_messages.Message):
+  r"""The configuration for a custom policy implemented by the user and
+  deployed with the client.
+
+  Fields:
+    data: An optional, arbitrary JSON object with configuration data,
+      understood by a locally installed custom policy implementation.
+    name: Identifies the custom policy. The value should match the type the
+      custom implementation is registered with on the gRPC clients. It should
+      follow protocol buffer message naming conventions and include the full
+      path (e.g. myorg.CustomLbPolicy). The maximum length is 256 characters.
+      Note that specifying the same custom policy more than once for a backend
+      is not a valid configuration and will be rejected.
+  """
+
+  data = _messages.StringField(1)
+  name = _messages.StringField(2)
+
+
+class BackendServiceLocalityLoadBalancingPolicyConfigPolicy(_messages.Message):
+  r"""The configuration for a built-in load balancing policy.
+
+  Enums:
+    NameValueValuesEnum: The name of a locality load balancer policy to be
+      used. The value should be one of the predefined ones as supported by
+      localityLbPolicy, although at the moment only ROUND_ROBIN is supported.
+      This field should only be populated when the customPolicy field is not
+      used. Note that specifying the same policy more than once for a backend
+      is not a valid configuration and will be rejected.
+
+  Fields:
+    name: The name of a locality load balancer policy to be used. The value
+      should be one of the predefined ones as supported by localityLbPolicy,
+      although at the moment only ROUND_ROBIN is supported. This field should
+      only be populated when the customPolicy field is not used. Note that
+      specifying the same policy more than once for a backend is not a valid
+      configuration and will be rejected.
+  """
+
+  class NameValueValuesEnum(_messages.Enum):
+    r"""The name of a locality load balancer policy to be used. The value
+    should be one of the predefined ones as supported by localityLbPolicy,
+    although at the moment only ROUND_ROBIN is supported. This field should
+    only be populated when the customPolicy field is not used. Note that
+    specifying the same policy more than once for a backend is not a valid
+    configuration and will be rejected.
+
+    Values:
+      INVALID_LB_POLICY: <no description>
+      LEAST_REQUEST: An O(1) algorithm which selects two random healthy hosts
+        and picks the host which has fewer active requests.
+      MAGLEV: This algorithm implements consistent hashing to backends. Maglev
+        can be used as a drop in replacement for the ring hash load balancer.
+        Maglev is not as stable as ring hash but has faster table lookup build
+        times and host selection times. For more information about Maglev, see
+        https://ai.google/research/pubs/pub44824
+      ORIGINAL_DESTINATION: Backend host is selected based on the client
+        connection metadata, i.e., connections are opened to the same address
+        as the destination address of the incoming connection before the
+        connection was redirected to the load balancer.
+      RANDOM: The load balancer selects a random healthy host.
+      RING_HASH: The ring/modulo hash load balancer implements consistent
+        hashing to backends. The algorithm has the property that the
+        addition/removal of a host from a set of N hosts only affects 1/N of
+        the requests.
+      ROUND_ROBIN: This is a simple policy in which each healthy backend is
+        selected in round robin order. This is the default.
+      WEIGHTED_MAGLEV: Per-instance weighted Load Balancing via health check
+        reported weights. If set, the Backend Service must configure a non
+        legacy HTTP-based Health Check, and health check replies are expected
+        to contain non-standard HTTP response header field X-Load-Balancing-
+        Endpoint-Weight to specify the per-instance weights. If set, Load
+        Balancing is weighted based on the per-instance weights reported in
+        the last processed health check replies, as long as every instance
+        either reported a valid weight or had UNAVAILABLE_WEIGHT. Otherwise,
+        Load Balancing remains equal-weight. This option is only supported in
+        Network Load Balancing.
+    """
+    INVALID_LB_POLICY = 0
+    LEAST_REQUEST = 1
+    MAGLEV = 2
+    ORIGINAL_DESTINATION = 3
+    RANDOM = 4
+    RING_HASH = 5
+    ROUND_ROBIN = 6
+    WEIGHTED_MAGLEV = 7
+
+  name = _messages.EnumField('NameValueValuesEnum', 1)
 
 
 class BackendServiceLogConfig(_messages.Message):
@@ -35109,14 +35220,10 @@ class GlobalSetLabelsRequest(_messages.Message):
   r"""A GlobalSetLabelsRequest object.
 
   Messages:
-    LabelsValue: A list of labels to apply for this resource. Each label key &
-      value must comply with RFC1035. Specifically, the name must be 1-63
-      characters long and match the regular expression
-      `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a
-      lowercase letter, and all following characters must be a dash, lowercase
-      letter, or digit, except the last character, which cannot be a dash. For
-      example, "webserver-frontend": "images". A label value can also be empty
-      (e.g. "my-label": "").
+    LabelsValue: A list of labels to apply for this resource. Each label must
+      comply with the requirements for labels. For example, "webserver-
+      frontend": "images". A label value can also be empty (e.g. "my-label":
+      "").
 
   Fields:
     labelFingerprint: The fingerprint of the previous set of labels for this
@@ -35126,24 +35233,16 @@ class GlobalSetLabelsRequest(_messages.Message):
       when updating or changing labels, otherwise the request will fail with
       error 412 conditionNotMet. Make a get() request to the resource to get
       the latest fingerprint.
-    labels: A list of labels to apply for this resource. Each label key &
-      value must comply with RFC1035. Specifically, the name must be 1-63
-      characters long and match the regular expression
-      `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a
-      lowercase letter, and all following characters must be a dash, lowercase
-      letter, or digit, except the last character, which cannot be a dash. For
-      example, "webserver-frontend": "images". A label value can also be empty
-      (e.g. "my-label": "").
+    labels: A list of labels to apply for this resource. Each label must
+      comply with the requirements for labels. For example, "webserver-
+      frontend": "images". A label value can also be empty (e.g. "my-label":
+      "").
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""A list of labels to apply for this resource. Each label key & value
-    must comply with RFC1035. Specifically, the name must be 1-63 characters
-    long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which
-    means the first character must be a lowercase letter, and all following
-    characters must be a dash, lowercase letter, or digit, except the last
-    character, which cannot be a dash. For example, "webserver-frontend":
+    r"""A list of labels to apply for this resource. Each label must comply
+    with the requirements for labels. For example, "webserver-frontend":
     "images". A label value can also be empty (e.g. "my-label": "").
 
     Messages:
@@ -35257,26 +35356,24 @@ class GuestOsFeature(_messages.Message):
     TypeValueValuesEnum: The ID of a supported feature. To add multiple
       values, use commas to separate values. Set to one or more of the
       following values: - VIRTIO_SCSI_MULTIQUEUE - WINDOWS - MULTI_IP_SUBNET -
-      UEFI_COMPATIBLE - SECURE_BOOT - GVNIC - SEV_CAPABLE -
-      SUSPEND_RESUME_COMPATIBLE - SEV_SNP_CAPABLE For more information, see
-      Enabling guest operating system features.
+      UEFI_COMPATIBLE - GVNIC - SEV_CAPABLE - SUSPEND_RESUME_COMPATIBLE -
+      SEV_SNP_CAPABLE For more information, see Enabling guest operating
+      system features.
 
   Fields:
     type: The ID of a supported feature. To add multiple values, use commas to
       separate values. Set to one or more of the following values: -
       VIRTIO_SCSI_MULTIQUEUE - WINDOWS - MULTI_IP_SUBNET - UEFI_COMPATIBLE -
-      SECURE_BOOT - GVNIC - SEV_CAPABLE - SUSPEND_RESUME_COMPATIBLE -
-      SEV_SNP_CAPABLE For more information, see Enabling guest operating
-      system features.
+      GVNIC - SEV_CAPABLE - SUSPEND_RESUME_COMPATIBLE - SEV_SNP_CAPABLE For
+      more information, see Enabling guest operating system features.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""The ID of a supported feature. To add multiple values, use commas to
     separate values. Set to one or more of the following values: -
     VIRTIO_SCSI_MULTIQUEUE - WINDOWS - MULTI_IP_SUBNET - UEFI_COMPATIBLE -
-    SECURE_BOOT - GVNIC - SEV_CAPABLE - SUSPEND_RESUME_COMPATIBLE -
-    SEV_SNP_CAPABLE For more information, see Enabling guest operating system
-    features.
+    GVNIC - SEV_CAPABLE - SUSPEND_RESUME_COMPATIBLE - SEV_SNP_CAPABLE For more
+    information, see Enabling guest operating system features.
 
     Values:
       BARE_METAL_LINUX_COMPATIBLE: <no description>
@@ -49001,10 +49098,8 @@ class NetworkEndpointGroupServerlessDeployment(_messages.Message):
   same project and located in the same region as the Serverless NEG.
 
   Fields:
-    platform: The platform of the backend target(s) of this NEG. Possible
-      values include: 1. API Gateway: apigateway.googleapis.com 2. App Engine:
-      appengine.googleapis.com 3. Cloud Functions:
-      cloudfunctions.googleapis.com 4. Cloud Run: run.googleapis.com
+    platform: The platform of the backend target(s) of this NEG. The only
+      supported value is API Gateway: apigateway.googleapis.com.
     resource: The user-defined name of the workload/instance. This value must
       be provided explicitly or in the urlMask. The resource identified by
       this value is platform-specific and is as follows: 1. API Gateway: The
@@ -49735,6 +49830,9 @@ class NetworkPeering(_messages.Message):
   Google Compute Engine should automatically create routes for the peering.
 
   Enums:
+    StackTypeValueValuesEnum: Which IP version(s) of traffic and routes are
+      allowed to be imported or exported between peer networks. The default
+      value is IPV4_ONLY.
     StateValueValuesEnum: [Output Only] State for the peering, either `ACTIVE`
       or `INACTIVE`. The peering is `ACTIVE` when there's a matching
       configuration in the peer network.
@@ -49775,12 +49873,29 @@ class NetworkPeering(_messages.Message):
       URL does not contain project, it is assumed that the peer network is in
       the same project as the current network.
     peerMtu: Maximum Transmission Unit in bytes.
+    stackType: Which IP version(s) of traffic and routes are allowed to be
+      imported or exported between peer networks. The default value is
+      IPV4_ONLY.
     state: [Output Only] State for the peering, either `ACTIVE` or `INACTIVE`.
       The peering is `ACTIVE` when there's a matching configuration in the
       peer network.
     stateDetails: [Output Only] Details about the current state of the
       peering.
   """
+
+  class StackTypeValueValuesEnum(_messages.Enum):
+    r"""Which IP version(s) of traffic and routes are allowed to be imported
+    or exported between peer networks. The default value is IPV4_ONLY.
+
+    Values:
+      IPV4_IPV6: This Peering will allow IPv4 traffic and routes to be
+        exchanged. Additionally if the matching peering is IPV4_IPV6, IPv6
+        traffic and routes will be exchanged as well.
+      IPV4_ONLY: This Peering will only allow IPv4 traffic and routes to be
+        exchanged, even if the matching peering is IPV4_IPV6.
+    """
+    IPV4_IPV6 = 0
+    IPV4_ONLY = 1
 
   class StateValueValuesEnum(_messages.Enum):
     r"""[Output Only] State for the peering, either `ACTIVE` or `INACTIVE`.
@@ -49805,8 +49920,9 @@ class NetworkPeering(_messages.Message):
   name = _messages.StringField(8)
   network = _messages.StringField(9)
   peerMtu = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  stateDetails = _messages.StringField(12)
+  stackType = _messages.EnumField('StackTypeValueValuesEnum', 11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  stateDetails = _messages.StringField(13)
 
 
 class NetworkPerformanceConfig(_messages.Message):
@@ -59592,9 +59708,12 @@ class ResourceStatusScheduling(_messages.Message):
       instance. Specify a value between 1-max count of availability domains in
       your GroupPlacementPolicy. See go/placement-policy-extension for more
       details.
+    terminationTimestamp: Time in future when the instance will be terminated
+      in RFC3339 text format.
   """
 
   availabilityDomain = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  terminationTimestamp = _messages.StringField(2)
 
 
 class ResourceStatusUpcomingMaintenance(_messages.Message):
@@ -62634,13 +62753,15 @@ class SecurityPolicy(_messages.Message):
     Values:
       CLOUD_ARMOR: <no description>
       CLOUD_ARMOR_EDGE: <no description>
+      CLOUD_ARMOR_INTERNAL_SERVICE: <no description>
       CLOUD_ARMOR_NETWORK: <no description>
       FIREWALL: <no description>
     """
     CLOUD_ARMOR = 0
     CLOUD_ARMOR_EDGE = 1
-    CLOUD_ARMOR_NETWORK = 2
-    FIREWALL = 3
+    CLOUD_ARMOR_INTERNAL_SERVICE = 2
+    CLOUD_ARMOR_NETWORK = 3
+    FIREWALL = 4
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):

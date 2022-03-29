@@ -211,41 +211,6 @@ class AlloydbProjectsLocationsClustersGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
-class AlloydbProjectsLocationsClustersImportRequest(_messages.Message):
-  r"""A AlloydbProjectsLocationsClustersImportRequest object.
-
-  Fields:
-    backupSource_backupName: Required. The name of the backup resource with
-      the format: * projects/{project}/locations/{region}/backups/{backup_id}
-    cluster: A Cluster resource to be passed as the request body.
-    clusterId: Required. Id of the requesting object If auto-generating Id
-      server-side, remove this field and cluster_id from the method_signature
-      of Create RPC
-    parent: Required. The name of the parent resource. For the required
-      format, see the comment on the Cluster.name field.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    validateOnly: Optional. If set, the backend validates the request, but
-      doesn't actually execute it.
-  """
-
-  backupSource_backupName = _messages.StringField(1)
-  cluster = _messages.MessageField('Cluster', 2)
-  clusterId = _messages.StringField(3)
-  parent = _messages.StringField(4, required=True)
-  requestId = _messages.StringField(5)
-  validateOnly = _messages.BooleanField(6)
-
-
 class AlloydbProjectsLocationsClustersInstancesCreateRequest(_messages.Message):
   r"""A AlloydbProjectsLocationsClustersInstancesCreateRequest object.
 
@@ -603,7 +568,7 @@ class AlloydbProjectsLocationsSupportedDatabaseFlagsListRequest(_messages.Messag
 
 
 class Backup(_messages.Message):
-  r"""Message describing Backup object
+  r"""Message describing Backup object NEXT ID: 13
 
   Enums:
     StateValueValuesEnum: Output only. The current state of the backup.
@@ -627,8 +592,15 @@ class Backup(_messages.Message):
       letter or number. For more details see https://google.aip.dev/122. The
       prefix of the backup resource name is the name of the parent resource: *
       projects/{project}/locations/{region}
+    reconciling: Output only. Reconciling
+      (https://google.aip.dev/128#reconciliation), if true, indicates that the
+      service is actively updating the resource. This can happen due to user-
+      triggered updates or system actions like failover or maintenance.
     state: Output only. The current state of the backup.
     type: The backup type, which suggests the trigger for the backup.
+    uid: Output only. The system-generated UID of the resource. The UID is
+      assigned when the resource is created, and it is retained until it is
+      deleted.
     updateTime: Output only. Update time stamp
   """
 
@@ -691,9 +663,11 @@ class Backup(_messages.Message):
   description = _messages.StringField(3)
   labels = _messages.MessageField('LabelsValue', 4)
   name = _messages.StringField(5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
-  type = _messages.EnumField('TypeValueValuesEnum', 7)
-  updateTime = _messages.StringField(8)
+  reconciling = _messages.BooleanField(6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  type = _messages.EnumField('TypeValueValuesEnum', 8)
+  uid = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
 
 
 class CancelOperationRequest(_messages.Message):
@@ -701,7 +675,7 @@ class CancelOperationRequest(_messages.Message):
 
 
 class Cluster(_messages.Message):
-  r"""Message describing Cluster object NEXT_ID: 16
+  r"""Message describing Cluster object NEXT_ID: 18
 
   Enums:
     DatabaseVersionValueValuesEnum: Output only. The database engine major
@@ -738,7 +712,14 @@ class Cluster(_messages.Message):
       in the form: "projects/{project_number}/global/networks/{network_id}".
       This is required to create a cluster. It can be updated, but it cannot
       be removed.
+    reconciling: Output only. Reconciling
+      (https://google.aip.dev/128#reconciliation), if true, indicates that the
+      service is actively updating the resource. This can happen due to user-
+      triggered updates or system actions like failover or maintenance.
     state: Output only. The current serving state of the cluster.
+    uid: Output only. The system-generated UID of the resource. The UID is
+      assigned when the resource is created, and it is retained until it is
+      deleted.
     updateTime: Output only. Update time stamp
   """
 
@@ -815,8 +796,10 @@ class Cluster(_messages.Message):
   migrationSource = _messages.MessageField('MigrationSource', 5)
   name = _messages.StringField(6)
   network = _messages.StringField(7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
-  updateTime = _messages.StringField(9)
+  reconciling = _messages.BooleanField(8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  uid = _messages.StringField(10)
+  updateTime = _messages.StringField(11)
 
 
 class Empty(_messages.Message):
@@ -853,7 +836,7 @@ class FailoverInstanceRequest(_messages.Message):
 
 
 class Instance(_messages.Message):
-  r"""Message describing Instance object NEXT ID: 15
+  r"""Message describing Instance object NEXT ID: 17
 
   Enums:
     AvailabilityTypeValueValuesEnum: Availability type of an Instance.
@@ -904,7 +887,14 @@ class Instance(_messages.Message):
       enable/disable public IP, enable/disable SSL and manage which external
       networks can connect to the instance.
     readPoolConfig: Read pool specific config.
+    reconciling: Output only. Reconciling
+      (https://google.aip.dev/128#reconciliation), if true, indicates that the
+      service is actively updating the resource. This can happen due to user-
+      triggered updates or system actions like failover or maintenance.
     state: Output only. The current serving state of the instance.
+    uid: Output only. The system-generated UID of the resource. The UID is
+      assigned when the resource is created, and it is retained until it is
+      deleted.
     updateTime: Output only. Update time stamp
   """
 
@@ -1031,8 +1021,10 @@ class Instance(_messages.Message):
   name = _messages.StringField(9)
   networkConfig = _messages.MessageField('NetworkConfig', 10)
   readPoolConfig = _messages.MessageField('ReadPoolConfig', 11)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
-  updateTime = _messages.StringField(13)
+  reconciling = _messages.BooleanField(12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  uid = _messages.StringField(14)
+  updateTime = _messages.StringField(15)
 
 
 class IntegerRestrictions(_messages.Message):

@@ -2050,6 +2050,7 @@ class PasswordValidationPolicy(_messages.Message):
   Fields:
     complexity: The complexity of the password.
     disallowUsernameSubstring: Disallow username as a part of the password.
+    enablePasswordPolicy: Whether the password policy is enabled or not.
     minLength: Minimum number of characters allowed.
     passwordChangeInterval: Minimum interval after which the password can be
       changed. This flag is only supported for PostgresSQL.
@@ -2069,9 +2070,10 @@ class PasswordValidationPolicy(_messages.Message):
 
   complexity = _messages.EnumField('ComplexityValueValuesEnum', 1)
   disallowUsernameSubstring = _messages.BooleanField(2)
-  minLength = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  passwordChangeInterval = _messages.StringField(4)
-  reuseInterval = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  enablePasswordPolicy = _messages.BooleanField(3)
+  minLength = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  passwordChangeInterval = _messages.StringField(5)
+  reuseInterval = _messages.IntegerField(6, variant=_messages.Variant.INT32)
 
 
 class ReplicaConfiguration(_messages.Message):

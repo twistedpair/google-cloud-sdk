@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 
 import abc
 
+from googlecloudsdk.command_lib.run.integrations.formatters import states
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_attr
 
@@ -64,23 +65,6 @@ class BaseFormatter:
             .replace('_', ' ')
             .title())
 
-  def GetGCPResourceState(self, resource):
-    """Return the state of the GCP resource that makes up the intergration.
-
-    Args:
-      resource: dict, the resource object.
-
-    Returns:
-      The state string.
-    """
-    state = resource.get('state', '')
-    return {
-        'GCP_RESOURCE_STATE_DEPLOYED': 'DEPLOYED',
-        'GCP_RESOURCE_STATE_MISSING': 'MISSING',
-        'GCP_RESOURCE_STATE_PROVISIONING': 'PROVISIONING',
-        'GCP_RESOURCE_STATE_READY': 'READY',
-        'GCP_RESOURCE_STATE_FAILED': 'FAILED',
-    }.get(state, 'UNKNOWN')
 
   def GetResourceState(self, resource):
     """Return the state of the top level resource in the integration.
@@ -91,16 +75,7 @@ class BaseFormatter:
     Returns:
       The state string.
     """
-    state = resource.get('state', '')
-
-    return {
-        'RESOURCE_STATE_UNKNOWN': 'UNKNOWN',
-        'RESOURCE_STATE_READY': 'READY',
-        'RESOURCE_STATE_ERROR': 'ERROR',
-        'RESOURCE_STATE_MISSING': 'MISSING',
-        'RESOURCE_STATE_UPDATING': 'UPDATING',
-        'RESOURCE_STATE_NOT_READY': 'NOT READY',
-    }.get(state, 'UNKNOWN')
+    return resource.get('state', states.UNKNOWN)
 
   def PrintStatus(self, status):
     """Print the status with symbol and color.
@@ -126,15 +101,15 @@ class BaseFormatter:
     encoding = console_attr.GetConsoleAttr().GetEncoding()
     if properties.VALUES.core.disable_color.GetBool():
       encoding = 'ascii'
-    if status == 'DEPLOYED' or status == 'READY':
+    if status == states.DEPLOYED or status == states.ACTIVE:
       return con.Colorize(
           self._PickSymbol('\N{HEAVY CHECK MARK}', '+', encoding), 'green')
-    if status in ('PROVISIONING', 'UPDATING', 'NOT READY'):
+    if status in (states.PROVISIONING, states.UPDATING, states.NOT_READY):
       return con.Colorize(self._PickSymbol(
           '\N{HORIZONTAL ELLIPSIS}', '.', encoding), 'yellow')
-    if status == 'MISSING':
+    if status == states.MISSING:
       return con.Colorize('?', 'yellow')
-    if status == 'FAILED' or status == 'ERROR':
+    if status == states.FAILED:
       return con.Colorize('X', 'red')
     return con.Colorize('~', 'blue')
 

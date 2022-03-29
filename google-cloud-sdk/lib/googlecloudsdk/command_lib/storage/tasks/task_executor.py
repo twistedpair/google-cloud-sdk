@@ -24,6 +24,7 @@ from googlecloudsdk.command_lib.storage import optimize_parameters_util
 from googlecloudsdk.command_lib.storage import plurality_checkable_iterator
 from googlecloudsdk.command_lib.storage.tasks import task_graph_executor
 from googlecloudsdk.command_lib.storage.tasks import task_status
+from googlecloudsdk.command_lib.storage.tasks import task_util
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
@@ -85,20 +86,6 @@ def _execute_tasks_sequential(task_iterator,
   return exit_code, messages_from_current_task_iterator
 
 
-def should_use_parallelism():
-  """Checks execution settings to determine if parallelism should be used.
-
-  This function is called in some tasks to determine how they are being
-  executed, and should include as many of the relevant conditions as possible.
-
-  Returns:
-    True if parallel execution should be used, False otherwise.
-  """
-  process_count = properties.VALUES.storage.process_count.GetInt()
-  thread_count = properties.VALUES.storage.thread_count.GetInt()
-  return process_count > 1 or thread_count > 1
-
-
 def execute_tasks(task_iterator,
                   parallelizable=False,
                   task_status_queue=None,
@@ -129,7 +116,7 @@ def execute_tasks(task_iterator,
   # Some tasks operate under the assumption that they will only be executed when
   # parallelizable is True, and use should_use_parallelism to determine how they
   # are executed.
-  if parallelizable and should_use_parallelism():
+  if parallelizable and task_util.should_use_parallelism():
     exit_code = task_graph_executor.TaskGraphExecutor(
         plurality_checkable_task_iterator,
         max_process_count=properties.VALUES.storage.process_count.GetInt(),

@@ -41,6 +41,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_GLOBAL_NETWORKPEERINGS = (
+      'projects.locations.global.networkPeerings',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/global/networkPeerings/'
+              '{networkPeeringsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_NETWORKPOLICIES = (
       'projects.locations.networkPolicies',
       '{+name}',

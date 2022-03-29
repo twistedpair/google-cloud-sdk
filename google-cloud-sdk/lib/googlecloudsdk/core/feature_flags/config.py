@@ -43,7 +43,7 @@ class Property:
         self.weights.append(attribute['weight'])
 
 _FEATURE_FLAG_CACHE_TIME_SECONDS = 30 * 60  # 30 minutes
-_FEATURE_FLAG_YAML_URL = 'http://www.gstatic.com/cloudsdk/feature_flag_config_file.yaml'
+_FEATURE_FLAG_YAML_URL = 'https://www.gstatic.com/cloudsdk/feature_flag_config_file.yaml'
 
 
 def Cache(func):
@@ -80,7 +80,9 @@ def FetchFeatureFlagsConfig():
 
   try:
     yaml_request = core_requests.GetSession()
-    return yaml_request.get(_FEATURE_FLAG_YAML_URL).text
+    response = yaml_request.get(_FEATURE_FLAG_YAML_URL)
+    response.raise_for_status()
+    return response.text
   except requests.exceptions.RequestException as e:
     logging.debug('Unable to fetch feature flags config from [%s]: %s',
                   _FEATURE_FLAG_YAML_URL, e)

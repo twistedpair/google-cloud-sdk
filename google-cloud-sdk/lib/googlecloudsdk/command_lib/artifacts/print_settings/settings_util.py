@@ -40,7 +40,7 @@ from googlecloudsdk.core.credentials import store
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
 
-_EXT_VERSION = "2.1.1"
+_EXT_VERSION = "2.1.5"
 
 _PROJECT_NOT_FOUND_ERROR = """\
 Failed to find attribute [project]. \

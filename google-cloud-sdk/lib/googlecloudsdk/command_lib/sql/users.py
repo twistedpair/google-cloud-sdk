@@ -18,9 +18,70 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.calliope import base
+
 
 def ParseUserType(sql_messages, args):
   if args.type:
     return sql_messages.User.TypeValueValuesEnum.lookup_by_name(
         args.type.upper())
   return None
+
+
+def CreatePasswordPolicyFromArgs(sql_messages, release_track, args):
+  """Generates password policy for the user.
+
+  Args:
+    sql_messages: module, The messages module that should be used.
+    release_track: base.ReleaseTrack, the release track that this was run under.
+    args: argparse.Namespace, The arguments that this command was invoked with.
+
+  Returns:
+    sql_messages.UserPasswordValidationPolicy or None
+
+  """
+  # this logic is shared between create-user and set-password-policy. There is
+  # no argument in create-user to set a shared password, so we must check that
+  # the argument exists.
+  clear_password_policy = None
+  if hasattr(args, 'clear_password_policy'):
+    clear_password_policy = args.clear_password_policy
+
+  # enable_password_verification is only supported in the ALPHA track at this
+  # time, but will be expanded to BETA and GA closer to release.
+  enable_password_verification = None
+  if release_track == base.ReleaseTrack.ALPHA:
+    enable_password_verification = args.password_policy_enable_password_verification
+
+  allowed_failed_attempts = args.password_policy_allowed_failed_attempts
+  password_expiration_duration = args.password_policy_password_expiration_duration
+  enable_failed_attempts_check = args.password_policy_enable_failed_attempts_check
+
+  should_generate_policy = any([
+      allowed_failed_attempts is not None,
+      password_expiration_duration is not None,
+      enable_failed_attempts_check is not None,
+      enable_password_verification is not None,
+      clear_password_policy is not None,
+  ])
+  if not should_generate_policy:
+    return None
+
+  # Config exists, generate password policy.
+  password_policy = sql_messages.UserPasswordValidationPolicy()
+
+  # Directly return empty policy to clear the existing password policy.
+  if clear_password_policy:
+    return password_policy
+
+  if allowed_failed_attempts is not None:
+    password_policy.allowedFailedAttempts = allowed_failed_attempts
+  if password_expiration_duration is not None:
+    password_policy.passwordExpirationDuration = str(
+        password_expiration_duration) + 's'
+  if enable_failed_attempts_check is not None:
+    password_policy.enableFailedAttemptsCheck = enable_failed_attempts_check
+  if enable_password_verification is not None:
+    password_policy.enablePasswordVerification = enable_password_verification
+
+  return password_policy

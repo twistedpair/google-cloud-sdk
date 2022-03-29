@@ -763,8 +763,7 @@ class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
   or the response type of an API method. For instance: service Foo { rpc
-  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
-  representation for `Empty` is empty JSON object `{}`.
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
 
 
@@ -1249,7 +1248,7 @@ class NodeConfig(_messages.Message):
 
   Fields:
     diskSizeGb: Optional. The disk size in GB used for node VMs. Minimum size
-      is 20GB. If unspecified, defaults to 100GB. Cannot be updated. This
+      is 30GB. If unspecified, defaults to 100GB. Cannot be updated. This
       field is supported for Cloud Composer environments in versions
       composer-1.*.*-airflow-*.*.*.
     enableIpMasqAgent: Optional. Deploys 'ip-masq-agent' daemon set in the GKE

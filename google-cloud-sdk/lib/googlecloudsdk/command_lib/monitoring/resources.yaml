@@ -41,3 +41,12 @@ dashboard:
   - parameter_name: dashboardsId
     attribute_name: dashboard
     help: The ID of the dashboard.
+
+metrics_scope:
+  name: metrics_scope
+  collection: monitoring.locations.global.metricsScopes
+  request_id_field: name
+  attributes:
+  - parameter_name: metricsScopesId
+    attribute_name: metrics_scope
+    help: The project ID corresponding to the metrics scope.

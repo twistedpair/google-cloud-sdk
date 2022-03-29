@@ -531,9 +531,9 @@ class Finding(_messages.Message):
 
   Enums:
     FindingClassValueValuesEnum: The class of the finding.
-    MuteValueValuesEnum: Indicates the mute state of a finding (either
-      unspecified, muted, unmuted or undefined). Unlike other attributes of a
-      finding, a finding provider shouldn't set the value of mute.
+    MuteValueValuesEnum: Indicates the mute state of a finding (either muted,
+      unmuted or undefined). Unlike other attributes of a finding, a finding
+      provider shouldn't set the value of mute.
     SeverityValueValuesEnum: The severity of the finding. This field is
       managed by the source that writes the finding.
     StateValueValuesEnum: The state of the finding.
@@ -583,9 +583,9 @@ class Finding(_messages.Message):
       https://en.wikipedia.org/wiki/Indicator_of_compromise
     mitreAttack: MITRE ATT&CK tactics and techniques related to this finding.
       See: https://attack.mitre.org
-    mute: Indicates the mute state of a finding (either unspecified, muted,
-      unmuted or undefined). Unlike other attributes of a finding, a finding
-      provider shouldn't set the value of mute.
+    mute: Indicates the mute state of a finding (either muted, unmuted or
+      undefined). Unlike other attributes of a finding, a finding provider
+      shouldn't set the value of mute.
     muteInitiator: First known as mute_annotation. Records additional
       information about the mute operation e.g. mute config that muted the
       finding, user who muted the finding, etc. Unlike other attributes of a
@@ -644,9 +644,9 @@ class Finding(_messages.Message):
     SCC_ERROR = 5
 
   class MuteValueValuesEnum(_messages.Enum):
-    r"""Indicates the mute state of a finding (either unspecified, muted,
-    unmuted or undefined). Unlike other attributes of a finding, a finding
-    provider shouldn't set the value of mute.
+    r"""Indicates the mute state of a finding (either muted, unmuted or
+    undefined). Unlike other attributes of a finding, a finding provider
+    shouldn't set the value of mute.
 
     Values:
       MUTE_UNSPECIFIED: Unspecified.
@@ -974,7 +974,7 @@ class GoogleCloudSecuritycenterV1Resource(_messages.Message):
     parent: The full resource name of resource's parent.
     parentDisplayName: The human readable name of resource's parent.
     project: The full resource name of project that the resource belongs to.
-    projectDisplayName: The project id that the resource belongs to.
+    projectDisplayName: The project ID that the resource belongs to.
     type: The full resource type of the resource.
   """
 

@@ -42,9 +42,7 @@ def AddModesForListFormat(resource):
 
 
 def CreateNetworkResourceFromArgs(messages, network_ref, network_args,
-                                  support_firewall_order,
-                                  support_enable_ula_internal_ipv6,
-                                  support_internal_ipv6_range):
+                                  support_firewall_order):
   """Creates a new network resource from flag arguments."""
 
   network = messages.Network(
@@ -72,12 +70,10 @@ def CreateNetworkResourceFromArgs(messages, network_ref, network_args,
         messages.Network.NetworkFirewallPolicyEnforcementOrderValueValuesEnum(
             network_args.network_firewall_policy_enforcement_order))
 
-  if support_enable_ula_internal_ipv6 and hasattr(
-      network_args, 'enable_ula_internal_ipv6'):
+  if hasattr(network_args, 'enable_ula_internal_ipv6'):
     network.enableUlaInternalIpv6 = network_args.enable_ula_internal_ipv6
 
-  if support_internal_ipv6_range and hasattr(
-      network_args, 'internal_ipv6_range'):
+  if hasattr(network_args, 'internal_ipv6_range'):
     network.internalIpv6Range = network_args.internal_ipv6_range
 
   return network

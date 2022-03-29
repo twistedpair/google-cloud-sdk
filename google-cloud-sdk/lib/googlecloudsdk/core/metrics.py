@@ -54,6 +54,7 @@ _GA_HELP_CATEGORY = 'Help'
 _GA_ERROR_CATEGORY = 'Error'
 _GA_EXECUTIONS_CATEGORY = 'Executions'
 _GA_TEST_EXECUTIONS_CATEGORY = 'TestExecutions'
+_GA_CUSTOM_CATEGORY = 'Custom'
 
 _LOAD_EVENT = 'load'
 _RUN_EVENT = 'run'
@@ -378,6 +379,8 @@ class _ClearcutMetricsReporter(object):
           {'key': _CLEARCUT_ERROR_TYPE_KEY, 'value': event.label})
     elif event.category is _GA_INSTALLS_CATEGORY:
       event_metadata.append({'key': 'component_version', 'value': event.label})
+    elif event.category is _GA_CUSTOM_CATEGORY:
+      event_metadata.append({'key': event.label, 'value': event.value})
 
     concord_event[_CLEARCUT_EVENT_METADATA_KEY].extend(event_metadata)
     self._clearcut_concord_timed_events.append((concord_event,
@@ -663,6 +666,7 @@ def _RecordEventAndSetTimerContext(
                     _GA_TEST_EXECUTIONS_CATEGORY]:
     collector.SetTimerContext(category, action, label, flag_names=flag_names)
   # Ignoring installs for now since there could be multiple per cmd execution.
+  # Custom events only record a key/value pair, and don't require timer context.
 
 
 def _GetFlagNameString(flag_names):
@@ -854,6 +858,18 @@ def Executions(command_name, version_string='unknown'):
   """
   _RecordEventAndSetTimerContext(
       _GA_EXECUTIONS_CATEGORY, command_name, version_string)
+
+
+@CaptureAndLogException
+def CustomKeyValue(command_path, key, value):
+  """Record a custom key/value metric for a given command.
+
+  Args:
+    command_path: str, The '.' separated name of the calliope command.
+    key: str, The key recorded for the event.
+    value: str. The value recorded for the event.
+  """
+  _RecordEventAndSetTimerContext(_GA_CUSTOM_CATEGORY, command_path, key, value)
 
 
 @CaptureAndLogException

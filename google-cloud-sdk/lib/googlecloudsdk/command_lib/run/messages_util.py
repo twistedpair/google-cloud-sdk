@@ -75,6 +75,22 @@ def GetStartDeployMessage(conn_context,
       ns=resource_ref.Parent().Name())
 
 
+def GetExecutionCreatedMessage(release_track, job_ref, execution_name):
+  """Returns a user message for running a job."""
+  # TODO(b/180749348): Don't piggyback off of cloud_run_revision
+  return (
+      '\nView details about this execution by running:\ngcloud{release_track} '
+      'run jobs executions describe {ex_name}\n\nSee logs for this execution '
+      'at: '
+      'https://console.cloud.google.com/logs/viewer?project={project_id}&resource=cloud_run_revision/service_name/{job_name}/revision_name/{ex_name}'
+      .format(
+          release_track=(' {}'.format(release_track.prefix)
+                         if release_track.prefix is not None else ''),
+          project_id=job_ref.Parent().Name(),
+          ex_name=execution_name,
+          job_name=job_ref.Name()))
+
+
 def GetBuildEquivalentForSourceRunMessage(serv, pack, source):
   """Returns a user message for equivalent gcloud commands for source deploy.
 

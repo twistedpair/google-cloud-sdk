@@ -2437,8 +2437,7 @@ class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
   or the response type of an API method. For instance: service Foo { rpc
-  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
-  representation for Empty is empty JSON object {}.
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
 
 
@@ -5980,7 +5979,6 @@ class VirtualClusterConfig(_messages.Message):
       used by this cluster.
     kubernetesClusterConfig: Required. The configuration for running the
       Dataproc cluster on Kubernetes.
-    softwareConfig: Optional. The config settings for cluster software.
     stagingBucket: Optional. A Storage bucket used to stage job dependencies,
       config files, and job driver console output. If you do not specify a
       staging bucket, Cloud Dataproc will determine a Cloud Storage location
@@ -6006,9 +6004,8 @@ class VirtualClusterConfig(_messages.Message):
 
   auxiliaryServicesConfig = _messages.MessageField('AuxiliaryServicesConfig', 1)
   kubernetesClusterConfig = _messages.MessageField('KubernetesClusterConfig', 2)
-  softwareConfig = _messages.MessageField('SoftwareConfig', 3)
-  stagingBucket = _messages.StringField(4)
-  tempBucket = _messages.StringField(5)
+  stagingBucket = _messages.StringField(3)
+  tempBucket = _messages.StringField(4)
 
 
 class WorkflowGraph(_messages.Message):

@@ -1568,6 +1568,24 @@ class CmekSettings(proto.Message):
             See `Enabling CMEK for Log
             Router <https://cloud.google.com/logging/docs/routing/managed-encryption>`__
             for more information.
+        kms_key_version_name (str):
+            The CryptoKeyVersion resource name for the configured Cloud
+            KMS key.
+
+            KMS key name format:
+
+            ::
+
+                "projects/[PROJECT_ID]/locations/[LOCATION]/keyRings/[KEYRING]/cryptoKeys/[KEY]/cryptoKeyVersions/[VERSION]"
+
+            For example:
+
+            ``"projects/my-project/locations/us-central1/keyRings/my-ring/cryptoKeys/my-key/cryptoKeyVersions/1"``
+
+            This is a read-only field used to convey the specific
+            configured CryptoKeyVersion of ``kms_key`` that has been
+            configured. It will be populated in cases where the CMEK
+            settings are bound to a single key version.
         service_account_id (str):
             Output only. The service account that will be used by the
             Log Router to access your Cloud KMS key.
@@ -1591,6 +1609,10 @@ class CmekSettings(proto.Message):
     kms_key_name = proto.Field(
         proto.STRING,
         number=2,
+    )
+    kms_key_version_name = proto.Field(
+        proto.STRING,
+        number=4,
     )
     service_account_id = proto.Field(
         proto.STRING,

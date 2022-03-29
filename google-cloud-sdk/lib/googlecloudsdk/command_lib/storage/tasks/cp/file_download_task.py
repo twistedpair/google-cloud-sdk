@@ -33,8 +33,9 @@ from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import hash_util
 from googlecloudsdk.command_lib.storage import tracker_file_util
 from googlecloudsdk.command_lib.storage.tasks import task
-from googlecloudsdk.command_lib.storage.tasks import task_executor
+from googlecloudsdk.command_lib.storage.tasks import task_util
 from googlecloudsdk.command_lib.storage.tasks.cp import copy_component_util
+from googlecloudsdk.command_lib.storage.tasks.cp import copy_util
 from googlecloudsdk.command_lib.storage.tasks.cp import download_util
 from googlecloudsdk.command_lib.storage.tasks.cp import file_part_download_task
 from googlecloudsdk.command_lib.storage.tasks.cp import finalize_sliced_download_task
@@ -115,7 +116,7 @@ def _should_perform_sliced_download(source_resource, destination_resource):
   return (source_resource.size and threshold != 0 and
           source_resource.size > threshold and component_size and
           cloud_api.Capability.SLICED_DOWNLOAD in api_capabilities and
-          task_executor.should_use_parallelism())
+          task_util.should_use_parallelism())
 
 
 class FileDownloadTask(task.Task):
@@ -223,7 +224,11 @@ class FileDownloadTask(task.Task):
     # between two running instances of gcloud storage. See the following PR for
     # more information: https://github.com/GoogleCloudPlatform/gsutil/pull/1202.
     if destination_url.exists():
+      if self._user_request_args and self._user_request_args.no_clobber:
+        log.status.Print(copy_util.get_no_clobber_message(destination_url))
+        return
       os.remove(destination_url.object_name)
+
     temporary_download_file_exists = (
         self._temporary_destination_resource.storage_url.exists())
     if temporary_download_file_exists and os.path.getsize(

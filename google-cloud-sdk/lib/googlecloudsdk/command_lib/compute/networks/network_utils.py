@@ -21,7 +21,6 @@ from __future__ import unicode_literals
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import parser_errors
 
-
 RANGE_HELP_TEXT = """\
     Specifies the IPv4 address range of legacy mode networks. The range
     must be specified in CIDR format:
@@ -69,8 +68,7 @@ def AddCreateBaseArgs(parser):
   """Adds common arguments for creating a network."""
 
   parser.add_argument(
-      '--description',
-      help='An optional, textual description for the network.')
+      '--description', help='An optional, textual description for the network.')
 
   parser.add_argument('--range', help=RANGE_HELP_TEXT)
 
@@ -100,7 +98,8 @@ def AddMtuArg(parser):
 def AddEnableUlaInternalIpv6Arg(parser):
   """Adds the --enable-ula-internal-ipv6 flag."""
   parser.add_argument(
-      '--enable-ula-internal-ipv6', action=arg_parsers.StoreTrueFalseAction,
+      '--enable-ula-internal-ipv6',
+      action=arg_parsers.StoreTrueFalseAction,
       help="""Enable/disable ULA internal IPv6 on this network. Enabling this
       feature will assign a /48 from google defined ULA prefix fd20::/20.""")
 
@@ -159,6 +158,8 @@ def AddUpdateArgs(parser):
       help="""The target BGP routing mode for this network.""")
 
   AddMtuArg(parser)
+  AddInternalIpv6RangeArg(parser)
+  AddEnableUlaInternalIpv6Arg(parser)
 
 
 def AddUpdateArgsAlpha(parser):

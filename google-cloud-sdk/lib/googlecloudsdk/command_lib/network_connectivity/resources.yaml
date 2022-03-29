@@ -19,6 +19,21 @@ region:
     help: |
       The location Id.
 
+regionDefaultGlobal:
+  name: region
+  collection: networkconnectivity.projects.locations
+  attributes:
+  - *project
+  - &regionDefaultGlobal
+    parameter_name: locationsId
+    attribute_name: region
+    help: |
+      The location Id.
+    fallthroughs:
+    - hook: googlecloudsdk.command_lib.network_connectivity.util:SetGlobalLocation
+      hint: |
+        use default global location
+
 location:
   name: location
   collection: networkconnectivity.projects.locations
@@ -59,7 +74,7 @@ internalRange:
   request_id_field: internalRangeId
   attributes:
   - *project
-  - *region
+  - *regionDefaultGlobal
   - &internalRange
     parameter_name: internalRangesId
     attribute_name: internal_range

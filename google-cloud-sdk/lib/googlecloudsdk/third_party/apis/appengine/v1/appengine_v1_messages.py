@@ -1176,8 +1176,7 @@ class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
   or the response type of an API method. For instance: service Foo { rpc
-  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
-  representation for Empty is empty JSON object {}.
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
 
 
@@ -2816,6 +2815,8 @@ class Version(_messages.Message):
     apiConfig: Serving configuration for Google Cloud Endpoints
       (https://cloud.google.com/appengine/docs/python/endpoints/).Only
       returned in GET requests if view=FULL is set.
+    appEngineApis: app_engine_apis allows second generation runtimes to access
+      the App Engine APIs.
     automaticScaling: Automatic scaling is based on request rate, response
       latencies, and other application metrics. Instances are dynamically
       created and destroyed as needed in order to handle traffic.
@@ -3039,44 +3040,45 @@ class Version(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   apiConfig = _messages.MessageField('ApiConfigHandler', 1)
-  automaticScaling = _messages.MessageField('AutomaticScaling', 2)
-  basicScaling = _messages.MessageField('BasicScaling', 3)
-  betaSettings = _messages.MessageField('BetaSettingsValue', 4)
-  buildEnvVariables = _messages.MessageField('BuildEnvVariablesValue', 5)
-  createTime = _messages.StringField(6)
-  createdBy = _messages.StringField(7)
-  defaultExpiration = _messages.StringField(8)
-  deployment = _messages.MessageField('Deployment', 9)
-  diskUsageBytes = _messages.IntegerField(10)
-  endpointsApiService = _messages.MessageField('EndpointsApiService', 11)
-  entrypoint = _messages.MessageField('Entrypoint', 12)
-  env = _messages.StringField(13)
-  envVariables = _messages.MessageField('EnvVariablesValue', 14)
-  errorHandlers = _messages.MessageField('ErrorHandler', 15, repeated=True)
-  handlers = _messages.MessageField('UrlMap', 16, repeated=True)
-  healthCheck = _messages.MessageField('HealthCheck', 17)
-  id = _messages.StringField(18)
-  inboundServices = _messages.EnumField('InboundServicesValueListEntryValuesEnum', 19, repeated=True)
-  instanceClass = _messages.StringField(20)
-  libraries = _messages.MessageField('Library', 21, repeated=True)
-  livenessCheck = _messages.MessageField('LivenessCheck', 22)
-  manualScaling = _messages.MessageField('ManualScaling', 23)
-  name = _messages.StringField(24)
-  network = _messages.MessageField('Network', 25)
-  nobuildFilesRegex = _messages.StringField(26)
-  readinessCheck = _messages.MessageField('ReadinessCheck', 27)
-  resources = _messages.MessageField('Resources', 28)
-  runtime = _messages.StringField(29)
-  runtimeApiVersion = _messages.StringField(30)
-  runtimeChannel = _messages.StringField(31)
-  runtimeMainExecutablePath = _messages.StringField(32)
-  serviceAccount = _messages.StringField(33)
-  servingStatus = _messages.EnumField('ServingStatusValueValuesEnum', 34)
-  threadsafe = _messages.BooleanField(35)
-  versionUrl = _messages.StringField(36)
-  vm = _messages.BooleanField(37)
-  vpcAccessConnector = _messages.MessageField('VpcAccessConnector', 38)
-  zones = _messages.StringField(39, repeated=True)
+  appEngineApis = _messages.BooleanField(2)
+  automaticScaling = _messages.MessageField('AutomaticScaling', 3)
+  basicScaling = _messages.MessageField('BasicScaling', 4)
+  betaSettings = _messages.MessageField('BetaSettingsValue', 5)
+  buildEnvVariables = _messages.MessageField('BuildEnvVariablesValue', 6)
+  createTime = _messages.StringField(7)
+  createdBy = _messages.StringField(8)
+  defaultExpiration = _messages.StringField(9)
+  deployment = _messages.MessageField('Deployment', 10)
+  diskUsageBytes = _messages.IntegerField(11)
+  endpointsApiService = _messages.MessageField('EndpointsApiService', 12)
+  entrypoint = _messages.MessageField('Entrypoint', 13)
+  env = _messages.StringField(14)
+  envVariables = _messages.MessageField('EnvVariablesValue', 15)
+  errorHandlers = _messages.MessageField('ErrorHandler', 16, repeated=True)
+  handlers = _messages.MessageField('UrlMap', 17, repeated=True)
+  healthCheck = _messages.MessageField('HealthCheck', 18)
+  id = _messages.StringField(19)
+  inboundServices = _messages.EnumField('InboundServicesValueListEntryValuesEnum', 20, repeated=True)
+  instanceClass = _messages.StringField(21)
+  libraries = _messages.MessageField('Library', 22, repeated=True)
+  livenessCheck = _messages.MessageField('LivenessCheck', 23)
+  manualScaling = _messages.MessageField('ManualScaling', 24)
+  name = _messages.StringField(25)
+  network = _messages.MessageField('Network', 26)
+  nobuildFilesRegex = _messages.StringField(27)
+  readinessCheck = _messages.MessageField('ReadinessCheck', 28)
+  resources = _messages.MessageField('Resources', 29)
+  runtime = _messages.StringField(30)
+  runtimeApiVersion = _messages.StringField(31)
+  runtimeChannel = _messages.StringField(32)
+  runtimeMainExecutablePath = _messages.StringField(33)
+  serviceAccount = _messages.StringField(34)
+  servingStatus = _messages.EnumField('ServingStatusValueValuesEnum', 35)
+  threadsafe = _messages.BooleanField(36)
+  versionUrl = _messages.StringField(37)
+  vm = _messages.BooleanField(38)
+  vpcAccessConnector = _messages.MessageField('VpcAccessConnector', 39)
+  zones = _messages.StringField(40, repeated=True)
 
 
 class Volume(_messages.Message):

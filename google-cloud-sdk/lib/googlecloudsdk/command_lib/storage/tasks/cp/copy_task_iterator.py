@@ -27,6 +27,7 @@ from googlecloudsdk.command_lib.storage import progress_callbacks
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage import wildcard_iterator
 from googlecloudsdk.command_lib.storage.resources import resource_reference
+from googlecloudsdk.command_lib.storage.resources import resource_util
 from googlecloudsdk.command_lib.storage.tasks.cp import copy_task_factory
 from googlecloudsdk.core import log
 
@@ -194,6 +195,7 @@ class CopyTaskIterator:
                custom_md5_digest=None,
                do_not_decompress=False,
                shared_stream=None,
+               skip_unsupported=True,
                task_status_queue=None,
                user_request_args=None):
     """Initializes a CopyTaskIterator instance.
@@ -207,10 +209,13 @@ class CopyTaskIterator:
       do_not_decompress (bool): Prevents automatically decompressing
         downloaded gzips.
       shared_stream (stream): Multiple tasks may reuse a read or write stream.
+      skip_unsupported (bool): Skip creating copy tasks for unsupported object
+        types.
       task_status_queue (multiprocessing.Queue|None): Used for estimating total
         workload from this iterator.
       user_request_args (UserRequestArgs|None): Values for RequestConfig.
     """
+    self._all_versions = source_name_iterator.all_versions
     self._has_multiple_top_level_sources = (
         source_name_iterator.has_multiple_top_level_resources)
     self._source_name_iterator = (
@@ -221,6 +226,7 @@ class CopyTaskIterator:
     self._do_not_decompress = do_not_decompress
     self._custom_md5_digest = custom_md5_digest
     self._shared_stream = shared_stream
+    self._skip_unsupported = skip_unsupported
     self._task_status_queue = task_status_queue
     self._user_request_args = user_request_args
 
@@ -283,6 +289,14 @@ class CopyTaskIterator:
     self._raise_error_if_source_matches_destination()
 
     for source in self._source_name_iterator:
+      if self._skip_unsupported:
+        unsupported_type = resource_util.get_unsupported_object_type(
+            source.resource)
+        if unsupported_type:
+          log.status.Print(
+              'Skipping item {} with unsupported object type: {}'.format(
+                  source.resource.storage_url, unsupported_type.value))
+          continue
 
       destination_resource = self._get_copy_destination(self._raw_destination,
                                                         source)
@@ -305,7 +319,7 @@ class CopyTaskIterator:
         # but there is only one object that needs to be copied over.
         self._raise_if_destination_is_file_url_and_not_a_directory_or_pipe()
 
-      if source.original_url.generation:
+      if source.original_url.generation or self._all_versions:
         source_url_string = source_url.url_string
       else:
         source_url_string = source_url.versionless_url_string

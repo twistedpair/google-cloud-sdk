@@ -5,6 +5,82 @@ Copyright 2014-2022 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 379.0.0 (2022-03-29)
+
+### Breaking Changes
+
+*   **(Cloud Services)** Replace `--deleted` flag with `--show-deleted` flag to `gcloud services api-keys list`. With `--show-deleted`, keys soft-deleted within 30 days will be returned.
+*   **(Cloud Services)** Change the default output format from tabular to row-based of `gcloud services api-keys list`.
+
+
+### Google Cloud CLI
+
+* Updated `gcloud auth login --cred-file=external-account-creds.json` to authorize gsutil with the External Account Credentials in the passed credential file.
+
+### AI
+
+* Added more choice options to `--region` flag of `gcloud ai custom-jobs` and `gcloud ai hp-tunining-jobs`, including: southamerica-east1 and us-west4.
+
+### Artifact Registry
+
+*   Changed com.google.cloud.artifactregistry.gradle-plugin from 2.1.1 to 2.1.5 in `gcloud print-settings`.
+*   Promoted `gcloud artifacts apt` and `artifacts yum` commands to GA.
+
+### Cloud Firestore Emulator
+
+* Release Cloud Firestore emulator v1.14.1
+  * Chore: prepare for aggregate support.
+  * Chore: add support of x-goog-request-params http header for routing.
+  * Fix: change read-past-max-staleness error code to align with production implementation.
+  * Fix: update readtime-in-the-future error message.
+  * Fix: support importing exports from Windows on UNIX systems.
+
+### Cloud Functions
+
+*  Promoted `--docker-repository`, `--kms-key`, `--clear-docker-repository` and
+    `--clear-kms-key` flag of `gcloud functions deploy` to GA.
+*  Promoted `--docker-registry` flag of `gcloud functions deploy` to beta.
+
+### Cloud On Demand Scanning
+
+* Added ARM support for `local-extract` on Linux.
+
+### Cloud Run
+
+* Promoted `gcloud run services proxy` to beta. This command allows you to proxy
+ a service or revision to localhost. Requests will be authenticated as the
+ current SDK account, or with a provided token.
+
+### Compute Engine
+
+* Fixed an issue with `--create-disk` and `--disk` flags that causes `gcloud compute instances create` to fail when attaching a boot disk.
+* Promoted `--enable-ula-internal-ipv6` and `--internal-ipv6-range` flags to GA for `gcloud compute networks <create|update>`.
+* Updated `--protocol` flag to permit values of `TCP` or `SSL` when `--enable-logging` or `--logging-sample-rate` flags are set for `gcloud compute backend-services create` and `gcloud compute backend-services update` for beta.
+
+### Config Connector
+
+* Updated Google Cloud Config Connector to version 1.78.0.
+  See Config Connector Overview for more details [https://cloud.google.com/config-connector/docs/overview](https://cloud.google.com/config-connector/docs/overview).
+
+### Database Migration
+
+* Updated `gcloud database-migration connection-profiles list --region=us-central1` to return correct structure for connection profiles based on format.
+* Updated `gcloud database-migration connection-profiles create mysql` to return error on invalid hostname.
+* Updated `gcloud database-migration connection-profiles create postgresql` to return error on invalid hostname.
+
+### Eventarc
+
+* Added `gcloud eventarc providers` which allows for the discovery of event providers.
+
+### Kubernetes Engine
+
+*   Deprecated `--autoprovisioning-min-cpu-platform` flag from
+    `gcloud container clusters create/update`.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 378.0.0 (2022-03-22)
 
 ### Breaking Changes

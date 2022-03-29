@@ -15,45 +15,6 @@ from apitools.base.py import extra_types
 package = 'artifactregistry'
 
 
-class AptArtifact(_messages.Message):
-  r"""A detailed representation of an Apt artifact. Information in the record
-  is derived from the archive's control file. See
-  https://www.debian.org/doc/debian-policy/ch-controlfields.html
-
-  Enums:
-    PackageTypeValueValuesEnum: Output only. An artifact is a binary or source
-      package.
-
-  Fields:
-    architecture: Output only. Operating system architecture of the artifact.
-    component: Output only. Repository component of the artifact.
-    controlFile: Output only. Contents of the artifact's control metadata
-      file.
-    name: Output only. The Artifact Registry resource name of the artifact.
-    packageName: Output only. The Apt package name of the artifact.
-    packageType: Output only. An artifact is a binary or source package.
-  """
-
-  class PackageTypeValueValuesEnum(_messages.Enum):
-    r"""Output only. An artifact is a binary or source package.
-
-    Values:
-      PACKAGE_TYPE_UNSPECIFIED: Package type is not specified.
-      BINARY: Binary package.
-      SOURCE: Source package.
-    """
-    PACKAGE_TYPE_UNSPECIFIED = 0
-    BINARY = 1
-    SOURCE = 2
-
-  architecture = _messages.StringField(1)
-  component = _messages.StringField(2)
-  controlFile = _messages.BytesField(3)
-  name = _messages.StringField(4)
-  packageName = _messages.StringField(5)
-  packageType = _messages.EnumField('PackageTypeValueValuesEnum', 6)
-
-
 class ArtifactregistryProjectsLocationsGetRequest(_messages.Message):
   r"""A ArtifactregistryProjectsLocationsGetRequest object.
 
@@ -280,46 +241,6 @@ class ArtifactregistryProjectsLocationsRepositoriesYumArtifactsUploadRequest(_me
 
   googleDevtoolsArtifactregistryV1alpha1UploadYumArtifactRequest = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1UploadYumArtifactRequest', 1)
   parent = _messages.StringField(2, required=True)
-
-
-class DockerImage(_messages.Message):
-  r"""DockerImage represents a docker artifact. The following fields are
-  returned as untyped metadata in the Version resource, using camelcase keys
-  (i.e. metadata.imageSizeBytes): * imageSizeBytes * mediaType * buildTime
-
-  Fields:
-    buildTime: The time this image was built. This field is returned as the
-      'metadata.buildTime' field in the Version resource. The build time is
-      returned to the client as an RFC 3339 string, which can be easily used
-      with the JavaScript Date constructor.
-    imageSizeBytes: Calculated size of the image. This field is returned as
-      the 'metadata.imageSizeBytes' field in the Version resource.
-    mediaType: Media type of this image, e.g.
-      "application/vnd.docker.distribution.manifest.v2+json". This field is
-      returned as the 'metadata.mediaType' field in the Version resource.
-    name: Required. registry_location, project_id, repository_name and image
-      id forms a unique image
-      name:`projects//locations//repository//dockerImages/`. For example,
-      "projects/test-project/locations/us-west4/repositories/test-
-      repo/dockerImages/ nginx@sha256:e9954c1fc875017be1c3e36eca16be2d9e9bccc4
-      bf072163515467d6a823c7cf", where "us-west4" is the registry_location,
-      "test-project" is the project_id, "test-repo" is the repository_name and
-      "nginx@sha256:e9954c1fc875017be1c3e36eca16be2d9e9bccc4bf072163515467d6a8
-      23c7cf" is the image's digest.
-    tags: Tags attached to this image.
-    uploadTime: Time the image was uploaded.
-    uri: Required. URL to access the image. Example: us-
-      west4-docker.pkg.dev/test-project/test-repo/nginx@sha256:e9954c1fc875017
-      be1c3e36eca16be2d9e9bccc4bf072163515467d6a823c7cf
-  """
-
-  buildTime = _messages.StringField(1)
-  imageSizeBytes = _messages.IntegerField(2)
-  mediaType = _messages.StringField(3)
-  name = _messages.StringField(4)
-  tags = _messages.StringField(5, repeated=True)
-  uploadTime = _messages.StringField(6)
-  uri = _messages.StringField(7)
 
 
 class GoogleDevtoolsArtifactregistryV1alpha1AptArtifact(_messages.Message):
@@ -725,80 +646,6 @@ class GoogleDevtoolsArtifactregistryV1alpha1YumArtifact(_messages.Message):
   packageType = _messages.EnumField('PackageTypeValueValuesEnum', 4)
 
 
-class ImportAptArtifactsErrorInfo(_messages.Message):
-  r"""Error information explaining why a package was not imported.
-
-  Fields:
-    error: The detailed error status.
-    gcsSource: Google Cloud Storage location requested.
-  """
-
-  error = _messages.MessageField('Status', 1)
-  gcsSource = _messages.MessageField('ImportAptArtifactsGcsSource', 2)
-
-
-class ImportAptArtifactsGcsSource(_messages.Message):
-  r"""Google Cloud Storage location where the artifacts currently reside.
-
-  Fields:
-    uris: Cloud Storage paths URI (e.g., gs://my_bucket//my_object).
-    useWildcards: Supports URI wildcards for matching multiple objects from a
-      single URI.
-  """
-
-  uris = _messages.StringField(1, repeated=True)
-  useWildcards = _messages.BooleanField(2)
-
-
-class ImportAptArtifactsResponse(_messages.Message):
-  r"""The response message from importing APT artifacts.
-
-  Fields:
-    aptArtifacts: The Apt artifacts imported.
-    errors: Detailed error info for packages that were not imported.
-  """
-
-  aptArtifacts = _messages.MessageField('AptArtifact', 1, repeated=True)
-  errors = _messages.MessageField('ImportAptArtifactsErrorInfo', 2, repeated=True)
-
-
-class ImportYumArtifactsErrorInfo(_messages.Message):
-  r"""Error information explaining why a package was not imported.
-
-  Fields:
-    error: The detailed error status.
-    gcsSource: Google Cloud Storage location requested.
-  """
-
-  error = _messages.MessageField('Status', 1)
-  gcsSource = _messages.MessageField('ImportYumArtifactsGcsSource', 2)
-
-
-class ImportYumArtifactsGcsSource(_messages.Message):
-  r"""Google Cloud Storage location where the artifacts currently reside.
-
-  Fields:
-    uris: Cloud Storage paths URI (e.g., gs://my_bucket//my_object).
-    useWildcards: Supports URI wildcards for matching multiple objects from a
-      single URI.
-  """
-
-  uris = _messages.StringField(1, repeated=True)
-  useWildcards = _messages.BooleanField(2)
-
-
-class ImportYumArtifactsResponse(_messages.Message):
-  r"""The response message from importing YUM artifacts.
-
-  Fields:
-    errors: Detailed error info for packages that were not imported.
-    yumArtifacts: The yum artifacts imported.
-  """
-
-  errors = _messages.MessageField('ImportYumArtifactsErrorInfo', 1, repeated=True)
-  yumArtifacts = _messages.MessageField('YumArtifact', 2, repeated=True)
-
-
 class ListLocationsResponse(_messages.Message):
   r"""The response message for Locations.ListLocations.
 
@@ -1000,10 +847,6 @@ class Operation(_messages.Message):
   response = _messages.MessageField('ResponseValue', 5)
 
 
-class OperationMetadata(_messages.Message):
-  r"""Metadata type for longrunning-operations, currently empty."""
-
-
 class StandardQueryParameters(_messages.Message):
   r"""Query parameters accepted by all methods.
 
@@ -1116,80 +959,6 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
-
-
-class UploadAptArtifactMediaResponse(_messages.Message):
-  r"""The response to upload an artifact.
-
-  Fields:
-    operation: Operation to be returned to the user.
-  """
-
-  operation = _messages.MessageField('Operation', 1)
-
-
-class UploadAptArtifactResponse(_messages.Message):
-  r"""The response of the completed artifact upload operation. This response
-  is contained in the Operation and available to users.
-
-  Fields:
-    aptArtifacts: The Apt artifacts updated.
-  """
-
-  aptArtifacts = _messages.MessageField('AptArtifact', 1, repeated=True)
-
-
-class UploadYumArtifactMediaResponse(_messages.Message):
-  r"""The response to upload an artifact.
-
-  Fields:
-    operation: Operation to be returned to the user.
-  """
-
-  operation = _messages.MessageField('Operation', 1)
-
-
-class UploadYumArtifactResponse(_messages.Message):
-  r"""The response of the completed artifact upload operation. This response
-  is contained in the Operation and available to users.
-
-  Fields:
-    yumArtifacts: The Apt artifacts updated.
-  """
-
-  yumArtifacts = _messages.MessageField('YumArtifact', 1, repeated=True)
-
-
-class YumArtifact(_messages.Message):
-  r"""A detailed representation of a Yum artifact.
-
-  Enums:
-    PackageTypeValueValuesEnum: Output only. An artifact is a binary or source
-      package.
-
-  Fields:
-    architecture: Output only. Operating system architecture of the artifact.
-    name: Output only. The Artifact Registry resource name of the artifact.
-    packageName: Output only. The yum package name of the artifact.
-    packageType: Output only. An artifact is a binary or source package.
-  """
-
-  class PackageTypeValueValuesEnum(_messages.Enum):
-    r"""Output only. An artifact is a binary or source package.
-
-    Values:
-      PACKAGE_TYPE_UNSPECIFIED: Package type is not specified.
-      BINARY: Binary package (.rpm).
-      SOURCE: Source package (.srpm).
-    """
-    PACKAGE_TYPE_UNSPECIFIED = 0
-    BINARY = 1
-    SOURCE = 2
-
-  architecture = _messages.StringField(1)
-  name = _messages.StringField(2)
-  packageName = _messages.StringField(3)
-  packageType = _messages.EnumField('PackageTypeValueValuesEnum', 4)
 
 
 encoding.AddCustomJsonFieldMapping(

@@ -210,7 +210,7 @@ class _FilesAndBytesStatusTracker(_StatusTracker):
       # Operation complete.
       component_tracker.pop(component_number, None)
       if not component_tracker:
-        self._tracked_file_progress[file_url_string] = -1
+        del self._tracked_file_progress[file_url_string]
         self._completed_files += 1
     else:
       component_tracker[component_number] = processed_component_bytes
@@ -230,7 +230,7 @@ class _FilesAndBytesStatusTracker(_StatusTracker):
 
     if processed_file_bytes == status_message.length:
       # Operation complete.
-      self._tracked_file_progress[file_url_string] = -1
+      del self._tracked_file_progress[file_url_string]
       self._completed_files += 1
     else:
       self._tracked_file_progress[file_url_string] = processed_file_bytes
@@ -240,10 +240,7 @@ class _FilesAndBytesStatusTracker(_StatusTracker):
     if isinstance(status_message, thread_messages.WorkloadEstimatorMessage):
       self._add_to_workload_estimation(status_message)
     elif isinstance(status_message, thread_messages.DetailedProgressMessage):
-      if self._tracked_file_progress.get(status_message.source_url.url_string,
-                                         0) == -1:
-        # File has already been downloaded. No processing to do.
-        return
+      # If files start getting counted twice, see b/225182075.
       if status_message.total_components:
         self._add_component_progress(status_message)
       else:

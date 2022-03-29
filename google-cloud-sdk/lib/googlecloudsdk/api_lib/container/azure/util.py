@@ -32,6 +32,7 @@ class _AzureClientBase(object):
     self.client = client or util.GetClientInstance(track)
     self.messages = messages or util.GetMessagesModule(track)
     self._service = self._GetService()
+    self.version = util.GetApiVersionForTrack(track).capitalize()
 
   def List(self, parent_ref, page_size, limit):
     """List Azure resources."""
@@ -74,20 +75,15 @@ class _AzureClientBase(object):
         'GetListResultsField() method not implemented for this type')
 
   def _CreateAzureDiskTemplate(self, size_gib):
-    # Using this to hide the 'v1alpha' that shows up in the type.
-    version = util.GetApiVersionForTrack(self.track).capitalize()
-    msg = 'GoogleCloudGkemulticloud{}AzureDiskTemplate'.format(version)
+    msg = 'GoogleCloudGkemulticloud{}AzureDiskTemplate'.format(self.version)
     return getattr(self.messages, msg)(sizeGib=size_gib)
 
   def _CreateProxyConfig(self, **kwargs):
-    # Using this to hide the 'v1alpha' that shows up in the type.
-    version = util.GetApiVersionForTrack(self.track).capitalize()
-    msg = 'GoogleCloudGkemulticloud{}AzureProxyConfig'.format(version)
+    msg = 'GoogleCloudGkemulticloud{}AzureProxyConfig'.format(self.version)
     return getattr(self.messages, msg)(**kwargs)
 
   def _CreateConfigEncryption(self, **kwargs):
-    version = util.GetApiVersionForTrack(self.track).capitalize()
-    msg = 'GoogleCloudGkemulticloud{}AzureConfigEncryption'.format(version)
+    msg = 'GoogleCloudGkemulticloud{}AzureConfigEncryption'.format(self.version)
     return getattr(self.messages, msg)(**kwargs)
 
 
@@ -119,7 +115,8 @@ class ClustersClient(_AzureClientBase):
              endpoint_subnet_id=None,
              database_encryption_key_id=None,
              config_encryption_key_id=None,
-             config_encryption_public_key=None):
+             config_encryption_public_key=None,
+             logging=None):
     """Create a new Azure Cluster."""
     req = self._service.GetRequestType('Create')(
         azureClusterId=cluster_ref.azureClustersId,
@@ -180,6 +177,9 @@ class ClustersClient(_AzureClientBase):
 
     if fleet_project:
       c.fleet = self._CreateFleet(fleet_project)
+
+    if logging:
+      c.loggingConfig = logging
 
     return self._service.Create(req)
 
@@ -346,7 +346,8 @@ class NodePoolsClient(_AzureClientBase):
              labels=None,
              azure_availability_zone=None,
              config_encryption_key_id=None,
-             config_encryption_public_key=None):
+             config_encryption_public_key=None,
+             image_type=None):
     """Create a new Azure Node Pool."""
     req = self._service.GetRequestType('Create')(
         azureNodePoolId=nodepool_ref.azureNodePoolsId,
@@ -397,6 +398,9 @@ class NodePoolsClient(_AzureClientBase):
       nodeconfig.labels = type(nodeconfig).LabelsValue(additionalProperties=[
           label_type(key=k, value=v) for k, v in labels.items()
       ])
+
+    if image_type:
+      nodeconfig.imageType = image_type
 
     return self._service.Create(req)
 

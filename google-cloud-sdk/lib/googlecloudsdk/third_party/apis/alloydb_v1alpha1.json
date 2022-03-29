@@ -283,11 +283,16 @@
     },
     "Cluster": {
       "id": "Cluster",
-      "description": "Message describing Cluster object NEXT_ID: 16",
+      "description": "Message describing Cluster object NEXT_ID: 18",
       "type": "object",
       "properties": {
         "name": {
           "description": "Output only. The name of the cluster resource with the format: * projects\/{project}\/locations\/{region}\/clusters\/{cluster_id} where the cluster ID segment should satisfy the regex expression \"[a-z]([a-z0-9-]{0,61}[a-z0-9])?\", e.g. 1-63 characters of lowercase letters, numbers, and dashes, starting with a letter, and ending with a letter or number. For more details see https:\/\/google.aip.dev\/122. The prefix of the cluster resource name is the name of the parent resource: * projects\/{project}\/locations\/{region}",
+          "readOnly": true,
+          "type": "string"
+        },
+        "uid": {
+          "description": "Output only. The system-generated UID of the resource. The UID is assigned when the resource is created, and it is retained until it is deleted.",
           "readOnly": true,
           "type": "string"
         },
@@ -361,6 +366,11 @@
         "migrationSource": {
           "readOnly": true,
           "$ref": "MigrationSource"
+        },
+        "reconciling": {
+          "description": "Output only. Reconciling (https:\/\/google.aip.dev\/128#reconciliation), if true, indicates that the service is actively updating the resource. This can happen due to user-triggered updates or system actions like failover or maintenance.",
+          "readOnly": true,
+          "type": "boolean"
         }
       }
     },
@@ -435,11 +445,16 @@
     },
     "Instance": {
       "id": "Instance",
-      "description": "Message describing Instance object NEXT ID: 15",
+      "description": "Message describing Instance object NEXT ID: 17",
       "type": "object",
       "properties": {
         "name": {
           "description": "Output only. The name of the instance resource with the format: * projects\/{project}\/locations\/{region}\/clusters\/{cluster_id}\/instances\/{instance_id} where the cluster and instance ID segments should satisfy the regex expression \"[a-z]([a-z0-9-]{0,61}[a-z0-9])?\", e.g. 1-63 characters of lowercase letters, numbers, and dashes, starting with a letter, and ending with a letter or number. For more details see https:\/\/google.aip.dev\/122. The prefix of the instance resource name is the name of the parent resource: * projects\/{project}\/locations\/{region}\/clusters\/{cluster_id}",
+          "readOnly": true,
+          "type": "string"
+        },
+        "uid": {
+          "description": "Output only. The system-generated UID of the resource. The UID is assigned when the resource is created, and it is retained until it is deleted.",
           "readOnly": true,
           "type": "string"
         },
@@ -541,6 +556,11 @@
           "description": "Output only. The IP address for the Instance. This is the connection endpoint for an end-user application.",
           "readOnly": true,
           "type": "string"
+        },
+        "reconciling": {
+          "description": "Output only. Reconciling (https:\/\/google.aip.dev\/128#reconciliation), if true, indicates that the service is actively updating the resource. This can happen due to user-triggered updates or system actions like failover or maintenance.",
+          "readOnly": true,
+          "type": "boolean"
         }
       }
     },
@@ -639,11 +659,16 @@
     },
     "Backup": {
       "id": "Backup",
-      "description": "Message describing Backup object",
+      "description": "Message describing Backup object NEXT ID: 13",
       "type": "object",
       "properties": {
         "name": {
           "description": "Output only. The name of the backup resource with the format: * projects\/{project}\/locations\/{region}\/backups\/{backup_id} where the cluster and backup ID segments should satisfy the regex expression \"[a-z]([a-z0-9-]{0,61}[a-z0-9])?\", e.g. 1-63 characters of lowercase letters, numbers, and dashes, starting with a letter, and ending with a letter or number. For more details see https:\/\/google.aip.dev\/122. The prefix of the backup resource name is the name of the parent resource: * projects\/{project}\/locations\/{region}",
+          "readOnly": true,
+          "type": "string"
+        },
+        "uid": {
+          "description": "Output only. The system-generated UID of the resource. The UID is assigned when the resource is created, and it is retained until it is deleted.",
           "readOnly": true,
           "type": "string"
         },
@@ -706,6 +731,11 @@
         "clusterName": {
           "description": "Required. The full resource name of the backup source cluster (e.g., projects\/\/locations\/\/clusters\/).",
           "type": "string"
+        },
+        "reconciling": {
+          "description": "Output only. Reconciling (https:\/\/google.aip.dev\/128#reconciliation), if true, indicates that the service is actively updating the resource. This can happen due to user-triggered updates or system actions like failover or maintenance.",
+          "readOnly": true,
+          "type": "boolean"
         }
       }
     },
@@ -1262,54 +1292,6 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Deletes a single Cluster."
-                },
-                "import": {
-                  "id": "alloydb.projects.locations.clusters.import",
-                  "path": "v1alpha1/{+parent}/clusters:import",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters:import",
-                  "httpMethod": "POST",
-                  "parameters": {
-                    "parent": {
-                      "description": "Required. The name of the parent resource. For the required format, see the comment on the Cluster.name field.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "clusterId": {
-                      "description": "Required. Id of the requesting object If auto-generating Id server-side, remove this field and cluster_id from the method_signature of Create RPC",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "backupSource.backupName": {
-                      "description": "Required. The name of the backup resource with the format: * projects\/{project}\/locations\/{region}\/backups\/{backup_id}",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "requestId": {
-                      "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "validateOnly": {
-                      "description": "Optional. If set, the backend validates the request, but doesn't actually execute it.",
-                      "location": "query",
-                      "type": "boolean"
-                    }
-                  },
-                  "parameterOrder": [
-                    "parent"
-                  ],
-                  "request": {
-                    "$ref": "Cluster"
-                  },
-                  "response": {
-                    "$ref": "Operation"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": ""
                 },
                 "restore": {
                   "id": "alloydb.projects.locations.clusters.restore",

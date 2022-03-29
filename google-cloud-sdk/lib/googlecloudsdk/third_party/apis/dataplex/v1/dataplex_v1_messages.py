@@ -1448,8 +1448,7 @@ class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
   or the response type of an API method. For instance: service Foo { rpc
-  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
-  representation for Empty is empty JSON object {}.
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
 
 
@@ -2240,6 +2239,8 @@ class GoogleCloudDataplexV1DiscoveryEventPartitionDetails(_messages.Message):
       qualified resource name.
     partition: The name to the partition resource. The name is the fully-
       qualified resource name.
+    sampledDataLocations: The locations of the data items (e.g., a Cloud
+      Storage objects) sampled for metadata inference.
     type: The type of the containing entity resource.
   """
 
@@ -2257,7 +2258,8 @@ class GoogleCloudDataplexV1DiscoveryEventPartitionDetails(_messages.Message):
 
   entity = _messages.StringField(1)
   partition = _messages.StringField(2)
-  type = _messages.EnumField('TypeValueValuesEnum', 3)
+  sampledDataLocations = _messages.StringField(3, repeated=True)
+  type = _messages.EnumField('TypeValueValuesEnum', 4)
 
 
 class GoogleCloudDataplexV1Entity(_messages.Message):

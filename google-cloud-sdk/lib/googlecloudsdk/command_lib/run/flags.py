@@ -783,7 +783,8 @@ def AddGeneralAnnotationFlags(parser):
       hidden=True,
       help=(
           'List of annotation KEY=VALUE pairs to update. If an annotation '
-          'exists, its value is modified. Otherwise, a new label is created.'))
+          'exists, its value is modified. Otherwise, a new annotation is '
+          'created.'))
 
 
 class _ScaleValue(object):

@@ -20,6 +20,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from googlecloudsdk.command_lib.run.integrations.formatters import base_formatter
+from googlecloudsdk.command_lib.run.integrations.formatters import states
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.resource import custom_printer_base as cp
 
@@ -61,17 +62,17 @@ class CustomDomainFormatter(base_formatter.BaseFormatter):
       The printed output.
     """
     resource_status = record.get('status', {})
-    gcp_resources = resource_status.get('gcpResource', {})
+    resource_components = resource_status.get('resourceComponentStatuses', {})
     details = resource_status.get('routerDetails', {})
     return cp.Labeled([
         cp.Lines([
             ('Google Cloud Load Balancer ({})'.format(
-                self._GetGCLBName(gcp_resources))),
+                self._GetGCLBName(resource_components))),
             cp.Labeled([
                 ('Console link', resource_status.get('consoleLink', 'n/a')),
                 ('Frontend', details.get('ipAddress', 'n/a')),
                 ('SSL Certificate',
-                 self.PrintStatus(self._GetSSLStatus(gcp_resources))),
+                 self.PrintStatus(self._GetSSLStatus(resource_components))),
             ]),
         ])
     ])
@@ -92,14 +93,16 @@ class CustomDomainFormatter(base_formatter.BaseFormatter):
       return None
 
     domain = resource_config.get('router', {}).get('domain')
-    gcp_resources = resource_status.get('gcpResource', {})
-    ssl_status = self._GetSSLStatus(gcp_resources)
+    resource_components = resource_status.get('resourceComponentStatuses', {})
+    ssl_status = self._GetSSLStatus(resource_components)
     ip = resource_status.get('routerDetails', {}).get('ipAddress')
-    if domain and ip and ssl_status != 'READY':
+    if domain and ip and ssl_status != states.ACTIVE:
       con = console_attr.GetConsoleAttr()
       return ('{} To complete the process, please ensure the following '
               'DNS records are configured on the domain "{}":\n'
-              '    A: {}'.format(con.Colorize('!', 'yellow'), domain, ip))
+              '    A: {}\n'
+              'It can take up to an hour for the certificate to provisioned.'
+              .format(con.Colorize('!', 'yellow'), domain, ip))
     return None
 
   def _GetServiceName(self, ref):
@@ -108,18 +111,19 @@ class CustomDomainFormatter(base_formatter.BaseFormatter):
       ref = parts[1]
     return ref
 
-  def _GetGCLBName(self, gcp_resources):
-    url_map = self._FindResourceByType(gcp_resources, 'google_compute_url_map')
+  def _GetGCLBName(self, resource_components):
+    url_map = self._FindResourceByType(resource_components,
+                                       'google_compute_url_map')
     if url_map:
-      return url_map.get('gcpResourceName', 'n/a')
+      return url_map.get('name', 'n/a')
     return 'n/a'
 
-  def _GetSSLStatus(self, gcp_resources):
+  def _GetSSLStatus(self, resource_components):
     ssl_cert = self._FindResourceByType(
-        gcp_resources, 'google_compute_managed_ssl_certificate')
+        resource_components, 'google_compute_managed_ssl_certificate')
     if ssl_cert:
-      return self.GetGCPResourceState(ssl_cert)
-    return 'UNKNOWN'
+      return ssl_cert.get('state', states.UNKNOWN)
+    return states.UNKNOWN
 
   def _FindResourceByType(self, resources, rtype):
     if not resources:

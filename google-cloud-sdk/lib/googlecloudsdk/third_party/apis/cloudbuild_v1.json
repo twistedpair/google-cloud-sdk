@@ -181,7 +181,7 @@
     },
     "Empty": {
       "id": "Empty",
-      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON representation for `Empty` is empty JSON object `{}`.",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }",
       "type": "object",
       "properties": {
       }
@@ -1875,7 +1875,7 @@
           "type": "string"
         },
         "uri": {
-          "description": "The URI of the repo (optional). If unspecified, the repo from which the trigger invocation originated is assumed to be the repo from which to read the specified path.",
+          "description": "The URI of the repo.",
           "type": "string"
         },
         "repoType": {
@@ -1914,7 +1914,7 @@
       "type": "object",
       "properties": {
         "uri": {
-          "description": "The URI of the repo (required).",
+          "description": "The URI of the repo.",
           "type": "string"
         },
         "ref": {
@@ -2177,32 +2177,6 @@
         },
         "repoId": {
           "description": "Identifier for a repository hosted on a Bitbucket Server.",
-          "$ref": "BitbucketServerRepositoryId"
-        }
-      }
-    },
-    "AddBitbucketServerConnectedRepositoryRequest": {
-      "id": "AddBitbucketServerConnectedRepositoryRequest",
-      "description": "RPC request object accepted by the AddBitbucketServerConnectedRepository RPC method.",
-      "type": "object",
-      "properties": {
-        "connectedRepository": {
-          "description": "The connected repository to add.",
-          "$ref": "BitbucketServerRepositoryId"
-        }
-      }
-    },
-    "AddBitbucketServerConnectedRepositoryResponse": {
-      "id": "AddBitbucketServerConnectedRepositoryResponse",
-      "description": "RPC request object returned by the AddBitbucketServerConnectedRepository RPC method.",
-      "type": "object",
-      "properties": {
-        "config": {
-          "description": "The name of the `BitbucketServerConfig` that added connected repository. Format: `projects\/{project}\/locations\/{location}\/bitbucketServerConfigs\/{config}`",
-          "type": "string"
-        },
-        "connectedRepository": {
-          "description": "The connected repository.",
           "$ref": "BitbucketServerRepositoryId"
         }
       }
@@ -4174,34 +4148,6 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Delete a `BitbucketServerConfig`. This API is experimental."
-                },
-                "addBitbucketServerConnectedRepository": {
-                  "id": "cloudbuild.projects.locations.bitbucketServerConfigs.addBitbucketServerConnectedRepository",
-                  "path": "v1/{+config}:addBitbucketServerConnectedRepository",
-                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/bitbucketServerConfigs/{bitbucketServerConfigsId}:addBitbucketServerConnectedRepository",
-                  "httpMethod": "POST",
-                  "parameters": {
-                    "config": {
-                      "description": "Required. The name of the `BitbucketServerConfig` to add a connected repository. Format: `projects\/{project}\/locations\/{location}\/bitbucketServerConfigs\/{config}`",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/bitbucketServerConfigs\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "config"
-                  ],
-                  "request": {
-                    "$ref": "AddBitbucketServerConnectedRepositoryRequest"
-                  },
-                  "response": {
-                    "$ref": "AddBitbucketServerConnectedRepositoryResponse"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Add a Bitbucket Server repository to a given BitbucketServerConfig's connected repositories. This API is experimental."
                 },
                 "removeBitbucketServerConnectedRepository": {
                   "id": "cloudbuild.projects.locations.bitbucketServerConfigs.removeBitbucketServerConnectedRepository",

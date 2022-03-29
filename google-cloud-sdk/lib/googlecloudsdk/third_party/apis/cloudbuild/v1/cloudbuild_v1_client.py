@@ -1031,33 +1031,6 @@ class CloudbuildV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
-    def AddBitbucketServerConnectedRepository(self, request, global_params=None):
-      r"""Add a Bitbucket Server repository to a given BitbucketServerConfig's connected repositories. This API is experimental.
-
-      Args:
-        request: (CloudbuildProjectsLocationsBitbucketServerConfigsAddBitbucketServerConnectedRepositoryRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (AddBitbucketServerConnectedRepositoryResponse) The response message.
-      """
-      config = self.GetMethodConfig('AddBitbucketServerConnectedRepository')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    AddBitbucketServerConnectedRepository.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/bitbucketServerConfigs/{bitbucketServerConfigsId}:addBitbucketServerConnectedRepository',
-        http_method='POST',
-        method_id='cloudbuild.projects.locations.bitbucketServerConfigs.addBitbucketServerConnectedRepository',
-        ordered_params=['config'],
-        path_params=['config'],
-        query_params=[],
-        relative_path='v1/{+config}:addBitbucketServerConnectedRepository',
-        request_field='addBitbucketServerConnectedRepositoryRequest',
-        request_type_name='CloudbuildProjectsLocationsBitbucketServerConfigsAddBitbucketServerConnectedRepositoryRequest',
-        response_type_name='AddBitbucketServerConnectedRepositoryResponse',
-        supports_download=False,
-    )
-
     def Create(self, request, global_params=None):
       r"""Creates a new `BitbucketServerConfig`. This API is experimental.
 

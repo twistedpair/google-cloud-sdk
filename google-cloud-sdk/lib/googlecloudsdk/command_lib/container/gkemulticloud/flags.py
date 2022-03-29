@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.container.gkemulticloud import util as api_util
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.command_lib.container.gkemulticloud import constants
 from googlecloudsdk.command_lib.projects import util as project_util
 from googlecloudsdk.command_lib.util.apis import arg_utils
 
@@ -28,6 +29,11 @@ def _ToCamelCase(name):
   """Converts hyphen-case name to CamelCase."""
   parts = name.split('-')
   return ''.join(x.title() for x in parts)
+
+
+def _InvalidValueError(value, flag, detail):
+  return arg_parsers.ArgumentTypeError(
+      'Invalid value [{}] for argument {}. {}'.format(value, flag, detail))
 
 
 _TAINT_EFFECT_ENUM_MAPPER = arg_utils.ChoiceEnumMapper(
@@ -43,6 +49,8 @@ _TAINT_EFFECT_HELP = 'Effect must be one of: {}.'.format(', '.join(
 
 _REPLICAPLACEMENT_FORMAT_HELP = (
     'Replica placement is of format subnetid:zone, for example subnetid12345:1')
+
+_LOGGING_CHOICES = [constants.SYSTEM, constants.WORKLOAD]
 
 
 def AddRegion(parser):
@@ -183,8 +191,7 @@ def GetAzureAvailabilityZone(args):
 
 def AddVMSize(parser):
   parser.add_argument(
-      '--vm-size',
-      help='Azure Virtual Machine Size (e.g. Standard_DS1_v).')
+      '--vm-size', help='Azure Virtual Machine Size (e.g. Standard_DS1_v).')
 
 
 def GetVMSize(args):
@@ -251,7 +258,8 @@ def AddTags(parser, noun):
   Applies the given tags (comma separated) on the {0}. Example:
 
     $ {{command}} EXAMPLE_{1} --tags=tag1=one,tag2=two
-  """.format(noun, noun.replace(' ', '_').upper())
+  """.format(noun,
+             noun.replace(' ', '_').upper())
 
   parser.add_argument(
       '--tags',
@@ -338,9 +346,7 @@ def _ValidateNodeTaintFormat(taint):
   """
   strs = taint.split(':')
   if len(strs) != 2:
-    raise arg_parsers.ArgumentTypeError(
-        'Invalid value [{}] for argument --node-taints. {}'.format(
-            taint, _TAINT_FORMAT_HELP))
+    raise _InvalidValueError(taint, '--node-taints', _TAINT_FORMAT_HELP)
   value, effect = strs[0], strs[1]
   return value, effect
 
@@ -363,9 +369,7 @@ def _ValidateNodeTaint(taint):
   unused_value, effect = _ValidateNodeTaintFormat(taint)
   effects = [_ToCamelCase(e) for e in _TAINT_EFFECT_ENUM_MAPPER.choices]
   if effect not in effects:
-    raise arg_parsers.ArgumentTypeError(
-        'Invalid value [{}] for argument --node-taints. {}'.format(
-            effect, _TAINT_EFFECT_HELP))
+    raise _InvalidValueError(effect, '--node-taints', _TAINT_EFFECT_HELP)
   return taint
 
 
@@ -421,13 +425,12 @@ def _ReplicaPlacementStrToObject(replicaplacement):
   """
   strs = replicaplacement.split(':')
   if len(strs) != 2:
-    raise arg_parsers.ArgumentTypeError(
-        'Invalid value [{}] for argument --replica-placements. {}'.format(
-            replicaplacement, _REPLICAPLACEMENT_FORMAT_HELP))
+    raise _InvalidValueError(replicaplacement, '--replica-placements',
+                             _REPLICAPLACEMENT_FORMAT_HELP)
   subnetid, zone = strs[0], strs[1]
   return api_util.GetMessagesModule(
-      ).GoogleCloudGkemulticloudV1ReplicaPlacement(
-          azureAvailabilityZone=zone, subnetId=subnetid)
+  ).GoogleCloudGkemulticloudV1ReplicaPlacement(
+      azureAvailabilityZone=zone, subnetId=subnetid)
 
 
 def AddReplicaPlacements(parser):
@@ -521,3 +524,71 @@ def AddAdminUsers(parser, create=True):
       type=arg_parsers.ArgList(min_length=1),
       metavar='USER',
       help=help_txt)
+
+
+def AddLogging(parser):
+  """Adds the --logging flag."""
+  help_text = """
+Set the components that have logging enabled.
+
+Examples:
+
+  $ {command} --logging=SYSTEM
+  $ {command} --logging=SYSTEM,WORKLOAD
+"""
+  parser.add_argument(
+      '--logging',
+      type=arg_parsers.ArgList(min_length=1, choices=_LOGGING_CHOICES),
+      metavar='COMPONENT',
+      help=help_text)
+
+
+def GetLogging(args):
+  """Parses and validates the value of the --logging flag.
+
+  Args:
+    args: Arguments parsed from the command.
+
+  Returns:
+    The logging config object as GoogleCloudGkemulticloudV1LoggingConfig.
+
+  Raises:
+    ArgumentError: If the value of the --logging flag is invalid.
+
+  """
+  logging = getattr(args, 'logging', None)
+  if not logging:
+    return None
+
+  messages = api_util.GetMessagesModule()
+  config = messages.GoogleCloudGkemulticloudV1LoggingComponentConfig()
+  enum = config.EnableComponentsValueListEntryValuesEnum
+  if constants.SYSTEM not in logging:
+    raise _InvalidValueError(
+        ','.join(logging), '--logging',
+        'Must include SYSTEM logging if any logging is enabled.')
+  if constants.SYSTEM in logging:
+    config.enableComponents.append(enum.SYSTEM_COMPONENTS)
+  if constants.WORKLOAD in logging:
+    config.enableComponents.append(enum.WORKLOADS)
+  return messages.GoogleCloudGkemulticloudV1LoggingConfig(
+      componentConfig=config)
+
+
+def AddImageType(parser):
+  """Adds the --image-type flag."""
+  help_text = """
+Set the OS image type to use on node pool instances.
+
+Examples:
+
+  $ {command} --image-type=windows
+  $ {command} --image-type=ubuntu
+"""
+  parser.add_argument(
+      '--image-type',
+      help=help_text)
+
+
+def GetImageType(args):
+  return getattr(args, 'image_type', None)

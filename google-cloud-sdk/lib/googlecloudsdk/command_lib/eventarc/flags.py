@@ -213,8 +213,7 @@ def AddProviderNameArg(parser):
   parser.add_argument(
       '--name',
       required=False,
-      hidden=True,
-      help='A provider name. List results will be filtered on this provider.'
+      help='A provider name (e.g. `storage.googleapis.com`) List results will be filtered on this provider. '
       'Only exact match of the provider name is supported.')
 
 

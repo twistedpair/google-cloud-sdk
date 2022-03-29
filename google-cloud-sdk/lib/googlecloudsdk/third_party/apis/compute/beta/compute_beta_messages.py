@@ -1400,11 +1400,17 @@ class AdvancedMachineFeatures(_messages.Message):
       simultaneous multithreading (SMT) set this to 1. If unset, the maximum
       number of threads supported per core by the underlying processor is
       assumed.
+    visibleCoreCount: The number of physical cores to expose to an instance.
+      Multiply by the number of threads per core to compute the total number
+      of virtual CPUs to expose to the instance. If unset, the number of cores
+      is inferred from the instance's nominal CPU count and the underlying
+      platform's SMT width.
   """
 
   enableNestedVirtualization = _messages.BooleanField(1)
   enableUefiNetworking = _messages.BooleanField(2)
   threadsPerCore = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  visibleCoreCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
 class AliasIpRange(_messages.Message):
@@ -3707,6 +3713,12 @@ class BackendService(_messages.Message):
     loadBalancingScheme: Specifies the load balancer type. A backend service
       created for one type of load balancer cannot be used with another. For
       more information, refer to Choosing a load balancer.
+    localityLbPolicies: A list of locality load balancing policies to be used
+      in order of preference. Either the policy or the customPolicy field
+      should be set. Overrides any value set in the localityLbPolicy field.
+      localityLbPolicies is only supported when the BackendService is
+      referenced by a URL Map that is referenced by a target gRPC proxy that
+      has the validateForProxyless field set to true.
     localityLbPolicy: The load balancing algorithm used within the scope of
       the locality. The possible values are: - ROUND_ROBIN: This is a simple
       policy in which each healthy backend is selected in round robin order.
@@ -4008,23 +4020,24 @@ class BackendService(_messages.Message):
   id = _messages.IntegerField(19, variant=_messages.Variant.UINT64)
   kind = _messages.StringField(20, default='compute#backendService')
   loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 21)
-  localityLbPolicy = _messages.EnumField('LocalityLbPolicyValueValuesEnum', 22)
-  logConfig = _messages.MessageField('BackendServiceLogConfig', 23)
-  maxStreamDuration = _messages.MessageField('Duration', 24)
-  name = _messages.StringField(25)
-  network = _messages.StringField(26)
-  outlierDetection = _messages.MessageField('OutlierDetection', 27)
-  port = _messages.IntegerField(28, variant=_messages.Variant.INT32)
-  portName = _messages.StringField(29)
-  protocol = _messages.EnumField('ProtocolValueValuesEnum', 30)
-  region = _messages.StringField(31)
-  securityPolicy = _messages.StringField(32)
-  securitySettings = _messages.MessageField('SecuritySettings', 33)
-  selfLink = _messages.StringField(34)
-  serviceBindings = _messages.StringField(35, repeated=True)
-  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 36)
-  subsetting = _messages.MessageField('Subsetting', 37)
-  timeoutSec = _messages.IntegerField(38, variant=_messages.Variant.INT32)
+  localityLbPolicies = _messages.MessageField('BackendServiceLocalityLoadBalancingPolicyConfig', 22, repeated=True)
+  localityLbPolicy = _messages.EnumField('LocalityLbPolicyValueValuesEnum', 23)
+  logConfig = _messages.MessageField('BackendServiceLogConfig', 24)
+  maxStreamDuration = _messages.MessageField('Duration', 25)
+  name = _messages.StringField(26)
+  network = _messages.StringField(27)
+  outlierDetection = _messages.MessageField('OutlierDetection', 28)
+  port = _messages.IntegerField(29, variant=_messages.Variant.INT32)
+  portName = _messages.StringField(30)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 31)
+  region = _messages.StringField(32)
+  securityPolicy = _messages.StringField(33)
+  securitySettings = _messages.MessageField('SecuritySettings', 34)
+  selfLink = _messages.StringField(35)
+  serviceBindings = _messages.StringField(36, repeated=True)
+  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 37)
+  subsetting = _messages.MessageField('Subsetting', 38)
+  timeoutSec = _messages.IntegerField(39, variant=_messages.Variant.INT32)
 
 
 class BackendServiceAggregatedList(_messages.Message):
@@ -4789,6 +4802,110 @@ class BackendServiceList(_messages.Message):
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
+
+
+class BackendServiceLocalityLoadBalancingPolicyConfig(_messages.Message):
+  r"""Container for either a built-in LB policy supported by gRPC or Envoy or
+  a custom one implemented by the end user.
+
+  Fields:
+    customPolicy: A
+      BackendServiceLocalityLoadBalancingPolicyConfigCustomPolicy attribute.
+    policy: A BackendServiceLocalityLoadBalancingPolicyConfigPolicy attribute.
+  """
+
+  customPolicy = _messages.MessageField('BackendServiceLocalityLoadBalancingPolicyConfigCustomPolicy', 1)
+  policy = _messages.MessageField('BackendServiceLocalityLoadBalancingPolicyConfigPolicy', 2)
+
+
+class BackendServiceLocalityLoadBalancingPolicyConfigCustomPolicy(_messages.Message):
+  r"""The configuration for a custom policy implemented by the user and
+  deployed with the client.
+
+  Fields:
+    data: An optional, arbitrary JSON object with configuration data,
+      understood by a locally installed custom policy implementation.
+    name: Identifies the custom policy. The value should match the type the
+      custom implementation is registered with on the gRPC clients. It should
+      follow protocol buffer message naming conventions and include the full
+      path (e.g. myorg.CustomLbPolicy). The maximum length is 256 characters.
+      Note that specifying the same custom policy more than once for a backend
+      is not a valid configuration and will be rejected.
+  """
+
+  data = _messages.StringField(1)
+  name = _messages.StringField(2)
+
+
+class BackendServiceLocalityLoadBalancingPolicyConfigPolicy(_messages.Message):
+  r"""The configuration for a built-in load balancing policy.
+
+  Enums:
+    NameValueValuesEnum: The name of a locality load balancer policy to be
+      used. The value should be one of the predefined ones as supported by
+      localityLbPolicy, although at the moment only ROUND_ROBIN is supported.
+      This field should only be populated when the customPolicy field is not
+      used. Note that specifying the same policy more than once for a backend
+      is not a valid configuration and will be rejected.
+
+  Fields:
+    name: The name of a locality load balancer policy to be used. The value
+      should be one of the predefined ones as supported by localityLbPolicy,
+      although at the moment only ROUND_ROBIN is supported. This field should
+      only be populated when the customPolicy field is not used. Note that
+      specifying the same policy more than once for a backend is not a valid
+      configuration and will be rejected.
+  """
+
+  class NameValueValuesEnum(_messages.Enum):
+    r"""The name of a locality load balancer policy to be used. The value
+    should be one of the predefined ones as supported by localityLbPolicy,
+    although at the moment only ROUND_ROBIN is supported. This field should
+    only be populated when the customPolicy field is not used. Note that
+    specifying the same policy more than once for a backend is not a valid
+    configuration and will be rejected.
+
+    Values:
+      INVALID_LB_POLICY: <no description>
+      LEAST_REQUEST: An O(1) algorithm which selects two random healthy hosts
+        and picks the host which has fewer active requests.
+      MAGLEV: This algorithm implements consistent hashing to backends. Maglev
+        can be used as a drop in replacement for the ring hash load balancer.
+        Maglev is not as stable as ring hash but has faster table lookup build
+        times and host selection times. For more information about Maglev, see
+        https://ai.google/research/pubs/pub44824
+      ORIGINAL_DESTINATION: Backend host is selected based on the client
+        connection metadata, i.e., connections are opened to the same address
+        as the destination address of the incoming connection before the
+        connection was redirected to the load balancer.
+      RANDOM: The load balancer selects a random healthy host.
+      RING_HASH: The ring/modulo hash load balancer implements consistent
+        hashing to backends. The algorithm has the property that the
+        addition/removal of a host from a set of N hosts only affects 1/N of
+        the requests.
+      ROUND_ROBIN: This is a simple policy in which each healthy backend is
+        selected in round robin order. This is the default.
+      WEIGHTED_MAGLEV: Per-instance weighted Load Balancing via health check
+        reported weights. If set, the Backend Service must configure a non
+        legacy HTTP-based Health Check, and health check replies are expected
+        to contain non-standard HTTP response header field X-Load-Balancing-
+        Endpoint-Weight to specify the per-instance weights. If set, Load
+        Balancing is weighted based on the per-instance weights reported in
+        the last processed health check replies, as long as every instance
+        either reported a valid weight or had UNAVAILABLE_WEIGHT. Otherwise,
+        Load Balancing remains equal-weight. This option is only supported in
+        Network Load Balancing.
+    """
+    INVALID_LB_POLICY = 0
+    LEAST_REQUEST = 1
+    MAGLEV = 2
+    ORIGINAL_DESTINATION = 3
+    RANDOM = 4
+    RING_HASH = 5
+    ROUND_ROBIN = 6
+    WEIGHTED_MAGLEV = 7
+
+  name = _messages.EnumField('NameValueValuesEnum', 1)
 
 
 class BackendServiceLogConfig(_messages.Message):
@@ -30305,6 +30422,8 @@ class FirewallPolicyRule(_messages.Message):
       priority must be a positive value between 0 and 2147483647. Rules are
       evaluated from highest to lowest priority where 0 is the highest
       priority and 2147483647 is the lowest prority.
+    ruleName: An optional name for the rule. This field is not a unique
+      identifier and can be updated.
     ruleTupleCount: [Output Only] Calculation of the complexity of a single
       firewall policy rule.
     targetResources: A list of network resource URLs to which this rule
@@ -30342,10 +30461,11 @@ class FirewallPolicyRule(_messages.Message):
   kind = _messages.StringField(6, default='compute#firewallPolicyRule')
   match = _messages.MessageField('FirewallPolicyRuleMatcher', 7)
   priority = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  ruleTupleCount = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  targetResources = _messages.StringField(10, repeated=True)
-  targetSecureTags = _messages.MessageField('FirewallPolicyRuleSecureTag', 11, repeated=True)
-  targetServiceAccounts = _messages.StringField(12, repeated=True)
+  ruleName = _messages.StringField(9)
+  ruleTupleCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  targetResources = _messages.StringField(11, repeated=True)
+  targetSecureTags = _messages.MessageField('FirewallPolicyRuleSecureTag', 12, repeated=True)
+  targetServiceAccounts = _messages.StringField(13, repeated=True)
 
 
 class FirewallPolicyRuleMatcher(_messages.Message):
@@ -30355,19 +30475,35 @@ class FirewallPolicyRuleMatcher(_messages.Message):
   Fields:
     destIpRanges: CIDR IP address range. Maximum number of destination CIDR IP
       ranges allowed is 5000.
+    destRegionCodes: Region codes whose IP addresses will be used to match for
+      destination of traffic. Should be specified as 2 letter country code
+      defined as per ISO 3166 alpha-2 country codes. ex."US" Maximum number of
+      dest region codes allowed is 5000.
+    destThreatIntelligences: Names of Network Threat Intelligence lists. The
+      IPs in these lists will be matched against traffic destination.
     layer4Configs: Pairs of IP protocols and ports that the rule should match.
     srcIpRanges: CIDR IP address range. Maximum number of source CIDR IP
       ranges allowed is 5000.
+    srcRegionCodes: Region codes whose IP addresses will be used to match for
+      source of traffic. Should be specified as 2 letter country code defined
+      as per ISO 3166 alpha-2 country codes. ex."US" Maximum number of source
+      region codes allowed is 5000.
     srcSecureTags: List of secure tag values, which should be matched at the
       source of the traffic. For INGRESS rule, if all the srcSecureTag are
       INEFFECTIVE, and there is no srcIpRange, this rule will be ignored.
       Maximum number of source tag values allowed is 256.
+    srcThreatIntelligences: Names of Network Threat Intelligence lists. The
+      IPs in these lists will be matched against traffic source.
   """
 
   destIpRanges = _messages.StringField(1, repeated=True)
-  layer4Configs = _messages.MessageField('FirewallPolicyRuleMatcherLayer4Config', 2, repeated=True)
-  srcIpRanges = _messages.StringField(3, repeated=True)
-  srcSecureTags = _messages.MessageField('FirewallPolicyRuleSecureTag', 4, repeated=True)
+  destRegionCodes = _messages.StringField(2, repeated=True)
+  destThreatIntelligences = _messages.StringField(3, repeated=True)
+  layer4Configs = _messages.MessageField('FirewallPolicyRuleMatcherLayer4Config', 4, repeated=True)
+  srcIpRanges = _messages.StringField(5, repeated=True)
+  srcRegionCodes = _messages.StringField(6, repeated=True)
+  srcSecureTags = _messages.MessageField('FirewallPolicyRuleSecureTag', 7, repeated=True)
+  srcThreatIntelligences = _messages.StringField(8, repeated=True)
 
 
 class FirewallPolicyRuleMatcherLayer4Config(_messages.Message):
@@ -31415,14 +31551,10 @@ class GlobalSetLabelsRequest(_messages.Message):
   r"""A GlobalSetLabelsRequest object.
 
   Messages:
-    LabelsValue: A list of labels to apply for this resource. Each label key &
-      value must comply with RFC1035. Specifically, the name must be 1-63
-      characters long and match the regular expression
-      `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a
-      lowercase letter, and all following characters must be a dash, lowercase
-      letter, or digit, except the last character, which cannot be a dash. For
-      example, "webserver-frontend": "images". A label value can also be empty
-      (e.g. "my-label": "").
+    LabelsValue: A list of labels to apply for this resource. Each label must
+      comply with the requirements for labels. For example, "webserver-
+      frontend": "images". A label value can also be empty (e.g. "my-label":
+      "").
 
   Fields:
     labelFingerprint: The fingerprint of the previous set of labels for this
@@ -31432,24 +31564,16 @@ class GlobalSetLabelsRequest(_messages.Message):
       when updating or changing labels, otherwise the request will fail with
       error 412 conditionNotMet. Make a get() request to the resource to get
       the latest fingerprint.
-    labels: A list of labels to apply for this resource. Each label key &
-      value must comply with RFC1035. Specifically, the name must be 1-63
-      characters long and match the regular expression
-      `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a
-      lowercase letter, and all following characters must be a dash, lowercase
-      letter, or digit, except the last character, which cannot be a dash. For
-      example, "webserver-frontend": "images". A label value can also be empty
-      (e.g. "my-label": "").
+    labels: A list of labels to apply for this resource. Each label must
+      comply with the requirements for labels. For example, "webserver-
+      frontend": "images". A label value can also be empty (e.g. "my-label":
+      "").
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""A list of labels to apply for this resource. Each label key & value
-    must comply with RFC1035. Specifically, the name must be 1-63 characters
-    long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which
-    means the first character must be a lowercase letter, and all following
-    characters must be a dash, lowercase letter, or digit, except the last
-    character, which cannot be a dash. For example, "webserver-frontend":
+    r"""A list of labels to apply for this resource. Each label must comply
+    with the requirements for labels. For example, "webserver-frontend":
     "images". A label value can also be empty (e.g. "my-label": "").
 
     Messages:
@@ -31548,26 +31672,24 @@ class GuestOsFeature(_messages.Message):
     TypeValueValuesEnum: The ID of a supported feature. To add multiple
       values, use commas to separate values. Set to one or more of the
       following values: - VIRTIO_SCSI_MULTIQUEUE - WINDOWS - MULTI_IP_SUBNET -
-      UEFI_COMPATIBLE - SECURE_BOOT - GVNIC - SEV_CAPABLE -
-      SUSPEND_RESUME_COMPATIBLE - SEV_SNP_CAPABLE For more information, see
-      Enabling guest operating system features.
+      UEFI_COMPATIBLE - GVNIC - SEV_CAPABLE - SUSPEND_RESUME_COMPATIBLE -
+      SEV_SNP_CAPABLE For more information, see Enabling guest operating
+      system features.
 
   Fields:
     type: The ID of a supported feature. To add multiple values, use commas to
       separate values. Set to one or more of the following values: -
       VIRTIO_SCSI_MULTIQUEUE - WINDOWS - MULTI_IP_SUBNET - UEFI_COMPATIBLE -
-      SECURE_BOOT - GVNIC - SEV_CAPABLE - SUSPEND_RESUME_COMPATIBLE -
-      SEV_SNP_CAPABLE For more information, see Enabling guest operating
-      system features.
+      GVNIC - SEV_CAPABLE - SUSPEND_RESUME_COMPATIBLE - SEV_SNP_CAPABLE For
+      more information, see Enabling guest operating system features.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""The ID of a supported feature. To add multiple values, use commas to
     separate values. Set to one or more of the following values: -
     VIRTIO_SCSI_MULTIQUEUE - WINDOWS - MULTI_IP_SUBNET - UEFI_COMPATIBLE -
-    SECURE_BOOT - GVNIC - SEV_CAPABLE - SUSPEND_RESUME_COMPATIBLE -
-    SEV_SNP_CAPABLE For more information, see Enabling guest operating system
-    features.
+    GVNIC - SEV_CAPABLE - SUSPEND_RESUME_COMPATIBLE - SEV_SNP_CAPABLE For more
+    information, see Enabling guest operating system features.
 
     Values:
       FEATURE_TYPE_UNSPECIFIED: <no description>
@@ -43037,10 +43159,8 @@ class NetworkEndpointGroupServerlessDeployment(_messages.Message):
   same project and located in the same region as the Serverless NEG.
 
   Fields:
-    platform: The platform of the backend target(s) of this NEG. Possible
-      values include: 1. API Gateway: apigateway.googleapis.com 2. App Engine:
-      appengine.googleapis.com 3. Cloud Functions:
-      cloudfunctions.googleapis.com 4. Cloud Run: run.googleapis.com
+    platform: The platform of the backend target(s) of this NEG. The only
+      supported value is API Gateway: apigateway.googleapis.com.
     resource: The user-defined name of the workload/instance. This value must
       be provided explicitly or in the urlMask. The resource identified by
       this value is platform-specific and is as follows: 1. API Gateway: The

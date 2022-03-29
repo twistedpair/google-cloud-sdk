@@ -295,16 +295,18 @@ Use 'None' to opt-out of any release channel.
       hidden=hidden)
 
 
-def AddClusterAutoscalingFlags(parser, update_group=None, hidden=False):
+def AddClusterAutoscalingFlags(
+    parser, update_group=None, location_policy_present=False, hidden=False):
   """Adds autoscaling related flags to parser.
 
   Autoscaling related flags are: --enable-autoscaling
-  --min-nodes --max-nodes flags.
+  --min-nodes --max-nodes --location-policy flags.
 
   Args:
     parser: A given parser.
     update_group: An optional group of mutually exclusive flag options to which
       an --enable-autoscaling flag is added.
+    location_policy_present: If true location-policy is added to the group.
     hidden: If true, suppress help text for added options.
 
   Returns:
@@ -343,6 +345,18 @@ Minimum number of nodes per zone to which the node pool specified by --node-pool
 --enable-autoscaling is also specified.""",
       hidden=hidden,
       type=int)
+  if location_policy_present:
+    group.add_argument(
+        '--location-policy',
+        choices=api_adapter.LOCATION_POLICY_OPTIONS,
+        help="""\
+Location policy specifies the algorithm used when scaling-up the node pool.
+
+* `BALANCED` - Is a best effort policy that aims to balance the sizes of available
+  zones.
+* `ANY` - Instructs the cluster autoscaler to prioritize utilization of unused
+  reservations, and reduces preemption risk for Spot VMs.""",
+        hidden=True)
   return group
 
 
@@ -526,7 +540,7 @@ autoupgrade is enabled for autoprovisioned node pools.
 enableAutoRepair: A boolean field that indicates if node
 autorepair is enabled for autoprovisioned node pools.
 
-minCpuPlatform: If specified, new autoprovisioned nodes will be
+minCpuPlatform (deprecated): If specified, new autoprovisioned nodes will be
 scheduled on host with specified CPU architecture or a newer one.
 Note: Min CPU platform can only be specified in Beta and Alpha.
 
@@ -718,6 +732,11 @@ Multiple locations can be specified, separated by commas.""",
       type=arg_parsers.ArgList(min_length=1))
   from_flags_group.add_argument(
       '--autoprovisioning-min-cpu-platform',
+      action=actions.DeprecationAction(
+          '--autoprovisioning-min-cpu-platform',
+          warn='The `--autoprovisioning-min-cpu-platform` flag is deprecated and '
+          'will be removed in an upcoming release. More info: https://cloud.google.com/kubernetes-engine/docs/release-notes#March_08_2022',
+          ),
       hidden=hidden,
       metavar='PLATFORM',
       help="""\
@@ -4398,6 +4417,19 @@ def AddPrivateEndpointFQDNFlag(parser, hidden=True):
       hidden=hidden,
       default=None,
       action='store_true')
+
+
+def AddPodAutoscalingDirectMetricsOptInFlag(parser):
+  """Adds a --pod-autoscaling-direct-metrics-opt-in flag to the given parser."""
+  parser.add_argument(
+      '--pod-autoscaling-direct-metrics-opt-in',
+      default=None,
+      action='store_true',
+      hidden=True,
+      help='When specified, the cluster will use the pod autoscaling direct '
+           'metrics collection feature. Otherwise the cluster will use '
+           'the feature or will not, depending on the cluster version.'
+  )
 
 
 def VerifyGetCredentialsFlags(args):

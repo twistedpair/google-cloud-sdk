@@ -563,12 +563,11 @@ def GetMethods(full_collection_name, api_version=None):
   Returns:
     [APIMethod], The method specifications.
   """
-  api_name, collection = _SplitFullCollectionName(full_collection_name)
-  api_version = _ValidateAndGetDefaultVersion(api_name, api_version)
-  client = apis.GetClientInstance(api_name, api_version, no_http=True)
   api_collection = GetAPICollection(full_collection_name,
                                     api_version=api_version)
-  service = _GetService(client, collection)
+  client = apis.GetClientInstance(api_collection.api_name,
+                                  api_collection.api_version, no_http=True)
+  service = _GetService(client, api_collection.name)
   if not service:
     # This is a synthetic collection that does not actually have a backing API.
     return []

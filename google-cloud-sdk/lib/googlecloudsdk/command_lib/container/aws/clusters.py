@@ -124,6 +124,10 @@ class Client(object):
     msg = 'GoogleCloudGkemulticloud{}Fleet'.format(self.version)
     return getattr(self.messages, msg)(project=fleet_project)
 
+  def _CreateAwsInstancePlacement(self, instance_placement_key):
+    msg = 'GoogleCloudGkemulticloud{}AwsInstancePlacement'.format(self.version)
+    return getattr(self.messages, msg)(tenancy=instance_placement_key)
+
   def Create(self, cluster_ref, args):
     """Creates an Anthos cluster on AWS."""
     validate_only = getattr(args, 'validate_only', False)
@@ -137,6 +141,8 @@ class Client(object):
     c.awsRegion = args.aws_region
     if args.fleet_project:
       c.fleet = self._CreateFleet(args.fleet_project)
+    if args.logging:
+      c.loggingConfig = args.logging
 
     cp = self._AddAwsControlPlane(c)
     cp.subnetIds.extend(args.subnet_ids)
@@ -164,6 +170,9 @@ class Client(object):
     if args.config_encryption_kms_key_arn:
       cp.configEncryption = self._CreateAwsConfigEncryption(
           args.config_encryption_kms_key_arn)
+    if args.instance_placement:
+      cp.instancePlacement = self._CreateAwsInstancePlacement(
+          args.instance_placement)
 
     net = self._AddAwsNetworking(c)
     net.vpcId = args.vpc_id

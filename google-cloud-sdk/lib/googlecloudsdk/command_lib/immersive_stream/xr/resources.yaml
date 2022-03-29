@@ -37,7 +37,7 @@ operation:
 content:
   name: content
   collection: stream.projects.locations.streamContents
-  request_id_field: name
+  request_id_field: streamContentId
   attributes:
   - *project
   - *location
@@ -50,7 +50,7 @@ content:
 instance:
   name: instance
   collection: stream.projects.locations.streamInstances
-  request_id_field: name
+  request_id_field: streamInstanceId
   attributes:
   - *project
   - *location

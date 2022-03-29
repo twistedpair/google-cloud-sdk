@@ -1960,6 +1960,10 @@
           "description": "Minimum interval after which the password can be changed. This flag is only supported for PostgresSQL.",
           "type": "string",
           "format": "google-duration"
+        },
+        "enablePasswordPolicy": {
+          "description": "Whether the password policy is enabled or not.",
+          "type": "boolean"
         }
       }
     },

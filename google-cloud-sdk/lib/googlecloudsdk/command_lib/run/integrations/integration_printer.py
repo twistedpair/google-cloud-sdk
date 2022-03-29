@@ -22,6 +22,7 @@ from __future__ import unicode_literals
 from frozendict import frozendict
 from googlecloudsdk.command_lib.run.integrations.formatters import custom_domain_formatter
 from googlecloudsdk.command_lib.run.integrations.formatters import fallback_formatter
+from googlecloudsdk.command_lib.run.integrations.formatters import states
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.resource import custom_printer_base as cp
 
@@ -83,7 +84,7 @@ class IntegrationPrinter(cp.CustomPrinterBase):
       status = {}
 
     formatter = GetFormatter(record['type'])
-    resource_state = formatter.GetResourceState(status)
+    resource_state = status.get('state', states.UNKNOWN)
     symbol = formatter.StatusSymbolAndColor(resource_state)
     return con.Emphasize('{} {} integration {} in region {}'.format(
         symbol, record.get('type'), record.get('name'), record.get('region')))

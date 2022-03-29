@@ -26,6 +26,10 @@ class AcceleratorType(_messages.Message):
   type = _messages.StringField(2)
 
 
+class AcceptedData(_messages.Message):
+  r"""Further data for the accepted state."""
+
+
 class AccessConfig(_messages.Message):
   r"""An access config attached to the TPU worker.
 
@@ -35,6 +39,10 @@ class AccessConfig(_messages.Message):
   """
 
   externalIp = _messages.StringField(1)
+
+
+class ActiveData(_messages.Message):
+  r"""Further data for the active state."""
 
 
 class AttachedDisk(_messages.Message):
@@ -71,14 +79,36 @@ class AttachedDisk(_messages.Message):
   sourceDisk = _messages.StringField(2)
 
 
+class BestEffort(_messages.Message):
+  r"""BestEffort tier definition."""
+
+
+class CreatingData(_messages.Message):
+  r"""Further data for the creating state."""
+
+
+class DeletingData(_messages.Message):
+  r"""Further data for the deleting state."""
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
   or the response type of an API method. For instance: service Foo { rpc
-  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
-  representation for `Empty` is empty JSON object `{}`.
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
 
+
+
+class FailedData(_messages.Message):
+  r"""Further data for the failed state.
+
+  Fields:
+    error: The error that caused the queued resource to enter the FAILED
+      state.
+  """
+
+  error = _messages.MessageField('Status', 1)
 
 
 class GenerateServiceIdentityRequest(_messages.Message):
@@ -118,6 +148,18 @@ class GetGuestAttributesResponse(_messages.Message):
   guestAttributes = _messages.MessageField('GuestAttributes', 1, repeated=True)
 
 
+class Guaranteed(_messages.Message):
+  r"""Guaranteed tier definition.
+
+  Fields:
+    minDuration: Optional. Defines the minimum duration of the guarantee. If
+      specified, the requested resources will only be provisioned if they can
+      be allocated for at least the given duration.
+  """
+
+  minDuration = _messages.StringField(1)
+
+
 class GuestAttributes(_messages.Message):
   r"""A guest attributes.
 
@@ -153,6 +195,24 @@ class GuestAttributesValue(_messages.Message):
   """
 
   items = _messages.MessageField('GuestAttributesEntry', 1, repeated=True)
+
+
+class Interval(_messages.Message):
+  r"""Represents a time interval, encoded as a Timestamp start (inclusive) and
+  a Timestamp end (exclusive). The start must be less than or equal to the
+  end. When the start equals the end, the interval is empty (matches no time).
+  When both start and end are unspecified, the interval matches any time.
+
+  Fields:
+    endTime: Optional. Exclusive end of the interval. If specified, a
+      Timestamp matching this interval will have to be before the end.
+    startTime: Optional. Inclusive start of the interval. If specified, a
+      Timestamp matching this interval will have to be the same or after the
+      start.
+  """
+
+  endTime = _messages.StringField(1)
+  startTime = _messages.StringField(2)
 
 
 class ListAcceleratorTypesResponse(_messages.Message):
@@ -207,6 +267,20 @@ class ListOperationsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+
+
+class ListQueuedResourcesResponse(_messages.Message):
+  r"""Response for ListQueuedResources.
+
+  Fields:
+    nextPageToken: The next page token or empty if none.
+    queuedResources: The listed queued resources.
+    unreachable: Locations that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  queuedResources = _messages.MessageField('QueuedResource', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListRuntimeVersionsResponse(_messages.Message):
@@ -356,8 +430,8 @@ class Node(_messages.Message):
       script and shutdown-script
 
   Fields:
-    acceleratorType: Required. The type of hardware accelerators associated
-      with this node.
+    acceleratorType: The type of hardware accelerators associated with this
+      node.
     apiVersion: Output only. The API version that created this Node.
     cidrBlock: The CIDR block that the TPU node will use when selecting an IP
       address. This CIDR block must be a /29 block; the Compute Engine
@@ -383,6 +457,8 @@ class Node(_messages.Message):
     networkEndpoints: Output only. The network endpoints where TPU workers can
       be accessed and sent work. It is recommended that runtime clients of the
       node reach out to the 0th entry in this map first.
+    queuedResource: Output only. The qualified name of the QueuedResource that
+      requested this Node.
     runtimeVersion: Required. The runtime version running in the Node.
     schedulingConfig: The scheduling options for this node.
     serviceAccount: The Google Cloud Platform Service Account to be used by
@@ -528,12 +604,28 @@ class Node(_messages.Message):
   name = _messages.StringField(12)
   networkConfig = _messages.MessageField('NetworkConfig', 13)
   networkEndpoints = _messages.MessageField('NetworkEndpoint', 14, repeated=True)
-  runtimeVersion = _messages.StringField(15)
-  schedulingConfig = _messages.MessageField('SchedulingConfig', 16)
-  serviceAccount = _messages.MessageField('ServiceAccount', 17)
-  state = _messages.EnumField('StateValueValuesEnum', 18)
-  symptoms = _messages.MessageField('Symptom', 19, repeated=True)
-  tags = _messages.StringField(20, repeated=True)
+  queuedResource = _messages.StringField(15)
+  runtimeVersion = _messages.StringField(16)
+  schedulingConfig = _messages.MessageField('SchedulingConfig', 17)
+  serviceAccount = _messages.MessageField('ServiceAccount', 18)
+  state = _messages.EnumField('StateValueValuesEnum', 19)
+  symptoms = _messages.MessageField('Symptom', 20, repeated=True)
+  tags = _messages.StringField(21, repeated=True)
+
+
+class NodeSpec(_messages.Message):
+  r"""Details of the TPU node being requested.
+
+  Fields:
+    node: Required. The node.
+    nodeId: The unqualified resource name. Should follow the
+      ^[A-Za-z0-9_.~+%-]+$ regex format.
+    parent: Required. The parent resource name.
+  """
+
+  node = _messages.MessageField('Node', 1)
+  nodeId = _messages.StringField(2)
+  parent = _messages.StringField(3)
 
 
 class Operation(_messages.Message):
@@ -666,6 +758,118 @@ class OperationMetadata(_messages.Message):
   statusDetail = _messages.StringField(5)
   target = _messages.StringField(6)
   verb = _messages.StringField(7)
+
+
+class ProvisioningData(_messages.Message):
+  r"""Further data for the provisioning state."""
+
+
+class QueuedResource(_messages.Message):
+  r"""A QueuedResource represents a request for resources that will be placed
+  in a queue and fulfilled when the necessary resources are available.
+
+  Fields:
+    bestEffort: The BestEffort tier.
+    guaranteed: The Guaranteed tier
+    name: Output only. Immutable. The name of the QueuedResource.
+    queueingPolicy: The queueing policy of the QueuedRequest.
+    state: Output only. State of the QueuedResource request
+    tpu: Defines a TPU resource.
+  """
+
+  bestEffort = _messages.MessageField('BestEffort', 1)
+  guaranteed = _messages.MessageField('Guaranteed', 2)
+  name = _messages.StringField(3)
+  queueingPolicy = _messages.MessageField('QueueingPolicy', 4)
+  state = _messages.MessageField('QueuedResourceState', 5)
+  tpu = _messages.MessageField('Tpu', 6)
+
+
+class QueuedResourceState(_messages.Message):
+  r"""QueuedResourceState defines the details of the QueuedResource request.
+
+  Enums:
+    StateValueValuesEnum: State of the QueuedResource request.
+
+  Fields:
+    acceptedData: Further data for the accepted state.
+    activeData: Further data for the active state.
+    creatingData: Further data for the creating state.
+    deletingData: Further data for the deleting state.
+    failedData: Further data for the failed state.
+    provisioningData: Further data for the provisioning state.
+    state: State of the QueuedResource request.
+    suspendedData: Further data for the suspended state.
+    suspendingData: Further data for the suspending state.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""State of the QueuedResource request.
+
+    Values:
+      STATE_UNSPECIFIED: State of the QueuedResource request is not known/set.
+      CREATING: The QueuedResource request has been received. We're still
+        working on determining if we will be able to honor this request.
+      ACCEPTED: The QueuedResource request has passed initial
+        validation/admission control and has been persisted in the queue.
+      PROVISIONING: The QueuedResource request has been selected. The
+        associated resources are currently being provisioned (or very soon
+        will begin provisioning).
+      FAILED: The request could not be completed. This may be due to some
+        late-discovered problem with the request itself, or due to
+        unavailability of resources within the constraints of the request
+        (e.g., the 'valid until' start timing constraint expired).
+      DELETING: The QueuedResource is being deleted.
+      ACTIVE: The resources specified in the QueuedResource request have been
+        provisioned and are ready for use by the end-user/consumer.
+      SUSPENDING: The resources specified in the QueuedResource request are
+        being deleted. This may have been initiated by the user, or the Cloud
+        TPU service. Inspect the state data for more details.
+      SUSPENDED: The resources specified in the QueuedResource request have
+        been deleted.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    ACCEPTED = 2
+    PROVISIONING = 3
+    FAILED = 4
+    DELETING = 5
+    ACTIVE = 6
+    SUSPENDING = 7
+    SUSPENDED = 8
+
+  acceptedData = _messages.MessageField('AcceptedData', 1)
+  activeData = _messages.MessageField('ActiveData', 2)
+  creatingData = _messages.MessageField('CreatingData', 3)
+  deletingData = _messages.MessageField('DeletingData', 4)
+  failedData = _messages.MessageField('FailedData', 5)
+  provisioningData = _messages.MessageField('ProvisioningData', 6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  suspendedData = _messages.MessageField('SuspendedData', 8)
+  suspendingData = _messages.MessageField('SuspendingData', 9)
+
+
+class QueueingPolicy(_messages.Message):
+  r"""Defines the policy of the QueuedRequest.
+
+  Fields:
+    validAfterDuration: A relative time after which resources may be created.
+    validAfterTime: An absolute time at which resources may be created.
+    validInterval: An absolute time interval within which resources may be
+      created.
+    validUntilDuration: A relative time after which resources should not be
+      created. If the request cannot be fulfilled by this time the request
+      will be failed.
+    validUntilTime: An absolute time after which resources should not be
+      created. If the request cannot be fulfilled by this time the request
+      will be failed.
+  """
+
+  validAfterDuration = _messages.StringField(1)
+  validAfterTime = _messages.StringField(2)
+  validInterval = _messages.MessageField('Interval', 3)
+  validUntilDuration = _messages.StringField(4)
+  validUntilTime = _messages.StringField(5)
 
 
 class RuntimeVersion(_messages.Message):
@@ -838,6 +1042,14 @@ class StopNodeRequest(_messages.Message):
   r"""Request for StopNode."""
 
 
+class SuspendedData(_messages.Message):
+  r"""Further data for the suspended state."""
+
+
+class SuspendingData(_messages.Message):
+  r"""Further data for the suspending state."""
+
+
 class Symptom(_messages.Message):
   r"""A Symptom instance.
 
@@ -878,6 +1090,16 @@ class Symptom(_messages.Message):
   details = _messages.StringField(2)
   symptomType = _messages.EnumField('SymptomTypeValueValuesEnum', 3)
   workerId = _messages.StringField(4)
+
+
+class Tpu(_messages.Message):
+  r"""Details of the TPU resources being requested.
+
+  Fields:
+    nodeSpec: The TPU node(s) being requested.
+  """
+
+  nodeSpec = _messages.MessageField('NodeSpec', 1, repeated=True)
 
 
 class TpuProjectsLocationsAcceleratorTypesGetRequest(_messages.Message):
@@ -1104,6 +1326,60 @@ class TpuProjectsLocationsOperationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class TpuProjectsLocationsQueuedResourcesCreateRequest(_messages.Message):
+  r"""A TpuProjectsLocationsQueuedResourcesCreateRequest object.
+
+  Fields:
+    parent: Required. The parent resource name.
+    queuedResource: A QueuedResource resource to be passed as the request
+      body.
+    queuedResourceId: The unqualified resource name.
+    requestId: Idempotent request UUID.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  queuedResource = _messages.MessageField('QueuedResource', 2)
+  queuedResourceId = _messages.StringField(3)
+  requestId = _messages.StringField(4)
+
+
+class TpuProjectsLocationsQueuedResourcesDeleteRequest(_messages.Message):
+  r"""A TpuProjectsLocationsQueuedResourcesDeleteRequest object.
+
+  Fields:
+    name: Required. The resource name.
+    requestId: Idempotent request UUID.
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class TpuProjectsLocationsQueuedResourcesGetRequest(_messages.Message):
+  r"""A TpuProjectsLocationsQueuedResourcesGetRequest object.
+
+  Fields:
+    name: Required. The resource name.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class TpuProjectsLocationsQueuedResourcesListRequest(_messages.Message):
+  r"""A TpuProjectsLocationsQueuedResourcesListRequest object.
+
+  Fields:
+    pageSize: The maximum number of items to return.
+    pageToken: The next_page_token value returned from a previous List
+      request, if any.
+    parent: Required. The parent resource name.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class TpuProjectsLocationsRuntimeVersionsGetRequest(_messages.Message):

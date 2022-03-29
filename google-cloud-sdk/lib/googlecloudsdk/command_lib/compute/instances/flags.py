@@ -1096,21 +1096,41 @@ def ValidateDiskAccessModeFlags(args):
           'instance.'.format(disk_name))
 
 
+def GetNumOfBootDisk(disks):
+  """get number of boot disks in list of disks."""
+  num_of_boot_disk = 0
+  for disk in disks or []:
+    if disk.get('boot', False):
+      num_of_boot_disk += 1
+  return num_of_boot_disk
+
+
 def ValidateDiskBootFlags(args, enable_kms=False):
   """Validates the values of boot disk-related flags."""
   boot_disk_specified = False
-  for disk in args.disk or []:
-    # If this is a boot disk and we have already seen a boot disk,
-    # we need to fail because only one boot disk can be attached.
-    boot_value = disk.get('boot', False)
-    if boot_value:
-      if boot_disk_specified:
-        raise exceptions.BadArgumentException(
-            '--disk',
-            'Each instance can have exactly one boot disk. At least two '
-            'boot disks were specified through [--disk].')
-      else:
-        boot_disk_specified = True
+  num_of_boot_disk_in_disks = GetNumOfBootDisk(args.disk)
+  # we need to fail because only one boot disk can be attached.
+  if num_of_boot_disk_in_disks > 1:
+    raise exceptions.BadArgumentException(
+        '--disk',
+        'Each instance can have exactly one boot disk. At least two '
+        'boot disks were specified through [--disk].')
+
+  num_of_boot_disk_in_create_disks = GetNumOfBootDisk(args.create_disk)
+  if num_of_boot_disk_in_create_disks > 1:
+    raise exceptions.BadArgumentException(
+        '--create-disk',
+        'Each instance can have exactly one boot disk. At least two '
+        'boot disks were specified through [--create-disk].')
+
+  if (num_of_boot_disk_in_create_disks + num_of_boot_disk_in_disks) > 1:
+    raise exceptions.BadArgumentException(
+        '--create-disk',
+        'Each instance can have exactly one boot disk. At least two '
+        'boot disks were specified through [--disk and --create-disk].')
+
+  if (num_of_boot_disk_in_create_disks + num_of_boot_disk_in_disks) == 1:
+    boot_disk_specified = True
 
   if args.IsSpecified('boot_disk_provisioned_iops'):
     if not args.IsSpecified(
@@ -1123,7 +1143,8 @@ def ValidateDiskBootFlags(args, enable_kms=False):
   if args.image and boot_disk_specified:
     raise exceptions.BadArgumentException(
         '--disk', 'Each instance can have exactly one boot disk. One boot disk '
-        'was specified through [--disk] and another through [--image].')
+        'was specified through [--disk or --create-disk]'
+        ' and another through [--image].')
 
   if boot_disk_specified:
     if args.boot_disk_device_name:
@@ -1650,18 +1671,18 @@ def AddMaxRunDurationVmArgs(parser):
       help="""\
       Limits how long this VM instance can run, specified as a duration
       relative to the VM instance's most-recent start time. Format the duration,
-      MAX_RUN_DURATION, similar to "T1h2m3s" where you can specify
+      ``MAX_RUN_DURATION'', similar to `T1h2m3s` where you can specify
       the number of hours, minutes, and seconds
-      using "h", "m", and "s" respectively.
-      Alternatively, to specify a timestamp, use --termination-time instead.
+      using `h`, `m`, and `s` respectively.
+      Alternatively, to specify a timestamp, use `--termination-time` instead.
 
-      If neither --max-run-duration nor --termination-time is specified
+      If neither `--max-run-duration` nor `--termination-time` is specified
       (default), the VM instance runs until prompted by a user action
       or system event.
       If either is specified, the VM instance will be terminated
-      using the action specified by --instance-termination-action.
-      For --max-run-duration, the VM instance is terminated
-      whenever the VM's current runtime reaches MAX_RUN_DURATION;
+      using the action specified by `--instance-termination-action`.
+      For `--max-run-duration`, the VM instance is terminated
+      whenever the VM's current runtime reaches ``MAX_RUN_DURATION'';
       the current runtime is reset to zero
       any time the VM instance is stopped and started again.
       """)
@@ -1671,15 +1692,15 @@ def AddMaxRunDurationVmArgs(parser):
       type=arg_parsers.Datetime.Parse,
       help="""
       Limits how long this VM instance can run, specified as a time.
-      Format the time, TERMINATION_TIME, as a RFC 3339 timestamp.
-      Alternatively, to specify a duration, use --max-run-duration instead.
+      Format the time, ``TERMINATION_TIME'', as a RFC 3339 timestamp.
+      Alternatively, to specify a duration, use `--max-run-duration` instead.
 
-     If neither --termination-time nor --max-run-duration
-     is specified (default)
+     If neither `--termination-time` nor `--max-run-duration`
+     is specified (default),
      the VM instance runs until prompted by a user action or system event.
      If either is specified, the VM instance will be terminated using the action
-     specified by --instance-termination-action.
-     For --termination-time,
+     specified by `--instance-termination-action`.
+     For `--termination-time`,
      the VM instance is terminated only during the specified time.
      """)
 
@@ -3241,6 +3262,8 @@ def AddBulkCreateNetworkingArgs(parser):
           '--network-interface', 'Invalid value for network-tier')
 
   multiple_network_interface_cards_spec['network-tier'] = ValidateNetworkTier
+  multiple_network_interface_cards_spec['nic-type'] = (
+      _ValidateNetworkInterfaceNicType)
 
   network_interface_help = """\
       Adds a network interface to the instance. Mutually exclusive with any
@@ -3258,6 +3281,9 @@ def AddBulkCreateNetworkingArgs(parser):
       *subnet*::: Specifies the subnet that the interface will be part of.
       If network key is also specified this must be a subnetwork of the
       specified network.
+
+      *nic-type*::: Specifies the  Network Interface Controller (NIC) type for
+      the interface. ``NIC_TYPE'' must be one of: `GVNIC`, `VIRTIO_NET`.
   """
 
   parser.add_argument(

@@ -466,6 +466,7 @@ class GcsBucketResource(resource_reference.BucketResource):
     return _get_full_bucket_metadata_string(self)
 
   def get_displayable_bucket_data(self):
+    """Returns the DisplaybleBucketData instance."""
     if self.metadata.labels is not None:
       labels = encoding.MessageToDict(self.metadata.labels)
     else:
@@ -515,6 +516,47 @@ class GcsObjectResource(resource_reference.ObjectResource):
 
   def get_full_metadata_string(self):
     return _get_full_object_metadata_string(self)
+
+  def get_displayable_object_data(self):
+    """Returns the DisplaybleObjectData instance."""
+    if getattr(self.metadata.metadata, 'additionalProperties', None):
+      additional_properties = _message_to_dict(
+          self.metadata.metadata.additionalProperties)
+    else:
+      additional_properties = None
+
+    return resource_reference.DisplayableObjectData(
+        name=self.name,
+        bucket=self.bucket,
+        url_string=self.storage_url.url_string,
+        acl=_message_to_dict(self.metadata.acl),
+        additional_properties=additional_properties,
+        cache_control=self.metadata.cacheControl,
+        component_count=self.metadata.componentCount,
+        content_disposition=self.metadata.contentDisposition,
+        content_encoding=self.metadata.contentEncoding,
+        content_language=self.metadata.contentLanguage,
+        content_length=self.size,
+        content_type=self.metadata.contentType,
+        crc32c_hash=self.metadata.crc32c,
+        creation_time=self.creation_time,
+        custom_time=self.metadata.customTime,
+        encryption_algorithm=getattr(self.metadata.customerEncryption,
+                                     'encryptionAlgorithm', None),
+        encryption_key_sha256=getattr(self.metadata.customerEncryption,
+                                      'keySha256', None),
+        etag=self.etag,
+        event_based_hold=self.metadata.eventBasedHold,
+        generation=self.generation,
+        kms_key=self.metadata.kmsKeyName,
+        md5_hash=self.metadata.md5Hash,
+        metageneration=self.metageneration,
+        noncurrent_time=self.metadata.timeDeleted,
+        retention_expiration=self.metadata.retentionExpirationTime,
+        storage_class=self.metadata.storageClass,
+        storage_class_update_time=self.metadata.timeStorageClassUpdated,
+        temporary_hold=self.metadata.temporaryHold,
+        update_time=self.metadata.updated)
 
   def get_json_dump(self):
     return _get_json_dump(self)

@@ -1168,6 +1168,23 @@ def AddPasswordPolicyEnableFailedAttemptsCheck(parser,
       **kwargs)
 
 
+def AddPasswordPolicyEnablePasswordVerification(parser,
+                                                show_negated_in_help=True):
+  """Add the flag to specify password policy password verification.
+
+  Args:
+    parser: The current argparse parser to add this to.
+    show_negated_in_help: Show nagative action in help.
+  """
+  kwargs = _GetKwargsForBoolFlag(show_negated_in_help)
+  parser.add_argument(
+      '--password-policy-enable-password-verification',
+      required=False,
+      hidden=True,
+      help='The current password must be specified when altering the password.',
+      **kwargs)
+
+
 INSTANCES_USERLABELS_FORMAT = ':(settings.userLabels:alias=labels:label=LABELS)'
 
 INSTANCES_FORMAT_COLUMNS = [

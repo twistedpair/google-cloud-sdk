@@ -72,6 +72,11 @@ _DOCKER_REPOSITORY_NAME_ERROR = (
     '/locations/{location}/repositories/{repository} and only contain '
     'characters from the valid character set for a repository.')
 
+DOCKER_REGISTRY_MAPPING = {
+    'CONTAINER_REGISTRY': 'container-registry',
+    'ARTIFACT_REGISTRY': 'artifact-registry',
+}
+
 
 def AddMinLogLevelFlag(parser):
   min_log_arg = base.ChoiceArgument(
@@ -780,6 +785,23 @@ def AddIgnoreFileFlag(parser):
       '--ignore-file',
       help='Override the .gcloudignore file and use the specified file instead.'
   )
+
+
+# Flags for Artifact Registry
+def AddDockerRegistryFlags(parser):
+  """Adds flags for selecting the Docker registry type for Cloud Function."""
+  docker_registry_arg = base.ChoiceArgument(
+      '--docker-registry',
+      choices=sorted(DOCKER_REGISTRY_MAPPING.values()),
+      help_str="""\
+        Docker Registry to use for storing the function's Docker images.
+        The option `container-registry` is used by default.
+
+        Warning: Artifact Registry and Container Registry have different image
+        storage costs. For more details, please see
+        https://cloud.google.com/functions/pricing#deployment_costs
+      """)
+  docker_registry_arg.AddToParser(parser)
 
 
 # Flags for CMEK

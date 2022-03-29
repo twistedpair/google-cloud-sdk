@@ -476,6 +476,10 @@
         "protectConfig": {
           "description": "Enable\/Disable Protect API features for the cluster.",
           "$ref": "ProtectConfig"
+        },
+        "podAutoscaling": {
+          "description": "The config for pod autoscaling.",
+          "$ref": "PodAutoscaling"
         }
       }
     },
@@ -3024,6 +3028,17 @@
         }
       }
     },
+    "PodAutoscaling": {
+      "id": "PodAutoscaling",
+      "description": "PodAutoscaling is used for configuration of parameters for workload autoscaling.",
+      "type": "object",
+      "properties": {
+        "directMetricsOptIn": {
+          "description": "Indicates the cluster has opted-into direct metrics collection.",
+          "type": "boolean"
+        }
+      }
+    },
     "CreateClusterRequest": {
       "id": "CreateClusterRequest",
       "description": "CreateClusterRequest creates a cluster.",
@@ -3542,6 +3557,10 @@
           "description": "Enable\/Disable Protect API features for the cluster.",
           "$ref": "ProtectConfig"
         },
+        "desiredPodAutoscaling": {
+          "description": "The desired config for pod autoscaling.",
+          "$ref": "PodAutoscaling"
+        },
         "desiredGatewayApiConfig": {
           "description": "The desired config of Gateway API on this cluster.",
           "$ref": "GatewayAPIConfig"
@@ -3961,7 +3980,7 @@
     },
     "Empty": {
       "id": "Empty",
-      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON representation for `Empty` is empty JSON object `{}`.",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }",
       "type": "object",
       "properties": {
       }

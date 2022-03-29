@@ -429,8 +429,7 @@ class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
   or the response type of an API method. For instance: service Foo { rpc
-  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
-  representation for `Empty` is empty JSON object `{}`.
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
 
 
@@ -1434,10 +1433,13 @@ class ListCollectionIdsRequest(_messages.Message):
   Fields:
     pageSize: The maximum number of results to return.
     pageToken: A page token. Must be a value from ListCollectionIdsResponse.
+    readTime: Reads documents as they were at the given time. This may not be
+      older than 270 seconds.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
+  readTime = _messages.StringField(3)
 
 
 class ListCollectionIdsResponse(_messages.Message):
@@ -1626,6 +1628,8 @@ class PartitionQueryRequest(_messages.Message):
       For example, this may be set to one fewer than the number of parallel
       queries to be run, or in running a data pipeline job, one fewer than the
       number of workers or compute instances available.
+    readTime: Reads documents as they were at the given time. This may not be
+      older than 270 seconds.
     structuredQuery: A structured query. Query must specify collection with
       all descendants and be ordered by name ascending. Other filters, order
       bys, limits, offsets, and start/end cursors are not supported.
@@ -1634,7 +1638,8 @@ class PartitionQueryRequest(_messages.Message):
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   partitionCount = _messages.IntegerField(3)
-  structuredQuery = _messages.MessageField('StructuredQuery', 4)
+  readTime = _messages.StringField(4)
+  structuredQuery = _messages.MessageField('StructuredQuery', 5)
 
 
 class PartitionQueryResponse(_messages.Message):

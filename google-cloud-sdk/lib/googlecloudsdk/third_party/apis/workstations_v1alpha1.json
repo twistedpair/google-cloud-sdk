@@ -192,7 +192,7 @@
     },
     "Empty": {
       "id": "Empty",
-      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON representation for `Empty` is empty JSON object `{}`.",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }",
       "type": "object",
       "properties": {
       }
@@ -262,10 +262,6 @@
         },
         "subnetwork": {
           "description": "Name of the Compute Engine subnetwork in which instances associated with this cluster will be created. Must be part of the subnetwork specified for this cluster.",
-          "type": "string"
-        },
-        "controlPlaneIpv4Cidr": {
-          "description": "IP range in CIDR notation to use for the Workstations control plane. This range will be used for assigning private IP addresses for control plane components. This range must not overlap with any other ranges in use within the specified subnetwork or its peers, and it must be a \/24 range.",
           "type": "string"
         },
         "privateClusterConfig": {

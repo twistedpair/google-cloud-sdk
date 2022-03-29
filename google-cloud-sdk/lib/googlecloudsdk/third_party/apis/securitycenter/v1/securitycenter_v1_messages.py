@@ -525,8 +525,7 @@ class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
   or the response type of an API method. For instance: service Foo { rpc
-  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
-  representation for `Empty` is empty JSON object `{}`.
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
 
 
@@ -576,9 +575,9 @@ class Finding(_messages.Message):
 
   Enums:
     FindingClassValueValuesEnum: The class of the finding.
-    MuteValueValuesEnum: Indicates the mute state of a finding (either
-      unspecified, muted, unmuted or undefined). Unlike other attributes of a
-      finding, a finding provider shouldn't set the value of mute.
+    MuteValueValuesEnum: Indicates the mute state of a finding (either muted,
+      unmuted or undefined). Unlike other attributes of a finding, a finding
+      provider shouldn't set the value of mute.
     SeverityValueValuesEnum: The severity of the finding. This field is
       managed by the source that writes the finding.
     StateValueValuesEnum: The state of the finding.
@@ -628,9 +627,9 @@ class Finding(_messages.Message):
       https://en.wikipedia.org/wiki/Indicator_of_compromise
     mitreAttack: MITRE ATT&CK tactics and techniques related to this finding.
       See: https://attack.mitre.org
-    mute: Indicates the mute state of a finding (either unspecified, muted,
-      unmuted or undefined). Unlike other attributes of a finding, a finding
-      provider shouldn't set the value of mute.
+    mute: Indicates the mute state of a finding (either muted, unmuted or
+      undefined). Unlike other attributes of a finding, a finding provider
+      shouldn't set the value of mute.
     muteAnnotation: Records additional information about the mute operation
       e.g. mute config that muted the finding etc. Unlike other attributes of
       a finding, a finding provider shouldn't set the value of
@@ -693,9 +692,9 @@ class Finding(_messages.Message):
     SCC_ERROR = 5
 
   class MuteValueValuesEnum(_messages.Enum):
-    r"""Indicates the mute state of a finding (either unspecified, muted,
-    unmuted or undefined). Unlike other attributes of a finding, a finding
-    provider shouldn't set the value of mute.
+    r"""Indicates the mute state of a finding (either muted, unmuted or
+    undefined). Unlike other attributes of a finding, a finding provider
+    shouldn't set the value of mute.
 
     Values:
       MUTE_UNSPECIFIED: Unspecified.
@@ -1056,7 +1055,7 @@ class GoogleCloudSecuritycenterV1Resource(_messages.Message):
     parent: The full resource name of resource's parent.
     parentDisplayName: The human readable name of resource's parent.
     project: The full resource name of project that the resource belongs to.
-    projectDisplayName: The project id that the resource belongs to.
+    projectDisplayName: The project ID that the resource belongs to.
     type: The full resource type of the resource.
   """
 
@@ -2366,7 +2365,7 @@ class Resource(_messages.Message):
       https://cloud.google.com/apis/design/resource_names#full_resource_name
     parentDisplayName: The human readable name of resource's parent.
     parentName: The full resource name of resource's parent.
-    projectDisplayName: The project id that the resource belongs to.
+    projectDisplayName: The project ID that the resource belongs to.
     projectName: The full resource name of project that the resource belongs
       to.
     type: The full resource type of the resource.
@@ -2623,7 +2622,7 @@ class SecuritycenterFoldersAssetsUpdateSecurityMarksRequest(_messages.Message):
     startTime: The time at which the updated SecurityMarks take effect. If not
       set uses current server time. Updates will be applied to the
       SecurityMarks that are active immediately preceding this time. Must be
-      smaller or equal to the server time.
+      earlier or equal to the server time.
     updateMask: The FieldMask to use when updating the security marks
       resource. The field mask must not contain duplicate fields. If empty or
       set to "marks", all marks will be replaced. Individual marks can be
@@ -3034,7 +3033,7 @@ class SecuritycenterFoldersSourcesFindingsUpdateSecurityMarksRequest(_messages.M
     startTime: The time at which the updated SecurityMarks take effect. If not
       set uses current server time. Updates will be applied to the
       SecurityMarks that are active immediately preceding this time. Must be
-      smaller or equal to the server time.
+      earlier or equal to the server time.
     updateMask: The FieldMask to use when updating the security marks
       resource. The field mask must not contain duplicate fields. If empty or
       set to "marks", all marks will be replaced. Individual marks can be
@@ -3206,7 +3205,7 @@ class SecuritycenterOrganizationsAssetsUpdateSecurityMarksRequest(_messages.Mess
     startTime: The time at which the updated SecurityMarks take effect. If not
       set uses current server time. Updates will be applied to the
       SecurityMarks that are active immediately preceding this time. Must be
-      smaller or equal to the server time.
+      earlier or equal to the server time.
     updateMask: The FieldMask to use when updating the security marks
       resource. The field mask must not contain duplicate fields. If empty or
       set to "marks", all marks will be replaced. Individual marks can be
@@ -3783,7 +3782,7 @@ class SecuritycenterOrganizationsSourcesFindingsUpdateSecurityMarksRequest(_mess
     startTime: The time at which the updated SecurityMarks take effect. If not
       set uses current server time. Updates will be applied to the
       SecurityMarks that are active immediately preceding this time. Must be
-      smaller or equal to the server time.
+      earlier or equal to the server time.
     updateMask: The FieldMask to use when updating the security marks
       resource. The field mask must not contain duplicate fields. If empty or
       set to "marks", all marks will be replaced. Individual marks can be
@@ -4032,7 +4031,7 @@ class SecuritycenterProjectsAssetsUpdateSecurityMarksRequest(_messages.Message):
     startTime: The time at which the updated SecurityMarks take effect. If not
       set uses current server time. Updates will be applied to the
       SecurityMarks that are active immediately preceding this time. Must be
-      smaller or equal to the server time.
+      earlier or equal to the server time.
     updateMask: The FieldMask to use when updating the security marks
       resource. The field mask must not contain duplicate fields. If empty or
       set to "marks", all marks will be replaced. Individual marks can be
@@ -4444,7 +4443,7 @@ class SecuritycenterProjectsSourcesFindingsUpdateSecurityMarksRequest(_messages.
     startTime: The time at which the updated SecurityMarks take effect. If not
       set uses current server time. Updates will be applied to the
       SecurityMarks that are active immediately preceding this time. Must be
-      smaller or equal to the server time.
+      earlier or equal to the server time.
     updateMask: The FieldMask to use when updating the security marks
       resource. The field mask must not contain duplicate fields. If empty or
       set to "marks", all marks will be replaced. Individual marks can be

@@ -843,7 +843,7 @@ apis:
   logging:
     v2:
       discovery_doc: logging_v2.json
-      gcloud_gapic_library: logging_v2_py
+      gcloud_gapic_library: google/logging/v2:logging_v2_py
       default: true
   memcache:
     v1beta2:

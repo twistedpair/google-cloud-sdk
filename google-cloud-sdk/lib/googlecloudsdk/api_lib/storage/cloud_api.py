@@ -30,6 +30,17 @@ class Capability(enum.Enum):
   ENCRYPTION = 'ENCRYPTION'
   RESUMABLE_UPLOAD = 'RESUMABLE_UPLOAD'
   SLICED_DOWNLOAD = 'SLICED_DOWNLOAD'
+  # For daisy chain operations, the upload stream is not purely seekable.
+  # For certain seek calls, we raise errors to avoid re-downloading the object.
+  # We do not want the "seekable" method for the upload stream to always return
+  # False because in case of GCS, Apitools checks for this value to determine
+  # if a resumable upload can be performed. However, for S3,
+  # boto3's upload_fileobj calls "seek" with
+  # unsupported offset and whence combinations, and to avoid that,
+  # we need to mark the upload stream as non-seekable for S3.
+  # This value is used by daisy chain operation to determine if the upload
+  # stream can be treated as seekable.
+  DAISY_CHAIN_SEEKABLE_UPLOAD_STREAM = 'DAISY_CHAIN_SEEKABLE_UPLOAD_STREAM'
 
 
 class DownloadStrategy(enum.Enum):
@@ -205,7 +216,7 @@ class CloudApi(object):
   def get_object_metadata(self,
                           bucket_name,
                           object_name,
-                          request_config,
+                          request_config=None,
                           generation=None,
                           fields_scope=None):
     """Gets object metadata.

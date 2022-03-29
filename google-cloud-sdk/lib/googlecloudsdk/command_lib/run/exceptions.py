@@ -155,7 +155,7 @@ class HttpError(exceptions_util.HttpException):
     super(HttpError, self).__init__(error)
     if self.payload.field_violations:
       self.error_format = '\n'.join([
-          '{{field_violations.{}}}'.format(k)
+          '{0}: {{field_violations.{0}}}'.format(k)
           for k in self.payload.field_violations.keys()
       ])
 

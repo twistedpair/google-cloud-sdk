@@ -244,7 +244,7 @@
     },
     "Empty": {
       "id": "Empty",
-      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON representation for `Empty` is empty JSON object `{}`.",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }",
       "type": "object",
       "properties": {
       }
@@ -289,7 +289,7 @@
           "type": "string"
         },
         "acceleratorType": {
-          "description": "Required. The type of hardware accelerators associated with this node.",
+          "description": "The type of hardware accelerators associated with this node.",
           "type": "string"
         },
         "state": {
@@ -446,6 +446,11 @@
           "items": {
             "$ref": "Symptom"
           }
+        },
+        "queuedResource": {
+          "description": "Output only. The qualified name of the QueuedResource that requested this Node.",
+          "readOnly": true,
+          "type": "string"
         }
       }
     },
@@ -614,6 +619,289 @@
     "StartNodeRequest": {
       "id": "StartNodeRequest",
       "description": "Request for StartNode.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "ListQueuedResourcesResponse": {
+      "id": "ListQueuedResourcesResponse",
+      "description": "Response for ListQueuedResources.",
+      "type": "object",
+      "properties": {
+        "queuedResources": {
+          "description": "The listed queued resources.",
+          "type": "array",
+          "items": {
+            "$ref": "QueuedResource"
+          }
+        },
+        "nextPageToken": {
+          "description": "The next page token or empty if none.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "QueuedResource": {
+      "id": "QueuedResource",
+      "description": "A QueuedResource represents a request for resources that will be placed in a queue and fulfilled when the necessary resources are available.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. Immutable. The name of the QueuedResource.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "tpu": {
+          "description": "Defines a TPU resource.",
+          "$ref": "Tpu"
+        },
+        "bestEffort": {
+          "description": "The BestEffort tier.",
+          "$ref": "BestEffort"
+        },
+        "guaranteed": {
+          "description": "The Guaranteed tier",
+          "$ref": "Guaranteed"
+        },
+        "queueingPolicy": {
+          "description": "The queueing policy of the QueuedRequest.",
+          "$ref": "QueueingPolicy"
+        },
+        "state": {
+          "description": "Output only. State of the QueuedResource request",
+          "readOnly": true,
+          "$ref": "QueuedResourceState"
+        }
+      }
+    },
+    "Tpu": {
+      "id": "Tpu",
+      "description": "Details of the TPU resources being requested.",
+      "type": "object",
+      "properties": {
+        "nodeSpec": {
+          "description": "The TPU node(s) being requested.",
+          "type": "array",
+          "items": {
+            "$ref": "NodeSpec"
+          }
+        }
+      }
+    },
+    "NodeSpec": {
+      "id": "NodeSpec",
+      "description": "Details of the TPU node being requested.",
+      "type": "object",
+      "properties": {
+        "parent": {
+          "description": "Required. The parent resource name.",
+          "type": "string"
+        },
+        "nodeId": {
+          "description": "The unqualified resource name. Should follow the ^[A-Za-z0-9_.~+%-]+$ regex format.",
+          "type": "string"
+        },
+        "node": {
+          "description": "Required. The node.",
+          "$ref": "Node"
+        }
+      }
+    },
+    "BestEffort": {
+      "id": "BestEffort",
+      "description": "BestEffort tier definition.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "Guaranteed": {
+      "id": "Guaranteed",
+      "description": "Guaranteed tier definition.",
+      "type": "object",
+      "properties": {
+        "minDuration": {
+          "description": "Optional. Defines the minimum duration of the guarantee. If specified, the requested resources will only be provisioned if they can be allocated for at least the given duration.",
+          "type": "string",
+          "format": "google-duration"
+        }
+      }
+    },
+    "QueueingPolicy": {
+      "id": "QueueingPolicy",
+      "description": "Defines the policy of the QueuedRequest.",
+      "type": "object",
+      "properties": {
+        "validUntilDuration": {
+          "description": "A relative time after which resources should not be created. If the request cannot be fulfilled by this time the request will be failed.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "validUntilTime": {
+          "description": "An absolute time after which resources should not be created. If the request cannot be fulfilled by this time the request will be failed.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "validAfterDuration": {
+          "description": "A relative time after which resources may be created.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "validAfterTime": {
+          "description": "An absolute time at which resources may be created.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "validInterval": {
+          "description": "An absolute time interval within which resources may be created.",
+          "$ref": "Interval"
+        }
+      }
+    },
+    "Interval": {
+      "id": "Interval",
+      "description": "Represents a time interval, encoded as a Timestamp start (inclusive) and a Timestamp end (exclusive). The start must be less than or equal to the end. When the start equals the end, the interval is empty (matches no time). When both start and end are unspecified, the interval matches any time.",
+      "type": "object",
+      "properties": {
+        "startTime": {
+          "description": "Optional. Inclusive start of the interval. If specified, a Timestamp matching this interval will have to be the same or after the start.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "Optional. Exclusive end of the interval. If specified, a Timestamp matching this interval will have to be before the end.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "QueuedResourceState": {
+      "id": "QueuedResourceState",
+      "description": "QueuedResourceState defines the details of the QueuedResource request.",
+      "type": "object",
+      "properties": {
+        "state": {
+          "description": "State of the QueuedResource request.",
+          "type": "string",
+          "enumDescriptions": [
+            "State of the QueuedResource request is not known\/set.",
+            "The QueuedResource request has been received. We\u2019re still working on determining if we will be able to honor this request.",
+            "The QueuedResource request has passed initial validation\/admission control and has been persisted in the queue.",
+            "The QueuedResource request has been selected. The associated resources are currently being provisioned (or very soon will begin provisioning).",
+            "The request could not be completed. This may be due to some late-discovered problem with the request itself, or due to unavailability of resources within the constraints of the request (e.g., the \u2018valid until\u2019 start timing constraint expired).",
+            "The QueuedResource is being deleted.",
+            "The resources specified in the QueuedResource request have been provisioned and are ready for use by the end-user\/consumer.",
+            "The resources specified in the QueuedResource request are being deleted. This may have been initiated by the user, or the Cloud TPU service. Inspect the state data for more details.",
+            "The resources specified in the QueuedResource request have been deleted."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "CREATING",
+            "ACCEPTED",
+            "PROVISIONING",
+            "FAILED",
+            "DELETING",
+            "ACTIVE",
+            "SUSPENDING",
+            "SUSPENDED"
+          ]
+        },
+        "creatingData": {
+          "description": "Further data for the creating state.",
+          "$ref": "CreatingData"
+        },
+        "acceptedData": {
+          "description": "Further data for the accepted state.",
+          "$ref": "AcceptedData"
+        },
+        "provisioningData": {
+          "description": "Further data for the provisioning state.",
+          "$ref": "ProvisioningData"
+        },
+        "failedData": {
+          "description": "Further data for the failed state.",
+          "$ref": "FailedData"
+        },
+        "deletingData": {
+          "description": "Further data for the deleting state.",
+          "$ref": "DeletingData"
+        },
+        "activeData": {
+          "description": "Further data for the active state.",
+          "$ref": "ActiveData"
+        },
+        "suspendingData": {
+          "description": "Further data for the suspending state.",
+          "$ref": "SuspendingData"
+        },
+        "suspendedData": {
+          "description": "Further data for the suspended state.",
+          "$ref": "SuspendedData"
+        }
+      }
+    },
+    "CreatingData": {
+      "id": "CreatingData",
+      "description": "Further data for the creating state.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "AcceptedData": {
+      "id": "AcceptedData",
+      "description": "Further data for the accepted state.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "ProvisioningData": {
+      "id": "ProvisioningData",
+      "description": "Further data for the provisioning state.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "FailedData": {
+      "id": "FailedData",
+      "description": "Further data for the failed state.",
+      "type": "object",
+      "properties": {
+        "error": {
+          "description": "The error that caused the queued resource to enter the FAILED state.",
+          "$ref": "Status"
+        }
+      }
+    },
+    "DeletingData": {
+      "id": "DeletingData",
+      "description": "Further data for the deleting state.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "ActiveData": {
+      "id": "ActiveData",
+      "description": "Further data for the active state.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "SuspendingData": {
+      "id": "SuspendingData",
+      "description": "Further data for the suspending state.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "SuspendedData": {
+      "id": "SuspendedData",
+      "description": "Further data for the suspended state.",
       "type": "object",
       "properties": {
       }
@@ -1315,6 +1603,139 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Retrieves the guest attributes for the node."
+                }
+              }
+            },
+            "queuedResources": {
+              "methods": {
+                "list": {
+                  "id": "tpu.projects.locations.queuedResources.list",
+                  "path": "v2alpha1/{+parent}/queuedResources",
+                  "flatPath": "v2alpha1/projects/{projectsId}/locations/{locationsId}/queuedResources",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent resource name.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The maximum number of items to return.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "The next_page_token value returned from a previous List request, if any.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListQueuedResourcesResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists queued resources."
+                },
+                "get": {
+                  "id": "tpu.projects.locations.queuedResources.get",
+                  "path": "v2alpha1/{+name}",
+                  "flatPath": "v2alpha1/projects/{projectsId}/locations/{locationsId}/queuedResources/{queuedResourcesId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The resource name.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/queuedResources\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "QueuedResource"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets details of a queued resource."
+                },
+                "create": {
+                  "id": "tpu.projects.locations.queuedResources.create",
+                  "path": "v2alpha1/{+parent}/queuedResources",
+                  "flatPath": "v2alpha1/projects/{projectsId}/locations/{locationsId}/queuedResources",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent resource name.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "queuedResourceId": {
+                      "description": "The unqualified resource name.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "description": "Idempotent request UUID.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "QueuedResource"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a QueuedResource TPU instance."
+                },
+                "delete": {
+                  "id": "tpu.projects.locations.queuedResources.delete",
+                  "path": "v2alpha1/{+name}",
+                  "flatPath": "v2alpha1/projects/{projectsId}/locations/{locationsId}/queuedResources/{queuedResourcesId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The resource name.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/queuedResources\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "description": "Idempotent request UUID.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a QueuedResource TPU instance."
                 }
               }
             },

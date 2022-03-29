@@ -34,12 +34,12 @@ _RELEASE_TRACK_TO_API_VERSION = {
 }
 
 
-def ListKeys(project, deleted=None, page_size=None, limit=None):
+def ListKeys(project, show_deleted=None, page_size=None, limit=None):
   """List API Keys for a given project.
 
   Args:
     project: The project for which to list keys.
-    deleted: List deleted keys.
+    show_deleted: Includes deleted keys in the list.
     page_size: The page size to list.
     limit: The max number of metrics to return.
 
@@ -52,12 +52,8 @@ def ListKeys(project, deleted=None, page_size=None, limit=None):
   client = GetClientInstance(calliope_base.ReleaseTrack.GA)
   messages = client.MESSAGES_MODULE
 
-  if deleted:
-    key_filter = 'state:DELETED'
-  else:
-    key_filter = None
   request = messages.ApikeysProjectsLocationsKeysListRequest(
-      parent=GetParentResourceName(project), filter=key_filter)
+      parent=GetParentResourceName(project), showDeleted=show_deleted)
   return list_pager.YieldFromList(
       client.projects_locations_keys,
       request,

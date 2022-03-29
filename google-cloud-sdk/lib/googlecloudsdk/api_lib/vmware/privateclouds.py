@@ -46,6 +46,7 @@ class PrivateCloudsClient(util.VmwareClientBase):
              node_count=None,
              network_cidr=None,
              network=None,
+             vmware_engine_network=None,
              network_project=None,
              external_ip_access=None,
              node_custom_core_count=None):
@@ -55,14 +56,24 @@ class PrivateCloudsClient(util.VmwareClientBase):
     flags.AddLabelsToMessage(labels, private_cloud)
     network_config = self.messages.NetworkConfig(
         managementCidr=network_cidr,
-        network=network,
         externalIpAccess=external_ip_access,
     )
-    if not network.startswith('project'):
-      if not bool(network_project):
-        network_project = resource.Parent().Parent().Name()
-      network_config.network = 'projects/{}/global/networks/{}'.format(
-          network_project, network)
+
+    # old networking model
+    if network_project is None:
+      network_project = resource.Parent().Parent().Name()
+
+    if network is not None:
+      if not network.startswith('project'):
+        network = 'projects/{}/global/networks/{}'.format(
+            network_project, network)
+
+      network_config.network = network
+
+    # new networking model
+    if vmware_engine_network is not None:
+      network_config.vmwareEngineNetwork = vmware_engine_network
+
     management_cluster = self.messages.ManagementCluster(
         clusterId=cluster_id, nodeCount=node_count,
         nodeTypeId=node_type, nodeCustomCoreCount=node_custom_core_count)

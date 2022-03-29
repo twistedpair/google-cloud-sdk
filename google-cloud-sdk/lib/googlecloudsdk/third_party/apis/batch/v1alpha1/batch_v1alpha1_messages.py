@@ -645,8 +645,7 @@ class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
   or the response type of an API method. For instance: service Foo { rpc
-  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
-  representation for `Empty` is empty JSON object `{}`.
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
 
 
@@ -817,6 +816,7 @@ class Job(_messages.Message):
       "projects/*/locations/*/jobs/*". For example:
       "projects/123456/locations/us-west1/jobs/job01".
     notification: Job notification.
+    notifications: Notification configurations.
     priority: Priority of the Job. The valid value range is [0, 100). A job
       with higher priority value will be scheduled to run earlier.
     schedulingPolicy: Scheduling policy for TaskGroups in the job.
@@ -874,12 +874,13 @@ class Job(_messages.Message):
   logsPolicy = _messages.MessageField('LogsPolicy', 5)
   name = _messages.StringField(6)
   notification = _messages.MessageField('JobNotification', 7)
-  priority = _messages.IntegerField(8)
-  schedulingPolicy = _messages.EnumField('SchedulingPolicyValueValuesEnum', 9)
-  status = _messages.MessageField('JobStatus', 10)
-  taskGroups = _messages.MessageField('TaskGroup', 11, repeated=True)
-  uid = _messages.StringField(12)
-  updateTime = _messages.StringField(13)
+  notifications = _messages.MessageField('JobNotification', 8, repeated=True)
+  priority = _messages.IntegerField(9)
+  schedulingPolicy = _messages.EnumField('SchedulingPolicyValueValuesEnum', 10)
+  status = _messages.MessageField('JobStatus', 11)
+  taskGroups = _messages.MessageField('TaskGroup', 12, repeated=True)
+  uid = _messages.StringField(13)
+  updateTime = _messages.StringField(14)
 
 
 class JobDependency(_messages.Message):
@@ -948,16 +949,21 @@ class JobDependency(_messages.Message):
 
 
 class JobNotification(_messages.Message):
-  r"""Job notification.
+  r"""Notification configurations.
 
   Fields:
-    pubsubTopic: The Cloud Pub/Sub topic where notifications like the job
-      state changes will be published. This topic should be an existing topic
-      in the same project with the job and billings will be charged to this
-      project.
+    message: The message caters the message attributes configuration will to
+      be sent to this Pub/Sub topic. Without this field, there is no message
+      being sent by default.
+    pubsubTopic: The Pub/Sub topic where notifications like the job state
+      changes will be published. This topic should be an existing topic in the
+      same project with the job and billings will be charged to this project.
+      If no topic is specified, there will be no Pub/Sub messages sent. Topic
+      format is `projects/{project}/topics/{topic}`.
   """
 
-  pubsubTopic = _messages.StringField(1)
+  message = _messages.MessageField('Message', 1)
+  pubsubTopic = _messages.StringField(2)
 
 
 class JobStatus(_messages.Message):
@@ -1244,6 +1250,82 @@ class LogsPolicy(_messages.Message):
 
   destination = _messages.EnumField('DestinationValueValuesEnum', 1)
   logsPath = _messages.StringField(2)
+
+
+class Message(_messages.Message):
+  r"""Message details. Describe a list of attributes this message should have.
+  Without specified message attributes, no message will be sent by default.
+
+  Enums:
+    NewJobStateValueValuesEnum: The new job state.
+    NewTaskStateValueValuesEnum: The new task state.
+    TypeValueValuesEnum: The message type.
+
+  Fields:
+    newJobState: The new job state.
+    newTaskState: The new task state.
+    type: The message type.
+  """
+
+  class NewJobStateValueValuesEnum(_messages.Enum):
+    r"""The new job state.
+
+    Values:
+      STATE_UNSPECIFIED: <no description>
+      QUEUED: Job is submitted into a ResourcePool and waiting for resource
+        allocation.
+      SCHEDULED: Job is scheduled to run as soon as resource allocation is
+        ready. The resource allocation may happen at a later time but with a
+        high chance to succeed.
+      RUNNING: Resource allocation has been successful. At least one Task in
+        the Job is RUNNING.
+      SUCCEEDED: All Tasks in the Job have finished successfully.
+      FAILED: At least one Task in the Job has failed.
+      DELETION_IN_PROGRESS: The Job will be deleted, but has not been deleted
+        yet. Typically this is because resources used by the Job are still
+        being cleaned up.
+    """
+    STATE_UNSPECIFIED = 0
+    QUEUED = 1
+    SCHEDULED = 2
+    RUNNING = 3
+    SUCCEEDED = 4
+    FAILED = 5
+    DELETION_IN_PROGRESS = 6
+
+  class NewTaskStateValueValuesEnum(_messages.Enum):
+    r"""The new task state.
+
+    Values:
+      STATE_UNSPECIFIED: unknown state
+      PENDING: The Task is created and waiting for resources.
+      ASSIGNED: The Task is assigned to at least one VM.
+      RUNNING: The Task is running.
+      FAILED: The Task has failed.
+      SUCCEEDED: The Task has succeeded.
+    """
+    STATE_UNSPECIFIED = 0
+    PENDING = 1
+    ASSIGNED = 2
+    RUNNING = 3
+    FAILED = 4
+    SUCCEEDED = 5
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""The message type.
+
+    Values:
+      TYPE_UNSPECIFIED: Unspecified.
+      JOB_STATE_CHANGED: Notify users that the job state has changed.
+      TASK_STATE_CHANGED: Notify users that the task state has changed.
+    """
+    TYPE_UNSPECIFIED = 0
+    JOB_STATE_CHANGED = 1
+    TASK_STATE_CHANGED = 2
+
+  newJobState = _messages.EnumField('NewJobStateValueValuesEnum', 1)
+  newTaskState = _messages.EnumField('NewTaskStateValueValuesEnum', 2)
+  type = _messages.EnumField('TypeValueValuesEnum', 3)
 
 
 class NFS(_messages.Message):

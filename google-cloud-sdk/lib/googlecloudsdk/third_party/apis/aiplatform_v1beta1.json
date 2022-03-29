@@ -244,7 +244,7 @@
     },
     "GoogleProtobufEmpty": {
       "id": "GoogleProtobufEmpty",
-      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON representation for `Empty` is empty JSON object `{}`.",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }",
       "type": "object",
       "properties": {
       }
@@ -693,6 +693,10 @@
           "description": "Output only. Resource name of the Model Monitoring job associated with this Endpoint if monitoring is enabled by CreateModelDeploymentMonitoringJob. Format: `projects\/{project}\/locations\/{location}\/modelDeploymentMonitoringJobs\/{model_deployment_monitoring_job}`",
           "readOnly": true,
           "type": "string"
+        },
+        "predictRequestResponseLoggingConfig": {
+          "description": "Configures the request-response logging for online prediction.",
+          "$ref": "GoogleCloudAiplatformV1beta1PredictRequestResponseLoggingConfig"
         }
       }
     },
@@ -715,6 +719,10 @@
         },
         "model": {
           "description": "Required. The name of the Model that this is the deployment of. Note that the Model may be in a different location than the DeployedModel's Endpoint.",
+          "type": "string"
+        },
+        "modelVersionId": {
+          "description": "The version ID of the model that is deployed.",
           "type": "string"
         },
         "displayName": {
@@ -1300,6 +1308,37 @@
         }
       }
     },
+    "GoogleCloudAiplatformV1beta1PredictRequestResponseLoggingConfig": {
+      "id": "GoogleCloudAiplatformV1beta1PredictRequestResponseLoggingConfig",
+      "description": "Configuration for logging request-response to a BigQuery table.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "If logging is enabled or not.",
+          "type": "boolean"
+        },
+        "samplingRate": {
+          "description": "Percentage of requests to be logged, expressed as a fraction in range(0,1].",
+          "type": "number",
+          "format": "double"
+        },
+        "bigqueryDestination": {
+          "description": "BigQuery table for logging. If only given project, a new dataset will be created with name `logging__` where will be made BigQuery-dataset-name compatible (e.g. most special characters will become underscores). If no table name is given, a new table will be created with name `request_response_logging`",
+          "$ref": "GoogleCloudAiplatformV1beta1BigQueryDestination"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1BigQueryDestination": {
+      "id": "GoogleCloudAiplatformV1beta1BigQueryDestination",
+      "description": "The BigQuery location for the output content.",
+      "type": "object",
+      "properties": {
+        "outputUri": {
+          "description": "Required. BigQuery URI to a project or table, up to 2000 characters long. When only the project is specified, the Dataset and Table is created. When the full table reference is specified, the Dataset must exist and table must not exist. Accepted forms: * BigQuery path. For example: `bq:\/\/projectId` or `bq:\/\/projectId.bqDatasetId` or `bq:\/\/projectId.bqDatasetId.bqTableId`.",
+          "type": "string"
+        }
+      }
+    },
     "GoogleCloudAiplatformV1beta1ListEndpointsResponse": {
       "id": "GoogleCloudAiplatformV1beta1ListEndpointsResponse",
       "description": "Response message for EndpointService.ListEndpoints.",
@@ -1710,7 +1749,7 @@
           "format": "int32"
         },
         "maxNodeCount": {
-          "description": "The maximum number of nodes to scale up to. Must be greater or equal to min_node_count.",
+          "description": "The maximum number of nodes to scale up to. Must be greater than min_node_count, and less than or equal to 10 times of 'min_node_count'.",
           "type": "integer",
           "format": "int32"
         }
@@ -1784,6 +1823,18 @@
         "snapshotAnalysis": {
           "description": "The config for Snapshot Analysis Based Feature Monitoring.",
           "$ref": "GoogleCloudAiplatformV1beta1FeaturestoreMonitoringConfigSnapshotAnalysis"
+        },
+        "importFeaturesAnalysis": {
+          "description": "The config for ImportFeatures Analysis Based Feature Monitoring.",
+          "$ref": "GoogleCloudAiplatformV1beta1FeaturestoreMonitoringConfigImportFeaturesAnalysis"
+        },
+        "numericalThresholdConfig": {
+          "description": "Threshold for numerical features of anomaly detection. This is shared by all objectives of Featurestore Monitoring for numerical features (i.e. Features with type (Feature.ValueType) DOUBLE or INT64).",
+          "$ref": "GoogleCloudAiplatformV1beta1FeaturestoreMonitoringConfigThresholdConfig"
+        },
+        "categoricalThresholdConfig": {
+          "description": "Threshold for categorical features of anomaly detection. This is shared by all types of Featurestore Monitoring for categorical features (i.e. Features with type (Feature.ValueType) BOOL or STRING).",
+          "$ref": "GoogleCloudAiplatformV1beta1FeaturestoreMonitoringConfigThresholdConfig"
         }
       }
     },
@@ -1805,6 +1856,62 @@
           "description": "Configuration of the snapshot analysis based monitoring pipeline running interval. The value indicates number of days. If both FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval_days and FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval are set when creating\/updating EntityTypes\/Features, FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval_days will be used.",
           "type": "integer",
           "format": "int32"
+        },
+        "stalenessDays": {
+          "description": "Customized export features time window for snapshot analysis. Unit is one day. Default value is 3 weeks. Minimum value is 1 day. Maximum value is 4000 days.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1FeaturestoreMonitoringConfigImportFeaturesAnalysis": {
+      "id": "GoogleCloudAiplatformV1beta1FeaturestoreMonitoringConfigImportFeaturesAnalysis",
+      "description": "Configuration of the Featurestore's ImportFeature Analysis Based Monitoring. This type of analysis generates statistics for values of each Feature imported by every ImportFeatureValues operation.",
+      "type": "object",
+      "properties": {
+        "state": {
+          "description": "Whether to enable \/ disable \/ inherite default hebavior for import features analysis.",
+          "type": "string",
+          "enumDescriptions": [
+            "Should not be used.",
+            "The default behavior of whether to enable the monitoring. EntityType-level config: disabled. Feature-level config: inherited from the configuration of EntityType this Feature belongs to.",
+            "Explicitly enables import features analysis. EntityType-level config: by default enables import features analysis for all Features under it. Feature-level config: enables import features analysis regardless of the EntityType-level config.",
+            "Explicitly disables import features analysis. EntityType-level config: by default disables import features analysis for all Features under it. Feature-level config: disables import features analysis regardless of the EntityType-level config."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "DEFAULT",
+            "ENABLED",
+            "DISABLED"
+          ]
+        },
+        "anomalyDetectionBaseline": {
+          "description": "The baseline used to do anomaly detection for the statistics generated by import features analysis.",
+          "type": "string",
+          "enumDescriptions": [
+            "Should not be used.",
+            "Choose the later one statistics generated by either most recent snapshot analysis or previous import features analysis. If non of them exists, skip anomaly detection and only generate a statistics.",
+            "Use the statistics generated by the most recent snapshot analysis if exists.",
+            "Use the statistics generated by the previous import features analysis if exists."
+          ],
+          "enum": [
+            "BASELINE_UNSPECIFIED",
+            "LATEST_STATS",
+            "MOST_RECENT_SNAPSHOT_STATS",
+            "PREVIOUS_IMPORT_FEATURES_STATS"
+          ]
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1FeaturestoreMonitoringConfigThresholdConfig": {
+      "id": "GoogleCloudAiplatformV1beta1FeaturestoreMonitoringConfigThresholdConfig",
+      "description": "The config for Featurestore Monitoring threshold.",
+      "type": "object",
+      "properties": {
+        "value": {
+          "description": "Specify a threshold value that can trigger the alert. 1. For categorical feature, the distribution distance is calculated by L-inifinity norm. 2. For numerical feature, the distribution distance is calculated by Jensen\u2013Shannon divergence. Each feature must have a non-zero threshold if they need to be monitored. Otherwise no alert will be triggered for that feature.",
+          "type": "number",
+          "format": "double"
         }
       }
     },
@@ -1894,12 +2001,24 @@
           "description": "Optional. The custom monitoring configuration for this Feature, if not set, use the monitoring_config defined for the EntityType this Feature belongs to. Only Features with type (Feature.ValueType) BOOL, STRING, DOUBLE or INT64 can enable monitoring. If this is populated with FeaturestoreMonitoringConfig.disabled = true, snapshot analysis monitoring is disabled; if FeaturestoreMonitoringConfig.monitoring_interval specified, snapshot analysis monitoring is enabled. Otherwise, snapshot analysis monitoring config is same as the EntityType's this Feature belongs to.",
           "$ref": "GoogleCloudAiplatformV1beta1FeaturestoreMonitoringConfig"
         },
+        "disableMonitoring": {
+          "description": "Optional. If not set, use the monitoring_config defined for the EntityType this Feature belongs to. Only Features with type (Feature.ValueType) BOOL, STRING, DOUBLE or INT64 can enable monitoring. If set to true, all types of data monitoring are disabled despite the config on EntityType.",
+          "type": "boolean"
+        },
         "monitoringStats": {
           "description": "Output only. A list of historical Snapshot Analysis stats requested by user, sorted by FeatureStatsAnomaly.start_time descending.",
           "readOnly": true,
           "type": "array",
           "items": {
             "$ref": "GoogleCloudAiplatformV1beta1FeatureStatsAnomaly"
+          }
+        },
+        "monitoringStatsAnomalies": {
+          "description": "Output only. The list of historical stats and anomalies with specified objectives.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1FeatureMonitoringStatsAnomaly"
           }
         }
       }
@@ -1941,6 +2060,33 @@
           "description": "The end timestamp of window where stats were generated. For objectives where time window doesn't make sense (e.g. Featurestore Snapshot Monitoring), end_time indicates the timestamp of the data used to generate stats (e.g. timestamp we take snapshots for feature values).",
           "type": "string",
           "format": "google-datetime"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1FeatureMonitoringStatsAnomaly": {
+      "id": "GoogleCloudAiplatformV1beta1FeatureMonitoringStatsAnomaly",
+      "description": "A list of historical Snapshot Analysis or Import Feature Analysis stats requested by user, sorted by FeatureStatsAnomaly.start_time descending.",
+      "type": "object",
+      "properties": {
+        "objective": {
+          "description": "Output only. The objective for each stats.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "If it's OBJECTIVE_UNSPECIFIED, monitoring_stats will be empty.",
+            "Stats are generated by Import Feature Analysis.",
+            "Stats are generated by Snapshot Analysis."
+          ],
+          "enum": [
+            "OBJECTIVE_UNSPECIFIED",
+            "IMPORT_FEATURE_ANALYSIS",
+            "SNAPSHOT_ANALYSIS"
+          ]
+        },
+        "featureStatsAnomaly": {
+          "description": "Output only. The stats and anomalies generated at specific timestamp.",
+          "readOnly": true,
+          "$ref": "GoogleCloudAiplatformV1beta1FeatureStatsAnomaly"
         }
       }
     },
@@ -2037,6 +2183,10 @@
           "description": "Specifies the number of workers that are used to write data to the Featurestore. Consider the online serving capacity that you require to achieve the desired import throughput without interfering with online serving. The value must be positive, and less than or equal to 100. If not set, defaults to using 1 worker. The low count ensures minimal impact on online serving performance.",
           "type": "integer",
           "format": "int32"
+        },
+        "disableIngestionAnalysis": {
+          "description": "If true, API doesn't start ingestion analysis pipeline.",
+          "type": "boolean"
         }
       }
     },
@@ -2137,17 +2287,6 @@
         "csvDestination": {
           "description": "Output in CSV format. Array Feature value types are not allowed in CSV format.",
           "$ref": "GoogleCloudAiplatformV1beta1CsvDestination"
-        }
-      }
-    },
-    "GoogleCloudAiplatformV1beta1BigQueryDestination": {
-      "id": "GoogleCloudAiplatformV1beta1BigQueryDestination",
-      "description": "The BigQuery location for the output content.",
-      "type": "object",
-      "properties": {
-        "outputUri": {
-          "description": "Required. BigQuery URI to a project or table, up to 2000 characters long. When only the project is specified, the Dataset and Table is created. When the full table reference is specified, the Dataset must exist and table must not exist. Accepted forms: * BigQuery path. For example: `bq:\/\/projectId` or `bq:\/\/projectId.bqDatasetId` or `bq:\/\/projectId.bqDatasetId.bqTableId`.",
-          "type": "string"
         }
       }
     },
@@ -3952,6 +4091,10 @@
           "description": "The name of the Model resoure that produces the predictions via this job, must share the same ancestor Location. Starting this job has no impact on any existing deployments of the Model and their resources. Exactly one of model and unmanaged_container_model must be set.",
           "type": "string"
         },
+        "modelVersionId": {
+          "description": "The version ID of the Model that produces the predictions via this job.",
+          "type": "string"
+        },
         "unmanagedContainerModel": {
           "description": "Contains model information necessary to perform batch prediction without requiring uploading to model registry. Exactly one of model and unmanaged_container_model must be set.",
           "$ref": "GoogleCloudAiplatformV1beta1UnmanagedContainerModel"
@@ -3971,6 +4114,10 @@
         "dedicatedResources": {
           "description": "The config of resources used by the Model during the batch prediction. If the Model supports DEDICATED_RESOURCES this config may be provided (and the job will use these resources), if the Model doesn't support AUTOMATIC_RESOURCES, this config must be provided.",
           "$ref": "GoogleCloudAiplatformV1beta1BatchDedicatedResources"
+        },
+        "serviceAccount": {
+          "description": "The service account that the DeployedModel's container runs as. If not specified, a system generated one will be used, which has minimal permissions and the custom container, if used, may not have enough permission to access other GCP resources. Users deploying the Model must have the `iam.serviceAccounts.actAs` permission on this service account.",
+          "type": "string"
         },
         "manualBatchTuningParameters": {
           "description": "Immutable. Parameters configuring the batch behavior. Currently only applicable when dedicated_resources are used (in other cases Vertex AI does the tuning itself).",
@@ -6109,7 +6256,7 @@
       "type": "object",
       "properties": {
         "versionAliases": {
-          "description": "Required. The set of version aliases to merge. The alias should be at most 128 characters, and match `a-z{0,126}[a-z-0-9]`. Add the `-` prefix to an alias means removing that alias from the version. Example: `-golden` means removing the `golden` alias from the version. There is NO ordering in aliases, which means 1) The aliases returned from GetModel API might not have the exactly same order from this MergeVersionAliases API. 2) Adding and deleting the same alias in the request is not recommended, and the 2 operations will be cancelled out.",
+          "description": "Required. The set of version aliases to merge. The alias should be at most 128 characters, and match `a-z{0,126}[a-z-0-9]`. Add the `-` prefix to an alias means removing that alias from the version. `-` is NOT counted in the 128 characters. Example: `-golden` means removing the `golden` alias from the version. There is NO ordering in aliases, which means 1) The aliases returned from GetModel API might not have the exactly same order from this MergeVersionAliases API. 2) Adding and deleting the same alias in the request is not recommended, and the 2 operations will be cancelled out.",
           "type": "array",
           "items": {
             "type": "string"
@@ -7127,6 +7274,11 @@
         },
         "model": {
           "description": "Output only. The resource name of the Model which is deployed as the DeployedModel that this prediction hits.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "modelVersionId": {
+          "description": "Output only. The version ID of the Model which is deployed as the DeployedModel that this prediction hits.",
           "readOnly": true,
           "type": "string"
         },
@@ -8326,12 +8478,24 @@
           "description": "Optional. The custom monitoring configuration for this Feature, if not set, use the monitoring_config defined for the EntityType this Feature belongs to. Only Features with type (Feature.ValueType) BOOL, STRING, DOUBLE or INT64 can enable monitoring. If this is populated with FeaturestoreMonitoringConfig.disabled = true, snapshot analysis monitoring is disabled; if FeaturestoreMonitoringConfig.monitoring_interval specified, snapshot analysis monitoring is enabled. Otherwise, snapshot analysis monitoring config is same as the EntityType's this Feature belongs to.",
           "$ref": "GoogleCloudAiplatformInternalFeaturestoreMonitoringConfig"
         },
+        "disableMonitoring": {
+          "description": "Optional. If not set, use the monitoring_config defined for the EntityType this Feature belongs to. Only Features with type (Feature.ValueType) BOOL, STRING, DOUBLE or INT64 can enable monitoring. If set to true, all types of data monitoring are disabled despite the config on EntityType.",
+          "type": "boolean"
+        },
         "monitoringStats": {
           "description": "Output only. A list of historical Snapshot Analysis stats requested by user, sorted by FeatureStatsAnomaly.start_time descending.",
           "readOnly": true,
           "type": "array",
           "items": {
             "$ref": "GoogleCloudAiplatformInternalFeatureStatsAnomaly"
+          }
+        },
+        "monitoringStatsAnomalies": {
+          "description": "Output only. The list of historical stats and anomalies with specified objectives.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformInternalFeatureMonitoringStatsAnomaly"
           }
         }
       }
@@ -8344,6 +8508,18 @@
         "snapshotAnalysis": {
           "description": "The config for Snapshot Analysis Based Feature Monitoring.",
           "$ref": "GoogleCloudAiplatformInternalFeaturestoreMonitoringConfigSnapshotAnalysis"
+        },
+        "importFeaturesAnalysis": {
+          "description": "The config for ImportFeatures Analysis Based Feature Monitoring.",
+          "$ref": "GoogleCloudAiplatformInternalFeaturestoreMonitoringConfigImportFeaturesAnalysis"
+        },
+        "numericalThresholdConfig": {
+          "description": "Threshold for numerical features of anomaly detection. This is shared by all objectives of Featurestore Monitoring for numerical features (i.e. Features with type (Feature.ValueType) DOUBLE or INT64).",
+          "$ref": "GoogleCloudAiplatformInternalFeaturestoreMonitoringConfigThresholdConfig"
+        },
+        "categoricalThresholdConfig": {
+          "description": "Threshold for categorical features of anomaly detection. This is shared by all types of Featurestore Monitoring for categorical features (i.e. Features with type (Feature.ValueType) BOOL or STRING).",
+          "$ref": "GoogleCloudAiplatformInternalFeaturestoreMonitoringConfigThresholdConfig"
         }
       }
     },
@@ -8360,6 +8536,62 @@
           "description": "Configuration of the snapshot analysis based monitoring pipeline running interval. The value indicates number of days. If both FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval_days and FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval are set when creating\/updating EntityTypes\/Features, FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval_days will be used.",
           "type": "integer",
           "format": "int32"
+        },
+        "stalenessDays": {
+          "description": "Customized export features time window for snapshot analysis. Unit is one day. Default value is 3 weeks. Minimum value is 1 day. Maximum value is 4000 days.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalFeaturestoreMonitoringConfigImportFeaturesAnalysis": {
+      "id": "GoogleCloudAiplatformInternalFeaturestoreMonitoringConfigImportFeaturesAnalysis",
+      "description": "Configuration of the Featurestore's ImportFeature Analysis Based Monitoring. This type of analysis generates statistics for values of each Feature imported by every ImportFeatureValues operation.",
+      "type": "object",
+      "properties": {
+        "state": {
+          "description": "Whether to enable \/ disable \/ inherite default hebavior for import features analysis.",
+          "type": "string",
+          "enumDescriptions": [
+            "Should not be used.",
+            "The default behavior of whether to enable the monitoring. EntityType-level config: disabled. Feature-level config: inherited from the configuration of EntityType this Feature belongs to.",
+            "Explicitly enables import features analysis. EntityType-level config: by default enables import features analysis for all Features under it. Feature-level config: enables import features analysis regardless of the EntityType-level config.",
+            "Explicitly disables import features analysis. EntityType-level config: by default disables import features analysis for all Features under it. Feature-level config: disables import features analysis regardless of the EntityType-level config."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "DEFAULT",
+            "ENABLED",
+            "DISABLED"
+          ]
+        },
+        "anomalyDetectionBaseline": {
+          "description": "The baseline used to do anomaly detection for the statistics generated by import features analysis.",
+          "type": "string",
+          "enumDescriptions": [
+            "Should not be used.",
+            "Choose the later one statistics generated by either most recent snapshot analysis or previous import features analysis. If non of them exists, skip anomaly detection and only generate a statistics.",
+            "Use the statistics generated by the most recent snapshot analysis if exists.",
+            "Use the statistics generated by the previous import features analysis if exists."
+          ],
+          "enum": [
+            "BASELINE_UNSPECIFIED",
+            "LATEST_STATS",
+            "MOST_RECENT_SNAPSHOT_STATS",
+            "PREVIOUS_IMPORT_FEATURES_STATS"
+          ]
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalFeaturestoreMonitoringConfigThresholdConfig": {
+      "id": "GoogleCloudAiplatformInternalFeaturestoreMonitoringConfigThresholdConfig",
+      "description": "The config for Featurestore Monitoring threshold.",
+      "type": "object",
+      "properties": {
+        "value": {
+          "description": "Specify a threshold value that can trigger the alert. 1. For categorical feature, the distribution distance is calculated by L-inifinity norm. 2. For numerical feature, the distribution distance is calculated by Jensen\u2013Shannon divergence. Each feature must have a non-zero threshold if they need to be monitored. Otherwise no alert will be triggered for that feature.",
+          "type": "number",
+          "format": "double"
         }
       }
     },
@@ -8392,6 +8624,33 @@
           "description": "The end timestamp of window where stats were generated. For objectives where time window doesn't make sense (e.g. Featurestore Snapshot Monitoring), end_time indicates the timestamp of the data used to generate stats (e.g. timestamp we take snapshots for feature values).",
           "type": "string",
           "format": "google-datetime"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalFeatureMonitoringStatsAnomaly": {
+      "id": "GoogleCloudAiplatformInternalFeatureMonitoringStatsAnomaly",
+      "description": "A list of historical Snapshot Analysis or Import Feature Analysis stats requested by user, sorted by FeatureStatsAnomaly.start_time descending.",
+      "type": "object",
+      "properties": {
+        "objective": {
+          "description": "Output only. The objective for each stats.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "If it's OBJECTIVE_UNSPECIFIED, monitoring_stats will be empty.",
+            "Stats are generated by Import Feature Analysis.",
+            "Stats are generated by Snapshot Analysis."
+          ],
+          "enum": [
+            "OBJECTIVE_UNSPECIFIED",
+            "IMPORT_FEATURE_ANALYSIS",
+            "SNAPSHOT_ANALYSIS"
+          ]
+        },
+        "featureStatsAnomaly": {
+          "description": "Output only. The stats and anomalies generated at specific timestamp.",
+          "readOnly": true,
+          "$ref": "GoogleCloudAiplatformInternalFeatureStatsAnomaly"
         }
       }
     },
@@ -8721,6 +8980,10 @@
         },
         "model": {
           "description": "Required. The name of the Model that this is the deployment of. Note that the Model may be in a different location than the DeployedModel's Endpoint.",
+          "type": "string"
+        },
+        "modelVersionId": {
+          "description": "The version ID of the model that is deployed.",
           "type": "string"
         },
         "displayName": {
@@ -10267,6 +10530,11 @@
         "model": {
           "description": "The name of the uploaded Model resource. Format: `projects\/{project}\/locations\/{location}\/models\/{model}`",
           "type": "string"
+        },
+        "modelVersionId": {
+          "description": "Output only. The version ID of the model that is uploaded.",
+          "readOnly": true,
+          "type": "string"
         }
       }
     },
@@ -11179,12 +11447,24 @@
           "description": "Optional. The custom monitoring configuration for this Feature, if not set, use the monitoring_config defined for the EntityType this Feature belongs to. Only Features with type (Feature.ValueType) BOOL, STRING, DOUBLE or INT64 can enable monitoring. If this is populated with FeaturestoreMonitoringConfig.disabled = true, snapshot analysis monitoring is disabled; if FeaturestoreMonitoringConfig.monitoring_interval specified, snapshot analysis monitoring is enabled. Otherwise, snapshot analysis monitoring config is same as the EntityType's this Feature belongs to.",
           "$ref": "GoogleCloudAiplatformUiFeaturestoreMonitoringConfig"
         },
+        "disableMonitoring": {
+          "description": "Optional. If not set, use the monitoring_config defined for the EntityType this Feature belongs to. Only Features with type (Feature.ValueType) BOOL, STRING, DOUBLE or INT64 can enable monitoring. If set to true, all types of data monitoring are disabled despite the config on EntityType.",
+          "type": "boolean"
+        },
         "monitoringStats": {
           "description": "Output only. A list of historical Snapshot Analysis stats requested by user, sorted by FeatureStatsAnomaly.start_time descending.",
           "readOnly": true,
           "type": "array",
           "items": {
             "$ref": "GoogleCloudAiplatformUiFeatureStatsAnomaly"
+          }
+        },
+        "monitoringStatsAnomalies": {
+          "description": "Output only. The list of historical stats and anomalies with specified objectives.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformUiFeatureMonitoringStatsAnomaly"
           }
         }
       }
@@ -11197,6 +11477,18 @@
         "snapshotAnalysis": {
           "description": "The config for Snapshot Analysis Based Feature Monitoring.",
           "$ref": "GoogleCloudAiplatformUiFeaturestoreMonitoringConfigSnapshotAnalysis"
+        },
+        "importFeaturesAnalysis": {
+          "description": "The config for ImportFeatures Analysis Based Feature Monitoring.",
+          "$ref": "GoogleCloudAiplatformUiFeaturestoreMonitoringConfigImportFeaturesAnalysis"
+        },
+        "numericalThresholdConfig": {
+          "description": "Threshold for numerical features of anomaly detection. This is shared by all objectives of Featurestore Monitoring for numerical features (i.e. Features with type (Feature.ValueType) DOUBLE or INT64).",
+          "$ref": "GoogleCloudAiplatformUiFeaturestoreMonitoringConfigThresholdConfig"
+        },
+        "categoricalThresholdConfig": {
+          "description": "Threshold for categorical features of anomaly detection. This is shared by all types of Featurestore Monitoring for categorical features (i.e. Features with type (Feature.ValueType) BOOL or STRING).",
+          "$ref": "GoogleCloudAiplatformUiFeaturestoreMonitoringConfigThresholdConfig"
         }
       }
     },
@@ -11218,6 +11510,62 @@
           "description": "Configuration of the snapshot analysis based monitoring pipeline running interval. The value indicates number of days. If both FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval_days and FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval are set when creating\/updating EntityTypes\/Features, FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval_days will be used.",
           "type": "integer",
           "format": "int32"
+        },
+        "stalenessDays": {
+          "description": "Customized export features time window for snapshot analysis. Unit is one day. Default value is 3 weeks. Minimum value is 1 day. Maximum value is 4000 days.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiFeaturestoreMonitoringConfigImportFeaturesAnalysis": {
+      "id": "GoogleCloudAiplatformUiFeaturestoreMonitoringConfigImportFeaturesAnalysis",
+      "description": "Configuration of the Featurestore's ImportFeature Analysis Based Monitoring. This type of analysis generates statistics for values of each Feature imported by every ImportFeatureValues operation.",
+      "type": "object",
+      "properties": {
+        "state": {
+          "description": "Whether to enable \/ disable \/ inherite default hebavior for import features analysis.",
+          "type": "string",
+          "enumDescriptions": [
+            "Should not be used.",
+            "The default behavior of whether to enable the monitoring. EntityType-level config: disabled. Feature-level config: inherited from the configuration of EntityType this Feature belongs to.",
+            "Explicitly enables import features analysis. EntityType-level config: by default enables import features analysis for all Features under it. Feature-level config: enables import features analysis regardless of the EntityType-level config.",
+            "Explicitly disables import features analysis. EntityType-level config: by default disables import features analysis for all Features under it. Feature-level config: disables import features analysis regardless of the EntityType-level config."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "DEFAULT",
+            "ENABLED",
+            "DISABLED"
+          ]
+        },
+        "anomalyDetectionBaseline": {
+          "description": "The baseline used to do anomaly detection for the statistics generated by import features analysis.",
+          "type": "string",
+          "enumDescriptions": [
+            "Should not be used.",
+            "Choose the later one statistics generated by either most recent snapshot analysis or previous import features analysis. If non of them exists, skip anomaly detection and only generate a statistics.",
+            "Use the statistics generated by the most recent snapshot analysis if exists.",
+            "Use the statistics generated by the previous import features analysis if exists."
+          ],
+          "enum": [
+            "BASELINE_UNSPECIFIED",
+            "LATEST_STATS",
+            "MOST_RECENT_SNAPSHOT_STATS",
+            "PREVIOUS_IMPORT_FEATURES_STATS"
+          ]
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiFeaturestoreMonitoringConfigThresholdConfig": {
+      "id": "GoogleCloudAiplatformUiFeaturestoreMonitoringConfigThresholdConfig",
+      "description": "The config for Featurestore Monitoring threshold.",
+      "type": "object",
+      "properties": {
+        "value": {
+          "description": "Specify a threshold value that can trigger the alert. 1. For categorical feature, the distribution distance is calculated by L-inifinity norm. 2. For numerical feature, the distribution distance is calculated by Jensen\u2013Shannon divergence. Each feature must have a non-zero threshold if they need to be monitored. Otherwise no alert will be triggered for that feature.",
+          "type": "number",
+          "format": "double"
         }
       }
     },
@@ -11475,6 +11823,33 @@
         }
       }
     },
+    "GoogleCloudAiplatformUiFeatureMonitoringStatsAnomaly": {
+      "id": "GoogleCloudAiplatformUiFeatureMonitoringStatsAnomaly",
+      "description": "A list of historical Snapshot Analysis or Import Feature Analysis stats requested by user, sorted by FeatureStatsAnomaly.start_time descending.",
+      "type": "object",
+      "properties": {
+        "objective": {
+          "description": "Output only. The objective for each stats.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "If it's OBJECTIVE_UNSPECIFIED, monitoring_stats will be empty.",
+            "Stats are generated by Import Feature Analysis.",
+            "Stats are generated by Snapshot Analysis."
+          ],
+          "enum": [
+            "OBJECTIVE_UNSPECIFIED",
+            "IMPORT_FEATURE_ANALYSIS",
+            "SNAPSHOT_ANALYSIS"
+          ]
+        },
+        "featureStatsAnomaly": {
+          "description": "Output only. The stats and anomalies generated at specific timestamp.",
+          "readOnly": true,
+          "$ref": "GoogleCloudAiplatformUiFeatureStatsAnomaly"
+        }
+      }
+    },
     "GoogleCloudAiplatformUiCheckTrialEarlyStoppingStateMetatdata": {
       "id": "GoogleCloudAiplatformUiCheckTrialEarlyStoppingStateMetatdata",
       "description": "This message will be placed in the metadata field of a google.longrunning.Operation associated with a CheckTrialEarlyStoppingState request.",
@@ -11601,6 +11976,10 @@
         },
         "model": {
           "description": "Required. The name of the Model that this is the deployment of. Note that the Model may be in a different location than the DeployedModel's Endpoint.",
+          "type": "string"
+        },
+        "modelVersionId": {
+          "description": "The version ID of the model that is deployed.",
           "type": "string"
         },
         "displayName": {
@@ -12751,13 +13130,15 @@
             "",
             "",
             "",
+            "",
             ""
           ],
           "enum": [
             "UNKNOWN",
             "CUSTOMJOB",
             "DATAFLOWJOB",
-            "BIGQUERYJOB"
+            "BIGQUERYJOB",
+            "BATCHPREDICTIONJOB"
           ]
         },
         "resourceUri": {
@@ -13416,6 +13797,11 @@
       "properties": {
         "model": {
           "description": "The name of the uploaded Model resource. Format: `projects\/{project}\/locations\/{location}\/models\/{model}`",
+          "type": "string"
+        },
+        "modelVersionId": {
+          "description": "Output only. The version ID of the model that is uploaded.",
+          "readOnly": true,
           "type": "string"
         }
       }
@@ -14728,6 +15114,10 @@
           "description": "Required. The name of the Model that this is the deployment of. Note that the Model may be in a different location than the DeployedModel's Endpoint.",
           "type": "string"
         },
+        "modelVersionId": {
+          "description": "The version ID of the model that is deployed.",
+          "type": "string"
+        },
         "displayName": {
           "description": "The display name of the DeployedModel. If not provided upon creation, the Model's display_name is used.",
           "type": "string"
@@ -15544,6 +15934,11 @@
       "properties": {
         "model": {
           "description": "The name of the uploaded Model resource. Format: `projects\/{project}\/locations\/{location}\/models\/{model}`",
+          "type": "string"
+        },
+        "modelVersionId": {
+          "description": "Output only. The version ID of the model that is uploaded.",
+          "readOnly": true,
           "type": "string"
         }
       }
@@ -17026,6 +17421,11 @@
       "properties": {
         "model": {
           "description": "The name of the uploaded Model resource. Format: `projects\/{project}\/locations\/{location}\/models\/{model}`",
+          "type": "string"
+        },
+        "modelVersionId": {
+          "description": "Output only. The version ID of the model that is uploaded.",
+          "readOnly": true,
           "type": "string"
         }
       }
@@ -19886,6 +20286,85 @@
         "etag": {
           "description": "Used to perform a consistent read-modify-write updates. If not set, a blind \"overwrite\" update happens.",
           "type": "string"
+        },
+        "disableMonitoring": {
+          "description": "Optional. If not set, use the monitoring_config defined for the EntityType this Feature belongs to. Only Features with type (Feature.ValueType) BOOL, STRING, DOUBLE or INT64 can enable monitoring. If set to true, all types of data monitoring are disabled despite the config on EntityType.",
+          "type": "boolean"
+        },
+        "monitoringStatsAnomalies": {
+          "description": "Output only. The list of historical stats and anomalies with specified objectives.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1FeatureMonitoringStatsAnomaly"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1FeatureMonitoringStatsAnomaly": {
+      "id": "GoogleCloudAiplatformV1FeatureMonitoringStatsAnomaly",
+      "description": "A list of historical Snapshot Analysis or Import Feature Analysis stats requested by user, sorted by FeatureStatsAnomaly.start_time descending.",
+      "type": "object",
+      "properties": {
+        "objective": {
+          "description": "Output only. The objective for each stats.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "If it's OBJECTIVE_UNSPECIFIED, monitoring_stats will be empty.",
+            "Stats are generated by Import Feature Analysis.",
+            "Stats are generated by Snapshot Analysis."
+          ],
+          "enum": [
+            "OBJECTIVE_UNSPECIFIED",
+            "IMPORT_FEATURE_ANALYSIS",
+            "SNAPSHOT_ANALYSIS"
+          ]
+        },
+        "featureStatsAnomaly": {
+          "description": "Output only. The stats and anomalies generated at specific timestamp.",
+          "readOnly": true,
+          "$ref": "GoogleCloudAiplatformV1FeatureStatsAnomaly"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1FeatureStatsAnomaly": {
+      "id": "GoogleCloudAiplatformV1FeatureStatsAnomaly",
+      "description": "Stats and Anomaly generated at specific timestamp for specific Feature. The start_time and end_time are used to define the time range of the dataset that current stats belongs to, e.g. prediction traffic is bucketed into prediction datasets by time window. If the Dataset is not defined by time window, start_time = end_time. Timestamp of the stats and anomalies always refers to end_time. Raw stats and anomalies are stored in stats_uri or anomaly_uri in the tensorflow defined protos. Field data_stats contains almost identical information with the raw stats in Vertex AI defined proto, for UI to display.",
+      "type": "object",
+      "properties": {
+        "score": {
+          "description": "Feature importance score, only populated when cross-feature monitoring is enabled. For now only used to represent feature attribution score within range [0, 1] for ModelDeploymentMonitoringObjectiveType.FEATURE_ATTRIBUTION_SKEW and ModelDeploymentMonitoringObjectiveType.FEATURE_ATTRIBUTION_DRIFT.",
+          "type": "number",
+          "format": "double"
+        },
+        "statsUri": {
+          "description": "Path of the stats file for current feature values in Cloud Storage bucket. Format: gs:\/\/\/\/stats. Example: gs:\/\/monitoring_bucket\/feature_name\/stats. Stats are stored as binary format with Protobuf message [tensorflow.metadata.v0.FeatureNameStatistics](https:\/\/github.com\/tensorflow\/metadata\/blob\/master\/tensorflow_metadata\/proto\/v0\/statistics.proto).",
+          "type": "string"
+        },
+        "anomalyUri": {
+          "description": "Path of the anomaly file for current feature values in Cloud Storage bucket. Format: gs:\/\/\/\/anomalies. Example: gs:\/\/monitoring_bucket\/feature_name\/anomalies. Stats are stored as binary format with Protobuf message Anoamlies are stored as binary format with Protobuf message [tensorflow.metadata.v0.AnomalyInfo] (https:\/\/github.com\/tensorflow\/metadata\/blob\/master\/tensorflow_metadata\/proto\/v0\/anomalies.proto).",
+          "type": "string"
+        },
+        "distributionDeviation": {
+          "description": "Deviation from the current stats to baseline stats. 1. For categorical feature, the distribution distance is calculated by L-inifinity norm. 2. For numerical feature, the distribution distance is calculated by Jensen\u2013Shannon divergence.",
+          "type": "number",
+          "format": "double"
+        },
+        "anomalyDetectionThreshold": {
+          "description": "This is the threshold used when detecting anomalies. The threshold can be changed by user, so this one might be different from ThresholdConfig.value.",
+          "type": "number",
+          "format": "double"
+        },
+        "startTime": {
+          "description": "The start timestamp of window where stats were generated. For objectives where time window doesn't make sense (e.g. Featurestore Snapshot Monitoring), start_time is only used to indicate the monitoring intervals, so it always equals to (end_time - monitoring_interval).",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "The end timestamp of window where stats were generated. For objectives where time window doesn't make sense (e.g. Featurestore Snapshot Monitoring), end_time indicates the timestamp of the data used to generate stats (e.g. timestamp we take snapshots for feature values).",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },
@@ -19952,6 +20431,10 @@
         },
         "model": {
           "description": "Required. The name of the Model that this is the deployment of. Note that the Model may be in a different location than the DeployedModel's Endpoint.",
+          "type": "string"
+        },
+        "modelVersionId": {
+          "description": "The version ID of the model that is deployed.",
           "type": "string"
         },
         "displayName": {
@@ -21297,6 +21780,11 @@
       "properties": {
         "model": {
           "description": "The name of the uploaded Model resource. Format: `projects\/{project}\/locations\/{location}\/models\/{model}`",
+          "type": "string"
+        },
+        "modelVersionId": {
+          "description": "Output only. The version ID of the model that is uploaded.",
+          "readOnly": true,
           "type": "string"
         }
       }
@@ -26818,7 +27306,7 @@
                           "type": "string"
                         },
                         "updateMask": {
-                          "description": "Field mask is used to specify the fields to be overwritten in the EntityType resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then only the non-empty fields present in the request will be overwritten. Set the update_mask to `*` to override all fields. Updatable fields: * `description` * `labels` * `monitoring_config.snapshot_analysis.disabled` * `monitoring_config.snapshot_analysis.monitoring_interval`",
+                          "description": "Field mask is used to specify the fields to be overwritten in the EntityType resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then only the non-empty fields present in the request will be overwritten. Set the update_mask to `*` to override all fields. Updatable fields: * `description` * `labels` * `monitoring_config.snapshot_analysis.disabled` * `monitoring_config.snapshot_analysis.monitoring_interval_days` * `monitoring_config.snapshot_analysis.staleness_days` * `monitoring_config.import_features_analysis.state` * `monitoring_config.import_features_analysis.anomaly_detection_baseline` * `monitoring_config.numerical_threshold_config.value` * `monitoring_config.categorical_threshold_config.value`",
                           "location": "query",
                           "type": "string",
                           "format": "google-fieldmask"
@@ -27238,7 +27726,7 @@
                               "type": "string"
                             },
                             "updateMask": {
-                              "description": "Field mask is used to specify the fields to be overwritten in the Features resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then only the non-empty fields present in the request will be overwritten. Set the update_mask to `*` to override all fields. Updatable fields: * `description` * `labels` * `monitoring_config.snapshot_analysis.disabled` * `monitoring_config.snapshot_analysis.monitoring_interval`",
+                              "description": "Field mask is used to specify the fields to be overwritten in the Features resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then only the non-empty fields present in the request will be overwritten. Set the update_mask to `*` to override all fields. Updatable fields: * `description` * `labels` * `disable_monitoring`",
                               "location": "query",
                               "type": "string",
                               "format": "google-fieldmask"
@@ -28862,7 +29350,7 @@
                       "type": "string"
                     },
                     "pageSize": {
-                      "description": "The standard list page size.",
+                      "description": "The standard list page size. If unspecified, at most 50 FederatedLearningJobs will be returned.",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"
@@ -32206,7 +32694,7 @@
                       "type": "string"
                     },
                     "filter": {
-                      "description": "Lists the PipelineJobs that match the filter expression. The following fields are supported: * `pipeline_name`: Supports `=` and `!=` comparisons. * `display_name`: Supports `=`, `!=` comparisons, and `:` wildcard. * `pipeline_job_user_id`: Supports `=`, `!=` comparisons, and `:` wildcard. for example, can check if pipeline's display_name contains *step* by doing display_name:\\\"*step*\\\" * `state`: Supports `=` and `!=` comparisons. * `create_time`: Supports `=`, `!=`, `<`, `>`, `<=`, and `>=` comparisons. Values must be in RFC 3339 format. * `update_time`: Supports `=`, `!=`, `<`, `>`, `<=`, and `>=` comparisons. Values must be in RFC 3339 format. * `end_time`: Supports `=`, `!=`, `<`, `>`, `<=`, and `>=` comparisons. Values must be in RFC 3339 format. * `labels`: Supports key-value equality and key presence. Filter expressions can be combined together using logical operators (`AND` & `OR`). For example: `pipeline_name=\"test\" AND create_time>\"2020-05-18T13:30:00Z\"`. The syntax to define filter expression is based on https:\/\/google.aip.dev\/160. Examples: * `create_time>\"2021-05-18T00:00:00Z\" OR update_time>\"2020-05-18T00:00:00Z\"` PipelineJobs created or updated after 2020-05-18 00:00:00 UTC. * `labels.env = \"prod\"` PipelineJobs with label \"env\" set to \"prod\".",
+                      "description": "Lists the PipelineJobs that match the filter expression. The following fields are supported: * `pipeline_name`: Supports `=` and `!=` comparisons. * `display_name`: Supports `=`, `!=` comparisons, and `:` wildcard. * `pipeline_job_user_id`: Supports `=`, `!=` comparisons, and `:` wildcard. for example, can check if pipeline's display_name contains *step* by doing display_name:\\\"*step*\\\" * `state`: Supports `=` and `!=` comparisons. * `create_time`: Supports `=`, `!=`, `<`, `>`, `<=`, and `>=` comparisons. Values must be in RFC 3339 format. * `update_time`: Supports `=`, `!=`, `<`, `>`, `<=`, and `>=` comparisons. Values must be in RFC 3339 format. * `end_time`: Supports `=`, `!=`, `<`, `>`, `<=`, and `>=` comparisons. Values must be in RFC 3339 format. * `labels`: Supports key-value equality and key presence. * `template_uri`: Supports `=`, `!=` comparisons, and `:` wildcard. * `template_metadata.version_name`: Supports `=`, `!=` comparisons, and `:` wildcard. Filter expressions can be combined together using logical operators (`AND` & `OR`). For example: `pipeline_name=\"test\" AND create_time>\"2020-05-18T13:30:00Z\"`. The syntax to define filter expression is based on https:\/\/google.aip.dev\/160. Examples: * `create_time>\"2021-05-18T00:00:00Z\" OR update_time>\"2020-05-18T00:00:00Z\"` PipelineJobs created or updated after 2020-05-18 00:00:00 UTC. * `labels.env = \"prod\"` PipelineJobs with label \"env\" set to \"prod\".",
                       "location": "query",
                       "type": "string"
                     },

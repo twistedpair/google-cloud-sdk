@@ -367,5 +367,26 @@ class S3ObjectResource(resource_reference.ObjectResource):
   def get_full_metadata_string(self):
     return _get_full_object_metadata_string(self)
 
+  def get_displayable_object_data(self):
+
+    return resource_reference.DisplayableObjectData(
+        name=self.name,
+        bucket=self.bucket,
+        url_string=self.storage_url.url_string,
+        acl=_get_error_string_or_value(self.metadata.get('ACL')),
+        cache_control=self.metadata.get('CacheControl'),
+        component_count=self.metadata.get('PartsCount'),
+        content_disposition=self.metadata.get('CacheDisposition'),
+        content_encoding=self.metadata.get('ContentEncoding'),
+        content_language=self.metadata.get('ContentLanguage'),
+        content_length=self.size,
+        content_type=self.metadata.get('ContentType'),
+        encryption_algorithm=self.metadata.get('SSECustomerAlgorithm'),
+        etag=self.etag,
+        generation=self.generation,
+        md5_hash=self.md5_hash,
+        storage_class=self.metadata.get('StorageClass'),
+        update_time=self.metadata.get('LastModified'))
+
   def get_json_dump(self):
     return _get_json_dump(self)

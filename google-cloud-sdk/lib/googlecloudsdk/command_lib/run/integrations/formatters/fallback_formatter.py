@@ -49,11 +49,12 @@ class FallbackFormatter(base_formatter.BaseFormatter):
     Returns:
       The printed output.
     """
-    gcp_resources = record.get('status', {}).get('gcpResource', {})
+    component_status = record.get('status', {}).get('resourceComponentStatuses',
+                                                    {})
     components = []
-    for r in gcp_resources:
+    for r in component_status:
       components.append((self.PrintType(r.get('type')), '{} {}'.format(
-          self.StatusSymbolAndColor(r.get('state')), r.get('gcpResourceName'))))
+          self.StatusSymbolAndColor(r.get('state')), r.get('name'))))
     return cp.Labeled(components)
 
   def _PrintAsYaml(self, record):

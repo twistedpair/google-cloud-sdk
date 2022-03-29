@@ -196,259 +196,6 @@
       "properties": {
       }
     },
-    "Deployment": {
-      "id": "Deployment",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "Required. The name of the `Deployment`. Format: projects\/{project}\/locations\/{location}\/deployments\/{deployment_id}",
-          "type": "string"
-        },
-        "displayName": {
-          "description": "A user-specified, human-readable name for the `Deployment`. If provided, this value must be 1-63 characters.",
-          "type": "string"
-        },
-        "uid": {
-          "description": "Output only. A unique identifier (UUID4) for the `Deployment`.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "annotations": {
-          "description": "User specified annotations. See https:\/\/google.aip.dev\/128#annotations for more details such as format and size limitations.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        },
-        "createTime": {
-          "description": "Output only. Time at which the request to create the `Deployment` was received.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "updateTime": {
-          "description": "Output only. Time at which the request to update the `Deployment` was received.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "deleteTime": {
-          "description": "Output only. Time at which the request to delete the `Deployment` was received.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "reconciling": {
-          "description": "Output only. A resource must set the reconciling field to true if the current state of the resource does not match the user's intended state, and the system is working to reconcile them. This is regardless of whether the root cause of going into reconciliation was user or system action.",
-          "readOnly": true,
-          "type": "boolean"
-        },
-        "deploymentState": {
-          "description": "Output only. `Deployment` resource deployment current state.",
-          "readOnly": true,
-          "type": "string",
-          "enumDescriptions": [
-            "State of the `Deployment` is unspecified.",
-            "`Deployment` workflow is progress.",
-            "`Deployment` workflow is finished successfully.",
-            "`Deployment` workflow failed.",
-            "`Deployment` workflow is cancelling.",
-            "`Deployment` workflow is cancelled."
-          ],
-          "enum": [
-            "DEPLOYMENT_STATE_UNSPECIFIED",
-            "DEPLOYMENT_IN_PROGRESS",
-            "DEPLOYMENT_SUCCEEDED",
-            "DEPLOYMENT_FAILED",
-            "DEPLOYMENT_CANCELLING",
-            "DEPLOYMENT_CANCELLED"
-          ]
-        },
-        "etag": {
-          "description": "Checksum computed by the server at the time of resource creation or update time. Ensure that the client has an up-to-date value before proceeding. If an etag is provided and does not match the current etag of the `Deployment`, request will be blocked and an ABORTED error will be returned.",
-          "type": "string"
-        },
-        "revisionId": {
-          "description": "Output only. A system generated revision ID of the `Deployment`. A new revision is committed whenever the `Deployment` is changed in any way.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "revisionCreateTime": {
-          "description": "Output only. The timestamp that the revision was created.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "flexTemplateConfig": {
-          "description": "Required. Dataflow Job information of Flex Template Type.",
-          "$ref": "DataflowFlexTemplateConfig"
-        },
-        "classicTemplateConfig": {
-          "description": "Required. Dataflow Job information of Classic Template Type.",
-          "$ref": "DataflowClassicTemplateConfig"
-        },
-        "deploymentWorkflowConfig": {
-          "description": "Dataflow job deployment workflow config.",
-          "$ref": "DeploymentWorkflowConfig"
-        }
-      }
-    },
-    "DataflowFlexTemplateConfig": {
-      "id": "DataflowFlexTemplateConfig",
-      "description": "Dataflow Job information of Flex Template Type. More info about dataflow flex templates can be found here https:\/\/cloud.google.com\/dataflow\/docs\/guides\/templates\/using-flex-templates.",
-      "type": "object",
-      "properties": {
-      }
-    },
-    "DataflowClassicTemplateConfig": {
-      "id": "DataflowClassicTemplateConfig",
-      "description": "Dataflow Job information of Classic Template Type. More info about dataflow classic templates can be found here https:\/\/cloud.google.com\/dataflow\/docs\/guides\/templates\/creating-templates.",
-      "type": "object",
-      "properties": {
-      }
-    },
-    "DeploymentWorkflowConfig": {
-      "id": "DeploymentWorkflowConfig",
-      "description": "Dataflow job deployment workflow config.",
-      "type": "object",
-      "properties": {
-        "jobType": {
-          "description": "Streaming or batch job.",
-          "type": "string",
-          "enumDescriptions": [
-            "",
-            "Batch job.",
-            "Streaming job."
-          ],
-          "enum": [
-            "JOB_TYPE_UNSPECIFIED",
-            "JOB_TYPE_BATCH",
-            "JOB_TYPE_STREAMING"
-          ]
-        }
-      }
-    },
-    "Operation": {
-      "id": "Operation",
-      "description": "This resource represents a long-running operation that is the result of a network API call.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "The server-assigned name, which is only unique within the same service that originally returns it. If you use the default HTTP mapping, the `name` should be a resource name ending with `operations\/{unique_id}`.",
-          "type": "string"
-        },
-        "metadata": {
-          "description": "Service-specific metadata associated with the operation. It typically contains progress information and common metadata such as create time. Some services might not provide such metadata. Any method that returns a long-running operation should document the metadata type, if any.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "any",
-            "description": "Properties of the object. Contains field @type with type URL."
-          }
-        },
-        "done": {
-          "description": "If the value is `false`, it means the operation is still in progress. If `true`, the operation is completed, and either `error` or `response` is available.",
-          "type": "boolean"
-        },
-        "error": {
-          "description": "The error result of the operation in case of failure or cancellation.",
-          "$ref": "Status"
-        },
-        "response": {
-          "description": "The normal response of the operation in case of success. If the original method returns no data on success, such as `Delete`, the response is `google.protobuf.Empty`. If the original method is standard `Get`\/`Create`\/`Update`, the response should be the resource. For other methods, the response should have the type `XxxResponse`, where `Xxx` is the original method name. For example, if the original method name is `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "any",
-            "description": "Properties of the object. Contains field @type with type URL."
-          }
-        }
-      }
-    },
-    "Status": {
-      "id": "Status",
-      "description": "The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https:\/\/github.com\/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https:\/\/cloud.google.com\/apis\/design\/errors).",
-      "type": "object",
-      "properties": {
-        "code": {
-          "description": "The status code, which should be an enum value of google.rpc.Code.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "message": {
-          "description": "A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the google.rpc.Status.details field, or localized by the client.",
-          "type": "string"
-        },
-        "details": {
-          "description": "A list of messages that carry the error details. There is a common set of message types for APIs to use.",
-          "type": "array",
-          "items": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "any",
-              "description": "Properties of the object. Contains field @type with type URL."
-            }
-          }
-        }
-      }
-    },
-    "ListDeploymentsResponse": {
-      "id": "ListDeploymentsResponse",
-      "description": "Response of a request to list `Cloud Dataflow job deployments` in a project.",
-      "type": "object",
-      "properties": {
-        "deployments": {
-          "description": "The deployments from the specified publisher.",
-          "type": "array",
-          "items": {
-            "$ref": "Deployment"
-          }
-        },
-        "nextPageToken": {
-          "description": "A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages. Use `next_token.SerializeAsString` + `absl::WebSafeBase64Escape`.",
-          "type": "string"
-        }
-      }
-    },
-    "ListDeploymentRevisionsResponse": {
-      "id": "ListDeploymentRevisionsResponse",
-      "description": "Response of a request to list `Cloud Dataflow job deployment revisions`.",
-      "type": "object",
-      "properties": {
-        "deployments": {
-          "description": "The deployments from the specified publisher.",
-          "type": "array",
-          "items": {
-            "$ref": "Deployment"
-          }
-        },
-        "nextPageToken": {
-          "description": "A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages. Use `next_token.SerializeAsString` + `absl::WebSafeBase64Escape`.",
-          "type": "string"
-        }
-      }
-    },
-    "RollbackDeploymentRequest": {
-      "id": "RollbackDeploymentRequest",
-      "description": "Request to rollback a Cloud Dataflow job deployment to a specific revision.",
-      "type": "object",
-      "properties": {
-        "revisionId": {
-          "description": "Required. The revision ID to roll back to. It must be a revision of the same `Deployment`. Example: c7cfa2a8",
-          "type": "string"
-        },
-        "etag": {
-          "description": "The current etag of the Deployment. Checksum computed by the server. Ensure that the client has an up-to-date value before proceeding. If an etag is provided and does not match the current etag of the `Deployment`, request will be blocked and an ABORTED error will be returned.",
-          "type": "string"
-        },
-        "requestId": {
-          "description": "A unique identifier for this request. Restricted to 36 ASCII characters. A random UUID is recommended. This request is only idempotent if a `request_id` is provided.",
-          "type": "string"
-        },
-        "validateOnly": {
-          "description": "Validate an intended change to see what the result will be before actually making the change.",
-          "type": "boolean"
-        }
-      }
-    },
     "Snapshot": {
       "id": "Snapshot",
       "description": "Represents a snapshot of a job.",
@@ -1874,6 +1621,917 @@
         }
       }
     },
+    "CreateJobFromTemplateRequest": {
+      "id": "CreateJobFromTemplateRequest",
+      "description": "A request to create a Cloud Dataflow job from a template.",
+      "type": "object",
+      "properties": {
+        "jobName": {
+          "description": "Required. The job name to use for the created job.",
+          "type": "string"
+        },
+        "gcsPath": {
+          "description": "Required. A Cloud Storage path to the template from which to create the job. Must be a valid Cloud Storage URL, beginning with `gs:\/\/`.",
+          "type": "string"
+        },
+        "parameters": {
+          "description": "The runtime parameters to pass to the job.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "environment": {
+          "description": "The runtime environment for the job.",
+          "$ref": "RuntimeEnvironment"
+        },
+        "location": {
+          "description": "The [regional endpoint] (https:\/\/cloud.google.com\/dataflow\/docs\/concepts\/regional-endpoints) to which to direct the request.",
+          "type": "string"
+        }
+      }
+    },
+    "RuntimeEnvironment": {
+      "id": "RuntimeEnvironment",
+      "description": "The environment values to set at runtime.",
+      "type": "object",
+      "properties": {
+        "numWorkers": {
+          "description": "The initial number of Google Compute Engine instnaces for the job.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "maxWorkers": {
+          "description": "The maximum number of Google Compute Engine instances to be made available to your pipeline during execution, from 1 to 1000.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "zone": {
+          "description": "The Compute Engine [availability zone](https:\/\/cloud.google.com\/compute\/docs\/regions-zones\/regions-zones) for launching worker instances to run your pipeline. In the future, worker_zone will take precedence.",
+          "type": "string"
+        },
+        "serviceAccountEmail": {
+          "description": "The email address of the service account to run the job as.",
+          "type": "string"
+        },
+        "tempLocation": {
+          "description": "The Cloud Storage path to use for temporary files. Must be a valid Cloud Storage URL, beginning with `gs:\/\/`.",
+          "type": "string"
+        },
+        "bypassTempDirValidation": {
+          "description": "Whether to bypass the safety checks for the job's temporary directory. Use with caution.",
+          "type": "boolean"
+        },
+        "machineType": {
+          "description": "The machine type to use for the job. Defaults to the value from the template if not specified.",
+          "type": "string"
+        },
+        "additionalExperiments": {
+          "description": "Additional experiment flags for the job, specified with the `--experiments` option.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "network": {
+          "description": "Network to which VMs will be assigned. If empty or unspecified, the service will use the network \"default\".",
+          "type": "string"
+        },
+        "subnetwork": {
+          "description": "Subnetwork to which VMs will be assigned, if desired. You can specify a subnetwork using either a complete URL or an abbreviated path. Expected to be of the form \"https:\/\/www.googleapis.com\/compute\/v1\/projects\/HOST_PROJECT_ID\/regions\/REGION\/subnetworks\/SUBNETWORK\" or \"regions\/REGION\/subnetworks\/SUBNETWORK\". If the subnetwork is located in a Shared VPC network, you must use the complete URL.",
+          "type": "string"
+        },
+        "additionalUserLabels": {
+          "description": "Additional user labels to be specified for the job. Keys and values should follow the restrictions specified in the [labeling restrictions](https:\/\/cloud.google.com\/compute\/docs\/labeling-resources#restrictions) page. An object containing a list of \"key\": value pairs. Example: { \"name\": \"wrench\", \"mass\": \"1kg\", \"count\": \"3\" }.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "kmsKeyName": {
+          "description": "Name for the Cloud KMS key for the job. Key format is: projects\/\/locations\/\/keyRings\/\/cryptoKeys\/",
+          "type": "string"
+        },
+        "ipConfiguration": {
+          "description": "Configuration for VM IPs.",
+          "type": "string",
+          "enumDescriptions": [
+            "The configuration is unknown, or unspecified.",
+            "Workers should have public IP addresses.",
+            "Workers should have private IP addresses."
+          ],
+          "enum": [
+            "WORKER_IP_UNSPECIFIED",
+            "WORKER_IP_PUBLIC",
+            "WORKER_IP_PRIVATE"
+          ]
+        },
+        "workerRegion": {
+          "description": "The Compute Engine region (https:\/\/cloud.google.com\/compute\/docs\/regions-zones\/regions-zones) in which worker processing should occur, e.g. \"us-west1\". Mutually exclusive with worker_zone. If neither worker_region nor worker_zone is specified, default to the control plane's region.",
+          "type": "string"
+        },
+        "workerZone": {
+          "description": "The Compute Engine zone (https:\/\/cloud.google.com\/compute\/docs\/regions-zones\/regions-zones) in which worker processing should occur, e.g. \"us-west1-a\". Mutually exclusive with worker_region. If neither worker_region nor worker_zone is specified, a zone in the control plane's region is chosen based on available capacity. If both `worker_zone` and `zone` are set, `worker_zone` takes precedence.",
+          "type": "string"
+        },
+        "enableStreamingEngine": {
+          "description": "Whether to enable Streaming Engine for the job.",
+          "type": "boolean"
+        }
+      }
+    },
+    "LaunchTemplateParameters": {
+      "id": "LaunchTemplateParameters",
+      "description": "Parameters to provide to the template being launched.",
+      "type": "object",
+      "properties": {
+        "jobName": {
+          "description": "Required. The job name to use for the created job.",
+          "type": "string"
+        },
+        "parameters": {
+          "description": "The runtime parameters to pass to the job.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "environment": {
+          "description": "The runtime environment for the job.",
+          "$ref": "RuntimeEnvironment"
+        },
+        "update": {
+          "description": "If set, replace the existing pipeline with the name specified by jobName with this pipeline, preserving state.",
+          "type": "boolean"
+        },
+        "transformNameMapping": {
+          "description": "Only applicable when updating a pipeline. Map of transform name prefixes of the job to be replaced to the corresponding name prefixes of the new job.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "LaunchTemplateResponse": {
+      "id": "LaunchTemplateResponse",
+      "description": "Response to the request to launch a template.",
+      "type": "object",
+      "properties": {
+        "job": {
+          "description": "The job that was launched, if the request was not a dry run and the job was successfully launched.",
+          "$ref": "Job"
+        }
+      }
+    },
+    "GetTemplateResponse": {
+      "id": "GetTemplateResponse",
+      "description": "The response to a GetTemplate request.",
+      "type": "object",
+      "properties": {
+        "status": {
+          "description": "The status of the get template request. Any problems with the request will be indicated in the error_details.",
+          "$ref": "Status"
+        },
+        "metadata": {
+          "description": "The template metadata describing the template name, available parameters, etc.",
+          "$ref": "TemplateMetadata"
+        },
+        "templateType": {
+          "description": "Template Type.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unknown Template Type.",
+            "Legacy Template.",
+            "Flex Template."
+          ],
+          "enum": [
+            "UNKNOWN",
+            "LEGACY",
+            "FLEX"
+          ]
+        },
+        "runtimeMetadata": {
+          "description": "Describes the runtime metadata with SDKInfo and available parameters.",
+          "$ref": "RuntimeMetadata"
+        }
+      }
+    },
+    "Status": {
+      "id": "Status",
+      "description": "The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https:\/\/github.com\/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https:\/\/cloud.google.com\/apis\/design\/errors).",
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "The status code, which should be an enum value of google.rpc.Code.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "description": "A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the google.rpc.Status.details field, or localized by the client.",
+          "type": "string"
+        },
+        "details": {
+          "description": "A list of messages that carry the error details. There is a common set of message types for APIs to use.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "any",
+              "description": "Properties of the object. Contains field @type with type URL."
+            }
+          }
+        }
+      }
+    },
+    "TemplateMetadata": {
+      "id": "TemplateMetadata",
+      "description": "Metadata describing a template.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. The name of the template.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Optional. A description of the template.",
+          "type": "string"
+        },
+        "parameters": {
+          "description": "The parameters for the template.",
+          "type": "array",
+          "items": {
+            "$ref": "ParameterMetadata"
+          }
+        }
+      }
+    },
+    "ParameterMetadata": {
+      "id": "ParameterMetadata",
+      "description": "Metadata for a specific parameter.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. The name of the parameter.",
+          "type": "string"
+        },
+        "label": {
+          "description": "Required. The label to display for the parameter.",
+          "type": "string"
+        },
+        "helpText": {
+          "description": "Required. The help text to display for the parameter.",
+          "type": "string"
+        },
+        "isOptional": {
+          "description": "Optional. Whether the parameter is optional. Defaults to false.",
+          "type": "boolean"
+        },
+        "regexes": {
+          "description": "Optional. Regexes that the parameter must match.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "paramType": {
+          "description": "Optional. The type of the parameter. Used for selecting input picker.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default input type.",
+            "The parameter specifies generic text input.",
+            "The parameter specifies a Cloud Storage Bucket to read from.",
+            "The parameter specifies a Cloud Storage Bucket to write to.",
+            "The parameter specifies a Cloud Storage file path to read from.",
+            "The parameter specifies a Cloud Storage file path to write to.",
+            "The parameter specifies a Cloud Storage folder path to read from.",
+            "The parameter specifies a Cloud Storage folder to write to.",
+            "The parameter specifies a Pub\/Sub Topic.",
+            "The parameter specifies a Pub\/Sub Subscription."
+          ],
+          "enum": [
+            "DEFAULT",
+            "TEXT",
+            "GCS_READ_BUCKET",
+            "GCS_WRITE_BUCKET",
+            "GCS_READ_FILE",
+            "GCS_WRITE_FILE",
+            "GCS_READ_FOLDER",
+            "GCS_WRITE_FOLDER",
+            "PUBSUB_TOPIC",
+            "PUBSUB_SUBSCRIPTION"
+          ]
+        },
+        "customMetadata": {
+          "description": "Optional. Additional metadata for describing this parameter.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "RuntimeMetadata": {
+      "id": "RuntimeMetadata",
+      "description": "RuntimeMetadata describing a runtime environment.",
+      "type": "object",
+      "properties": {
+        "sdkInfo": {
+          "description": "SDK Info for the template.",
+          "$ref": "SDKInfo"
+        },
+        "parameters": {
+          "description": "The parameters for the template.",
+          "type": "array",
+          "items": {
+            "$ref": "ParameterMetadata"
+          }
+        }
+      }
+    },
+    "SDKInfo": {
+      "id": "SDKInfo",
+      "description": "SDK Information.",
+      "type": "object",
+      "properties": {
+        "language": {
+          "description": "Required. The SDK Language.",
+          "type": "string",
+          "enumDescriptions": [
+            "UNKNOWN Language.",
+            "Java.",
+            "Python."
+          ],
+          "enum": [
+            "UNKNOWN",
+            "JAVA",
+            "PYTHON"
+          ]
+        },
+        "version": {
+          "description": "Optional. The SDK version.",
+          "type": "string"
+        }
+      }
+    },
+    "LaunchFlexTemplateRequest": {
+      "id": "LaunchFlexTemplateRequest",
+      "description": "A request to launch a Cloud Dataflow job from a FlexTemplate.",
+      "type": "object",
+      "properties": {
+        "launchParameter": {
+          "description": "Required. Parameter to launch a job form Flex Template.",
+          "$ref": "LaunchFlexTemplateParameter"
+        },
+        "validateOnly": {
+          "description": "If true, the request is validated but not actually executed. Defaults to false.",
+          "type": "boolean"
+        }
+      }
+    },
+    "LaunchFlexTemplateParameter": {
+      "id": "LaunchFlexTemplateParameter",
+      "description": "Launch FlexTemplate Parameter.",
+      "type": "object",
+      "properties": {
+        "jobName": {
+          "description": "Required. The job name to use for the created job. For update job request, job name should be same as the existing running job.",
+          "type": "string"
+        },
+        "containerSpec": {
+          "description": "Spec about the container image to launch.",
+          "$ref": "ContainerSpec"
+        },
+        "containerSpecGcsPath": {
+          "description": "Cloud Storage path to a file with json serialized ContainerSpec as content.",
+          "type": "string"
+        },
+        "parameters": {
+          "description": "The parameters for FlexTemplate. Ex. {\"num_workers\":\"5\"}",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "launchOptions": {
+          "description": "Launch options for this flex template job. This is a common set of options across languages and templates. This should not be used to pass job parameters.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "environment": {
+          "description": "The runtime environment for the FlexTemplate job",
+          "$ref": "FlexTemplateRuntimeEnvironment"
+        },
+        "update": {
+          "description": "Set this to true if you are sending a request to update a running streaming job. When set, the job name should be the same as the running job.",
+          "type": "boolean"
+        },
+        "transformNameMappings": {
+          "description": "Use this to pass transform_name_mappings for streaming update jobs. Ex:{\"oldTransformName\":\"newTransformName\",...}'",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ContainerSpec": {
+      "id": "ContainerSpec",
+      "description": "Container Spec.",
+      "type": "object",
+      "properties": {
+        "image": {
+          "description": "Name of the docker container image. E.g., gcr.io\/project\/some-image",
+          "type": "string"
+        },
+        "metadata": {
+          "description": "Metadata describing a template including description and validation rules.",
+          "$ref": "TemplateMetadata"
+        },
+        "sdkInfo": {
+          "description": "Required. SDK info of the Flex Template.",
+          "$ref": "SDKInfo"
+        },
+        "defaultEnvironment": {
+          "description": "Default runtime environment for the job.",
+          "$ref": "FlexTemplateRuntimeEnvironment"
+        }
+      }
+    },
+    "FlexTemplateRuntimeEnvironment": {
+      "id": "FlexTemplateRuntimeEnvironment",
+      "description": "The environment values to be set at runtime for flex template.",
+      "type": "object",
+      "properties": {
+        "numWorkers": {
+          "description": "The initial number of Google Compute Engine instances for the job.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "maxWorkers": {
+          "description": "The maximum number of Google Compute Engine instances to be made available to your pipeline during execution, from 1 to 1000.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "zone": {
+          "description": "The Compute Engine [availability zone](https:\/\/cloud.google.com\/compute\/docs\/regions-zones\/regions-zones) for launching worker instances to run your pipeline. In the future, worker_zone will take precedence.",
+          "type": "string"
+        },
+        "serviceAccountEmail": {
+          "description": "The email address of the service account to run the job as.",
+          "type": "string"
+        },
+        "tempLocation": {
+          "description": "The Cloud Storage path to use for temporary files. Must be a valid Cloud Storage URL, beginning with `gs:\/\/`.",
+          "type": "string"
+        },
+        "machineType": {
+          "description": "The machine type to use for the job. Defaults to the value from the template if not specified.",
+          "type": "string"
+        },
+        "additionalExperiments": {
+          "description": "Additional experiment flags for the job.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "network": {
+          "description": "Network to which VMs will be assigned. If empty or unspecified, the service will use the network \"default\".",
+          "type": "string"
+        },
+        "subnetwork": {
+          "description": "Subnetwork to which VMs will be assigned, if desired. You can specify a subnetwork using either a complete URL or an abbreviated path. Expected to be of the form \"https:\/\/www.googleapis.com\/compute\/v1\/projects\/HOST_PROJECT_ID\/regions\/REGION\/subnetworks\/SUBNETWORK\" or \"regions\/REGION\/subnetworks\/SUBNETWORK\". If the subnetwork is located in a Shared VPC network, you must use the complete URL.",
+          "type": "string"
+        },
+        "additionalUserLabels": {
+          "description": "Additional user labels to be specified for the job. Keys and values must follow the restrictions specified in the [labeling restrictions](https:\/\/cloud.google.com\/compute\/docs\/labeling-resources#restrictions) page. An object containing a list of \"key\": value pairs. Example: { \"name\": \"wrench\", \"mass\": \"1kg\", \"count\": \"3\" }.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "kmsKeyName": {
+          "description": "Name for the Cloud KMS key for the job. Key format is: projects\/\/locations\/\/keyRings\/\/cryptoKeys\/",
+          "type": "string"
+        },
+        "ipConfiguration": {
+          "description": "Configuration for VM IPs.",
+          "type": "string",
+          "enumDescriptions": [
+            "The configuration is unknown, or unspecified.",
+            "Workers should have public IP addresses.",
+            "Workers should have private IP addresses."
+          ],
+          "enum": [
+            "WORKER_IP_UNSPECIFIED",
+            "WORKER_IP_PUBLIC",
+            "WORKER_IP_PRIVATE"
+          ]
+        },
+        "workerRegion": {
+          "description": "The Compute Engine region (https:\/\/cloud.google.com\/compute\/docs\/regions-zones\/regions-zones) in which worker processing should occur, e.g. \"us-west1\". Mutually exclusive with worker_zone. If neither worker_region nor worker_zone is specified, default to the control plane's region.",
+          "type": "string"
+        },
+        "workerZone": {
+          "description": "The Compute Engine zone (https:\/\/cloud.google.com\/compute\/docs\/regions-zones\/regions-zones) in which worker processing should occur, e.g. \"us-west1-a\". Mutually exclusive with worker_region. If neither worker_region nor worker_zone is specified, a zone in the control plane's region is chosen based on available capacity. If both `worker_zone` and `zone` are set, `worker_zone` takes precedence.",
+          "type": "string"
+        },
+        "enableStreamingEngine": {
+          "description": "Whether to enable Streaming Engine for the job.",
+          "type": "boolean"
+        },
+        "flexrsGoal": {
+          "description": "Set FlexRS goal for the job. https:\/\/cloud.google.com\/dataflow\/docs\/guides\/flexrs",
+          "type": "string",
+          "enumDescriptions": [
+            "Run in the default mode.",
+            "Optimize for lower execution time.",
+            "Optimize for lower cost."
+          ],
+          "enum": [
+            "FLEXRS_UNSPECIFIED",
+            "FLEXRS_SPEED_OPTIMIZED",
+            "FLEXRS_COST_OPTIMIZED"
+          ]
+        },
+        "stagingLocation": {
+          "description": "The Cloud Storage path for staging local files. Must be a valid Cloud Storage URL, beginning with `gs:\/\/`.",
+          "type": "string"
+        },
+        "sdkContainerImage": {
+          "description": "Docker registry location of container image to use for the 'worker harness. Default is the container for the version of the SDK. Note this field is only valid for portable pipelines.",
+          "type": "string"
+        },
+        "diskSizeGb": {
+          "description": "Worker disk size, in gigabytes.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "autoscalingAlgorithm": {
+          "description": "The algorithm to use for autoscaling",
+          "type": "string",
+          "enumDescriptions": [
+            "The algorithm is unknown, or unspecified.",
+            "Disable autoscaling.",
+            "Increase worker count over time to reduce job execution time."
+          ],
+          "enum": [
+            "AUTOSCALING_ALGORITHM_UNKNOWN",
+            "AUTOSCALING_ALGORITHM_NONE",
+            "AUTOSCALING_ALGORITHM_BASIC"
+          ]
+        },
+        "dumpHeapOnOom": {
+          "description": "If true, save a heap dump before killing a thread or process which is GC thrashing or out of memory. The location of the heap file will either be echoed back to the user, or the user will be given the opportunity to download the heap file.",
+          "type": "boolean"
+        },
+        "saveHeapDumpsToGcsPath": {
+          "description": "Cloud Storage bucket (directory) to upload heap dumps to the given location. Enabling this implies that heap dumps should be generated on OOM (dump_heap_on_oom is set to true).",
+          "type": "string"
+        },
+        "launcherMachineType": {
+          "description": "The machine type to use for launching the job. The default is n1-standard-1.",
+          "type": "string"
+        }
+      }
+    },
+    "LaunchFlexTemplateResponse": {
+      "id": "LaunchFlexTemplateResponse",
+      "description": "Response to the request to launch a job from Flex Template.",
+      "type": "object",
+      "properties": {
+        "job": {
+          "description": "The job that was launched, if the request was not a dry run and the job was successfully launched.",
+          "$ref": "Job"
+        }
+      }
+    },
+    "Deployment": {
+      "id": "Deployment",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. The name of the `Deployment`. Format: projects\/{project}\/locations\/{location}\/deployments\/{deployment_id}",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "A user-specified, human-readable name for the `Deployment`. If provided, this value must be 1-63 characters.",
+          "type": "string"
+        },
+        "uid": {
+          "description": "Output only. A unique identifier (UUID4) for the `Deployment`.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "annotations": {
+          "description": "User specified annotations. See https:\/\/google.aip.dev\/128#annotations for more details such as format and size limitations.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "createTime": {
+          "description": "Output only. Time at which the request to create the `Deployment` was received.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. Time at which the request to update the `Deployment` was received.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "deleteTime": {
+          "description": "Output only. Time at which the request to delete the `Deployment` was received.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "reconciling": {
+          "description": "Output only. A resource must set the reconciling field to true if the current state of the resource does not match the user's intended state, and the system is working to reconcile them. This is regardless of whether the root cause of going into reconciliation was user or system action.",
+          "readOnly": true,
+          "type": "boolean"
+        },
+        "deploymentState": {
+          "description": "Output only. `Deployment` resource deployment current state.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "State of the `Deployment` is unspecified.",
+            "`Deployment` workflow is progress.",
+            "`Deployment` workflow is finished successfully.",
+            "`Deployment` workflow failed.",
+            "`Deployment` workflow is cancelling.",
+            "`Deployment` workflow is cancelled."
+          ],
+          "enum": [
+            "DEPLOYMENT_STATE_UNSPECIFIED",
+            "DEPLOYMENT_IN_PROGRESS",
+            "DEPLOYMENT_SUCCEEDED",
+            "DEPLOYMENT_FAILED",
+            "DEPLOYMENT_CANCELLING",
+            "DEPLOYMENT_CANCELLED"
+          ]
+        },
+        "etag": {
+          "description": "Checksum computed by the server at the time of resource creation or update time. Ensure that the client has an up-to-date value before proceeding. If an etag is provided and does not match the current etag of the `Deployment`, request will be blocked and an ABORTED error will be returned.",
+          "type": "string"
+        },
+        "revisionId": {
+          "description": "Output only. A system generated revision ID of the `Deployment`. A new revision is committed whenever the `Deployment` is changed in any way.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "revisionCreateTime": {
+          "description": "Output only. The timestamp that the revision was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "flexTemplateConfig": {
+          "description": "Required. Dataflow Job information of Flex Template Type.",
+          "$ref": "DataflowFlexTemplateConfig"
+        },
+        "classicTemplateConfig": {
+          "description": "Required. Dataflow Job information of Classic Template Type.",
+          "$ref": "DataflowClassicTemplateConfig"
+        },
+        "deploymentWorkflowConfig": {
+          "description": "Dataflow job deployment workflow config.",
+          "$ref": "DeploymentWorkflowConfig"
+        }
+      }
+    },
+    "DataflowFlexTemplateConfig": {
+      "id": "DataflowFlexTemplateConfig",
+      "description": "Dataflow Job information of Flex Template Type. More info about dataflow flex templates can be found here https:\/\/cloud.google.com\/dataflow\/docs\/guides\/templates\/using-flex-templates.",
+      "type": "object",
+      "properties": {
+        "containerSpecGcsPath": {
+          "description": "Cloud Storage path to a file with json serialized ContainerSpec as content.",
+          "type": "string"
+        },
+        "parameters": {
+          "description": "The parameters for FlexTemplate. Ex. {\"num_workers\":\"5\"}",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "launchOptions": {
+          "description": "Launch options for this flex template job. This is a common set of options across languages and templates. This should not be used to pass job parameters.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "environment": {
+          "description": "The runtime environment for the FlexTemplate job",
+          "$ref": "FlexTemplateRuntimeEnvironment"
+        },
+        "transformNameMappings": {
+          "description": "Use this to pass transform_name_mappings for streaming update jobs. Ex:{\"oldTransformName\":\"newTransformName\",...}'",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "DataflowClassicTemplateConfig": {
+      "id": "DataflowClassicTemplateConfig",
+      "description": "Dataflow Job information of Classic Template Type. More info about dataflow classic templates can be found here https:\/\/cloud.google.com\/dataflow\/docs\/guides\/templates\/creating-templates.",
+      "type": "object",
+      "properties": {
+        "gcsPath": {
+          "description": "A Cloud Storage path to the template from which to create the job. Must be valid Cloud Storage URL, beginning with 'gs:\/\/'.",
+          "type": "string"
+        },
+        "parameters": {
+          "description": "The runtime parameters to pass to the job.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "environment": {
+          "description": "The runtime environment for the job.",
+          "$ref": "RuntimeEnvironment"
+        },
+        "transformNameMappings": {
+          "description": "Use this to pass transform_name_mappings for streaming update jobs. Ex:{\"oldTransformName\":\"newTransformName\",...}'.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "DeploymentWorkflowConfig": {
+      "id": "DeploymentWorkflowConfig",
+      "description": "Dataflow job deployment workflow config.",
+      "type": "object",
+      "properties": {
+        "jobType": {
+          "description": "Streaming or batch job.",
+          "type": "string",
+          "enumDescriptions": [
+            "Job type is unspecified.",
+            "Batch job.",
+            "Streaming job."
+          ],
+          "enum": [
+            "JOB_TYPE_UNSPECIFIED",
+            "JOB_TYPE_BATCH",
+            "JOB_TYPE_STREAMING"
+          ]
+        },
+        "stopMode": {
+          "description": "Stop modes for the existent job.",
+          "type": "string",
+          "enumDescriptions": [
+            "Stop mode is unspecified.",
+            "Drain the job.",
+            "Cancel the job."
+          ],
+          "enum": [
+            "STOP_MODE_UNSPECIFIED",
+            "STOP_MODE_DRAIN",
+            "STOP_MODE_CANCEL"
+          ]
+        },
+        "snapshotPolicy": {
+          "description": "Snapshot policies to take a snapshot of the existing dataflow job before beginning the deployment.",
+          "$ref": "SnapshotPolicy"
+        },
+        "serviceAccount": {
+          "description": "Custom service account to use for the deployment. By default the service account provisioned for CICD will be used.",
+          "type": "string"
+        }
+      }
+    },
+    "SnapshotPolicy": {
+      "id": "SnapshotPolicy",
+      "description": "Snapshot policies to take a snapshot of the existing dataflow job before beginning the deployment.",
+      "type": "object",
+      "properties": {
+        "snapshot": {
+          "description": "If true, task a snapshot of the existing dataflow job before beginning the deployment.",
+          "type": "boolean"
+        },
+        "ttl": {
+          "description": "TTL for the snapshot.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "snapshotSources": {
+          "description": "If true, perform snapshots for sources which support this.",
+          "type": "boolean"
+        },
+        "description": {
+          "description": "User specified description of the snapshot. Maybe empty.",
+          "type": "string"
+        }
+      }
+    },
+    "Operation": {
+      "id": "Operation",
+      "description": "This resource represents a long-running operation that is the result of a network API call.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The server-assigned name, which is only unique within the same service that originally returns it. If you use the default HTTP mapping, the `name` should be a resource name ending with `operations\/{unique_id}`.",
+          "type": "string"
+        },
+        "metadata": {
+          "description": "Service-specific metadata associated with the operation. It typically contains progress information and common metadata such as create time. Some services might not provide such metadata. Any method that returns a long-running operation should document the metadata type, if any.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        },
+        "done": {
+          "description": "If the value is `false`, it means the operation is still in progress. If `true`, the operation is completed, and either `error` or `response` is available.",
+          "type": "boolean"
+        },
+        "error": {
+          "description": "The error result of the operation in case of failure or cancellation.",
+          "$ref": "Status"
+        },
+        "response": {
+          "description": "The normal response of the operation in case of success. If the original method returns no data on success, such as `Delete`, the response is `google.protobuf.Empty`. If the original method is standard `Get`\/`Create`\/`Update`, the response should be the resource. For other methods, the response should have the type `XxxResponse`, where `Xxx` is the original method name. For example, if the original method name is `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        }
+      }
+    },
+    "ListDeploymentsResponse": {
+      "id": "ListDeploymentsResponse",
+      "description": "Response of a request to list `Cloud Dataflow job deployments` in a project.",
+      "type": "object",
+      "properties": {
+        "deployments": {
+          "description": "The deployments from the specified publisher.",
+          "type": "array",
+          "items": {
+            "$ref": "Deployment"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages. Use `next_token.SerializeAsString` + `absl::WebSafeBase64Escape`.",
+          "type": "string"
+        }
+      }
+    },
+    "ListDeploymentRevisionsResponse": {
+      "id": "ListDeploymentRevisionsResponse",
+      "description": "Response of a request to list `Cloud Dataflow job deployment revisions`.",
+      "type": "object",
+      "properties": {
+        "deployments": {
+          "description": "The deployments from the specified publisher.",
+          "type": "array",
+          "items": {
+            "$ref": "Deployment"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages. Use `next_token.SerializeAsString` + `absl::WebSafeBase64Escape`.",
+          "type": "string"
+        }
+      }
+    },
+    "RollbackDeploymentRequest": {
+      "id": "RollbackDeploymentRequest",
+      "description": "Request to rollback a Cloud Dataflow job deployment to a specific revision.",
+      "type": "object",
+      "properties": {
+        "revisionId": {
+          "description": "Required. The revision ID to roll back to. It must be a revision of the same `Deployment`. Example: c7cfa2a8",
+          "type": "string"
+        },
+        "etag": {
+          "description": "The current etag of the Deployment. Checksum computed by the server. Ensure that the client has an up-to-date value before proceeding. If an etag is provided and does not match the current etag of the `Deployment`, request will be blocked and an ABORTED error will be returned.",
+          "type": "string"
+        },
+        "requestId": {
+          "description": "A unique identifier for this request. Restricted to 36 ASCII characters. A random UUID is recommended. This request is only idempotent if a `request_id` is provided.",
+          "type": "string"
+        },
+        "validateOnly": {
+          "description": "Validate an intended change to see what the result will be before actually making the change.",
+          "type": "boolean"
+        }
+      }
+    },
     "ListJobMessagesResponse": {
       "id": "ListJobMessagesResponse",
       "description": "Response to a request to list job messages.",
@@ -2352,567 +3010,6 @@
         }
       }
     },
-    "CreateJobFromTemplateRequest": {
-      "id": "CreateJobFromTemplateRequest",
-      "description": "A request to create a Cloud Dataflow job from a template.",
-      "type": "object",
-      "properties": {
-        "jobName": {
-          "description": "Required. The job name to use for the created job.",
-          "type": "string"
-        },
-        "gcsPath": {
-          "description": "Required. A Cloud Storage path to the template from which to create the job. Must be a valid Cloud Storage URL, beginning with `gs:\/\/`.",
-          "type": "string"
-        },
-        "parameters": {
-          "description": "The runtime parameters to pass to the job.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        },
-        "environment": {
-          "description": "The runtime environment for the job.",
-          "$ref": "RuntimeEnvironment"
-        },
-        "location": {
-          "description": "The [regional endpoint] (https:\/\/cloud.google.com\/dataflow\/docs\/concepts\/regional-endpoints) to which to direct the request.",
-          "type": "string"
-        }
-      }
-    },
-    "RuntimeEnvironment": {
-      "id": "RuntimeEnvironment",
-      "description": "The environment values to set at runtime.",
-      "type": "object",
-      "properties": {
-        "numWorkers": {
-          "description": "The initial number of Google Compute Engine instnaces for the job.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "maxWorkers": {
-          "description": "The maximum number of Google Compute Engine instances to be made available to your pipeline during execution, from 1 to 1000.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "zone": {
-          "description": "The Compute Engine [availability zone](https:\/\/cloud.google.com\/compute\/docs\/regions-zones\/regions-zones) for launching worker instances to run your pipeline. In the future, worker_zone will take precedence.",
-          "type": "string"
-        },
-        "serviceAccountEmail": {
-          "description": "The email address of the service account to run the job as.",
-          "type": "string"
-        },
-        "tempLocation": {
-          "description": "The Cloud Storage path to use for temporary files. Must be a valid Cloud Storage URL, beginning with `gs:\/\/`.",
-          "type": "string"
-        },
-        "bypassTempDirValidation": {
-          "description": "Whether to bypass the safety checks for the job's temporary directory. Use with caution.",
-          "type": "boolean"
-        },
-        "machineType": {
-          "description": "The machine type to use for the job. Defaults to the value from the template if not specified.",
-          "type": "string"
-        },
-        "additionalExperiments": {
-          "description": "Additional experiment flags for the job, specified with the `--experiments` option.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "network": {
-          "description": "Network to which VMs will be assigned. If empty or unspecified, the service will use the network \"default\".",
-          "type": "string"
-        },
-        "subnetwork": {
-          "description": "Subnetwork to which VMs will be assigned, if desired. You can specify a subnetwork using either a complete URL or an abbreviated path. Expected to be of the form \"https:\/\/www.googleapis.com\/compute\/v1\/projects\/HOST_PROJECT_ID\/regions\/REGION\/subnetworks\/SUBNETWORK\" or \"regions\/REGION\/subnetworks\/SUBNETWORK\". If the subnetwork is located in a Shared VPC network, you must use the complete URL.",
-          "type": "string"
-        },
-        "additionalUserLabels": {
-          "description": "Additional user labels to be specified for the job. Keys and values should follow the restrictions specified in the [labeling restrictions](https:\/\/cloud.google.com\/compute\/docs\/labeling-resources#restrictions) page. An object containing a list of \"key\": value pairs. Example: { \"name\": \"wrench\", \"mass\": \"1kg\", \"count\": \"3\" }.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        },
-        "kmsKeyName": {
-          "description": "Name for the Cloud KMS key for the job. Key format is: projects\/\/locations\/\/keyRings\/\/cryptoKeys\/",
-          "type": "string"
-        },
-        "ipConfiguration": {
-          "description": "Configuration for VM IPs.",
-          "type": "string",
-          "enumDescriptions": [
-            "The configuration is unknown, or unspecified.",
-            "Workers should have public IP addresses.",
-            "Workers should have private IP addresses."
-          ],
-          "enum": [
-            "WORKER_IP_UNSPECIFIED",
-            "WORKER_IP_PUBLIC",
-            "WORKER_IP_PRIVATE"
-          ]
-        },
-        "workerRegion": {
-          "description": "The Compute Engine region (https:\/\/cloud.google.com\/compute\/docs\/regions-zones\/regions-zones) in which worker processing should occur, e.g. \"us-west1\". Mutually exclusive with worker_zone. If neither worker_region nor worker_zone is specified, default to the control plane's region.",
-          "type": "string"
-        },
-        "workerZone": {
-          "description": "The Compute Engine zone (https:\/\/cloud.google.com\/compute\/docs\/regions-zones\/regions-zones) in which worker processing should occur, e.g. \"us-west1-a\". Mutually exclusive with worker_region. If neither worker_region nor worker_zone is specified, a zone in the control plane's region is chosen based on available capacity. If both `worker_zone` and `zone` are set, `worker_zone` takes precedence.",
-          "type": "string"
-        },
-        "enableStreamingEngine": {
-          "description": "Whether to enable Streaming Engine for the job.",
-          "type": "boolean"
-        }
-      }
-    },
-    "LaunchTemplateParameters": {
-      "id": "LaunchTemplateParameters",
-      "description": "Parameters to provide to the template being launched.",
-      "type": "object",
-      "properties": {
-        "jobName": {
-          "description": "Required. The job name to use for the created job.",
-          "type": "string"
-        },
-        "parameters": {
-          "description": "The runtime parameters to pass to the job.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        },
-        "environment": {
-          "description": "The runtime environment for the job.",
-          "$ref": "RuntimeEnvironment"
-        },
-        "update": {
-          "description": "If set, replace the existing pipeline with the name specified by jobName with this pipeline, preserving state.",
-          "type": "boolean"
-        },
-        "transformNameMapping": {
-          "description": "Only applicable when updating a pipeline. Map of transform name prefixes of the job to be replaced to the corresponding name prefixes of the new job.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "LaunchTemplateResponse": {
-      "id": "LaunchTemplateResponse",
-      "description": "Response to the request to launch a template.",
-      "type": "object",
-      "properties": {
-        "job": {
-          "description": "The job that was launched, if the request was not a dry run and the job was successfully launched.",
-          "$ref": "Job"
-        }
-      }
-    },
-    "GetTemplateResponse": {
-      "id": "GetTemplateResponse",
-      "description": "The response to a GetTemplate request.",
-      "type": "object",
-      "properties": {
-        "status": {
-          "description": "The status of the get template request. Any problems with the request will be indicated in the error_details.",
-          "$ref": "Status"
-        },
-        "metadata": {
-          "description": "The template metadata describing the template name, available parameters, etc.",
-          "$ref": "TemplateMetadata"
-        },
-        "templateType": {
-          "description": "Template Type.",
-          "type": "string",
-          "enumDescriptions": [
-            "Unknown Template Type.",
-            "Legacy Template.",
-            "Flex Template."
-          ],
-          "enum": [
-            "UNKNOWN",
-            "LEGACY",
-            "FLEX"
-          ]
-        },
-        "runtimeMetadata": {
-          "description": "Describes the runtime metadata with SDKInfo and available parameters.",
-          "$ref": "RuntimeMetadata"
-        }
-      }
-    },
-    "TemplateMetadata": {
-      "id": "TemplateMetadata",
-      "description": "Metadata describing a template.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "Required. The name of the template.",
-          "type": "string"
-        },
-        "description": {
-          "description": "Optional. A description of the template.",
-          "type": "string"
-        },
-        "parameters": {
-          "description": "The parameters for the template.",
-          "type": "array",
-          "items": {
-            "$ref": "ParameterMetadata"
-          }
-        }
-      }
-    },
-    "ParameterMetadata": {
-      "id": "ParameterMetadata",
-      "description": "Metadata for a specific parameter.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "Required. The name of the parameter.",
-          "type": "string"
-        },
-        "label": {
-          "description": "Required. The label to display for the parameter.",
-          "type": "string"
-        },
-        "helpText": {
-          "description": "Required. The help text to display for the parameter.",
-          "type": "string"
-        },
-        "isOptional": {
-          "description": "Optional. Whether the parameter is optional. Defaults to false.",
-          "type": "boolean"
-        },
-        "regexes": {
-          "description": "Optional. Regexes that the parameter must match.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "paramType": {
-          "description": "Optional. The type of the parameter. Used for selecting input picker.",
-          "type": "string",
-          "enumDescriptions": [
-            "Default input type.",
-            "The parameter specifies generic text input.",
-            "The parameter specifies a Cloud Storage Bucket to read from.",
-            "The parameter specifies a Cloud Storage Bucket to write to.",
-            "The parameter specifies a Cloud Storage file path to read from.",
-            "The parameter specifies a Cloud Storage file path to write to.",
-            "The parameter specifies a Cloud Storage folder path to read from.",
-            "The parameter specifies a Cloud Storage folder to write to.",
-            "The parameter specifies a Pub\/Sub Topic.",
-            "The parameter specifies a Pub\/Sub Subscription."
-          ],
-          "enum": [
-            "DEFAULT",
-            "TEXT",
-            "GCS_READ_BUCKET",
-            "GCS_WRITE_BUCKET",
-            "GCS_READ_FILE",
-            "GCS_WRITE_FILE",
-            "GCS_READ_FOLDER",
-            "GCS_WRITE_FOLDER",
-            "PUBSUB_TOPIC",
-            "PUBSUB_SUBSCRIPTION"
-          ]
-        },
-        "customMetadata": {
-          "description": "Optional. Additional metadata for describing this parameter.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "RuntimeMetadata": {
-      "id": "RuntimeMetadata",
-      "description": "RuntimeMetadata describing a runtime environment.",
-      "type": "object",
-      "properties": {
-        "sdkInfo": {
-          "description": "SDK Info for the template.",
-          "$ref": "SDKInfo"
-        },
-        "parameters": {
-          "description": "The parameters for the template.",
-          "type": "array",
-          "items": {
-            "$ref": "ParameterMetadata"
-          }
-        }
-      }
-    },
-    "SDKInfo": {
-      "id": "SDKInfo",
-      "description": "SDK Information.",
-      "type": "object",
-      "properties": {
-        "language": {
-          "description": "Required. The SDK Language.",
-          "type": "string",
-          "enumDescriptions": [
-            "UNKNOWN Language.",
-            "Java.",
-            "Python."
-          ],
-          "enum": [
-            "UNKNOWN",
-            "JAVA",
-            "PYTHON"
-          ]
-        },
-        "version": {
-          "description": "Optional. The SDK version.",
-          "type": "string"
-        }
-      }
-    },
-    "LaunchFlexTemplateRequest": {
-      "id": "LaunchFlexTemplateRequest",
-      "description": "A request to launch a Cloud Dataflow job from a FlexTemplate.",
-      "type": "object",
-      "properties": {
-        "launchParameter": {
-          "description": "Required. Parameter to launch a job form Flex Template.",
-          "$ref": "LaunchFlexTemplateParameter"
-        },
-        "validateOnly": {
-          "description": "If true, the request is validated but not actually executed. Defaults to false.",
-          "type": "boolean"
-        }
-      }
-    },
-    "LaunchFlexTemplateParameter": {
-      "id": "LaunchFlexTemplateParameter",
-      "description": "Launch FlexTemplate Parameter.",
-      "type": "object",
-      "properties": {
-        "jobName": {
-          "description": "Required. The job name to use for the created job. For update job request, job name should be same as the existing running job.",
-          "type": "string"
-        },
-        "containerSpec": {
-          "description": "Spec about the container image to launch.",
-          "$ref": "ContainerSpec"
-        },
-        "containerSpecGcsPath": {
-          "description": "Cloud Storage path to a file with json serialized ContainerSpec as content.",
-          "type": "string"
-        },
-        "parameters": {
-          "description": "The parameters for FlexTemplate. Ex. {\"num_workers\":\"5\"}",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        },
-        "launchOptions": {
-          "description": "Launch options for this flex template job. This is a common set of options across languages and templates. This should not be used to pass job parameters.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        },
-        "environment": {
-          "description": "The runtime environment for the FlexTemplate job",
-          "$ref": "FlexTemplateRuntimeEnvironment"
-        },
-        "update": {
-          "description": "Set this to true if you are sending a request to update a running streaming job. When set, the job name should be the same as the running job.",
-          "type": "boolean"
-        },
-        "transformNameMappings": {
-          "description": "Use this to pass transform_name_mappings for streaming update jobs. Ex:{\"oldTransformName\":\"newTransformName\",...}'",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "ContainerSpec": {
-      "id": "ContainerSpec",
-      "description": "Container Spec.",
-      "type": "object",
-      "properties": {
-        "image": {
-          "description": "Name of the docker container image. E.g., gcr.io\/project\/some-image",
-          "type": "string"
-        },
-        "metadata": {
-          "description": "Metadata describing a template including description and validation rules.",
-          "$ref": "TemplateMetadata"
-        },
-        "sdkInfo": {
-          "description": "Required. SDK info of the Flex Template.",
-          "$ref": "SDKInfo"
-        },
-        "defaultEnvironment": {
-          "description": "Default runtime environment for the job.",
-          "$ref": "FlexTemplateRuntimeEnvironment"
-        }
-      }
-    },
-    "FlexTemplateRuntimeEnvironment": {
-      "id": "FlexTemplateRuntimeEnvironment",
-      "description": "The environment values to be set at runtime for flex template.",
-      "type": "object",
-      "properties": {
-        "numWorkers": {
-          "description": "The initial number of Google Compute Engine instances for the job.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "maxWorkers": {
-          "description": "The maximum number of Google Compute Engine instances to be made available to your pipeline during execution, from 1 to 1000.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "zone": {
-          "description": "The Compute Engine [availability zone](https:\/\/cloud.google.com\/compute\/docs\/regions-zones\/regions-zones) for launching worker instances to run your pipeline. In the future, worker_zone will take precedence.",
-          "type": "string"
-        },
-        "serviceAccountEmail": {
-          "description": "The email address of the service account to run the job as.",
-          "type": "string"
-        },
-        "tempLocation": {
-          "description": "The Cloud Storage path to use for temporary files. Must be a valid Cloud Storage URL, beginning with `gs:\/\/`.",
-          "type": "string"
-        },
-        "machineType": {
-          "description": "The machine type to use for the job. Defaults to the value from the template if not specified.",
-          "type": "string"
-        },
-        "additionalExperiments": {
-          "description": "Additional experiment flags for the job.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "network": {
-          "description": "Network to which VMs will be assigned. If empty or unspecified, the service will use the network \"default\".",
-          "type": "string"
-        },
-        "subnetwork": {
-          "description": "Subnetwork to which VMs will be assigned, if desired. You can specify a subnetwork using either a complete URL or an abbreviated path. Expected to be of the form \"https:\/\/www.googleapis.com\/compute\/v1\/projects\/HOST_PROJECT_ID\/regions\/REGION\/subnetworks\/SUBNETWORK\" or \"regions\/REGION\/subnetworks\/SUBNETWORK\". If the subnetwork is located in a Shared VPC network, you must use the complete URL.",
-          "type": "string"
-        },
-        "additionalUserLabels": {
-          "description": "Additional user labels to be specified for the job. Keys and values must follow the restrictions specified in the [labeling restrictions](https:\/\/cloud.google.com\/compute\/docs\/labeling-resources#restrictions) page. An object containing a list of \"key\": value pairs. Example: { \"name\": \"wrench\", \"mass\": \"1kg\", \"count\": \"3\" }.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        },
-        "kmsKeyName": {
-          "description": "Name for the Cloud KMS key for the job. Key format is: projects\/\/locations\/\/keyRings\/\/cryptoKeys\/",
-          "type": "string"
-        },
-        "ipConfiguration": {
-          "description": "Configuration for VM IPs.",
-          "type": "string",
-          "enumDescriptions": [
-            "The configuration is unknown, or unspecified.",
-            "Workers should have public IP addresses.",
-            "Workers should have private IP addresses."
-          ],
-          "enum": [
-            "WORKER_IP_UNSPECIFIED",
-            "WORKER_IP_PUBLIC",
-            "WORKER_IP_PRIVATE"
-          ]
-        },
-        "workerRegion": {
-          "description": "The Compute Engine region (https:\/\/cloud.google.com\/compute\/docs\/regions-zones\/regions-zones) in which worker processing should occur, e.g. \"us-west1\". Mutually exclusive with worker_zone. If neither worker_region nor worker_zone is specified, default to the control plane's region.",
-          "type": "string"
-        },
-        "workerZone": {
-          "description": "The Compute Engine zone (https:\/\/cloud.google.com\/compute\/docs\/regions-zones\/regions-zones) in which worker processing should occur, e.g. \"us-west1-a\". Mutually exclusive with worker_region. If neither worker_region nor worker_zone is specified, a zone in the control plane's region is chosen based on available capacity. If both `worker_zone` and `zone` are set, `worker_zone` takes precedence.",
-          "type": "string"
-        },
-        "enableStreamingEngine": {
-          "description": "Whether to enable Streaming Engine for the job.",
-          "type": "boolean"
-        },
-        "flexrsGoal": {
-          "description": "Set FlexRS goal for the job. https:\/\/cloud.google.com\/dataflow\/docs\/guides\/flexrs",
-          "type": "string",
-          "enumDescriptions": [
-            "Run in the default mode.",
-            "Optimize for lower execution time.",
-            "Optimize for lower cost."
-          ],
-          "enum": [
-            "FLEXRS_UNSPECIFIED",
-            "FLEXRS_SPEED_OPTIMIZED",
-            "FLEXRS_COST_OPTIMIZED"
-          ]
-        },
-        "stagingLocation": {
-          "description": "The Cloud Storage path for staging local files. Must be a valid Cloud Storage URL, beginning with `gs:\/\/`.",
-          "type": "string"
-        },
-        "sdkContainerImage": {
-          "description": "Docker registry location of container image to use for the 'worker harness. Default is the container for the version of the SDK. Note this field is only valid for portable pipelines.",
-          "type": "string"
-        },
-        "diskSizeGb": {
-          "description": "Worker disk size, in gigabytes.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "autoscalingAlgorithm": {
-          "description": "The algorithm to use for autoscaling",
-          "type": "string",
-          "enumDescriptions": [
-            "The algorithm is unknown, or unspecified.",
-            "Disable autoscaling.",
-            "Increase worker count over time to reduce job execution time."
-          ],
-          "enum": [
-            "AUTOSCALING_ALGORITHM_UNKNOWN",
-            "AUTOSCALING_ALGORITHM_NONE",
-            "AUTOSCALING_ALGORITHM_BASIC"
-          ]
-        },
-        "dumpHeapOnOom": {
-          "description": "If true, save a heap dump before killing a thread or process which is GC thrashing or out of memory. The location of the heap file will either be echoed back to the user, or the user will be given the opportunity to download the heap file.",
-          "type": "boolean"
-        },
-        "saveHeapDumpsToGcsPath": {
-          "description": "Cloud Storage bucket (directory) to upload heap dumps to the given location. Enabling this implies that heap dumps should be generated on OOM (dump_heap_on_oom is set to true).",
-          "type": "string"
-        },
-        "launcherMachineType": {
-          "description": "The machine type to use for launching the job. The default is n1-standard-1.",
-          "type": "string"
-        }
-      }
-    },
-    "LaunchFlexTemplateResponse": {
-      "id": "LaunchFlexTemplateResponse",
-      "description": "Response to the request to launch a job from Flex Template.",
-      "type": "object",
-      "properties": {
-        "job": {
-          "description": "The job that was launched, if the request was not a dry run and the job was successfully launched.",
-          "$ref": "Job"
-        }
-      }
-    },
     "CreateTemplateVersionRequest": {
       "id": "CreateTemplateVersionRequest",
       "description": "Creates a new Template with TemplateVersions.",
@@ -3016,7 +3113,7 @@
     },
     "Empty": {
       "id": "Empty",
-      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON representation for `Empty` is empty JSON object `{}`.",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }",
       "type": "object",
       "properties": {
       }
@@ -6641,288 +6738,6 @@
           }
           ,
           "resources": {
-            "deployments": {
-              "methods": {
-                "create": {
-                  "id": "dataflow.projects.locations.deployments.create",
-                  "path": "v1b3/{+parent}/deployments",
-                  "flatPath": "v1b3/projects/{projectsId}/locations/{locationsId}/deployments",
-                  "httpMethod": "POST",
-                  "parameters": {
-                    "parent": {
-                      "description": "Required. The parent resource where this deployment will be created. Format: projects\/{project}\/locations\/{location}",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "deploymentId": {
-                      "description": "The ID to use for the Cloud Dataflow job deployment, which will become the final component of the deployment's resource name. This value should be 4-63 characters, and valid characters are \/a-z-\/.",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "requestId": {
-                      "description": "A unique identifier for this request. Restricted to 36 ASCII characters. A random UUID is recommended. This request is only idempotent if a `request_id` is provided.",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "validateOnly": {
-                      "description": "Validate an intended change to see what the result will be before actually making the change.",
-                      "location": "query",
-                      "type": "boolean"
-                    }
-                  },
-                  "parameterOrder": [
-                    "parent"
-                  ],
-                  "request": {
-                    "$ref": "Deployment"
-                  },
-                  "response": {
-                    "$ref": "Operation"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform",
-                    "https://www.googleapis.com/auth/userinfo.email"
-                  ],
-                  "description": "Request that creates a new `Deployment`. The result is an `Operation` which can be used to track the creation process. This process usually takes a few seconds, but can sometimes take much longer. The tracking `Operation` is automatically deleted after a few hours, so there is no need to call `DeleteOperation`."
-                },
-                "patch": {
-                  "id": "dataflow.projects.locations.deployments.patch",
-                  "path": "v1b3/{+name}",
-                  "flatPath": "v1b3/projects/{projectsId}/locations/{locationsId}/deployments/{deploymentsId}",
-                  "httpMethod": "PATCH",
-                  "parameters": {
-                    "name": {
-                      "description": "Required. The name of the `Deployment`. Format: projects\/{project}\/locations\/{location}\/deployments\/{deployment_id}",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deployments\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "requestId": {
-                      "description": "A unique identifier for this request. Restricted to 36 ASCII characters. A random UUID is recommended. This request is only idempotent if a `request_id` is provided.",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "updateMask": {
-                      "description": "The list of fields to update.",
-                      "location": "query",
-                      "type": "string",
-                      "format": "google-fieldmask"
-                    },
-                    "allowMissing": {
-                      "description": "If set to true, and the `Deployment` is not found, a new `Deployment` will be created.",
-                      "location": "query",
-                      "type": "boolean"
-                    },
-                    "validateOnly": {
-                      "description": "Validate an intended change to see what the result will be before actually making the change.",
-                      "location": "query",
-                      "type": "boolean"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "request": {
-                    "$ref": "Deployment"
-                  },
-                  "response": {
-                    "$ref": "Operation"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform",
-                    "https://www.googleapis.com/auth/userinfo.email"
-                  ],
-                  "description": "Request that updates or optionally creates a new `Deployment`. The result is an `Operation` which can be used to track the update\/creation process. This process usually takes a few seconds, but can sometimes take much longer. The tracking `Operation` is automatically deleted after a few hours, so there is no need to call `DeleteOperation`."
-                },
-                "delete": {
-                  "id": "dataflow.projects.locations.deployments.delete",
-                  "path": "v1b3/{+name}",
-                  "flatPath": "v1b3/projects/{projectsId}/locations/{locationsId}/deployments/{deploymentsId}",
-                  "httpMethod": "DELETE",
-                  "parameters": {
-                    "name": {
-                      "description": "Required. The name of the `Deployment`. Format: projects\/{project}\/locations\/{location}\/deployments\/{deployment_id}",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deployments\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "etag": {
-                      "description": "The current etag of the Deployment. Checksum computed by the server. Ensure that the client has an up-to-date value before proceeding. If an etag is provided and does not match the current etag of the `Deployment`, request will be blocked and an ABORTED error will be returned.",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "allowMissing": {
-                      "description": "If set to true, and the `Deployment` is not found, the request will succeed but no action will be taken on the server.",
-                      "location": "query",
-                      "type": "boolean"
-                    },
-                    "validateOnly": {
-                      "description": "Validate an intended change to see what the result will be before actually making the change.",
-                      "location": "query",
-                      "type": "boolean"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "response": {
-                    "$ref": "Operation"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform",
-                    "https://www.googleapis.com/auth/userinfo.email"
-                  ],
-                  "description": "Request that deletes `Deployment`. The result is an `Operation` which can be used to track the creation process. This process usually takes a few seconds, but can sometimes take much longer. The tracking `Operation` is automatically deleted after a few hours, so there is no need to call `DeleteOperation`."
-                },
-                "get": {
-                  "id": "dataflow.projects.locations.deployments.get",
-                  "path": "v1b3/{+name}",
-                  "flatPath": "v1b3/projects/{projectsId}/locations/{locationsId}/deployments/{deploymentsId}",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "name": {
-                      "description": "Required. The name of the `Deployment`. Format: projects\/{project}\/locations\/{location}\/deployments\/{deployment_id}",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deployments\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "view": {
-                      "location": "query",
-                      "type": "string",
-                      "enumDescriptions": [
-                        "The deployment view to return isn't specified, or is unknown. Responses will contain at least the `DEPLOYMENT_VIEW_ALL` information, and may contain additional information.",
-                        "Request all information available for this depoyment.",
-                        "Request all mutable information available for this depoyment."
-                      ],
-                      "enum": [
-                        "DEPLOYMENT_VIEW_UNSPECIFIED",
-                        "DEPLOYMENT_VIEW_ALL",
-                        "DEPLOYMENT_VIEW_MUTABLE"
-                      ]
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "response": {
-                    "$ref": "Deployment"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform",
-                    "https://www.googleapis.com/auth/userinfo.email"
-                  ],
-                  "description": "Request to get Deployment."
-                },
-                "list": {
-                  "id": "dataflow.projects.locations.deployments.list",
-                  "path": "v1b3/{+parent}/deployments",
-                  "flatPath": "v1b3/projects/{projectsId}/locations/{locationsId}/deployments",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "parent": {
-                      "description": "Required. The `location`, which owns this collection of deployments. Format: projects\/{project}\/locations\/{location}",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "pageSize": {
-                      "description": "The maximum number of deployments to return. The service may return fewer than this value. If unspecified, at most 50 deployments will be returned. The maximum value is 1000; values above 1000 will be coerced to 1000.",
-                      "location": "query",
-                      "type": "integer",
-                      "format": "int32"
-                    },
-                    "pageToken": {
-                      "description": "A page token, received from a previous `ListDeployments` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListDeployments` must match the call that provided the page token.",
-                      "location": "query",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "parent"
-                  ],
-                  "response": {
-                    "$ref": "ListDeploymentsResponse"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform",
-                    "https://www.googleapis.com/auth/userinfo.email"
-                  ],
-                  "description": "Request that lists `Deployments`."
-                },
-                "listRevisions": {
-                  "id": "dataflow.projects.locations.deployments.listRevisions",
-                  "path": "v1b3/{+name}:listRevisions",
-                  "flatPath": "v1b3/projects/{projectsId}/locations/{locationsId}/deployments/{deploymentsId}:listRevisions",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "name": {
-                      "description": "Required. The name of the `Deployment`. Format: projects\/{project}\/locations\/{location}\/deployments\/{deployment_id}",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deployments\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "pageSize": {
-                      "description": "The maximum number of deployments to return. The service may return fewer than this value. If unspecified, at most 50 deployments will be returned. The maximum value is 1000; values above 1000 will be coerced to 1000.",
-                      "location": "query",
-                      "type": "integer",
-                      "format": "int32"
-                    },
-                    "pageToken": {
-                      "description": "A page token, received from a previous `ListDeployments` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListDeployments` must match the call that provided the page token.",
-                      "location": "query",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "response": {
-                    "$ref": "ListDeploymentRevisionsResponse"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform",
-                    "https://www.googleapis.com/auth/userinfo.email"
-                  ],
-                  "description": "Request that lists revisions of a `Deployment`."
-                },
-                "rollback": {
-                  "id": "dataflow.projects.locations.deployments.rollback",
-                  "path": "v1b3/{+name}:rollback",
-                  "flatPath": "v1b3/projects/{projectsId}/locations/{locationsId}/deployments/{deploymentsId}:rollback",
-                  "httpMethod": "POST",
-                  "parameters": {
-                    "name": {
-                      "description": "Required. The name of the `Deployment`. Format: projects\/{project}\/locations\/{location}\/deployments\/{deployment_id}",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deployments\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "request": {
-                    "$ref": "RollbackDeploymentRequest"
-                  },
-                  "response": {
-                    "$ref": "Operation"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform",
-                    "https://www.googleapis.com/auth/userinfo.email"
-                  ],
-                  "description": "Request that rollback `Deployment` to any of the previous revisions."
-                }
-              }
-            },
             "snapshots": {
               "methods": {
                 "get": {
@@ -7831,47 +7646,6 @@
                 }
               }
             },
-            "sql": {
-              "methods": {
-                "validate": {
-                  "id": "dataflow.projects.locations.sql.validate",
-                  "path": "v1b3/projects/{projectId}/locations/{location}/sql:validate",
-                  "flatPath": "v1b3/projects/{projectId}/locations/{location}/sql:validate",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "projectId": {
-                      "description": "Required. The ID of the Cloud Platform project that the job belongs to.",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "location": {
-                      "description": "The [regional endpoint] (https:\/\/cloud.google.com\/dataflow\/docs\/concepts\/regional-endpoints) to which to direct the request.",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "query": {
-                      "description": "The sql query to validate.",
-                      "location": "query",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "projectId",
-                    "location"
-                  ],
-                  "response": {
-                    "$ref": "ValidateResponse"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform",
-                    "https://www.googleapis.com/auth/userinfo.email"
-                  ],
-                  "description": "Validates a GoogleSQL query for Cloud Dataflow syntax. Will always confirm the given query parses correctly, and if able to look up schema information from DataCatalog, will validate that the query analyzes properly as well."
-                }
-              }
-            },
             "templates": {
               "methods": {
                 "create": {
@@ -8058,6 +7832,329 @@
                     "https://www.googleapis.com/auth/userinfo.email"
                   ],
                   "description": "Launch a job with a FlexTemplate."
+                }
+              }
+            },
+            "deployments": {
+              "methods": {
+                "create": {
+                  "id": "dataflow.projects.locations.deployments.create",
+                  "path": "v1b3/{+parent}/deployments",
+                  "flatPath": "v1b3/projects/{projectsId}/locations/{locationsId}/deployments",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent resource where this deployment will be created. Format: projects\/{project}\/locations\/{location}",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "deploymentId": {
+                      "description": "The ID to use for the Cloud Dataflow job deployment, which will become the final component of the deployment's resource name. This value should be 4-63 characters, and valid characters are \/a-z-\/.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "description": "A unique identifier for this request. Restricted to 36 ASCII characters. A random UUID is recommended. This request is only idempotent if a `request_id` is provided.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "validateOnly": {
+                      "description": "Validate an intended change to see what the result will be before actually making the change.",
+                      "location": "query",
+                      "type": "boolean"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "Deployment"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/userinfo.email"
+                  ],
+                  "description": "Request that creates a new `Deployment`. The result is an `Operation` which can be used to track the creation process. This process usually takes a few seconds, but can sometimes take much longer. The tracking `Operation` is automatically deleted after a few hours, so there is no need to call `DeleteOperation`."
+                },
+                "patch": {
+                  "id": "dataflow.projects.locations.deployments.patch",
+                  "path": "v1b3/{+name}",
+                  "flatPath": "v1b3/projects/{projectsId}/locations/{locationsId}/deployments/{deploymentsId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the `Deployment`. Format: projects\/{project}\/locations\/{location}\/deployments\/{deployment_id}",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deployments\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "description": "A unique identifier for this request. Restricted to 36 ASCII characters. A random UUID is recommended. This request is only idempotent if a `request_id` is provided.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "The list of fields to update.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    },
+                    "allowMissing": {
+                      "description": "If set to true, and the `Deployment` is not found, a new `Deployment` will be created.",
+                      "location": "query",
+                      "type": "boolean"
+                    },
+                    "validateOnly": {
+                      "description": "Validate an intended change to see what the result will be before actually making the change.",
+                      "location": "query",
+                      "type": "boolean"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "Deployment"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/userinfo.email"
+                  ],
+                  "description": "Request that updates or optionally creates a new `Deployment`. The result is an `Operation` which can be used to track the update\/creation process. This process usually takes a few seconds, but can sometimes take much longer. The tracking `Operation` is automatically deleted after a few hours, so there is no need to call `DeleteOperation`."
+                },
+                "delete": {
+                  "id": "dataflow.projects.locations.deployments.delete",
+                  "path": "v1b3/{+name}",
+                  "flatPath": "v1b3/projects/{projectsId}/locations/{locationsId}/deployments/{deploymentsId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the `Deployment`. Format: projects\/{project}\/locations\/{location}\/deployments\/{deployment_id}",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deployments\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "etag": {
+                      "description": "The current etag of the Deployment. Checksum computed by the server. Ensure that the client has an up-to-date value before proceeding. If an etag is provided and does not match the current etag of the `Deployment`, request will be blocked and an ABORTED error will be returned.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "allowMissing": {
+                      "description": "If set to true, and the `Deployment` is not found, the request will succeed but no action will be taken on the server.",
+                      "location": "query",
+                      "type": "boolean"
+                    },
+                    "validateOnly": {
+                      "description": "Validate an intended change to see what the result will be before actually making the change.",
+                      "location": "query",
+                      "type": "boolean"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/userinfo.email"
+                  ],
+                  "description": "Request that deletes `Deployment`. The result is an `Operation` which can be used to track the creation process. This process usually takes a few seconds, but can sometimes take much longer. The tracking `Operation` is automatically deleted after a few hours, so there is no need to call `DeleteOperation`."
+                },
+                "get": {
+                  "id": "dataflow.projects.locations.deployments.get",
+                  "path": "v1b3/{+name}",
+                  "flatPath": "v1b3/projects/{projectsId}/locations/{locationsId}/deployments/{deploymentsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the `Deployment`. Format: projects\/{project}\/locations\/{location}\/deployments\/{deployment_id}",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deployments\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "view": {
+                      "location": "query",
+                      "type": "string",
+                      "enumDescriptions": [
+                        "The deployment view to return isn't specified, or is unknown. Responses will contain at least the `DEPLOYMENT_VIEW_ALL` information, and may contain additional information.",
+                        "Request all information available for this depoyment.",
+                        "Request all mutable information available for this depoyment."
+                      ],
+                      "enum": [
+                        "DEPLOYMENT_VIEW_UNSPECIFIED",
+                        "DEPLOYMENT_VIEW_ALL",
+                        "DEPLOYMENT_VIEW_MUTABLE"
+                      ]
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Deployment"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/userinfo.email"
+                  ],
+                  "description": "Request to get Deployment."
+                },
+                "list": {
+                  "id": "dataflow.projects.locations.deployments.list",
+                  "path": "v1b3/{+parent}/deployments",
+                  "flatPath": "v1b3/projects/{projectsId}/locations/{locationsId}/deployments",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The `location`, which owns this collection of deployments. Format: projects\/{project}\/locations\/{location}",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The maximum number of deployments to return. The service may return fewer than this value. If unspecified, at most 50 deployments will be returned. The maximum value is 1000; values above 1000 will be coerced to 1000.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "A page token, received from a previous `ListDeployments` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListDeployments` must match the call that provided the page token.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListDeploymentsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/userinfo.email"
+                  ],
+                  "description": "Request that lists `Deployments`."
+                },
+                "listRevisions": {
+                  "id": "dataflow.projects.locations.deployments.listRevisions",
+                  "path": "v1b3/{+name}:listRevisions",
+                  "flatPath": "v1b3/projects/{projectsId}/locations/{locationsId}/deployments/{deploymentsId}:listRevisions",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the `Deployment`. Format: projects\/{project}\/locations\/{location}\/deployments\/{deployment_id}",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deployments\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The maximum number of deployments to return. The service may return fewer than this value. If unspecified, at most 50 deployments will be returned. The maximum value is 1000; values above 1000 will be coerced to 1000.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "A page token, received from a previous `ListDeployments` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListDeployments` must match the call that provided the page token.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "ListDeploymentRevisionsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/userinfo.email"
+                  ],
+                  "description": "Request that lists revisions of a `Deployment`."
+                },
+                "rollback": {
+                  "id": "dataflow.projects.locations.deployments.rollback",
+                  "path": "v1b3/{+name}:rollback",
+                  "flatPath": "v1b3/projects/{projectsId}/locations/{locationsId}/deployments/{deploymentsId}:rollback",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the `Deployment`. Format: projects\/{project}\/locations\/{location}\/deployments\/{deployment_id}",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deployments\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "RollbackDeploymentRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/userinfo.email"
+                  ],
+                  "description": "Request that rollback `Deployment` to any of the previous revisions."
+                }
+              }
+            },
+            "sql": {
+              "methods": {
+                "validate": {
+                  "id": "dataflow.projects.locations.sql.validate",
+                  "path": "v1b3/projects/{projectId}/locations/{location}/sql:validate",
+                  "flatPath": "v1b3/projects/{projectId}/locations/{location}/sql:validate",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "projectId": {
+                      "description": "Required. The ID of the Cloud Platform project that the job belongs to.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "location": {
+                      "description": "The [regional endpoint] (https:\/\/cloud.google.com\/dataflow\/docs\/concepts\/regional-endpoints) to which to direct the request.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "query": {
+                      "description": "The sql query to validate.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "projectId",
+                    "location"
+                  ],
+                  "response": {
+                    "$ref": "ValidateResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/userinfo.email"
+                  ],
+                  "description": "Validates a GoogleSQL query for Cloud Dataflow syntax. Will always confirm the given query parses correctly, and if able to look up schema information from DataCatalog, will validate that the query analyzes properly as well."
                 }
               }
             }

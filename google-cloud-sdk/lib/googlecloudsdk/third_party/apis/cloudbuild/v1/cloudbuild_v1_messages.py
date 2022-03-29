@@ -14,32 +14,6 @@ from apitools.base.py import extra_types
 package = 'cloudbuild'
 
 
-class AddBitbucketServerConnectedRepositoryRequest(_messages.Message):
-  r"""RPC request object accepted by the AddBitbucketServerConnectedRepository
-  RPC method.
-
-  Fields:
-    connectedRepository: The connected repository to add.
-  """
-
-  connectedRepository = _messages.MessageField('BitbucketServerRepositoryId', 1)
-
-
-class AddBitbucketServerConnectedRepositoryResponse(_messages.Message):
-  r"""RPC request object returned by the AddBitbucketServerConnectedRepository
-  RPC method.
-
-  Fields:
-    config: The name of the `BitbucketServerConfig` that added connected
-      repository. Format: `projects/{project}/locations/{location}/bitbucketSe
-      rverConfigs/{config}`
-    connectedRepository: The connected repository.
-  """
-
-  config = _messages.StringField(1)
-  connectedRepository = _messages.MessageField('BitbucketServerRepositoryId', 2)
-
-
 class AnthosWorkerPool(_messages.Message):
   r"""Anthos CICD cluster option.
 
@@ -1590,23 +1564,6 @@ class CloudbuildProjectsInstallationsPatchRequest(_messages.Message):
   updateMask = _messages.StringField(7)
 
 
-class CloudbuildProjectsLocationsBitbucketServerConfigsAddBitbucketServerConnectedRepositoryRequest(_messages.Message):
-  r"""A CloudbuildProjectsLocationsBitbucketServerConfigsAddBitbucketServerCon
-  nectedRepositoryRequest object.
-
-  Fields:
-    addBitbucketServerConnectedRepositoryRequest: A
-      AddBitbucketServerConnectedRepositoryRequest resource to be passed as
-      the request body.
-    config: Required. The name of the `BitbucketServerConfig` to add a
-      connected repository. Format: `projects/{project}/locations/{location}/b
-      itbucketServerConfigs/{config}`
-  """
-
-  addBitbucketServerConnectedRepositoryRequest = _messages.MessageField('AddBitbucketServerConnectedRepositoryRequest', 1)
-  config = _messages.StringField(2, required=True)
-
-
 class CloudbuildProjectsLocationsBitbucketServerConfigsConnectedRepositoriesBatchCreateRequest(_messages.Message):
   r"""A CloudbuildProjectsLocationsBitbucketServerConfigsConnectedRepositories
   BatchCreateRequest object.
@@ -2580,8 +2537,7 @@ class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
   or the response type of an API method. For instance: service Foo { rpc
-  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
-  representation for `Empty` is empty JSON object `{}`.
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
 
 
@@ -2672,9 +2628,7 @@ class GitFileSource(_messages.Message):
       scm.com/docs/gitrevisions If unspecified, the revision from which the
       trigger invocation originated is assumed to be the revision from which
       to read the specified path.
-    uri: The URI of the repo (optional). If unspecified, the repo from which
-      the trigger invocation originated is assumed to be the repo from which
-      to read the specified path.
+    uri: The URI of the repo.
   """
 
   class RepoTypeValueValuesEnum(_messages.Enum):
@@ -2859,7 +2813,7 @@ class GitRepoSource(_messages.Message):
       `projects/{project}/githubEnterpriseConfigs/{id}`.
     ref: The branch or tag to use. Must start with "refs/" (required).
     repoType: See RepoType below.
-    uri: The URI of the repo (required).
+    uri: The URI of the repo.
   """
 
   class RepoTypeValueValuesEnum(_messages.Enum):

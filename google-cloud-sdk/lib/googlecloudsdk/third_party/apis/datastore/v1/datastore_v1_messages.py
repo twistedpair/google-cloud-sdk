@@ -365,8 +365,7 @@ class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
   or the response type of an API method. For instance: service Foo { rpc
-  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
-  representation for `Empty` is empty JSON object `{}`.
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
 
 
@@ -1676,8 +1675,18 @@ class PropertyFilter(_messages.Message):
         the given `value`. Requires: * That `property` comes first in
         `order_by`.
       EQUAL: The given `property` is equal to the given `value`.
+      IN: The given `property` is equal to at least one value in the given
+        array. Requires: * That `value` is a non-empty `ArrayValue` with at
+        most 10 values. * No other `IN` or `NOT_IN` is in the same query.
+      NOT_EQUAL: The given `property` is not equal to the given `value`.
+        Requires: * No other `NOT_EQUAL` or `NOT_IN` is in the same query. *
+        That `property` comes first in the `order_by`.
       HAS_ANCESTOR: Limit the result set to the given entity and its
         descendants. Requires: * That `value` is an entity key.
+      NOT_IN: The value of the `property` is not in the given array. Requires:
+        * That `value` is a non-empty `ArrayValue` with at most 10 values. *
+        No other `IN`, `NOT_IN`, `NOT_EQUAL` is in the same query. * That
+        `field` comes first in the `order_by`.
     """
     OPERATOR_UNSPECIFIED = 0
     LESS_THAN = 1
@@ -1685,7 +1694,10 @@ class PropertyFilter(_messages.Message):
     GREATER_THAN = 3
     GREATER_THAN_OR_EQUAL = 4
     EQUAL = 5
-    HAS_ANCESTOR = 6
+    IN = 6
+    NOT_EQUAL = 7
+    HAS_ANCESTOR = 8
+    NOT_IN = 9
 
   op = _messages.EnumField('OpValueValuesEnum', 1)
   property = _messages.MessageField('PropertyReference', 2)

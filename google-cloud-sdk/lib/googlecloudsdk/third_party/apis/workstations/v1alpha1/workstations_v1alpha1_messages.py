@@ -444,8 +444,7 @@ class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
   or the response type of an API method. For instance: service Foo { rpc
-  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
-  representation for `Empty` is empty JSON object `{}`.
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
 
 
@@ -1181,11 +1180,6 @@ class WorkstationCluster(_messages.Message):
 
   Fields:
     annotations: Client-specified annotations.
-    controlPlaneIpv4Cidr: IP range in CIDR notation to use for the
-      Workstations control plane. This range will be used for assigning
-      private IP addresses for control plane components. This range must not
-      overlap with any other ranges in use within the specified subnetwork or
-      its peers, and it must be a /24 range.
     createTime: Output only. Time when this resource was created.
     deleteTime: Output only. Time when this resource was soft-deleted.
     displayName: Human-readable name for this resource.
@@ -1233,18 +1227,17 @@ class WorkstationCluster(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   annotations = _messages.MessageField('AnnotationsValue', 1)
-  controlPlaneIpv4Cidr = _messages.StringField(2)
-  createTime = _messages.StringField(3)
-  deleteTime = _messages.StringField(4)
-  displayName = _messages.StringField(5)
-  etag = _messages.StringField(6)
-  name = _messages.StringField(7)
-  network = _messages.StringField(8)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 9)
-  reconciling = _messages.BooleanField(10)
-  subnetwork = _messages.StringField(11)
-  uid = _messages.StringField(12)
-  updateTime = _messages.StringField(13)
+  createTime = _messages.StringField(2)
+  deleteTime = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  etag = _messages.StringField(5)
+  name = _messages.StringField(6)
+  network = _messages.StringField(7)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 8)
+  reconciling = _messages.BooleanField(9)
+  subnetwork = _messages.StringField(10)
+  uid = _messages.StringField(11)
+  updateTime = _messages.StringField(12)
 
 
 class WorkstationConfig(_messages.Message):

@@ -610,8 +610,76 @@ class DataflowClassicTemplateConfig(_messages.Message):
   r"""Dataflow Job information of Classic Template Type. More info about
   dataflow classic templates can be found here
   https://cloud.google.com/dataflow/docs/guides/templates/creating-templates.
+
+  Messages:
+    ParametersValue: The runtime parameters to pass to the job.
+    TransformNameMappingsValue: Use this to pass transform_name_mappings for
+      streaming update jobs. Ex:{"oldTransformName":"newTransformName",...}'.
+
+  Fields:
+    environment: The runtime environment for the job.
+    gcsPath: A Cloud Storage path to the template from which to create the
+      job. Must be valid Cloud Storage URL, beginning with 'gs://'.
+    parameters: The runtime parameters to pass to the job.
+    transformNameMappings: Use this to pass transform_name_mappings for
+      streaming update jobs. Ex:{"oldTransformName":"newTransformName",...}'.
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ParametersValue(_messages.Message):
+    r"""The runtime parameters to pass to the job.
+
+    Messages:
+      AdditionalProperty: An additional property for a ParametersValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ParametersValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ParametersValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TransformNameMappingsValue(_messages.Message):
+    r"""Use this to pass transform_name_mappings for streaming update jobs.
+    Ex:{"oldTransformName":"newTransformName",...}'.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        TransformNameMappingsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        TransformNameMappingsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TransformNameMappingsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  environment = _messages.MessageField('RuntimeEnvironment', 1)
+  gcsPath = _messages.StringField(2)
+  parameters = _messages.MessageField('ParametersValue', 3)
+  transformNameMappings = _messages.MessageField('TransformNameMappingsValue', 4)
 
 
 class DataflowFlexTemplateConfig(_messages.Message):
@@ -619,8 +687,110 @@ class DataflowFlexTemplateConfig(_messages.Message):
   flex templates can be found here
   https://cloud.google.com/dataflow/docs/guides/templates/using-flex-
   templates.
+
+  Messages:
+    LaunchOptionsValue: Launch options for this flex template job. This is a
+      common set of options across languages and templates. This should not be
+      used to pass job parameters.
+    ParametersValue: The parameters for FlexTemplate. Ex. {"num_workers":"5"}
+    TransformNameMappingsValue: Use this to pass transform_name_mappings for
+      streaming update jobs. Ex:{"oldTransformName":"newTransformName",...}'
+
+  Fields:
+    containerSpecGcsPath: Cloud Storage path to a file with json serialized
+      ContainerSpec as content.
+    environment: The runtime environment for the FlexTemplate job
+    launchOptions: Launch options for this flex template job. This is a common
+      set of options across languages and templates. This should not be used
+      to pass job parameters.
+    parameters: The parameters for FlexTemplate. Ex. {"num_workers":"5"}
+    transformNameMappings: Use this to pass transform_name_mappings for
+      streaming update jobs. Ex:{"oldTransformName":"newTransformName",...}'
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LaunchOptionsValue(_messages.Message):
+    r"""Launch options for this flex template job. This is a common set of
+    options across languages and templates. This should not be used to pass
+    job parameters.
+
+    Messages:
+      AdditionalProperty: An additional property for a LaunchOptionsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type LaunchOptionsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LaunchOptionsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ParametersValue(_messages.Message):
+    r"""The parameters for FlexTemplate. Ex. {"num_workers":"5"}
+
+    Messages:
+      AdditionalProperty: An additional property for a ParametersValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ParametersValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ParametersValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TransformNameMappingsValue(_messages.Message):
+    r"""Use this to pass transform_name_mappings for streaming update jobs.
+    Ex:{"oldTransformName":"newTransformName",...}'
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        TransformNameMappingsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        TransformNameMappingsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TransformNameMappingsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  containerSpecGcsPath = _messages.StringField(1)
+  environment = _messages.MessageField('FlexTemplateRuntimeEnvironment', 2)
+  launchOptions = _messages.MessageField('LaunchOptionsValue', 3)
+  parameters = _messages.MessageField('ParametersValue', 4)
+  transformNameMappings = _messages.MessageField('TransformNameMappingsValue', 5)
 
 
 class DataflowProjectsCatalogTemplatesCommitRequest(_messages.Message):
@@ -2174,16 +2344,22 @@ class DeploymentWorkflowConfig(_messages.Message):
 
   Enums:
     JobTypeValueValuesEnum: Streaming or batch job.
+    StopModeValueValuesEnum: Stop modes for the existent job.
 
   Fields:
     jobType: Streaming or batch job.
+    serviceAccount: Custom service account to use for the deployment. By
+      default the service account provisioned for CICD will be used.
+    snapshotPolicy: Snapshot policies to take a snapshot of the existing
+      dataflow job before beginning the deployment.
+    stopMode: Stop modes for the existent job.
   """
 
   class JobTypeValueValuesEnum(_messages.Enum):
     r"""Streaming or batch job.
 
     Values:
-      JOB_TYPE_UNSPECIFIED: <no description>
+      JOB_TYPE_UNSPECIFIED: Job type is unspecified.
       JOB_TYPE_BATCH: Batch job.
       JOB_TYPE_STREAMING: Streaming job.
     """
@@ -2191,7 +2367,22 @@ class DeploymentWorkflowConfig(_messages.Message):
     JOB_TYPE_BATCH = 1
     JOB_TYPE_STREAMING = 2
 
+  class StopModeValueValuesEnum(_messages.Enum):
+    r"""Stop modes for the existent job.
+
+    Values:
+      STOP_MODE_UNSPECIFIED: Stop mode is unspecified.
+      STOP_MODE_DRAIN: Drain the job.
+      STOP_MODE_CANCEL: Cancel the job.
+    """
+    STOP_MODE_UNSPECIFIED = 0
+    STOP_MODE_DRAIN = 1
+    STOP_MODE_CANCEL = 2
+
   jobType = _messages.EnumField('JobTypeValueValuesEnum', 1)
+  serviceAccount = _messages.StringField(2)
+  snapshotPolicy = _messages.MessageField('SnapshotPolicy', 3)
+  stopMode = _messages.EnumField('StopModeValueValuesEnum', 4)
 
 
 class DerivedSource(_messages.Message):
@@ -2341,8 +2532,7 @@ class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
   or the response type of an API method. For instance: service Foo { rpc
-  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
-  representation for `Empty` is empty JSON object `{}`.
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
 
 
@@ -5730,6 +5920,25 @@ class SnapshotJobRequest(_messages.Message):
 
   description = _messages.StringField(1)
   location = _messages.StringField(2)
+  snapshotSources = _messages.BooleanField(3)
+  ttl = _messages.StringField(4)
+
+
+class SnapshotPolicy(_messages.Message):
+  r"""Snapshot policies to take a snapshot of the existing dataflow job before
+  beginning the deployment.
+
+  Fields:
+    description: User specified description of the snapshot. Maybe empty.
+    snapshot: If true, task a snapshot of the existing dataflow job before
+      beginning the deployment.
+    snapshotSources: If true, perform snapshots for sources which support
+      this.
+    ttl: TTL for the snapshot.
+  """
+
+  description = _messages.StringField(1)
+  snapshot = _messages.BooleanField(2)
   snapshotSources = _messages.BooleanField(3)
   ttl = _messages.StringField(4)
 

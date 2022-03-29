@@ -129,7 +129,7 @@ class ApikeysV2(base_api.BaseApiClient):
           }
 
     def Clone(self, request, global_params=None):
-      r"""Clones the existing key's restriction and display name to a new API key. The service account must have the `apikeys.keys.get` and `apikeys.keys.create` permissions in the project. NOTE: Key is a global resource; hence the only supported value for location is `global`.
+      r"""DEPRECATED: API customers can call `GetKey` and then `CreateKey` methods to create a copy of an existing key. Retire `CloneKey` method to eliminate the unnessary method from API Keys API. Clones the existing key's restriction and display name to a new API key. The service account must have the `apikeys.keys.get` and `apikeys.keys.create` permissions in the project. NOTE: Key is a global resource; hence the only supported value for location is `global`.
 
       Args:
         request: (ApikeysProjectsLocationsKeysCloneRequest) input message
@@ -282,7 +282,7 @@ class ApikeysV2(base_api.BaseApiClient):
         method_id='apikeys.projects.locations.keys.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'showDeleted'],
         relative_path='v2/{+parent}/keys',
         request_field='',
         request_type_name='ApikeysProjectsLocationsKeysListRequest',

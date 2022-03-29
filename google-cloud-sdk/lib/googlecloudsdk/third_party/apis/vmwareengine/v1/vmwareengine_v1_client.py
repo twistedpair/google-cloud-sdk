@@ -39,6 +39,9 @@ class VmwareengineV1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.projects_locations_global_networkPeerings_peeringRoutes = self.ProjectsLocationsGlobalNetworkPeeringsPeeringRoutesService(self)
+    self.projects_locations_global_networkPeerings = self.ProjectsLocationsGlobalNetworkPeeringsService(self)
+    self.projects_locations_global = self.ProjectsLocationsGlobalService(self)
     self.projects_locations_networkPolicies_externalAccessRules = self.ProjectsLocationsNetworkPoliciesExternalAccessRulesService(self)
     self.projects_locations_networkPolicies = self.ProjectsLocationsNetworkPoliciesService(self)
     self.projects_locations_nodeTypes = self.ProjectsLocationsNodeTypesService(self)
@@ -50,6 +53,171 @@ class VmwareengineV1(base_api.BaseApiClient):
     self.projects_locations_vmwareEngineNetworks = self.ProjectsLocationsVmwareEngineNetworksService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class ProjectsLocationsGlobalNetworkPeeringsPeeringRoutesService(base_api.BaseApiService):
+    """Service class for the projects_locations_global_networkPeerings_peeringRoutes resource."""
+
+    _NAME = 'projects_locations_global_networkPeerings_peeringRoutes'
+
+    def __init__(self, client):
+      super(VmwareengineV1.ProjectsLocationsGlobalNetworkPeeringsPeeringRoutesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists the VPC network peering routes exchanged over a peering connection.
+
+      Args:
+        request: (VmwareengineProjectsLocationsGlobalNetworkPeeringsPeeringRoutesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListPeeringRoutesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/global/networkPeerings/{networkPeeringsId}/peeringRoutes',
+        http_method='GET',
+        method_id='vmwareengine.projects.locations.global.networkPeerings.peeringRoutes.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/peeringRoutes',
+        request_field='',
+        request_type_name='VmwareengineProjectsLocationsGlobalNetworkPeeringsPeeringRoutesListRequest',
+        response_type_name='ListPeeringRoutesResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsGlobalNetworkPeeringsService(base_api.BaseApiService):
+    """Service class for the projects_locations_global_networkPeerings resource."""
+
+    _NAME = 'projects_locations_global_networkPeerings'
+
+    def __init__(self, client):
+      super(VmwareengineV1.ProjectsLocationsGlobalNetworkPeeringsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new VPC network peering between the service and consumer VPC networks provided in a `NetworkPeering` resource.
+
+      Args:
+        request: (VmwareengineProjectsLocationsGlobalNetworkPeeringsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/global/networkPeerings',
+        http_method='POST',
+        method_id='vmwareengine.projects.locations.global.networkPeerings.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['networkPeeringId', 'requestId'],
+        relative_path='v1/{+parent}/networkPeerings',
+        request_field='networkPeering',
+        request_type_name='VmwareengineProjectsLocationsGlobalNetworkPeeringsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a `NetworkPeering` resource. When a network peering is deleted for a consumer VPC network, the service project VPC network becomes inaccessible to that consumer VPC network.
+
+      Args:
+        request: (VmwareengineProjectsLocationsGlobalNetworkPeeringsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/global/networkPeerings/{networkPeeringsId}',
+        http_method='DELETE',
+        method_id='vmwareengine.projects.locations.global.networkPeerings.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='VmwareengineProjectsLocationsGlobalNetworkPeeringsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves a `NetworkPeering` resource by its resource name. The resource contains details of the VPC network peering, such as peered VPC networks, import and export custom route configurations, and peering state.
+
+      Args:
+        request: (VmwareengineProjectsLocationsGlobalNetworkPeeringsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (NetworkPeering) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/global/networkPeerings/{networkPeeringsId}',
+        http_method='GET',
+        method_id='vmwareengine.projects.locations.global.networkPeerings.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='VmwareengineProjectsLocationsGlobalNetworkPeeringsGetRequest',
+        response_type_name='NetworkPeering',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists `NetworkPeering` resources in a given project.
+
+      Args:
+        request: (VmwareengineProjectsLocationsGlobalNetworkPeeringsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListNetworkPeeringsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/global/networkPeerings',
+        http_method='GET',
+        method_id='vmwareengine.projects.locations.global.networkPeerings.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/networkPeerings',
+        request_field='',
+        request_type_name='VmwareengineProjectsLocationsGlobalNetworkPeeringsListRequest',
+        response_type_name='ListNetworkPeeringsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsGlobalService(base_api.BaseApiService):
+    """Service class for the projects_locations_global resource."""
+
+    _NAME = 'projects_locations_global'
+
+    def __init__(self, client):
+      super(VmwareengineV1.ProjectsLocationsGlobalService, self).__init__(client)
+      self._upload_configs = {
+          }
 
   class ProjectsLocationsNetworkPoliciesExternalAccessRulesService(base_api.BaseApiService):
     """Service class for the projects_locations_networkPolicies_externalAccessRules resource."""
@@ -369,7 +537,7 @@ class VmwareengineV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Modifies a `NetworkPolicy` resource. Only the following fields can be updated: `labels`, `internet_access`, `external_ip`, `edge_services_cidr`. Only fields specified in `updateMask` are applied. When updating a network policy, the external IP network service can only be disabled if there are no external IP addresses present in the scope of the policy. Also, a `NetworkService` cannot be updated when `NetworkService.state` is set to `RECONCILING`. During operation processing, the resource is temporarily in the `ACTIVE` state before the operation fully completes. For that period of time, you can't update the resource. Use the operation status to determine when the processing fully completes.
+      r"""Modifies a `NetworkPolicy` resource. Only the following fields can be updated: `internet_access`, `external_ip`, `edge_services_cidr`. Only fields specified in `updateMask` are applied. When updating a network policy, the external IP network service can only be disabled if there are no external IP addresses present in the scope of the policy. Also, a `NetworkService` cannot be updated when `NetworkService.state` is set to `RECONCILING`. During operation processing, the resource is temporarily in the `ACTIVE` state before the operation fully completes. For that period of time, you can't update the resource. Use the operation status to determine when the processing fully completes.
 
       Args:
         request: (VmwareengineProjectsLocationsNetworkPoliciesPatchRequest) input message
@@ -831,7 +999,7 @@ class VmwareengineV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Modifies a `Cluster` resource. Only the following fields can be updated: `labels`, `nodeCount`. Only fields specified in `updateMask` are applied. During operation processing, the resource is temporarily in the `ACTIVE` state before the operation fully completes. For that period of time, you can't update the resource. Use the operation status to determine when the processing fully completes.
+      r"""Modifies a `Cluster` resource. Only the following fields can be updated: `nodeCount`. Only fields specified in `updateMask` are applied. During operation processing, the resource is temporarily in the `ACTIVE` state before the operation fully completes. For that period of time, you can't update the resource. Use the operation status to determine when the processing fully completes.
 
       Args:
         request: (VmwareengineProjectsLocationsPrivateCloudsClustersPatchRequest) input message
@@ -1374,7 +1542,7 @@ class VmwareengineV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Modifies a `PrivateCloud` resource. Only the following fields can be updated: `labels`, `description`, `network_config.external_ip_access`. Only fields specified in `updateMask` are applied. During operation processing, the resource is temporarily in the `ACTIVE` state before the operation fully completes. For that period of time, you can't update the resource. Use the operation status to determine when the processing fully completes.
+      r"""Modifies a `PrivateCloud` resource. Only the following fields can be updated: `description`, `network_config.external_ip_access`. Only fields specified in `updateMask` are applied. During operation processing, the resource is temporarily in the `ACTIVE` state before the operation fully completes. For that period of time, you can't update the resource. Use the operation status to determine when the processing fully completes.
 
       Args:
         request: (VmwareengineProjectsLocationsPrivateCloudsPatchRequest) input message
@@ -1708,7 +1876,7 @@ class VmwareengineV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Modifies a VMware Engine network resource. Only the following fields can be updated: `labels`, `description`. Only fields specified in `updateMask` are applied.
+      r"""Modifies a VMware Engine network resource. Only the following fields can be updated: `description`. Only fields specified in `updateMask` are applied.
 
       Args:
         request: (VmwareengineProjectsLocationsVmwareEngineNetworksPatchRequest) input message

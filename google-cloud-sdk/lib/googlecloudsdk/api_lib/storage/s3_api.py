@@ -444,7 +444,7 @@ class S3Api(cloud_api.CloudApi):
   def get_object_metadata(self,
                           bucket_name,
                           object_name,
-                          request_config,
+                          request_config=None,
                           generation=None,
                           fields_scope=None):
     """See super class."""
@@ -573,6 +573,8 @@ class S3Api(cloud_api.CloudApi):
         # does not accept ContentMD5.
         extra_args.pop('ContentMD5')
       else:
+        if request_config.resource_args.size is not None:
+          extra_args['ContentLength'] = request_config.resource_args.size
         return self._upload_using_put_object(
             source_stream, destination_resource, extra_args)
 

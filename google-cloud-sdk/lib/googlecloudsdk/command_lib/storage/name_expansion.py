@@ -55,8 +55,9 @@ class NameExpansionIterator:
       include_buckets (bool): True if buckets should be fetched.
       recursion_requested (bool): True if recursion is requested, else False.
     """
+    self.all_versions = all_versions
+
     self._urls = urls
-    self._all_versions = all_versions
     self._ignore_symlinks = ignore_symlinks
     self._include_buckets = include_buckets
     self._recursion_requested = recursion_requested
@@ -86,7 +87,7 @@ class NameExpansionIterator:
     for url in self._urls:
       for resource in wildcard_iterator.get_wildcard_iterator(
           url,
-          all_versions=self._all_versions,
+          all_versions=self.all_versions,
           ignore_symlinks=self._ignore_symlinks):
         original_storage_url = storage_url.storage_url_from_string(url)
         yield url, self._get_name_expansion_result(resource,
@@ -98,7 +99,7 @@ class NameExpansionIterator:
         '**')
     child_resources = wildcard_iterator.get_wildcard_iterator(
         new_storage_url.url_string,
-        all_versions=self._all_versions,
+        all_versions=self.all_versions,
         ignore_symlinks=self._ignore_symlinks)
     for child_resource in child_resources:
       yield self._get_name_expansion_result(
@@ -108,8 +109,8 @@ class NameExpansionIterator:
   def _get_name_expansion_result(self, resource, expanded_url, original_url):
     """Returns a NameExpansionResult, removing generations when appropriate."""
     keep_generation_in_url = (
-        self._all_versions
-        or original_url.generation  # User requested a specific generation.
+        self.all_versions or
+        original_url.generation  # User requested a specific generation.
     )
     if not keep_generation_in_url:
       new_storage_url = storage_url.storage_url_from_string(

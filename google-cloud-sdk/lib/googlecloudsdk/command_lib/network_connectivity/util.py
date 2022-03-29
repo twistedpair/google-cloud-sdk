@@ -26,8 +26,14 @@ from googlecloudsdk.core import resources
 from googlecloudsdk.api_lib.network_connectivity \
     import networkconnectivity_client as ch_client
 
+
 def AppendLocationsGlobalToParent(unused_ref, unused_args, request):
   """Add locations/global to parent path."""
 
   request.parent += "/locations/global"
   return request
+
+
+def SetGlobalLocation():
+  """Set default location to global."""
+  return "global"

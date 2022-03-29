@@ -25,6 +25,7 @@ from apitools.base.py import transfer
 from googlecloudsdk.api_lib.storage import errors
 from googlecloudsdk.api_lib.storage import gcs_metadata_util
 from googlecloudsdk.api_lib.storage import retry_util
+from googlecloudsdk.command_lib.storage.tasks.cp import copy_util
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import scaled_integer
 
@@ -32,12 +33,8 @@ from googlecloudsdk.core.util import scaled_integer
 class _Upload:
   """Base class shared by different upload strategies."""
 
-  def __init__(self,
-               gcs_api,
-               http_client,
-               source_stream,
-               destination_resource,
-               request_config):
+  def __init__(self, gcs_api, http_client, source_stream, destination_resource,
+               should_gzip_in_flight, request_config):
     """Initializes an _Upload instance.
 
     Args:
@@ -46,6 +43,7 @@ class _Upload:
       source_stream (io.IOBase): Yields bytes to upload.
       destination_resource (resource_reference.ObjectResource|UnknownResource):
         Metadata for the destination object.
+      should_gzip_in_flight (bool): Should gzip encode upload in flight.
       request_config (gcs_api.GcsRequestConfig): Tracks additional request
         preferences.
     """
@@ -53,6 +51,7 @@ class _Upload:
     self._http_client = http_client
     self._source_stream = source_stream
     self._destination_resource = destination_resource
+    self._should_gzip_in_flight = should_gzip_in_flight
     self._request_config = request_config
 
   def _get_validated_insert_request(self):
@@ -74,7 +73,8 @@ class _Upload:
     return self._gcs_api.messages.StorageObjectsInsertRequest(
         bucket=object_metadata.bucket,
         object=object_metadata,
-        ifGenerationMatch=self._request_config.precondition_generation_match,
+        ifGenerationMatch=copy_util.get_generation_match_value(
+            self._request_config),
         ifMetagenerationMatch=(
             self._request_config.precondition_metageneration_match),
         predefinedAcl=predefined_acl)
@@ -96,9 +96,9 @@ class SimpleUpload(_Upload):
     resource_args = self._request_config.resource_args
     apitools_upload = transfer.Upload(
         self._source_stream,
-        getattr(resource_args, 'content_type', None),
-        gzip_encoded=getattr(resource_args, 'gzip_encoded', None),
-        total_size=getattr(resource_args, 'size', None))
+        resource_args.content_type,
+        gzip_encoded=self._should_gzip_in_flight,
+        total_size=resource_args.size)
     apitools_upload.bytes_http = self._http_client
     apitools_upload.strategy = transfer.SIMPLE_UPLOAD
 
@@ -115,6 +115,7 @@ class ResumableUpload(_Upload):
                http_client,
                source_stream,
                destination_resource,
+               should_gzip_in_flight,
                request_config,
                serialization_data=None,
                tracker_callback=None):
@@ -127,15 +128,14 @@ class ResumableUpload(_Upload):
     """
     # pylint: enable=g-doc-args
     super(ResumableUpload, self).__init__(gcs_api, http_client, source_stream,
-                                          destination_resource, request_config)
+                                          destination_resource,
+                                          should_gzip_in_flight, request_config)
     self._serialization_data = serialization_data
     self._tracker_callback = tracker_callback
 
   def run(self):
     max_retries = properties.VALUES.storage.max_retries.GetInt()
     resource_args = self._request_config.resource_args
-    content_type = getattr(resource_args, 'content_type', None)
-    gzip_encoded = getattr(resource_args, 'gzip_encoded', None)
     size = getattr(resource_args, 'size', None)
     if self._serialization_data is not None:
       # FromData implicitly sets strategy as RESUMABLE.
@@ -144,16 +144,16 @@ class ResumableUpload(_Upload):
           json.dumps(self._serialization_data),
           self._gcs_api.client.http,
           auto_transfer=False,
-          gzip_encoded=gzip_encoded,
+          gzip_encoded=self._should_gzip_in_flight,
           num_retries=max_retries)
     else:
       apitools_upload = transfer.Upload(
           self._source_stream,
-          content_type,
+          resource_args.content_type,
           auto_transfer=False,
           chunksize=scaled_integer.ParseInteger(
               properties.VALUES.storage.upload_chunk_size.Get()),
-          gzip_encoded=gzip_encoded,
+          gzip_encoded=self._should_gzip_in_flight,
           total_size=size,
           num_retries=max_retries)
       apitools_upload.strategy = transfer.RESUMABLE_UPLOAD
@@ -173,7 +173,7 @@ class ResumableUpload(_Upload):
     # and updating the attempts requires manipulating state.retrial.
     while True:
       try:
-        if gzip_encoded:
+        if self._should_gzip_in_flight:
           http_response = apitools_upload.StreamInChunks()
         else:
           http_response = apitools_upload.StreamMedia()

@@ -32,8 +32,9 @@ from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.api_lib.storage import gcs_api
 from googlecloudsdk.command_lib.storage import tracker_file_util
 from googlecloudsdk.command_lib.storage.tasks import task
-from googlecloudsdk.command_lib.storage.tasks import task_executor
+from googlecloudsdk.command_lib.storage.tasks import task_util
 from googlecloudsdk.command_lib.storage.tasks.cp import copy_component_util
+from googlecloudsdk.command_lib.storage.tasks.cp import copy_util
 from googlecloudsdk.command_lib.storage.tasks.cp import file_part_upload_task
 from googlecloudsdk.command_lib.storage.tasks.cp import finalize_composite_upload_task
 from googlecloudsdk.core import log
@@ -97,6 +98,15 @@ class FileUploadTask(task.Task):
         properties.VALUES.storage.parallel_composite_upload_threshold.Get())
 
   def execute(self, task_status_queue=None):
+    destination_provider = self._destination_resource.storage_url.scheme
+    if copy_util.check_for_cloud_clobber(
+        self._user_request_args, api_factory.get_api(destination_provider),
+        self._destination_resource):
+      log.status.Print(
+          copy_util.get_no_clobber_message(
+              self._destination_resource.storage_url))
+      return
+
     source_url = self._source_resource.storage_url
     source_filename = source_url.object_name
 
@@ -105,13 +115,12 @@ class FileUploadTask(task.Task):
     else:
       size = os.path.getsize(source_filename)
 
-    destination_provider = self._destination_resource.storage_url.scheme
     api_capabilties = api_factory.get_capabilities(destination_provider)
     should_perform_single_transfer = (
         source_url.is_pipe or size < self._composite_upload_threshold or
         not self._composite_upload_threshold or
         cloud_api.Capability.COMPOSE_OBJECTS not in api_capabilties or
-        not task_executor.should_use_parallelism())
+        not task_util.should_use_parallelism())
 
     if should_perform_single_transfer:
       task_output = file_part_upload_task.FilePartUploadTask(

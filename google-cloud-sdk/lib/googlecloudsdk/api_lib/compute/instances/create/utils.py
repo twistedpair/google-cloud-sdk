@@ -173,6 +173,11 @@ def CreateDiskMessages(args,
         use_disk_type_uri=use_disk_type_uri)
     persistent_disks = [boot_disk] + persistent_disks
 
+  # The boot disk must end up at index 0 in the disk messages.
+  if persistent_create_disks and persistent_create_disks[0].boot:
+    boot_disk = persistent_create_disks.pop(0)
+    persistent_disks = [boot_disk] + persistent_disks
+
   return persistent_disks + persistent_create_disks + local_nvdimms + local_ssds
 
 
@@ -419,7 +424,12 @@ def CreatePersistentCreateDiskMessages(compute_client,
         mode=mode,
         type=messages.AttachedDisk.TypeValueValuesEnum.PERSISTENT,
         diskEncryptionKey=disk_key)
-    disks_messages.append(create_disk)
+
+    # The boot disk must end up at index 0.
+    if boot:
+      disks_messages = [create_disk] + disks_messages
+    else:
+      disks_messages.append(create_disk)
 
   return disks_messages
 

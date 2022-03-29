@@ -104,19 +104,23 @@ class ApikeysProjectsLocationsKeysListRequest(_messages.Message):
   r"""A ApikeysProjectsLocationsKeysListRequest object.
 
   Fields:
-    filter: Optional. Only list keys that conform to the specified filter. The
-      allowed filter strings are `state:ACTIVE` and `state:DELETED`. By
-      default, ListKeys returns only active keys.
+    filter: Optional. Deprecated: Use `show_deleted` instead. Only list keys
+      that conform to the specified filter. The allowed filter strings are
+      `state:ACTIVE` and `state:DELETED`. By default, ListKeys returns only
+      active keys.
     pageSize: Optional. Specifies the maximum number of results to be returned
       at a time.
     pageToken: Optional. Requests a specific page of results.
     parent: Required. Lists all API keys associated with this project.
+    showDeleted: Optional. Indicate that keys are marked as deleted within 30
+      days should also be returned. Normally only active keys are returned.
   """
 
   filter = _messages.StringField(1)
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
+  showDeleted = _messages.BooleanField(5)
 
 
 class ApikeysProjectsLocationsKeysPatchRequest(_messages.Message):
@@ -474,7 +478,17 @@ class V2IosKeyRestrictions(_messages.Message):
 class V2Key(_messages.Message):
   r"""The representation of a key managed by the API Keys API.
 
+  Messages:
+    AnnotationsValue: Annotations is an unstructured key-value map stored with
+      a policy that may be set by external tools to store and retrieve
+      arbitrary metadata. They are not queryable and should be preserved when
+      modifying objects.
+
   Fields:
+    annotations: Annotations is an unstructured key-value map stored with a
+      policy that may be set by external tools to store and retrieve arbitrary
+      metadata. They are not queryable and should be preserved when modifying
+      objects.
     createTime: Output only. A timestamp identifying the time this key was
       originally created.
     deleteTime: Output only. A timestamp when this key was deleted. If the
@@ -484,6 +498,7 @@ class V2Key(_messages.Message):
     etag: Output only. A checksum computed by the server based on the current
       value of the Key resource. This may be sent on update and delete
       requests to ensure the client has an up-to-date value before proceeding.
+      See https://google.aip.dev/154.
     keyString: Output only. An encrypted and signed value held by this key.
       This field can be accessed only through the `GetKeyString` method.
     name: Output only. The resource name of the key. The `name` has the form:
@@ -497,15 +512,43 @@ class V2Key(_messages.Message):
       last updated.
   """
 
-  createTime = _messages.StringField(1)
-  deleteTime = _messages.StringField(2)
-  displayName = _messages.StringField(3)
-  etag = _messages.StringField(4)
-  keyString = _messages.StringField(5)
-  name = _messages.StringField(6)
-  restrictions = _messages.MessageField('V2Restrictions', 7)
-  uid = _messages.StringField(8)
-  updateTime = _messages.StringField(9)
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""Annotations is an unstructured key-value map stored with a policy that
+    may be set by external tools to store and retrieve arbitrary metadata.
+    They are not queryable and should be preserved when modifying objects.
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  createTime = _messages.StringField(2)
+  deleteTime = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  etag = _messages.StringField(5)
+  keyString = _messages.StringField(6)
+  name = _messages.StringField(7)
+  restrictions = _messages.MessageField('V2Restrictions', 8)
+  uid = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
 
 
 class V2ListKeysResponse(_messages.Message):

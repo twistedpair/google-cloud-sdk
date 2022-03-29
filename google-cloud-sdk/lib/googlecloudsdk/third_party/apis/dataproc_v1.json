@@ -271,7 +271,7 @@
     },
     "Empty": {
       "id": "Empty",
-      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON representation for Empty is empty JSON object {}.",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } ",
       "type": "object",
       "properties": {
       }
@@ -1764,10 +1764,6 @@
         "tempBucket": {
           "description": "Optional. A Cloud Storage bucket used to store ephemeral cluster and jobs data, such as Spark and MapReduce history files. If you do not specify a temp bucket, Dataproc will determine a Cloud Storage location (US, ASIA, or EU) for your cluster's temp bucket according to the Compute Engine zone where your cluster is deployed, and then create and manage this project-level, per-location bucket. The default bucket has a TTL of 90 days, but you can use any TTL (or none) if you specify a bucket (see Dataproc staging and temp buckets (https:\/\/cloud.google.com\/dataproc\/docs\/concepts\/configuring-clusters\/staging-bucket)). This field requires a Cloud Storage bucket name, not a gs:\/\/... URI to a Cloud Storage bucket.",
           "type": "string"
-        },
-        "softwareConfig": {
-          "description": "Optional. The config settings for cluster software.",
-          "$ref": "SoftwareConfig"
         },
         "kubernetesClusterConfig": {
           "description": "Required. The configuration for running the Dataproc cluster on Kubernetes.",

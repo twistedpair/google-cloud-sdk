@@ -46,7 +46,9 @@ from googlecloudsdk.command_lib.storage import encryption_util
 from googlecloudsdk.command_lib.storage import errors as command_errors
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage import tracker_file_util
+from googlecloudsdk.command_lib.storage import user_request_args_factory
 from googlecloudsdk.command_lib.storage.resources import resource_reference
+from googlecloudsdk.command_lib.storage.tasks.cp import copy_util
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
@@ -90,6 +92,23 @@ def _catch_http_error_raise_gcs_api_error(format_str=None):
   """
   return cloud_errors.catch_error_raise_cloud_api_error(
       _ERROR_TRANSLATION, format_str=format_str)
+
+
+def _should_gzip_in_flight(request_config, source_resource):
+  """Determines if resource qualifies for in-flight gzip encoding."""
+  if (request_config.gzip_in_flight ==
+      user_request_args_factory.GZIP_IN_FLIGHT_ALL):
+    return True
+  elif isinstance(request_config.gzip_in_flight, list):
+    source_path = source_resource.storage_url.versionless_url_string
+    for extension in request_config.gzip_in_flight:
+      if extension.startswith('.'):
+        dot_separated_extension = extension
+      else:
+        dot_separated_extension = '.' + extension
+      if source_path.endswith(dot_separated_extension):
+        return True
+  return False
 
 
 def _no_op_callback(unused_response, unused_object):
@@ -207,6 +226,7 @@ class GcsApi(cloud_api.CloudApi):
       cloud_api.Capability.RESUMABLE_UPLOAD,
       cloud_api.Capability.SLICED_DOWNLOAD,
       cloud_api.Capability.ENCRYPTION,
+      cloud_api.Capability.DAISY_CHAIN_SEEKABLE_UPLOAD_STREAM,
   }
 
   def __init__(self):
@@ -657,7 +677,8 @@ class GcsApi(cloud_api.CloudApi):
             destinationObject=destination_resource.storage_url.object_name,
             object=destination_metadata,
             sourceGeneration=source_generation,
-            ifGenerationMatch=request_config.precondition_generation_match,
+            ifGenerationMatch=copy_util.get_generation_match_value(
+                request_config),
             ifMetagenerationMatch=request_config
             .precondition_metageneration_match,
             destinationPredefinedAcl=predefined_acl,
@@ -895,7 +916,6 @@ class GcsApi(cloud_api.CloudApi):
                     tracker_callback=None,
                     upload_strategy=cloud_api.UploadStrategy.SIMPLE):
     """See CloudApi class for function doc strings."""
-    del source_resource  # TODO(b/222110136): Use for gzip-transfer decision.
     if self._upload_http_client is None:
       self._upload_http_client = transports.GetApitoolsTransport(
           redact_request_body_reason=(
@@ -903,15 +923,17 @@ class GcsApi(cloud_api.CloudApi):
               ' Set log_http_show_request_body property to True to print the'
               ' body of this request.'))
 
+    should_gzip_in_flight = _should_gzip_in_flight(request_config,
+                                                   source_resource)
     if upload_strategy == cloud_api.UploadStrategy.SIMPLE:
       upload = gcs_upload.SimpleUpload(self, self._upload_http_client,
                                        source_stream, destination_resource,
-                                       request_config)
+                                       should_gzip_in_flight, request_config)
     elif upload_strategy == cloud_api.UploadStrategy.RESUMABLE:
       upload = gcs_upload.ResumableUpload(self, self._upload_http_client,
                                           source_stream, destination_resource,
-                                          request_config, serialization_data,
-                                          tracker_callback)
+                                          should_gzip_in_flight, request_config,
+                                          serialization_data, tracker_callback)
     else:
       raise command_errors.Error(
           'Invalid upload strategy: {}.'.format(upload_strategy.value))

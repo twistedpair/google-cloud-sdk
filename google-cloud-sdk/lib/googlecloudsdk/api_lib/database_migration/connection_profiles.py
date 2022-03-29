@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import re
+
 from apitools.base.py import list_pager
 
 from googlecloudsdk.api_lib.database_migration import api_util
@@ -98,7 +100,18 @@ class ConnectionProfilesClient(object):
     return self._release_track == base.ReleaseTrack.GA
 
   def _ValidateArgs(self, args):
+    self._ValidateHostArgs(args)
     self._ValidateSslConfigArgs(args)
+
+  def _ValidateHostArgs(self, args):
+    if not args.IsKnownAndSpecified('host'):
+      return True
+    pattern = re.compile('[a-zA-Z0-9][-.a-zA-Z0-9]*[a-zA-Z0-9]')
+    if not pattern.match(args.host):
+      raise calliope_exceptions.InvalidArgumentException(
+          'host',
+          'Hostname and IP can only include letters, numbers, dots, hyphens and valid IP ranges.'
+      )
 
   def _ValidateSslConfigArgs(self, args):
     self._ValidateCertificateFormat(args, 'ca_certificate')

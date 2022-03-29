@@ -110,19 +110,65 @@ class Application(_messages.Message):
 
 
 class ApplicationStatus(_messages.Message):
-  r"""Status of the application.
+  r"""Status of the application. Next tag: 7
 
   Messages:
+    AnnotationsValue: Unstructured key value map that may be set by external
+      tools to store and arbitrary metadata. They are not queryable and should
+      be preserved when modifying objects. This field follows Kubernetes
+      annotations' namespacing, limits, and rules. More info:
+      http://kubernetes.io/docs/user-guide/annotations
     ResourcesValue: The map of resource status where the key is the name of
       resources and the value is the resource status.
 
   Fields:
-    modifyTime: Time at which the status was last updated.
+    annotations: Unstructured key value map that may be set by external tools
+      to store and arbitrary metadata. They are not queryable and should be
+      preserved when modifying objects. This field follows Kubernetes
+      annotations' namespacing, limits, and rules. More info:
+      http://kubernetes.io/docs/user-guide/annotations
+    createTime: Output only. Create time stamp
+    displayName: Display name
+    etag: Output only. A system-generated fingerprint for this version of the
+      resource. May be used to detect modification conflict during updates.
     name: The resource name of the application status, in the following form:
-      `projects/{project}/locations/{location}/applications/{name}/status`
+      `projects/{project}/locations/{location}/applications/{application}/stat
+      us`
+    reconciling: Output only. Indicates whether the resource's reconciliation
+      is still in progress.
     resources: The map of resource status where the key is the name of
       resources and the value is the resource status.
+    updateTime: Output only. Time at which the status was last updated.
   """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""Unstructured key value map that may be set by external tools to store
+    and arbitrary metadata. They are not queryable and should be preserved
+    when modifying objects. This field follows Kubernetes annotations'
+    namespacing, limits, and rules. More info: http://kubernetes.io/docs/user-
+    guide/annotations
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResourcesValue(_messages.Message):
@@ -149,9 +195,14 @@ class ApplicationStatus(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  modifyTime = _messages.StringField(1)
-  name = _messages.StringField(2)
-  resources = _messages.MessageField('ResourcesValue', 3)
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  createTime = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  etag = _messages.StringField(4)
+  name = _messages.StringField(5)
+  reconciling = _messages.BooleanField(6)
+  resources = _messages.MessageField('ResourcesValue', 7)
+  updateTime = _messages.StringField(8)
 
 
 class BindingStatus(_messages.Message):
@@ -160,17 +211,17 @@ class BindingStatus(_messages.Message):
   Messages:
     AnnotationsValue: Annotations of the Cloud Run service for the binded
       resource.
-    EnvVarsValue: Environment variables of the Cloud Run service for the
-      binded resource.
+    EnvironmentVariablesValue: Environment variables of the Cloud Run service
+      for the binded resource.
 
   Fields:
     annotations: Annotations of the Cloud Run service for the binded resource.
-    envVars: Environment variables of the Cloud Run service for the binded
-      resource.
+    environmentVariables: Environment variables of the Cloud Run service for
+      the binded resource.
     resourceName: Name of the binded resource.
     resourceType: Type of the binded resource.
-    serviceAccount: Service account used by the Cloud Run service for the
-      binded resource.
+    serviceAccount: Service account email used by the Cloud Run service for
+      the binded resource.
     serviceName: Name of the Cloud Run service.
   """
 
@@ -200,19 +251,21 @@ class BindingStatus(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
-  class EnvVarsValue(_messages.Message):
+  class EnvironmentVariablesValue(_messages.Message):
     r"""Environment variables of the Cloud Run service for the binded
     resource.
 
     Messages:
-      AdditionalProperty: An additional property for a EnvVarsValue object.
+      AdditionalProperty: An additional property for a
+        EnvironmentVariablesValue object.
 
     Fields:
-      additionalProperties: Additional properties of type EnvVarsValue
+      additionalProperties: Additional properties of type
+        EnvironmentVariablesValue
     """
 
     class AdditionalProperty(_messages.Message):
-      r"""An additional property for a EnvVarsValue object.
+      r"""An additional property for a EnvironmentVariablesValue object.
 
       Fields:
         key: Name of the additional property.
@@ -225,7 +278,7 @@ class BindingStatus(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   annotations = _messages.MessageField('AnnotationsValue', 1)
-  envVars = _messages.MessageField('EnvVarsValue', 2)
+  environmentVariables = _messages.MessageField('EnvironmentVariablesValue', 2)
   resourceName = _messages.StringField(3)
   resourceType = _messages.StringField(4)
   serviceAccount = _messages.StringField(5)
@@ -488,61 +541,9 @@ class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
   or the response type of an API method. For instance: service Foo { rpc
-  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
-  representation for `Empty` is empty JSON object `{}`.
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
 
-
-
-class GcpResourceStatus(_messages.Message):
-  r"""Status for a GCP resource.
-
-  Enums:
-    StateValueValuesEnum: The state of the GCP resource.
-
-  Fields:
-    consoleLink: Pantheon link for the resource. This does not exist for every
-      resource that makes up the SAF resource.
-    dirty: Indicates that this GCP resource has been altered and may not match
-      the expected state.
-    errorMessage: The error message associated with the GCP resource, if
-      applicable.
-    gcpResourceName: The full path of the GCP resource, which can be used to
-      query other GCP services.
-    selfLink: Fully qualified URL to the GCP resource object.
-    state: The state of the GCP resource.
-    type: The type of the GCP resource (e.g. "redis").
-  """
-
-  class StateValueValuesEnum(_messages.Enum):
-    r"""The state of the GCP resource.
-
-    Values:
-      GCP_RESOURCE_STATE_UNKNOWN: <no description>
-      GCP_RESOURCE_STATE_DEPLOYED: The resource has been deployed.
-      GCP_RESOURCE_STATE_MISSING: The resource is missing.
-      GCP_RESOURCE_STATE_PROVISIONING: The resource has been deployed and is
-        provisioning.
-      GCP_RESOURCE_STATE_READY: The resource has been deployed and is working
-        as intended. This is intended for resources that have a health
-        indicator.
-      GCP_RESOURCE_STATE_FAILED: The resource has failed and the full error
-        message will be populated in the resource.
-    """
-    GCP_RESOURCE_STATE_UNKNOWN = 0
-    GCP_RESOURCE_STATE_DEPLOYED = 1
-    GCP_RESOURCE_STATE_MISSING = 2
-    GCP_RESOURCE_STATE_PROVISIONING = 3
-    GCP_RESOURCE_STATE_READY = 4
-    GCP_RESOURCE_STATE_FAILED = 5
-
-  consoleLink = _messages.StringField(1)
-  dirty = _messages.BooleanField(2)
-  errorMessage = _messages.StringField(3)
-  gcpResourceName = _messages.StringField(4)
-  selfLink = _messages.StringField(5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
-  type = _messages.StringField(7)
 
 
 class JobDetails(_messages.Message):
@@ -936,6 +937,58 @@ class Render(_messages.Message):
   outputLocation = _messages.MessageField('Target', 2)
 
 
+class ResourceComponentStatus(_messages.Message):
+  r"""Status for a component of a resource.
+
+  Enums:
+    StateValueValuesEnum: The state of the resource component.
+
+  Fields:
+    consoleLink: Pantheon link for the resource. This does not exist for every
+      resource that makes up the SAF resource.
+    diverged: Indicates that this resource component has been altered and may
+      not match the expected state.
+    errorMessage: The error message associated with the resource component, if
+      applicable.
+    name: The name the resource component. Usually it's the name of the GCP
+      resource, which was used inside the Terraform Resource block that
+      defines it. (e.g. cri-domain-cert)
+    selfLink: Fully qualified URL to the object represented by this resource
+      component.
+    state: The state of the resource component.
+    type: The Terraform Resource Type of the GCP resource (e.g.
+      "google_compute_managed_ssl_certificate").
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""The state of the resource component.
+
+    Values:
+      STATE_UNSPECIFIED: The status of this component is unspecified.
+      DEPLOYED: The component has been deployed.
+      MISSING: The component is missing.
+      PROVISIONING: The component has been deployed and is provisioning.
+      ACTIVE: The component has been deployed and is working as intended. This
+        is intended for resources that have a health indicator.
+      FAILED: The component has failed and the full error message will be
+        populated in the resource.
+    """
+    STATE_UNSPECIFIED = 0
+    DEPLOYED = 1
+    MISSING = 2
+    PROVISIONING = 3
+    ACTIVE = 4
+    FAILED = 5
+
+  consoleLink = _messages.StringField(1)
+  diverged = _messages.BooleanField(2)
+  errorMessage = _messages.StringField(3)
+  name = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  type = _messages.StringField(7)
+
+
 class ResourceConfig(_messages.Message):
   r"""Message for the Resource configuration.
 
@@ -958,54 +1011,53 @@ class ResourceStatus(_messages.Message):
   r"""Status for a resource.
 
   Enums:
-    StateValueValuesEnum: The enum status of the resource.
+    StateValueValuesEnum: The enum state of the resource.
 
   Fields:
     bindingStatus: The binding status related to this resource.
     cloudSqlDetails: Detail Status of CloudSQL resource.
     consoleLink: Pantheon link for the resource. For example, the custom
       domain will link to the GCLB page.
-    dirty: Indicates that a child GCP resource has been altered and may not
-      match the expected state.
+    diverged: Indicates that a child component of this resource has been
+      altered and may not match the expected state.
     errorMessage: The error message associated with the resource, if
       applicable.
-    gcpResource: Repeated field with status per GCP resource created for this
-      resource.
     redisDetails: Detail Status of Redis resource.
+    resourceComponentStatuses: Repeated field with status per component
+      created for this resource.
     resourceName: Name of the resource, pulled from the Application Config.
     routerDetails: Detail Status of Router resource.
-    state: The enum status of the resource.
+    state: The enum state of the resource.
     type: Type of resource.
     vpcDetails: Detail Status of VPC resource.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""The enum status of the resource.
+    r"""The enum state of the resource.
 
     Values:
-      RESOURCE_STATE_UNKNOWN: <no description>
-      RESOURCE_STATE_READY: The resource is ready.
-      RESOURCE_STATE_ERROR: Some of the components of the resource are not
-        working.
-      RESOURCE_STATE_MISSING: The key components are missing.
-      RESOURCE_STATE_UPDATING: The resource is being deployed.
-      RESOURCE_STATE_NOT_READY: Some of the resource's child resources are not
-        in ready state.
+      STATE_UNSPECIFIED: The status of this resource is unspecified.
+      ACTIVE: The resource is active.
+      FAILED: Some of the components of the resource are not working.
+      MISSING: The key components are missing.
+      UPDATING: The resource is being deployed.
+      NOT_READY: Some of the resource's child resources are not in ready
+        state.
     """
-    RESOURCE_STATE_UNKNOWN = 0
-    RESOURCE_STATE_READY = 1
-    RESOURCE_STATE_ERROR = 2
-    RESOURCE_STATE_MISSING = 3
-    RESOURCE_STATE_UPDATING = 4
-    RESOURCE_STATE_NOT_READY = 5
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    FAILED = 2
+    MISSING = 3
+    UPDATING = 4
+    NOT_READY = 5
 
   bindingStatus = _messages.MessageField('BindingStatus', 1, repeated=True)
   cloudSqlDetails = _messages.MessageField('CloudSqlStatus', 2)
   consoleLink = _messages.StringField(3)
-  dirty = _messages.BooleanField(4)
+  diverged = _messages.BooleanField(4)
   errorMessage = _messages.StringField(5)
-  gcpResource = _messages.MessageField('GcpResourceStatus', 6, repeated=True)
-  redisDetails = _messages.MessageField('RedisStatus', 7)
+  redisDetails = _messages.MessageField('RedisStatus', 6)
+  resourceComponentStatuses = _messages.MessageField('ResourceComponentStatus', 7, repeated=True)
   resourceName = _messages.StringField(8)
   routerDetails = _messages.MessageField('RouterStatus', 9)
   state = _messages.EnumField('StateValueValuesEnum', 10)
@@ -1054,7 +1106,7 @@ class RouterStatus(_messages.Message):
   r"""Detail Status of Router resource.
 
   Fields:
-    ipAddress: A string attribute.
+    ipAddress: IP Address of the Google Cloud Load Balancer.
   """
 
   ipAddress = _messages.StringField(1)
@@ -1184,7 +1236,7 @@ class RunappsProjectsLocationsApplicationsGetStatusRequest(_messages.Message):
   r"""A RunappsProjectsLocationsApplicationsGetStatusRequest object.
 
   Fields:
-    name: Required. Name of the resource
+    name: Required. Name of the resource.
     readMask: Field mask used for limiting the resources to query status on.
   """
 

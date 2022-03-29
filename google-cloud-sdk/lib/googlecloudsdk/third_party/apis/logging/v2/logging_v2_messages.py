@@ -151,6 +151,14 @@ class CmekSettings(_messages.Message):
       to an empty string.See Enabling CMEK for Log Router
       (https://cloud.google.com/logging/docs/routing/managed-encryption) for
       more information.
+    kmsKeyVersionName: The CryptoKeyVersion resource name for the configured
+      Cloud KMS key.KMS key name format: "projects/[PROJECT_ID]/locations/[LOC
+      ATION]/keyRings/[KEYRING]/cryptoKeys/[KEY]/cryptoKeyVersions/[VERSION]"
+      For example:"projects/my-project/locations/us-central1/keyRings/my-
+      ring/cryptoKeys/my-key/cryptoKeyVersions/1"This is a read-only field
+      used to convey the specific configured CryptoKeyVersion of kms_key that
+      has been configured. It will be populated in cases where the CMEK
+      settings are bound to a single key version.
     name: Output only. The resource name of the CMEK settings.
     serviceAccountId: Output only. The service account that will be used by
       the Log Router to access your Cloud KMS key.Before enabling CMEK for Log
@@ -163,8 +171,9 @@ class CmekSettings(_messages.Message):
   """
 
   kmsKeyName = _messages.StringField(1)
-  name = _messages.StringField(2)
-  serviceAccountId = _messages.StringField(3)
+  kmsKeyVersionName = _messages.StringField(2)
+  name = _messages.StringField(3)
+  serviceAccountId = _messages.StringField(4)
 
 
 class CopyLogEntriesMetadata(_messages.Message):
@@ -304,8 +313,7 @@ class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
   or the response type of an API method. For instance: service Foo { rpc
-  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
-  representation for Empty is empty JSON object {}.
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
 
 

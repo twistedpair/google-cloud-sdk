@@ -402,3 +402,122 @@ class DisplayableBucketData(object):
     # Using __dict__ should be safe because all the fields in this object
     # are comparable and we do not expect this object to be hashable.
     return self.__dict__ == other.__dict__
+
+
+class DisplayableObjectData(object):
+  """Class representing an ObjectResource for display purpose.
+
+  All the public attributes in this object will be displayed by
+  the list and describe commands. Objects get displayed recursively, e.g.
+  if a field represents a datetime object, the display logic in gcloud will
+  display each member of the datetime object as well. Hence, it is recommended
+  to stringify any member before it gets sent to the gcloud's resource printers.
+
+  Attributes:
+    name (str): Name of object.
+    bucket (str): Bucket that contains the object.
+    url_string (str): The url string representing the object.
+    acl (dict|str|None): ACLs for the objects.
+      If the API call to fetch the data failed, this can be an error string.
+    additional_properties (dict|None): Additional metadata.
+    cache_control (str|None): Cache control value for the object.
+    component_count (int|None): Number of components, if any.
+    content_disposition (str|None): Content Disposition value for the object.
+    content_encoding (str|None): Content Encoding value for the object.
+    content_language (str|None): Content Language value for the object.
+    content_length (int|None): Size of the object.
+    content_type (str|None): Content Type of the object.
+    crc32c_hash (str|None): Base64-encoded digest of crc32c hash.
+    creation_time (str|None): Time the object was created.
+    custom_time (str|None): Custom time, if present.
+    encryption_algorithm (str|None): Encryption algorithm used for encrypting
+      the object if CSEK is used.
+    encryption_key_sha256 (str|None): The hash of a customer supplied
+      encryption key.
+    etag (str|None): HTTP version identifier.
+    event_based_hold (bool|None): Event based hold information for the object.
+    generation (str|None): Generation (or "version") of the underlying object.
+    kms_key (str|None): The KMS key used to encrypt the object.
+    md5_hash (str|None): Base64-encoded digest of md5 hash.
+    metageneration (int|None): Generation object's metadata.
+    noncurrent_time (str|None): Noncurrent time value for the object.
+    retention_expiration (str|None): Retention expiration information.
+    storage_class (str|None): The storage class for the object.
+    storage_class_update_time (str|None): Storage class update time.
+    temporary_hold (bool|None): Temporary hold information for the object.
+    update_time (str|None): Time the object was updated.
+  """
+
+  def __init__(self,
+               name,
+               bucket,
+               url_string,
+               acl=None,
+               additional_properties=None,
+               cache_control=None,
+               component_count=None,
+               content_disposition=None,
+               content_encoding=None,
+               content_language=None,
+               content_length=None,
+               content_type=None,
+               crc32c_hash=None,
+               creation_time=None,
+               custom_time=None,
+               encryption_algorithm=None,
+               encryption_key_sha256=None,
+               etag=None,
+               event_based_hold=None,
+               generation=None,
+               kms_key=None,
+               md5_hash=None,
+               metageneration=None,
+               noncurrent_time=None,
+               retention_expiration=None,
+               storage_class=None,
+               storage_class_update_time=None,
+               temporary_hold=None,
+               update_time=None):
+    """Initializes DisplayableObjectData."""
+    self.name = name
+    self.bucket = bucket
+    self.url_string = url_string
+    self.acl = acl
+    self.additional_properties = additional_properties
+    self.cache_control = cache_control
+    self.component_count = component_count
+    self.content_disposition = content_disposition
+    self.content_encoding = content_encoding
+    self.content_language = content_language
+    self.content_length = content_length
+    self.content_type = content_type
+    self.crc32c_hash = crc32c_hash
+    self.creation_time = (
+        resource_util.get_formatted_timestamp_in_utc(creation_time)
+        if creation_time is not None else None)
+    self.custom_time = (
+        resource_util.get_formatted_timestamp_in_utc(custom_time)
+        if custom_time is not None else None)
+    self.encryption_algorithm = encryption_algorithm
+    self.encryption_key_sha256 = encryption_key_sha256
+    self.etag = etag
+    self.event_based_hold = event_based_hold
+    self.generation = generation
+    self.kms_key = kms_key
+    self.md5_hash = md5_hash
+    self.metageneration = metageneration
+    self.noncurrent_time = noncurrent_time
+    self.retention_expiration = retention_expiration
+    self.storage_class = storage_class
+    self.storage_class_update_time = storage_class_update_time
+    self.temporary_hold = temporary_hold
+    self.update_time = (
+        resource_util.get_formatted_timestamp_in_utc(update_time)
+        if update_time is not None else None)
+
+  def __eq__(self, other):
+    if not isinstance(other, type(self)):
+      return NotImplemented
+    # Using __dict__ should be safe because all the fields in this object
+    # are comparable and we do not expect this object to be hashable.
+    return self.__dict__ == other.__dict__
