@@ -517,6 +517,22 @@
           "description": "Whether objects should be deleted from the source after they are transferred to the sink. **Note:** This option and delete_objects_unique_in_sink are mutually exclusive.",
           "type": "boolean"
         },
+        "overwriteWhen": {
+          "description": "When to overwrite objects that already exist in the sink. If not set overwrite behavior is determined by overwrite_objects_already_existing_in_sink.",
+          "type": "string",
+          "enumDescriptions": [
+            "Indicate the option is not set.",
+            "Overwrite destination object with source if the two objects are different.",
+            "Never overwrite destination object.",
+            "Always overwrite destination object."
+          ],
+          "enum": [
+            "OVERWRITE_WHEN_UNSPECIFIED",
+            "DIFFERENT",
+            "NEVER",
+            "ALWAYS"
+          ]
+        },
         "metadataOptions": {
           "description": "Represents the selected metadata options for a transfer job. This feature is in Preview.",
           "$ref": "MetadataOptions"
@@ -525,11 +541,11 @@
     },
     "MetadataOptions": {
       "id": "MetadataOptions",
-      "description": "Specifies the metadata options for running a transfer. These options only apply to transfers involving a POSIX filesystem and are ignored for other transfers.",
+      "description": "Specifies the metadata options for running a transfer.",
       "type": "object",
       "properties": {
         "symlink": {
-          "description": "Specifies how symlinks should be handled by the transfer. By default, symlinks are not preserved.",
+          "description": "Specifies how symlinks should be handled by the transfer. By default, symlinks are not preserved. Only applicable to transfers involving POSIX file systems, and ignored for other transfers.",
           "type": "string",
           "enumDescriptions": [
             "Symlink behavior is unspecified.",
@@ -543,7 +559,7 @@
           ]
         },
         "mode": {
-          "description": "Specifies how each file's mode attribute should be handled by the transfer. By default, mode is not preserved.",
+          "description": "Specifies how each file's mode attribute should be handled by the transfer. By default, mode is not preserved. Only applicable to transfers involving POSIX file systems, and ignored for other transfers.",
           "type": "string",
           "enumDescriptions": [
             "Mode behavior is unspecified.",
@@ -557,7 +573,7 @@
           ]
         },
         "gid": {
-          "description": "Specifies how each file's POSIX group ID (GID) attribute should be handled by the transfer. By default, GID is not preserved.",
+          "description": "Specifies how each file's POSIX group ID (GID) attribute should be handled by the transfer. By default, GID is not preserved. Only applicable to transfers involving POSIX file systems, and ignored for other transfers.",
           "type": "string",
           "enumDescriptions": [
             "GID behavior is unspecified.",
@@ -571,7 +587,7 @@
           ]
         },
         "uid": {
-          "description": "Specifies how each file's POSIX user ID (UID) attribute should be handled by the transfer. By default, UID is not preserved.",
+          "description": "Specifies how each file's POSIX user ID (UID) attribute should be handled by the transfer. By default, UID is not preserved. Only applicable to transfers involving POSIX file systems, and ignored for other transfers.",
           "type": "string",
           "enumDescriptions": [
             "UID behavior is unspecified.",

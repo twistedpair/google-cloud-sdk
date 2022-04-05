@@ -360,6 +360,10 @@
           "description": "Output only. Attributes specific to Endpoint Verification devices.",
           "readOnly": true,
           "$ref": "EndpointVerificationSpecificAttributes"
+        },
+        "deviceId": {
+          "description": "Unique identifier for the device.",
+          "type": "string"
         }
       }
     },

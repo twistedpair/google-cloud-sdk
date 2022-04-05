@@ -71,8 +71,7 @@ def _PipelineSpecTransform(pipeline_spec):
 
   if "finally" in pipeline_spec:
     for pipeline_task in pipeline_spec.get("finally", []):
-      for param_spec in pipeline_task.get("params", []):
-        input_util.ParamSpecTransform(param_spec)
+      input_util.ParamDictTransform(pipeline_task.get("params", []))
     pipeline_spec["finallyTasks"] = pipeline_spec.pop("finally")
 
 
@@ -91,8 +90,7 @@ def _PipelineTaskTransform(pipeline_task):
       _WhenExpressionTransform(when_expression)
     pipeline_task["whenExpressions"] = pipeline_task.pop("when")
 
-  for param in pipeline_task.get("params", []):
-    input_util.ParamSpecTransform(param)
+  input_util.ParamDictTransform(pipeline_task.get("params", []))
 
 
 def _WhenExpressionTransform(when_expression):

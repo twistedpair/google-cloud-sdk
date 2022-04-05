@@ -217,7 +217,9 @@ class Certificate(_messages.Message):
     scope: Immutable. The scope of the certificate.
     selfManaged: If set, defines data of a self-managed certificate.
     subjectAlternativeNames: Output only. The list of Subject Alternative
-      Names defined in the certificate.
+      Names defined in the certificate. Managed certificates that haven't been
+      provisioned yet have this field populated with a value of the
+      managed.domains field.
     updateTime: Output only. The last update timestamp of a Certificate.
   """
 

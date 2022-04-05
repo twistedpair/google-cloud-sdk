@@ -37,7 +37,7 @@ from googlecloudsdk.command_lib.storage.tasks.rm import delete_object_task
 from googlecloudsdk.core import log
 
 
-class IntraCloudCopyTask(task.Task):
+class IntraCloudCopyTask(task.Task, copy_util.CopyTaskExitHandlerMixin):
   """Represents a command operation copying an object around the cloud."""
 
   def __init__(self,

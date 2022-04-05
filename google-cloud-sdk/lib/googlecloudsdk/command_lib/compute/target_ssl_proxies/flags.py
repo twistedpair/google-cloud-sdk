@@ -22,6 +22,24 @@ from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
 
+DEFAULT_LIST_FORMAT = """\
+    table(
+      name,
+      proxyHeader,
+      service.basename(),
+      sslCertificates.map().basename().list():label=SSL_CERTIFICATES
+    )"""
+
+DEFAULT_BETA_LIST_FORMAT = """\
+    table(
+      name,
+      proxyHeader,
+      service.basename(),
+      sslCertificates.map().basename().list():label=SSL_CERTIFICATES,
+      certificateMap.basename()
+    )"""
+
+
 class TargetSslProxiesCompleter(compute_completers.ListCommandCompleter):
 
   def __init__(self, **kwargs):

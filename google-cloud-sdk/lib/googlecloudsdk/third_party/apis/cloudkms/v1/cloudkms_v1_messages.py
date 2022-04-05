@@ -1731,10 +1731,10 @@ class EncryptRequest(_messages.Message):
     additionalAuthenticatedData: Optional. Optional data that, if specified,
       must also be provided during decryption through
       DecryptRequest.additional_authenticated_data. The maximum size depends
-      on the key version's protection_level. For SOFTWARE keys, the AAD must
-      be no larger than 64KiB. For HSM keys, the combined length of the
-      plaintext and additional_authenticated_data fields must be no larger
-      than 8KiB.
+      on the key version's protection_level. For SOFTWARE, EXTERNAL, and
+      EXTERNAL_VPC keys the AAD must be no larger than 64KiB. For HSM keys,
+      the combined length of the plaintext and additional_authenticated_data
+      fields must be no larger than 8KiB.
     additionalAuthenticatedDataCrc32c: Optional. An optional CRC32C checksum
       of the EncryptRequest.additional_authenticated_data. If specified,
       KeyManagementService will verify the integrity of the received
@@ -1751,9 +1751,9 @@ class EncryptRequest(_messages.Message):
       type.
     plaintext: Required. The data to encrypt. Must be no larger than 64KiB.
       The maximum size depends on the key version's protection_level. For
-      SOFTWARE keys, the plaintext must be no larger than 64KiB. For HSM keys,
-      the combined length of the plaintext and additional_authenticated_data
-      fields must be no larger than 8KiB.
+      SOFTWARE, EXTERNAL, and EXTERNAL_VPC keys, the plaintext must be no
+      larger than 64KiB. For HSM keys, the combined length of the plaintext
+      and additional_authenticated_data fields must be no larger than 8KiB.
     plaintextCrc32c: Optional. An optional CRC32C checksum of the
       EncryptRequest.plaintext. If specified, KeyManagementService will verify
       the integrity of the received EncryptRequest.plaintext using this

@@ -38543,7 +38543,8 @@ class Instance(_messages.Message):
 
   Enums:
     KeyRevocationActionTypeValueValuesEnum: KeyRevocationActionType of the
-      instance.
+      instance. Supported options are "STOP" and "NONE". The default value is
+      "NONE" if it is not specified.
     PostKeyRevocationActionTypeValueValuesEnum: PostKeyRevocationActionType of
       the instance.
     PrivateIpv6GoogleAccessValueValuesEnum: The private IPv6 google access
@@ -38608,6 +38609,8 @@ class Instance(_messages.Message):
       keys, so you cannot use your own keys to encrypt local SSDs and in-
       memory content in a managed instance group.
     keyRevocationActionType: KeyRevocationActionType of the instance.
+      Supported options are "STOP" and "NONE". The default value is "NONE" if
+      it is not specified.
     kind: [Output Only] Type of the resource. Always compute#instance for
       instances.
     labelFingerprint: A fingerprint for this request, which is essentially a
@@ -38709,7 +38712,8 @@ class Instance(_messages.Message):
   """
 
   class KeyRevocationActionTypeValueValuesEnum(_messages.Enum):
-    r"""KeyRevocationActionType of the instance.
+    r"""KeyRevocationActionType of the instance. Supported options are "STOP"
+    and "NONE". The default value is "NONE" if it is not specified.
 
     Values:
       KEY_REVOCATION_ACTION_TYPE_UNSPECIFIED: Default value. This value is
@@ -41977,7 +41981,8 @@ class InstanceProperties(_messages.Message):
 
   Enums:
     KeyRevocationActionTypeValueValuesEnum: KeyRevocationActionType of the
-      instance.
+      instance. Supported options are "STOP" and "NONE". The default value is
+      "NONE" if it is not specified.
     PostKeyRevocationActionTypeValueValuesEnum: PostKeyRevocationActionType of
       the instance.
     PrivateIpv6GoogleAccessValueValuesEnum: The private IPv6 google access
@@ -42014,6 +42019,8 @@ class InstanceProperties(_messages.Message):
     guestAccelerators: A list of guest accelerator cards' type and count to
       use for instances created from these properties.
     keyRevocationActionType: KeyRevocationActionType of the instance.
+      Supported options are "STOP" and "NONE". The default value is "NONE" if
+      it is not specified.
     labels: Labels to apply to instances that are created from these
       properties.
     machineType: The machine type to use for instances that are created from
@@ -42065,7 +42072,8 @@ class InstanceProperties(_messages.Message):
   """
 
   class KeyRevocationActionTypeValueValuesEnum(_messages.Enum):
-    r"""KeyRevocationActionType of the instance.
+    r"""KeyRevocationActionType of the instance. Supported options are "STOP"
+    and "NONE". The default value is "NONE" if it is not specified.
 
     Values:
       KEY_REVOCATION_ACTION_TYPE_UNSPECIFIED: Default value. This value is
@@ -64959,7 +64967,8 @@ class SourceInstanceProperties(_messages.Message):
 
   Enums:
     KeyRevocationActionTypeValueValuesEnum: KeyRevocationActionType of the
-      instance.
+      instance. Supported options are "STOP" and "NONE". The default value is
+      "NONE" if it is not specified.
     PostKeyRevocationActionTypeValueValuesEnum: PostKeyRevocationActionType of
       the instance.
 
@@ -64983,6 +64992,8 @@ class SourceInstanceProperties(_messages.Message):
     guestAccelerators: A list of guest accelerator cards' type and count to
       use for instances created from this machine image.
     keyRevocationActionType: KeyRevocationActionType of the instance.
+      Supported options are "STOP" and "NONE". The default value is "NONE" if
+      it is not specified.
     labels: Labels to apply to instances that are created from this machine
       image.
     machineType: The machine type to use for instances that are created from
@@ -65013,7 +65024,8 @@ class SourceInstanceProperties(_messages.Message):
   """
 
   class KeyRevocationActionTypeValueValuesEnum(_messages.Enum):
-    r"""KeyRevocationActionType of the instance.
+    r"""KeyRevocationActionType of the instance. Supported options are "STOP"
+    and "NONE". The default value is "NONE" if it is not specified.
 
     Values:
       KEY_REVOCATION_ACTION_TYPE_UNSPECIFIED: Default value. This value is
@@ -66762,18 +66774,15 @@ class Subnetwork(_messages.Message):
       INTERVAL_15_MIN.
     Ipv6AccessTypeValueValuesEnum: The access type of IPv6 address this subnet
       holds. It's immutable and can only be specified during creation or the
-      first time the subnet is updated into IPV4_IPV6 dual stack. If the
-      ipv6_type is EXTERNAL then this subnet cannot enable direct path.
+      first time the subnet is updated into IPV4_IPV6 dual stack.
     MetadataValueValuesEnum: Can only be specified if VPC flow logging for
       this subnetwork is enabled. Configures whether metadata fields should be
       added to the reported VPC flow logs. Options are INCLUDE_ALL_METADATA,
       EXCLUDE_ALL_METADATA, and CUSTOM_METADATA. Default is
       EXCLUDE_ALL_METADATA.
-    PrivateIpv6GoogleAccessValueValuesEnum: The private IPv6 google access
-      type for the VMs in this subnet. This is an expanded field of
-      enablePrivateV6Access. If both fields are set, privateIpv6GoogleAccess
-      will take priority. This field can be both set at resource creation time
-      and updated using patch.
+    PrivateIpv6GoogleAccessValueValuesEnum: This field is for internal use.
+      This field can be both set at resource creation time and updated using
+      patch.
     PurposeValueValuesEnum: The purpose of the resource. This field can be
       either PRIVATE_RFC_1918 or INTERNAL_HTTPS_LOAD_BALANCER. A subnetwork
       with purpose set to INTERNAL_HTTPS_LOAD_BALANCER is a user-created
@@ -66837,8 +66846,8 @@ class Subnetwork(_messages.Message):
       PrivateIpv6GoogleAccess. Whether the VMs in this subnet can directly
       access Google services via internal IPv6 addresses. This field can be
       both set at resource creation time and updated using patch.
-    externalIpv6Prefix: [Output Only] The range of external IPv6 addresses
-      that are owned by this subnetwork.
+    externalIpv6Prefix: [Output Only] The external IPv6 address range that is
+      assigned to this subnetwork.
     fingerprint: Fingerprint of this resource. A hash of the contents stored
       in this object. This field is used in optimistic locking. This field
       will be ignored when inserting a Subnetwork. An up-to-date fingerprint
@@ -66855,9 +66864,8 @@ class Subnetwork(_messages.Message):
       reach destination addresses outside this subnetwork.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
-    internalIpv6Prefix: [Output Only] The range of internal IPv6 addresses
-      that are owned by this subnetwork. Note this is for general VM to VM
-      communication, not to be confused with the ipv6_cidr_range field.
+    internalIpv6Prefix: [Output Only] The internal IPv6 address range that is
+      assigned to this subnetwork.
     ipCidrRange: The range of internal addresses that are owned by this
       subnetwork. Provide this property when you create the subnetwork. For
       example, 10.0.0.0/8 or 100.64.0.0/10. Ranges must be unique and non-
@@ -66867,11 +66875,8 @@ class Subnetwork(_messages.Message):
       expandIpCidrRange.
     ipv6AccessType: The access type of IPv6 address this subnet holds. It's
       immutable and can only be specified during creation or the first time
-      the subnet is updated into IPV4_IPV6 dual stack. If the ipv6_type is
-      EXTERNAL then this subnet cannot enable direct path.
-    ipv6CidrRange: [Output Only] The range of internal IPv6 addresses that are
-      owned by this subnetwork. Note this will be for private google access
-      only eventually.
+      the subnet is updated into IPV4_IPV6 dual stack.
+    ipv6CidrRange: [Output Only] This field is for internal use.
     kind: [Output Only] Type of the resource. Always compute#subnetwork for
       Subnetwork resources.
     logConfig: This field denotes the VPC flow logging options for this
@@ -66895,10 +66900,8 @@ class Subnetwork(_messages.Message):
       services without assigned external IP addresses. This field can be both
       set at resource creation time and updated using
       setPrivateIpGoogleAccess.
-    privateIpv6GoogleAccess: The private IPv6 google access type for the VMs
-      in this subnet. This is an expanded field of enablePrivateV6Access. If
-      both fields are set, privateIpv6GoogleAccess will take priority. This
-      field can be both set at resource creation time and updated using patch.
+    privateIpv6GoogleAccess: This field is for internal use. This field can be
+      both set at resource creation time and updated using patch.
     privateIpv6GoogleAccessServiceAccounts: Deprecated in favor of enable
       PrivateIpv6GoogleAccess on instance directly. The service accounts can
       be used to selectively turn on Private IPv6 Google Access only on the
@@ -66972,12 +66975,11 @@ class Subnetwork(_messages.Message):
   class Ipv6AccessTypeValueValuesEnum(_messages.Enum):
     r"""The access type of IPv6 address this subnet holds. It's immutable and
     can only be specified during creation or the first time the subnet is
-    updated into IPV4_IPV6 dual stack. If the ipv6_type is EXTERNAL then this
-    subnet cannot enable direct path.
+    updated into IPV4_IPV6 dual stack.
 
     Values:
       EXTERNAL: VMs on this subnet will be assigned IPv6 addresses that are
-        accesible via the Internet, as well as the VPC network.
+        accessible via the Internet, as well as the VPC network.
       INTERNAL: VMs on this subnet will be assigned IPv6 addresses that are
         only accessible over the VPC network.
     """
@@ -66999,10 +67001,8 @@ class Subnetwork(_messages.Message):
     INCLUDE_ALL_METADATA = 1
 
   class PrivateIpv6GoogleAccessValueValuesEnum(_messages.Enum):
-    r"""The private IPv6 google access type for the VMs in this subnet. This
-    is an expanded field of enablePrivateV6Access. If both fields are set,
-    privateIpv6GoogleAccess will take priority. This field can be both set at
-    resource creation time and updated using patch.
+    r"""This field is for internal use. This field can be both set at resource
+    creation time and updated using patch.
 
     Values:
       DISABLE_GOOGLE_ACCESS: Disable private IPv6 access to/from Google

@@ -246,3 +246,20 @@ class NodePoolsClient(object):
     req.updateMask = ','.join(update_mask)
 
     return self.service.Patch(req)
+
+  def HasNodePools(self, cluster_ref):
+    """Checks if the cluster has a node pool.
+
+    Args:
+      cluster_ref: gkemulticloud.GoogleCloudGkemulticloudV1AwsCluster object.
+
+    Returns:
+      True if the cluster has a node pool. Otherwise, False.
+    """
+    req = self.messages.GkemulticloudProjectsLocationsAwsClustersAwsNodePoolsListRequest(
+        parent=cluster_ref.RelativeName(),
+        pageSize=1)
+    res = self.service.List(req)
+    if res.awsNodePools:
+      return True
+    return False

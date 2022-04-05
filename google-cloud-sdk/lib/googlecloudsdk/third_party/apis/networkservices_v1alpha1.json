@@ -2573,7 +2573,7 @@
       "type": "object",
       "properties": {
         "matches": {
-          "description": "Required. RouteMatch defines the predicate used to match requests to a given action. Multiple match types are \u201COR\u201Ded for evaluation.",
+          "description": "Required. RouteMatch defines the predicate used to match requests to a given action. Multiple match types are \"OR\"ed for evaluation.",
           "type": "array",
           "items": {
             "$ref": "TlsRouteRouteMatch"
@@ -2587,7 +2587,7 @@
     },
     "TlsRouteRouteMatch": {
       "id": "TlsRouteRouteMatch",
-      "description": "RouteMatch defines the predicate used to match requests to a given action. Multiple match types are \u201CAND\u201Ded for evaluation. If no routeMatch field is specified, this rule will unconditionally match traffic.",
+      "description": "RouteMatch defines the predicate used to match requests to a given action. Multiple match types are \"AND\"ed for evaluation. If no routeMatch field is specified, this rule will unconditionally match traffic.",
       "type": "object",
       "properties": {
         "sniHost": {
@@ -2681,10 +2681,6 @@
         },
         "service": {
           "description": "Required. The full service directory service name of the format \/projects\/*\/locations\/*\/namespaces\/*\/services\/*",
-          "type": "string"
-        },
-        "endpointFilter": {
-          "description": "Optional. The endpoint filter associated with the Service Binding. The syntax is described in http:\/\/cloud\/service-directory\/docs\/reference\/rpc\/google.cloud.servicedirectory.v1#google.cloud.servicedirectory.v1.ResolveServiceRequest",
           "type": "string"
         },
         "labels": {
@@ -6008,40 +6004,6 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Creates a new ServiceBinding in a given project and location."
-                },
-                "patch": {
-                  "id": "networkservices.projects.locations.serviceBindings.patch",
-                  "path": "v1alpha1/{+name}",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/serviceBindings/{serviceBindingsId}",
-                  "httpMethod": "PATCH",
-                  "parameters": {
-                    "name": {
-                      "description": "Required. Name of the ServiceBinding resource. It matches pattern `projects\/*\/locations\/global\/serviceBindings\/service_binding_name>`.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/serviceBindings\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "updateMask": {
-                      "description": "Optional. Field mask is used to specify the fields to be overwritten in the ServiceBinding resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
-                      "location": "query",
-                      "type": "string",
-                      "format": "google-fieldmask"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "request": {
-                    "$ref": "ServiceBinding"
-                  },
-                  "response": {
-                    "$ref": "Operation"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Updates the parameters of a single ServiceBinding."
                 },
                 "delete": {
                   "id": "networkservices.projects.locations.serviceBindings.delete",

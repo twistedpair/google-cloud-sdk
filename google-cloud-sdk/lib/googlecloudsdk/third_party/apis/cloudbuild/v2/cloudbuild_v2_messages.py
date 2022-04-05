@@ -841,7 +841,8 @@ class CloudbuildProjectsLocationsResultsListRequest(_messages.Message):
 
   Fields:
     filter: Filter for the Records.
-    pageSize: Size of the page to return.
+    pageSize: Size of the page to return. Default page_size = 50 Maximum
+      page_size = 1000
     pageToken: Page start.
     parent: Required. The parent, which owns this collection of Results.
       Format: projects/{project}/locations/{location}/
@@ -1334,8 +1335,7 @@ class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
   or the response type of an API method. For instance: service Foo { rpc
-  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
-  representation for `Empty` is empty JSON object `{}`.
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
 
 
@@ -2064,6 +2064,9 @@ class PipelineRun(_messages.Message):
     startTime: Output only. Time the pipeline is actually started.
     taskRuns: Output only. List of TaskRuns and their status.
     timeout: Time after which the Pipeline times out.
+    timeouts: Time after which the Pipeline times out. Currently three keys
+      are accepted in the map pipeline, tasks and finally with
+      Timeouts.pipeline >= Timeouts.tasks + Timeouts.finally
     uid: Output only. A unique identifier for the `PipelineRun`.
     updateTime: Output only. Time at which the request to update the
       `PipelineRun` was received.
@@ -2147,11 +2150,12 @@ class PipelineRun(_messages.Message):
   startTime = _messages.StringField(13)
   taskRuns = _messages.MessageField('PipelineRunTaskRunStatus', 14, repeated=True)
   timeout = _messages.StringField(15)
-  uid = _messages.StringField(16)
-  updateTime = _messages.StringField(17)
-  workerPool = _messages.StringField(18)
-  workflow = _messages.StringField(19)
-  workspaces = _messages.MessageField('WorkspaceBinding', 20, repeated=True)
+  timeouts = _messages.MessageField('TimeoutFields', 16)
+  uid = _messages.StringField(17)
+  updateTime = _messages.StringField(18)
+  workerPool = _messages.StringField(19)
+  workflow = _messages.StringField(20)
+  workspaces = _messages.MessageField('WorkspaceBinding', 21, repeated=True)
 
 
 class PipelineRunTaskRunStatus(_messages.Message):
@@ -3063,7 +3067,9 @@ class TaskRun(_messages.Message):
       containers
     taskRunStatus: Status of the TaskRun.
     taskSpec: TaskSpec contains the Spec to instantiate a TaskRun.
-    timeout: Time after which the task times out.
+    timeout: Time after which the task times out. Defaults to 1 hour. If you
+      set the timeout to 0, the TaskRun will have no timeout and will run
+      until it completes successfully or fails from an error.
     uid: Output only. A unique identifier for the `TaskRun`.
     updateTime: Output only. Time at which the request to update the `TaskRun`
       was received.
@@ -3194,8 +3200,13 @@ class TaskRunStatus(_messages.Message):
 class TaskSpec(_messages.Message):
   r"""TaskSpec contains the Spec to instantiate a TaskRun.
 
+  Enums:
+    ManagedSidecarsValueListEntryValuesEnum:
+
   Fields:
     description: Description of the task.
+    managedSidecars: Sidecars that run alongside the Task's step containers
+      that should be added to this Task.
     params: List of parameters.
     results: Values that this Task can output.
     sidecars: Sidecars that run alongside the Task's step containers.
@@ -3204,13 +3215,24 @@ class TaskSpec(_messages.Message):
     workspaces: The volumes that this Task requires.
   """
 
+  class ManagedSidecarsValueListEntryValuesEnum(_messages.Enum):
+    r"""ManagedSidecarsValueListEntryValuesEnum enum type.
+
+    Values:
+      MANAGED_SIDECAR_UNSPECIFIED: Default enum type; should not be used.
+      PRIVILEGED_DOCKER_DAEMON: Sidecar for a privileged docker daemon.
+    """
+    MANAGED_SIDECAR_UNSPECIFIED = 0
+    PRIVILEGED_DOCKER_DAEMON = 1
+
   description = _messages.StringField(1)
-  params = _messages.MessageField('ParamSpec', 2, repeated=True)
-  results = _messages.MessageField('TaskResult', 3, repeated=True)
-  sidecars = _messages.MessageField('Sidecar', 4, repeated=True)
-  steps = _messages.MessageField('Step', 5, repeated=True)
-  volumes = _messages.MessageField('VolumeSource', 6, repeated=True)
-  workspaces = _messages.MessageField('WorkspaceDeclaration', 7, repeated=True)
+  managedSidecars = _messages.EnumField('ManagedSidecarsValueListEntryValuesEnum', 2, repeated=True)
+  params = _messages.MessageField('ParamSpec', 3, repeated=True)
+  results = _messages.MessageField('TaskResult', 4, repeated=True)
+  sidecars = _messages.MessageField('Sidecar', 5, repeated=True)
+  steps = _messages.MessageField('Step', 6, repeated=True)
+  volumes = _messages.MessageField('VolumeSource', 7, repeated=True)
+  workspaces = _messages.MessageField('WorkspaceDeclaration', 8, repeated=True)
 
 
 class TimeSpan(_messages.Message):
@@ -3223,6 +3245,24 @@ class TimeSpan(_messages.Message):
 
   endTime = _messages.StringField(1)
   startTime = _messages.StringField(2)
+
+
+class TimeoutFields(_messages.Message):
+  r"""TimeoutFields allows granular specification of pipeline, task, and
+  finally timeouts
+
+  Fields:
+    finally_: Finally sets the maximum allowed duration of this pipeline's
+      finally
+    pipeline: Pipeline sets the maximum allowed duration for execution of the
+      entire pipeline. The sum of individual timeouts for tasks and finally
+      must not exceed this value.
+    tasks: Tasks sets the maximum allowed duration of this pipeline's tasks
+  """
+
+  finally_ = _messages.StringField(1)
+  pipeline = _messages.StringField(2)
+  tasks = _messages.StringField(3)
 
 
 class UpdateBitbucketServerConfigOperationMetadata(_messages.Message):
@@ -3597,6 +3637,8 @@ class WorkspacePipelineTaskBinding(_messages.Message):
   workspace = _messages.StringField(2)
 
 
+encoding.AddCustomJsonFieldMapping(
+    TimeoutFields, 'finally_', 'finally')
 encoding.AddCustomJsonFieldMapping(
     StandardQueryParameters, 'f__xgafv', '$.xgafv')
 encoding.AddCustomJsonEnumMapping(

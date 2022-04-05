@@ -1939,25 +1939,28 @@ class LinuxNodeConfig(_messages.Message):
   Messages:
     SysctlsValue: The Linux kernel parameters to be applied to the nodes and
       all pods running on the nodes. The following parameters are supported.
-      net.core.netdev_max_backlog net.core.rmem_max net.core.wmem_default
-      net.core.wmem_max net.core.optmem_max net.core.somaxconn
-      net.ipv4.tcp_rmem net.ipv4.tcp_wmem net.ipv4.tcp_tw_reuse
+      net.core.busy_poll net.core.busy_read net.core.netdev_max_backlog
+      net.core.rmem_max net.core.wmem_default net.core.wmem_max
+      net.core.optmem_max net.core.somaxconn net.ipv4.tcp_rmem
+      net.ipv4.tcp_wmem net.ipv4.tcp_tw_reuse
 
   Fields:
     sysctls: The Linux kernel parameters to be applied to the nodes and all
       pods running on the nodes. The following parameters are supported.
-      net.core.netdev_max_backlog net.core.rmem_max net.core.wmem_default
-      net.core.wmem_max net.core.optmem_max net.core.somaxconn
-      net.ipv4.tcp_rmem net.ipv4.tcp_wmem net.ipv4.tcp_tw_reuse
+      net.core.busy_poll net.core.busy_read net.core.netdev_max_backlog
+      net.core.rmem_max net.core.wmem_default net.core.wmem_max
+      net.core.optmem_max net.core.somaxconn net.ipv4.tcp_rmem
+      net.ipv4.tcp_wmem net.ipv4.tcp_tw_reuse
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class SysctlsValue(_messages.Message):
     r"""The Linux kernel parameters to be applied to the nodes and all pods
     running on the nodes. The following parameters are supported.
-    net.core.netdev_max_backlog net.core.rmem_max net.core.wmem_default
-    net.core.wmem_max net.core.optmem_max net.core.somaxconn net.ipv4.tcp_rmem
-    net.ipv4.tcp_wmem net.ipv4.tcp_tw_reuse
+    net.core.busy_poll net.core.busy_read net.core.netdev_max_backlog
+    net.core.rmem_max net.core.wmem_default net.core.wmem_max
+    net.core.optmem_max net.core.somaxconn net.ipv4.tcp_rmem net.ipv4.tcp_wmem
+    net.ipv4.tcp_tw_reuse
 
     Messages:
       AdditionalProperty: An additional property for a SysctlsValue object.
@@ -2183,6 +2186,17 @@ class MaintenanceWindow(_messages.Message):
   recurringWindow = _messages.MessageField('RecurringTimeWindow', 3)
 
 
+class ManagedPrometheusConfig(_messages.Message):
+  r"""ManagedPrometheusConfig defines the configuration for Google Cloud
+  Managed Service for Prometheus.
+
+  Fields:
+    enabled: Enable Managed Collection.
+  """
+
+  enabled = _messages.BooleanField(1)
+
+
 class MasterAuth(_messages.Message):
   r"""The authentication information for accessing the master endpoint.
   Authentication can be done using HTTP basic auth or using client
@@ -2322,9 +2336,12 @@ class MonitoringConfig(_messages.Message):
 
   Fields:
     componentConfig: Monitoring components configuration
+    managedPrometheusConfig: Enable Google Cloud Managed Service for
+      Prometheus in the cluster.
   """
 
   componentConfig = _messages.MessageField('MonitoringComponentConfig', 1)
+  managedPrometheusConfig = _messages.MessageField('ManagedPrometheusConfig', 2)
 
 
 class NetworkConfig(_messages.Message):
@@ -2416,6 +2433,31 @@ class NetworkConfig(_messages.Message):
   privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 7)
   serviceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 8)
   subnetwork = _messages.StringField(9)
+
+
+class NetworkPerformanceConfig(_messages.Message):
+  r"""Configuration of all network bandwidth tiers
+
+  Enums:
+    TotalEgressBandwidthTierValueValuesEnum: Specifies the total network
+      bandwidth tier for the NodePool.
+
+  Fields:
+    totalEgressBandwidthTier: Specifies the total network bandwidth tier for
+      the NodePool.
+  """
+
+  class TotalEgressBandwidthTierValueValuesEnum(_messages.Enum):
+    r"""Specifies the total network bandwidth tier for the NodePool.
+
+    Values:
+      TIER_UNSPECIFIED: Default value
+      TIER_1: Higher bandwidth, actual values based on VM size.
+    """
+    TIER_UNSPECIFIED = 0
+    TIER_1 = 1
+
+  totalEgressBandwidthTier = _messages.EnumField('TotalEgressBandwidthTierValueValuesEnum', 1)
 
 
 class NetworkPolicy(_messages.Message):
@@ -2819,6 +2861,7 @@ class NodeNetworkConfig(_messages.Message):
     enablePrivateNodes: Whether nodes have internal IP addresses only. If
       enable_private_nodes is not specified, then the value is derived from
       cluster.privateClusterConfig.enablePrivateNodes
+    networkPerformanceConfig: Network bandwidth tier configuration.
     podIpv4CidrBlock: The IP address range for pod IPs in this node pool. Only
       applicable if `create_pod_range` is true. Set to blank to have a range
       chosen with the default size. Set to /netmask (e.g. `/14`) to have a
@@ -2836,8 +2879,9 @@ class NodeNetworkConfig(_messages.Message):
 
   createPodRange = _messages.BooleanField(1)
   enablePrivateNodes = _messages.BooleanField(2)
-  podIpv4CidrBlock = _messages.StringField(3)
-  podRange = _messages.StringField(4)
+  networkPerformanceConfig = _messages.MessageField('NetworkPerformanceConfig', 3)
+  podIpv4CidrBlock = _messages.StringField(4)
+  podRange = _messages.StringField(5)
 
 
 class NodePool(_messages.Message):

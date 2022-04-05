@@ -413,6 +413,22 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
+class ExtendSchemaRequest(_messages.Message):
+  r"""ExtendSchemaRequest is the request message for ExtendSchema method.
+
+  Fields:
+    description: Required. Description for Schema Change.
+    fileContents: File uploaded as a byte stream input.
+    gcsPath: File stored in Cloud Storage bucket and represented in the form
+      projects/{project_id}/buckets/{bucket_name}/objects/{object_name} File
+      should be in the same project as the domain.
+  """
+
+  description = _messages.StringField(1)
+  fileContents = _messages.BytesField(2)
+  gcsPath = _messages.StringField(3)
+
+
 class GoogleCloudManagedidentitiesV1OpMetadata(_messages.Message):
   r"""Represents the metadata of the long-running operation.
 
@@ -1586,6 +1602,21 @@ class ManagedidentitiesProjectsLocationsGlobalDomainsDetachTrustRequest(_message
 
   detachTrustRequest = _messages.MessageField('DetachTrustRequest', 1)
   name = _messages.StringField(2, required=True)
+
+
+class ManagedidentitiesProjectsLocationsGlobalDomainsExtendSchemaRequest(_messages.Message):
+  r"""A ManagedidentitiesProjectsLocationsGlobalDomainsExtendSchemaRequest
+  object.
+
+  Fields:
+    domain: Required. The domain resource name using the form:
+      `projects/{project_id}/locations/global/domains/{domain_name}`
+    extendSchemaRequest: A ExtendSchemaRequest resource to be passed as the
+      request body.
+  """
+
+  domain = _messages.StringField(1, required=True)
+  extendSchemaRequest = _messages.MessageField('ExtendSchemaRequest', 2)
 
 
 class ManagedidentitiesProjectsLocationsGlobalDomainsGetIamPolicyRequest(_messages.Message):

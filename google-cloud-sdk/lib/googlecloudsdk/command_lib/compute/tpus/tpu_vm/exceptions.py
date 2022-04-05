@@ -46,3 +46,11 @@ class SSHKeyNotInAgent(exceptions.Error):
     super(SSHKeyNotInAgent, self).__init__(
         'SSH Key is not present in the SSH agent. Please run "ssh-add {}" to '
         'add it, and try again.'.format(identity_file))
+
+
+class IapTunnelingUnavailable(exceptions.Error):
+  """Error when IAP tunneling is unavailable (either temporarily or not)."""
+
+  def __init__(self):
+    super(IapTunnelingUnavailable, self).__init__(
+        'Currently unable to connect to this TPU using IAP tunneling.')

@@ -4,7 +4,7 @@
   "id": "compute:beta",
   "name": "compute",
   "version": "beta",
-  "revision": "20220318",
+  "revision": "20220329",
   "title": "Compute Engine API",
   "description": "Creates and runs virtual machines on Google Cloud Platform. ",
   "ownerDomain": "google.com",
@@ -3769,6 +3769,20 @@
         },
         "networkPerformanceConfig": {
           "$ref": "NetworkPerformanceConfig"
+        },
+        "keyRevocationActionType": {
+          "description": "KeyRevocationActionType of the instance. Supported options are \"STOP\" and \"NONE\". The default value is \"NONE\" if it is not specified.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value. This value is unused.",
+            "Indicates user chose no operation.",
+            "Indicates user chose to opt for VM shutdown on key revocation."
+          ],
+          "enum": [
+            "KEY_REVOCATION_ACTION_TYPE_UNSPECIFIED",
+            "NONE",
+            "STOP"
+          ]
         }
       }
     },
@@ -5464,6 +5478,20 @@
         "networkPerformanceConfig": {
           "description": "Note that for MachineImage, this is not supported yet.",
           "$ref": "NetworkPerformanceConfig"
+        },
+        "keyRevocationActionType": {
+          "description": "KeyRevocationActionType of the instance. Supported options are \"STOP\" and \"NONE\". The default value is \"NONE\" if it is not specified.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value. This value is unused.",
+            "Indicates user chose no operation.",
+            "Indicates user chose to opt for VM shutdown on key revocation."
+          ],
+          "enum": [
+            "KEY_REVOCATION_ACTION_TYPE_UNSPECIFIED",
+            "NONE",
+            "STOP"
+          ]
         }
       }
     },
@@ -5512,6 +5540,22 @@
             "DENY",
             "PREFERENCE_UNSPECIFIED"
           ]
+        },
+        "constraints": {
+          "description": "Constraints that the caller requires on the result distribution in this zone.",
+          "$ref": "LocationPolicyLocationConstraints"
+        }
+      }
+    },
+    "LocationPolicyLocationConstraints": {
+      "id": "LocationPolicyLocationConstraints",
+      "description": "Per-zone constraints on location policy for this zone.",
+      "type": "object",
+      "properties": {
+        "maxCount": {
+          "description": "Maximum number of items that are allowed to be placed in this zone. The value must be non-negative.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -18695,6 +18739,20 @@
             "POST_KEY_REVOCATION_ACTION_TYPE_UNSPECIFIED",
             "SHUTDOWN"
           ]
+        },
+        "keyRevocationActionType": {
+          "description": "KeyRevocationActionType of the instance. Supported options are \"STOP\" and \"NONE\". The default value is \"NONE\" if it is not specified.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value. This value is unused.",
+            "Indicates user chose no operation.",
+            "Indicates user chose to opt for VM shutdown on key revocation."
+          ],
+          "enum": [
+            "KEY_REVOCATION_ACTION_TYPE_UNSPECIFIED",
+            "NONE",
+            "STOP"
+          ]
         }
       }
     },
@@ -26240,6 +26298,13 @@
         "encryptedInterconnectRouter": {
           "description": "Indicates if a router is dedicated for use with encrypted VLAN attachments (interconnectAttachments). Not currently available publicly. ",
           "type": "boolean"
+        },
+        "md5AuthenticationKeys": {
+          "description": "Keys used for MD5 authentication.",
+          "type": "array",
+          "items": {
+            "$ref": "RouterMd5AuthenticationKey"
+          }
         }
       }
     },
@@ -26411,6 +26476,10 @@
         },
         "peerIpv6NexthopAddress": {
           "description": "IPv6 address of the BGP interface outside Google Cloud Platform.",
+          "type": "string"
+        },
+        "md5AuthenticationKeyName": {
+          "description": "Present if MD5 authentication is enabled for the peering. Must be the name of one of the entries in the Router.md5_authentication_keys. The field must comply with RFC1035.",
           "type": "string"
         }
       }
@@ -26725,6 +26794,31 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "RouterMd5AuthenticationKey": {
+      "id": "RouterMd5AuthenticationKey",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Name used to identify the key. Must be unique within a router. Must be referenced by at least one bgpPeer. Must comply with RFC1035.",
+          "annotations": {
+            "required": [
+              "compute.routers.insert",
+              "compute.routers.update"
+            ]
+          },
+          "type": "string"
+        },
+        "key": {
+          "description": "[Input only] Value of the key. For patch and update calls, it can be skipped to copy the value from the previous configuration. This is allowed if the key with the same name existed before the operation. Maximum length is 80 characters. Can only contain printable ASCII characters.",
+          "annotations": {
+            "required": [
+              "compute.routers.insert"
+            ]
+          },
+          "type": "string"
         }
       }
     },
@@ -27180,6 +27274,22 @@
         },
         "bfdStatus": {
           "$ref": "BfdStatus"
+        },
+        "md5AuthEnabled": {
+          "description": "Informs whether MD5 authentication is enabled on this BGP peer.",
+          "type": "boolean"
+        },
+        "statusReason": {
+          "description": "Indicates why particular status was returned.",
+          "type": "string",
+          "enumDescriptions": [
+            "Indicates internal problems with configuration of MD5 authentication. This particular reason can only be returned when md5AuthEnabled is true and status is DOWN.",
+            ""
+          ],
+          "enum": [
+            "MD5_AUTH_INTERNAL_PROBLEM",
+            "STATUS_REASON_UNSPECIFIED"
+          ]
         }
       }
     },
@@ -29256,7 +29366,7 @@
           "type": "boolean"
         },
         "privateIpv6GoogleAccess": {
-          "description": "The private IPv6 google access type for the VMs in this subnet. This is an expanded field of enablePrivateV6Access. If both fields are set, privateIpv6GoogleAccess will take priority. This field can be both set at resource creation time and updated using patch.",
+          "description": "This field is for internal use. This field can be both set at resource creation time and updated using patch.",
           "type": "string",
           "enumDescriptions": [
             "Disable private IPv6 access to\/from Google services.",
@@ -29270,15 +29380,15 @@
           ]
         },
         "ipv6CidrRange": {
-          "description": "[Output Only] The range of internal IPv6 addresses that are owned by this subnetwork. Note this will be for private google access only eventually.",
+          "description": "[Output Only] This field is for internal use.",
           "type": "string"
         },
         "externalIpv6Prefix": {
-          "description": "[Output Only] The range of external IPv6 addresses that are owned by this subnetwork.",
+          "description": "[Output Only] The external IPv6 address range that is assigned to this subnetwork.",
           "type": "string"
         },
         "internalIpv6Prefix": {
-          "description": "[Output Only] The range of internal IPv6 addresses that are owned by this subnetwork. Note this is for general VM to VM communication, not to be confused with the ipv6_cidr_range field.",
+          "description": "[Output Only] The internal IPv6 address range that is assigned to this subnetwork.",
           "type": "string"
         },
         "purpose": {
@@ -29340,10 +29450,10 @@
           ]
         },
         "ipv6AccessType": {
-          "description": "The access type of IPv6 address this subnet holds. It's immutable and can only be specified during creation or the first time the subnet is updated into IPV4_IPV6 dual stack. If the ipv6_type is EXTERNAL then this subnet cannot enable direct path.",
+          "description": "The access type of IPv6 address this subnet holds. It's immutable and can only be specified during creation or the first time the subnet is updated into IPV4_IPV6 dual stack.",
           "type": "string",
           "enumDescriptions": [
-            "VMs on this subnet will be assigned IPv6 addresses that are accesible via the Internet, as well as the VPC network.",
+            "VMs on this subnet will be assigned IPv6 addresses that are accessible via the Internet, as well as the VPC network.",
             "VMs on this subnet will be assigned IPv6 addresses that are only accessible over the VPC network."
           ],
           "enum": [
@@ -32189,6 +32299,10 @@
         "proxyBind": {
           "description": "This field only applies when the forwarding rule that references this target proxy has a loadBalancingScheme set to INTERNAL_SELF_MANAGED. When this field is set to true, Envoy proxies set up inbound traffic interception and bind to the IP address and port specified in the forwarding rule. This is generally useful when using Traffic Director to configure Envoy as a gateway or middle proxy (in other words, not a sidecar proxy). The Envoy proxy listens for inbound requests and handles requests when it receives them. The default is false.",
           "type": "boolean"
+        },
+        "region": {
+          "description": "[Output Only] URL of the region where the regional TCP proxy resides. This field is not applicable to global TCP proxy.",
+          "type": "string"
         }
       }
     },
@@ -67672,6 +67786,251 @@
           },
           "parameterOrder": [
             "project",
+            "resource"
+          ],
+          "request": {
+            "$ref": "TestPermissionsRequest"
+          },
+          "response": {
+            "$ref": "TestPermissionsResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/compute",
+            "https://www.googleapis.com/auth/compute.readonly"
+          ],
+          "description": "Returns permissions that a caller has on the specified resource."
+        }
+      }
+    },
+    "regionTargetTcpProxies": {
+      "methods": {
+        "list": {
+          "id": "compute.regionTargetTcpProxies.list",
+          "path": "projects/{project}/regions/{region}/targetTcpProxies",
+          "flatPath": "projects/{project}/regions/{region}/targetTcpProxies",
+          "httpMethod": "GET",
+          "parameters": {
+            "filter": {
+              "description": "A filter expression that filters resources listed in the response. The expression must specify the field name, an operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=` or `:`. For example, if you are filtering Compute Engine instances, you can exclude instances named `example-instance` by specifying `name != example-instance`. The `:` operator can be used with string fields to match substrings. For non-string fields it is equivalent to the `=` operator. The `:*` comparison can be used to test whether a key has been defined. For example, to find all objects with `owner` label use: ``` labels.owner:* ``` You can also filter nested fields. For example, you could specify `scheduling.automaticRestart = false` to include instances only if they are not scheduled for automatic restarts. You can use filtering on nested fields to filter based on resource labels. To filter on multiple expressions, provide each separate expression within parentheses. For example: ``` (scheduling.automaticRestart = true) (cpuPlatform = \"Intel Skylake\") ``` By default, each expression is an `AND` expression. However, you can include `AND` and `OR` expressions explicitly. For example: ``` (cpuPlatform = \"Intel Skylake\") OR (cpuPlatform = \"Intel Broadwell\") AND (scheduling.automaticRestart = true) ```",
+              "location": "query",
+              "type": "string"
+            },
+            "maxResults": {
+              "description": "The maximum number of results per page that should be returned. If the number of available results is larger than `maxResults`, Compute Engine returns a `nextPageToken` that can be used to get the next page of results in subsequent list requests. Acceptable values are `0` to `500`, inclusive. (Default: `500`)",
+              "default": "500",
+              "minimum": "0",
+              "location": "query",
+              "type": "integer",
+              "format": "uint32"
+            },
+            "orderBy": {
+              "description": "Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name. You can also sort results in descending order based on the creation timestamp using `orderBy=\"creationTimestamp desc\"`. This sorts results based on the `creationTimestamp` field in reverse chronological order (newest result first). Use this to sort resources like operations so that the newest operation is returned first. Currently, only sorting by `name` or `creationTimestamp desc` is supported.",
+              "location": "query",
+              "type": "string"
+            },
+            "pageToken": {
+              "description": "Specifies a page token to use. Set `pageToken` to the `nextPageToken` returned by a previous list request to get the next page of results.",
+              "location": "query",
+              "type": "string"
+            },
+            "project": {
+              "description": "Project ID for this request.",
+              "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "region": {
+              "description": "Name of the region scoping this request.",
+              "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "returnPartialSuccess": {
+              "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false.",
+              "location": "query",
+              "type": "boolean"
+            }
+          },
+          "parameterOrder": [
+            "project",
+            "region"
+          ],
+          "response": {
+            "$ref": "TargetTcpProxyList"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/compute",
+            "https://www.googleapis.com/auth/compute.readonly"
+          ],
+          "description": "Retrieves a list of TargetTcpProxy resources available to the specified project in a given region."
+        },
+        "get": {
+          "id": "compute.regionTargetTcpProxies.get",
+          "path": "projects/{project}/regions/{region}/targetTcpProxies/{targetTcpProxy}",
+          "flatPath": "projects/{project}/regions/{region}/targetTcpProxies/{targetTcpProxy}",
+          "httpMethod": "GET",
+          "parameters": {
+            "project": {
+              "description": "Project ID for this request.",
+              "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "region": {
+              "description": "Name of the region scoping this request.",
+              "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "targetTcpProxy": {
+              "description": "Name of the TargetTcpProxy resource to return.",
+              "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "project",
+            "region",
+            "targetTcpProxy"
+          ],
+          "response": {
+            "$ref": "TargetTcpProxy"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/compute",
+            "https://www.googleapis.com/auth/compute.readonly"
+          ],
+          "description": "Returns the specified TargetTcpProxy resource."
+        },
+        "insert": {
+          "id": "compute.regionTargetTcpProxies.insert",
+          "path": "projects/{project}/regions/{region}/targetTcpProxies",
+          "flatPath": "projects/{project}/regions/{region}/targetTcpProxies",
+          "httpMethod": "POST",
+          "parameters": {
+            "project": {
+              "description": "Project ID for this request.",
+              "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "region": {
+              "description": "Name of the region scoping this request.",
+              "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "requestId": {
+              "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported ( 00000000-0000-0000-0000-000000000000).",
+              "location": "query",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "project",
+            "region"
+          ],
+          "request": {
+            "$ref": "TargetTcpProxy"
+          },
+          "response": {
+            "$ref": "Operation"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/compute"
+          ],
+          "description": "Creates a TargetTcpProxy resource in the specified project and region using the data included in the request."
+        },
+        "delete": {
+          "id": "compute.regionTargetTcpProxies.delete",
+          "path": "projects/{project}/regions/{region}/targetTcpProxies/{targetTcpProxy}",
+          "flatPath": "projects/{project}/regions/{region}/targetTcpProxies/{targetTcpProxy}",
+          "httpMethod": "DELETE",
+          "parameters": {
+            "project": {
+              "description": "Project ID for this request.",
+              "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "region": {
+              "description": "Name of the region scoping this request.",
+              "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "requestId": {
+              "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported ( 00000000-0000-0000-0000-000000000000).",
+              "location": "query",
+              "type": "string"
+            },
+            "targetTcpProxy": {
+              "description": "Name of the TargetTcpProxy resource to delete.",
+              "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "project",
+            "region",
+            "targetTcpProxy"
+          ],
+          "response": {
+            "$ref": "Operation"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/compute"
+          ],
+          "description": "Deletes the specified TargetTcpProxy resource."
+        },
+        "testIamPermissions": {
+          "id": "compute.regionTargetTcpProxies.testIamPermissions",
+          "path": "projects/{project}/regions/{region}/targetTcpProxies/{resource}/testIamPermissions",
+          "flatPath": "projects/{project}/regions/{region}/targetTcpProxies/{resource}/testIamPermissions",
+          "httpMethod": "POST",
+          "parameters": {
+            "project": {
+              "description": "Project ID for this request.",
+              "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "region": {
+              "description": "The name of the region for this request.",
+              "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "resource": {
+              "description": "Name or id of the resource for this request.",
+              "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "project",
+            "region",
             "resource"
           ],
           "request": {

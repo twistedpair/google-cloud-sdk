@@ -24,11 +24,13 @@ from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import tracker_file_util
 from googlecloudsdk.command_lib.storage.tasks import compose_objects_task
 from googlecloudsdk.command_lib.storage.tasks import task
+from googlecloudsdk.command_lib.storage.tasks.cp import copy_util
 from googlecloudsdk.command_lib.storage.tasks.cp import delete_temporary_components_task
 from googlecloudsdk.core import log
 
 
-class FinalizeCompositeUploadTask(task.Task):
+class FinalizeCompositeUploadTask(task.Task,
+                                  copy_util.CopyTaskExitHandlerMixin):
   """Composes and deletes object resources received as messages."""
 
   def __init__(self,

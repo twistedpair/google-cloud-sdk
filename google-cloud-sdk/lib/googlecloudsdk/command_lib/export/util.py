@@ -45,7 +45,6 @@ def AddExportFlags(parser, schema_path=None):
   """
 
   help_text = """Path to a YAML file where the configuration will be exported.
-          The exported data will not contain any output-only fields.
           Alternatively, you may omit this flag to write to standard output."""
   if schema_path is not None:
     help_text += """ For a schema describing the export/import format, see:
@@ -66,9 +65,8 @@ def AddImportFlags(parser, schema_path=None):
     schema_path: The resource instance schema file path if there is one.
   """
 
-  help_text = """Path to a YAML file containing configuration export data. The
-          YAML file must not contain any output-only fields. Alternatively, you
-          may omit this flag to read from standard input."""
+  help_text = """Path to a YAML file containing configuration export data.
+          Alternatively, you may omit this flag to read from standard input."""
   if schema_path is not None:
     help_text += """For a schema describing the export/import format, see:
           {}.

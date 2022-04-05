@@ -117,5 +117,19 @@ class Task(six.with_metaclass(abc.ABCMeta, object)):
     """
     pass
 
+  def exit_handler(self, error=None, task_status_queue=None):
+    """Task executor calls this method on a completed task before discarding it.
+
+    An example use case is a subclass that needs to report its final status and
+    if it failed or succeeded at some operation.
+
+    Args:
+      error (Exception|None): Task executor may pass an error object.
+      task_status_queue (multiprocessing.Queue): Used by task to report it
+        progress to a central location.
+    """
+    del error, task_status_queue  # Unused.
+    pass
+
   def __repr__(self):
     return debug_output.generic_repr(self)

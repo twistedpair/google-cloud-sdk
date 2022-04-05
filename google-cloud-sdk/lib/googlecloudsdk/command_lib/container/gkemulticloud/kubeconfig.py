@@ -313,3 +313,16 @@ def _ExecAuthPlugin(cmd_path, cmd_args):
             endpoint
     }]
   return cfg
+
+
+def CheckClusterHasNodePools(cluster_client, cluster_ref):
+  """Checks and gives a warning if the cluster does not have a node pool."""
+  try:
+    if not cluster_client.HasNodePools(cluster_ref):
+      log.warning(
+          'Cluster does not have a node pool. To use Connect Gateway, '
+          'ensure you have at least one Linux node pool running.')
+  # pylint: disable=bare-except, this function is just a warning and should not
+  # add new failures.
+  except:
+    pass

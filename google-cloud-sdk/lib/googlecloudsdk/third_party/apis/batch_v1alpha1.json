@@ -354,6 +354,10 @@
         "requireHostsFile": {
           "description": "When true, Batch will populate a file with a list of all VMs assigned to the TaskGroup and set the BATCH_HOSTS_FILE environment variable to the path of that file. Defaults to false.",
           "type": "boolean"
+        },
+        "permissiveSsh": {
+          "description": "When true, Batch will configure SSH to allow passwordless login between VMs for the user running the Batch tasks.",
+          "type": "boolean"
         }
       }
     },

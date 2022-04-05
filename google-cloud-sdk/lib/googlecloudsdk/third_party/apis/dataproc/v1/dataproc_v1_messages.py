@@ -2876,13 +2876,14 @@ class GkeNodePoolTarget(_messages.Message):
   Fields:
     nodePool: Required. The target GKE NodePool. Format: 'projects/{project}/l
       ocations/{location}/clusters/{cluster}/nodePools/{node_pool}'
-    nodePoolConfig: Optional. The configuration for the GKE NodePool.If
+    nodePoolConfig: Input only. The configuration for the GKE NodePool.If
       specified, Dataproc attempts to create a NodePool with the specified
       shape. If one with the same name already exists, it is verified against
       all specified fields. If a field differs, the virtual cluster creation
       will fail.If omitted, any NodePool with the specified name is used. If a
       NodePool with the specified name does not exist, Dataproc create a
-      NodePool with default values.
+      NodePool with default values.This is an input only field. It will not be
+      returned by the API.
     roles: Required. The types of role for a GKE NodePool
   """
 

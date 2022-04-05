@@ -1060,6 +1060,11 @@ apis:
     v1:
       discovery_doc: secretmanager_v1.json
       default: true
+  securedlandingzone:
+    v1beta:
+      discovery_doc: securedlandingzone_v1beta.json
+      mtls_endpoint_override: https://securedlandingzone.mtls.googleapis.com/
+      default: true
   securitycenter:
     v1beta2:
       discovery_doc: securitycenter_v1beta2.json

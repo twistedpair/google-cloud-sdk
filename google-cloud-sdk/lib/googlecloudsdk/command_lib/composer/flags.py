@@ -89,11 +89,11 @@ class V2ExclusiveStoreAction(argparse._StoreAction):  # pylint: disable=protecte
 
 
 _AIRFLOW_VERSION_TYPE = arg_parsers.RegexpValidator(
-    r'^(\d+\.\d+(?:\.\d+)?)', 'must be in the form X.Y[.Z].')
+    r'^(\d+(?:\.\d+(?:\.\d+)?)?)', 'must be in the form X[.Y[.Z]].')
 
 _IMAGE_VERSION_TYPE = arg_parsers.RegexpValidator(
-    r'^composer-(\d+(?:\.\d+\.\d+(?:-[a-z]+\.\d+)?)?|latest)-airflow-(\d+\.\d+(?:\.\d+)?)',
-    'must be in the form \'composer-A[.B.C[-D.E]]-airflow-X.Y[.Z]\' or '
+    r'^composer-(\d+(?:\.\d+\.\d+(?:-[a-z]+\.\d+)?)?|latest)-airflow-(\d+(?:\.\d+(?:\.\d+)?)?)',
+    'must be in the form \'composer-A[.B.C[-D.E]]-airflow-X[.Y[.Z]]\' or '
     '\'latest\' can be provided in place of the Cloud Composer version '
     'string. For example: \'composer-latest-airflow-1.10.0\'.')
 
@@ -227,13 +227,14 @@ UPDATE_AIRFLOW_VERSION_FLAG = base.Argument(
     type=_AIRFLOW_VERSION_TYPE,
     metavar='AIRFLOW_VERSION',
     help="""\
-    Upgrade the environment to a later Airflow version in-place.
+    Upgrade the environment to a later Apache Airflow version in-place.
 
-    Must be of the form `X.Y[.Z]`.
+    Must be of the form `X[.Y[.Z]]`, where `[]` denotes optional fragments.
 
-    The Airflow version is a semantic version. The patch version can be omitted
-    and the current version will be selected. The version numbers that are used
-    will be stored.
+    The Apache Airflow version is a semantic version or an alias in the form of
+    major or major.minor version numbers, resolved to the latest matching Apache
+    Airflow version supported in the current Cloud Composer version. The
+    resolved version is stored in the upgraded environment.
     """)
 
 UPDATE_IMAGE_VERSION_FLAG = base.Argument(
@@ -245,15 +246,16 @@ UPDATE_IMAGE_VERSION_FLAG = base.Argument(
 
     The image version encapsulates the versions of both Cloud Composer and
     Apache Airflow. Must be of the form
-    `composer-A[.B.C[-D.E]]-airflow-X.Y[.Z]`.
+    `composer-A[.B.C[-D.E]]-airflow-X[.Y[.Z]]`, where `[]` denotes optional
+    fragments.
 
-    The Cloud Composer and Airflow versions are semantic versions.
-    `latest` can be provided instead of an explicit Cloud Composer
-    version number indicating that the server will replace `latest`
-    with the current Cloud Composer version. For the Apache Airflow
-    portion, the patch version can be omitted and the current
-    version will be selected. The version numbers that are used will
-    be stored.
+    The Cloud Composer portion of the image version is a semantic version or
+    an alias in the form of major version number or `latest`, resolved to the
+    current Cloud Composer version. The Apache Airflow portion of the image
+    version is a semantic version or an alias in the form of major or
+    major.minor version numbers, resolved to the latest matching Apache Airflow
+    version supported in the given Cloud Composer version. The resolved versions
+    are stored in the upgraded environment.
     """)
 
 UPDATE_PYPI_FROM_FILE_FLAG = base.Argument(

@@ -138,6 +138,7 @@ class _ReadableStream:
     self._restart_download_callback = restart_download_callback
     self._bytes_read_since_last_progress_callback = 0
     self._seekable = seekable
+    self._is_closed = False
 
   def _restart_download(self, offset):
     self._restart_download_callback(offset)
@@ -283,10 +284,18 @@ class _ReadableStream:
     return self._position
 
   def close(self):
+    """Updates progress callback if needed."""
+    if self._is_closed:
+      # Ensures that close called multiple times does not have any side-effect.
+      return
+
     if (self._progress_callback and
-        self._bytes_read_since_last_progress_callback):
+        (self._bytes_read_since_last_progress_callback or
+         # Update progress for zero-sized object.
+         self._end_position == 0)):
       self._bytes_read_since_last_progress_callback = 0
       self._progress_callback(self._position)
+    self._is_closed = True
 
 
 class BufferController:
@@ -352,12 +361,13 @@ class BufferController:
 
     client = api_factory.get_api(self._source_resource.storage_url.scheme)
     try:
-      client.download_object(
-          self._source_resource,
-          self.writable_stream,
-          request_config,
-          start_byte=start_byte,
-          download_strategy=cloud_api.DownloadStrategy.ONE_SHOT)
+      if self._source_resource.size != 0:
+        client.download_object(
+            self._source_resource,
+            self.writable_stream,
+            request_config,
+            start_byte=start_byte,
+            download_strategy=cloud_api.DownloadStrategy.ONE_SHOT)
     except _AbruptShutdownError:
       # Shutdown caused by interruption from another thread.
       pass
@@ -408,7 +418,7 @@ class BufferController:
       self.exception_raised = error
 
 
-class DaisyChainCopyTask(task.Task):
+class DaisyChainCopyTask(task.Task, copy_util.CopyTaskExitHandlerMixin):
   """Represents an operation to copy by downloading and uploading.
 
   This task downloads from one cloud location and uplaods to another cloud

@@ -278,6 +278,15 @@
         "enablePrivateVmInstances": {
           "description": "Whether Workstation VM instances have no public IP address.",
           "type": "boolean"
+        },
+        "enablePrivateEndpoint": {
+          "description": "Whether Workstations endpoint is private.",
+          "type": "boolean"
+        },
+        "serviceAttachmentUri": {
+          "description": "Output only. Service attachment URI for the Workstation Cluster. The service attachemnt is created when private endpoint is enabled. To access workstations in the cluster, configure access to the managed service using (Private Service Connect)[https:\/\/cloud.google.com\/vpc\/docs\/configure-private-service-connect-services].",
+          "readOnly": true,
+          "type": "string"
         }
       }
     },

@@ -1132,6 +1132,21 @@
         "instanceQuota": {
           "description": "Instance quota.",
           "$ref": "InstanceQuota"
+        },
+        "serverCount": {
+          "description": "Server count.",
+          "type": "string",
+          "format": "int64"
+        },
+        "networkBandwidth": {
+          "description": "Network bandwidth, Gbps",
+          "type": "string",
+          "format": "int64"
+        },
+        "storageGib": {
+          "description": "Storage size (GB).",
+          "type": "string",
+          "format": "int64"
         }
       }
     },

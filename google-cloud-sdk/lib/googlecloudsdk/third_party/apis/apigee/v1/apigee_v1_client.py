@@ -6540,7 +6540,7 @@ class ApigeeV1(base_api.BaseApiClient):
         method_id='apigee.organizations.instances.create',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['environments'],
+        query_params=['environments', 'runtimeVersion'],
         relative_path='v1/{+parent}/instances',
         request_field='googleCloudApigeeV1Instance',
         request_type_name='ApigeeOrganizationsInstancesCreateRequest',

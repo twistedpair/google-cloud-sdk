@@ -119,7 +119,7 @@ def _should_perform_sliced_download(source_resource, destination_resource):
           task_util.should_use_parallelism())
 
 
-class FileDownloadTask(task.Task):
+class FileDownloadTask(task.Task, copy_util.CopyTaskExitHandlerMixin):
   """Represents a command operation triggering a file download."""
 
   def __init__(self,

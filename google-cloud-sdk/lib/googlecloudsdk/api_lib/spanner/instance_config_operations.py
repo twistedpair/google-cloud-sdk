@@ -26,10 +26,8 @@ from googlecloudsdk.core import resources
 
 def Get(config, operation):
   """Gets the specified operation."""
-  # TODO(b/213356452): Replace v1alpha -> v1, once spanner prod (spanner/v1)
-  # contain rest bindings for instanceConfigs LROs.
-  client = apis.GetClientInstance('spanner', 'v1alpha')
-  msgs = apis.GetMessagesModule('spanner', 'v1alpha')
+  client = apis.GetClientInstance('spanner', 'v1')
+  msgs = apis.GetMessagesModule('spanner', 'v1')
   ref = resources.REGISTRY.Parse(
       operation,
       params={
@@ -44,10 +42,8 @@ def Get(config, operation):
 
 def List(config, type_filter=None):
   """List operations on instanceConfig using the generic operation list API."""
-  # TODO(b/213356452): Replace v1alpha -> v1, once spanner prod (spanner/v1)
-  # contain rest bindings for instanceConfigs LROs.
-  client = apis.GetClientInstance('spanner', 'v1alpha')
-  msgs = apis.GetMessagesModule('spanner', 'v1alpha')
+  client = apis.GetClientInstance('spanner', 'v1')
+  msgs = apis.GetMessagesModule('spanner', 'v1')
   ref = resources.REGISTRY.Parse(
       config,
       params={'projectsId': properties.VALUES.core.project.GetOrFail},
@@ -63,10 +59,8 @@ def List(config, type_filter=None):
 
 def Cancel(config, operation):
   """Cancel the specified operation."""
-  # TODO(b/213356452): Replace v1alpha -> v1, once spanner prod (spanner/v1)
-  # contain rest bindings for instanceConfigs LROs.
-  client = apis.GetClientInstance('spanner', 'v1alpha')
-  msgs = apis.GetMessagesModule('spanner', 'v1alpha')
+  client = apis.GetClientInstance('spanner', 'v1')
+  msgs = apis.GetMessagesModule('spanner', 'v1')
   ref = resources.REGISTRY.Parse(
       operation,
       params={

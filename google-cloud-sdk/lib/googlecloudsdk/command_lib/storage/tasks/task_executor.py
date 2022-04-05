@@ -56,15 +56,19 @@ def _execute_tasks_sequential(task_iterator,
     if received_messages is not None:
       task.received_messages = received_messages
 
+    task_execution_error = None
     try:
       task_output = task.execute(task_status_queue=task_status_queue)
     except core_exceptions.Error as e:
+      task_execution_error = e
       if continue_on_error:
         log.warning(str(e))
         exit_code = 1
         continue
       else:
         raise
+    finally:
+      task.exit_handler(task_execution_error, task_status_queue)
 
     if task_output is None:
       continue

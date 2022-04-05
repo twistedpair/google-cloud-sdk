@@ -20,6 +20,29 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.api_lib.storage import errors
+from googlecloudsdk.command_lib.storage import manifest_util
+
+
+class CopyTaskExitHandlerMixin:
+  """Mixin that overrides exit handler to copy tasks."""
+
+  def exit_handler(self, error=None, task_status_queue=None):
+    """Send copy result info to manifest if requested."""
+    if not (getattr(self, '_source_resource', None) and
+            getattr(self, '_destination_resource', None)):
+      raise KeyError(
+          self.__class__.__name__ +
+          ' requires attributes "_source_resource" and "_destination_resource".'
+      )
+    if error and getattr(self, '_manifest_path', None):
+      if task_status_queue:
+        manifest_util.send_error_message(self._source_resource,
+                                         self._destination_resource, error,
+                                         task_status_queue)
+      else:
+        raise ValueError(
+            'Tried to send error message to manifest, but'
+            ' CopyTaskExitHandlerMixin did not receive task_status_queue.')
 
 
 def get_no_clobber_message(destination_url):

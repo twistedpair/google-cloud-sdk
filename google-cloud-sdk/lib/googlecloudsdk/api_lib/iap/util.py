@@ -22,6 +22,7 @@ from __future__ import unicode_literals
 import abc
 
 from apitools.base.py import encoding
+from apitools.base.py import list_pager
 
 from googlecloudsdk.api_lib.app import appengine_api_client
 from googlecloudsdk.api_lib.app import operations_util
@@ -520,7 +521,7 @@ class IapSettingsResource(object):
 class IapTunnelDestGroupResource(IapIamResource):
   """IAP TCP tunnelDestGroup IAM resource."""
 
-  def __init__(self, release_track, project, region, group_name):
+  def __init__(self, release_track, project, region='-', group_name=None):
     super(IapTunnelDestGroupResource, self).__init__(release_track, project)
     self.region = region
     self.group_name = group_name
@@ -532,6 +533,11 @@ class IapTunnelDestGroupResource(IapIamResource):
     return 'iap_tunneldestgroups'
 
   def _Parse(self):
+    if self.group_name is None:
+      return self._ParseWithoutGroupId()
+    return self._ParseWithGroupId()
+
+  def _ParseWithGroupId(self):
     project_number = _GetProject(self.project).projectNumber
     return self.registry.Parse(
         None,
@@ -571,3 +577,15 @@ class IapTunnelDestGroupResource(IapIamResource):
     request = self.messages.IapProjectsIapTunnelLocationsDestGroupsDeleteRequest(
         name=self._Parse().RelativeName())
     return self.ResourceService().Delete(request)
+
+  def List(self, page_size=None, limit=None, list_filter=None):
+    """Yields TunnelDestGroups."""
+    list_req = self.messages.IapProjectsIapTunnelLocationsDestGroupsListRequest(
+        parent=self._ParseWithoutGroupId().RelativeName())
+    return list_pager.YieldFromList(
+        self.ResourceService(),
+        list_req,
+        batch_size=page_size,
+        limit=limit,
+        field='tunnelDestGroups',
+        batch_size_attribute='pageSize')

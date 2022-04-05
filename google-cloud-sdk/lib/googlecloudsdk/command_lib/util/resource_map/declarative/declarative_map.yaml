@@ -219,6 +219,12 @@ aiplatform:
     supported_apis:
     - v1alpha1
     - v1beta1
+  projects.locations.deploymentResourcePools:
+    supported_apis:
+    - v1beta1
+  projects.locations.deploymentResourcePools.operations:
+    supported_apis:
+    - v1beta1
   projects.locations.edgeDevices:
     supported_apis:
     - v1beta1
@@ -261,6 +267,9 @@ aiplatform:
   projects.locations.featurestores.operations:
     supported_apis:
     - v1alpha1
+    - v1beta1
+  projects.locations.federatedLearningJobs:
+    supported_apis:
     - v1beta1
   projects.locations.hyperparameterTuningJobs:
     supported_apis:
@@ -588,6 +597,12 @@ apigee:
   organizations.apis:
     supported_apis:
     - v1
+  organizations.apis.keyvaluemaps:
+    supported_apis:
+    - v1
+  organizations.apis.keyvaluemaps.entries:
+    supported_apis:
+    - v1
   organizations.apis.revisions:
     supported_apis:
     - v1
@@ -613,6 +628,9 @@ apigee:
     supported_apis:
     - v1
   organizations.developers.subscriptions:
+    supported_apis:
+    - v1
+  organizations.endpointAttachments:
     supported_apis:
     - v1
   organizations.envgroups:
@@ -649,6 +667,12 @@ apigee:
     supported_apis:
     - v1
   organizations.environments.keystores.aliases:
+    supported_apis:
+    - v1
+  organizations.environments.keyvaluemaps:
+    supported_apis:
+    - v1
+  organizations.environments.keyvaluemaps.entries:
     supported_apis:
     - v1
   organizations.environments.optimizedStats:
@@ -696,6 +720,12 @@ apigee:
   organizations.instances.natAddresses:
     supported_apis:
     - v1
+  organizations.keyvaluemaps:
+    supported_apis:
+    - v1
+  organizations.keyvaluemaps.entries:
+    supported_apis:
+    - v1
   organizations.operations:
     supported_apis:
     - v1
@@ -703,6 +733,9 @@ apigee:
     supported_apis:
     - v1
   organizations.reports:
+    supported_apis:
+    - v1
+  organizations.senseProfiles:
     supported_apis:
     - v1
   organizations.sharedflows:
@@ -790,16 +823,19 @@ appengine:
 artifactregistry:
   projects:
     supported_apis:
+    - v1
     - v1alpha1
     - v1beta1
     - v1beta2
   projects.locations:
     supported_apis:
+    - v1
     - v1alpha1
     - v1beta1
     - v1beta2
   projects.locations.operations:
     supported_apis:
+    - v1
     - v1alpha1
     - v1beta1
     - v1beta2
@@ -814,24 +850,32 @@ artifactregistry:
     support_iam: true
     support_single_export: true
     supported_apis:
+    - v1
     - v1alpha1
     - v1beta1
     - v1beta2
     surface_spec_resource_name: REPOSITORY
+  projects.locations.repositories.dockerImages:
+    supported_apis:
+    - v1
   projects.locations.repositories.files:
     supported_apis:
+    - v1
     - v1beta1
     - v1beta2
   projects.locations.repositories.packages:
     supported_apis:
+    - v1
     - v1beta1
     - v1beta2
   projects.locations.repositories.packages.tags:
     supported_apis:
+    - v1
     - v1beta1
     - v1beta2
   projects.locations.repositories.packages.versions:
     supported_apis:
+    - v1
     - v1beta1
     - v1beta2
 assuredworkloads:
@@ -870,7 +914,13 @@ baremetalsolution:
   projects.locations.nfsShares:
     supported_apis:
     - v2
+  projects.locations.provisioningConfigs:
+    supported_apis:
+    - v2
   projects.locations.snapshotSchedulePolicies:
+    supported_apis:
+    - v2
+  projects.locations.sshKeys:
     supported_apis:
     - v2
   projects.locations.volumes:
@@ -1203,6 +1253,9 @@ cloudbuild:
     supported_apis:
     - v1
     - v1beta1
+  projects.locations.workflows:
+    supported_apis:
+    - v2
   projects.triggers:
     asset_inventory_type: cloudbuild.googleapis.com/Trigger
     enable_single_resource_autogen: true
@@ -1857,6 +1910,8 @@ compute:
   networkEdgeSecurityServices:
     supported_apis:
     - alpha
+    - beta
+    - v1
   networkEndpointGroups:
     asset_inventory_type: compute.googleapis.com/NetworkEndpointGroup
     home_directory: compute.network_endpoint_groups
@@ -1872,6 +1927,8 @@ compute:
   networkFirewallPolicies:
     supported_apis:
     - alpha
+    - beta
+    - v1
   networks:
     asset_inventory_type: compute.googleapis.com/Network
     home_directory: compute.networks
@@ -2011,6 +2068,8 @@ compute:
   regionNetworkFirewallPolicies:
     supported_apis:
     - alpha
+    - beta
+    - v1
   regionNetworks:
     supported_apis:
     - alpha
@@ -2027,6 +2086,8 @@ compute:
   regionSecurityPolicies:
     supported_apis:
     - alpha
+    - beta
+    - v1
   regionSslCertificates:
     supported_apis:
     - alpha
@@ -2045,6 +2106,9 @@ compute:
     - alpha
     - beta
     - v1
+  regionTargetTcpProxies:
+    supported_apis:
+    - alpha
   regionUrlMaps:
     supported_apis:
     - alpha
@@ -2804,6 +2868,15 @@ dialogflow:
   projects.agent.versions:
     supported_apis:
     - v2
+  projects.conversationDatasets:
+    supported_apis:
+    - v2
+  projects.conversationModels:
+    supported_apis:
+    - v2
+  projects.conversationModels.evaluations:
+    supported_apis:
+    - v2
   projects.conversationProfiles:
     supported_apis:
     - v2
@@ -2853,6 +2926,15 @@ dialogflow:
     supported_apis:
     - v2
   projects.locations.agent.versions:
+    supported_apis:
+    - v2
+  projects.locations.conversationDatasets:
+    supported_apis:
+    - v2
+  projects.locations.conversationModels:
+    supported_apis:
+    - v2
+  projects.locations.conversationModels.evaluations:
     supported_apis:
     - v2
   projects.locations.conversationProfiles:
@@ -2959,16 +3041,19 @@ dns:
     - v1
     - v1alpha2
     - v1beta2
+    - v2
   dnsKeys:
     supported_apis:
     - v1
     - v1alpha2
     - v1beta2
+    - v2
   managedZoneOperations:
     supported_apis:
     - v1
     - v1alpha2
     - v1beta2
+    - v2
   managedZones:
     asset_inventory_type: dns.googleapis.com/ManagedZone
     enable_single_resource_autogen: true
@@ -2982,6 +3067,7 @@ dns:
     - v1
     - v1alpha2
     - v1beta2
+    - v2
   policies:
     asset_inventory_type: dns.googleapis.com/Policy
     enable_single_resource_autogen: true
@@ -2995,11 +3081,13 @@ dns:
     - v1
     - v1alpha2
     - v1beta2
+    - v2
   projects:
     supported_apis:
     - v1
     - v1alpha2
     - v1beta2
+    - v2
   resourceRecordSets:
     asset_inventory_type: dns.googleapis.com/RecordSet
     # Has odd URI ending in /{recordSetId}/{type}
@@ -3014,16 +3102,19 @@ dns:
     - v1
     - v1alpha2
     - v1beta2
+    - v2
   responsePolicies:
     supported_apis:
     - v1
     - v1alpha2
     - v1beta2
+    - v2
   responsePolicyRules:
     supported_apis:
     - v1
     - v1alpha2
     - v1beta2
+    - v2
 domains:
   projects:
     supported_apis:
@@ -3048,32 +3139,67 @@ domains:
 edgecontainer:
   projects:
     supported_apis:
+    - v1
     - v1alpha
     - v1beta
   projects.locations:
     supported_apis:
+    - v1
     - v1alpha
     - v1beta
   projects.locations.clusters:
     supported_apis:
+    - v1
     - v1alpha
     - v1beta
   projects.locations.clusters.nodePools:
     supported_apis:
+    - v1
     - v1alpha
     - v1beta
   projects.locations.machines:
     supported_apis:
+    - v1
     - v1alpha
     - v1beta
   projects.locations.operations:
     supported_apis:
+    - v1
     - v1alpha
     - v1beta
   projects.locations.vpnConnections:
     supported_apis:
+    - v1
     - v1alpha
     - v1beta
+edgenetwork:
+  projects:
+    supported_apis:
+    - v1alpha1
+  projects.locations:
+    supported_apis:
+    - v1alpha1
+  projects.locations.operations:
+    supported_apis:
+    - v1alpha1
+  projects.locations.zones:
+    supported_apis:
+    - v1alpha1
+  projects.locations.zones.interconnectAttachments:
+    supported_apis:
+    - v1alpha1
+  projects.locations.zones.interconnects:
+    supported_apis:
+    - v1alpha1
+  projects.locations.zones.networks:
+    supported_apis:
+    - v1alpha1
+  projects.locations.zones.routers:
+    supported_apis:
+    - v1alpha1
+  projects.locations.zones.subnets:
+    supported_apis:
+    - v1alpha1
 essentialcontacts:
   folders:
     supported_apis:
@@ -3131,6 +3257,7 @@ eventarc:
     supported_apis:
     - v1
     - v1beta1
+eventarcpublishing: {}
 eventflow:
   projects:
     supported_apis:
@@ -3498,10 +3625,19 @@ iam:
   locations.workforcePools.providers:
     supported_apis:
     - v1
+  locations.workforcePools.providers.keys:
+    supported_apis:
+    - v1
+  locations.workforcePools.providers.keys.operations:
+    supported_apis:
+    - v1
   locations.workforcePools.providers.operations:
     supported_apis:
     - v1
   locations.workforcePools.subjects:
+    supported_apis:
+    - v1
+  locations.workforcePools.subjects.operations:
     supported_apis:
     - v1
   organizations:
@@ -3538,6 +3674,12 @@ iam:
     supported_apis:
     - v1
     - v1beta
+  projects.locations.workloadIdentityPools.providers.keys:
+    supported_apis:
+    - v1
+  projects.locations.workloadIdentityPools.providers.keys.operations:
+    supported_apis:
+    - v1
   projects.locations.workloadIdentityPools.providers.operations:
     supported_apis:
     - v1
@@ -3600,6 +3742,12 @@ iap:
   projects.brands.identityAwareProxyClients:
     supported_apis:
     - v1
+  projects.iap_tunnel.locations:
+    supported_apis:
+    - v1
+  projects.iap_tunnel.locations.destGroups:
+    supported_apis:
+    - v1
   projects.iap_web:
     supported_apis:
     - v1
@@ -3628,43 +3776,19 @@ ids:
 krmapihosting:
   projects:
     supported_apis:
+    - v1
     - v1alpha1
   projects.locations:
     supported_apis:
+    - v1
     - v1alpha1
   projects.locations.krmApiHosts:
     supported_apis:
+    - v1
     - v1alpha1
   projects.locations.operations:
     supported_apis:
-    - v1alpha1
-kubernetesedge:
-  projects:
-    supported_apis:
-    - v1alpha1
-  projects.locations:
-    supported_apis:
-    - v1alpha1
-  projects.locations.clusters:
-    supported_apis:
-    - v1alpha1
-  projects.locations.clusters.nodePools:
-    supported_apis:
-    - v1alpha1
-  projects.locations.machines:
-    supported_apis:
-    - v1alpha1
-  projects.locations.operations:
-    supported_apis:
-    - v1alpha1
-  projects.locations.sites:
-    supported_apis:
-    - v1alpha1
-  projects.locations.sites.machines:
-    supported_apis:
-    - v1alpha1
-  projects.locations.vpnConnections:
-    supported_apis:
+    - v1
     - v1alpha1
 language:
   documents:
@@ -3686,6 +3810,9 @@ logging:
     supported_apis:
     - v2
   billingAccounts.buckets:
+    supported_apis:
+    - v2
+  billingAccounts.buckets.links:
     supported_apis:
     - v2
   billingAccounts.buckets.views:
@@ -3718,6 +3845,9 @@ logging:
   folders.locations.buckets:
     supported_apis:
     - v2
+  folders.locations.buckets.links:
+    supported_apis:
+    - v2
   folders.locations.buckets.views:
     supported_apis:
     - v2
@@ -3731,6 +3861,9 @@ logging:
     supported_apis:
     - v2
   locations.buckets:
+    supported_apis:
+    - v2
+  locations.buckets.links:
     supported_apis:
     - v2
   locations.buckets.views:
@@ -3749,6 +3882,9 @@ logging:
     supported_apis:
     - v2
   organizations.locations.buckets:
+    supported_apis:
+    - v2
+  organizations.locations.buckets.links:
     supported_apis:
     - v2
   organizations.locations.buckets.views:
@@ -3772,6 +3908,9 @@ logging:
   projects.locations.buckets:
     supported_apis:
     - v2
+  projects.locations.buckets.links:
+    supported_apis:
+    - v2
   projects.locations.buckets.views:
     supported_apis:
     - v2
@@ -3786,7 +3925,6 @@ logging:
     - v2
   sinks:
     asset_inventory_type: logging.googleapis.com/LogSink
-    # Complex resource, needs further examination.
     enable_single_resource_autogen: false
     home_directory: logging.sinks
     krm_group: logging
@@ -3814,8 +3952,12 @@ managedidentities:
     - v1beta1
   projects.locations.global.domains.backups:
     supported_apis:
+    - v1
     - v1alpha1
     - v1beta1
+  projects.locations.global.domains.schemaExtensions:
+    supported_apis:
+    - v1alpha1
   projects.locations.global.domains.sqlIntegrations:
     supported_apis:
     - v1
@@ -3922,6 +4064,14 @@ metastore:
   projects.locations.services.backups:
     supported_apis:
     - v1
+    - v1alpha
+    - v1beta
+  projects.locations.services.databases:
+    supported_apis:
+    - v1alpha
+    - v1beta
+  projects.locations.services.databases.tables:
+    supported_apis:
     - v1alpha
     - v1beta
   projects.locations.services.metadataImports:
@@ -4154,9 +4304,6 @@ networkservices:
     - v1
     - v1alpha1
     - v1beta1
-  projects.locations.routers:
-    supported_apis:
-    - v1alpha1
   projects.locations.serviceBindings:
     supported_apis:
     - v1alpha1
@@ -4728,6 +4875,9 @@ run:
     supported_apis:
     - v1
     - v1alpha1
+  projects.locations.jobs:
+    supported_apis:
+    - v1
   projects.locations.namespaces:
     supported_apis:
     - v1
@@ -4830,6 +4980,9 @@ securitycenter:
   folders:
     supported_apis:
     - v1
+  folders.bigQueryExports:
+    supported_apis:
+    - v1
   folders.muteConfigs:
     supported_apis:
     - v1
@@ -4861,6 +5014,9 @@ securitycenter:
     supported_apis:
     - v1
   projects:
+    supported_apis:
+    - v1
+  projects.bigQueryExports:
     supported_apis:
     - v1
   projects.muteConfigs:
@@ -4941,7 +5097,6 @@ serviceusage:
     - v1beta1
   services:
     asset_inventory_type: serviceusage.googleapis.com/Service
-    # No real usecase to manipulate services
     enable_single_resource_autogen: false
     home_directory: services
     krm_group: serviceusage
@@ -5224,6 +5379,22 @@ storagetransfer:
   transferOperations:
     supported_apis:
     - v1
+stream:
+  projects:
+    supported_apis:
+    - v1alpha1
+  projects.locations:
+    supported_apis:
+    - v1alpha1
+  projects.locations.operations:
+    supported_apis:
+    - v1alpha1
+  projects.locations.streamContents:
+    supported_apis:
+    - v1alpha1
+  projects.locations.streamInstances:
+    supported_apis:
+    - v1alpha1
 testing:
   projects:
     supported_apis:
@@ -5289,6 +5460,9 @@ tpu:
     - v1
     - v1alpha1
     - v2
+    - v2alpha1
+  projects.locations.queuedResources:
+    supported_apis:
     - v2alpha1
   projects.locations.runtimeVersions:
     supported_apis:
@@ -5401,7 +5575,13 @@ vmwareengine:
   projects.locations:
     supported_apis:
     - v1
+  projects.locations.global.networkPeerings:
+    supported_apis:
+    - v1
   projects.locations.networkPolicies:
+    supported_apis:
+    - v1
+  projects.locations.networkPolicies.externalAccessRules:
     supported_apis:
     - v1
   projects.locations.nodeTypes:
@@ -5416,7 +5596,13 @@ vmwareengine:
   projects.locations.privateClouds.clusters:
     supported_apis:
     - v1
+  projects.locations.privateClouds.externalAddresses:
+    supported_apis:
+    - v1
   projects.locations.privateClouds.hcxActivationKeys:
+    supported_apis:
+    - v1
+  projects.locations.vmwareEngineNetworks:
     supported_apis:
     - v1
 vpcaccess:
@@ -5498,3 +5684,22 @@ workflows:
     - v1
     - v1alpha1
     - v1beta
+workstations:
+  projects:
+    supported_apis:
+    - v1alpha1
+  projects.locations:
+    supported_apis:
+    - v1alpha1
+  projects.locations.operations:
+    supported_apis:
+    - v1alpha1
+  projects.locations.workstationClusters:
+    supported_apis:
+    - v1alpha1
+  projects.locations.workstationClusters.workstationConfigs:
+    supported_apis:
+    - v1alpha1
+  projects.locations.workstationClusters.workstations:
+    supported_apis:
+    - v1alpha1

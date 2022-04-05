@@ -569,9 +569,9 @@ class NoBrowserHelperFlow(InstalledAppFlow):
       'Copy the following line back to the gcloud CLI waiting to continue '
       'the login flow.')
   _COPY_AUTH_RESPONSE_WARNING = (
-      '{bold}WARNING: THE FOLLOWING LINE ENABLES ACCESS TO YOUR GCP RESOURCES. '
-      'ONLY COPY IT TO A MACHINE YOU TRUST AND RAN '
-      '`{command} --no-browser` ON EARLIER.{normal}')
+      '{bold}WARNING: The following line enables access to your Google Cloud '
+      'resources. Only copy it to the trusted machine that you ran the '
+      '`{command} --no-browser` command on earlier.{normal}')
   _PROMPT_TO_CONTINUE_MSG = (
       'DO NOT PROCEED UNLESS YOU ARE BOOTSTRAPPING GCLOUD '
       'ON A TRUSTED MACHINE WITHOUT A WEB BROWSER AND THE ABOVE COMMAND WAS '

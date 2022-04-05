@@ -239,7 +239,7 @@
           "$ref": "Instance"
         },
         "clusters": {
-          "description": "Required. The clusters to be created within the instance, mapped by desired cluster ID, e.g., just `mycluster` rather than `projects\/myproject\/instances\/myinstance\/clusters\/mycluster`. Fields marked `OutputOnly` must be left blank. Currently, at most four clusters can be specified.",
+          "description": "Required. The clusters to be created within the instance, mapped by desired cluster ID, e.g., just `mycluster` rather than `projects\/myproject\/instances\/myinstance\/clusters\/mycluster`. Fields marked `OutputOnly` must be left blank.",
           "type": "object",
           "additionalProperties": {
             "$ref": "Cluster"
@@ -2397,7 +2397,7 @@
                         "https://www.googleapis.com/auth/cloud-bigtable.admin.cluster",
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Lists Hot Tablets in a cluster, within the time range provided. Hot Tablets are ordered based on CPU usage."
+                      "description": "Lists hot tablets in a cluster, within the time range provided. Hot tablets are ordered based on CPU usage."
                     }
                   }
                 },

@@ -25,6 +25,7 @@ from __future__ import unicode_literals
 from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import tracker_file_util
 from googlecloudsdk.command_lib.storage.tasks import task
+from googlecloudsdk.command_lib.storage.tasks.cp import copy_util
 from googlecloudsdk.command_lib.storage.tasks.cp import download_util
 from googlecloudsdk.command_lib.storage.tasks.rm import delete_object_task
 from googlecloudsdk.command_lib.util import crc32c
@@ -32,7 +33,7 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 
 
-class FinalizeSlicedDownloadTask(task.Task):
+class FinalizeSlicedDownloadTask(task.Task, copy_util.CopyTaskExitHandlerMixin):
   """Performs final steps of sliced download."""
 
   def __init__(self,

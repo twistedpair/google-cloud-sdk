@@ -150,8 +150,9 @@ class _UserRequestArgs:
 
   def __init__(self,
                gzip_in_flight=None,
+               manifest_path=None,
                max_bytes_per_call=None,
-               no_clobber=None,
+               no_clobber=False,
                precondition_generation_match=None,
                precondition_metageneration_match=None,
                predefined_acl_string=None,
@@ -159,6 +160,7 @@ class _UserRequestArgs:
                resource_args=None):
     """Sets properties."""
     self.gzip_in_flight = gzip_in_flight
+    self.manifest_path = manifest_path
     self.max_bytes_per_call = max_bytes_per_call
     self.no_clobber = no_clobber
     self.precondition_generation_match = precondition_generation_match
@@ -171,6 +173,7 @@ class _UserRequestArgs:
     if not isinstance(other, type(self)):
       return NotImplemented
     return (self.gzip_in_flight == other.gzip_in_flight and
+            self.manifest_path == other.manifest_path and
             self.max_bytes_per_call == other.max_bytes_per_call and
             self.no_clobber == other.no_clobber and
             self.precondition_generation_match
@@ -281,7 +284,8 @@ def get_user_request_args_from_command_args(args, metadata_type=None):
 
   return _UserRequestArgs(
       gzip_in_flight=gzip_in_flight,
-      no_clobber=getattr(args, 'no_clobber', None),
+      manifest_path=getattr(args, 'manifest_path', None),
+      no_clobber=getattr(args, 'no_clobber', False),
       precondition_generation_match=getattr(args, 'if_generation_match', None),
       precondition_metageneration_match=getattr(args, 'if_metageneration_match',
                                                 None),

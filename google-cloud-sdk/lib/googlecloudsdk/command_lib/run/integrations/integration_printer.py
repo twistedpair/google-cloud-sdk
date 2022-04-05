@@ -22,6 +22,7 @@ from __future__ import unicode_literals
 from frozendict import frozendict
 from googlecloudsdk.command_lib.run.integrations.formatters import custom_domain_formatter
 from googlecloudsdk.command_lib.run.integrations.formatters import fallback_formatter
+from googlecloudsdk.command_lib.run.integrations.formatters import redis_formatter
 from googlecloudsdk.command_lib.run.integrations.formatters import states
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.resource import custom_printer_base as cp
@@ -31,6 +32,7 @@ INTEGRATION_PRINTER_FORMAT = 'integration'
 _FALLBACK_FORMATTER = fallback_formatter.FallbackFormatter()
 _INTEGRATION_FORMATTER_MAPS = frozendict({
     'custom-domain': custom_domain_formatter.CustomDomainFormatter(),
+    'redis': redis_formatter.RedisFormatter(),
 })
 
 

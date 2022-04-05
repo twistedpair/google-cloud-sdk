@@ -954,6 +954,26 @@
         }
       }
     },
+    "ExtendSchemaRequest": {
+      "id": "ExtendSchemaRequest",
+      "description": "ExtendSchemaRequest is the request message for ExtendSchema method.",
+      "type": "object",
+      "properties": {
+        "description": {
+          "description": "Required. Description for Schema Change.",
+          "type": "string"
+        },
+        "gcsPath": {
+          "description": "File stored in Cloud Storage bucket and represented in the form projects\/{project_id}\/buckets\/{bucket_name}\/objects\/{object_name} File should be in the same project as the domain.",
+          "type": "string"
+        },
+        "fileContents": {
+          "description": "File uploaded as a byte stream input.",
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
     "SetIamPolicyRequest": {
       "id": "SetIamPolicyRequest",
       "description": "Request message for `SetIamPolicy` method.",
@@ -2322,6 +2342,34 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Patches a single ldaps settings."
+                    },
+                    "extendSchema": {
+                      "id": "managedidentities.projects.locations.global.domains.extendSchema",
+                      "path": "v1alpha1/{+domain}:extendSchema",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/global/domains/{domainsId}:extendSchema",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "domain": {
+                          "description": "Required. The domain resource name using the form: `projects\/{project_id}\/locations\/global\/domains\/{domain_name}`",
+                          "pattern": "^projects\/[^\/]+\/locations\/global\/domains\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "domain"
+                      ],
+                      "request": {
+                        "$ref": "ExtendSchemaRequest"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Extend Schema for Domain"
                     },
                     "setIamPolicy": {
                       "id": "managedidentities.projects.locations.global.domains.setIamPolicy",

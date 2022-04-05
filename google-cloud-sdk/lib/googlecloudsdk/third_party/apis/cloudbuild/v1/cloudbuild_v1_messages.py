@@ -2628,7 +2628,9 @@ class GitFileSource(_messages.Message):
       scm.com/docs/gitrevisions If unspecified, the revision from which the
       trigger invocation originated is assumed to be the revision from which
       to read the specified path.
-    uri: The URI of the repo.
+    uri: The URI of the repo. Either uri or repository can be specified. If
+      unspecified, the repo from which the trigger invocation originated is
+      assumed to be the repo from which to read the specified path.
   """
 
   class RepoTypeValueValuesEnum(_messages.Enum):
@@ -2813,7 +2815,8 @@ class GitRepoSource(_messages.Message):
       `projects/{project}/githubEnterpriseConfigs/{id}`.
     ref: The branch or tag to use. Must start with "refs/" (required).
     repoType: See RepoType below.
-    uri: The URI of the repo.
+    uri: The URI of the repo. Either uri or repository can be specified and is
+      required.
   """
 
   class RepoTypeValueValuesEnum(_messages.Enum):

@@ -518,6 +518,8 @@
           "type": "string",
           "enumDescriptions": [
             "Not set.",
+            "Snapshot every 15 minutes.",
+            "Snapshot every 30 minutes.",
             "Snapshot every 1 hour.",
             "Snapshot every 6 hours.",
             "Snapshot every 12 hours.",
@@ -525,6 +527,8 @@
           ],
           "enum": [
             "SNAPSHOT_PERIOD_UNSPECIFIED",
+            "FIFTEEN_MINUTES",
+            "THIRTY_MINUTES",
             "ONE_HOUR",
             "SIX_HOURS",
             "TWELVE_HOURS",

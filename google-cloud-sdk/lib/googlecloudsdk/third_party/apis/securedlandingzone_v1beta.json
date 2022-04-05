@@ -1,0 +1,689 @@
+{
+  "kind": "discovery#restDescription",
+  "discoveryVersion": "v1",
+  "id": "securedlandingzone:v1beta",
+  "name": "securedlandingzone",
+  "canonicalName": "Secured Landing Zone",
+  "version": "v1beta",
+  "revision": "0",
+  "title": "Secured Landing Zone API (staging-qual-global)",
+  "description": "WIP",
+  "ownerDomain": "google.com",
+  "ownerName": "Google",
+  "icons": {
+    "x16": "http://www.google.com/images/icons/product/search-16.gif",
+    "x32": "http://www.google.com/images/icons/product/search-32.gif"
+   },
+  "documentationLink": "https://www.google.com",
+  "protocol": "rest",
+  "rootUrl": "https://staging-securedlandingzone.sandbox.googleapis.com/",
+  "mtlsRootUrl": "https://staging-securedlandingzone.mtls.sandbox.googleapis.com/",
+  "servicePath": "",
+  "baseUrl": "https://staging-securedlandingzone.sandbox.googleapis.com/",
+  "batchPath": "batch",
+  "version_module": true,
+  "fullyEncodeReservedExpansion": true,
+  "parameters": {
+    "access_token": {
+      "type": "string",
+      "description": "OAuth access token.",
+      "location": "query"
+    },
+    "alt": {
+      "type": "string",
+      "description": "Data format for response.",
+      "default": "json",
+      "enum": [
+        "json",
+        "media",
+        "proto"
+      ],
+      "enumDescriptions": [
+        "Responses with Content-Type of application/json",
+        "Media download with context-dependent Content-Type",
+        "Responses with Content-Type of application/x-protobuf"
+      ],
+      "location": "query"
+    },
+    "callback": {
+      "type": "string",
+      "description": "JSONP",
+      "location": "query"
+    },
+    "fields": {
+      "type": "string",
+      "description": "Selector specifying which fields to include in a partial response.",
+      "location": "query"
+    },
+    "key": {
+      "type": "string",
+      "description": "API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.",
+      "location": "query"
+    },
+    "oauth_token": {
+      "type": "string",
+      "description": "OAuth 2.0 token for the current user.",
+      "location": "query"
+    },
+    "prettyPrint": {
+      "type": "boolean",
+      "description": "Returns response with indentations and line breaks.",
+      "default": "true",
+      "location": "query"
+    },
+    "quotaUser": {
+      "type": "string",
+      "description": "Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.",
+      "location": "query"
+    },
+    "upload_protocol": {
+      "type": "string",
+      "description": "Upload protocol for media (e.g. \"raw\", \"multipart\").",
+      "location": "query"
+    },
+    "uploadType": {
+      "type": "string",
+      "description": "Legacy upload protocol for media (e.g. \"media\", \"multipart\").",
+      "location": "query"
+    },
+    "$.xgafv": {
+      "type": "string",
+      "description": "V1 error format.",
+      "enum": [
+        "1",
+        "2"
+      ],
+      "enumDescriptions": [
+        "v1 error format",
+        "v2 error format"
+      ],
+      "location": "query"
+    }
+  },
+  "schemas": {
+    "GoogleLongrunningListOperationsResponse": {
+      "id": "GoogleLongrunningListOperationsResponse",
+      "description": "The response message for Operations.ListOperations.",
+      "type": "object",
+      "properties": {
+        "operations": {
+          "description": "A list of operations that matches the specified filter in the request.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleLongrunningOperation"
+          }
+        },
+        "nextPageToken": {
+          "description": "The standard List next-page token.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleLongrunningOperation": {
+      "id": "GoogleLongrunningOperation",
+      "description": "This resource represents a long-running operation that is the result of a network API call.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The server-assigned name, which is only unique within the same service that originally returns it. If you use the default HTTP mapping, the `name` should be a resource name ending with `operations\/{unique_id}`.",
+          "type": "string"
+        },
+        "metadata": {
+          "description": "Service-specific metadata associated with the operation. It typically contains progress information and common metadata such as create time. Some services might not provide such metadata. Any method that returns a long-running operation should document the metadata type, if any.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        },
+        "done": {
+          "description": "If the value is `false`, it means the operation is still in progress. If `true`, the operation is completed, and either `error` or `response` is available.",
+          "type": "boolean"
+        },
+        "error": {
+          "description": "The error result of the operation in case of failure or cancellation.",
+          "$ref": "GoogleRpcStatus"
+        },
+        "response": {
+          "description": "The normal response of the operation in case of success. If the original method returns no data on success, such as `Delete`, the response is `google.protobuf.Empty`. If the original method is standard `Get`\/`Create`\/`Update`, the response should be the resource. For other methods, the response should have the type `XxxResponse`, where `Xxx` is the original method name. For example, if the original method name is `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        }
+      }
+    },
+    "GoogleRpcStatus": {
+      "id": "GoogleRpcStatus",
+      "description": "The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https:\/\/github.com\/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https:\/\/cloud.google.com\/apis\/design\/errors).",
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "The status code, which should be an enum value of google.rpc.Code.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "description": "A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the google.rpc.Status.details field, or localized by the client.",
+          "type": "string"
+        },
+        "details": {
+          "description": "A list of messages that carry the error details. There is a common set of message types for APIs to use.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "any",
+              "description": "Properties of the object. Contains field @type with type URL."
+            }
+          }
+        }
+      }
+    },
+    "GoogleProtobufEmpty": {
+      "id": "GoogleProtobufEmpty",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleLongrunningCancelOperationRequest": {
+      "id": "GoogleLongrunningCancelOperationRequest",
+      "description": "The request message for Operations.CancelOperation.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleLongrunningWaitOperationRequest": {
+      "id": "GoogleLongrunningWaitOperationRequest",
+      "description": "The request message for Operations.WaitOperation.",
+      "type": "object",
+      "properties": {
+        "timeout": {
+          "description": "The maximum duration to wait before timing out. If left blank, the wait will be at most the time permitted by the underlying HTTP\/RPC protocol. If RPC context deadline is also specified, the shorter one will be used.",
+          "type": "string",
+          "format": "google-duration"
+        }
+      }
+    },
+    "GoogleCloudSecuredlandingzoneV1betaEnableOverwatchRequest": {
+      "id": "GoogleCloudSecuredlandingzoneV1betaEnableOverwatchRequest",
+      "description": "The request message for enabling Overwatch for an organization in a region.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudSecuredlandingzoneV1betaEnableOverwatchResponse": {
+      "id": "GoogleCloudSecuredlandingzoneV1betaEnableOverwatchResponse",
+      "description": "The response message for enabling Overwatch on an organization in a region.",
+      "type": "object",
+      "properties": {
+        "serviceAccount": {
+          "description": "Required. The service account created to grant the required permissions for Overwatch to create\/manage resources.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudSecuredlandingzoneV1betaOverwatch": {
+      "id": "GoogleCloudSecuredlandingzoneV1betaOverwatch",
+      "description": "The Overwatch resource which holds all meta data related to an Overwatch instance.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The resource name of this overwatch resource. In the format of organizations\/{org_id}\/locations\/{location_id}\/overwatches\/{overwatch_id}.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "state": {
+          "description": "Output only. The operation state of Overwatch resource that decides if response actions will be taken upon receiving drift or threat signals. This field is mutable by using ActivateOverwatch or SuspendOverwatch only.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified operation state.",
+            "The state where the Overwatch is suspended, and no response actions are taken.",
+            "The default state where the Overwatch is active, and response actions will be taken based on the playbook if signals are received.",
+            "The state in which the overwatch is not completely created.",
+            "The state in which the overwatch is not completely deleted.",
+            "The state in which the overwatch is not completely updated."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "SUSPENDED",
+            "ACTIVE",
+            "CREATING",
+            "DELETING",
+            "UPDATING"
+          ]
+        },
+        "planData": {
+          "description": "Input only. The terraform plan file passed as bytes.",
+          "type": "string",
+          "format": "byte"
+        },
+        "remediationServiceAccount": {
+          "description": "Output only. This service account will be used by overwatch for remediating drifts.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. Creation time.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. Update time.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "GoogleCloudSecuredlandingzoneV1betaActivateOverwatchRequest": {
+      "id": "GoogleCloudSecuredlandingzoneV1betaActivateOverwatchRequest",
+      "description": "The request message for bringing the overwatch in active state.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudSecuredlandingzoneV1betaSuspendOverwatchRequest": {
+      "id": "GoogleCloudSecuredlandingzoneV1betaSuspendOverwatchRequest",
+      "description": "The request message for bringing the overwatch in suspend state.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudSecuredlandingzoneV1betaListOverwatchesResponse": {
+      "id": "GoogleCloudSecuredlandingzoneV1betaListOverwatchesResponse",
+      "description": "The response message for ListOverwatch.",
+      "type": "object",
+      "properties": {
+        "overwatches": {
+          "description": "List of Overwatch resources under the specified parent in the request.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudSecuredlandingzoneV1betaOverwatch"
+          }
+        },
+        "nextPageToken": {
+          "description": "A pagination token returned from a previous call to `ListOverwatches` that indicates where listing should continue.",
+          "type": "string"
+        }
+      }
+    }
+  },
+  "resources": {
+    "organizations": {
+      "resources": {
+        "operations": {
+          "methods": {
+            "list": {
+              "id": "securedlandingzone.organizations.operations.list",
+              "path": "v1beta/{+name}/operations",
+              "flatPath": "v1beta/organizations/{organizationsId}/operations",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "The name of the operation's parent resource.",
+                  "pattern": "^organizations\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "filter": {
+                  "description": "The standard list filter.",
+                  "location": "query",
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "The standard list page size.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "The standard list page token.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "GoogleLongrunningListOperationsResponse"
+              },
+              "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+            },
+            "get": {
+              "id": "securedlandingzone.organizations.operations.get",
+              "path": "v1beta/{+name}",
+              "flatPath": "v1beta/organizations/{organizationsId}/operations/{operationsId}",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "The name of the operation resource.",
+                  "pattern": "^organizations\/[^\/]+\/operations\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "GoogleLongrunningOperation"
+              },
+              "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
+            },
+            "delete": {
+              "id": "securedlandingzone.organizations.operations.delete",
+              "path": "v1beta/{+name}",
+              "flatPath": "v1beta/organizations/{organizationsId}/operations/{operationsId}",
+              "httpMethod": "DELETE",
+              "parameters": {
+                "name": {
+                  "description": "The name of the operation resource to be deleted.",
+                  "pattern": "^organizations\/[^\/]+\/operations\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "GoogleProtobufEmpty"
+              },
+              "description": "Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`."
+            },
+            "cancel": {
+              "id": "securedlandingzone.organizations.operations.cancel",
+              "path": "v1beta/{+name}:cancel",
+              "flatPath": "v1beta/organizations/{organizationsId}/operations/{operationsId}:cancel",
+              "httpMethod": "POST",
+              "parameters": {
+                "name": {
+                  "description": "The name of the operation resource to be cancelled.",
+                  "pattern": "^organizations\/[^\/]+\/operations\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "GoogleLongrunningCancelOperationRequest"
+              },
+              "response": {
+                "$ref": "GoogleProtobufEmpty"
+              },
+              "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`."
+            },
+            "wait": {
+              "id": "securedlandingzone.organizations.operations.wait",
+              "path": "v1beta/{+name}:wait",
+              "flatPath": "v1beta/organizations/{organizationsId}/operations/{operationsId}:wait",
+              "httpMethod": "POST",
+              "parameters": {
+                "name": {
+                  "description": "The name of the operation resource to wait on.",
+                  "pattern": "^organizations\/[^\/]+\/operations\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "GoogleLongrunningWaitOperationRequest"
+              },
+              "response": {
+                "$ref": "GoogleLongrunningOperation"
+              },
+              "description": "Waits until the specified long-running operation is done or reaches at most a specified timeout, returning the latest state. If the operation is already done, the latest state is immediately returned. If the timeout specified is greater than the default HTTP\/RPC timeout, the HTTP\/RPC timeout is used. If the server does not support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Note that this method is on a best-effort basis. It may return the latest state before the specified timeout (including immediately), meaning even an immediate response is no guarantee that the operation is done."
+            }
+          }
+        },
+        "locations": {
+          "methods": {
+            "enableOverwatch": {
+              "id": "securedlandingzone.organizations.locations.enableOverwatch",
+              "path": "v1beta/{+organization}/locations/{locationsId}:enableOverwatch",
+              "flatPath": "v1beta/organizations/{organizationsId}/locations/{locationsId}:enableOverwatch",
+              "httpMethod": "POST",
+              "parameters": {
+                "organization": {
+                  "description": "Required. Organization for which overwatch service has to be enabled. organizations\/{org_id}",
+                  "pattern": "^organizations\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "locationsId": {
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "organization",
+                "locationsId"
+              ],
+              "request": {
+                "$ref": "GoogleCloudSecuredlandingzoneV1betaEnableOverwatchRequest"
+              },
+              "response": {
+                "$ref": "GoogleCloudSecuredlandingzoneV1betaEnableOverwatchResponse"
+              },
+              "description": "Enables the overwatch service for an organization in a region. This creates a service account, which is returned in the response. The purpose of this RPC is to create the Service account and allow the user to give additional permissions that Overwatch needs to operate."
+            }
+          }
+          ,
+          "resources": {
+            "overwatches": {
+              "methods": {
+                "create": {
+                  "id": "securedlandingzone.organizations.locations.overwatches.create",
+                  "path": "v1beta/{+parent}/overwatches",
+                  "flatPath": "v1beta/organizations/{organizationsId}/locations/{locationsId}/overwatches",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent resource name of this Overwatch resource. Currently the only parent resource supported is an organization. organizations\/{org_id}\/locations\/{location_id}",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "overwatchId": {
+                      "description": "Required. Unique id per organization for an overwatch instance",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "GoogleCloudSecuredlandingzoneV1betaOverwatch"
+                  },
+                  "response": {
+                    "$ref": "GoogleLongrunningOperation"
+                  },
+                  "description": "Create a new overwatch resource. Operation"
+                },
+                "delete": {
+                  "id": "securedlandingzone.organizations.locations.overwatches.delete",
+                  "path": "v1beta/{+name}",
+                  "flatPath": "v1beta/organizations/{organizationsId}/locations/{locationsId}/overwatches/{overwatchesId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The resource name of the overwatch to delete. name: organizations\/{org_id}\/locations\/{location_id}\/overwatches\/{overwatch_id}",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/overwatches\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "GoogleLongrunningOperation"
+                  },
+                  "description": "Delete an overwatch resource. Operation"
+                },
+                "patch": {
+                  "id": "securedlandingzone.organizations.locations.overwatches.patch",
+                  "path": "v1beta/{+name}",
+                  "flatPath": "v1beta/organizations/{organizationsId}/locations/{locationsId}/overwatches/{overwatchesId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Output only. The resource name of this overwatch resource. In the format of organizations\/{org_id}\/locations\/{location_id}\/overwatches\/{overwatch_id}.",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/overwatches\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Optional. The FieldMask to use when updating the Overwatch. Only the fields specified here will be updated. This should not be empty. Updatable fields are: * blueprint_plan",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "GoogleCloudSecuredlandingzoneV1betaOverwatch"
+                  },
+                  "response": {
+                    "$ref": "GoogleLongrunningOperation"
+                  },
+                  "description": "Update blueprint of an overwatch resource. Operation"
+                },
+                "activate": {
+                  "id": "securedlandingzone.organizations.locations.overwatches.activate",
+                  "path": "v1beta/{+name}:activate",
+                  "flatPath": "v1beta/organizations/{organizationsId}/locations/{locationsId}/overwatches/{overwatchesId}:activate",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The resource name of the overwatch run. name: organizations\/{org_id}\/locations\/{location_id}\/overwatches\/{overwatch_id}",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/overwatches\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "GoogleCloudSecuredlandingzoneV1betaActivateOverwatchRequest"
+                  },
+                  "response": {
+                    "$ref": "GoogleCloudSecuredlandingzoneV1betaOverwatch"
+                  },
+                  "description": "Activate an overwatch resource. This sets the state to ACTIVE, response actions will now be taken against signals according to the playbook."
+                },
+                "suspend": {
+                  "id": "securedlandingzone.organizations.locations.overwatches.suspend",
+                  "path": "v1beta/{+name}:suspend",
+                  "flatPath": "v1beta/organizations/{organizationsId}/locations/{locationsId}/overwatches/{overwatchesId}:suspend",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The resource name of the overwatch to stop. name: organizations\/{org_id}\/locations\/{location_id}\/overwatches\/{overwatch_id}",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/overwatches\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "GoogleCloudSecuredlandingzoneV1betaSuspendOverwatchRequest"
+                  },
+                  "response": {
+                    "$ref": "GoogleCloudSecuredlandingzoneV1betaOverwatch"
+                  },
+                  "description": "Suspend an overwatch resource. This sets the state to SUSPENDED, and will stop all future response actions."
+                },
+                "get": {
+                  "id": "securedlandingzone.organizations.locations.overwatches.get",
+                  "path": "v1beta/{+name}",
+                  "flatPath": "v1beta/organizations/{organizationsId}/locations/{locationsId}/overwatches/{overwatchesId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The resource name of the overwatch to get. name: organizations\/{org_id}\/locations\/{location_id}\/overwatches\/{overwatch_id}",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/overwatches\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "GoogleCloudSecuredlandingzoneV1betaOverwatch"
+                  },
+                  "description": "Get an overwatch resource."
+                },
+                "list": {
+                  "id": "securedlandingzone.organizations.locations.overwatches.list",
+                  "path": "v1beta/{+parent}/overwatches",
+                  "flatPath": "v1beta/organizations/{organizationsId}/locations/{locationsId}/overwatches",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent name of the overwatches to list. parent: organizations\/{org_id}\/locations\/{location_id}",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Optional. The page size for the list result. If unspecified, at most 50 Overwatches will be returned.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "Optional. A pagination token indicates from where listing should continue in the next call.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "GoogleCloudSecuredlandingzoneV1betaListOverwatchesResponse"
+                  },
+                  "description": "List overwatch resources created under a parent resource."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "basePath": ""
+}

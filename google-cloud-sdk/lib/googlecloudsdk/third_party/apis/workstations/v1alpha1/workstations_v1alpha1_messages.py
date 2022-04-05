@@ -838,11 +838,20 @@ class PrivateClusterConfig(_messages.Message):
   r"""Configuration options for private clusters.
 
   Fields:
+    enablePrivateEndpoint: Whether Workstations endpoint is private.
     enablePrivateVmInstances: Whether Workstation VM instances have no public
       IP address.
+    serviceAttachmentUri: Output only. Service attachment URI for the
+      Workstation Cluster. The service attachemnt is created when private
+      endpoint is enabled. To access workstations in the cluster, configure
+      access to the managed service using (Private Service
+      Connect)[https://cloud.google.com/vpc/docs/configure-private-service-
+      connect-services].
   """
 
-  enablePrivateVmInstances = _messages.BooleanField(1)
+  enablePrivateEndpoint = _messages.BooleanField(1)
+  enablePrivateVmInstances = _messages.BooleanField(2)
+  serviceAttachmentUri = _messages.StringField(3)
 
 
 class Rule(_messages.Message):

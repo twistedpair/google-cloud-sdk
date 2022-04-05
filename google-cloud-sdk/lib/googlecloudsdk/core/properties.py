@@ -1063,8 +1063,7 @@ class _SectionApiEndpointOverrides(_Section):
   """
 
   def __init__(self):
-    super(_SectionApiEndpointOverrides, self).__init__(
-        'api_endpoint_overrides')
+    super(_SectionApiEndpointOverrides, self).__init__('api_endpoint_overrides')
     self.accessapproval = self._Add(
         'accessapproval', command='gcloud access-approval')
     self.accesscontextmanager = self._Add(
@@ -1076,16 +1075,16 @@ class _SectionApiEndpointOverrides(_Section):
     self.apigateway = self._Add('apigateway', command='gcloud api-gateway')
     self.apigee = self._Add('apigee', command='gcloud apigee')
     self.appengine = self._Add('appengine', command='gcloud app')
-    self.assuredworkloads = self._Add('assuredworkloads',
-                                      command='gcloud assured')
-    self.baremetalsolution = self._Add('baremetalsolution',
-                                       command='gcloud bms')
+    self.assuredworkloads = self._Add(
+        'assuredworkloads', command='gcloud assured')
+    self.baremetalsolution = self._Add(
+        'baremetalsolution', command='gcloud bms')
     self.bigtableadmin = self._Add('bigtableadmin', command='gcloud bigtable')
     self.binaryauthorization = self._Add(
         'binaryauthorization', command='gcloud container binauthz', hidden=True)
     self.blueprints = self._Add('config', command='gcloud blueprints')
-    self.artifactregistry = self._Add('artifactregistry',
-                                      command='gcloud artifacts')
+    self.artifactregistry = self._Add(
+        'artifactregistry', command='gcloud artifacts')
     self.categorymanager = self._Add('categorymanager', hidden=True)
     self.certificatemanager = self._Add(
         'certificatemanager', command='gcloud certificate-manager')
@@ -1101,8 +1100,7 @@ class _SectionApiEndpointOverrides(_Section):
         'clouderrorreporting', command='gcloud error-reporting')
     self.cloudfunctions = self._Add(
         'cloudfunctions', command='gcloud functions')
-    self.cloudidentity = self._Add(
-        'cloudidentity', command='gcloud identity')
+    self.cloudidentity = self._Add('cloudidentity', command='gcloud identity')
     self.cloudiot = self._Add('cloudiot', command='gcloud iot')
     self.cloudkms = self._Add('cloudkms', command='gcloud kms')
     self.cloudresourcemanager = self._Add(
@@ -1218,7 +1216,7 @@ class _SectionApiEndpointOverrides(_Section):
         help_text='Overrides API endpoint for `gcloud spanner` command group. '
         'For spanner emulator usage, see '
         'https://cloud.google.com/spanner/docs/emulator#using_the_gcloud_cli_with_the_emulator'
-        )
+    )
     self.speech = self._Add('speech', command='gcloud ml speech')
     self.sql = self._Add('sql', command='gcloud sql')
     self.storage = self._Add('storage', command='gcloud storage')
@@ -1234,6 +1232,8 @@ class _SectionApiEndpointOverrides(_Section):
     self.sddc = self._Add('sddc', command='gcloud vmware sddc')
     self.vmwareengine = self._Add('vmwareengine', command='gcloud vmware')
     self.beyondcorp = self._Add('beyondcorp', hidden=True)
+    self.securedlandingzone = self._Add(
+        'securedlandingzone', hidden=True, command='gcloud scc slz-overwatch')
 
   def EndpointValidator(self, value):
     """Checks to see if the endpoint override string is valid."""
@@ -1369,13 +1369,12 @@ class _SectionAuth(_Section):
         'token_host',
         default=self.DEFAULT_TOKEN_HOST,
         help_text='Overrides the token endpoint to provision access tokens. '
-                  'It can be used with Private Service Connect.')
+        'It can be used with Private Service Connect.')
     self.mtls_token_host = self._Add(
         'mtls_token_host',
         default=self.DEFAULT_MTLS_TOKEN_HOST,
         help_text='Overrides the mtls token endpoint to provision access tokens.',
-        hidden=True
-    )
+        hidden=True)
     self.disable_ssl_validation = self._AddBool(
         'disable_ssl_validation', hidden=True)
     self.client_id = self._Add(
@@ -1504,6 +1503,7 @@ class _SectionBilling(_Section):
              `billing/quota_project` and `--billing-project` are specified,
              `--billing-project` takes precedence.
              """))
+
 
 class _SectionBlueprints(_Section):
   """Contains the properties for the 'blueprints' section."""
@@ -1763,10 +1763,9 @@ class _SectionContextAware(_Section):
     self.always_use_mtls_endpoint = self._AddBool(
         'always_use_mtls_endpoint',
         help_text='If True, use the mTLS endpoints regardless of the value of '
-                  'context_aware/use_client_certificate.',
+        'context_aware/use_client_certificate.',
         default=False,
-        hidden=True
-    )
+        hidden=True)
     self.auto_discovery_file_path = self._Add(
         'auto_discovery_file_path',
         validator=ExistingAbsoluteFilepathValidator,
@@ -2045,7 +2044,7 @@ class _SectionCore(_Section):
     self.project_number = self._Add(
         'project_number',
         help_text='This property is for tests only. It should be kept in sync '
-                  'with core/project.',
+        'with core/project.',
         internal=True,
         hidden=True)
     self.credentialed_hosted_repo_domains = self._Add(
@@ -2824,6 +2823,12 @@ class _SectionScc(_Section):
     self.parent = self._Add(
         'parent',
         help_text='Default parent `gcloud` should use for scc surface.')
+    self.slz_overwatch_location = self._Add(
+        'location',
+        default='global',
+        help_text=(
+            'Default location `gcloud` should use for scc slz-overwatch surface.'
+        ))
 
 
 class _SectionSecrets(_Section):
@@ -2984,8 +2989,7 @@ class _SectionStorage(_Section):
             'Customer-supplied encryption keys must be RFC 4648 section'
             ' 4 base64-encoded AES256 strings. Customer-managed encryption keys'
             ' must be of the form `projects/{project}/locations/{location}'
-            '/keyRings/{key-ring}/cryptoKeys/{crypto-key}`.'
-        ))
+            '/keyRings/{key-ring}/cryptoKeys/{crypto-key}`.'))
 
     self.max_retry_delay = self._Add(
         'max_retry_delay',
@@ -3082,8 +3086,7 @@ class _SectionStorage(_Section):
             ' if you\'re running Cygwin or some other package that provides '
             ' implementations of UNIX-like commands). When available and '
             ' enabled use_magicfile should be more robust because it analyzes '
-            ' file contents in addition to extensions.'
-        ))
+            ' file contents in addition to extensions.'))
 
     self.use_threading_local = self._AddBool(
         'use_threading_local',
@@ -3722,9 +3725,7 @@ def GetValueFromFeatureFlag(prop):
     str, the value of the property, or None if it is not set.
   """
   ff_config = feature_flags_config.GetFeatureFlagsConfig(
-      VALUES.core.account.Get(),
-      VALUES.core.project.Get()
-  )
+      VALUES.core.account.Get(), VALUES.core.project.Get())
   if ff_config:
     return ff_config.Get(prop)
   return None
@@ -3759,8 +3760,8 @@ def _GetPropertyWithoutDefault(prop, properties_file):
           Stringize(value), PropertyValue.PropertySource.CALLBACK)
 
   # Feature Flag callback
-  if (prop.is_feature_flag and
-      prop != VALUES.core.enable_feature_flags and FeatureFlagEnabled()):
+  if (prop.is_feature_flag and prop != VALUES.core.enable_feature_flags and
+      FeatureFlagEnabled()):
     return PropertyValue(
         GetValueFromFeatureFlag(prop),
         PropertyValue.PropertySource.FEATURE_FLAG)

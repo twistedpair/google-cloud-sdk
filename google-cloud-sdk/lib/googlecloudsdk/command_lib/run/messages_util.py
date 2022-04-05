@@ -75,20 +75,28 @@ def GetStartDeployMessage(conn_context,
       ns=resource_ref.Parent().Name())
 
 
-def GetExecutionCreatedMessage(release_track, job_ref, execution_name):
-  """Returns a user message for running a job."""
-  # TODO(b/180749348): Don't piggyback off of cloud_run_revision
-  return (
-      '\nView details about this execution by running:\ngcloud{release_track} '
-      'run jobs executions describe {ex_name}\n\nSee logs for this execution '
-      'at: '
-      'https://console.cloud.google.com/logs/viewer?project={project_id}&resource=cloud_run_revision/service_name/{job_name}/revision_name/{ex_name}'
-      .format(
-          release_track=(' {}'.format(release_track.prefix)
-                         if release_track.prefix is not None else ''),
-          project_id=job_ref.Parent().Name(),
-          ex_name=execution_name,
-          job_name=job_ref.Name()))
+def GetRunJobMessage(release_track, job_name, repeat=False):
+  """Returns a user message for how to run a job."""
+  return ('\nTo execute this job{repeat}, use:\n'
+          'gcloud{release_track} run jobs execute {job_name}'.format(
+              repeat=' again' if repeat else '',
+              release_track=(' {}'.format(release_track.prefix)
+                             if release_track.prefix is not None else ''),
+              job_name=job_name))
+
+
+def GetExecutionCreatedMessage(release_track, execution):
+  """Returns a user message with execution details when running a job."""
+  msg = ('\nView details about this execution by running:\n'
+         'gcloud{release_track} run jobs executions describe {execution_name}'
+        ).format(
+            release_track=(' {}'.format(release_track.prefix)
+                           if release_track.prefix is not None else ''),
+            execution_name=execution.name)
+  if execution.status and execution.status.logUri:
+    msg += '\n\nSee logs for this execution at: {}'.format(
+        execution.status.logUri)
+  return msg
 
 
 def GetBuildEquivalentForSourceRunMessage(serv, pack, source):

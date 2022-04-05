@@ -1353,15 +1353,13 @@ class CreateInstanceRequest(_messages.Message):
     ClustersValue: Required. The clusters to be created within the instance,
       mapped by desired cluster ID, e.g., just `mycluster` rather than
       `projects/myproject/instances/myinstance/clusters/mycluster`. Fields
-      marked `OutputOnly` must be left blank. Currently, at most four clusters
-      can be specified.
+      marked `OutputOnly` must be left blank.
 
   Fields:
     clusters: Required. The clusters to be created within the instance, mapped
       by desired cluster ID, e.g., just `mycluster` rather than
       `projects/myproject/instances/myinstance/clusters/mycluster`. Fields
-      marked `OutputOnly` must be left blank. Currently, at most four clusters
-      can be specified.
+      marked `OutputOnly` must be left blank.
     instance: Required. The instance to create. Fields marked `OutputOnly`
       must be left blank.
     instanceId: Required. The ID to be used when referring to the new instance
@@ -1376,8 +1374,7 @@ class CreateInstanceRequest(_messages.Message):
     r"""Required. The clusters to be created within the instance, mapped by
     desired cluster ID, e.g., just `mycluster` rather than
     `projects/myproject/instances/myinstance/clusters/mycluster`. Fields
-    marked `OutputOnly` must be left blank. Currently, at most four clusters
-    can be specified.
+    marked `OutputOnly` must be left blank.
 
     Messages:
       AdditionalProperty: An additional property for a ClustersValue object.

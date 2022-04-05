@@ -98,18 +98,21 @@ def _get_digesters(component_number, resource):
     errors.Error: gcloud storage set to fail if performance-optimized digesters
       could not be created.
   """
-  check_hashes = properties.VALUES.storage.check_hashes.Get()
-  if check_hashes == properties.CheckHashes.NEVER.value:
-    return {}
-
   digesters = {}
-  if component_number is None and resource.md5_hash:
-    digesters[hash_util.HashAlgorithm.MD5] = hashing.get_md5()
+  check_hashes = properties.VALUES.storage.check_hashes.Get()
+  if check_hashes != properties.CheckHashes.NEVER.value:
+    if component_number is None and resource.md5_hash:
+      digesters[hash_util.HashAlgorithm.MD5] = hashing.get_md5()
 
-  elif (component_number is not None and resource.crc32c_hash and
-        (crc32c.IS_FAST_GOOGLE_CRC32C_AVAILABLE or
-         check_hashes == properties.CheckHashes.ALWAYS.value)):
-    digesters[hash_util.HashAlgorithm.CRC32C] = crc32c.get_crc32c()
+    elif (component_number is not None and resource.crc32c_hash and
+          (crc32c.IS_FAST_GOOGLE_CRC32C_AVAILABLE or
+           check_hashes == properties.CheckHashes.ALWAYS.value)):
+      digesters[hash_util.HashAlgorithm.CRC32C] = crc32c.get_crc32c()
+
+  if not digesters:
+    log.warning(
+        'Found no hashes to validate download of object: %s.'
+        ' Integrity cannot be assured without hashes.', resource)
 
   return digesters
 

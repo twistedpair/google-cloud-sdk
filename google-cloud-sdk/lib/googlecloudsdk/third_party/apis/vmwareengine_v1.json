@@ -233,25 +233,25 @@
           "type": "string"
         },
         "createTime": {
-          "description": "Output only. Creation time of this resource in RFC3339 text format.",
+          "description": "Output only. Creation time of this resource.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
-          "description": "Output only. Last update time of this resource in RFC3339 text format.",
+          "description": "Output only. Last update time of this resource.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "deleteTime": {
-          "description": "Output only. Time the resource was marked as deleted, in RFC3339 text format.",
+          "description": "Output only. Time the resource was marked as deleted.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "expireTime": {
-          "description": "Output only. Planned deletion time of this resource in RFC3339 text format.",
+          "description": "Output only. Planned deletion time of this resource.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
@@ -285,7 +285,7 @@
           ]
         },
         "networkConfig": {
-          "description": "Required. Network configuration of the private cloud. Caution: Do not remove VPC networks used by private clouds (`NetworkConfig.network`). Doing so removes your ability to access the private cloud.",
+          "description": "Required. Network configuration of the private cloud.",
           "$ref": "NetworkConfig"
         },
         "managementCluster": {
@@ -324,11 +324,11 @@
       "type": "object",
       "properties": {
         "network": {
-          "description": "Optional. DEPRECATED: Optional. The relative resource name of the consumer VPC network this private cloud is attached to. Specify the name in the following form: `projects\/{project}\/global\/networks\/{network_id}` where `{project}` can either be a project number or a project ID.",
+          "description": "Optional. Deprecated: Optional. The relative resource name of the consumer VPC network this private cloud is attached to. Specify the name in the following form: `projects\/{project}\/global\/networks\/{network_id}` where `{project}` can either be a project number or a project ID.",
           "type": "string"
         },
         "serviceNetwork": {
-          "description": "Output only. DEPRECATED: Output only. The relative resource name of the service VPC network this private cloud is attached to. The name is specified in the following form: `projects\/{service_project_number}\/global\/networks\/{network_id}`.",
+          "description": "Output only. Deprecated: Output only. The relative resource name of the service VPC network this private cloud is attached to. The name is specified in the following form: `projects\/{service_project_number}\/global\/networks\/{network_id}`.",
           "readOnly": true,
           "type": "string"
         },
@@ -532,13 +532,13 @@
           "type": "string"
         },
         "createTime": {
-          "description": "Output only. Creation time of this resource in RFC3339 text format.",
+          "description": "Output only. Creation time of this resource.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
-          "description": "Output only. Last update time of this resource in RFC3339 text format.",
+          "description": "Output only. Last update time of this resource.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
@@ -633,13 +633,13 @@
           "type": "string"
         },
         "createTime": {
-          "description": "Output only. Creation time of this resource in RFC3339 text format.",
+          "description": "Output only. Creation time of this resource.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
-          "description": "Output only. Last update time of this resource in RFC3339 text format.",
+          "description": "Output only. Last update time of this resource.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
@@ -748,13 +748,13 @@
           "type": "string"
         },
         "createTime": {
-          "description": "Output only. Creation time of this resource in RFC3339 text format.",
+          "description": "Output only. Creation time of this resource.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
-          "description": "Output only. Last update time of this resource in RFC3339 text format.",
+          "description": "Output only. Last update time of this resource.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
@@ -983,24 +983,24 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. The resource name of the VPC network peering. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/global\/networkPeerings\/my-peering`",
+          "description": "Output only. The resource name of the VPC network peering. Resource names are scheme-less URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/global\/networkPeerings\/my-peering`",
           "readOnly": true,
           "type": "string"
         },
         "createTime": {
-          "description": "Output only. Creation time of this resource in RFC3339 text format.",
+          "description": "Output only. Creation time of this resource.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
-          "description": "Output only. Last update time of this resource in RFC3339 text format.",
+          "description": "Output only. Last update time of this resource.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "peerNetwork": {
-          "description": "Required. The relative resource name of the VPC network to peer with the VMware Engine service network. This network can be a consumer VPC network or another producer service VPC network. Specify the name in the following form: `projects\/{project}\/global\/networks\/{network_id}` where `{project}` can either be a project number or a project ID.",
+          "description": "Required. The relative resource name of the network to peer with the VMware Engine network. This network can be a consumer VPC network or another VMware Engine network. If the `peer_network_type` is VMWARE_ENGINE_NETWORK, specify the name in the form: `projects\/{project}\/locations\/global\/vmwareEngineNetworks\/{vmware_engine_network_id}`. Otherwise specify the name in the form: `projects\/{project}\/global\/networks\/{network_id}`, where `{project}` can either be a project number or a project ID.",
           "type": "string"
         },
         "exportCustomRoutes": {
@@ -1077,6 +1077,10 @@
         },
         "vmwareEngineNetwork": {
           "description": "Required. The relative resource name of the VMware Engine network. Specify the name in the following form: `projects\/{project}\/locations\/{location}\/vmwareEngineNetworks\/{vmware_engine_network_id}` where `{project}` can either be a project number or a project ID.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Optional. User-provided description for this network peering.",
           "type": "string"
         }
       }
@@ -1250,13 +1254,13 @@
           "type": "string"
         },
         "createTime": {
-          "description": "Output only. Creation time of this resource in RFC3339 text format.",
+          "description": "Output only. Creation time of this resource.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
-          "description": "Output only. Last update time of this resource in RFC3339 text format.",
+          "description": "Output only. Last update time of this resource.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
@@ -1277,7 +1281,7 @@
           "$ref": "NetworkService"
         },
         "network": {
-          "description": "Optional. DEPRECATED: Optional. Name of the network in the consumer project which is peered or will be peered with the service network. Provide the network name in the form of `projects\/{project}\/global\/networks\/{network}`, where `{project}` is the project ID or project number of the project containing the network. In case of shared VPC, use the project ID or project number of the host project containing the shared VPC network.",
+          "description": "Optional. Deprecated: Optional. Name of the network in the consumer project which is peered or will be peered with the service network. Provide the network name in the form of `projects\/{project}\/global\/networks\/{network}`, where `{project}` is the project ID or project number of the project containing the network. In case of shared VPC, use the project ID or project number of the host project containing the shared VPC network.",
           "type": "string"
         },
         "edgeServicesCidr": {
@@ -1363,13 +1367,13 @@
           "type": "string"
         },
         "createTime": {
-          "description": "Output only. Creation time of this resource in RFC3339 text format.",
+          "description": "Output only. Creation time of this resource.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
-          "description": "Output only. Last update time of this resource in RFC3339 text format.",
+          "description": "Output only. Last update time of this resource.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
@@ -1717,13 +1721,13 @@
       "type": "object",
       "properties": {
         "createTime": {
-          "description": "Output only. The time the operation was created in RFC3339 text format.",
+          "description": "Output only. The time the operation was created.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "endTime": {
-          "description": "Output only. The time the operation finished running in RFC3339 text format.",
+          "description": "Output only. The time the operation finished running.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
@@ -3832,6 +3836,49 @@
                       }
                     }
                   }
+                }
+              }
+            },
+            "networkPeerings": {
+              "methods": {
+                "patch": {
+                  "id": "vmwareengine.projects.locations.networkPeerings.patch",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/networkPeerings/{networkPeeringsId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Output only. The resource name of the VPC network peering. Resource names are scheme-less URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/global\/networkPeerings\/my-peering`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/networkPeerings\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Required. Field mask is used to specify the fields to be overwritten in the `NetworkPeering` resource by the update. The fields specified in the `update_mask` are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    },
+                    "requestId": {
+                      "description": "Optional. A request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server guarantees that a request doesn't result in creation of duplicate commitments for at least 60 minutes. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "NetworkPeering"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Modifies a `NetworkPeering` resource. Only the `description` field can be updated. Only fields specified in `updateMask` are applied."
                 }
               }
             },

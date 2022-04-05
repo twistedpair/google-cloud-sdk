@@ -457,6 +457,8 @@ class Dashboard(_messages.Message):
   Fields:
     columnLayout: The content is divided into equally spaced columns and the
       widgets are arranged vertically.
+    dashboardFilters: Filters to reduce the amount of data charted based on
+      the filter criteria.
     displayName: Required. The mutable, human-readable name.
     etag: etag is used for optimistic concurrency control as a way to help
       prevent simultaneous updates of a policy from overwriting each other. An
@@ -499,13 +501,54 @@ class Dashboard(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   columnLayout = _messages.MessageField('ColumnLayout', 1)
-  displayName = _messages.StringField(2)
-  etag = _messages.StringField(3)
-  gridLayout = _messages.MessageField('GridLayout', 4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  mosaicLayout = _messages.MessageField('MosaicLayout', 6)
-  name = _messages.StringField(7)
-  rowLayout = _messages.MessageField('RowLayout', 8)
+  dashboardFilters = _messages.MessageField('DashboardFilter', 2, repeated=True)
+  displayName = _messages.StringField(3)
+  etag = _messages.StringField(4)
+  gridLayout = _messages.MessageField('GridLayout', 5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  mosaicLayout = _messages.MessageField('MosaicLayout', 7)
+  name = _messages.StringField(8)
+  rowLayout = _messages.MessageField('RowLayout', 9)
+
+
+class DashboardFilter(_messages.Message):
+  r"""A filter to reduce the amount of data charted in relevant widgets.
+
+  Enums:
+    FilterTypeValueValuesEnum: The specified filter type
+
+  Fields:
+    filterType: The specified filter type
+    labelKey: Required. The key for the label
+    stringValue: A variable-length string value.
+    templateVariable: The placeholder text that can be referenced in a filter
+      string or MQL query. If omitted, the dashboard filter will be applied to
+      all relevant widgets in the dashboard.
+  """
+
+  class FilterTypeValueValuesEnum(_messages.Enum):
+    r"""The specified filter type
+
+    Values:
+      FILTER_TYPE_UNSPECIFIED: Filter type is unspecified. This is not valid
+        in a well-formed request.
+      RESOURCE_LABEL: Filter on a resource label value
+      METRIC_LABEL: Filter on a metrics label value
+      USER_METADATA_LABEL: Filter on a user metadata label value
+      SYSTEM_METADATA_LABEL: Filter on a system metadata label value
+      GROUP: Filter on a group id
+    """
+    FILTER_TYPE_UNSPECIFIED = 0
+    RESOURCE_LABEL = 1
+    METRIC_LABEL = 2
+    USER_METADATA_LABEL = 3
+    SYSTEM_METADATA_LABEL = 4
+    GROUP = 5
+
+  filterType = _messages.EnumField('FilterTypeValueValuesEnum', 1)
+  labelKey = _messages.StringField(2)
+  stringValue = _messages.StringField(3)
+  templateVariable = _messages.StringField(4)
 
 
 class DataSet(_messages.Message):

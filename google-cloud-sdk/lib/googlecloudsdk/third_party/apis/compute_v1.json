@@ -4,7 +4,7 @@
   "id": "compute:v1",
   "name": "compute",
   "version": "v1",
-  "revision": "20220318",
+  "revision": "20220329",
   "title": "Compute Engine API",
   "description": "Creates and runs virtual machines on Google Cloud Platform. ",
   "ownerDomain": "google.com",
@@ -28260,7 +28260,7 @@
           "type": "boolean"
         },
         "privateIpv6GoogleAccess": {
-          "description": "The private IPv6 google access type for the VMs in this subnet. This is an expanded field of enablePrivateV6Access. If both fields are set, privateIpv6GoogleAccess will take priority. This field can be both set at resource creation time and updated using patch.",
+          "description": "This field is for internal use. This field can be both set at resource creation time and updated using patch.",
           "type": "string",
           "enumDescriptions": [
             "Disable private IPv6 access to\/from Google services.",
@@ -28274,15 +28274,15 @@
           ]
         },
         "ipv6CidrRange": {
-          "description": "[Output Only] The range of internal IPv6 addresses that are owned by this subnetwork. Note this will be for private google access only eventually.",
+          "description": "[Output Only] This field is for internal use.",
           "type": "string"
         },
         "externalIpv6Prefix": {
-          "description": "[Output Only] The range of external IPv6 addresses that are owned by this subnetwork.",
+          "description": "[Output Only] The external IPv6 address range that is assigned to this subnetwork.",
           "type": "string"
         },
         "internalIpv6Prefix": {
-          "description": "[Output Only] The range of internal IPv6 addresses that are owned by this subnetwork. Note this is for general VM to VM communication, not to be confused with the ipv6_cidr_range field.",
+          "description": "[Output Only] The internal IPv6 address range that is assigned to this subnetwork.",
           "type": "string"
         },
         "purpose": {
@@ -28344,10 +28344,10 @@
           ]
         },
         "ipv6AccessType": {
-          "description": "The access type of IPv6 address this subnet holds. It's immutable and can only be specified during creation or the first time the subnet is updated into IPV4_IPV6 dual stack. If the ipv6_type is EXTERNAL then this subnet cannot enable direct path.",
+          "description": "The access type of IPv6 address this subnet holds. It's immutable and can only be specified during creation or the first time the subnet is updated into IPV4_IPV6 dual stack.",
           "type": "string",
           "enumDescriptions": [
-            "VMs on this subnet will be assigned IPv6 addresses that are accesible via the Internet, as well as the VPC network.",
+            "VMs on this subnet will be assigned IPv6 addresses that are accessible via the Internet, as well as the VPC network.",
             "VMs on this subnet will be assigned IPv6 addresses that are only accessible over the VPC network."
           ],
           "enum": [

@@ -571,7 +571,7 @@ class BigtableadminV2(base_api.BaseApiClient):
           }
 
     def List(self, request, global_params=None):
-      r"""Lists Hot Tablets in a cluster, within the time range provided. Hot Tablets are ordered based on CPU usage.
+      r"""Lists hot tablets in a cluster, within the time range provided. Hot tablets are ordered based on CPU usage.
 
       Args:
         request: (BigtableadminProjectsInstancesClustersHotTabletsListRequest) input message

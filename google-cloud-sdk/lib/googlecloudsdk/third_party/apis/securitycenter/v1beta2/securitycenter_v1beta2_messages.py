@@ -1460,6 +1460,7 @@ class MitreAttack(_messages.Message):
       MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE: T1578
       EXPLOIT_PUBLIC_FACING_APPLICATION: T1190
       MODIFY_AUTHENTICATION_PROCESS: T1556
+      DATA_DESTRUCTION: T1485
     """
     TECHNIQUE_UNSPECIFIED = 0
     ACTIVE_SCANNING = 1
@@ -1490,6 +1491,7 @@ class MitreAttack(_messages.Message):
     MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE = 26
     EXPLOIT_PUBLIC_FACING_APPLICATION = 27
     MODIFY_AUTHENTICATION_PROCESS = 28
+    DATA_DESTRUCTION = 29
 
   class PrimaryTacticValueValuesEnum(_messages.Enum):
     r"""The MITRE ATT&CK tactic most closely represented by this finding, if
@@ -1561,6 +1563,7 @@ class MitreAttack(_messages.Message):
       MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE: T1578
       EXPLOIT_PUBLIC_FACING_APPLICATION: T1190
       MODIFY_AUTHENTICATION_PROCESS: T1556
+      DATA_DESTRUCTION: T1485
     """
     TECHNIQUE_UNSPECIFIED = 0
     ACTIVE_SCANNING = 1
@@ -1591,6 +1594,7 @@ class MitreAttack(_messages.Message):
     MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE = 26
     EXPLOIT_PUBLIC_FACING_APPLICATION = 27
     MODIFY_AUTHENTICATION_PROCESS = 28
+    DATA_DESTRUCTION = 29
 
   additionalTactics = _messages.EnumField('AdditionalTacticsValueListEntryValuesEnum', 1, repeated=True)
   additionalTechniques = _messages.EnumField('AdditionalTechniquesValueListEntryValuesEnum', 2, repeated=True)

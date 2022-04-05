@@ -163,7 +163,7 @@ GCE_RESOURCE_PATH_REGEX = r'^[a-z\d-]+(/[a-z\d-]+)*$'
 
 GCE_RESOURCE_NAME_REGEX = r'^[a-z]([a-z\d-]{0,61}[a-z\d])?$'
 
-FLEX_INSTANCE_IP_MODE_REGEX = r'^EXTERNAL|INTERNAL$'
+FLEX_INSTANCE_IP_MODE_REGEX = r'^(EXTERNAL|external|INTERNAL|internal)$'
 
 VPC_ACCESS_CONNECTOR_NAME_REGEX = r'^[a-z\d-]+(/.+)*$'
 

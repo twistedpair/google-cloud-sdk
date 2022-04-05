@@ -101,9 +101,9 @@ def _get_md5_hash_from_etag(etag, object_url):
     encoded_bytes = base64.b64encode(binascii.unhexlify(etag))
     return encoded_bytes.decode(encoding='utf-8')
   else:
-    log.warning('Non-MD5 etag ("%s") present for object: %s.'
-                ' Data integrity checks are not possible.',
-                etag, object_url)
+    log.debug(
+        'Non-MD5 etag ("%s") present for object: %s.'
+        ' Data integrity checks are not possible.', etag, object_url)
   return None
 
 

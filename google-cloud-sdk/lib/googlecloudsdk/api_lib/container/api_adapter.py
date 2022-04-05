@@ -1824,8 +1824,9 @@ class APIAdapter(object):
             enabled=options.enable_autoscaling,
             minNodeCount=options.min_nodes,
             maxNodeCount=options.max_nodes)
-        pool.autoscaling.locationPolicy = LocationPolicyEnumFromString(
-            self.messages, options.location_policy)
+        if options.location_policy is not None:
+          pool.autoscaling.locationPolicy = LocationPolicyEnumFromString(
+              self.messages, options.location_policy)
       if options.max_pods_per_node:
         if not options.enable_ip_alias:
           raise util.Error(MAX_PODS_PER_NODE_WITHOUT_IP_ALIAS_ERROR_MSG)
@@ -3111,8 +3112,9 @@ class APIAdapter(object):
       pool.autoscaling.enabled = options.enable_autoscaling
       pool.autoscaling.minNodeCount = options.min_nodes
       pool.autoscaling.maxNodeCount = options.max_nodes
-      pool.autoscaling.locationPolicy = LocationPolicyEnumFromString(
-          self.messages, options.location_policy)
+      if options.location_policy is not None:
+        pool.autoscaling.locationPolicy = LocationPolicyEnumFromString(
+            self.messages, options.location_policy)
 
     if options.enable_autoprovisioning:
       pool.autoscaling.autoprovisioned = options.enable_autoprovisioning
@@ -3215,7 +3217,6 @@ class APIAdapter(object):
         autoscaling.minNodeCount = 0
         autoscaling.maxNodeCount = 0
         autoscaling.autoprovisioned = False
-        autoscaling.locationPolicy = self.messages.NodePoolAutoscaling.LocationPolicyValueValuesEnum.LOCATION_POLICY_UNSPECIFIED
     if options.enable_autoprovisioning is not None:
       autoscaling.autoprovisioned = options.enable_autoprovisioning
       if autoscaling.autoprovisioned:
@@ -4880,8 +4881,9 @@ class V1Alpha1Adapter(V1Beta1Adapter):
             enabled=options.enable_autoscaling,
             minNodeCount=options.min_nodes,
             maxNodeCount=options.max_nodes)
-        pool.autoscaling.locationPolicy = LocationPolicyEnumFromString(
-            self.messages, options.location_policy)
+        if options.location_policy is not None:
+          pool.autoscaling.locationPolicy = LocationPolicyEnumFromString(
+              self.messages, options.location_policy)
       if options.max_pods_per_node:
         if not options.enable_ip_alias:
           raise util.Error(MAX_PODS_PER_NODE_WITHOUT_IP_ALIAS_ERROR_MSG)

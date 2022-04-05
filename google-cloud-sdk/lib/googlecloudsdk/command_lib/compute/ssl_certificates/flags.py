@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 from googlecloudsdk.command_lib.util import completers
@@ -111,3 +112,15 @@ def SslCertificatesArgumentForOtherResource(
         balancer. The SSL certificates must exist and cannot be deleted while
         referenced by a {0}.
         """.format(resource))
+
+
+def GetClearSslCertificatesArgumentForOtherResource(proxy_type, required=False):
+  """Returns the flag for clearing the SSL Certificates."""
+  return base.Argument(
+      '--clear-ssl-certificates',
+      action='store_true',
+      default=False,
+      required=required,
+      help="""\
+      Removes any attached SSL Certificates from the {} proxy.
+      """.format(proxy_type))

@@ -1875,7 +1875,7 @@
           "type": "string"
         },
         "uri": {
-          "description": "The URI of the repo.",
+          "description": "The URI of the repo. Either uri or repository can be specified. If unspecified, the repo from which the trigger invocation originated is assumed to be the repo from which to read the specified path.",
           "type": "string"
         },
         "repoType": {
@@ -1914,7 +1914,7 @@
       "type": "object",
       "properties": {
         "uri": {
-          "description": "The URI of the repo.",
+          "description": "The URI of the repo. Either uri or repository can be specified and is required.",
           "type": "string"
         },
         "ref": {

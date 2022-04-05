@@ -38,9 +38,9 @@ class _ImageVersionItem(object):
   """Class used to dissect and analyze image version components and strings."""
 
   def __init__(self, image_ver=None, composer_ver=None, airflow_ver=None):
-    image_version_regex = r'^composer-(\d+(?:\.\d+\.\d+(?:-[a-z]+\.\d+)?)?|latest)-airflow-(\d+\.\d+(?:\.\d+)?)'
+    image_version_regex = r'^composer-(\d+(?:\.\d+\.\d+(?:-[a-z]+\.\d+)?)?|latest)-airflow-(\d+(?:\.\d+(?:\.\d+)?)?)'
     composer_version_alias_regex = r'^(\d+|latest)$'
-    airflow_version_alias_regex = r'^(\d+\.\d+)$'
+    airflow_version_alias_regex = r'^(\d+|\d+\.\d+)$'
 
     if image_ver is not None:
       iv_parts = re.findall(image_version_regex, image_ver)[0]

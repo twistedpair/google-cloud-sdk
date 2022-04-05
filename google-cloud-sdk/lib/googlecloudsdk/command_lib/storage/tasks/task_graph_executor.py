@@ -169,12 +169,14 @@ def _thread_worker(task_queue, task_output_queue, task_status_queue,
       break
     idle_thread_count.acquire()
 
+    task_execution_error = None
     try:
       task_output = task_wrapper.task.execute(
           task_status_queue=task_status_queue)
     # pylint: disable=broad-except
     # If any exception is raised, it will prevent the executor from exiting.
     except Exception as exception:
+      task_execution_error = exception
       log.error(exception)
       log.debug(exception, exc_info=sys.exc_info())
       if task_wrapper.task.report_error:
@@ -184,6 +186,8 @@ def _thread_worker(task_queue, task_output_queue, task_status_queue,
       else:
         task_output = None
     # pylint: enable=broad-except
+    finally:
+      task_wrapper.task.exit_handler(task_execution_error, task_status_queue)
 
     task_output_queue.put((task_wrapper, task_output))
     idle_thread_count.release()

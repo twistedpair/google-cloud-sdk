@@ -214,6 +214,13 @@
           "description": "The content is divided into equally spaced columns and the widgets are arranged vertically.",
           "$ref": "ColumnLayout"
         },
+        "dashboardFilters": {
+          "description": "Filters to reduce the amount of data charted based on the filter criteria.",
+          "type": "array",
+          "items": {
+            "$ref": "DashboardFilter"
+          }
+        },
         "labels": {
           "description": "Labels applied to the dashboard",
           "type": "object",
@@ -1054,6 +1061,45 @@
           "items": {
             "$ref": "Widget"
           }
+        }
+      }
+    },
+    "DashboardFilter": {
+      "id": "DashboardFilter",
+      "description": "A filter to reduce the amount of data charted in relevant widgets.",
+      "type": "object",
+      "properties": {
+        "labelKey": {
+          "description": "Required. The key for the label",
+          "type": "string"
+        },
+        "templateVariable": {
+          "description": "The placeholder text that can be referenced in a filter string or MQL query. If omitted, the dashboard filter will be applied to all relevant widgets in the dashboard.",
+          "type": "string"
+        },
+        "stringValue": {
+          "description": "A variable-length string value.",
+          "type": "string"
+        },
+        "filterType": {
+          "description": "The specified filter type",
+          "type": "string",
+          "enumDescriptions": [
+            "Filter type is unspecified. This is not valid in a well-formed request.",
+            "Filter on a resource label value",
+            "Filter on a metrics label value",
+            "Filter on a user metadata label value",
+            "Filter on a system metadata label value",
+            "Filter on a group id"
+          ],
+          "enum": [
+            "FILTER_TYPE_UNSPECIFIED",
+            "RESOURCE_LABEL",
+            "METRIC_LABEL",
+            "USER_METADATA_LABEL",
+            "SYSTEM_METADATA_LABEL",
+            "GROUP"
+          ]
         }
       }
     },

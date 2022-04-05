@@ -15,6 +15,45 @@ from apitools.base.py import extra_types
 package = 'artifactregistry'
 
 
+class AptArtifact(_messages.Message):
+  r"""A detailed representation of an Apt artifact. Information in the record
+  is derived from the archive's control file. See
+  https://www.debian.org/doc/debian-policy/ch-controlfields.html
+
+  Enums:
+    PackageTypeValueValuesEnum: Output only. An artifact is a binary or source
+      package.
+
+  Fields:
+    architecture: Output only. Operating system architecture of the artifact.
+    component: Output only. Repository component of the artifact.
+    controlFile: Output only. Contents of the artifact's control metadata
+      file.
+    name: Output only. The Artifact Registry resource name of the artifact.
+    packageName: Output only. The Apt package name of the artifact.
+    packageType: Output only. An artifact is a binary or source package.
+  """
+
+  class PackageTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. An artifact is a binary or source package.
+
+    Values:
+      PACKAGE_TYPE_UNSPECIFIED: Package type is not specified.
+      BINARY: Binary package.
+      SOURCE: Source package.
+    """
+    PACKAGE_TYPE_UNSPECIFIED = 0
+    BINARY = 1
+    SOURCE = 2
+
+  architecture = _messages.StringField(1)
+  component = _messages.StringField(2)
+  controlFile = _messages.BytesField(3)
+  name = _messages.StringField(4)
+  packageName = _messages.StringField(5)
+  packageType = _messages.EnumField('PackageTypeValueValuesEnum', 6)
+
+
 class ArtifactregistryProjectsGetProjectSettingsRequest(_messages.Message):
   r"""A ArtifactregistryProjectsGetProjectSettingsRequest object.
 
@@ -638,8 +677,7 @@ class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
   or the response type of an API method. For instance: service Foo { rpc
-  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
-  representation for `Empty` is empty JSON object `{}`.
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
 
 
@@ -730,6 +768,18 @@ class Hash(_messages.Message):
   value = _messages.BytesField(2)
 
 
+class ImportAptArtifactsErrorInfo(_messages.Message):
+  r"""Error information explaining why a package was not imported.
+
+  Fields:
+    error: The detailed error status.
+    gcsSource: Google Cloud Storage location requested.
+  """
+
+  error = _messages.MessageField('Status', 1)
+  gcsSource = _messages.MessageField('ImportAptArtifactsGcsSource', 2)
+
+
 class ImportAptArtifactsGcsSource(_messages.Message):
   r"""Google Cloud Storage location where the artifacts currently reside.
 
@@ -743,6 +793,10 @@ class ImportAptArtifactsGcsSource(_messages.Message):
   useWildcards = _messages.BooleanField(2)
 
 
+class ImportAptArtifactsMetadata(_messages.Message):
+  r"""The operation metadata for importing artifacts."""
+
+
 class ImportAptArtifactsRequest(_messages.Message):
   r"""The request to import new apt artifacts.
 
@@ -751,6 +805,30 @@ class ImportAptArtifactsRequest(_messages.Message):
   """
 
   gcsSource = _messages.MessageField('ImportAptArtifactsGcsSource', 1)
+
+
+class ImportAptArtifactsResponse(_messages.Message):
+  r"""The response message from importing APT artifacts.
+
+  Fields:
+    aptArtifacts: The Apt artifacts imported.
+    errors: Detailed error info for packages that were not imported.
+  """
+
+  aptArtifacts = _messages.MessageField('AptArtifact', 1, repeated=True)
+  errors = _messages.MessageField('ImportAptArtifactsErrorInfo', 2, repeated=True)
+
+
+class ImportYumArtifactsErrorInfo(_messages.Message):
+  r"""Error information explaining why a package was not imported.
+
+  Fields:
+    error: The detailed error status.
+    gcsSource: Google Cloud Storage location requested.
+  """
+
+  error = _messages.MessageField('Status', 1)
+  gcsSource = _messages.MessageField('ImportYumArtifactsGcsSource', 2)
 
 
 class ImportYumArtifactsGcsSource(_messages.Message):
@@ -766,6 +844,10 @@ class ImportYumArtifactsGcsSource(_messages.Message):
   useWildcards = _messages.BooleanField(2)
 
 
+class ImportYumArtifactsMetadata(_messages.Message):
+  r"""The operation metadata for importing artifacts."""
+
+
 class ImportYumArtifactsRequest(_messages.Message):
   r"""The request to import new yum artifacts.
 
@@ -774,6 +856,18 @@ class ImportYumArtifactsRequest(_messages.Message):
   """
 
   gcsSource = _messages.MessageField('ImportYumArtifactsGcsSource', 1)
+
+
+class ImportYumArtifactsResponse(_messages.Message):
+  r"""The response message from importing YUM artifacts.
+
+  Fields:
+    errors: Detailed error info for packages that were not imported.
+    yumArtifacts: The yum artifacts imported.
+  """
+
+  errors = _messages.MessageField('ImportYumArtifactsErrorInfo', 1, repeated=True)
+  yumArtifacts = _messages.MessageField('YumArtifact', 2, repeated=True)
 
 
 class ListDockerImagesResponse(_messages.Message):
@@ -1088,6 +1182,10 @@ class Operation(_messages.Message):
   response = _messages.MessageField('ResponseValue', 5)
 
 
+class OperationMetadata(_messages.Message):
+  r"""Metadata type for longrunning-operations, currently empty."""
+
+
 class Package(_messages.Message):
   r"""Packages are named collections of versions.
 
@@ -1247,6 +1345,9 @@ class Repository(_messages.Message):
       configuration for the repositories of maven type.
     name: The name of the repository, for example: "projects/p1/locations/us-
       central1/repositories/repo1".
+    sizeBytes: Output only. The size, in bytes, of all artifact storage in
+      this repository. Repositories that are generally available or in public
+      preview use this to calculate storage costs.
     updateTime: The time when the repository was last updated.
   """
 
@@ -1306,7 +1407,8 @@ class Repository(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 5)
   mavenConfig = _messages.MessageField('MavenRepositoryConfig', 6)
   name = _messages.StringField(7)
-  updateTime = _messages.StringField(8)
+  sizeBytes = _messages.IntegerField(8)
+  updateTime = _messages.StringField(9)
 
 
 class SetIamPolicyRequest(_messages.Message):
@@ -1495,6 +1597,17 @@ class UploadAptArtifactRequest(_messages.Message):
   r"""The request to upload an artifact."""
 
 
+class UploadAptArtifactResponse(_messages.Message):
+  r"""The response of the completed artifact upload operation. This response
+  is contained in the Operation and available to users.
+
+  Fields:
+    aptArtifacts: The Apt artifacts updated.
+  """
+
+  aptArtifacts = _messages.MessageField('AptArtifact', 1, repeated=True)
+
+
 class UploadYumArtifactMediaResponse(_messages.Message):
   r"""The response to upload an artifact.
 
@@ -1507,6 +1620,17 @@ class UploadYumArtifactMediaResponse(_messages.Message):
 
 class UploadYumArtifactRequest(_messages.Message):
   r"""The request to upload an artifact."""
+
+
+class UploadYumArtifactResponse(_messages.Message):
+  r"""The response of the completed artifact upload operation. This response
+  is contained in the Operation and available to users.
+
+  Fields:
+    yumArtifacts: The Apt artifacts updated.
+  """
+
+  yumArtifacts = _messages.MessageField('YumArtifact', 1, repeated=True)
 
 
 class Version(_messages.Message):
@@ -1567,6 +1691,38 @@ class Version(_messages.Message):
   name = _messages.StringField(4)
   relatedTags = _messages.MessageField('Tag', 5, repeated=True)
   updateTime = _messages.StringField(6)
+
+
+class YumArtifact(_messages.Message):
+  r"""A detailed representation of a Yum artifact.
+
+  Enums:
+    PackageTypeValueValuesEnum: Output only. An artifact is a binary or source
+      package.
+
+  Fields:
+    architecture: Output only. Operating system architecture of the artifact.
+    name: Output only. The Artifact Registry resource name of the artifact.
+    packageName: Output only. The yum package name of the artifact.
+    packageType: Output only. An artifact is a binary or source package.
+  """
+
+  class PackageTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. An artifact is a binary or source package.
+
+    Values:
+      PACKAGE_TYPE_UNSPECIFIED: Package type is not specified.
+      BINARY: Binary package (.rpm).
+      SOURCE: Source package (.srpm).
+    """
+    PACKAGE_TYPE_UNSPECIFIED = 0
+    BINARY = 1
+    SOURCE = 2
+
+  architecture = _messages.StringField(1)
+  name = _messages.StringField(2)
+  packageName = _messages.StringField(3)
+  packageType = _messages.EnumField('PackageTypeValueValuesEnum', 4)
 
 
 encoding.AddCustomJsonFieldMapping(

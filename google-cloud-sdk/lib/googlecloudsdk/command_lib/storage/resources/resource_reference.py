@@ -509,7 +509,9 @@ class DisplayableObjectData(object):
     self.noncurrent_time = noncurrent_time
     self.retention_expiration = retention_expiration
     self.storage_class = storage_class
-    self.storage_class_update_time = storage_class_update_time
+    self.storage_class_update_time = (
+        resource_util.get_formatted_timestamp_in_utc(storage_class_update_time)
+        if storage_class_update_time is not None else None)
     self.temporary_hold = temporary_hold
     self.update_time = (
         resource_util.get_formatted_timestamp_in_utc(update_time)

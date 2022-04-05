@@ -245,7 +245,7 @@ class BinaryAuthorization(_messages.Message):
 
   Fields:
     enabled: Enable Binary Authorization for this cluster. If enabled, all
-      container images will be validated by Google Binauthz.
+      container images will be validated by Binary Authorization.
   """
 
   enabled = _messages.BooleanField(1)
@@ -2422,25 +2422,28 @@ class LinuxNodeConfig(_messages.Message):
   Messages:
     SysctlsValue: The Linux kernel parameters to be applied to the nodes and
       all pods running on the nodes. The following parameters are supported.
-      net.core.netdev_max_backlog net.core.rmem_max net.core.wmem_default
-      net.core.wmem_max net.core.optmem_max net.core.somaxconn
-      net.ipv4.tcp_rmem net.ipv4.tcp_wmem net.ipv4.tcp_tw_reuse
+      net.core.busy_poll net.core.busy_read net.core.netdev_max_backlog
+      net.core.rmem_max net.core.wmem_default net.core.wmem_max
+      net.core.optmem_max net.core.somaxconn net.ipv4.tcp_rmem
+      net.ipv4.tcp_wmem net.ipv4.tcp_tw_reuse
 
   Fields:
     sysctls: The Linux kernel parameters to be applied to the nodes and all
       pods running on the nodes. The following parameters are supported.
-      net.core.netdev_max_backlog net.core.rmem_max net.core.wmem_default
-      net.core.wmem_max net.core.optmem_max net.core.somaxconn
-      net.ipv4.tcp_rmem net.ipv4.tcp_wmem net.ipv4.tcp_tw_reuse
+      net.core.busy_poll net.core.busy_read net.core.netdev_max_backlog
+      net.core.rmem_max net.core.wmem_default net.core.wmem_max
+      net.core.optmem_max net.core.somaxconn net.ipv4.tcp_rmem
+      net.ipv4.tcp_wmem net.ipv4.tcp_tw_reuse
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class SysctlsValue(_messages.Message):
     r"""The Linux kernel parameters to be applied to the nodes and all pods
     running on the nodes. The following parameters are supported.
-    net.core.netdev_max_backlog net.core.rmem_max net.core.wmem_default
-    net.core.wmem_max net.core.optmem_max net.core.somaxconn net.ipv4.tcp_rmem
-    net.ipv4.tcp_wmem net.ipv4.tcp_tw_reuse
+    net.core.busy_poll net.core.busy_read net.core.netdev_max_backlog
+    net.core.rmem_max net.core.wmem_default net.core.wmem_max
+    net.core.optmem_max net.core.somaxconn net.ipv4.tcp_rmem net.ipv4.tcp_wmem
+    net.ipv4.tcp_tw_reuse
 
     Messages:
       AdditionalProperty: An additional property for a SysctlsValue object.

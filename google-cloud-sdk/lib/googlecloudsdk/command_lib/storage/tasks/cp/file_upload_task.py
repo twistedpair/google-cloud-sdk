@@ -60,7 +60,7 @@ def _get_random_prefix():
   return str(random.randint(1, 10**10))
 
 
-class FileUploadTask(task.Task):
+class FileUploadTask(task.Task, copy_util.CopyTaskExitHandlerMixin):
   """Represents a command operation triggering a file upload."""
 
   def __init__(self,

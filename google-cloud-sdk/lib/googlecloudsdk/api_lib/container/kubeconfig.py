@@ -302,7 +302,14 @@ credentials using one of
 $ gcloud config set container/use_application_default_credentials true
 $ export CLOUDSDK_CONTAINER_USE_APPLICATION_DEFAULT_CREDENTIALS=true'''
 
-GKE_GCLOUD_AUTH_PLUGIN_NOT_FOUND = '''ACTION REQUIRED: gke-gcloud-auth-plugin, which is needed for continued use of kubectl, was not found or is not executable. Install gke-gcloud-auth-plugin using go/gke-kubectl-exec-auth'''
+GKE_GCLOUD_AUTH_INSTALL_HINT = """\
+Install gke-gcloud-auth-plugin for use with kubectl by following \
+https://cloud.google.com/blog/products/containers-kubernetes/kubectl-auth-changes-in-gke"""
+
+GKE_GCLOUD_AUTH_PLUGIN_NOT_FOUND = """\
+ACTION REQUIRED: gke-gcloud-auth-plugin, \
+which is needed for continued use of kubectl, was not found or is not executable. \
+""" + GKE_GCLOUD_AUTH_INSTALL_HINT
 
 
 def _ExecAuthPlugin():
@@ -335,15 +342,10 @@ def _ExecAuthPlugin():
     log.critical(GKE_GCLOUD_AUTH_PLUGIN_NOT_FOUND)
 
   exec_cfg = {
-      'command':
-          command,
-      'apiVersion':
-          'client.authentication.k8s.io/v1beta1',
-      'installHint':
-          'Install gke-gcloud-auth-plugin for use with kubectl by following '
-          'go/gke-kubectl-exec-auth',
-      'provideClusterInfo':
-          True,
+      'command': command,
+      'apiVersion': 'client.authentication.k8s.io/v1beta1',
+      'installHint': GKE_GCLOUD_AUTH_INSTALL_HINT,
+      'provideClusterInfo': True,
   }
 
   if properties.VALUES.container.use_app_default_credentials.GetBool():

@@ -22,6 +22,7 @@ import abc
 import enum
 import threading
 
+from googlecloudsdk.command_lib.storage import metrics_util
 from googlecloudsdk.command_lib.storage import thread_messages
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import progress_tracker
@@ -43,8 +44,9 @@ class OperationName(enum.Enum):
 
 
 class ProgressType(enum.Enum):
-  FILES_AND_BYTES = 'FILES AND BYTES'
   COUNT = 'COUNT'
+  FILES_AND_BYTES = 'FILES_AND_BYTES'
+  FILES_AND_BYTES_AND_MANIFEST = 'FILES_AND_BYTES_AND_MANIFEST'
 
 
 def _get_formatted_throughput(bytes_processed, time_delta):
@@ -114,7 +116,7 @@ class _CountStatusTracker(_StatusTracker):
       self._completed += 1
 
 
-class _FilesAndBytesStatusTracker(_StatusTracker):
+class _FilesAndBytesStatusTracker(_StatusTracker, metrics_util.MetricsReporter):
   """See super class. Tracks both file count and byte amount."""
 
   def __init__(self):
@@ -240,6 +242,7 @@ class _FilesAndBytesStatusTracker(_StatusTracker):
     if isinstance(status_message, thread_messages.WorkloadEstimatorMessage):
       self._add_to_workload_estimation(status_message)
     elif isinstance(status_message, thread_messages.DetailedProgressMessage):
+      self._set_source_and_destination_schemes(status_message)
       # If files start getting counted twice, see b/225182075.
       if status_message.total_components:
         self._add_component_progress(status_message)
@@ -252,11 +255,13 @@ class _FilesAndBytesStatusTracker(_StatusTracker):
     if (self._first_operation_time is not None and
         self._last_operation_time is not None and
         self._first_operation_time != self._last_operation_time):
+      time_delta = self._last_operation_time - self._first_operation_time
       # Don't use get_done_string because it may cause line wrapping.
       log.status.Print('\nAverage throughput: {}'.format(
-          _get_formatted_throughput(
-              self._processed_bytes,
-              self._last_operation_time - self._first_operation_time)))
+          _get_formatted_throughput(self._processed_bytes, time_delta)))
+      # Report event for analytics tracking, if enabled.
+      self._report_metrics(self._processed_bytes, time_delta,
+                           self._completed_files)
 
 
 def status_message_handler(task_status_queue, status_tracker):

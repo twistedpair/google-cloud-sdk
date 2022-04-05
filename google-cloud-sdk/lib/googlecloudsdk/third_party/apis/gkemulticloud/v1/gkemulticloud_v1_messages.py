@@ -133,7 +133,9 @@ class GkemulticloudProjectsLocationsAwsClustersAwsNodePoolsPatchRequest(_message
       `autoscaling.max_node_count`. * `config.config_encryption.kms_key_arn`.
       * `config.security_group_ids`. * `config.root_volume.iops`. *
       `config.root_volume.kms_key_arn`. * `config.root_volume.volume_type`. *
-      `config.root_volume.size_gib`.
+      `config.root_volume.size_gib`. * `config.proxy_config`. *
+      `config.proxy_config.secret_arn`. *
+      `config.proxy_config.secret_version`.
     validateOnly: If set, only validate the request, but don't actually update
       the node pool.
   """
@@ -277,8 +279,8 @@ class GkemulticloudProjectsLocationsAwsClustersPatchRequest(_messages.Message):
       `control_plane.aws_services_authentication.role_session_name`. *
       `control_plane.config_encryption.kms_key_arn`. *
       `control_plane.instance_type`. * `control_plane.security_group_ids`. *
-      `control_plane.proxy_config.secret_arn`. *
-      `control_plane.proxy_config.secret_version`. *
+      `control_plane.proxy_config`. * `control_plane.proxy_config.secret_arn`.
+      * `control_plane.proxy_config.secret_version`. *
       `control_plane.root_volume.iops`. *
       `control_plane.root_volume.kms_key_arn`. *
       `control_plane.root_volume.volume_type`. *

@@ -311,7 +311,7 @@ def WaitForApplyLROWithStagedTracker(poller,
       deployment_metadata = encoding.JsonToMessage(messages.OperationMetadata,
                                                    json).deploymentMetadata
 
-      if deployment_metadata is not None and progress_stages.get(
+      if deployment_metadata and deployment_metadata.step and progress_stages.get(
           deployment_metadata.step.name) is not None:
         tracker.StartStage(deployment_metadata.step.name)
 

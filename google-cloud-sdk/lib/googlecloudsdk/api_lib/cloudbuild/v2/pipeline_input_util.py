@@ -28,6 +28,7 @@ _PIPELINERUN_UNSUPPORTED_FIELDS = [
 ]
 _TASKRUN_UNSUPPORTED_FIELDS = ["resources", "podTemplate"]
 _WORKER_POOL_ANNOTATION = "cloudbuild.googleapis.com/worker-pool"
+_MANAGED_SIDECARS_ANNOTATION = "cloudbuild.googleapis.com/managed-sidecars"
 
 
 def TektonYamlDataToPipelineRun(data):
@@ -50,7 +51,7 @@ def TektonYamlDataToPipelineRun(data):
   for workspace in spec.get("workspaces", []):
     _WorkspaceTransform(workspace)
   _ServiceAccountTransform(spec)
-  _ParamDictTransform(spec.get("params", []))
+  input_util.ParamDictTransform(spec.get("params", []))
 
   discarded_fields = _CheckUnsupportedFields(spec,
                                              _PIPELINERUN_UNSUPPORTED_FIELDS)
@@ -64,10 +65,13 @@ def TektonYamlDataToPipelineRun(data):
 def TektonYamlDataToTaskRun(data):
   """Convert Tekton yaml file into TaskRun message."""
   _VersionCheck(data)
-  _MetadataTransform(data)
+  metadata = _MetadataTransform(data)
   spec = data["spec"]
   if "taskSpec" in spec:
     _TaskSpecTransform(spec["taskSpec"])
+    managed_sidecars = _MetadataToSidecar(metadata)
+    if managed_sidecars:
+      spec["taskSpec"]["managedSidecars"] = managed_sidecars
   elif "taskRef" not in spec:
     raise cloudbuild_exceptions.InvalidYamlError(
         "TaskSpec or TaskRef is required.")
@@ -75,7 +79,7 @@ def TektonYamlDataToTaskRun(data):
   for workspace in spec.get("workspaces", []):
     _WorkspaceTransform(workspace)
   _ServiceAccountTransform(spec)
-  _ParamDictTransform(spec.get("params", []))
+  input_util.ParamDictTransform(spec.get("params", []))
 
   discarded_fields = _CheckUnsupportedFields(spec, _TASKRUN_UNSUPPORTED_FIELDS)
   messages = client_util.GetMessagesModule()
@@ -109,6 +113,14 @@ def _MetadataTransform(data):
   spec["annotations"] = annotations
   if labels:
     spec["labels"] = labels
+  return metadata
+
+
+def _MetadataToSidecar(metadata):
+  if "annotations" in metadata and _MANAGED_SIDECARS_ANNOTATION in metadata[
+      "annotations"]:
+    return metadata["annotations"][_MANAGED_SIDECARS_ANNOTATION]
+  return None
 
 
 def _CheckUnsupportedFields(spec, unsupported_fields):
@@ -140,6 +152,11 @@ def _TaskTransform(task):
 
   if "taskSpec" in task:
     task_spec = task.pop("taskSpec")
+    _TaskSpecTransform(task_spec)
+    managed_sidecars = _MetadataToSidecar(
+        task_spec.pop("metadata")) if "metadata" in task_spec else []
+    if managed_sidecars:
+      task_spec["managedSidecars"] = managed_sidecars
     task["taskSpec"] = {"taskSpec": task_spec}
   whens = task.pop("when", [])
   for when in whens:
@@ -147,12 +164,7 @@ def _TaskTransform(task):
       when["expressionOperator"] = input_util.CamelToSnake(
           when.pop("operator")).upper()
   task["whenExpressions"] = whens
-  _ParamDictTransform(task.get("params", []))
-
-
-def _ParamDictTransform(params):
-  for param in params:
-    param["value"] = input_util.ParamValueTransform(param["value"])
+  input_util.ParamDictTransform(task.get("params", []))
 
 
 def _ServiceAccountTransform(spec):

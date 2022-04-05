@@ -1112,8 +1112,7 @@ def ValidateDiskBootFlags(args, enable_kms=False):
   # we need to fail because only one boot disk can be attached.
   if num_of_boot_disk_in_disks > 1:
     raise exceptions.BadArgumentException(
-        '--disk',
-        'Each instance can have exactly one boot disk. At least two '
+        '--disk', 'Each instance can have exactly one boot disk. At least two '
         'boot disks were specified through [--disk].')
 
   num_of_boot_disk_in_create_disks = GetNumOfBootDisk(args.create_disk)
@@ -1646,12 +1645,12 @@ def AddProvisioningModelVmArgs(parser):
   parser.add_argument(
       '--provisioning-model',
       choices={
-          'SPOT': (
-              'Spot VMs are spare capacity; Spot VMs are discounted '
-              'to have much lower prices than standard VMs '
-              'but have no guaranteed runtime. Spot VMs are the new version '
-              'of preemptible VM instances, except Spot VMs do not have '
-              'a 24-hour maximum runtime.'),
+          'SPOT':
+              ('Spot VMs are spare capacity; Spot VMs are discounted '
+               'to have much lower prices than standard VMs '
+               'but have no guaranteed runtime. Spot VMs are the new version '
+               'of preemptible VM instances, except Spot VMs do not have '
+               'a 24-hour maximum runtime.'),
           'STANDARD': ('Default. Standard provisioning model for VM instances, '
                        'which has user-controlled runtime '
                        'but no Spot discounts.')
@@ -3376,6 +3375,28 @@ def AddIpv6NetworkTierArgs(parser):
       type=arg_utils.ChoiceToEnumName,
       help=('Specifies the IPv6 network tier that will be used to configure '
             'the instance network interface IPv6 access config.'))
+
+
+def AddIPv6AddressArgs(parser):
+  parser.add_argument(
+      '--ipv6-address',
+      type=NonEmptyString('--ipv6-address'),
+      help="""
+      Assigns the given external IPv6 address to the instance that is created.
+      The address must be the first IP in the range. This option can only be
+      used when creating a single instance.
+    """)
+
+
+def AddIPv6PrefixLengthArgs(parser):
+  parser.add_argument(
+      '--ipv6-prefix-length',
+      type=int,
+      help="""
+      Prefix Length of the External IPv6 address range, should be used together
+      with --ipv6-address. Currently only /96 is supported and the default value
+      is 96.
+    """)
 
 
 def AddNetworkPerformanceConfigsArgs(parser):

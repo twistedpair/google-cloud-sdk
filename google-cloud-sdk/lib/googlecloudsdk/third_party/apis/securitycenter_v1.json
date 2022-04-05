@@ -733,7 +733,8 @@
               "T1539",
               "T1578",
               "T1190",
-              "T1556"
+              "T1556",
+              "T1485"
             ],
             "enum": [
               "TECHNIQUE_UNSPECIFIED",
@@ -764,7 +765,8 @@
               "STEAL_WEB_SESSION_COOKIE",
               "MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE",
               "EXPLOIT_PUBLIC_FACING_APPLICATION",
-              "MODIFY_AUTHENTICATION_PROCESS"
+              "MODIFY_AUTHENTICATION_PROCESS",
+              "DATA_DESTRUCTION"
             ]
           }
         },
@@ -843,7 +845,8 @@
               "T1539",
               "T1578",
               "T1190",
-              "T1556"
+              "T1556",
+              "T1485"
             ],
             "enum": [
               "TECHNIQUE_UNSPECIFIED",
@@ -874,7 +877,8 @@
               "STEAL_WEB_SESSION_COOKIE",
               "MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE",
               "EXPLOIT_PUBLIC_FACING_APPLICATION",
-              "MODIFY_AUTHENTICATION_PROCESS"
+              "MODIFY_AUTHENTICATION_PROCESS",
+              "DATA_DESTRUCTION"
             ]
           }
         },

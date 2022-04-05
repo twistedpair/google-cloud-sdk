@@ -1925,9 +1925,10 @@ class Network(_messages.Message):
     environment.
 
     Values:
-      INSTANCE_IP_MODE_UNSPECIFIED: Unspecified should be treated as EXTERNAL
-      EXTERNAL: VMs should be created with external and internal IPs
-      INTERNAL: VMs should be created with internal IPs only
+      INSTANCE_IP_MODE_UNSPECIFIED: Unspecified is treated as EXTERNAL.
+      EXTERNAL: Instances are created with both internal and external IP
+        addresses.
+      INTERNAL: Instances are created with internal IP addresses only.
     """
     INSTANCE_IP_MODE_UNSPECIFIED = 0
     EXTERNAL = 1

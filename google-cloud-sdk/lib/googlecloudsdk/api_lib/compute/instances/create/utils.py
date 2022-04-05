@@ -693,10 +693,8 @@ def GetNetworkInterfaces(args, client, holder, project, location, scope,
       'stack_type',
       'subnet',
   ])
-  if (skip_defaults and not instance_utils.IsAnySpecified(
-      args,
-      *network_interface_args
-  )):
+  if (skip_defaults and
+      not instance_utils.IsAnySpecified(args, *network_interface_args)):
     return []
   return [
       CreateNetworkInterfaceMessage(
@@ -726,21 +724,11 @@ def GetNetworkInterfacesAlpha(args, client, holder, project, location, scope,
                               skip_defaults):
   """"Get network interfaces in compute Alpha API."""
   network_interface_args = filter(lambda flag: hasattr(args, flag), [
-      'address',
-      'ipv6_network_tier',
-      'ipv6_public_ptr_domain',
-      'network',
-      'network_tier',
-      'no_address',
-      'no_public_dns',
-      'no_public_ptr',
-      'no_public_ptr_domain',
-      'private_network_ip',
-      'public_dns',
-      'public_ptr',
-      'public_ptr_domain',
-      'stack_type',
-      'subnet',
+      'address', 'ipv6_network_tier', 'ipv6_public_ptr_domain', 'network',
+      'network_tier', 'no_address', 'no_public_dns', 'no_public_ptr',
+      'no_public_ptr_domain', 'private_network_ip', 'public_dns', 'public_ptr',
+      'public_ptr_domain', 'stack_type', 'subnet', 'ipv6_address',
+      'ipv6_prefix_length'
   ])
   if (skip_defaults and
       not instance_utils.IsAnySpecified(args, *network_interface_args)):
@@ -766,7 +754,9 @@ def GetNetworkInterfacesAlpha(args, client, holder, project, location, scope,
           public_ptr_domain=getattr(args, 'public_ptr_domain', None),
           stack_type=getattr(args, 'stack_type', None),
           ipv6_network_tier=getattr(args, 'ipv6_network_tier', None),
-          ipv6_public_ptr_domain=getattr(args, 'ipv6_public_ptr_domain', None))
+          ipv6_public_ptr_domain=getattr(args, 'ipv6_public_ptr_domain', None),
+          ipv6_address=getattr(args, 'ipv6_address', None),
+          ipv6_prefix_length=getattr(args, 'ipv6_prefix_length', None)),
   ]
 
 
@@ -792,7 +782,9 @@ def CreateNetworkInterfaceMessage(resources,
                                   stack_type=None,
                                   ipv6_network_tier=None,
                                   ipv6_public_ptr_domain=None,
-                                  queue_count=None):
+                                  queue_count=None,
+                                  ipv6_address=None,
+                                  ipv6_prefix_length=None):
   """Returns a new NetworkInterface message."""
   # TODO(b/30460572): instance reference should have zone name, not zone URI.
   if scope == compute_scopes.ScopeEnum.ZONE:
@@ -882,7 +874,7 @@ def CreateNetworkInterfaceMessage(resources,
 
     network_interface.accessConfigs = [access_config]
 
-  if ipv6_network_tier is not None or ipv6_public_ptr_domain is not None:
+  if ipv6_network_tier is not None or ipv6_public_ptr_domain is not None or ipv6_address:
     ipv6_access_config = messages.AccessConfig(
         name=constants.DEFAULT_IPV6_ACCESS_CONFIG_NAME,
         type=messages.AccessConfig.TypeValueValuesEnum.DIRECT_IPV6)
@@ -894,6 +886,13 @@ def CreateNetworkInterfaceMessage(resources,
 
   if ipv6_public_ptr_domain is not None:
     ipv6_access_config.publicPtrDomainName = ipv6_public_ptr_domain
+
+  if ipv6_address:
+    ipv6_access_config.externalIpv6 = ipv6_address
+    if ipv6_prefix_length:
+      ipv6_access_config.externalIpv6PrefixLength = ipv6_prefix_length
+    else:
+      ipv6_access_config.externalIpv6PrefixLength = 96
 
   return network_interface
 
@@ -971,7 +970,8 @@ def GetNetworkInterfacesWithValidation(args,
                                        location,
                                        scope,
                                        skip_defaults,
-                                       support_public_dns=False):
+                                       support_public_dns=False,
+                                       support_ipv6_assignment=False):
   """Validates and retrieves the network interface message."""
   network_interface_from_file = getattr(args, 'network_interface_from_file',
                                         None)
@@ -991,8 +991,9 @@ def GetNetworkInterfacesWithValidation(args,
         scope=scope)
   else:
     instances_flags.ValidatePublicPtrFlags(args)
-    if support_public_dns:
-      instances_flags.ValidatePublicDnsFlags(args)
+    if support_public_dns or support_ipv6_assignment:
+      if support_public_dns:
+        instances_flags.ValidatePublicDnsFlags(args)
       return GetNetworkInterfacesAlpha(args, compute_client, holder, project,
                                        location, scope, skip_defaults)
     return GetNetworkInterfaces(args, compute_client, holder, project, location,

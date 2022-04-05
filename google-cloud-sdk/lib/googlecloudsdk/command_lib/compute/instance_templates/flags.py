@@ -115,6 +115,14 @@ def AddServiceProxyConfigArgs(parser, hide_arguments=False,
   configuration for the service proxy.
   """)
 
+  if release_track == base.ReleaseTrack.ALPHA:
+    service_proxy_spec.update({
+        'intercept-dns': None,
+    })
+    service_proxy_help += textwrap.dedent("""
+    *intercept-dns*::: Enables interception of UDP traffic by the service proxy.
+    """)
+
   if (release_track == base.ReleaseTrack.ALPHA or
       release_track == base.ReleaseTrack.BETA):
     service_proxy_spec.update({

@@ -826,14 +826,17 @@ class ComplianceVersion(_messages.Message):
   os version.
 
   Fields:
+    benchmarkDocument: The name of the document that defines this benchmark,
+      e.g. "CIS Container-Optimized OS".
     cpeUri: The CPE URI (https://cpe.mitre.org/specification/) this benchmark
       is applicable to.
     version: The version of the benchmark. This is set to the version of the
       OS-specific CIS document the benchmark is defined in.
   """
 
-  cpeUri = _messages.StringField(1)
-  version = _messages.StringField(2)
+  benchmarkDocument = _messages.StringField(1)
+  cpeUri = _messages.StringField(2)
+  version = _messages.StringField(3)
 
 
 class ContaineranalysisGoogleDevtoolsCloudbuildV1ApprovalConfig(_messages.Message):

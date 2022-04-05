@@ -2584,8 +2584,8 @@ class GooglePrivacyDlpV2ByteContentItem(_messages.Message):
       TEXT_UTF8: plain text
       WORD_DOCUMENT: docx, docm, dotx, dotm
       PDF: pdf
-      POWERPOINT_DOCUMENT: powerpoint
-      EXCEL_DOCUMENT: excel
+      POWERPOINT_DOCUMENT: pptx, pptm, potx, potm, pot
+      EXCEL_DOCUMENT: xlsx, xlsm, xltx, xltm
       AVRO: avro
       CSV: csv
       TSV: tsv
@@ -3396,6 +3396,162 @@ class GooglePrivacyDlpV2CustomInfoType(_messages.Message):
   surrogateType = _messages.MessageField('GooglePrivacyDlpV2SurrogateType', 8)
 
 
+class GooglePrivacyDlpV2DataProfileAction(_messages.Message):
+  r"""A task to execute when a data profile has been generated.
+
+  Fields:
+    exportData: Export data profiles into a provided location.
+    pubSubNotification: Publish a message into the Pub/Sub topic.
+  """
+
+  exportData = _messages.MessageField('GooglePrivacyDlpV2Export', 1)
+  pubSubNotification = _messages.MessageField('GooglePrivacyDlpV2PubSubNotification', 2)
+
+
+class GooglePrivacyDlpV2DataProfileConfigSnapshot(_messages.Message):
+  r"""Snapshot of the configurations used to generate the profile.
+
+  Fields:
+    dataProfileJob: A copy of the configuration used to generate this profile.
+    inspectConfig: A copy of the inspection config used to generate this
+      profile. This is a copy of the inspect_template specified in
+      `DataProfileJobConfig`.
+  """
+
+  dataProfileJob = _messages.MessageField('GooglePrivacyDlpV2DataProfileJobConfig', 1)
+  inspectConfig = _messages.MessageField('GooglePrivacyDlpV2InspectConfig', 2)
+
+
+class GooglePrivacyDlpV2DataProfileJobConfig(_messages.Message):
+  r"""Configuration for setting up a job to scan resources for profile
+  generation. Only one data profile configuration may exist per organization,
+  folder, or project. The generated data profiles are retained according to
+  the [data retention policy] (https://cloud.google.com/dlp/docs/data-
+  profiles#retention).
+
+  Fields:
+    dataProfileActions: Actions to execute at the completion of the job.
+    inspectTemplates: Detection logic for profile generation. Not all template
+      features are used by profiles. FindingLimits, include_quote and
+      exclude_info_types have no impact on data profiling. Multiple templates
+      may be provided if there is data in multiple regions. At most one
+      template must be specified per-region (including "global"). Each region
+      is scanned using the applicable template. If no region-specific template
+      is specified, but a "global" template is specified, it will be copied to
+      that region and used instead. If no global or region-specific template
+      is provided for a region with data, that region's data will not be
+      scanned. For more information, see
+      https://cloud.google.com/dlp/docs/data-profiles#data_residency.
+    location: The data to scan.
+    projectId: The project that will run the scan. The DLP service account
+      that exists within this project must have access to all resources that
+      are profiled, and the Cloud DLP API must be enabled.
+  """
+
+  dataProfileActions = _messages.MessageField('GooglePrivacyDlpV2DataProfileAction', 1, repeated=True)
+  inspectTemplates = _messages.StringField(2, repeated=True)
+  location = _messages.MessageField('GooglePrivacyDlpV2DataProfileLocation', 3)
+  projectId = _messages.StringField(4)
+
+
+class GooglePrivacyDlpV2DataProfileLocation(_messages.Message):
+  r"""The data that will be profiled.
+
+  Fields:
+    folderId: The ID of the Folder within an organization to scan.
+    organizationId: The ID of an organization to scan.
+  """
+
+  folderId = _messages.IntegerField(1)
+  organizationId = _messages.IntegerField(2)
+
+
+class GooglePrivacyDlpV2DataProfilePubSubCondition(_messages.Message):
+  r"""A condition for determining whether a PubSub should be triggered.
+
+  Fields:
+    expressions: An expression.
+  """
+
+  expressions = _messages.MessageField('GooglePrivacyDlpV2PubSubExpressions', 1)
+
+
+class GooglePrivacyDlpV2DataProfilePubSubMessage(_messages.Message):
+  r"""The message that will be published to a Pub/Sub topic. To receive a
+  message of protocol buffer schema type, convert the message data to an
+  object of this proto class.
+  https://cloud.google.com/pubsub/docs/samples/pubsub-subscribe-proto-messages
+
+  Enums:
+    EventValueValuesEnum: The event that caused the Pub/Sub message to be
+      sent.
+
+  Fields:
+    event: The event that caused the Pub/Sub message to be sent.
+    profile: If `DetailLevel` is `TABLE_PROFILE` this will be fully populated.
+      Otherwise, if `DetailLevel` is `RESOURCE_NAME`, then only `name` and
+      `full_resource` will be populated.
+  """
+
+  class EventValueValuesEnum(_messages.Enum):
+    r"""The event that caused the Pub/Sub message to be sent.
+
+    Values:
+      EVENT_TYPE_UNSPECIFIED: Unused.
+      NEW_PROFILE: New profile (not a re-profile).
+      CHANGED_PROFILE: Changed one of the following profile metrics: * Table
+        data risk score * Table sensitivity score * Table resource visibility
+        * Table encryption type * Table predicted infoTypes * Table other
+        infoTypes
+      SCORE_INCREASED: Table data risk score or sensitivity score increased.
+      ERROR_CHANGED: A user (non-internal) error occurred.
+    """
+    EVENT_TYPE_UNSPECIFIED = 0
+    NEW_PROFILE = 1
+    CHANGED_PROFILE = 2
+    SCORE_INCREASED = 3
+    ERROR_CHANGED = 4
+
+  event = _messages.EnumField('EventValueValuesEnum', 1)
+  profile = _messages.MessageField('GooglePrivacyDlpV2TableDataProfile', 2)
+
+
+class GooglePrivacyDlpV2DataRiskLevel(_messages.Message):
+  r"""Score is a summary of all elements in the data profile. A higher number
+  means more risky.
+
+  Enums:
+    ScoreValueValuesEnum: The score applied to the resource.
+
+  Fields:
+    score: The score applied to the resource.
+  """
+
+  class ScoreValueValuesEnum(_messages.Enum):
+    r"""The score applied to the resource.
+
+    Values:
+      RISK_SCORE_UNSPECIFIED: Unused.
+      RISK_LOW: Low risk - Lower indication of sensitive data that appears to
+        have additional access restrictions in place or no indication of
+        sensitive data found.
+      RISK_MODERATE: Medium risk - Sensitive data may be present but
+        additional access or fine grain access restrictions appears to be
+        present. Consider limiting access even further or transforming data to
+        mask.
+      RISK_HIGH: High risk \u2013 SPII may be present. Access controls may
+        include public ACLs. Exfiltration of data may lead to user data loss.
+        Re-identification of users may be possible. Consider limiting usage
+        and or removing SPII.
+    """
+    RISK_SCORE_UNSPECIFIED = 0
+    RISK_LOW = 1
+    RISK_MODERATE = 2
+    RISK_HIGH = 3
+
+  score = _messages.EnumField('ScoreValueValuesEnum', 1)
+
+
 class GooglePrivacyDlpV2DatastoreKey(_messages.Message):
   r"""Record key for a finding in Cloud Datastore.
 
@@ -3873,6 +4029,19 @@ class GooglePrivacyDlpV2ExclusionRule(_messages.Message):
   excludeInfoTypes = _messages.MessageField('GooglePrivacyDlpV2ExcludeInfoTypes', 2)
   matchingType = _messages.EnumField('MatchingTypeValueValuesEnum', 3)
   regex = _messages.MessageField('GooglePrivacyDlpV2Regex', 4)
+
+
+class GooglePrivacyDlpV2Export(_messages.Message):
+  r"""If set, the detailed data profiles will be persisted to the location of
+  your choice whenever updated.
+
+  Fields:
+    profileTable: Store all table and column profiles in an existing table or
+      a new table in an existing dataset. Each re-generation will result in a
+      new row in BigQuery.
+  """
+
+  profileTable = _messages.MessageField('GooglePrivacyDlpV2BigQueryTable', 1)
 
 
 class GooglePrivacyDlpV2Expressions(_messages.Message):
@@ -4463,6 +4632,16 @@ class GooglePrivacyDlpV2InfoTypeStats(_messages.Message):
 
   count = _messages.IntegerField(1)
   infoType = _messages.MessageField('GooglePrivacyDlpV2InfoType', 2)
+
+
+class GooglePrivacyDlpV2InfoTypeSummary(_messages.Message):
+  r"""The infoType details for this column.
+
+  Fields:
+    infoType: The infoType.
+  """
+
+  infoType = _messages.MessageField('GooglePrivacyDlpV2InfoType', 1)
 
 
 class GooglePrivacyDlpV2InfoTypeTransformation(_messages.Message):
@@ -5282,6 +5461,16 @@ class GooglePrivacyDlpV2NumericalStatsResult(_messages.Message):
   quantileValues = _messages.MessageField('GooglePrivacyDlpV2Value', 3, repeated=True)
 
 
+class GooglePrivacyDlpV2OtherInfoTypeSummary(_messages.Message):
+  r"""Infotype details for other infoTypes found within a column.
+
+  Fields:
+    infoType: The other infoType.
+  """
+
+  infoType = _messages.MessageField('GooglePrivacyDlpV2InfoType', 1)
+
+
 class GooglePrivacyDlpV2OutputStorageConfig(_messages.Message):
   r"""Cloud repository for storing output.
 
@@ -5441,6 +5630,18 @@ class GooglePrivacyDlpV2PrivacyMetric(_messages.Message):
   numericalStatsConfig = _messages.MessageField('GooglePrivacyDlpV2NumericalStatsConfig', 6)
 
 
+class GooglePrivacyDlpV2ProfileStatus(_messages.Message):
+  r"""A GooglePrivacyDlpV2ProfileStatus object.
+
+  Fields:
+    status: Profiling status code and optional message
+    timestamp: Time when the profile generation status was updated
+  """
+
+  status = _messages.MessageField('GoogleRpcStatus', 1)
+  timestamp = _messages.StringField(2)
+
+
 class GooglePrivacyDlpV2Proximity(_messages.Message):
   r"""Message for specifying a window around a finding to apply a detection
   rule.
@@ -5452,6 +5653,143 @@ class GooglePrivacyDlpV2Proximity(_messages.Message):
 
   windowAfter = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   windowBefore = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class GooglePrivacyDlpV2PubSubCondition(_messages.Message):
+  r"""A condition consisting of a value.
+
+  Enums:
+    MinimumRiskScoreValueValuesEnum: The minimum data risk score that triggers
+      the condition.
+    MinimumSensitivityScoreValueValuesEnum: The minimum sensitivity level that
+      triggers the condition.
+
+  Fields:
+    minimumRiskScore: The minimum data risk score that triggers the condition.
+    minimumSensitivityScore: The minimum sensitivity level that triggers the
+      condition.
+  """
+
+  class MinimumRiskScoreValueValuesEnum(_messages.Enum):
+    r"""The minimum data risk score that triggers the condition.
+
+    Values:
+      PROFILE_SCORE_BUCKET_UNSPECIFIED: Unused.
+      HIGH: High risk/sensitivity detected.
+      MEDIUM_OR_HIGH: Medium or high risk/sensitivity detected.
+    """
+    PROFILE_SCORE_BUCKET_UNSPECIFIED = 0
+    HIGH = 1
+    MEDIUM_OR_HIGH = 2
+
+  class MinimumSensitivityScoreValueValuesEnum(_messages.Enum):
+    r"""The minimum sensitivity level that triggers the condition.
+
+    Values:
+      PROFILE_SCORE_BUCKET_UNSPECIFIED: Unused.
+      HIGH: High risk/sensitivity detected.
+      MEDIUM_OR_HIGH: Medium or high risk/sensitivity detected.
+    """
+    PROFILE_SCORE_BUCKET_UNSPECIFIED = 0
+    HIGH = 1
+    MEDIUM_OR_HIGH = 2
+
+  minimumRiskScore = _messages.EnumField('MinimumRiskScoreValueValuesEnum', 1)
+  minimumSensitivityScore = _messages.EnumField('MinimumSensitivityScoreValueValuesEnum', 2)
+
+
+class GooglePrivacyDlpV2PubSubExpressions(_messages.Message):
+  r"""An expression, consisting of an operator and conditions.
+
+  Enums:
+    LogicalOperatorValueValuesEnum: The operator to apply to the collection of
+      conditions.
+
+  Fields:
+    conditions: Conditions to apply to the expression.
+    logicalOperator: The operator to apply to the collection of conditions.
+  """
+
+  class LogicalOperatorValueValuesEnum(_messages.Enum):
+    r"""The operator to apply to the collection of conditions.
+
+    Values:
+      LOGICAL_OPERATOR_UNSPECIFIED: Unused.
+      OR: Conditional OR.
+      AND: Conditional AND.
+    """
+    LOGICAL_OPERATOR_UNSPECIFIED = 0
+    OR = 1
+    AND = 2
+
+  conditions = _messages.MessageField('GooglePrivacyDlpV2PubSubCondition', 1, repeated=True)
+  logicalOperator = _messages.EnumField('LogicalOperatorValueValuesEnum', 2)
+
+
+class GooglePrivacyDlpV2PubSubNotification(_messages.Message):
+  r"""Send a Pub/Sub message into the given Pub/Sub topic to connect other
+  systems to data profile generation. The message payload data will be the
+  byte serialization of `DataProfilePubSubMessage`.
+
+  Enums:
+    DetailOfMessageValueValuesEnum: How much data to include in the Pub/Sub
+      message. If the user wishes to limit the size of the message, they can
+      use resource_name and fetch the profile fields they wish to. Per table
+      profile (not per column).
+    EventValueValuesEnum: The type of event that triggers a Pub/Sub. At most
+      one `PubSubNotification` per EventType is permitted.
+
+  Fields:
+    detailOfMessage: How much data to include in the Pub/Sub message. If the
+      user wishes to limit the size of the message, they can use resource_name
+      and fetch the profile fields they wish to. Per table profile (not per
+      column).
+    event: The type of event that triggers a Pub/Sub. At most one
+      `PubSubNotification` per EventType is permitted.
+    pubsubCondition: Conditions (e.g., data risk or sensitivity level) for
+      triggering a Pub/Sub.
+    topic: Cloud Pub/Sub topic to send notifications to. Format is
+      projects/{project}/topics/{topic}.
+  """
+
+  class DetailOfMessageValueValuesEnum(_messages.Enum):
+    r"""How much data to include in the Pub/Sub message. If the user wishes to
+    limit the size of the message, they can use resource_name and fetch the
+    profile fields they wish to. Per table profile (not per column).
+
+    Values:
+      DETAIL_LEVEL_UNSPECIFIED: Unused.
+      TABLE_PROFILE: The full table data profile.
+      RESOURCE_NAME: The resource name of the table.
+    """
+    DETAIL_LEVEL_UNSPECIFIED = 0
+    TABLE_PROFILE = 1
+    RESOURCE_NAME = 2
+
+  class EventValueValuesEnum(_messages.Enum):
+    r"""The type of event that triggers a Pub/Sub. At most one
+    `PubSubNotification` per EventType is permitted.
+
+    Values:
+      EVENT_TYPE_UNSPECIFIED: Unused.
+      NEW_PROFILE: New profile (not a re-profile).
+      CHANGED_PROFILE: Changed one of the following profile metrics: * Table
+        data risk score * Table sensitivity score * Table resource visibility
+        * Table encryption type * Table predicted infoTypes * Table other
+        infoTypes
+      SCORE_INCREASED: Table data risk score or sensitivity score increased.
+      ERROR_CHANGED: A user (non-internal) error occurred.
+    """
+    EVENT_TYPE_UNSPECIFIED = 0
+    NEW_PROFILE = 1
+    CHANGED_PROFILE = 2
+    SCORE_INCREASED = 3
+    ERROR_CHANGED = 4
+
+  detailOfMessage = _messages.EnumField('DetailOfMessageValueValuesEnum', 1)
+  event = _messages.EnumField('EventValueValuesEnum', 2)
+  pubsubCondition = _messages.MessageField('GooglePrivacyDlpV2DataProfilePubSubCondition', 3)
+  topic = _messages.StringField(4)
 
 
 class GooglePrivacyDlpV2PublishFindingsToCloudDataCatalog(_messages.Message):
@@ -5879,6 +6217,38 @@ class GooglePrivacyDlpV2Schedule(_messages.Message):
   recurrencePeriodDuration = _messages.StringField(1)
 
 
+class GooglePrivacyDlpV2SensitivityScore(_messages.Message):
+  r"""Score is a summary of all elements in the data profile. A higher number
+  means more sensitive.
+
+  Enums:
+    ScoreValueValuesEnum: The score applied to the resource.
+
+  Fields:
+    score: The score applied to the resource.
+  """
+
+  class ScoreValueValuesEnum(_messages.Enum):
+    r"""The score applied to the resource.
+
+    Values:
+      SENSITIVITY_SCORE_UNSPECIFIED: Unused.
+      SENSITIVITY_LOW: No sensitive information detected. Limited access.
+      SENSITIVITY_MODERATE: Medium risk - PII, potentially sensitive data, or
+        fields with free-text data that are at higher risk of having
+        intermittent sensitive data. Consider limiting access.
+      SENSITIVITY_HIGH: High risk \u2013 SPII may be present. Exfiltration of
+        data may lead to user data loss. Re-identification of users may be
+        possible. Consider limiting usage and or removing SPII.
+    """
+    SENSITIVITY_SCORE_UNSPECIFIED = 0
+    SENSITIVITY_LOW = 1
+    SENSITIVITY_MODERATE = 2
+    SENSITIVITY_HIGH = 3
+
+  score = _messages.EnumField('ScoreValueValuesEnum', 1)
+
+
 class GooglePrivacyDlpV2StatisticalTable(_messages.Message):
   r"""An auxiliary table containing statistical information on the relative
   frequency of different quasi-identifiers values. It has one or several
@@ -6103,6 +6473,147 @@ class GooglePrivacyDlpV2Table(_messages.Message):
 
   headers = _messages.MessageField('GooglePrivacyDlpV2FieldId', 1, repeated=True)
   rows = _messages.MessageField('GooglePrivacyDlpV2Row', 2, repeated=True)
+
+
+class GooglePrivacyDlpV2TableDataProfile(_messages.Message):
+  r"""The profile for a scanned table.
+
+  Enums:
+    EncryptionStatusValueValuesEnum: How the table is encrypted.
+    ResourceVisibilityValueValuesEnum: How broadly a resource has been shared.
+    StateValueValuesEnum: State of a profile.
+
+  Messages:
+    ResourceLabelsValue: The labels applied to the resource at the time the
+      profile was generated.
+
+  Fields:
+    configSnapshot: The snapshot of the configurations used to generate the
+      profile.
+    createTime: The time at which the table was created.
+    dataRiskLevel: The data risk level of this table.
+    datasetId: The BigQuery dataset ID.
+    datasetLocation: The BigQuery location where the dataset's data is stored.
+      See https://cloud.google.com/bigquery/docs/locations for supported
+      locations.
+    datasetProjectId: The GCP project ID that owns the BigQuery dataset.
+    encryptionStatus: How the table is encrypted.
+    expirationTime: Optional. The time when this table expires.
+    failedColumnCount: The number of columns skipped in the table because of
+      an error.
+    fullResource: The resource name of the table.
+      https://cloud.google.com/apis/design/resource_names#full_resource_name
+    lastModifiedTime: The time when this table was last modified
+    name: The name of the profile.
+    otherInfoTypes: Other infoTypes found in this table's data.
+    predictedInfoTypes: The infoTypes predicted from this table's data.
+    profileLastGenerated: The last time the profile was generated.
+    profileStatus: Success or error status from the most recent profile
+      generation attempt. May be empty if the profile is still being
+      generated.
+    projectDataProfile: The resource name to the project data profile for this
+      table.
+    resourceLabels: The labels applied to the resource at the time the profile
+      was generated.
+    resourceVisibility: How broadly a resource has been shared.
+    rowCount: Number of rows in the table when the profile was generated.
+    scannedColumnCount: The number of columns profiled in the table.
+    sensitivityScore: The sensitivity score of this table.
+    state: State of a profile.
+    tableId: The BigQuery table ID.
+    tableSizeBytes: The size of the table when the profile was generated.
+  """
+
+  class EncryptionStatusValueValuesEnum(_messages.Enum):
+    r"""How the table is encrypted.
+
+    Values:
+      ENCRYPTION_STATUS_UNSPECIFIED: Unused.
+      ENCRYPTION_GOOGLE_MANAGED: Google manages server-side encryption keys on
+        your behalf.
+      ENCRYPTION_CUSTOMER_MANAGED: Customer provides the key.
+    """
+    ENCRYPTION_STATUS_UNSPECIFIED = 0
+    ENCRYPTION_GOOGLE_MANAGED = 1
+    ENCRYPTION_CUSTOMER_MANAGED = 2
+
+  class ResourceVisibilityValueValuesEnum(_messages.Enum):
+    r"""How broadly a resource has been shared.
+
+    Values:
+      RESOURCE_VISIBILITY_UNSPECIFIED: Unused.
+      RESOURCE_VISIBILITY_PUBLIC: Visible to any user.
+      RESOURCE_VISIBILITY_RESTRICTED: Visible only to specific users.
+    """
+    RESOURCE_VISIBILITY_UNSPECIFIED = 0
+    RESOURCE_VISIBILITY_PUBLIC = 1
+    RESOURCE_VISIBILITY_RESTRICTED = 2
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""State of a profile.
+
+    Values:
+      STATE_UNSPECIFIED: Unused.
+      RUNNING: The profile is currently running. Once a profile has finished
+        it will transition to DONE.
+      DONE: The profile is no longer generating. If profile_status.status.code
+        is 0, the profile succeeded, otherwise, it failed.
+    """
+    STATE_UNSPECIFIED = 0
+    RUNNING = 1
+    DONE = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ResourceLabelsValue(_messages.Message):
+    r"""The labels applied to the resource at the time the profile was
+    generated.
+
+    Messages:
+      AdditionalProperty: An additional property for a ResourceLabelsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type ResourceLabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ResourceLabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  configSnapshot = _messages.MessageField('GooglePrivacyDlpV2DataProfileConfigSnapshot', 1)
+  createTime = _messages.StringField(2)
+  dataRiskLevel = _messages.MessageField('GooglePrivacyDlpV2DataRiskLevel', 3)
+  datasetId = _messages.StringField(4)
+  datasetLocation = _messages.StringField(5)
+  datasetProjectId = _messages.StringField(6)
+  encryptionStatus = _messages.EnumField('EncryptionStatusValueValuesEnum', 7)
+  expirationTime = _messages.StringField(8)
+  failedColumnCount = _messages.IntegerField(9)
+  fullResource = _messages.StringField(10)
+  lastModifiedTime = _messages.StringField(11)
+  name = _messages.StringField(12)
+  otherInfoTypes = _messages.MessageField('GooglePrivacyDlpV2OtherInfoTypeSummary', 13, repeated=True)
+  predictedInfoTypes = _messages.MessageField('GooglePrivacyDlpV2InfoTypeSummary', 14, repeated=True)
+  profileLastGenerated = _messages.StringField(15)
+  profileStatus = _messages.MessageField('GooglePrivacyDlpV2ProfileStatus', 16)
+  projectDataProfile = _messages.StringField(17)
+  resourceLabels = _messages.MessageField('ResourceLabelsValue', 18)
+  resourceVisibility = _messages.EnumField('ResourceVisibilityValueValuesEnum', 19)
+  rowCount = _messages.IntegerField(20)
+  scannedColumnCount = _messages.IntegerField(21)
+  sensitivityScore = _messages.MessageField('GooglePrivacyDlpV2SensitivityScore', 22)
+  state = _messages.EnumField('StateValueValuesEnum', 23)
+  tableId = _messages.StringField(24)
+  tableSizeBytes = _messages.IntegerField(25)
 
 
 class GooglePrivacyDlpV2TableLocation(_messages.Message):

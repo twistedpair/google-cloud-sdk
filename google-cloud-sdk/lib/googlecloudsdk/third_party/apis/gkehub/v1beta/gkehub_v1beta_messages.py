@@ -1551,8 +1551,8 @@ class IdentityServiceOidcConfig(_messages.Message):
   Fields:
     certificateAuthorityData: PEM-encoded CA for OIDC provider.
     clientId: ID for OIDC client application.
-    clientSecret: Unencrypted OIDC client secret will be passed to the GKE Hub
-      CLH.
+    clientSecret: Input only. Unencrypted OIDC client secret will be passed to
+      the GKE Hub CLH.
     deployCloudConsoleProxy: Flag to denote if reverse proxy is used to
       connect to auth provider. This flag should be set to true when provider
       is not reachable by Google Cloud Console.

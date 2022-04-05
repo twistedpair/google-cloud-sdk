@@ -3351,11 +3351,15 @@ class ApigeeOrganizationsInstancesCreateRequest(_messages.Message):
       passed as the request body.
     parent: Required. Name of the organization. Use the following structure in
       your request: `organizations/{org}`.
+    runtimeVersion: Optional. Software config version for instance creation.
+      runtime_version value can contain only alphanumeric characters and
+      hyphens (-) and cannot begin or end with a hyphen.
   """
 
   environments = _messages.StringField(1, repeated=True)
   googleCloudApigeeV1Instance = _messages.MessageField('GoogleCloudApigeeV1Instance', 2)
   parent = _messages.StringField(3, required=True)
+  runtimeVersion = _messages.StringField(4)
 
 
 class ApigeeOrganizationsInstancesDeleteRequest(_messages.Message):
@@ -6661,6 +6665,9 @@ class GoogleCloudApigeeV1Instance(_messages.Message):
     StateValueValuesEnum: Output only. State of the instance. Values other
       than `ACTIVE` means the resource is not ready to use.
 
+  Messages:
+    LabelsValue: Optional. Labels associated with the instance.
+
   Fields:
     accessLoggingConfig: Optional. Access logging configuration enables the
       access logging feature at the instance. Apigee customers can enable
@@ -6694,6 +6701,7 @@ class GoogleCloudApigeeV1Instance(_messages.Message):
       should use this CIDR block for configuring their firewall needs to allow
       traffic from Apigee. Input format: "a.b.c.d/22", Output format:
       a.b.c.d/22, e.f.g.h/28"
+    labels: Optional. Labels associated with the instance.
     lastModifiedAt: Output only. Time the instance was last modified in
       milliseconds since epoch.
     location: Required. Compute Engine location where the instance resides.
@@ -6758,6 +6766,30 @@ class GoogleCloudApigeeV1Instance(_messages.Message):
     DELETING = 3
     UPDATING = 4
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels associated with the instance.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   accessLoggingConfig = _messages.MessageField('GoogleCloudApigeeV1AccessLoggingConfig', 1)
   consumerAcceptList = _messages.StringField(2, repeated=True)
   createdAt = _messages.IntegerField(3)
@@ -6768,15 +6800,16 @@ class GoogleCloudApigeeV1Instance(_messages.Message):
   externalHostEnabled = _messages.BooleanField(8)
   host = _messages.StringField(9)
   ipRange = _messages.StringField(10)
-  lastModifiedAt = _messages.IntegerField(11)
-  location = _messages.StringField(12)
-  name = _messages.StringField(13)
-  nodeConfig = _messages.MessageField('GoogleCloudApigeeV1NodeConfig', 14)
-  peeringCidrRange = _messages.EnumField('PeeringCidrRangeValueValuesEnum', 15)
-  port = _messages.StringField(16)
-  runtimeVersion = _messages.StringField(17)
-  serviceAttachment = _messages.StringField(18)
-  state = _messages.EnumField('StateValueValuesEnum', 19)
+  labels = _messages.MessageField('LabelsValue', 11)
+  lastModifiedAt = _messages.IntegerField(12)
+  location = _messages.StringField(13)
+  name = _messages.StringField(14)
+  nodeConfig = _messages.MessageField('GoogleCloudApigeeV1NodeConfig', 15)
+  peeringCidrRange = _messages.EnumField('PeeringCidrRangeValueValuesEnum', 16)
+  port = _messages.StringField(17)
+  runtimeVersion = _messages.StringField(18)
+  serviceAttachment = _messages.StringField(19)
+  state = _messages.EnumField('StateValueValuesEnum', 20)
 
 
 class GoogleCloudApigeeV1InstanceAttachment(_messages.Message):
@@ -7703,6 +7736,9 @@ class GoogleCloudApigeeV1Organization(_messages.Message):
       single region. This field determines which single region Apigee should
       use. For example: "us-west1" when control plane is in US or "europe-
       west2" when control plane is in EU.
+    apigeeProjectId: Output only. Apigee Project ID associated with the
+      organization. Use this project to allowlist Apigee in the Service
+      Attachment when using private service connect with Apigee.
     attributes: Not used by Apigee.
     authorizedNetwork: Compute Engine network used for Service Networking to
       be peered with Apigee runtime instances. See [Getting started with the
@@ -7880,28 +7916,29 @@ class GoogleCloudApigeeV1Organization(_messages.Message):
   analyticsRegion = _messages.StringField(2)
   apiConsumerDataEncryptionKeyName = _messages.StringField(3)
   apiConsumerDataLocation = _messages.StringField(4)
-  attributes = _messages.StringField(5, repeated=True)
-  authorizedNetwork = _messages.StringField(6)
-  billingType = _messages.EnumField('BillingTypeValueValuesEnum', 7)
-  caCertificate = _messages.BytesField(8)
-  controlPlaneEncryptionKeyName = _messages.StringField(9)
-  createdAt = _messages.IntegerField(10)
-  customerName = _messages.StringField(11)
-  description = _messages.StringField(12)
-  displayName = _messages.StringField(13)
-  environments = _messages.StringField(14, repeated=True)
-  expiresAt = _messages.IntegerField(15)
-  lastModifiedAt = _messages.IntegerField(16)
-  name = _messages.StringField(17)
-  portalDisabled = _messages.BooleanField(18)
-  projectId = _messages.StringField(19)
-  properties = _messages.MessageField('GoogleCloudApigeeV1Properties', 20)
-  releaseChannel = _messages.EnumField('ReleaseChannelValueValuesEnum', 21)
-  runtimeDatabaseEncryptionKeyName = _messages.StringField(22)
-  runtimeType = _messages.EnumField('RuntimeTypeValueValuesEnum', 23)
-  state = _messages.EnumField('StateValueValuesEnum', 24)
-  subscriptionType = _messages.EnumField('SubscriptionTypeValueValuesEnum', 25)
-  type = _messages.EnumField('TypeValueValuesEnum', 26)
+  apigeeProjectId = _messages.StringField(5)
+  attributes = _messages.StringField(6, repeated=True)
+  authorizedNetwork = _messages.StringField(7)
+  billingType = _messages.EnumField('BillingTypeValueValuesEnum', 8)
+  caCertificate = _messages.BytesField(9)
+  controlPlaneEncryptionKeyName = _messages.StringField(10)
+  createdAt = _messages.IntegerField(11)
+  customerName = _messages.StringField(12)
+  description = _messages.StringField(13)
+  displayName = _messages.StringField(14)
+  environments = _messages.StringField(15, repeated=True)
+  expiresAt = _messages.IntegerField(16)
+  lastModifiedAt = _messages.IntegerField(17)
+  name = _messages.StringField(18)
+  portalDisabled = _messages.BooleanField(19)
+  projectId = _messages.StringField(20)
+  properties = _messages.MessageField('GoogleCloudApigeeV1Properties', 21)
+  releaseChannel = _messages.EnumField('ReleaseChannelValueValuesEnum', 22)
+  runtimeDatabaseEncryptionKeyName = _messages.StringField(23)
+  runtimeType = _messages.EnumField('RuntimeTypeValueValuesEnum', 24)
+  state = _messages.EnumField('StateValueValuesEnum', 25)
+  subscriptionType = _messages.EnumField('SubscriptionTypeValueValuesEnum', 26)
+  type = _messages.EnumField('TypeValueValuesEnum', 27)
 
 
 class GoogleCloudApigeeV1OrganizationProjectMapping(_messages.Message):

@@ -1494,6 +1494,10 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaListWorkerPoolsResponse(_mes
   workerPools = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerPool', 1, repeated=True)
 
 
+class GoogleDevtoolsRemotebuildexecutionAdminV1alphaTestNotifyInstanceRequest(_messages.Message):
+  r"""The request used for `TestNotifyInstance`."""
+
+
 class GoogleDevtoolsRemotebuildexecutionAdminV1alphaUpdateInstanceRequest(_messages.Message):
   r"""The request used for `UpdateInstance`.
 
@@ -2127,6 +2131,15 @@ class GoogleLongrunningOperation(_messages.Message):
   response = _messages.MessageField('ResponseValue', 5)
 
 
+class GoogleProtobufEmpty(_messages.Message):
+  r"""A generic empty message that you can re-use to avoid defining duplicated
+  empty messages in your APIs. A typical example is to use it as the request
+  or the response type of an API method. For instance: service Foo { rpc
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
+  """
+
+
+
 class GoogleRpcStatus(_messages.Message):
   r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
@@ -2239,6 +2252,21 @@ class RemotebuildexecutionProjectsInstancesPatchRequest(_messages.Message):
   name = _messages.StringField(3, required=True)
   name1 = _messages.StringField(4)
   updateMask = _messages.StringField(5)
+
+
+class RemotebuildexecutionProjectsInstancesTestNotifyRequest(_messages.Message):
+  r"""A RemotebuildexecutionProjectsInstancesTestNotifyRequest object.
+
+  Fields:
+    googleDevtoolsRemotebuildexecutionAdminV1alphaTestNotifyInstanceRequest: A
+      GoogleDevtoolsRemotebuildexecutionAdminV1alphaTestNotifyInstanceRequest
+      resource to be passed as the request body.
+    name: Name of the instance for which to send a test notification. Format:
+      `projects/[PROJECT_ID]/instances/[INSTANCE_ID]`.
+  """
+
+  googleDevtoolsRemotebuildexecutionAdminV1alphaTestNotifyInstanceRequest = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaTestNotifyInstanceRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class RemotebuildexecutionProjectsInstancesWorkerpoolsDeleteRequest(_messages.Message):

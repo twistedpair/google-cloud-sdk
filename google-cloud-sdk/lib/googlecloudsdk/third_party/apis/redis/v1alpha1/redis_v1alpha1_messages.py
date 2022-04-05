@@ -951,16 +951,20 @@ class PersistenceConfig(_messages.Message):
 
     Values:
       SNAPSHOT_PERIOD_UNSPECIFIED: Not set.
+      FIFTEEN_MINUTES: Snapshot every 15 minutes.
+      THIRTY_MINUTES: Snapshot every 30 minutes.
       ONE_HOUR: Snapshot every 1 hour.
       SIX_HOURS: Snapshot every 6 hours.
       TWELVE_HOURS: Snapshot every 12 hours.
       TWENTY_FOUR_HOURS: Snapshot every 24 horus.
     """
     SNAPSHOT_PERIOD_UNSPECIFIED = 0
-    ONE_HOUR = 1
-    SIX_HOURS = 2
-    TWELVE_HOURS = 3
-    TWENTY_FOUR_HOURS = 4
+    FIFTEEN_MINUTES = 1
+    THIRTY_MINUTES = 2
+    ONE_HOUR = 3
+    SIX_HOURS = 4
+    TWELVE_HOURS = 5
+    TWENTY_FOUR_HOURS = 6
 
   persistenceMode = _messages.EnumField('PersistenceModeValueValuesEnum', 1)
   rdbNextSnapshotTime = _messages.StringField(2)

@@ -20,18 +20,29 @@ from __future__ import unicode_literals
 from googlecloudsdk.api_lib.util import apis
 
 
-# TODO(b/225094051) Create an SLZ client using discovery tools.
-def get_overwatch_client(no_http=False):
-  return apis.GetClientInstance('securedlandingzones', 'v1', no_http=no_http)
+def get_overwatch_client():
+  return apis.GetClientInstance('securedlandingzone', 'v1beta', no_http=False)
 
 
 # Get the slz-overwatch resquest/response messages
 def get_overwatch_message():
   client = get_overwatch_client()
-  return client.MESSAGE_MODULE
+  return client.MESSAGES_MODULE
 
 
-# Get the service object from the client.
+# Get the overwatch service object from the client.
 def get_overwatch_service():
   client = get_overwatch_client()
-  return client.overwatch
+  return client.organizations_locations_overwatches
+
+
+# Get the organization service object from the client.
+def get_organization_service():
+  client = get_overwatch_client()
+  return client.organizations_locations
+
+
+# Get the operations service object fropm the client.
+def get_operations_service():
+  client = get_overwatch_client()
+  return client.organizations_operations

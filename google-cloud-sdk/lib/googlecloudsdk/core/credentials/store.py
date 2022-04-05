@@ -1303,19 +1303,6 @@ class _LegacyGenerator(object):
     # recreated here.
     self.Clean()
 
-    if (self._cred_type == c_creds.EXTERNAL_ACCOUNT_CREDS_NAME or
-        self._cred_type == c_creds.EXTERNAL_ACCOUNT_USER_CREDS_NAME):
-      gsutil_creds_path = os.path.join(
-          os.path.dirname(self._gsutil_path), 'external_account_creds.json')
-      c_creds.ADC(self.credentials).DumpADCToFile(file_path=gsutil_creds_path)
-
-      self._WriteFileContents(
-          self._gsutil_path, '\n'.join([
-              '[Credentials]',
-              'gs_external_account_file = {external_account_file}',
-          ]).format(external_account_file=gsutil_creds_path))
-      return
-
     # Generates credentials used by bq and gsutil.
     if self._cred_type == c_creds.P12_SERVICE_ACCOUNT_CREDS_NAME:
       cred = self.credentials
@@ -1337,6 +1324,15 @@ class _LegacyGenerator(object):
 
     c_creds.ADC(
         self.credentials).DumpADCToFile(file_path=self._adc_path)
+
+    if (self._cred_type == c_creds.EXTERNAL_ACCOUNT_CREDS_NAME or
+        self._cred_type == c_creds.EXTERNAL_ACCOUNT_USER_CREDS_NAME):
+      self._WriteFileContents(
+          self._gsutil_path, '\n'.join([
+              '[Credentials]',
+              'gs_external_account_file = {external_account_file}',
+          ]).format(external_account_file=self._adc_path))
+      return
 
     if self._cred_type == c_creds.USER_ACCOUNT_CREDS_NAME:
       # We create a small .boto file for gsutil, to be put in BOTO_PATH.

@@ -71,6 +71,7 @@ def AddDestGroupArgs(parser):
       help='Name of the Destination Group.')
   parser.add_argument(
       '--region',
+      metavar='REGION',
       required=True,
       help='Region of the Destination Group.')
 
@@ -82,6 +83,15 @@ def AddDestGroupIpAndFqdnArgs(parser):
   parser.add_argument(
       '--fqdn-list',
       help='List of fqdn-list in the Destination Group.')
+
+
+def AddDestGroupListRegionArgs(parser):
+  parser.add_argument(
+      '--region',
+      metavar='REGION',
+      required=False,
+      help='Region of the Destination Group, will list all regions by default',
+      default='-')
 
 
 def AddIapIamResourceArgs(parser, use_region_arg=False, use_iap_gateway=False):
@@ -486,7 +496,7 @@ def ParseIapGatewayResource(release_track):
 
 
 def ParseIapDestGroupResource(release_track, args):
-  """Parse an IAP TCP DestGroup resource from the input arguments.
+  """Parses an IAP TCP DestGroup resource from the input arguments.
 
   Args:
     release_track: base.ReleaseTrack, release track of command.
@@ -499,3 +509,18 @@ def ParseIapDestGroupResource(release_track, args):
   project = properties.VALUES.core.project.GetOrFail()
   return iap_api.IapTunnelDestGroupResource(release_track, project, args.region,
                                             args.group_name)
+
+
+def ParseIapDestGroupResourceWithNoGroupId(release_track, args):
+  """Parses an IAP TCP Tunnel resource from the input arguments.
+
+  Args:
+    release_track: base.ReleaseTrack, release track of command.
+    args: an argparse namespace. All the arguments that were provided to this
+      command invocation.
+
+  Returns:
+    The specified IAP TCP Tunnel resource.
+  """
+  project = properties.VALUES.core.project.GetOrFail()
+  return iap_api.IapTunnelDestGroupResource(release_track, project, args.region)

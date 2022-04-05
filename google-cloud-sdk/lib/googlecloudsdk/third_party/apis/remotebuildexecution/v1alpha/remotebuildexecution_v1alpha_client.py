@@ -334,6 +334,33 @@ class RemotebuildexecutionV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def TestNotify(self, request, global_params=None):
+      r"""Sends a test notification to the specified instance. Returns a `google.protobuf.Empty` on success.
+
+      Args:
+        request: (RemotebuildexecutionProjectsInstancesTestNotifyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleProtobufEmpty) The response message.
+      """
+      config = self.GetMethodConfig('TestNotify')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestNotify.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/instances/{instancesId}:testNotify',
+        http_method='POST',
+        method_id='remotebuildexecution.projects.instances.testNotify',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}:testNotify',
+        request_field='googleDevtoolsRemotebuildexecutionAdminV1alphaTestNotifyInstanceRequest',
+        request_type_name='RemotebuildexecutionProjectsInstancesTestNotifyRequest',
+        response_type_name='GoogleProtobufEmpty',
+        supports_download=False,
+    )
+
   class ProjectsOperationsService(base_api.BaseApiService):
     """Service class for the projects_operations resource."""
 

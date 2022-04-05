@@ -563,6 +563,16 @@ class LinkedRouterApplianceInstances(_messages.Message):
   siteToSiteDataTransfer = _messages.BooleanField(2)
 
 
+class LinkedVpcNetwork(_messages.Message):
+  r"""An existing VPC network.
+
+  Fields:
+    uri: The URI of the VPC network resource
+  """
+
+  uri = _messages.StringField(1)
+
+
 class LinkedVpnTunnels(_messages.Message):
   r"""A collection of Cloud VPN tunnel resources. These resources should be
   redundant HA VPN tunnels that all advertise the same prefixes to Google
@@ -1601,6 +1611,7 @@ class Spoke(_messages.Message):
       the spoke.
     linkedRouterApplianceInstances: Router appliance instances that are
       associated with the spoke.
+    linkedVpcNetwork: VPC network that is associated with to the spoke.
     linkedVpnTunnels: VPN tunnels that are associated with the spoke.
     name: Immutable. The name of the spoke. Spoke names must be unique. They
       use the following form:
@@ -1659,11 +1670,12 @@ class Spoke(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 4)
   linkedInterconnectAttachments = _messages.MessageField('LinkedInterconnectAttachments', 5)
   linkedRouterApplianceInstances = _messages.MessageField('LinkedRouterApplianceInstances', 6)
-  linkedVpnTunnels = _messages.MessageField('LinkedVpnTunnels', 7)
-  name = _messages.StringField(8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
-  uniqueId = _messages.StringField(10)
-  updateTime = _messages.StringField(11)
+  linkedVpcNetwork = _messages.MessageField('LinkedVpcNetwork', 7)
+  linkedVpnTunnels = _messages.MessageField('LinkedVpnTunnels', 8)
+  name = _messages.StringField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  uniqueId = _messages.StringField(11)
+  updateTime = _messages.StringField(12)
 
 
 class StandardQueryParameters(_messages.Message):

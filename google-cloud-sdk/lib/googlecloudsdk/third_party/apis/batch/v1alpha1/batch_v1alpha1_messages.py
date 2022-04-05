@@ -1842,6 +1842,8 @@ class TaskGroup(_messages.Message):
       west1/jobs/job01/taskGroups/default-group".
     parallelism: Max number of tasks that can run in parallel. Default to
       min(task_count, 1000).
+    permissiveSsh: When true, Batch will configure SSH to allow passwordless
+      login between VMs for the user running the Batch tasks.
     requireHostsFile: When true, Batch will populate a file with a list of all
       VMs assigned to the TaskGroup and set the BATCH_HOSTS_FILE environment
       variable to the path of that file. Defaults to false.
@@ -1903,12 +1905,13 @@ class TaskGroup(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 2)
   name = _messages.StringField(3)
   parallelism = _messages.IntegerField(4)
-  requireHostsFile = _messages.BooleanField(5)
-  schedulingPolicy = _messages.EnumField('SchedulingPolicyValueValuesEnum', 6)
-  taskCount = _messages.IntegerField(7)
-  taskCountPerNode = _messages.IntegerField(8)
-  taskEnvironments = _messages.MessageField('Environment', 9, repeated=True)
-  taskSpec = _messages.MessageField('TaskSpec', 10)
+  permissiveSsh = _messages.BooleanField(5)
+  requireHostsFile = _messages.BooleanField(6)
+  schedulingPolicy = _messages.EnumField('SchedulingPolicyValueValuesEnum', 7)
+  taskCount = _messages.IntegerField(8)
+  taskCountPerNode = _messages.IntegerField(9)
+  taskEnvironments = _messages.MessageField('Environment', 10, repeated=True)
+  taskSpec = _messages.MessageField('TaskSpec', 11)
 
 
 class TaskGroupStatus(_messages.Message):

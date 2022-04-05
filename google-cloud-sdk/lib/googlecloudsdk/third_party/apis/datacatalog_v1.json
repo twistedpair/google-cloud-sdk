@@ -1707,6 +1707,87 @@
         }
       }
     },
+    "GoogleCloudDatacatalogV1ExportMetadataRequest": {
+      "id": "GoogleCloudDatacatalogV1ExportMetadataRequest",
+      "description": "Request message for ExportMetadata.",
+      "type": "object",
+      "properties": {
+        "bucket": {
+          "description": "Required. A Cloud Storage bucket to store the exported metadata.",
+          "type": "string"
+        },
+        "object": {
+          "description": "Optional. Name of the Cloud Storage object for which metadata will be written to. If no name is provided, then a name will be auto-generated.",
+          "type": "string"
+        },
+        "notifyTopic": {
+          "description": "Required. Name of the Pub\/Sub topic for which operation status updates will be published to. You must either have permission to publish to the topic provided.",
+          "type": "string"
+        }
+      }
+    },
+    "Operation": {
+      "id": "Operation",
+      "description": "This resource represents a long-running operation that is the result of a network API call.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The server-assigned name, which is only unique within the same service that originally returns it. If you use the default HTTP mapping, the `name` should be a resource name ending with `operations\/{unique_id}`.",
+          "type": "string"
+        },
+        "metadata": {
+          "description": "Service-specific metadata associated with the operation. It typically contains progress information and common metadata such as create time. Some services might not provide such metadata. Any method that returns a long-running operation should document the metadata type, if any.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        },
+        "done": {
+          "description": "If the value is `false`, it means the operation is still in progress. If `true`, the operation is completed, and either `error` or `response` is available.",
+          "type": "boolean"
+        },
+        "error": {
+          "description": "The error result of the operation in case of failure or cancellation.",
+          "$ref": "Status"
+        },
+        "response": {
+          "description": "The normal response of the operation in case of success. If the original method returns no data on success, such as `Delete`, the response is `google.protobuf.Empty`. If the original method is standard `Get`\/`Create`\/`Update`, the response should be the resource. For other methods, the response should have the type `XxxResponse`, where `Xxx` is the original method name. For example, if the original method name is `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        }
+      }
+    },
+    "Status": {
+      "id": "Status",
+      "description": "The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https:\/\/github.com\/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https:\/\/cloud.google.com\/apis\/design\/errors).",
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "The status code, which should be an enum value of google.rpc.Code.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "description": "A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the google.rpc.Status.details field, or localized by the client.",
+          "type": "string"
+        },
+        "details": {
+          "description": "A list of messages that carry the error details. There is a common set of message types for APIs to use.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "any",
+              "description": "Properties of the object. Contains field @type with type URL."
+            }
+          }
+        }
+      }
+    },
     "GoogleCloudDatacatalogV1Taxonomy": {
       "id": "GoogleCloudDatacatalogV1Taxonomy",
       "description": "A taxonomy is a collection of hierarchical policy tags that classify data along a common axis. For example, a \"data sensitivity\" taxonomy might contain the following policy tags: ``` + PII + Account number + Age + SSN + Zipcode + Financials + Revenue ``` A \"data origin\" taxonomy might contain the following policy tags: ``` + User data + Employee data + Partner data + Public data ```",
@@ -1992,6 +2073,37 @@
     "projects": {
       "resources": {
         "locations": {
+          "methods": {
+            "exportMetadata": {
+              "id": "datacatalog.projects.locations.exportMetadata",
+              "path": "v1/{+parent}:exportMetadata",
+              "flatPath": "v1/projects/{projectsId}/locations/{locationsId}:exportMetadata",
+              "httpMethod": "POST",
+              "parameters": {
+                "parent": {
+                  "description": "Required. Name of the project and location to export the tags and entries from.",
+                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "request": {
+                "$ref": "GoogleCloudDatacatalogV1ExportMetadataRequest"
+              },
+              "response": {
+                "$ref": "Operation"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Exports all tags and their respective entries under a given project and location to an existing Cloud Storage bucket. You must have permission to publish in Pub\/Sub to a given topic. See ExportMetadataRequest."
+            }
+          }
+          ,
           "resources": {
             "entryGroups": {
               "methods": {

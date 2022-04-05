@@ -150,8 +150,7 @@ class Cluster(_messages.Message):
       not what is desired).
 
   Fields:
-    createTime: Output only. Creation time of this resource in RFC3339 text
-      format.
+    createTime: Output only. Creation time of this resource.
     labels: Deprecated: Labels are a way to attach lightweight metadata to
       resources for filtering and querying resource data. No more than 64 user
       labels can be associated with each resource. Label keys and values can
@@ -180,8 +179,7 @@ class Cluster(_messages.Message):
       in this cluster. For example: standard-72.
     state: Output only. State of the resource.
     uid: Output only. System-generated unique identifier for the resource.
-    updateTime: Output only. Last update time of this resource in RFC3339 text
-      format.
+    updateTime: Output only. Last update time of this resource.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -330,8 +328,7 @@ class ExternalAccessRule(_messages.Message):
 
   Fields:
     action: The action that the external access rule performs.
-    createTime: Output only. Creation time of this resource in RFC3339 text
-      format.
+    createTime: Output only. Creation time of this resource.
     description: User-provided description for this external access rule.
     destinationIpRanges: If destination ranges are specified, the external
       access rule applies only to the traffic that has a destination IP
@@ -382,8 +379,7 @@ class ExternalAccessRule(_messages.Message):
       rule applies to connections through any source port.
     state: Output only. The state of the resource.
     uid: Output only. System-generated unique identifier for the resource.
-    updateTime: Output only. Last update time of this resource in RFC3339 text
-      format.
+    updateTime: Output only. Last update time of this resource.
   """
 
   class ActionValueValuesEnum(_messages.Enum):
@@ -486,8 +482,7 @@ class ExternalAddress(_messages.Message):
       not what is desired).
 
   Fields:
-    createTime: Output only. Creation time of this resource in RFC3339 text
-      format.
+    createTime: Output only. Creation time of this resource.
     description: User-provided description for this resource.
     displayName: User-provided name for this resource.
     externalIp: Output only. The external IP address of a workload VM.
@@ -510,8 +505,7 @@ class ExternalAddress(_messages.Message):
       cloud/externalAddresses/my-address`
     state: Output only. The state of the resource.
     uid: Output only. System-generated unique identifier for the resource.
-    updateTime: Output only. Last update time of this resource in RFC3339 text
-      format.
+    updateTime: Output only. Last update time of this resource.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -982,11 +976,11 @@ class NetworkConfig(_messages.Message):
       HTTPS traffic.
     managementCidr: Required. Management CIDR used by VMware management
       appliances.
-    network: Optional. DEPRECATED: Optional. The relative resource name of the
+    network: Optional. Deprecated: Optional. The relative resource name of the
       consumer VPC network this private cloud is attached to. Specify the name
       in the following form: `projects/{project}/global/networks/{network_id}`
       where `{project}` can either be a project number or a project ID.
-    serviceNetwork: Output only. DEPRECATED: Output only. The relative
+    serviceNetwork: Output only. Deprecated: Output only. The relative
       resource name of the service VPC network this private cloud is attached
       to. The name is specified in the following form:
       `projects/{service_project_number}/global/networks/{network_id}`.
@@ -1015,8 +1009,8 @@ class NetworkPeering(_messages.Message):
       the peer network. New values may be added to this enum when appropriate.
 
   Fields:
-    createTime: Output only. Creation time of this resource in RFC3339 text
-      format.
+    createTime: Output only. Creation time of this resource.
+    description: Optional. User-provided description for this network peering.
     exchangeSubnetRoutes: Optional. True if full mesh connectivity is created
       and managed automatically between peered VPC networks; false otherwise.
       Currently this field is always true because Google Compute Engine
@@ -1037,15 +1031,17 @@ class NetworkPeering(_messages.Message):
       (https://en.wikipedia.org/wiki/IPv4#Special_addresses) are always
       imported to peers and are not controlled by this field.
     name: Output only. The resource name of the VPC network peering. Resource
-      names are schemeless URIs that follow the conventions in
+      names are scheme-less URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
       `projects/my-project/locations/global/networkPeerings/my-peering`
     peerMtu: Optional. Maximum transmission unit (MTU) in bytes.
-    peerNetwork: Required. The relative resource name of the VPC network to
-      peer with the VMware Engine service network. This network can be a
-      consumer VPC network or another producer service VPC network. Specify
-      the name in the following form:
-      `projects/{project}/global/networks/{network_id}` where `{project}` can
+    peerNetwork: Required. The relative resource name of the network to peer
+      with the VMware Engine network. This network can be a consumer VPC
+      network or another VMware Engine network. If the `peer_network_type` is
+      VMWARE_ENGINE_NETWORK, specify the name in the form: `projects/{project}
+      /locations/global/vmwareEngineNetworks/{vmware_engine_network_id}`.
+      Otherwise specify the name in the form:
+      `projects/{project}/global/networks/{network_id}`, where `{project}` can
       either be a project number or a project ID.
     peerNetworkType: Required. The type of the VPC network to peer with the
       VMware Engine service network.
@@ -1055,8 +1051,7 @@ class NetworkPeering(_messages.Message):
     stateDetails: Output only. Output Only. Details about the current state of
       the VPC network peering.
     uid: Output only. System-generated unique identifier for the resource.
-    updateTime: Output only. Last update time of this resource in RFC3339 text
-      format.
+    updateTime: Output only. Last update time of this resource.
     vmwareEngineNetwork: Required. The relative resource name of the VMware
       Engine network. Specify the name in the following form: `projects/{proje
       ct}/locations/{location}/vmwareEngineNetworks/{vmware_engine_network_id}
@@ -1106,20 +1101,21 @@ class NetworkPeering(_messages.Message):
     DELETING = 4
 
   createTime = _messages.StringField(1)
-  exchangeSubnetRoutes = _messages.BooleanField(2)
-  exportCustomRoutes = _messages.BooleanField(3)
-  exportCustomRoutesWithPublicIp = _messages.BooleanField(4)
-  importCustomRoutes = _messages.BooleanField(5)
-  importCustomRoutesWithPublicIp = _messages.BooleanField(6)
-  name = _messages.StringField(7)
-  peerMtu = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  peerNetwork = _messages.StringField(9)
-  peerNetworkType = _messages.EnumField('PeerNetworkTypeValueValuesEnum', 10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  stateDetails = _messages.StringField(12)
-  uid = _messages.StringField(13)
-  updateTime = _messages.StringField(14)
-  vmwareEngineNetwork = _messages.StringField(15)
+  description = _messages.StringField(2)
+  exchangeSubnetRoutes = _messages.BooleanField(3)
+  exportCustomRoutes = _messages.BooleanField(4)
+  exportCustomRoutesWithPublicIp = _messages.BooleanField(5)
+  importCustomRoutes = _messages.BooleanField(6)
+  importCustomRoutesWithPublicIp = _messages.BooleanField(7)
+  name = _messages.StringField(8)
+  peerMtu = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  peerNetwork = _messages.StringField(10)
+  peerNetworkType = _messages.EnumField('PeerNetworkTypeValueValuesEnum', 11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  stateDetails = _messages.StringField(13)
+  uid = _messages.StringField(14)
+  updateTime = _messages.StringField(15)
+  vmwareEngineNetwork = _messages.StringField(16)
 
 
 class NetworkPolicy(_messages.Message):
@@ -1143,8 +1139,7 @@ class NetworkPolicy(_messages.Message):
       not what is desired).
 
   Fields:
-    createTime: Output only. Creation time of this resource in RFC3339 text
-      format.
+    createTime: Output only. Creation time of this resource.
     description: Optional. User-provided description for this network policy.
     edgeServicesCidr: Required. IP address range in CIDR notation used to
       create internet access and external IP access. An RFC 1918 CIDR block,
@@ -1172,7 +1167,7 @@ class NetworkPolicy(_messages.Message):
       https://cloud.google.com/apis/design/resource_names. For example:
       `projects/my-project/locations/us-central1/networkPolicies/my-network-
       policy`
-    network: Optional. DEPRECATED: Optional. Name of the network in the
+    network: Optional. Deprecated: Optional. Name of the network in the
       consumer project which is peered or will be peered with the service
       network. Provide the network name in the form of
       `projects/{project}/global/networks/{network}`, where `{project}` is the
@@ -1180,8 +1175,7 @@ class NetworkPolicy(_messages.Message):
       case of shared VPC, use the project ID or project number of the host
       project containing the shared VPC network.
     uid: Output only. System-generated unique identifier for the resource.
-    updateTime: Output only. Last update time of this resource in RFC3339 text
-      format.
+    updateTime: Output only. Last update time of this resource.
     vmwareEngineNetwork: Optional. The relative resource name of the VMware
       Engine network. Specify the name in the following form: `projects/{proje
       ct}/locations/{location}/vmwareEngineNetworks/{vmware_engine_network_id}
@@ -1449,10 +1443,8 @@ class OperationMetadata(_messages.Message):
 
   Fields:
     apiVersion: Output only. API version used to start the operation.
-    createTime: Output only. The time the operation was created in RFC3339
-      text format.
-    endTime: Output only. The time the operation finished running in RFC3339
-      text format.
+    createTime: Output only. The time the operation was created.
+    endTime: Output only. The time the operation finished running.
     requestedCancellation: Output only. True if the user has requested
       cancellation of the operation; false otherwise. Operations that have
       successfully been cancelled have Operation.error value with a
@@ -1618,13 +1610,10 @@ class PrivateCloud(_messages.Message):
       not what is desired).
 
   Fields:
-    createTime: Output only. Creation time of this resource in RFC3339 text
-      format.
-    deleteTime: Output only. Time the resource was marked as deleted, in
-      RFC3339 text format.
+    createTime: Output only. Creation time of this resource.
+    deleteTime: Output only. Time the resource was marked as deleted.
     description: User-provided description for this private cloud.
-    expireTime: Output only. Planned deletion time of this resource in RFC3339
-      text format.
+    expireTime: Output only. Planned deletion time of this resource.
     hcx: Output only. HCX appliance.
     labels: Deprecated: Labels are a way to attach lightweight metadata to
       resources for filtering and querying resource data. No more than 64 user
@@ -1647,15 +1636,11 @@ class PrivateCloud(_messages.Message):
       https://cloud.google.com/apis/design/resource_names. For example:
       `projects/my-project/locations/us-west1-a/privateClouds/my-cloud`
     networkConfig: Required. Network configuration of the private cloud.
-      Caution: Do not remove VPC networks used by private clouds
-      (`NetworkConfig.network`). Doing so removes your ability to access the
-      private cloud.
     nsx: Output only. NSX appliance.
     state: Output only. State of the resource. New values may be added to this
       enum when appropriate.
     uid: Output only. System-generated unique identifier for the resource.
-    updateTime: Output only. Last update time of this resource in RFC3339 text
-      format.
+    updateTime: Output only. Last update time of this resource.
     vcenter: Output only. Vcenter appliance.
   """
 
@@ -1993,8 +1978,7 @@ class VmwareEngineNetwork(_messages.Message):
       not what is desired).
 
   Fields:
-    createTime: Output only. Creation time of this resource in RFC3339 text
-      format.
+    createTime: Output only. Creation time of this resource.
     description: User-provided description for this VMware Engine network.
     etag: Checksum that may be sent on update and delete requests to ensure
       that the user-provided value is up to date before the server processes a
@@ -2018,8 +2002,7 @@ class VmwareEngineNetwork(_messages.Message):
     state: Output only. State of the VMware Engine network.
     type: Required. VMware Engine network type.
     uid: Output only. System-generated unique identifier for the resource.
-    updateTime: Output only. Last update time of this resource in RFC3339 text
-      format.
+    updateTime: Output only. Last update time of this resource.
     vpcNetworks: Output only. VMware Engine service VPC networks that provide
       connectivity from a private cloud to customer projects, the internet,
       and other Google Cloud services.
@@ -2276,6 +2259,41 @@ class VmwareengineProjectsLocationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class VmwareengineProjectsLocationsNetworkPeeringsPatchRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsNetworkPeeringsPatchRequest object.
+
+  Fields:
+    name: Output only. The resource name of the VPC network peering. Resource
+      names are scheme-less URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/global/networkPeerings/my-peering`
+    networkPeering: A NetworkPeering resource to be passed as the request
+      body.
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server
+      guarantees that a request doesn't result in creation of duplicate
+      commitments for at least 60 minutes. For example, consider a situation
+      where you make an initial request and the request times out. If you make
+      the request again with the same request ID, the server can check if
+      original operation with the same request ID was received, and if so,
+      will ignore the second request. This prevents clients from accidentally
+      creating duplicate commitments. The request ID must be a valid UUID with
+      the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the `NetworkPeering` resource by the update. The fields
+      specified in the `update_mask` are relative to the resource, not the
+      full request. A field will be overwritten if it is in the mask. If the
+      user does not provide a mask then all fields will be overwritten.
+  """
+
+  name = _messages.StringField(1, required=True)
+  networkPeering = _messages.MessageField('NetworkPeering', 2)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
 
 
 class VmwareengineProjectsLocationsNetworkPoliciesCreateRequest(_messages.Message):

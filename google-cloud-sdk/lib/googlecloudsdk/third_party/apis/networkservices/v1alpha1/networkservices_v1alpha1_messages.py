@@ -4212,26 +4212,6 @@ class NetworkservicesProjectsLocationsServiceBindingsListRequest(_messages.Messa
   parent = _messages.StringField(3, required=True)
 
 
-class NetworkservicesProjectsLocationsServiceBindingsPatchRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsServiceBindingsPatchRequest object.
-
-  Fields:
-    name: Required. Name of the ServiceBinding resource. It matches pattern
-      `projects/*/locations/global/serviceBindings/service_binding_name>`.
-    serviceBinding: A ServiceBinding resource to be passed as the request
-      body.
-    updateMask: Optional. Field mask is used to specify the fields to be
-      overwritten in the ServiceBinding resource by the update. The fields
-      specified in the update_mask are relative to the resource, not the full
-      request. A field will be overwritten if it is in the mask. If the user
-      does not provide a mask then all fields will be overwritten.
-  """
-
-  name = _messages.StringField(1, required=True)
-  serviceBinding = _messages.MessageField('ServiceBinding', 2)
-  updateMask = _messages.StringField(3)
-
-
 class NetworkservicesProjectsLocationsServiceBindingsSetIamPolicyRequest(_messages.Message):
   r"""A NetworkservicesProjectsLocationsServiceBindingsSetIamPolicyRequest
   object.
@@ -5006,10 +4986,6 @@ class ServiceBinding(_messages.Message):
     createTime: Output only. The timestamp when the resource was created.
     description: Optional. A free-text description of the resource. Max length
       1024 characters.
-    endpointFilter: Optional. The endpoint filter associated with the Service
-      Binding. The syntax is described in http://cloud/service-directory/docs/
-      reference/rpc/google.cloud.servicedirectory.v1#google.cloud.servicedirec
-      tory.v1.ResolveServiceRequest
     labels: Optional. Set of label tags associated with the ServiceBinding
       resource.
     name: Required. Name of the ServiceBinding resource. It matches pattern
@@ -5046,11 +5022,10 @@ class ServiceBinding(_messages.Message):
 
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
-  endpointFilter = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  service = _messages.StringField(6)
-  updateTime = _messages.StringField(7)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  service = _messages.StringField(5)
+  updateTime = _messages.StringField(6)
 
 
 class ServiceGraph(_messages.Message):

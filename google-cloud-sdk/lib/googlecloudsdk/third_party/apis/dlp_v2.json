@@ -771,8 +771,8 @@
             "plain text",
             "docx, docm, dotx, dotm",
             "pdf",
-            "powerpoint",
-            "excel",
+            "pptx, pptm, potx, potm, pot",
+            "xlsx, xlsm, xltx, xltm",
             "avro",
             "csv",
             "tsv"
@@ -4321,6 +4321,480 @@
       "description": "The request message for finishing a DLP hybrid job.",
       "type": "object",
       "properties": {
+      }
+    },
+    "GooglePrivacyDlpV2DataProfilePubSubMessage": {
+      "id": "GooglePrivacyDlpV2DataProfilePubSubMessage",
+      "description": "The message that will be published to a Pub\/Sub topic. To receive a message of protocol buffer schema type, convert the message data to an object of this proto class. https:\/\/cloud.google.com\/pubsub\/docs\/samples\/pubsub-subscribe-proto-messages",
+      "type": "object",
+      "properties": {
+        "profile": {
+          "description": "If `DetailLevel` is `TABLE_PROFILE` this will be fully populated. Otherwise, if `DetailLevel` is `RESOURCE_NAME`, then only `name` and `full_resource` will be populated.",
+          "$ref": "GooglePrivacyDlpV2TableDataProfile"
+        },
+        "event": {
+          "description": "The event that caused the Pub\/Sub message to be sent.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unused.",
+            "New profile (not a re-profile).",
+            "Changed one of the following profile metrics: * Table data risk score * Table sensitivity score * Table resource visibility * Table encryption type * Table predicted infoTypes * Table other infoTypes",
+            "Table data risk score or sensitivity score increased.",
+            "A user (non-internal) error occurred."
+          ],
+          "enum": [
+            "EVENT_TYPE_UNSPECIFIED",
+            "NEW_PROFILE",
+            "CHANGED_PROFILE",
+            "SCORE_INCREASED",
+            "ERROR_CHANGED"
+          ]
+        }
+      }
+    },
+    "GooglePrivacyDlpV2TableDataProfile": {
+      "id": "GooglePrivacyDlpV2TableDataProfile",
+      "description": "The profile for a scanned table.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The name of the profile.",
+          "type": "string"
+        },
+        "projectDataProfile": {
+          "description": "The resource name to the project data profile for this table.",
+          "type": "string"
+        },
+        "datasetProjectId": {
+          "description": "The GCP project ID that owns the BigQuery dataset.",
+          "type": "string"
+        },
+        "datasetLocation": {
+          "description": "The BigQuery location where the dataset's data is stored. See https:\/\/cloud.google.com\/bigquery\/docs\/locations for supported locations.",
+          "type": "string"
+        },
+        "datasetId": {
+          "description": "The BigQuery dataset ID.",
+          "type": "string"
+        },
+        "tableId": {
+          "description": "The BigQuery table ID.",
+          "type": "string"
+        },
+        "fullResource": {
+          "description": "The resource name of the table. https:\/\/cloud.google.com\/apis\/design\/resource_names#full_resource_name",
+          "type": "string"
+        },
+        "profileStatus": {
+          "description": "Success or error status from the most recent profile generation attempt. May be empty if the profile is still being generated.",
+          "$ref": "GooglePrivacyDlpV2ProfileStatus"
+        },
+        "state": {
+          "description": "State of a profile.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unused.",
+            "The profile is currently running. Once a profile has finished it will transition to DONE.",
+            "The profile is no longer generating. If profile_status.status.code is 0, the profile succeeded, otherwise, it failed."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "RUNNING",
+            "DONE"
+          ]
+        },
+        "sensitivityScore": {
+          "description": "The sensitivity score of this table.",
+          "$ref": "GooglePrivacyDlpV2SensitivityScore"
+        },
+        "dataRiskLevel": {
+          "description": "The data risk level of this table.",
+          "$ref": "GooglePrivacyDlpV2DataRiskLevel"
+        },
+        "predictedInfoTypes": {
+          "description": "The infoTypes predicted from this table's data.",
+          "type": "array",
+          "items": {
+            "$ref": "GooglePrivacyDlpV2InfoTypeSummary"
+          }
+        },
+        "otherInfoTypes": {
+          "description": "Other infoTypes found in this table's data.",
+          "type": "array",
+          "items": {
+            "$ref": "GooglePrivacyDlpV2OtherInfoTypeSummary"
+          }
+        },
+        "configSnapshot": {
+          "description": "The snapshot of the configurations used to generate the profile.",
+          "$ref": "GooglePrivacyDlpV2DataProfileConfigSnapshot"
+        },
+        "lastModifiedTime": {
+          "description": "The time when this table was last modified",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "expirationTime": {
+          "description": "Optional. The time when this table expires.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "scannedColumnCount": {
+          "description": "The number of columns profiled in the table.",
+          "type": "string",
+          "format": "int64"
+        },
+        "failedColumnCount": {
+          "description": "The number of columns skipped in the table because of an error.",
+          "type": "string",
+          "format": "int64"
+        },
+        "tableSizeBytes": {
+          "description": "The size of the table when the profile was generated.",
+          "type": "string",
+          "format": "int64"
+        },
+        "rowCount": {
+          "description": "Number of rows in the table when the profile was generated.",
+          "type": "string",
+          "format": "int64"
+        },
+        "encryptionStatus": {
+          "description": "How the table is encrypted.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unused.",
+            "Google manages server-side encryption keys on your behalf.",
+            "Customer provides the key."
+          ],
+          "enum": [
+            "ENCRYPTION_STATUS_UNSPECIFIED",
+            "ENCRYPTION_GOOGLE_MANAGED",
+            "ENCRYPTION_CUSTOMER_MANAGED"
+          ]
+        },
+        "resourceVisibility": {
+          "description": "How broadly a resource has been shared.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unused.",
+            "Visible to any user.",
+            "Visible only to specific users."
+          ],
+          "enum": [
+            "RESOURCE_VISIBILITY_UNSPECIFIED",
+            "RESOURCE_VISIBILITY_PUBLIC",
+            "RESOURCE_VISIBILITY_RESTRICTED"
+          ]
+        },
+        "profileLastGenerated": {
+          "description": "The last time the profile was generated.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "resourceLabels": {
+          "description": "The labels applied to the resource at the time the profile was generated.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "createTime": {
+          "description": "The time at which the table was created.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "GooglePrivacyDlpV2ProfileStatus": {
+      "id": "GooglePrivacyDlpV2ProfileStatus",
+      "type": "object",
+      "properties": {
+        "status": {
+          "description": "Profiling status code and optional message",
+          "$ref": "GoogleRpcStatus"
+        },
+        "timestamp": {
+          "description": "Time when the profile generation status was updated",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "GooglePrivacyDlpV2SensitivityScore": {
+      "id": "GooglePrivacyDlpV2SensitivityScore",
+      "description": "Score is a summary of all elements in the data profile. A higher number means more sensitive.",
+      "type": "object",
+      "properties": {
+        "score": {
+          "description": "The score applied to the resource.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unused.",
+            "No sensitive information detected. Limited access.",
+            "Medium risk - PII, potentially sensitive data, or fields with free-text data that are at higher risk of having intermittent sensitive data. Consider limiting access.",
+            "High risk \u2013 SPII may be present. Exfiltration of data may lead to user data loss. Re-identification of users may be possible. Consider limiting usage and or removing SPII."
+          ],
+          "enum": [
+            "SENSITIVITY_SCORE_UNSPECIFIED",
+            "SENSITIVITY_LOW",
+            "SENSITIVITY_MODERATE",
+            "SENSITIVITY_HIGH"
+          ]
+        }
+      }
+    },
+    "GooglePrivacyDlpV2DataRiskLevel": {
+      "id": "GooglePrivacyDlpV2DataRiskLevel",
+      "description": "Score is a summary of all elements in the data profile. A higher number means more risky.",
+      "type": "object",
+      "properties": {
+        "score": {
+          "description": "The score applied to the resource.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unused.",
+            "Low risk - Lower indication of sensitive data that appears to have additional access restrictions in place or no indication of sensitive data found.",
+            "Medium risk - Sensitive data may be present but additional access or fine grain access restrictions appears to be present. Consider limiting access even further or transforming data to mask.",
+            "High risk \u2013 SPII may be present. Access controls may include public ACLs. Exfiltration of data may lead to user data loss. Re-identification of users may be possible. Consider limiting usage and or removing SPII."
+          ],
+          "enum": [
+            "RISK_SCORE_UNSPECIFIED",
+            "RISK_LOW",
+            "RISK_MODERATE",
+            "RISK_HIGH"
+          ]
+        }
+      }
+    },
+    "GooglePrivacyDlpV2InfoTypeSummary": {
+      "id": "GooglePrivacyDlpV2InfoTypeSummary",
+      "description": "The infoType details for this column.",
+      "type": "object",
+      "properties": {
+        "infoType": {
+          "description": "The infoType.",
+          "$ref": "GooglePrivacyDlpV2InfoType"
+        }
+      }
+    },
+    "GooglePrivacyDlpV2OtherInfoTypeSummary": {
+      "id": "GooglePrivacyDlpV2OtherInfoTypeSummary",
+      "description": "Infotype details for other infoTypes found within a column.",
+      "type": "object",
+      "properties": {
+        "infoType": {
+          "description": "The other infoType.",
+          "$ref": "GooglePrivacyDlpV2InfoType"
+        }
+      }
+    },
+    "GooglePrivacyDlpV2DataProfileConfigSnapshot": {
+      "id": "GooglePrivacyDlpV2DataProfileConfigSnapshot",
+      "description": "Snapshot of the configurations used to generate the profile.",
+      "type": "object",
+      "properties": {
+        "inspectConfig": {
+          "description": "A copy of the inspection config used to generate this profile. This is a copy of the inspect_template specified in `DataProfileJobConfig`.",
+          "$ref": "GooglePrivacyDlpV2InspectConfig"
+        },
+        "dataProfileJob": {
+          "description": "A copy of the configuration used to generate this profile.",
+          "$ref": "GooglePrivacyDlpV2DataProfileJobConfig"
+        }
+      }
+    },
+    "GooglePrivacyDlpV2DataProfileJobConfig": {
+      "id": "GooglePrivacyDlpV2DataProfileJobConfig",
+      "description": "Configuration for setting up a job to scan resources for profile generation. Only one data profile configuration may exist per organization, folder, or project. The generated data profiles are retained according to the [data retention policy] (https:\/\/cloud.google.com\/dlp\/docs\/data-profiles#retention).",
+      "type": "object",
+      "properties": {
+        "location": {
+          "description": "The data to scan.",
+          "$ref": "GooglePrivacyDlpV2DataProfileLocation"
+        },
+        "projectId": {
+          "description": "The project that will run the scan. The DLP service account that exists within this project must have access to all resources that are profiled, and the Cloud DLP API must be enabled.",
+          "type": "string"
+        },
+        "inspectTemplates": {
+          "description": "Detection logic for profile generation. Not all template features are used by profiles. FindingLimits, include_quote and exclude_info_types have no impact on data profiling. Multiple templates may be provided if there is data in multiple regions. At most one template must be specified per-region (including \"global\"). Each region is scanned using the applicable template. If no region-specific template is specified, but a \"global\" template is specified, it will be copied to that region and used instead. If no global or region-specific template is provided for a region with data, that region's data will not be scanned. For more information, see https:\/\/cloud.google.com\/dlp\/docs\/data-profiles#data_residency.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "dataProfileActions": {
+          "description": "Actions to execute at the completion of the job.",
+          "type": "array",
+          "items": {
+            "$ref": "GooglePrivacyDlpV2DataProfileAction"
+          }
+        }
+      }
+    },
+    "GooglePrivacyDlpV2DataProfileLocation": {
+      "id": "GooglePrivacyDlpV2DataProfileLocation",
+      "description": "The data that will be profiled.",
+      "type": "object",
+      "properties": {
+        "organizationId": {
+          "description": "The ID of an organization to scan.",
+          "type": "string",
+          "format": "int64"
+        },
+        "folderId": {
+          "description": "The ID of the Folder within an organization to scan.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "GooglePrivacyDlpV2DataProfileAction": {
+      "id": "GooglePrivacyDlpV2DataProfileAction",
+      "description": "A task to execute when a data profile has been generated.",
+      "type": "object",
+      "properties": {
+        "exportData": {
+          "description": "Export data profiles into a provided location.",
+          "$ref": "GooglePrivacyDlpV2Export"
+        },
+        "pubSubNotification": {
+          "description": "Publish a message into the Pub\/Sub topic.",
+          "$ref": "GooglePrivacyDlpV2PubSubNotification"
+        }
+      }
+    },
+    "GooglePrivacyDlpV2Export": {
+      "id": "GooglePrivacyDlpV2Export",
+      "description": "If set, the detailed data profiles will be persisted to the location of your choice whenever updated.",
+      "type": "object",
+      "properties": {
+        "profileTable": {
+          "description": "Store all table and column profiles in an existing table or a new table in an existing dataset. Each re-generation will result in a new row in BigQuery.",
+          "$ref": "GooglePrivacyDlpV2BigQueryTable"
+        }
+      }
+    },
+    "GooglePrivacyDlpV2PubSubNotification": {
+      "id": "GooglePrivacyDlpV2PubSubNotification",
+      "description": "Send a Pub\/Sub message into the given Pub\/Sub topic to connect other systems to data profile generation. The message payload data will be the byte serialization of `DataProfilePubSubMessage`.",
+      "type": "object",
+      "properties": {
+        "topic": {
+          "description": "Cloud Pub\/Sub topic to send notifications to. Format is projects\/{project}\/topics\/{topic}.",
+          "type": "string"
+        },
+        "event": {
+          "description": "The type of event that triggers a Pub\/Sub. At most one `PubSubNotification` per EventType is permitted.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unused.",
+            "New profile (not a re-profile).",
+            "Changed one of the following profile metrics: * Table data risk score * Table sensitivity score * Table resource visibility * Table encryption type * Table predicted infoTypes * Table other infoTypes",
+            "Table data risk score or sensitivity score increased.",
+            "A user (non-internal) error occurred."
+          ],
+          "enum": [
+            "EVENT_TYPE_UNSPECIFIED",
+            "NEW_PROFILE",
+            "CHANGED_PROFILE",
+            "SCORE_INCREASED",
+            "ERROR_CHANGED"
+          ]
+        },
+        "pubsubCondition": {
+          "description": "Conditions (e.g., data risk or sensitivity level) for triggering a Pub\/Sub.",
+          "$ref": "GooglePrivacyDlpV2DataProfilePubSubCondition"
+        },
+        "detailOfMessage": {
+          "description": "How much data to include in the Pub\/Sub message. If the user wishes to limit the size of the message, they can use resource_name and fetch the profile fields they wish to. Per table profile (not per column).",
+          "type": "string",
+          "enumDescriptions": [
+            "Unused.",
+            "The full table data profile.",
+            "The resource name of the table."
+          ],
+          "enum": [
+            "DETAIL_LEVEL_UNSPECIFIED",
+            "TABLE_PROFILE",
+            "RESOURCE_NAME"
+          ]
+        }
+      }
+    },
+    "GooglePrivacyDlpV2DataProfilePubSubCondition": {
+      "id": "GooglePrivacyDlpV2DataProfilePubSubCondition",
+      "description": "A condition for determining whether a PubSub should be triggered.",
+      "type": "object",
+      "properties": {
+        "expressions": {
+          "description": "An expression.",
+          "$ref": "GooglePrivacyDlpV2PubSubExpressions"
+        }
+      }
+    },
+    "GooglePrivacyDlpV2PubSubExpressions": {
+      "id": "GooglePrivacyDlpV2PubSubExpressions",
+      "description": "An expression, consisting of an operator and conditions.",
+      "type": "object",
+      "properties": {
+        "logicalOperator": {
+          "description": "The operator to apply to the collection of conditions.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unused.",
+            "Conditional OR.",
+            "Conditional AND."
+          ],
+          "enum": [
+            "LOGICAL_OPERATOR_UNSPECIFIED",
+            "OR",
+            "AND"
+          ]
+        },
+        "conditions": {
+          "description": "Conditions to apply to the expression.",
+          "type": "array",
+          "items": {
+            "$ref": "GooglePrivacyDlpV2PubSubCondition"
+          }
+        }
+      }
+    },
+    "GooglePrivacyDlpV2PubSubCondition": {
+      "id": "GooglePrivacyDlpV2PubSubCondition",
+      "description": "A condition consisting of a value.",
+      "type": "object",
+      "properties": {
+        "minimumRiskScore": {
+          "description": "The minimum data risk score that triggers the condition.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unused.",
+            "High risk\/sensitivity detected.",
+            "Medium or high risk\/sensitivity detected."
+          ],
+          "enum": [
+            "PROFILE_SCORE_BUCKET_UNSPECIFIED",
+            "HIGH",
+            "MEDIUM_OR_HIGH"
+          ]
+        },
+        "minimumSensitivityScore": {
+          "description": "The minimum sensitivity level that triggers the condition.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unused.",
+            "High risk\/sensitivity detected.",
+            "Medium or high risk\/sensitivity detected."
+          ],
+          "enum": [
+            "PROFILE_SCORE_BUCKET_UNSPECIFIED",
+            "HIGH",
+            "MEDIUM_OR_HIGH"
+          ]
+        }
       }
     }
   },

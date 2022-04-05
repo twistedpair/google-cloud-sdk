@@ -495,9 +495,7 @@ class LoggingConfig(_messages.Message):
 
 
 class MetadataOptions(_messages.Message):
-  r"""Specifies the metadata options for running a transfer. These options
-  only apply to transfers involving a POSIX filesystem and are ignored for
-  other transfers.
+  r"""Specifies the metadata options for running a transfer.
 
   Enums:
     AclValueValuesEnum: Specifies how each object's ACLs should be preserved
@@ -505,19 +503,23 @@ class MetadataOptions(_messages.Message):
       default behavior is the same as ACL_DESTINATION_BUCKET_DEFAULT.
     GidValueValuesEnum: Specifies how each file's POSIX group ID (GID)
       attribute should be handled by the transfer. By default, GID is not
-      preserved.
+      preserved. Only applicable to transfers involving POSIX file systems,
+      and ignored for other transfers.
     KmsKeyValueValuesEnum: Specifies how each object's Cloud KMS customer-
       managed encryption key (CMEK) is preserved for transfers between Google
       Cloud Storage buckets. If unspecified, the default behavior is the same
       as KMS_KEY_DESTINATION_BUCKET_DEFAULT.
     ModeValueValuesEnum: Specifies how each file's mode attribute should be
-      handled by the transfer. By default, mode is not preserved.
+      handled by the transfer. By default, mode is not preserved. Only
+      applicable to transfers involving POSIX file systems, and ignored for
+      other transfers.
     StorageClassValueValuesEnum: Specifies the storage class to set on objects
       being transferred to Google Cloud Storage buckets. If unspecified, the
       default behavior is the same as
       STORAGE_CLASS_DESTINATION_BUCKET_DEFAULT.
     SymlinkValueValuesEnum: Specifies how symlinks should be handled by the
-      transfer. By default, symlinks are not preserved.
+      transfer. By default, symlinks are not preserved. Only applicable to
+      transfers involving POSIX file systems, and ignored for other transfers.
     TemporaryHoldValueValuesEnum: Specifies how each object's temporary hold
       status should be preserved for transfers between Google Cloud Storage
       buckets. If unspecified, the default behavior is the same as
@@ -528,25 +530,30 @@ class MetadataOptions(_messages.Message):
       TIME_CREATED_SKIP.
     UidValueValuesEnum: Specifies how each file's POSIX user ID (UID)
       attribute should be handled by the transfer. By default, UID is not
-      preserved.
+      preserved. Only applicable to transfers involving POSIX file systems,
+      and ignored for other transfers.
 
   Fields:
     acl: Specifies how each object's ACLs should be preserved for transfers
       between Google Cloud Storage buckets. If unspecified, the default
       behavior is the same as ACL_DESTINATION_BUCKET_DEFAULT.
     gid: Specifies how each file's POSIX group ID (GID) attribute should be
-      handled by the transfer. By default, GID is not preserved.
+      handled by the transfer. By default, GID is not preserved. Only
+      applicable to transfers involving POSIX file systems, and ignored for
+      other transfers.
     kmsKey: Specifies how each object's Cloud KMS customer-managed encryption
       key (CMEK) is preserved for transfers between Google Cloud Storage
       buckets. If unspecified, the default behavior is the same as
       KMS_KEY_DESTINATION_BUCKET_DEFAULT.
     mode: Specifies how each file's mode attribute should be handled by the
-      transfer. By default, mode is not preserved.
+      transfer. By default, mode is not preserved. Only applicable to
+      transfers involving POSIX file systems, and ignored for other transfers.
     storageClass: Specifies the storage class to set on objects being
       transferred to Google Cloud Storage buckets. If unspecified, the default
       behavior is the same as STORAGE_CLASS_DESTINATION_BUCKET_DEFAULT.
     symlink: Specifies how symlinks should be handled by the transfer. By
-      default, symlinks are not preserved.
+      default, symlinks are not preserved. Only applicable to transfers
+      involving POSIX file systems, and ignored for other transfers.
     temporaryHold: Specifies how each object's temporary hold status should be
       preserved for transfers between Google Cloud Storage buckets. If
       unspecified, the default behavior is the same as
@@ -555,7 +562,9 @@ class MetadataOptions(_messages.Message):
       preserved for transfers between Google Cloud Storage buckets. If
       unspecified, the default behavior is the same as TIME_CREATED_SKIP.
     uid: Specifies how each file's POSIX user ID (UID) attribute should be
-      handled by the transfer. By default, UID is not preserved.
+      handled by the transfer. By default, UID is not preserved. Only
+      applicable to transfers involving POSIX file systems, and ignored for
+      other transfers.
   """
 
   class AclValueValuesEnum(_messages.Enum):
@@ -580,7 +589,9 @@ class MetadataOptions(_messages.Message):
 
   class GidValueValuesEnum(_messages.Enum):
     r"""Specifies how each file's POSIX group ID (GID) attribute should be
-    handled by the transfer. By default, GID is not preserved.
+    handled by the transfer. By default, GID is not preserved. Only applicable
+    to transfers involving POSIX file systems, and ignored for other
+    transfers.
 
     Values:
       GID_UNSPECIFIED: GID behavior is unspecified.
@@ -612,7 +623,8 @@ class MetadataOptions(_messages.Message):
 
   class ModeValueValuesEnum(_messages.Enum):
     r"""Specifies how each file's mode attribute should be handled by the
-    transfer. By default, mode is not preserved.
+    transfer. By default, mode is not preserved. Only applicable to transfers
+    involving POSIX file systems, and ignored for other transfers.
 
     Values:
       MODE_UNSPECIFIED: Mode behavior is unspecified.
@@ -650,7 +662,8 @@ class MetadataOptions(_messages.Message):
 
   class SymlinkValueValuesEnum(_messages.Enum):
     r"""Specifies how symlinks should be handled by the transfer. By default,
-    symlinks are not preserved.
+    symlinks are not preserved. Only applicable to transfers involving POSIX
+    file systems, and ignored for other transfers.
 
     Values:
       SYMLINK_UNSPECIFIED: Symlink behavior is unspecified.
@@ -697,7 +710,9 @@ class MetadataOptions(_messages.Message):
 
   class UidValueValuesEnum(_messages.Enum):
     r"""Specifies how each file's POSIX user ID (UID) attribute should be
-    handled by the transfer. By default, UID is not preserved.
+    handled by the transfer. By default, UID is not preserved. Only applicable
+    to transfers involving POSIX file systems, and ignored for other
+    transfers.
 
     Values:
       UID_UNSPECIFIED: UID behavior is unspecified.
@@ -1639,6 +1654,11 @@ class TransferOptions(_messages.Message):
   r"""TransferOptions define the actions to be performed on objects in a
   transfer.
 
+  Enums:
+    OverwriteWhenValueValuesEnum: When to overwrite objects that already exist
+      in the sink. If not set overwrite behavior is determined by
+      overwrite_objects_already_existing_in_sink.
+
   Fields:
     deleteObjectsFromSourceAfterTransfer: Whether objects should be deleted
       from the source after they are transferred to the sink. **Note:** This
@@ -1653,12 +1673,33 @@ class TransferOptions(_messages.Message):
       different from the source are ovewritten. If true, all objects in the
       sink whose name matches an object in the source are overwritten with the
       source object.
+    overwriteWhen: When to overwrite objects that already exist in the sink.
+      If not set overwrite behavior is determined by
+      overwrite_objects_already_existing_in_sink.
   """
+
+  class OverwriteWhenValueValuesEnum(_messages.Enum):
+    r"""When to overwrite objects that already exist in the sink. If not set
+    overwrite behavior is determined by
+    overwrite_objects_already_existing_in_sink.
+
+    Values:
+      OVERWRITE_WHEN_UNSPECIFIED: Indicate the option is not set.
+      DIFFERENT: Overwrite destination object with source if the two objects
+        are different.
+      NEVER: Never overwrite destination object.
+      ALWAYS: Always overwrite destination object.
+    """
+    OVERWRITE_WHEN_UNSPECIFIED = 0
+    DIFFERENT = 1
+    NEVER = 2
+    ALWAYS = 3
 
   deleteObjectsFromSourceAfterTransfer = _messages.BooleanField(1)
   deleteObjectsUniqueInSink = _messages.BooleanField(2)
   metadataOptions = _messages.MessageField('MetadataOptions', 3)
   overwriteObjectsAlreadyExistingInSink = _messages.BooleanField(4)
+  overwriteWhen = _messages.EnumField('OverwriteWhenValueValuesEnum', 5)
 
 
 class TransferSpec(_messages.Message):

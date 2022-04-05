@@ -89,6 +89,7 @@ _INTEGRATION_TYPES = frozenset([
                         'Supported values include: REDIS_6_X, REDIS_5_0, '
                         'REDIS_4_0 and REDIS_3_2.',
                     'type': 'string',
+                    'update_allowed': False,
                 }),
             }),
     }),

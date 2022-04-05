@@ -1156,7 +1156,6 @@ class Instance(_messages.Message):
       single file share is supported.
     kmsKeyName: KMS key name used for data encryption.
     labels: Resource labels to represent user provided metadata.
-    maxShareCount: Output only. The max number of shares allowed.
     name: Output only. The resource name of the instance, in the format
       `projects/{project_id}/locations/{location_id}/instances/{instance_id}`.
     networks: VPC networks to which the instance is connected. For this
@@ -1266,14 +1265,13 @@ class Instance(_messages.Message):
   fileShares = _messages.MessageField('FileShareConfig', 4, repeated=True)
   kmsKeyName = _messages.StringField(5)
   labels = _messages.MessageField('LabelsValue', 6)
-  maxShareCount = _messages.IntegerField(7)
-  name = _messages.StringField(8)
-  networks = _messages.MessageField('NetworkConfig', 9, repeated=True)
-  satisfiesPzs = _messages.BooleanField(10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  statusMessage = _messages.StringField(12)
-  suspensionReasons = _messages.EnumField('SuspensionReasonsValueListEntryValuesEnum', 13, repeated=True)
-  tier = _messages.EnumField('TierValueValuesEnum', 14)
+  name = _messages.StringField(7)
+  networks = _messages.MessageField('NetworkConfig', 8, repeated=True)
+  satisfiesPzs = _messages.BooleanField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  statusMessage = _messages.StringField(11)
+  suspensionReasons = _messages.EnumField('SuspensionReasonsValueListEntryValuesEnum', 12, repeated=True)
+  tier = _messages.EnumField('TierValueValuesEnum', 13)
 
 
 class ListBackupsResponse(_messages.Message):

@@ -4,7 +4,7 @@
  "id": "bigquery:v2",
  "name": "bigquery",
  "version": "v2",
- "revision": "20220318",
+ "revision": "20220329",
  "title": "BigQuery API",
  "description": "A data platform for customers to create, manage, share and query data.",
  "ownerDomain": "google.com",
@@ -519,6 +519,11 @@
     "location": {
      "type": "string",
      "description": "The geographic location where the dataset should reside. The default value is US. See details at https://cloud.google.com/bigquery/docs/locations."
+    },
+    "maxTimeTravelHours": {
+     "type": "string",
+     "description": "[Optional] Number of hours for the max time travel for all tables in the dataset.",
+     "format": "int64"
     },
     "satisfiesPZS": {
      "type": "boolean",
@@ -2756,6 +2761,46 @@
      "type": "string",
      "description": "[Output-only] The number of rows of data in this table, excluding any data in the streaming buffer.",
      "format": "uint64"
+    },
+    "num_active_logical_bytes": {
+     "type": "string",
+     "description": "[Output-only] Number of logical bytes that are less than 90 days old.",
+     "format": "int64"
+    },
+    "num_active_physical_bytes": {
+     "type": "string",
+     "description": "[Output-only] Number of physical bytes less than 90 days old. This data is not kept in real time, and might be delayed by a few seconds to a few minutes.",
+     "format": "int64"
+    },
+    "num_long_term_logical_bytes": {
+     "type": "string",
+     "description": "[Output-only] Number of logical bytes that are more than 90 days old.",
+     "format": "int64"
+    },
+    "num_long_term_physical_bytes": {
+     "type": "string",
+     "description": "[Output-only] Number of physical bytes more than 90 days old. This data is not kept in real time, and might be delayed by a few seconds to a few minutes.",
+     "format": "int64"
+    },
+    "num_partitions": {
+     "type": "string",
+     "description": "[Output-only] The number of partitions present in the table or materialized view. This data is not kept in real time, and might be delayed by a few seconds to a few minutes.",
+     "format": "int64"
+    },
+    "num_time_travel_physical_bytes": {
+     "type": "string",
+     "description": "[Output-only] Number of physical bytes used by time travel storage (deleted or changed data). This data is not kept in real time, and might be delayed by a few seconds to a few minutes.",
+     "format": "int64"
+    },
+    "num_total_logical_bytes": {
+     "type": "string",
+     "description": "[Output-only] Total number of logical bytes in the table or materialized view.",
+     "format": "int64"
+    },
+    "num_total_physical_bytes": {
+     "type": "string",
+     "description": "[Output-only] The physical size of this table in bytes. This also includes storage used for time travel. This data is not kept in real time, and might be delayed by a few seconds to a few minutes.",
+     "format": "int64"
     },
     "rangePartitioning": {
      "$ref": "RangePartitioning",

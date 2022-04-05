@@ -836,6 +836,8 @@ class Dataset(_messages.Message):
     location: The geographic location where the dataset should reside. The
       default value is US. See details at
       https://cloud.google.com/bigquery/docs/locations.
+    maxTimeTravelHours: [Optional] Number of hours for the max time travel for
+      all tables in the dataset.
     satisfiesPZS: [Output-only] Reserved for future use.
     selfLink: [Output-only] A URL that can be used to access the resource
       again. You can use this URL in Get or Update requests to the resource.
@@ -953,9 +955,10 @@ class Dataset(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 14)
   lastModifiedTime = _messages.IntegerField(15)
   location = _messages.StringField(16)
-  satisfiesPZS = _messages.BooleanField(17)
-  selfLink = _messages.StringField(18)
-  tags = _messages.MessageField('TagsValueListEntry', 19, repeated=True)
+  maxTimeTravelHours = _messages.IntegerField(17)
+  satisfiesPZS = _messages.BooleanField(18)
+  selfLink = _messages.StringField(19)
+  tags = _messages.MessageField('TagsValueListEntry', 20, repeated=True)
 
 
 class DatasetAccessEntry(_messages.Message):
@@ -3141,6 +3144,29 @@ class Table(_messages.Message):
       includes compression and storage used for time travel.
     numRows: [Output-only] The number of rows of data in this table, excluding
       any data in the streaming buffer.
+    num_active_logical_bytes: [Output-only] Number of logical bytes that are
+      less than 90 days old.
+    num_active_physical_bytes: [Output-only] Number of physical bytes less
+      than 90 days old. This data is not kept in real time, and might be
+      delayed by a few seconds to a few minutes.
+    num_long_term_logical_bytes: [Output-only] Number of logical bytes that
+      are more than 90 days old.
+    num_long_term_physical_bytes: [Output-only] Number of physical bytes more
+      than 90 days old. This data is not kept in real time, and might be
+      delayed by a few seconds to a few minutes.
+    num_partitions: [Output-only] The number of partitions present in the
+      table or materialized view. This data is not kept in real time, and
+      might be delayed by a few seconds to a few minutes.
+    num_time_travel_physical_bytes: [Output-only] Number of physical bytes
+      used by time travel storage (deleted or changed data). This data is not
+      kept in real time, and might be delayed by a few seconds to a few
+      minutes.
+    num_total_logical_bytes: [Output-only] Total number of logical bytes in
+      the table or materialized view.
+    num_total_physical_bytes: [Output-only] The physical size of this table in
+      bytes. This also includes storage used for time travel. This data is not
+      kept in real time, and might be delayed by a few seconds to a few
+      minutes.
     rangePartitioning: [TrustedTester] Range partitioning specification for
       this table. Only one of timePartitioning and rangePartitioning should be
       specified.
@@ -3218,16 +3244,24 @@ class Table(_messages.Message):
   numLongTermBytes = _messages.IntegerField(19)
   numPhysicalBytes = _messages.IntegerField(20)
   numRows = _messages.IntegerField(21, variant=_messages.Variant.UINT64)
-  rangePartitioning = _messages.MessageField('RangePartitioning', 22)
-  requirePartitionFilter = _messages.BooleanField(23, default=False)
-  schema = _messages.MessageField('TableSchema', 24)
-  selfLink = _messages.StringField(25)
-  snapshotDefinition = _messages.MessageField('SnapshotDefinition', 26)
-  streamingBuffer = _messages.MessageField('Streamingbuffer', 27)
-  tableReference = _messages.MessageField('TableReference', 28)
-  timePartitioning = _messages.MessageField('TimePartitioning', 29)
-  type = _messages.StringField(30)
-  view = _messages.MessageField('ViewDefinition', 31)
+  num_active_logical_bytes = _messages.IntegerField(22)
+  num_active_physical_bytes = _messages.IntegerField(23)
+  num_long_term_logical_bytes = _messages.IntegerField(24)
+  num_long_term_physical_bytes = _messages.IntegerField(25)
+  num_partitions = _messages.IntegerField(26)
+  num_time_travel_physical_bytes = _messages.IntegerField(27)
+  num_total_logical_bytes = _messages.IntegerField(28)
+  num_total_physical_bytes = _messages.IntegerField(29)
+  rangePartitioning = _messages.MessageField('RangePartitioning', 30)
+  requirePartitionFilter = _messages.BooleanField(31, default=False)
+  schema = _messages.MessageField('TableSchema', 32)
+  selfLink = _messages.StringField(33)
+  snapshotDefinition = _messages.MessageField('SnapshotDefinition', 34)
+  streamingBuffer = _messages.MessageField('Streamingbuffer', 35)
+  tableReference = _messages.MessageField('TableReference', 36)
+  timePartitioning = _messages.MessageField('TimePartitioning', 37)
+  type = _messages.StringField(38)
+  view = _messages.MessageField('ViewDefinition', 39)
 
 
 class TableCell(_messages.Message):

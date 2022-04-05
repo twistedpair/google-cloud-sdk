@@ -25,6 +25,7 @@ import time
 from apitools.base.py import encoding_helper
 from apitools.base.py.exceptions import HttpConflictError
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.command_lib.compute import iap_tunnel
 from googlecloudsdk.command_lib.compute.tpus.tpu_vm import exceptions as tpu_exceptions
 from googlecloudsdk.command_lib.util.ssh import ssh
 from googlecloudsdk.core import execution_utils
@@ -33,6 +34,13 @@ from googlecloudsdk.core import log
 import six
 
 SSH_KEYS_METADATA_KEY = 'ssh-keys'
+
+IAP_TROUBLESHOOTING_HELP = """
+Please ensure that this TPU was created after March 24, 2022. If it is, check
+that you have allowed IAP to connect to instances in your
+firewall (https://cloud.google.com/iap/docs/using-tcp-forwarding#create-firewall-rule),
+and that the TPU is in READY state with HEALTHY health.
+"""
 
 
 def AddTPUSSHArgs(parser):
@@ -51,7 +59,8 @@ def AddTPUSSHArgs(parser):
           with your private key prior to executing the gcloud command. Default:
           'ssh-add ~/.ssh/google_compute_engine'.
           """)
-  parser.add_argument(
+  routing_group = parser.add_mutually_exclusive_group()
+  routing_group.add_argument(
       '--internal-ip',
       action='store_true',
       help="""\
@@ -60,6 +69,25 @@ def AddTPUSSHArgs(parser):
           Engine VM to a TPU VM on the same VPC network, or between two peered
           VPC networks.
           """)
+  routing_group.add_argument(
+      '--tunnel-through-iap',
+      action='store_true',
+      help="""\
+      Tunnel the SSH connection through Cloud Identity-Aware Proxy for TCP
+      forwarding.
+
+      This flag must be specified to attempt to connect via IAP tunneling. If it
+      is not set, and connection to a Cloud TPU VM without external IP address
+      is attempted from outside the network, then the command will fail.
+
+      To use IAP tunneling, there must be firewall access to the SSH port for
+      the IAP TCP IP address range for the network the TPU is created in. See
+      the [user guide](https://cloud.google.com/iap/docs/using-tcp-forwarding)
+      for more details.
+
+      To learn more, see the
+      [IAP for TCP forwarding documentation](https://cloud.google.com/iap/docs/tcp-forwarding-overview).
+      """)
 
 
 def ValidateTPUState(state, state_enum):
@@ -157,41 +185,41 @@ def ParseWorkerFlag(worker_flag, network_endpoints, use_internal_ips):
   return worker_ips
 
 
-def _ParseHostKeySuffixes(guest_attributes_response):
+def _ParseHostKeySuffixes(guest_attributes):
   """Returns the host key suffixes."""
   host_key_suffixes = []
-  for guest_attributes in guest_attributes_response.guestAttributes:
-    for item in guest_attributes.queryValue.items:
+  for worker_guest_attributes in guest_attributes:
+    for item in worker_guest_attributes.queryValue.items:
       if item.key == 'ssh-ed25519':
         host_key_suffixes.append(item.value[-6:])
         break
   return host_key_suffixes
 
 
-def _ParseSingleHostKeySuffix(guest_attributes_response, worker_count, worker):
+def _ParseSingleHostKeySuffix(guest_attributes, worker_count, worker):
   """Returns a list with only a single worker's host key suffix populated."""
   suffixes = [''] * worker_count
-  for item in guest_attributes_response.guestAttributes[0].queryValue.items:
+  for item in guest_attributes[0].queryValue.items:
     if item.key == 'ssh-ed25519':
       suffixes[worker] = item.value[-6:]
       break
   return suffixes
 
 
-def GetHostKeySuffixes(tpu_helper, tpu_name, worker_ips, worker_count, zone):
+def GetFromGuestAttributes(guest_attributes, worker, key):
+  for item in guest_attributes[worker].queryValue.items:
+    if item.key == key:
+      return item.value
+  return None
+
+
+def GetHostKeySuffixes(
+    guest_attributes, worker_count=None, worker_id=None):
   """Retrieves the host key suffixes for the TPU workers."""
-  single_pod_worker = worker_count > 1 and len(worker_ips) == 1
-  if single_pod_worker:
-    # Retrieve only that worker's GuestAttributes.
-    worker_id = list(worker_ips)[0]
-    guest_attributes_response = tpu_helper.GetGuestAttributes(
-        tpu_name, zone, str(worker_id))
-    host_key_suffixes = _ParseSingleHostKeySuffix(guest_attributes_response,
-                                                  worker_count, worker_id)
+  if worker_count and worker_id:
+    return _ParseSingleHostKeySuffix(guest_attributes, worker_count, worker_id)
   else:
-    guest_attributes_response = tpu_helper.GetGuestAttributes(tpu_name, zone)
-    host_key_suffixes = _ParseHostKeySuffixes(guest_attributes_response)
-  return host_key_suffixes
+    return _ParseHostKeySuffixes(guest_attributes)
 
 
 def TpuHasOsLoginEnabled(node):
@@ -289,6 +317,22 @@ def VerifyKeyInAgent(identity_file):
 
   if fingerprint not in out.getvalue():
     raise tpu_exceptions.SSHKeyNotInAgent(identity_file)
+
+
+def CreateSshTunnelArgs(args, track, project, zone, instance):
+  """Construct an SshTunnelArgs object from command line args and values."""
+  # If tunneling through IAP is not available or specified, then abort.
+  if not args.IsKnownAndSpecified('tunnel_through_iap'):
+    return None
+
+  res = iap_tunnel.SshTunnelArgs()
+
+  res.track = track.prefix
+  res.project = project.name
+  res.zone = zone
+  res.instance = instance
+
+  return res
 
 
 def AttemptRunWithRetries(command_name, worker, exit_statuses, cmd, env,

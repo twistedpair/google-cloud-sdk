@@ -1568,6 +1568,9 @@ class ProvisioningQuota(_messages.Message):
     instanceQuota: Instance quota.
     location: The specific location of the provisioining quota.
     name: Output only. The name of the provisioning quota.
+    networkBandwidth: Network bandwidth, Gbps
+    serverCount: Server count.
+    storageGib: Storage size (GB).
   """
 
   class AssetTypeValueValuesEnum(_messages.Enum):
@@ -1590,6 +1593,9 @@ class ProvisioningQuota(_messages.Message):
   instanceQuota = _messages.MessageField('InstanceQuota', 4)
   location = _messages.StringField(5)
   name = _messages.StringField(6)
+  networkBandwidth = _messages.IntegerField(7)
+  serverCount = _messages.IntegerField(8)
+  storageGib = _messages.IntegerField(9)
 
 
 class QosPolicy(_messages.Message):

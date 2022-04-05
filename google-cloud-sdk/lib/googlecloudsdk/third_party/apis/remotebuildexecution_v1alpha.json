@@ -333,6 +333,20 @@
         }
       }
     },
+    "GoogleDevtoolsRemotebuildexecutionAdminV1alphaTestNotifyInstanceRequest": {
+      "id": "GoogleDevtoolsRemotebuildexecutionAdminV1alphaTestNotifyInstanceRequest",
+      "description": "The request used for `TestNotifyInstance`.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleProtobufEmpty": {
+      "id": "GoogleProtobufEmpty",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }",
+      "type": "object",
+      "properties": {
+      }
+    },
     "GoogleDevtoolsRemotebuildexecutionAdminV1alphaCreateWorkerPoolRequest": {
       "id": "GoogleDevtoolsRemotebuildexecutionAdminV1alphaCreateWorkerPoolRequest",
       "description": "The request used for `CreateWorkerPool`.",
@@ -2009,6 +2023,34 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Lists instances in a project."
+            },
+            "testNotify": {
+              "id": "remotebuildexecution.projects.instances.testNotify",
+              "path": "v1alpha/{+name}:testNotify",
+              "flatPath": "v1alpha/projects/{projectsId}/instances/{instancesId}:testNotify",
+              "httpMethod": "POST",
+              "parameters": {
+                "name": {
+                  "description": "Name of the instance for which to send a test notification. Format: `projects\/[PROJECT_ID]\/instances\/[INSTANCE_ID]`.",
+                  "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "GoogleDevtoolsRemotebuildexecutionAdminV1alphaTestNotifyInstanceRequest"
+              },
+              "response": {
+                "$ref": "GoogleProtobufEmpty"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Sends a test notification to the specified instance. Returns a `google.protobuf.Empty` on success."
             },
             "patch": {
               "id": "remotebuildexecution.projects.instances.patch",

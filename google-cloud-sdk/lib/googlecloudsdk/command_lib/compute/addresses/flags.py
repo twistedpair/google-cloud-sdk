@@ -12,7 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Flags and helpers for the compute addresses commands."""
 
 from __future__ import absolute_import
@@ -125,7 +124,7 @@ def AddPrefixLength(parser):
   """Adds the prefix-length flag."""
   parser.add_argument(
       '--prefix-length',
-      type=arg_parsers.BoundedInt(lower_bound=8, upper_bound=30),
+      type=arg_parsers.BoundedInt(lower_bound=8, upper_bound=96),
       help="""\
       The prefix length of the IP range. It must be a value between 8 and 30
       inclusive. If not present, it means the address field is a single IP
@@ -183,6 +182,20 @@ def AddNetworkTier(parser):
       addresses (`--global` specified, `--subnet` omitted) can only use
       `PREMIUM`. Internal addresses can only use `PREMIUM`.
       """)
+
+
+def AddIPv6EndPointType(parser, support_ipv6_reservation):
+  """Adds IPv6 EndPoint flag."""
+  choices = ['VM', 'NETLB']
+  if support_ipv6_reservation:
+    parser.add_argument(
+        '--endpoint-type',
+        choices=choices,
+        type=lambda x: x.upper(),
+        help="""\
+         The endpoint type of the external IPv6 address to be reserved.
+         Currently it can only be 'VM'.
+        """)
 
 
 def AddPurpose(parser, support_psc_google_apis):

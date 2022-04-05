@@ -50,11 +50,14 @@ def UnrecognizedFields(message):
 def ParamSpecTransform(param_spec):
   if "default" in param_spec:
     param_spec["default"] = ParamValueTransform(param_spec["default"])
-    param_spec["type"] = param_spec["default"]["type"]
 
-  if "value" in param_spec:
-    param_spec["value"] = ParamValueTransform(param_spec["value"])
-    param_spec["type"] = param_spec["value"]["type"]
+  if "type" in param_spec:
+    param_spec["type"] = param_spec["type"].upper()
+
+
+def ParamDictTransform(params):
+  for param in params:
+    param["value"] = ParamValueTransform(param["value"])
 
 
 def ParamValueTransform(param_value):

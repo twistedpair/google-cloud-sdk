@@ -112,6 +112,10 @@ class OrgPolicyApi(object):
     pass
 
   @abc.abstractmethod
+  def CreateEmptyPolicySpec(self):
+    pass
+
+  @abc.abstractmethod
   def BuildPolicy(self, name):
     pass
 
@@ -247,6 +251,9 @@ class OrgPolicyApiGA(OrgPolicyApi):
     request = self.messages.OrgpolicyOrganizationsCustomConstraintsGetRequest(
         name=name)
     return self.client.organizations_customConstraints.Get(request)
+
+  def CreateEmptyPolicySpec(self):
+    return self.messages.GoogleCloudOrgpolicyV2PolicySpec()
 
   def BuildPolicy(self, name):
     spec = self.messages.GoogleCloudOrgpolicyV2PolicySpec()

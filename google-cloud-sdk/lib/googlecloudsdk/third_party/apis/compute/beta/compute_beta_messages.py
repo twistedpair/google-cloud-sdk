@@ -21638,6 +21638,144 @@ class ComputeRegionTargetHttpsProxiesTestIamPermissionsRequest(_messages.Message
   testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
 
 
+class ComputeRegionTargetTcpProxiesDeleteRequest(_messages.Message):
+  r"""A ComputeRegionTargetTcpProxiesDeleteRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    targetTcpProxy: Name of the TargetTcpProxy resource to delete.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  targetTcpProxy = _messages.StringField(4, required=True)
+
+
+class ComputeRegionTargetTcpProxiesGetRequest(_messages.Message):
+  r"""A ComputeRegionTargetTcpProxiesGetRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    targetTcpProxy: Name of the TargetTcpProxy resource to return.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  targetTcpProxy = _messages.StringField(3, required=True)
+
+
+class ComputeRegionTargetTcpProxiesInsertRequest(_messages.Message):
+  r"""A ComputeRegionTargetTcpProxiesInsertRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    targetTcpProxy: A TargetTcpProxy resource to be passed as the request
+      body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  targetTcpProxy = _messages.MessageField('TargetTcpProxy', 4)
+
+
+class ComputeRegionTargetTcpProxiesListRequest(_messages.Message):
+  r"""A ComputeRegionTargetTcpProxiesListRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
+      instances, you can exclude instances named `example-instance` by
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
+      fields. For example, you could specify `scheduling.automaticRestart =
+      false` to include instances only if they are not scheduled for automatic
+      restarts. You can use filtering on nested fields to filter based on
+      resource labels. To filter on multiple expressions, provide each
+      separate expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ```
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than
+      `maxResults`, Compute Engine returns a `nextPageToken` that can be used
+      to get the next page of results in subsequent list requests. Acceptable
+      values are `0` to `500`, inclusive. (Default: `500`)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name. You can
+      also sort results in descending order based on the creation timestamp
+      using `orderBy="creationTimestamp desc"`. This sorts results based on
+      the `creationTimestamp` field in reverse chronological order (newest
+      result first). Use this to sort resources like operations so that the
+      newest operation is returned first. Currently, only sorting by `name` or
+      `creationTimestamp desc` is supported.
+    pageToken: Specifies a page token to use. Set `pageToken` to the
+      `nextPageToken` returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+  region = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
+
+
+class ComputeRegionTargetTcpProxiesTestIamPermissionsRequest(_messages.Message):
+  r"""A ComputeRegionTargetTcpProxiesTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    resource: Name or id of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
+
+
 class ComputeRegionUrlMapsDeleteRequest(_messages.Message):
   r"""A ComputeRegionUrlMapsDeleteRequest object.
 
@@ -34433,6 +34571,9 @@ class Instance(_messages.Message):
   Machine Instances.
 
   Enums:
+    KeyRevocationActionTypeValueValuesEnum: KeyRevocationActionType of the
+      instance. Supported options are "STOP" and "NONE". The default value is
+      "NONE" if it is not specified.
     PostKeyRevocationActionTypeValueValuesEnum: PostKeyRevocationActionType of
       the instance.
     PrivateIpv6GoogleAccessValueValuesEnum: The private IPv6 google access
@@ -34484,6 +34625,9 @@ class Instance(_messages.Message):
       using zonal DNS.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
+    keyRevocationActionType: KeyRevocationActionType of the instance.
+      Supported options are "STOP" and "NONE". The default value is "NONE" if
+      it is not specified.
     kind: [Output Only] Type of the resource. Always compute#instance for
       instances.
     labelFingerprint: A fingerprint for this request, which is essentially a
@@ -34571,6 +34715,20 @@ class Instance(_messages.Message):
       specify this field as part of the HTTP request URL. It is not settable
       as a field in the request body.
   """
+
+  class KeyRevocationActionTypeValueValuesEnum(_messages.Enum):
+    r"""KeyRevocationActionType of the instance. Supported options are "STOP"
+    and "NONE". The default value is "NONE" if it is not specified.
+
+    Values:
+      KEY_REVOCATION_ACTION_TYPE_UNSPECIFIED: Default value. This value is
+        unused.
+      NONE: Indicates user chose no operation.
+      STOP: Indicates user chose to opt for VM shutdown on key revocation.
+    """
+    KEY_REVOCATION_ACTION_TYPE_UNSPECIFIED = 0
+    NONE = 1
+    STOP = 2
 
   class PostKeyRevocationActionTypeValueValuesEnum(_messages.Enum):
     r"""PostKeyRevocationActionType of the instance.
@@ -34678,38 +34836,39 @@ class Instance(_messages.Message):
   guestAccelerators = _messages.MessageField('AcceleratorConfig', 12, repeated=True)
   hostname = _messages.StringField(13)
   id = _messages.IntegerField(14, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(15, default='compute#instance')
-  labelFingerprint = _messages.BytesField(16)
-  labels = _messages.MessageField('LabelsValue', 17)
-  lastStartTimestamp = _messages.StringField(18)
-  lastStopTimestamp = _messages.StringField(19)
-  lastSuspendedTimestamp = _messages.StringField(20)
-  machineType = _messages.StringField(21)
-  metadata = _messages.MessageField('Metadata', 22)
-  minCpuPlatform = _messages.StringField(23)
-  name = _messages.StringField(24)
-  networkInterfaces = _messages.MessageField('NetworkInterface', 25, repeated=True)
-  networkPerformanceConfig = _messages.MessageField('NetworkPerformanceConfig', 26)
-  params = _messages.MessageField('InstanceParams', 27)
-  postKeyRevocationActionType = _messages.EnumField('PostKeyRevocationActionTypeValueValuesEnum', 28)
-  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 29)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 30)
-  resourcePolicies = _messages.StringField(31, repeated=True)
-  satisfiesPzs = _messages.BooleanField(32)
-  scheduling = _messages.MessageField('Scheduling', 33)
-  selfLink = _messages.StringField(34)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 35, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 36)
-  shieldedInstanceIntegrityPolicy = _messages.MessageField('ShieldedInstanceIntegrityPolicy', 37)
-  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 38)
-  shieldedVmIntegrityPolicy = _messages.MessageField('ShieldedVmIntegrityPolicy', 39)
-  sourceMachineImage = _messages.StringField(40)
-  sourceMachineImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 41)
-  startRestricted = _messages.BooleanField(42)
-  status = _messages.EnumField('StatusValueValuesEnum', 43)
-  statusMessage = _messages.StringField(44)
-  tags = _messages.MessageField('Tags', 45)
-  zone = _messages.StringField(46)
+  keyRevocationActionType = _messages.EnumField('KeyRevocationActionTypeValueValuesEnum', 15)
+  kind = _messages.StringField(16, default='compute#instance')
+  labelFingerprint = _messages.BytesField(17)
+  labels = _messages.MessageField('LabelsValue', 18)
+  lastStartTimestamp = _messages.StringField(19)
+  lastStopTimestamp = _messages.StringField(20)
+  lastSuspendedTimestamp = _messages.StringField(21)
+  machineType = _messages.StringField(22)
+  metadata = _messages.MessageField('Metadata', 23)
+  minCpuPlatform = _messages.StringField(24)
+  name = _messages.StringField(25)
+  networkInterfaces = _messages.MessageField('NetworkInterface', 26, repeated=True)
+  networkPerformanceConfig = _messages.MessageField('NetworkPerformanceConfig', 27)
+  params = _messages.MessageField('InstanceParams', 28)
+  postKeyRevocationActionType = _messages.EnumField('PostKeyRevocationActionTypeValueValuesEnum', 29)
+  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 30)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 31)
+  resourcePolicies = _messages.StringField(32, repeated=True)
+  satisfiesPzs = _messages.BooleanField(33)
+  scheduling = _messages.MessageField('Scheduling', 34)
+  selfLink = _messages.StringField(35)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 36, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 37)
+  shieldedInstanceIntegrityPolicy = _messages.MessageField('ShieldedInstanceIntegrityPolicy', 38)
+  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 39)
+  shieldedVmIntegrityPolicy = _messages.MessageField('ShieldedVmIntegrityPolicy', 40)
+  sourceMachineImage = _messages.StringField(41)
+  sourceMachineImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 42)
+  startRestricted = _messages.BooleanField(43)
+  status = _messages.EnumField('StatusValueValuesEnum', 44)
+  statusMessage = _messages.StringField(45)
+  tags = _messages.MessageField('Tags', 46)
+  zone = _messages.StringField(47)
 
 
 class InstanceAggregatedList(_messages.Message):
@@ -37541,6 +37700,9 @@ class InstanceProperties(_messages.Message):
   r"""A InstanceProperties object.
 
   Enums:
+    KeyRevocationActionTypeValueValuesEnum: KeyRevocationActionType of the
+      instance. Supported options are "STOP" and "NONE". The default value is
+      "NONE" if it is not specified.
     PostKeyRevocationActionTypeValueValuesEnum: PostKeyRevocationActionType of
       the instance.
     PrivateIpv6GoogleAccessValueValuesEnum: The private IPv6 google access
@@ -37576,6 +37738,9 @@ class InstanceProperties(_messages.Message):
       MachineImage, this is not supported yet.
     guestAccelerators: A list of guest accelerator cards' type and count to
       use for instances created from these properties.
+    keyRevocationActionType: KeyRevocationActionType of the instance.
+      Supported options are "STOP" and "NONE". The default value is "NONE" if
+      it is not specified.
     labels: Labels to apply to instances that are created from these
       properties.
     machineType: The machine type to use for instances that are created from
@@ -37622,6 +37787,20 @@ class InstanceProperties(_messages.Message):
       firewalls. The setTags method can modify this list of tags. Each tag
       within the list must comply with RFC1035.
   """
+
+  class KeyRevocationActionTypeValueValuesEnum(_messages.Enum):
+    r"""KeyRevocationActionType of the instance. Supported options are "STOP"
+    and "NONE". The default value is "NONE" if it is not specified.
+
+    Values:
+      KEY_REVOCATION_ACTION_TYPE_UNSPECIFIED: Default value. This value is
+        unused.
+      NONE: Indicates user chose no operation.
+      STOP: Indicates user chose to opt for VM shutdown on key revocation.
+    """
+    KEY_REVOCATION_ACTION_TYPE_UNSPECIFIED = 0
+    NONE = 1
+    STOP = 2
 
   class PostKeyRevocationActionTypeValueValuesEnum(_messages.Enum):
     r"""PostKeyRevocationActionType of the instance.
@@ -37717,22 +37896,23 @@ class InstanceProperties(_messages.Message):
   disks = _messages.MessageField('AttachedDisk', 5, repeated=True)
   displayDevice = _messages.MessageField('DisplayDevice', 6)
   guestAccelerators = _messages.MessageField('AcceleratorConfig', 7, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 8)
-  machineType = _messages.StringField(9)
-  metadata = _messages.MessageField('Metadata', 10)
-  minCpuPlatform = _messages.StringField(11)
-  networkInterfaces = _messages.MessageField('NetworkInterface', 12, repeated=True)
-  networkPerformanceConfig = _messages.MessageField('NetworkPerformanceConfig', 13)
-  postKeyRevocationActionType = _messages.EnumField('PostKeyRevocationActionTypeValueValuesEnum', 14)
-  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 15)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 16)
-  resourceManagerTags = _messages.MessageField('ResourceManagerTagsValue', 17)
-  resourcePolicies = _messages.StringField(18, repeated=True)
-  scheduling = _messages.MessageField('Scheduling', 19)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 20, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 21)
-  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 22)
-  tags = _messages.MessageField('Tags', 23)
+  keyRevocationActionType = _messages.EnumField('KeyRevocationActionTypeValueValuesEnum', 8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  machineType = _messages.StringField(10)
+  metadata = _messages.MessageField('Metadata', 11)
+  minCpuPlatform = _messages.StringField(12)
+  networkInterfaces = _messages.MessageField('NetworkInterface', 13, repeated=True)
+  networkPerformanceConfig = _messages.MessageField('NetworkPerformanceConfig', 14)
+  postKeyRevocationActionType = _messages.EnumField('PostKeyRevocationActionTypeValueValuesEnum', 15)
+  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 16)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 17)
+  resourceManagerTags = _messages.MessageField('ResourceManagerTagsValue', 18)
+  resourcePolicies = _messages.StringField(19, repeated=True)
+  scheduling = _messages.MessageField('Scheduling', 20)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 21, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 22)
+  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 23)
+  tags = _messages.MessageField('Tags', 24)
 
 
 class InstanceReference(_messages.Message):
@@ -40753,6 +40933,8 @@ class LocationPolicyLocation(_messages.Message):
     PreferenceValueValuesEnum: Preference for a given location.
 
   Fields:
+    constraints: Constraints that the caller requires on the result
+      distribution in this zone.
     preference: Preference for a given location.
   """
 
@@ -40768,7 +40950,19 @@ class LocationPolicyLocation(_messages.Message):
     DENY = 1
     PREFERENCE_UNSPECIFIED = 2
 
-  preference = _messages.EnumField('PreferenceValueValuesEnum', 1)
+  constraints = _messages.MessageField('LocationPolicyLocationConstraints', 1)
+  preference = _messages.EnumField('PreferenceValueValuesEnum', 2)
+
+
+class LocationPolicyLocationConstraints(_messages.Message):
+  r"""Per-zone constraints on location policy for this zone.
+
+  Fields:
+    maxCount: Maximum number of items that are allowed to be placed in this
+      zone. The value must be non-negative.
+  """
+
+  maxCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
 class LogConfig(_messages.Message):
@@ -53335,6 +53529,7 @@ class Router(_messages.Message):
       resource, (for example, linkedVpnTunnel), or IP address and IP address
       range (for example, ipRange), or both.
     kind: [Output Only] Type of resource. Always compute#router for routers.
+    md5AuthenticationKeys: Keys used for MD5 authentication.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -53358,11 +53553,12 @@ class Router(_messages.Message):
   id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
   interfaces = _messages.MessageField('RouterInterface', 7, repeated=True)
   kind = _messages.StringField(8, default='compute#router')
-  name = _messages.StringField(9)
-  nats = _messages.MessageField('RouterNat', 10, repeated=True)
-  network = _messages.StringField(11)
-  region = _messages.StringField(12)
-  selfLink = _messages.StringField(13)
+  md5AuthenticationKeys = _messages.MessageField('RouterMd5AuthenticationKey', 9, repeated=True)
+  name = _messages.StringField(10)
+  nats = _messages.MessageField('RouterNat', 11, repeated=True)
+  network = _messages.StringField(12)
+  region = _messages.StringField(13)
+  selfLink = _messages.StringField(14)
 
 
 class RouterAdvertisedIpRange(_messages.Message):
@@ -53675,6 +53871,9 @@ class RouterBgpPeer(_messages.Message):
       InterconnectAttachment of type PARTNER. Google automatically creates,
       updates, and deletes this type of BGP peer when the PARTNER
       InterconnectAttachment is created, updated, or deleted.
+    md5AuthenticationKeyName: Present if MD5 authentication is enabled for the
+      peering. Must be the name of one of the entries in the
+      Router.md5_authentication_keys. The field must comply with RFC1035.
     name: Name of this BGP peer. The name must be 1-63 characters long, and
       comply with RFC1035. Specifically, the name must be 1-63 characters long
       and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which
@@ -53760,11 +53959,12 @@ class RouterBgpPeer(_messages.Message):
   ipAddress = _messages.StringField(9)
   ipv6NexthopAddress = _messages.StringField(10)
   managementType = _messages.EnumField('ManagementTypeValueValuesEnum', 11)
-  name = _messages.StringField(12)
-  peerAsn = _messages.IntegerField(13, variant=_messages.Variant.UINT32)
-  peerIpAddress = _messages.StringField(14)
-  peerIpv6NexthopAddress = _messages.StringField(15)
-  routerApplianceInstance = _messages.StringField(16)
+  md5AuthenticationKeyName = _messages.StringField(12)
+  name = _messages.StringField(13)
+  peerAsn = _messages.IntegerField(14, variant=_messages.Variant.UINT32)
+  peerIpAddress = _messages.StringField(15)
+  peerIpv6NexthopAddress = _messages.StringField(16)
+  routerApplianceInstance = _messages.StringField(17)
 
 
 class RouterBgpPeerBfd(_messages.Message):
@@ -54063,6 +54263,23 @@ class RouterList(_messages.Message):
   warning = _messages.MessageField('WarningValue', 6)
 
 
+class RouterMd5AuthenticationKey(_messages.Message):
+  r"""A RouterMd5AuthenticationKey object.
+
+  Fields:
+    key: [Input only] Value of the key. For patch and update calls, it can be
+      skipped to copy the value from the previous configuration. This is
+      allowed if the key with the same name existed before the operation.
+      Maximum length is 80 characters. Can only contain printable ASCII
+      characters.
+    name: Name used to identify the key. Must be unique within a router. Must
+      be referenced by at least one bgpPeer. Must comply with RFC1035.
+  """
+
+  key = _messages.StringField(1)
+  name = _messages.StringField(2)
+
+
 class RouterNat(_messages.Message):
   r"""Represents a Nat resource. It enables the VMs within the specified
   subnetworks to access Internet without external IP addresses. It specifies a
@@ -54357,12 +54574,15 @@ class RouterStatusBgpPeerStatus(_messages.Message):
 
   Enums:
     StatusValueValuesEnum: Status of the BGP peer: {UP, DOWN}
+    StatusReasonValueValuesEnum: Indicates why particular status was returned.
 
   Fields:
     advertisedRoutes: Routes that were advertised to the remote BGP peer
     bfdStatus: A BfdStatus attribute.
     ipAddress: IP address of the local BGP interface.
     linkedVpnTunnel: URL of the VPN tunnel that this BGP peer controls.
+    md5AuthEnabled: Informs whether MD5 authentication is enabled on this BGP
+      peer.
     name: Name of this BGP peer. Unique within the Routers resource.
     numLearnedRoutes: Number of routes learned from the remote BGP Peer.
     peerIpAddress: IP address of the remote BGP interface.
@@ -54373,10 +54593,23 @@ class RouterStatusBgpPeerStatus(_messages.Message):
     state: The state of the BGP session. For a list of possible values for
       this field, see BGP session states.
     status: Status of the BGP peer: {UP, DOWN}
+    statusReason: Indicates why particular status was returned.
     uptime: Time this session has been up. Format: 14 years, 51 weeks, 6 days,
       23 hours, 59 minutes, 59 seconds
     uptimeSeconds: Time this session has been up, in seconds. Format: 145
   """
+
+  class StatusReasonValueValuesEnum(_messages.Enum):
+    r"""Indicates why particular status was returned.
+
+    Values:
+      MD5_AUTH_INTERNAL_PROBLEM: Indicates internal problems with
+        configuration of MD5 authentication. This particular reason can only
+        be returned when md5AuthEnabled is true and status is DOWN.
+      STATUS_REASON_UNSPECIFIED: <no description>
+    """
+    MD5_AUTH_INTERNAL_PROBLEM = 0
+    STATUS_REASON_UNSPECIFIED = 1
 
   class StatusValueValuesEnum(_messages.Enum):
     r"""Status of the BGP peer: {UP, DOWN}
@@ -54394,14 +54627,16 @@ class RouterStatusBgpPeerStatus(_messages.Message):
   bfdStatus = _messages.MessageField('BfdStatus', 2)
   ipAddress = _messages.StringField(3)
   linkedVpnTunnel = _messages.StringField(4)
-  name = _messages.StringField(5)
-  numLearnedRoutes = _messages.IntegerField(6, variant=_messages.Variant.UINT32)
-  peerIpAddress = _messages.StringField(7)
-  routerApplianceInstance = _messages.StringField(8)
-  state = _messages.StringField(9)
-  status = _messages.EnumField('StatusValueValuesEnum', 10)
-  uptime = _messages.StringField(11)
-  uptimeSeconds = _messages.StringField(12)
+  md5AuthEnabled = _messages.BooleanField(5)
+  name = _messages.StringField(6)
+  numLearnedRoutes = _messages.IntegerField(7, variant=_messages.Variant.UINT32)
+  peerIpAddress = _messages.StringField(8)
+  routerApplianceInstance = _messages.StringField(9)
+  state = _messages.StringField(10)
+  status = _messages.EnumField('StatusValueValuesEnum', 11)
+  statusReason = _messages.EnumField('StatusReasonValueValuesEnum', 12)
+  uptime = _messages.StringField(13)
+  uptimeSeconds = _messages.StringField(14)
 
 
 class RouterStatusNatStatus(_messages.Message):
@@ -57545,6 +57780,9 @@ class SourceInstanceProperties(_messages.Message):
   properties will not be added to this field.
 
   Enums:
+    KeyRevocationActionTypeValueValuesEnum: KeyRevocationActionType of the
+      instance. Supported options are "STOP" and "NONE". The default value is
+      "NONE" if it is not specified.
     PostKeyRevocationActionTypeValueValuesEnum: PostKeyRevocationActionType of
       the instance.
 
@@ -57567,6 +57805,9 @@ class SourceInstanceProperties(_messages.Message):
       created from this machine image.
     guestAccelerators: A list of guest accelerator cards' type and count to
       use for instances created from this machine image.
+    keyRevocationActionType: KeyRevocationActionType of the instance.
+      Supported options are "STOP" and "NONE". The default value is "NONE" if
+      it is not specified.
     labels: Labels to apply to instances that are created from this machine
       image.
     machineType: The machine type to use for instances that are created from
@@ -57595,6 +57836,20 @@ class SourceInstanceProperties(_messages.Message):
       firewalls. The setTags method can modify this list of tags. Each tag
       within the list must comply with RFC1035.
   """
+
+  class KeyRevocationActionTypeValueValuesEnum(_messages.Enum):
+    r"""KeyRevocationActionType of the instance. Supported options are "STOP"
+    and "NONE". The default value is "NONE" if it is not specified.
+
+    Values:
+      KEY_REVOCATION_ACTION_TYPE_UNSPECIFIED: Default value. This value is
+        unused.
+      NONE: Indicates user chose no operation.
+      STOP: Indicates user chose to opt for VM shutdown on key revocation.
+    """
+    KEY_REVOCATION_ACTION_TYPE_UNSPECIFIED = 0
+    NONE = 1
+    STOP = 2
 
   class PostKeyRevocationActionTypeValueValuesEnum(_messages.Enum):
     r"""PostKeyRevocationActionType of the instance.
@@ -57638,15 +57893,16 @@ class SourceInstanceProperties(_messages.Message):
   description = _messages.StringField(3)
   disks = _messages.MessageField('SavedAttachedDisk', 4, repeated=True)
   guestAccelerators = _messages.MessageField('AcceleratorConfig', 5, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 6)
-  machineType = _messages.StringField(7)
-  metadata = _messages.MessageField('Metadata', 8)
-  minCpuPlatform = _messages.StringField(9)
-  networkInterfaces = _messages.MessageField('NetworkInterface', 10, repeated=True)
-  postKeyRevocationActionType = _messages.EnumField('PostKeyRevocationActionTypeValueValuesEnum', 11)
-  scheduling = _messages.MessageField('Scheduling', 12)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 13, repeated=True)
-  tags = _messages.MessageField('Tags', 14)
+  keyRevocationActionType = _messages.EnumField('KeyRevocationActionTypeValueValuesEnum', 6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  machineType = _messages.StringField(8)
+  metadata = _messages.MessageField('Metadata', 9)
+  minCpuPlatform = _messages.StringField(10)
+  networkInterfaces = _messages.MessageField('NetworkInterface', 11, repeated=True)
+  postKeyRevocationActionType = _messages.EnumField('PostKeyRevocationActionTypeValueValuesEnum', 12)
+  scheduling = _messages.MessageField('Scheduling', 13)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 14, repeated=True)
+  tags = _messages.MessageField('Tags', 15)
 
 
 class SslCertificate(_messages.Message):
@@ -58991,13 +59247,10 @@ class Subnetwork(_messages.Message):
   Enums:
     Ipv6AccessTypeValueValuesEnum: The access type of IPv6 address this subnet
       holds. It's immutable and can only be specified during creation or the
-      first time the subnet is updated into IPV4_IPV6 dual stack. If the
-      ipv6_type is EXTERNAL then this subnet cannot enable direct path.
-    PrivateIpv6GoogleAccessValueValuesEnum: The private IPv6 google access
-      type for the VMs in this subnet. This is an expanded field of
-      enablePrivateV6Access. If both fields are set, privateIpv6GoogleAccess
-      will take priority. This field can be both set at resource creation time
-      and updated using patch.
+      first time the subnet is updated into IPV4_IPV6 dual stack.
+    PrivateIpv6GoogleAccessValueValuesEnum: This field is for internal use.
+      This field can be both set at resource creation time and updated using
+      patch.
     PurposeValueValuesEnum: The purpose of the resource. This field can be
       either PRIVATE_RFC_1918 or INTERNAL_HTTPS_LOAD_BALANCER. A subnetwork
       with purpose set to INTERNAL_HTTPS_LOAD_BALANCER is a user-created
@@ -59050,8 +59303,8 @@ class Subnetwork(_messages.Message):
       is no org policy specified, then it will default to disabled. This field
       isn't supported with the purpose field set to
       INTERNAL_HTTPS_LOAD_BALANCER.
-    externalIpv6Prefix: [Output Only] The range of external IPv6 addresses
-      that are owned by this subnetwork.
+    externalIpv6Prefix: [Output Only] The external IPv6 address range that is
+      assigned to this subnetwork.
     fingerprint: Fingerprint of this resource. A hash of the contents stored
       in this object. This field is used in optimistic locking. This field
       will be ignored when inserting a Subnetwork. An up-to-date fingerprint
@@ -59062,9 +59315,8 @@ class Subnetwork(_messages.Message):
       reach destination addresses outside this subnetwork.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
-    internalIpv6Prefix: [Output Only] The range of internal IPv6 addresses
-      that are owned by this subnetwork. Note this is for general VM to VM
-      communication, not to be confused with the ipv6_cidr_range field.
+    internalIpv6Prefix: [Output Only] The internal IPv6 address range that is
+      assigned to this subnetwork.
     ipCidrRange: The range of internal addresses that are owned by this
       subnetwork. Provide this property when you create the subnetwork. For
       example, 10.0.0.0/8 or 100.64.0.0/10. Ranges must be unique and non-
@@ -59074,11 +59326,8 @@ class Subnetwork(_messages.Message):
       expandIpCidrRange.
     ipv6AccessType: The access type of IPv6 address this subnet holds. It's
       immutable and can only be specified during creation or the first time
-      the subnet is updated into IPV4_IPV6 dual stack. If the ipv6_type is
-      EXTERNAL then this subnet cannot enable direct path.
-    ipv6CidrRange: [Output Only] The range of internal IPv6 addresses that are
-      owned by this subnetwork. Note this will be for private google access
-      only eventually.
+      the subnet is updated into IPV4_IPV6 dual stack.
+    ipv6CidrRange: [Output Only] This field is for internal use.
     kind: [Output Only] Type of the resource. Always compute#subnetwork for
       Subnetwork resources.
     logConfig: This field denotes the VPC flow logging options for this
@@ -59097,10 +59346,8 @@ class Subnetwork(_messages.Message):
       services without assigned external IP addresses. This field can be both
       set at resource creation time and updated using
       setPrivateIpGoogleAccess.
-    privateIpv6GoogleAccess: The private IPv6 google access type for the VMs
-      in this subnet. This is an expanded field of enablePrivateV6Access. If
-      both fields are set, privateIpv6GoogleAccess will take priority. This
-      field can be both set at resource creation time and updated using patch.
+    privateIpv6GoogleAccess: This field is for internal use. This field can be
+      both set at resource creation time and updated using patch.
     purpose: The purpose of the resource. This field can be either
       PRIVATE_RFC_1918 or INTERNAL_HTTPS_LOAD_BALANCER. A subnetwork with
       purpose set to INTERNAL_HTTPS_LOAD_BALANCER is a user-created subnetwork
@@ -59137,12 +59384,11 @@ class Subnetwork(_messages.Message):
   class Ipv6AccessTypeValueValuesEnum(_messages.Enum):
     r"""The access type of IPv6 address this subnet holds. It's immutable and
     can only be specified during creation or the first time the subnet is
-    updated into IPV4_IPV6 dual stack. If the ipv6_type is EXTERNAL then this
-    subnet cannot enable direct path.
+    updated into IPV4_IPV6 dual stack.
 
     Values:
       EXTERNAL: VMs on this subnet will be assigned IPv6 addresses that are
-        accesible via the Internet, as well as the VPC network.
+        accessible via the Internet, as well as the VPC network.
       INTERNAL: VMs on this subnet will be assigned IPv6 addresses that are
         only accessible over the VPC network.
     """
@@ -59150,10 +59396,8 @@ class Subnetwork(_messages.Message):
     INTERNAL = 1
 
   class PrivateIpv6GoogleAccessValueValuesEnum(_messages.Enum):
-    r"""The private IPv6 google access type for the VMs in this subnet. This
-    is an expanded field of enablePrivateV6Access. If both fields are set,
-    privateIpv6GoogleAccess will take priority. This field can be both set at
-    resource creation time and updated using patch.
+    r"""This field is for internal use. This field can be both set at resource
+    creation time and updated using patch.
 
     Values:
       DISABLE_GOOGLE_ACCESS: Disable private IPv6 access to/from Google
@@ -63003,6 +63247,8 @@ class TargetTcpProxy(_messages.Message):
       false.
     proxyHeader: Specifies the type of proxy header to append before sending
       data to the backend, either NONE or PROXY_V1. The default is NONE.
+    region: [Output Only] URL of the region where the regional TCP proxy
+      resides. This field is not applicable to global TCP proxy.
     selfLink: [Output Only] Server-defined URL for the resource.
     service: URL to the BackendService resource.
   """
@@ -63025,8 +63271,9 @@ class TargetTcpProxy(_messages.Message):
   name = _messages.StringField(5)
   proxyBind = _messages.BooleanField(6)
   proxyHeader = _messages.EnumField('ProxyHeaderValueValuesEnum', 7)
-  selfLink = _messages.StringField(8)
-  service = _messages.StringField(9)
+  region = _messages.StringField(8)
+  selfLink = _messages.StringField(9)
+  service = _messages.StringField(10)
 
 
 class TargetTcpProxyList(_messages.Message):

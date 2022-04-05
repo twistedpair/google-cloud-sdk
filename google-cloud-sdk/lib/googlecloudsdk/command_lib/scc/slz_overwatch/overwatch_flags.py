@@ -23,7 +23,8 @@ from googlecloudsdk.calliope import base
 
 def get_organization_id_flag():
   return base.Argument(
-      'ORG_ID', help='The organization ID in the format organizations/<ORG_ID>')
+      'ORGANIZATION',
+      help='The organization ID in the format organizations/<ORG_ID>')
 
 
 def get_size_flag():
@@ -40,7 +41,7 @@ def get_page_token_flag():
 
 def get_overwatch_path_flag():
   return base.Argument(
-      'OVERWATCH_PATH',
+      'OVERWATCH',
       help="""The overwatch path specified in the resource format
            organizations/<ORG_ID>/locations/<REGION>/overwatches/<OVERWATCH_ID>.
             """)
@@ -55,6 +56,6 @@ def get_blueprint_plan_flag():
 
 def get_operation_flag():
   return base.Argument(
-      'OPERATION_ID',
+      'OPERATION',
       help="""Operation ID of the long running operation to get status. Format
        operations/<OPERATION_ID>""")

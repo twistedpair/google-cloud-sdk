@@ -18,15 +18,20 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import enum
+
 from googlecloudsdk.command_lib.storage.tasks import task_util
 from googlecloudsdk.core import metrics
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files
+from googlecloudsdk.core.util import platforms
 
 
-SEQUENTIAL = 'Sequential'
-PARALLEL = 'Parallel'
-UNSET = None
+class ParallelismStrategy(enum.Enum):
+  PARALLEL = 'Parallel'
+  SEQUENTIAL = 'Sequential'
+
+UNSET = '_UNSET'
 
 
 def _record_storage_event(metric, value=0):
@@ -38,6 +43,12 @@ def _record_storage_event(metric, value=0):
   """
   command_name = properties.VALUES.metrics.command_name.Get()
   metrics.CustomKeyValue(command_name, 'Storage-' + metric, value)
+
+
+def _get_parallelism_strategy():
+  if task_util.should_use_parallelism():
+    return ParallelismStrategy.PARALLEL.value
+  return ParallelismStrategy.SEQUENTIAL.value
 
 
 def report(source_scheme=UNSET, destination_scheme=UNSET, num_files=UNSET,
@@ -52,9 +63,7 @@ def report(source_scheme=UNSET, destination_scheme=UNSET, num_files=UNSET,
     avg_speed (int|UNSET): The average throughput of a transfer in bytes/sec.
     disk_io_time (int|UNSET): The time spent on disk of a transfer in ms.
   """
-  use_parallelism = task_util.should_use_parallelism()
-  _record_storage_event('ParallelismStrategy',
-                        PARALLEL if use_parallelism else SEQUENTIAL)
+  _record_storage_event('ParallelismStrategy', _get_parallelism_strategy())
   _record_storage_event('SourceScheme', source_scheme)
   _record_storage_event('DestinationScheme', destination_scheme)
   _record_storage_event('NumberOfFiles', num_files)
@@ -71,12 +80,18 @@ def _get_partitions():
   """
   partitions = []
 
-  with files.FileReader('/proc/partitions') as f:
-    lines = f.readlines()[2:]
-    for line in lines:
-      _, _, _, name = line.split()
-      if name[-1].isdigit():
-        partitions.append(name)
+  try:
+    with files.FileReader('/proc/partitions') as f:
+      lines = f.readlines()[2:]
+      for line in lines:
+        _, _, _, name = line.split()
+        if name[-1].isdigit():
+          partitions.append(name)
+  # This will catch access denied and file not found errors, which is expected
+  # on non-Linux/limited access systems. All other errors will raise as normal.
+  except files.Error:
+    pass
+
   return partitions
 
 
@@ -101,17 +116,81 @@ def get_disk_counters():
   partitions = _get_partitions()
 
   retdict = {}
-  with files.FileReader('/proc/diskstats') as f:
-    lines = f.readlines()
-    for line in lines:
-      values = line.split()[:11]
-      _, _, name, reads, _, rbytes, rtime, writes, _, wbytes, wtime = values
-      if name in partitions:
-        rbytes = int(rbytes) * sector_size
-        wbytes = int(wbytes) * sector_size
-        reads = int(reads)
-        writes = int(writes)
-        rtime = int(rtime)
-        wtime = int(wtime)
-        retdict[name] = (reads, writes, rbytes, wbytes, rtime, wtime)
+  try:
+    with files.FileReader('/proc/diskstats') as f:
+      lines = f.readlines()
+      for line in lines:
+        values = line.split()[:11]
+        _, _, name, reads, _, rbytes, rtime, writes, _, wbytes, wtime = values
+        if name in partitions:
+          rbytes = int(rbytes) * sector_size
+          wbytes = int(wbytes) * sector_size
+          reads = int(reads)
+          writes = int(writes)
+          rtime = int(rtime)
+          wtime = int(wtime)
+          retdict[name] = (reads, writes, rbytes, wbytes, rtime, wtime)
+  # This will catch access denied and file not found errors, which is expected
+  # on non-Linux/limited access systems. All other errors will raise as normal.
+  except files.Error:
+    pass
+
   return retdict
+
+
+class MetricsReporter():
+  """Mix-in for tracking metrics during task status reporting."""
+
+  def __init__(self):
+    # For source/destination types
+    self._source_scheme = None
+    self._destination_scheme = None
+    # For calculating disk I/O.
+    self._disk_counters_start = get_disk_counters()
+
+  def _get_scheme_value(self, url):
+    """Extracts the scheme as a string from a storage_url."""
+    if url:
+      return url.scheme.value
+    return None
+
+  def _set_source_and_destination_schemes(self, status_message):
+    """Sets source and destination schemes, if available.
+
+    Args:
+      status_message (thread_messages.*): Message to process.
+    """
+    if self._source_scheme is None:
+      self._source_scheme = self._get_scheme_value(status_message.source_url)
+    if self._destination_scheme is None:
+      self._destination_scheme = self._get_scheme_value(
+          status_message.destination_url)
+
+  def _calculate_disk_io(self):
+    """Calculate deltas of time spent on I/O."""
+    current_os = platforms.OperatingSystem.Current()
+    if current_os == platforms.OperatingSystem.LINUX:
+      disk_start = self._disk_counters_start
+      disk_end = get_disk_counters()
+      # Read and write time are the 5th and 6th elements of the stat tuple.
+      return (sum([stat[4] + stat[5] for stat in disk_end.values()]) -
+              sum([stat[4] + stat[5] for stat in disk_start.values()]))
+    return UNSET
+
+  def _report_metrics(self, total_bytes, time_delta, num_files):
+    """Reports back all tracked events via report method.
+
+    Args:
+      total_bytes (int): Amount of data transferred in bytes.
+      time_delta (int): Time elapsed during the transfer in seconds.
+      num_files (int): Number of files processed
+    """
+    # This recreates the gsutil throughput calculation so that metrics are 1:1.
+    avg_speed = float(total_bytes) / float(time_delta)
+    report(
+        source_scheme=self._source_scheme,
+        destination_scheme=self._destination_scheme,
+        num_files=num_files,
+        size=total_bytes,
+        avg_speed=avg_speed,
+        disk_io_time=self._calculate_disk_io())

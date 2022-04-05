@@ -270,7 +270,7 @@
           "$ref": "ManagedCertificate"
         },
         "subjectAlternativeNames": {
-          "description": "Output only. The list of Subject Alternative Names defined in the certificate.",
+          "description": "Output only. The list of Subject Alternative Names defined in the certificate. Managed certificates that haven't been provisioned yet have this field populated with a value of the managed.domains field.",
           "readOnly": true,
           "type": "array",
           "items": {

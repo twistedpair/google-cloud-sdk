@@ -186,7 +186,12 @@ class ResultsBucketOps(object):
           raise exceptions.BadFileException('[{0}] not found or not accessible'
                                             .format(path))
         src_obj = self._storage_messages.Object(size=file_size)
-        upload = transfer.Upload.FromFile(path, mime_type=mimetype)
+        try:
+          upload = transfer.Upload.FromFile(path, mime_type=mimetype)
+        except apitools_exceptions.InvalidUserInputError:
+          upload = transfer.Upload.FromFile(
+              path, mime_type='application/octet-stream')
+
         insert_req = self._storage_messages.StorageObjectsInsertRequest(
             bucket=self._results_bucket,
             name='{obj}/{name}'.format(
