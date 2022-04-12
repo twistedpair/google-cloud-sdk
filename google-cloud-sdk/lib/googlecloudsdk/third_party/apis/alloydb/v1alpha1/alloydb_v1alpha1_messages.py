@@ -675,7 +675,7 @@ class CancelOperationRequest(_messages.Message):
 
 
 class Cluster(_messages.Message):
-  r"""Message describing Cluster object NEXT_ID: 18
+  r"""Message describing Cluster object NEXT_ID: 19
 
   Enums:
     DatabaseVersionValueValuesEnum: Output only. The database engine major
@@ -806,8 +806,7 @@ class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
   or the response type of an API method. For instance: service Foo { rpc
-  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
-  representation for `Empty` is empty JSON object `{}`.
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
 
 
@@ -883,9 +882,6 @@ class Instance(_messages.Message):
       https://google.aip.dev/122. The prefix of the instance resource name is
       the name of the parent resource: *
       projects/{project}/locations/{region}/clusters/{cluster_id}
-    networkConfig: The settings for Network / IP Management. This allows to
-      enable/disable public IP, enable/disable SSL and manage which external
-      networks can connect to the instance.
     readPoolConfig: Read pool specific config.
     reconciling: Output only. Reconciling
       (https://google.aip.dev/128#reconciliation), if true, indicates that the
@@ -1019,12 +1015,11 @@ class Instance(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 7)
   machineConfig = _messages.MessageField('MachineConfig', 8)
   name = _messages.StringField(9)
-  networkConfig = _messages.MessageField('NetworkConfig', 10)
-  readPoolConfig = _messages.MessageField('ReadPoolConfig', 11)
-  reconciling = _messages.BooleanField(12)
-  state = _messages.EnumField('StateValueValuesEnum', 13)
-  uid = _messages.StringField(14)
-  updateTime = _messages.StringField(15)
+  readPoolConfig = _messages.MessageField('ReadPoolConfig', 10)
+  reconciling = _messages.BooleanField(11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  uid = _messages.StringField(13)
+  updateTime = _messages.StringField(14)
 
 
 class IntegerRestrictions(_messages.Message):
@@ -1241,19 +1236,6 @@ class MigrationSource(_messages.Message):
   hostPort = _messages.StringField(1)
   referenceId = _messages.StringField(2)
   sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 3)
-
-
-class NetworkConfig(_messages.Message):
-  r"""Network Management configuration.
-
-  Fields:
-    publicIpEnabled: Whether the instance is assigned a public IP address or
-      not.
-    sslRequired: Whether SSL connections over IP are enforced or not.
-  """
-
-  publicIpEnabled = _messages.BooleanField(1)
-  sslRequired = _messages.BooleanField(2)
 
 
 class Operation(_messages.Message):

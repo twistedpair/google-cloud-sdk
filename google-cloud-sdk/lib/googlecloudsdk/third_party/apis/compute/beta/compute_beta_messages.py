@@ -35488,6 +35488,8 @@ class InstanceGroupManager(_messages.Message):
       NO_FAILOVER.
 
   Fields:
+    allInstancesConfig: Specifies configuration that overrides the instance
+      template configuration for the group.
     autoHealingPolicies: The autohealing policy for this managed instance
       group. You can specify only one value.
     baseInstanceName: The base instance name to use for instances in this
@@ -35567,30 +35569,31 @@ class InstanceGroupManager(_messages.Message):
     NO_FAILOVER = 0
     UNKNOWN = 1
 
-  autoHealingPolicies = _messages.MessageField('InstanceGroupManagerAutoHealingPolicy', 1, repeated=True)
-  baseInstanceName = _messages.StringField(2)
-  creationTimestamp = _messages.StringField(3)
-  currentActions = _messages.MessageField('InstanceGroupManagerActionsSummary', 4)
-  description = _messages.StringField(5)
-  distributionPolicy = _messages.MessageField('DistributionPolicy', 6)
-  failoverAction = _messages.EnumField('FailoverActionValueValuesEnum', 7)
-  fingerprint = _messages.BytesField(8)
-  id = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
-  instanceGroup = _messages.StringField(10)
-  instanceTemplate = _messages.StringField(11)
-  kind = _messages.StringField(12, default='compute#instanceGroupManager')
-  name = _messages.StringField(13)
-  namedPorts = _messages.MessageField('NamedPort', 14, repeated=True)
-  region = _messages.StringField(15)
-  selfLink = _messages.StringField(16)
-  serviceAccount = _messages.StringField(17)
-  statefulPolicy = _messages.MessageField('StatefulPolicy', 18)
-  status = _messages.MessageField('InstanceGroupManagerStatus', 19)
-  targetPools = _messages.StringField(20, repeated=True)
-  targetSize = _messages.IntegerField(21, variant=_messages.Variant.INT32)
-  updatePolicy = _messages.MessageField('InstanceGroupManagerUpdatePolicy', 22)
-  versions = _messages.MessageField('InstanceGroupManagerVersion', 23, repeated=True)
-  zone = _messages.StringField(24)
+  allInstancesConfig = _messages.MessageField('InstanceGroupManagerAllInstancesConfig', 1)
+  autoHealingPolicies = _messages.MessageField('InstanceGroupManagerAutoHealingPolicy', 2, repeated=True)
+  baseInstanceName = _messages.StringField(3)
+  creationTimestamp = _messages.StringField(4)
+  currentActions = _messages.MessageField('InstanceGroupManagerActionsSummary', 5)
+  description = _messages.StringField(6)
+  distributionPolicy = _messages.MessageField('DistributionPolicy', 7)
+  failoverAction = _messages.EnumField('FailoverActionValueValuesEnum', 8)
+  fingerprint = _messages.BytesField(9)
+  id = _messages.IntegerField(10, variant=_messages.Variant.UINT64)
+  instanceGroup = _messages.StringField(11)
+  instanceTemplate = _messages.StringField(12)
+  kind = _messages.StringField(13, default='compute#instanceGroupManager')
+  name = _messages.StringField(14)
+  namedPorts = _messages.MessageField('NamedPort', 15, repeated=True)
+  region = _messages.StringField(16)
+  selfLink = _messages.StringField(17)
+  serviceAccount = _messages.StringField(18)
+  statefulPolicy = _messages.MessageField('StatefulPolicy', 19)
+  status = _messages.MessageField('InstanceGroupManagerStatus', 20)
+  targetPools = _messages.StringField(21, repeated=True)
+  targetSize = _messages.IntegerField(22, variant=_messages.Variant.INT32)
+  updatePolicy = _messages.MessageField('InstanceGroupManagerUpdatePolicy', 23)
+  versions = _messages.MessageField('InstanceGroupManagerVersion', 24, repeated=True)
+  zone = _messages.StringField(25)
 
 
 class InstanceGroupManagerActionsSummary(_messages.Message):
@@ -35835,6 +35838,22 @@ class InstanceGroupManagerAggregatedList(_messages.Message):
   warning = _messages.MessageField('WarningValue', 7)
 
 
+class InstanceGroupManagerAllInstancesConfig(_messages.Message):
+  r"""A InstanceGroupManagerAllInstancesConfig object.
+
+  Fields:
+    properties: Properties to set on all instances in the group. You can add
+      or modify properties using the instanceGroupManagers.patch or
+      regionInstanceGroupManagers.patch. After setting allInstancesConfig on
+      the group, you must update the group's instances to apply the
+      configuration. To apply the configuration, set the group's
+      updatePolicy.type field to use proactive updates or use the
+      applyUpdatesToInstances method.
+  """
+
+  properties = _messages.MessageField('InstancePropertiesPatch', 1)
+
+
 class InstanceGroupManagerAutoHealingPolicy(_messages.Message):
   r"""A InstanceGroupManagerAutoHealingPolicy object.
 
@@ -36008,6 +36027,8 @@ class InstanceGroupManagerStatus(_messages.Message):
   r"""A InstanceGroupManagerStatus object.
 
   Fields:
+    allInstancesConfig: [Output only] Status of all-instances configuration on
+      the group.
     autoscaler: [Output Only] The URL of the Autoscaler that targets this
       instance group manager.
     isStable: [Output Only] A bit indicating whether the managed instance
@@ -36023,10 +36044,25 @@ class InstanceGroupManagerStatus(_messages.Message):
       Instance Group Manager.
   """
 
-  autoscaler = _messages.StringField(1)
-  isStable = _messages.BooleanField(2)
-  stateful = _messages.MessageField('InstanceGroupManagerStatusStateful', 3)
-  versionTarget = _messages.MessageField('InstanceGroupManagerStatusVersionTarget', 4)
+  allInstancesConfig = _messages.MessageField('InstanceGroupManagerStatusAllInstancesConfig', 1)
+  autoscaler = _messages.StringField(2)
+  isStable = _messages.BooleanField(3)
+  stateful = _messages.MessageField('InstanceGroupManagerStatusStateful', 4)
+  versionTarget = _messages.MessageField('InstanceGroupManagerStatusVersionTarget', 5)
+
+
+class InstanceGroupManagerStatusAllInstancesConfig(_messages.Message):
+  r"""A InstanceGroupManagerStatusAllInstancesConfig object.
+
+  Fields:
+    currentRevision: [Output Only] Current all-instances configuration
+      revision. This value is in RFC3339 text format.
+    effective: [Output Only] A bit indicating whether this configuration has
+      been applied to all managed instances in the group.
+  """
+
+  currentRevision = _messages.StringField(1)
+  effective = _messages.BooleanField(2)
 
 
 class InstanceGroupManagerStatusStateful(_messages.Message):
@@ -36036,18 +36072,18 @@ class InstanceGroupManagerStatusStateful(_messages.Message):
     hasStatefulConfig: [Output Only] A bit indicating whether the managed
       instance group has stateful configuration, that is, if you have
       configured any items in a stateful policy or in per-instance configs.
-      The group might report that it has no stateful config even when there is
-      still some preserved state on a managed instance, for example, if you
-      have deleted all PICs but not yet applied those deletions.
+      The group might report that it has no stateful configuration even when
+      there is still some preserved state on a managed instance, for example,
+      if you have deleted all PICs but not yet applied those deletions.
     isStateful: [Output Only] A bit indicating whether the managed instance
       group has stateful configuration, that is, if you have configured any
       items in a stateful policy or in per-instance configs. The group might
-      report that it has no stateful config even when there is still some
-      preserved state on a managed instance, for example, if you have deleted
-      all PICs but not yet applied those deletions. This field is deprecated
-      in favor of has_stateful_config.
-    perInstanceConfigs: [Output Only] Status of per-instance configs on the
-      instance.
+      report that it has no stateful configuration even when there is still
+      some preserved state on a managed instance, for example, if you have
+      deleted all PICs but not yet applied those deletions. This field is
+      deprecated in favor of has_stateful_config.
+    perInstanceConfigs: [Output Only] Status of per-instance configurations on
+      the instance.
   """
 
   hasStatefulConfig = _messages.BooleanField(1)
@@ -36059,9 +36095,9 @@ class InstanceGroupManagerStatusStatefulPerInstanceConfigs(_messages.Message):
   r"""A InstanceGroupManagerStatusStatefulPerInstanceConfigs object.
 
   Fields:
-    allEffective: A bit indicating if all of the group's per-instance configs
-      (listed in the output of a listPerInstanceConfigs API call) have status
-      EFFECTIVE or there are no per-instance-configs.
+    allEffective: A bit indicating if all of the group's per-instance
+      configurations (listed in the output of a listPerInstanceConfigs API
+      call) have status EFFECTIVE or there are no per-instance-configs.
   """
 
   allEffective = _messages.BooleanField(1)
@@ -36613,8 +36649,8 @@ class InstanceGroupManagersPatchPerInstanceConfigsReq(_messages.Message):
   r"""InstanceGroupManagers.patchPerInstanceConfigs
 
   Fields:
-    perInstanceConfigs: The list of per-instance configs to insert or patch on
-      this managed instance group.
+    perInstanceConfigs: The list of per-instance configurations to insert or
+      patch on this managed instance group.
   """
 
   perInstanceConfigs = _messages.MessageField('PerInstanceConfig', 1, repeated=True)
@@ -36851,8 +36887,8 @@ class InstanceGroupManagersUpdatePerInstanceConfigsReq(_messages.Message):
   r"""InstanceGroupManagers.updatePerInstanceConfigs
 
   Fields:
-    perInstanceConfigs: The list of per-instance configs to insert or patch on
-      this managed instance group.
+    perInstanceConfigs: The list of per-instance configurations to insert or
+      patch on this managed instance group.
   """
 
   perInstanceConfigs = _messages.MessageField('PerInstanceConfig', 1, repeated=True)
@@ -37913,6 +37949,75 @@ class InstanceProperties(_messages.Message):
   shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 22)
   shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 23)
   tags = _messages.MessageField('Tags', 24)
+
+
+class InstancePropertiesPatch(_messages.Message):
+  r"""Represents the change that you want to make to the instance properties.
+
+  Messages:
+    LabelsValue: The label key-value pairs that you want to patch onto the
+      instance.
+    MetadataValue: The metadata key-value pairs that you want to patch onto
+      the instance. For more information, see Project and instance metadata.
+
+  Fields:
+    labels: The label key-value pairs that you want to patch onto the
+      instance.
+    metadata: The metadata key-value pairs that you want to patch onto the
+      instance. For more information, see Project and instance metadata.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""The label key-value pairs that you want to patch onto the instance.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetadataValue(_messages.Message):
+    r"""The metadata key-value pairs that you want to patch onto the instance.
+    For more information, see Project and instance metadata.
+
+    Messages:
+      AdditionalProperty: An additional property for a MetadataValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type MetadataValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  labels = _messages.MessageField('LabelsValue', 1)
+  metadata = _messages.MessageField('MetadataValue', 2)
 
 
 class InstanceReference(_messages.Message):
@@ -41870,6 +41975,8 @@ class ManagedInstance(_messages.Message):
       This field is empty when the instance does not exist.
 
   Fields:
+    allInstancesConfig: [Output Only] Current all-instances configuration
+      revision applied to this instance.
     currentAction: [Output Only] The current action that the managed instance
       group has scheduled for the instance. Possible values: - NONE The
       instance is running, and the managed instance group does not have any
@@ -42006,15 +42113,27 @@ class ManagedInstance(_messages.Message):
     SUSPENDING = 8
     TERMINATED = 9
 
-  currentAction = _messages.EnumField('CurrentActionValueValuesEnum', 1)
-  id = _messages.IntegerField(2, variant=_messages.Variant.UINT64)
-  instance = _messages.StringField(3)
-  instanceHealth = _messages.MessageField('ManagedInstanceInstanceHealth', 4, repeated=True)
-  instanceStatus = _messages.EnumField('InstanceStatusValueValuesEnum', 5)
-  lastAttempt = _messages.MessageField('ManagedInstanceLastAttempt', 6)
-  preservedStateFromConfig = _messages.MessageField('PreservedState', 7)
-  preservedStateFromPolicy = _messages.MessageField('PreservedState', 8)
-  version = _messages.MessageField('ManagedInstanceVersion', 9)
+  allInstancesConfig = _messages.MessageField('ManagedInstanceAllInstancesConfig', 1)
+  currentAction = _messages.EnumField('CurrentActionValueValuesEnum', 2)
+  id = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
+  instance = _messages.StringField(4)
+  instanceHealth = _messages.MessageField('ManagedInstanceInstanceHealth', 5, repeated=True)
+  instanceStatus = _messages.EnumField('InstanceStatusValueValuesEnum', 6)
+  lastAttempt = _messages.MessageField('ManagedInstanceLastAttempt', 7)
+  preservedStateFromConfig = _messages.MessageField('PreservedState', 8)
+  preservedStateFromPolicy = _messages.MessageField('PreservedState', 9)
+  version = _messages.MessageField('ManagedInstanceVersion', 10)
+
+
+class ManagedInstanceAllInstancesConfig(_messages.Message):
+  r"""A ManagedInstanceAllInstancesConfig object.
+
+  Fields:
+    revision: [Output Only] Current all-instances configuration revision. This
+      value is in RFC3339 text format.
+  """
+
+  revision = _messages.StringField(1)
 
 
 class ManagedInstanceInstanceHealth(_messages.Message):
@@ -48154,46 +48273,47 @@ class PerInstanceConfig(_messages.Message):
   r"""A PerInstanceConfig object.
 
   Enums:
-    StatusValueValuesEnum: The status of applying this per-instance config on
-      the corresponding managed instance.
+    StatusValueValuesEnum: The status of applying this per-instance
+      configuration on the corresponding managed instance.
 
   Fields:
     fingerprint: Fingerprint of this per-instance config. This field can be
       used in optimistic locking. It is ignored when inserting a per-instance
       config. An up-to-date fingerprint must be provided in order to update an
-      existing per-instance config or the field needs to be unset.
-    name: The name of a per-instance config and its corresponding instance.
-      Serves as a merge key during UpdatePerInstanceConfigs operations, that
-      is, if a per-instance config with the same name exists then it will be
-      updated, otherwise a new one will be created for the VM instance with
-      the same name. An attempt to create a per-instance config for a VM
-      instance that either doesn't exist or is not part of the group will
-      result in an error.
+      existing per-instance configuration or the field needs to be unset.
+    name: The name of a per-instance configuration and its corresponding
+      instance. Serves as a merge key during UpdatePerInstanceConfigs
+      operations, that is, if a per-instance configuration with the same name
+      exists then it will be updated, otherwise a new one will be created for
+      the VM instance with the same name. An attempt to create a per-instance
+      configconfiguration for a VM instance that either doesn't exist or is
+      not part of the group will result in an error.
     preservedState: The intended preserved state for the given instance. Does
       not contain preserved state generated from a stateful policy.
-    status: The status of applying this per-instance config on the
+    status: The status of applying this per-instance configuration on the
       corresponding managed instance.
   """
 
   class StatusValueValuesEnum(_messages.Enum):
-    r"""The status of applying this per-instance config on the corresponding
-    managed instance.
+    r"""The status of applying this per-instance configuration on the
+    corresponding managed instance.
 
     Values:
-      APPLYING: The per-instance config is being applied to the instance, but
-        is not yet effective, possibly waiting for the instance to, for
-        example, REFRESH.
-      DELETING: The per-instance config deletion is being applied on the
-        instance, possibly waiting for the instance to, for example, REFRESH.
-      EFFECTIVE: The per-instance config is effective on the instance, meaning
-        that all disks, ips and metadata specified in this config are attached
-        or set on the instance.
-      NONE: *[Default]* The default status, when no per-instance config
+      APPLYING: The per-instance configuration is being applied to the
+        instance, but is not yet effective, possibly waiting for the instance
+        to, for example, REFRESH.
+      DELETING: The per-instance configuration deletion is being applied on
+        the instance, possibly waiting for the instance to, for example,
+        REFRESH.
+      EFFECTIVE: The per-instance configuration is effective on the instance,
+        meaning that all disks, ips and metadata specified in this
+        configuration are attached or set on the instance.
+      NONE: *[Default]* The default status, when no per-instance configuration
         exists.
-      UNAPPLIED: The per-instance config is set on an instance but not been
-        applied yet.
-      UNAPPLIED_DELETION: The per-instance config has been deleted, but the
-        deletion is not yet applied.
+      UNAPPLIED: The per-instance configuration is set on an instance but not
+        been applied yet.
+      UNAPPLIED_DELETION: The per-instance configuration has been deleted, but
+        the deletion is not yet applied.
     """
     APPLYING = 0
     DELETING = 1
@@ -50598,8 +50718,8 @@ class RegionInstanceGroupManagerPatchInstanceConfigReq(_messages.Message):
   r"""RegionInstanceGroupManagers.patchPerInstanceConfigs
 
   Fields:
-    perInstanceConfigs: The list of per-instance configs to insert or patch on
-      this managed instance group.
+    perInstanceConfigs: The list of per-instance configurations to insert or
+      patch on this managed instance group.
   """
 
   perInstanceConfigs = _messages.MessageField('PerInstanceConfig', 1, repeated=True)
@@ -50609,8 +50729,8 @@ class RegionInstanceGroupManagerUpdateInstanceConfigReq(_messages.Message):
   r"""RegionInstanceGroupManagers.updatePerInstanceConfigs
 
   Fields:
-    perInstanceConfigs: The list of per-instance configs to insert or patch on
-      this managed instance group.
+    perInstanceConfigs: The list of per-instance configurations to insert or
+      patch on this managed instance group.
   """
 
   perInstanceConfigs = _messages.MessageField('PerInstanceConfig', 1, repeated=True)

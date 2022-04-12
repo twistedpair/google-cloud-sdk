@@ -245,17 +245,14 @@ def ListConfigControllerClusters(project):
   # function to list the clusters.
   args = [
       'container', 'clusters', 'list', '--project', project, '--filter',
-      'name:krmapihost', '--format', 'table(name,location)'
+      'name:krmapihost', '--format', 'json(name,location)'
   ]
   output, err = _RunGcloud(args)
   if err:
     raise exceptions.ConfigSyncError('Error listing clusters: {}'.format(err))
 
-  clusters = []
-  for cluster in output.split('\n'):
-    c = _ParseClusterLocation(cluster)
-    if c:
-      clusters.append(c)
+  output_json = json.loads(output)
+  clusters = [(c['name'], c['location']) for c in output_json]
   return clusters
 
 
@@ -274,18 +271,15 @@ def ListMemberships(project):
   # TODO(b/202418506) Check if there is any library
   # function to list the memberships.
   args = [
-      'container', 'fleet', 'memberships', 'list', '--format', 'table(name)',
+      'container', 'fleet', 'memberships', 'list', '--format', 'json(name)',
       '--project', project
   ]
   output, err = _RunGcloud(args)
   if err:
     raise exceptions.ConfigSyncError(
         'Error listing memberships: {}'.format(err))
-
-  memberships = []
-  for membership in output.replace('\n', ' ').split():
-    if membership != 'NAME':
-      memberships.append(membership)
+  json_output = json.loads(output)
+  memberships = [m['name'] for m in json_output]
   return memberships
 
 
@@ -359,29 +353,6 @@ def _GetEnvs():
     env[_KUBECONFIGENV] = files.ExpandHomeDir(
         os.path.join('~', '.kube', _DEFAULTKUBECONFIG))
   return env
-
-
-def _ParseClusterLocation(cluster_and_location):
-  """Get the cluster and location for the Config Controller cluster.
-
-  Args:
-    cluster_and_location: The one line string that contains the Config
-      Controller resource name and its location.
-
-  Returns:
-    The tuple of cluster and region.
-  """
-  if not cluster_and_location or cluster_and_location.startswith('NAME'):
-    return None
-  cluster = ''
-  region = ''
-  strings = cluster_and_location.split(' ')
-  for s in strings:
-    if s.startswith('krmapihost'):
-      cluster = s
-    elif s:
-      region = s
-  return (cluster, region)
 
 
 @contextlib.contextmanager

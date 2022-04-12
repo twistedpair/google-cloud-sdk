@@ -23,6 +23,8 @@ from googlecloudsdk.calliope import parser_errors
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core.console import console_io
 
+import six
+
 _MODE_SWITCH_MESSAGE = (
     'WARNING: switching from custom advertisement mode to default will clear '
     'out any existing advertised groups/ranges from this {resource}.')
@@ -42,6 +44,12 @@ _IP_RANGE_NOT_FOUND_ERROR_MESSAGE = (
 
 _REQUIRE_IP_ADDRESS_AND_MASK_LENGTH_ERROR_MESSAGE = (
     '--ip-address and --mask-length must be set together.')
+
+_MD5_AUTHENTICATION_KEY_SUFFIX = '-key'
+
+_MD5_AUTHENTICATION_KEY_SUBSTRING = '-key-'
+
+_MAX_LENGTH_OF_MD5_AUTHENTICATION_KEY = 63
 
 
 class RouterError(core_exceptions.Error):
@@ -177,8 +185,8 @@ def ParseAdvertisements(messages, resource_class, args):
 def ValidateCustomMode(messages, resource_class, resource):
   """Validate that a router/peer is in custom mode."""
 
-  if (resource.advertiseMode is
-      not resource_class.AdvertiseModeValueValuesEnum.CUSTOM):
+  if (resource.advertiseMode
+      is not resource_class.AdvertiseModeValueValuesEnum.CUSTOM):
     raise CustomWithDefaultError(messages, resource_class)
 
 
@@ -262,3 +270,35 @@ def RemoveIpRangesFromAdvertisements(messages, resource_class, resource,
   resource.advertisedIpRanges = [
       r for r in resource.advertisedIpRanges if r.range not in ip_ranges
   ]
+
+
+def GenerateMd5AuthenticationKeyName(router_message, args):
+  """Generates an MD5 authentication key name for the BGP peer.
+
+  Args:
+    router_message: the Cloud Router that contains the relevant BGP peer.
+    args: contains arguments passed to the command
+
+  Returns:
+    Generated MD5 authentication key name
+  """
+  md5_authentication_key_names = set()
+  for bgp_peer in router_message.bgpPeers:
+    if bgp_peer.md5AuthenticationKeyName is not None:
+      md5_authentication_key_names.add(bgp_peer.md5AuthenticationKeyName)
+  substrings_max_length = _MAX_LENGTH_OF_MD5_AUTHENTICATION_KEY - len(
+      _MD5_AUTHENTICATION_KEY_SUFFIX)
+  md5_authentication_key_name = (
+      args.peer_name[:substrings_max_length] + _MD5_AUTHENTICATION_KEY_SUFFIX)
+  md5_authentication_key_name_suffix = 2
+  while md5_authentication_key_name in md5_authentication_key_names:
+    substrings_max_length = (
+        _MAX_LENGTH_OF_MD5_AUTHENTICATION_KEY -
+        len(_MD5_AUTHENTICATION_KEY_SUBSTRING) -
+        len(six.text_type(md5_authentication_key_name_suffix)))
+    md5_authentication_key_name = (
+        args.peer_name[:substrings_max_length] +
+        _MD5_AUTHENTICATION_KEY_SUBSTRING +
+        six.text_type(md5_authentication_key_name_suffix))
+    md5_authentication_key_name_suffix += 1
+  return md5_authentication_key_name

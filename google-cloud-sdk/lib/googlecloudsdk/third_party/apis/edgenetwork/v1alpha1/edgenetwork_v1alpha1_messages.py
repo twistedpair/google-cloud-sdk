@@ -65,7 +65,7 @@ class EdgenetworkProjectsLocationsListRequest(_messages.Message):
 
   Fields:
     filter: A filter to narrow down results to a preferred subset. The
-      filtering language accepts strings like "displayName=tokyo", and is
+      filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
     name: The resource that owns the locations collection, if applicable.
     pageSize: The maximum number of results to return. If not set, the service
@@ -678,7 +678,7 @@ class Empty(_messages.Message):
 
 
 class Interconnect(_messages.Message):
-  r"""Message describing Interconnect object LINT.IfChange(Interconnect)
+  r"""Message describing Interconnect object
 
   Enums:
     InterconnectTypeValueValuesEnum: Optional. Type of interconnect, which
@@ -751,7 +751,6 @@ class Interconnect(_messages.Message):
 
 class InterconnectAttachment(_messages.Message):
   r"""Message describing InterconnectAttachment object
-  LINT.IfChange(InterconnectAttachment)
 
   Enums:
     StateValueValuesEnum: Output only. Current stage of the resource to the
@@ -794,12 +793,14 @@ class InterconnectAttachment(_messages.Message):
       STATE_RUNNING: The resource has been pushed to device successfully by
         config push.
       STATE_SUSPENDED: The resource failed to push to device by config push.
+      STATE_DELETING: The resource is under deletion.
     """
     STATE_UNKNOWN = 0
     STATE_PENDING = 1
     STATE_PROVISIONING = 2
     STATE_RUNNING = 3
     STATE_SUSPENDED = 4
+    STATE_DELETING = 5
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1052,7 +1053,7 @@ class Location(_messages.Message):
 
 
 class Network(_messages.Message):
-  r"""Message describing Network object LINT.IfChange(Network)
+  r"""Message describing Network object
 
   Messages:
     LabelsValue: Labels associated with this resource.
@@ -1236,7 +1237,7 @@ class OperationMetadata(_messages.Message):
 
 
 class Router(_messages.Message):
-  r"""Message describing Router object LINT.IfChange(Router)
+  r"""Message describing Router object
 
   Enums:
     StateValueValuesEnum: Output only. Current stage of the resource to the
@@ -1273,12 +1274,14 @@ class Router(_messages.Message):
       STATE_RUNNING: The resource has been pushed to device successfully by
         config push.
       STATE_SUSPENDED: The resource failed to push to device by config push.
+      STATE_DELETING: The resource is under deletion.
     """
     STATE_UNKNOWN = 0
     STATE_PENDING = 1
     STATE_PROVISIONING = 2
     STATE_RUNNING = 3
     STATE_SUSPENDED = 4
+    STATE_DELETING = 5
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1431,7 +1434,7 @@ class Status(_messages.Message):
 
 
 class Subnet(_messages.Message):
-  r"""Message describing Subnet object LINT.IfChange(Subnet)
+  r"""Message describing Subnet object
 
   Enums:
     StateValueValuesEnum: Output only. Current stage of the resource to the
@@ -1467,12 +1470,14 @@ class Subnet(_messages.Message):
       STATE_RUNNING: The resource has been pushed to device successfully by
         config push.
       STATE_SUSPENDED: The resource failed to push to device by config push.
+      STATE_DELETING: The resource is under deletion.
     """
     STATE_UNKNOWN = 0
     STATE_PENDING = 1
     STATE_PROVISIONING = 2
     STATE_RUNNING = 3
     STATE_SUSPENDED = 4
+    STATE_DELETING = 5
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):

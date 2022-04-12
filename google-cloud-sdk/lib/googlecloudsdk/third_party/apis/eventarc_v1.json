@@ -260,32 +260,11 @@
           "description": "Optional. The name of the channel associated with the trigger in `projects\/{project}\/locations\/{location}\/channels\/{channel}` format. You must provide a channel to receive events from Eventarc SaaS partners.",
           "type": "string"
         },
-        "state": {
-          "description": "Output only. The overall state of the trigger. The state of associated trigger resources. This is a computed field. If the trigger is in FAILED state, the field `conditions` will contain details of the reason of the failure.",
-          "readOnly": true,
-          "type": "string",
-          "enumDescriptions": [
-            "The default value. This value is used if the state is omitted.",
-            "The trigger is active and has no detected conditions.",
-            "The trigger is being created.",
-            "The trigger has error conditions and is being repairing.",
-            "The trigger has error conditions.",
-            "The trigger has been deleted."
-          ],
-          "enum": [
-            "STATE_UNSPECIFIED",
-            "ACTIVE",
-            "CREATING",
-            "REPAIRING",
-            "FAILED",
-            "DELETED"
-          ]
-        },
         "conditions": {
           "description": "Output only. The reason(s) why a trigger is in FAILED state.",
           "readOnly": true,
-          "type": "array",
-          "items": {
+          "type": "object",
+          "additionalProperties": {
             "$ref": "StateCondition"
           }
         },
@@ -1029,7 +1008,7 @@
                   "type": "string"
                 },
                 "filter": {
-                  "description": "A filter to narrow down results to a preferred subset. The filtering language accepts strings like \"displayName=tokyo\", and is documented in more detail in [AIP-160](https:\/\/google.aip.dev\/160).",
+                  "description": "A filter to narrow down results to a preferred subset. The filtering language accepts strings like `\"displayName=tokyo\"`, and is documented in more detail in [AIP-160](https:\/\/google.aip.dev\/160).",
                   "location": "query",
                   "type": "string"
                 },

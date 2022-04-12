@@ -722,7 +722,8 @@
           "type": "string"
         },
         "modelVersionId": {
-          "description": "The version ID of the model that is deployed.",
+          "description": "Output only. The version ID of the model that is deployed.",
+          "readOnly": true,
           "type": "string"
         },
         "displayName": {
@@ -3307,6 +3308,14 @@
           "description": "Required. The user-defined name of the FederatedLearningJob. The name can be up to 128 characters long and can be consist of any UTF-8 characters. Display name of a FederatedLearningJob.",
           "type": "string"
         },
+        "consortium": {
+          "description": "The name of the Consortium resoure that this job should run with, must share the same ancestor Location.",
+          "type": "string"
+        },
+        "jobSpec": {
+          "description": "Required. Job spec.",
+          "$ref": "GoogleCloudAiplatformV1beta1FederatedLearningJobSpec"
+        },
         "state": {
           "description": "Output only. The detailed state of the job.",
           "readOnly": true,
@@ -3362,6 +3371,13 @@
             "type": "string"
           }
         }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1FederatedLearningJobSpec": {
+      "id": "GoogleCloudAiplatformV1beta1FederatedLearningJobSpec",
+      "description": "Represents the spec of a FederatedLearningJob.",
+      "type": "object",
+      "properties": {
       }
     },
     "GoogleCloudAiplatformV1beta1ListFederatedLearningJobsResponse": {
@@ -4092,7 +4108,8 @@
           "type": "string"
         },
         "modelVersionId": {
-          "description": "The version ID of the Model that produces the predictions via this job.",
+          "description": "Output only. The version ID of the Model that produces the predictions via this job.",
+          "readOnly": true,
           "type": "string"
         },
         "unmanagedContainerModel": {
@@ -4561,6 +4578,10 @@
             "RUNNING"
           ]
         },
+        "latestMonitoringPipelineMetadata": {
+          "description": "Latest triggered monitoring pipeline metadata.",
+          "$ref": "GoogleCloudAiplatformV1beta1ModelDeploymentMonitoringJobLatestMonitoringPipelineMetadata"
+        },
         "modelDeploymentMonitoringObjectiveConfigs": {
           "description": "Required. The config for monitoring objectives. This is a per DeployedModel config. Each DeployedModel needs to be configured separately.",
           "type": "array",
@@ -4649,6 +4670,22 @@
         }
       }
     },
+    "GoogleCloudAiplatformV1beta1ModelDeploymentMonitoringJobLatestMonitoringPipelineMetadata": {
+      "id": "GoogleCloudAiplatformV1beta1ModelDeploymentMonitoringJobLatestMonitoringPipelineMetadata",
+      "description": "All metadata of most recent monitoring pipelines.",
+      "type": "object",
+      "properties": {
+        "runTime": {
+          "description": "The time that most recent monitoring pipelines that is related to this run.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "status": {
+          "description": "The status of the most recent monitoring pipeline.",
+          "$ref": "GoogleRpcStatus"
+        }
+      }
+    },
     "GoogleCloudAiplatformV1beta1ModelDeploymentMonitoringObjectiveConfig": {
       "id": "GoogleCloudAiplatformV1beta1ModelDeploymentMonitoringObjectiveConfig",
       "description": "ModelDeploymentMonitoringObjectiveConfig contains the pair of deployed_model_id to ModelMonitoringObjectiveConfig.",
@@ -4666,7 +4703,7 @@
     },
     "GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfig": {
       "id": "GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfig",
-      "description": "Next ID: 7",
+      "description": "Next ID: 8",
       "type": "object",
       "properties": {
         "trainingDataset": {
@@ -6317,6 +6354,17 @@
         "encryptionSpec": {
           "description": "Customer-managed encryption key options. If this is set, then the Model copy will be encrypted with the provided encryption key.",
           "$ref": "GoogleCloudAiplatformV1beta1EncryptionSpec"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1ImportModelEvaluationRequest": {
+      "id": "GoogleCloudAiplatformV1beta1ImportModelEvaluationRequest",
+      "description": "Request message for ModelService.ImportModelEvaluation",
+      "type": "object",
+      "properties": {
+        "modelEvaluation": {
+          "description": "Required. Model evaluation resource to be imported.",
+          "$ref": "GoogleCloudAiplatformV1beta1ModelEvaluation"
         }
       }
     },
@@ -8983,7 +9031,8 @@
           "type": "string"
         },
         "modelVersionId": {
-          "description": "The version ID of the model that is deployed.",
+          "description": "Output only. The version ID of the model that is deployed.",
+          "readOnly": true,
           "type": "string"
         },
         "displayName": {
@@ -11979,7 +12028,8 @@
           "type": "string"
         },
         "modelVersionId": {
-          "description": "The version ID of the model that is deployed.",
+          "description": "Output only. The version ID of the model that is deployed.",
+          "readOnly": true,
           "type": "string"
         },
         "displayName": {
@@ -12636,7 +12686,7 @@
     },
     "GoogleCloudAiplatformUiModelMonitoringObjectiveConfig": {
       "id": "GoogleCloudAiplatformUiModelMonitoringObjectiveConfig",
-      "description": "Next ID: 7",
+      "description": "Next ID: 8",
       "type": "object",
       "properties": {
         "trainingDataset": {
@@ -15115,7 +15165,8 @@
           "type": "string"
         },
         "modelVersionId": {
-          "description": "The version ID of the model that is deployed.",
+          "description": "Output only. The version ID of the model that is deployed.",
+          "readOnly": true,
           "type": "string"
         },
         "displayName": {
@@ -18075,7 +18126,7 @@
       "type": "object",
       "properties": {
         "targetColumn": {
-          "description": "The name of the column that the model is to predict.",
+          "description": "The name of the column that the Model is to predict values for. This column must be unavailable at forecast.",
           "type": "string"
         },
         "timeSeriesIdentifierColumn": {
@@ -18083,7 +18134,7 @@
           "type": "string"
         },
         "timeColumn": {
-          "description": "The name of the column that identifies time order in the time series.",
+          "description": "The name of the column that identifies time order in the time series. This column must be available at forecast.",
           "type": "string"
         },
         "transformations": {
@@ -18103,7 +18154,7 @@
           "format": "int64"
         },
         "weightColumn": {
-          "description": "Column name that should be used as the weight column. Higher values in this column give more importance to the row during model training. The column must have numeric values between 0 and 10000 inclusively; 0 means the row is ignored for training. If weight column field is not set, then all rows are assumed to have equal weight of 1.",
+          "description": "Column name that should be used as the weight column. Higher values in this column give more importance to the row during model training. The column must have numeric values between 0 and 10000 inclusively; 0 means the row is ignored for training. If weight column field is not set, then all rows are assumed to have equal weight of 1. This column must be available at forecast.",
           "type": "string"
         },
         "timeSeriesAttributeColumns": {
@@ -20434,7 +20485,8 @@
           "type": "string"
         },
         "modelVersionId": {
-          "description": "The version ID of the model that is deployed.",
+          "description": "Output only. The version ID of the model that is deployed.",
+          "readOnly": true,
           "type": "string"
         },
         "displayName": {
@@ -22434,7 +22486,7 @@
       "type": "object",
       "properties": {
         "targetColumn": {
-          "description": "The name of the column that the model is to predict.",
+          "description": "The name of the column that the Model is to predict values for. This column must be unavailable at forecast.",
           "type": "string"
         },
         "timeSeriesIdentifierColumn": {
@@ -22442,7 +22494,7 @@
           "type": "string"
         },
         "timeColumn": {
-          "description": "The name of the column that identifies time order in the time series.",
+          "description": "The name of the column that identifies time order in the time series. This column must be available at forecast.",
           "type": "string"
         },
         "transformations": {
@@ -22462,7 +22514,7 @@
           "format": "int64"
         },
         "weightColumn": {
-          "description": "Column name that should be used as the weight column. Higher values in this column give more importance to the row during model training. The column must have numeric values between 0 and 10000 inclusively; 0 means the row is ignored for training. If weight column field is not set, then all rows are assumed to have equal weight of 1.",
+          "description": "Column name that should be used as the weight column. Higher values in this column give more importance to the row during model training. The column must have numeric values between 0 and 10000 inclusively; 0 means the row is ignored for training. If weight column field is not set, then all rows are assumed to have equal weight of 1. This column must be available at forecast.",
           "type": "string"
         },
         "timeSeriesAttributeColumns": {
@@ -32003,6 +32055,34 @@
                 },
                 "evaluations": {
                   "methods": {
+                    "import": {
+                      "id": "aiplatform.projects.locations.models.evaluations.import",
+                      "path": "v1beta1/{+parent}/evaluations:import",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/models/{modelsId}/evaluations:import",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The name of the parent model resource. Format: `projects\/{project}\/locations\/{location}\/models\/{model}`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/models\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "GoogleCloudAiplatformV1beta1ImportModelEvaluationRequest"
+                      },
+                      "response": {
+                        "$ref": "GoogleCloudAiplatformV1beta1ModelEvaluation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Imports an externally generated ModelEvaluation."
+                    },
                     "get": {
                       "id": "aiplatform.projects.locations.models.evaluations.get",
                       "path": "v1beta1/{+name}",

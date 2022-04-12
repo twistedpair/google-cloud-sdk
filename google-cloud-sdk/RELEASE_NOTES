@@ -5,6 +5,94 @@ Copyright 2014-2022 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 381.0.0 (2022-04-12)
+
+### App Engine
+
+* Updated the Java SDK to version 1.9.96.
+  Please visit the following release notes for details:
+  <https://cloud.google.com/appengine/docs/java/release-notes>.
+
+### Artifact Registry
+
+* *Added repository size to `gcloud artifacts repositories describe` and `gcloud artifacts repositories list` responses to GA.
+
+### Cloud Bigtable
+
+*   Added "pretty-print" formatting to `cbt lookup` and `cbt read` commands.
+    Column encodings and types can be provided using a YAML file, which is
+    passed to the commands using `format-file` argument.
+*   Added "keys-only" filtering to `cbt lookup` and `cbt read` commands by
+    providing `keys-only=true` argument.
+*   Promoted `gcloud bigtable hot-tablets list` to beta and GA.
+
+### Cloud Dataflow
+
+* Added `--image-repository-username-secret-id`,
+`--image-repository-password-secret-id` and `--image-repository-cert-path`
+flags to `gcloud dataflow flex-template build` command to allow users to provide
+credentials to pull template images from private registries.
+
+### Cloud Dataproc
+
+* Promoted `gcloud dataproc clusters gke create` to GA.
+
+### Cloud Datastream
+
+* Deprecated `gcloud beta datastream`. Use `gcloud datastream` instead <https://cloud.google.com/sdk/gcloud/reference/datastream>.
+
+### Cloud Firestore Emulator
+
+* Release Cloud Firestore emulator v1.14.2
+  * Fix: transaction expires after 270s or 60s window
+  * Fix: dead transaction reused bug
+  * Fix: deadlock for up to 30s. [#2452](https://github.com/firebase/firebase-tools/issues/2452)
+
+### Cloud Healthcare
+
+* Added `--schema-type` value `analytics_v2` to the following command `gcloud beta healthcare fhir-stores export bq`.
+* Added `--resource-type` flag to `gcloud healthcare fhir-stores export bq` and `gcloud healthcare fhir-stores export gcs` which limits the export to specific types of FHIR resources on export.
+* Added `--since` flag to `gcloud healthcare fhir-stores export bq` and `gcloud healthcare fhir-stores export gcs` which limits the export to FHIR resources that were updated since the value passed in.
+
+### Cloud Spanner
+
+*   Added `--processing-units` flag to `spanner instances create` and `spanner
+    instances update` to add ability to create granular instances in GA.
+
+### Cloud Storage
+
+* Updated gsutil component to 5.9.
+
+### Compute Engine
+
+* Added `--region` flag for updating Regional Target HTTPS Proxies via `gcloud compute target-https-proxies import`.
+* Changed the list format field label of `gcloud compute networks subnets list` to include updated IPv6 fields.
+* Added  `--provisioning-model` and `--instance-termination-action` flags to `gcloud compute instances set-scheduling` surface for beta.
+* Updated `gcloud compute instances set-scheduling` documentation to include `--no-preemptible` flag.
+
+### Config Connector
+
+* Updated Google Cloud Config Connector to version 1.80.0.
+  See Config Connector Overview for more details [https://cloud.google.com/config-connector/docs/overview](https://cloud.google.com/config-connector/docs/overview).
+
+### Database Migration
+
+* Updated `gcloud database-migration connection-profiles list` to list all region connection profiles when region not specified.
+
+### GKE Hub
+
+* Added Kubernetes resource labels for RBAC policies produced by `generate-gateway-rbac` command.
+
+### Kubernetes Engine
+
+* Added `--network-performance-configs` flag to `gcloud container node-pools create/update` to allow node pools to enable higher performance bandwidth for VM to VM traffic.
+* Promoted maxSurge default to GA for node-pool upgrade settings.
+* Require values for both `--shielded-secure-boot` and  `--shielded-integrity-monitoring` when either one is set.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 380.0.0 (2022-04-05)
 
 ### Google Cloud CLI

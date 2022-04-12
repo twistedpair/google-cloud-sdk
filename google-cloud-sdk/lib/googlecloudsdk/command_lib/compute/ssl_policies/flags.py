@@ -31,6 +31,15 @@ DEFAULT_LIST_FORMAT = """\
       minTlsVersion
     )"""
 
+# The default output format for the list sub-command.
+DEFAULT_AGGREGATED_LIST_FORMAT = """\
+    table(
+      name,
+      region.basename(),
+      profile,
+      minTlsVersion
+    )"""
+
 # Mapping between user supplied argument to the string expected by API.
 _TLS_VERSION_MAP = {
     '1.0': 'TLS_1_0',
@@ -39,13 +48,39 @@ _TLS_VERSION_MAP = {
 }
 
 
+class LegacySslPoliciesCompleter(compute_completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(LegacySslPoliciesCompleter, self).__init__(
+        collection='compute.sslPolicies',
+        list_command='compute ssl-policies list --uri',
+        **kwargs)
+
+
+class GlobalSslPoliciesCompleter(compute_completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(GlobalSslPoliciesCompleter, self).__init__(
+        collection='compute.sslPolicies',
+        list_command='compute ssl-policies list --global --uri',
+        **kwargs)
+
+
+class RegionalSslPoliciesCompleter(compute_completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(RegionalSslPoliciesCompleter, self).__init__(
+        collection='compute.regionSslPolicies',
+        list_command='compute ssl-policies list --filter=region:* --uri',
+        **kwargs)
+
+
 class SslPoliciesCompleter(compute_completers.ListCommandCompleter):
   """An SSL policy completer for a resource argument."""
 
   def __init__(self, **kwargs):
     super(SslPoliciesCompleter, self).__init__(
-        collection='compute.sslPolicies',
-        list_command='alpha compute ssl-policies list --uri',
+        completers=[GlobalSslPoliciesCompleter, RegionalSslPoliciesCompleter],
         **kwargs)
 
 
@@ -54,7 +89,7 @@ def GetSslPolicyArgument(required=True, plural=False):
   return compute_flags.ResourceArgument(
       name='SSL_POLICY',
       resource_name='SSL policy',
-      completer=SslPoliciesCompleter,
+      completer=LegacySslPoliciesCompleter,
       plural=plural,
       custom_plural='SSL policies',
       required=required,
@@ -66,7 +101,7 @@ def GetSslPolicyArgumentForOtherResource(proxy_type, required=False):
   return compute_flags.ResourceArgument(
       name='--ssl-policy',
       resource_name='SSL policy',
-      completer=SslPoliciesCompleter,
+      completer=LegacySslPoliciesCompleter,
       plural=False,
       required=required,
       global_collection='compute.sslPolicies',
@@ -76,9 +111,43 @@ def GetSslPolicyArgumentForOtherResource(proxy_type, required=False):
       detailed_help="""\
         A reference to an SSL policy resource that defines the server-side
         support for SSL features and affects the connections between clients
-        and the {} proxy load balancer. The SSL policy must exist and cannot be
-        deleted while referenced by a target {} proxy.
-        """.format(proxy_type, proxy_type))
+        and the {proxy_type} proxy load balancer. The SSL policy must exist and cannot be
+        deleted while referenced by a target {proxy_type} proxy.
+        """.format(proxy_type=proxy_type))
+
+
+def GetSslPolicyMultiScopeArgument(required=True, plural=False):
+  """Returns the resource argument object for the SSL policy flag."""
+  return compute_flags.ResourceArgument(
+      name='SSL_POLICY',
+      resource_name='SSL policy',
+      completer=SslPoliciesCompleter,
+      plural=plural,
+      custom_plural='SSL policies',
+      required=required,
+      regional_collection='compute.regionSslPolicies',
+      global_collection='compute.sslPolicies')
+
+
+def GetSslPolicyMultiScopeArgumentForOtherResource(proxy_type, required=False):
+  """Returns the flag for specifying the SSL policy."""
+  return compute_flags.ResourceArgument(
+      name='--ssl-policy',
+      resource_name='SSL policy',
+      completer=SslPoliciesCompleter,
+      plural=False,
+      required=required,
+      regional_collection='compute.regionSslPolicies',
+      global_collection='compute.sslPolicies',
+      short_help=(
+          'A reference to an SSL policy resource that defines the server-side '
+          'support for SSL features.'),
+      detailed_help="""\
+        A reference to an SSL policy resource that defines the server-side
+        support for SSL features and affects the connections between clients
+        and the {proxy_type} proxy load balancer. The SSL policy must exist and cannot be
+        deleted while referenced by a target {proxy_type} proxy.
+        """.format(proxy_type=proxy_type))
 
 
 def GetClearSslPolicyArgumentForOtherResource(proxy_type, required=False):

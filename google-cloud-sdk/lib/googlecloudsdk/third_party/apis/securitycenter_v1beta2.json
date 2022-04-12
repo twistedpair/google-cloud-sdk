@@ -110,6 +110,31 @@
     }
   },
   "schemas": {
+    "OnboardingState": {
+      "id": "OnboardingState",
+      "description": "Resource capturing onboarding information for a given CRM resource.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The resource name of the OnboardingState. Format: organizations\/{organization}\/onboardingState Format: folders\/{folder}\/onboardingState Format: projects\/{project}\/onboardingState",
+          "type": "string"
+        },
+        "onboardingLevel": {
+          "description": "Describes the level a given organization, folder, or project is onboarded with SCC. If the resource wasn't onboarded, NOT_FOUND would have been thrown.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unused.",
+            "This resource is onboarded at the project level. Only possible for projects.",
+            "This resource is onboarded at the organization level. Possible for organizations, folders, and projects."
+          ],
+          "enum": [
+            "ONBOARDING_LEVEL_UNSPECIFIED",
+            "ONBOARDING_LEVEL_PROJECT",
+            "ONBOARDING_LEVEL_ORGANIZATION"
+          ]
+        }
+      }
+    },
     "ContainerThreatDetectionSettings": {
       "id": "ContainerThreatDetectionSettings",
       "description": "Resource capturing the settings for the Container Threat Detection service.",
@@ -761,6 +786,13 @@
         "muteInitiator": {
           "description": "First known as mute_annotation. Records additional information about the mute operation e.g. mute config that muted the finding, user who muted the finding, etc. Unlike other attributes of a finding, a finding provider shouldn't set the value of mute.",
           "type": "string"
+        },
+        "iamBindings": {
+          "description": "Represents IAM bindings associated with the Finding.",
+          "type": "array",
+          "items": {
+            "$ref": "IamBinding"
+          }
         }
       }
     },
@@ -1269,6 +1301,35 @@
         }
       }
     },
+    "IamBinding": {
+      "id": "IamBinding",
+      "description": "Represents a particular IAM binding, which captures a member's role addition, removal, or state.",
+      "type": "object",
+      "properties": {
+        "action": {
+          "description": "The action that was performed on a Binding.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified.",
+            "Addition of a Binding.",
+            "Removal of a Binding."
+          ],
+          "enum": [
+            "ACTION_UNSPECIFIED",
+            "ADD",
+            "REMOVE"
+          ]
+        },
+        "role": {
+          "description": "Role that is assigned to \"members\". For example, \"roles\/viewer\", \"roles\/editor\", or \"roles\/owner\".",
+          "type": "string"
+        },
+        "member": {
+          "description": "A single identity requesting access for a Cloud Platform resource, e.g. \"foo@google.com\".",
+          "type": "string"
+        }
+      }
+    },
     "GoogleCloudSecuritycenterV1Resource": {
       "id": "GoogleCloudSecuritycenterV1Resource",
       "description": "Information related to the Google Cloud resource.",
@@ -1563,6 +1624,31 @@
   "resources": {
     "organizations": {
       "methods": {
+        "getOnboardingState": {
+          "id": "securitycenter.organizations.getOnboardingState",
+          "path": "v1beta2/{+name}",
+          "flatPath": "v1beta2/organizations/{organizationsId}/onboardingState",
+          "httpMethod": "GET",
+          "parameters": {
+            "name": {
+              "description": "Required. The name of the OnboardingState to retrieve. Formats: * organizations\/{organization}\/onboardingState * folders\/{folder}\/onboardingState * projects\/{project}\/onboardingState",
+              "pattern": "^organizations\/[^\/]+\/onboardingState$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "OnboardingState"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Retrieve the OnboardingState of a resource."
+        },
         "getContainerThreatDetectionSettings": {
           "id": "securitycenter.organizations.getContainerThreatDetectionSettings",
           "path": "v1beta2/{+name}",
@@ -2060,6 +2146,31 @@
     },
     "folders": {
       "methods": {
+        "getOnboardingState": {
+          "id": "securitycenter.folders.getOnboardingState",
+          "path": "v1beta2/{+name}",
+          "flatPath": "v1beta2/folders/{foldersId}/onboardingState",
+          "httpMethod": "GET",
+          "parameters": {
+            "name": {
+              "description": "Required. The name of the OnboardingState to retrieve. Formats: * organizations\/{organization}\/onboardingState * folders\/{folder}\/onboardingState * projects\/{project}\/onboardingState",
+              "pattern": "^folders\/[^\/]+\/onboardingState$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "OnboardingState"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Retrieve the OnboardingState of a resource."
+        },
         "getContainerThreatDetectionSettings": {
           "id": "securitycenter.folders.getContainerThreatDetectionSettings",
           "path": "v1beta2/{+name}",
@@ -2507,6 +2618,31 @@
     },
     "projects": {
       "methods": {
+        "getOnboardingState": {
+          "id": "securitycenter.projects.getOnboardingState",
+          "path": "v1beta2/{+name}",
+          "flatPath": "v1beta2/projects/{projectsId}/onboardingState",
+          "httpMethod": "GET",
+          "parameters": {
+            "name": {
+              "description": "Required. The name of the OnboardingState to retrieve. Formats: * organizations\/{organization}\/onboardingState * folders\/{folder}\/onboardingState * projects\/{project}\/onboardingState",
+              "pattern": "^projects\/[^\/]+\/onboardingState$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "OnboardingState"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Retrieve the OnboardingState of a resource."
+        },
         "getContainerThreatDetectionSettings": {
           "id": "securitycenter.projects.getContainerThreatDetectionSettings",
           "path": "v1beta2/{+name}",

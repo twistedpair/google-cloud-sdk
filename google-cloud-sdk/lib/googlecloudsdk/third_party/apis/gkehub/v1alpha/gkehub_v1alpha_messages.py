@@ -1710,7 +1710,7 @@ class GkehubProjectsLocationsListRequest(_messages.Message):
 
   Fields:
     filter: A filter to narrow down results to a preferred subset. The
-      filtering language accepts strings like "displayName=tokyo", and is
+      filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
     name: The resource that owns the locations collection, if applicable.
     pageSize: The maximum number of results to return. If not set, the service
@@ -2276,8 +2276,8 @@ class IdentityServiceOidcConfig(_messages.Message):
   Fields:
     certificateAuthorityData: PEM-encoded CA for OIDC provider.
     clientId: ID for OIDC client application.
-    clientSecret: Unencrypted OIDC client secret will be passed to the GKE Hub
-      CLH.
+    clientSecret: Input only. Unencrypted OIDC client secret will be passed to
+      the GKE Hub CLH.
     deployCloudConsoleProxy: Flag to denote if reverse proxy is used to
       connect to auth provider. This flag should be set to true when provider
       is not reachable by Google Cloud Console.

@@ -19,6 +19,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import enum
+
 from googlecloudsdk.core import exceptions
 
 
@@ -37,6 +39,14 @@ class UnknownVersionError(exceptions.Error):
     super(UnknownVersionError, self).__init__(
         'The [{0}] API does not have version [{1}] in the APIs map'.format(
             api_name, api_version))
+
+
+class GapicTransport(enum.Enum):
+  """Enum options for Gapic Clients."""
+  GRPC = 1
+  GRPC_ASYNCIO = 2
+  REST = 3
+
 
 # This is the map of API name aliases to actual API names.
 # Do not add to this map unless the api definition uses different names for api

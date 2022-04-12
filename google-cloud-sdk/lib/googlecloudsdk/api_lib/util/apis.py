@@ -245,32 +245,36 @@ def GetClientInstance(api_name,
                                           CheckResponseForApiEnablement())
 
 
-def GetGapicClientClass(api_name, api_version, is_async=False):
+def GetGapicClientClass(api_name,
+                        api_version,
+                        transport=apis_util.GapicTransport.GRPC):
   """Returns the GAPIC client class for the API specified in the args.
 
   Args:
     api_name: str, The API name (or the command surface name, if different).
     api_version: str, The version of the API.
-    is_async: bool, If True, return the asyncio version of the gapic client.
+    transport: apis_util.GapicTransport, The transport class to obtain.
 
   Returns:
     The specified GAPIC API Client class.
   """
   # pylint:disable=protected-access
-  return apis_internal._GetGapicClientClass(api_name, api_version,
-                                            is_async=is_async)
+  return apis_internal._GetGapicClientClass(
+      api_name, api_version, transport_choice=transport)
 
 
-def GetGapicClientInstance(api_name, api_version, address_override_func=None,
-                           is_async=False):
+def GetGapicClientInstance(api_name,
+                           api_version,
+                           address_override_func=None,
+                           transport=apis_util.GapicTransport.GRPC):
   """Returns an instance of the GAPIC API client specified in the args.
 
   Args:
     api_name: str, The API name (or the command surface name, if different).
     api_version: str, The version of the API.
     address_override_func: function, function to call to override the client
-        host. It takes a single argument which is the original host.
-    is_async: bool, If True, return the asyncio version of the gapic client.
+      host. It takes a single argument which is the original host.
+    transport: apis_util.GapicTransport, The transport to be used by the client.
 
   Returns:
     An instance of the specified GAPIC API client.
@@ -278,8 +282,11 @@ def GetGapicClientInstance(api_name, api_version, address_override_func=None,
   credentials = gapic_util.GetGapicCredentials()
   # pylint:disable=protected-access
   return apis_internal._GetGapicClientInstance(
-      api_name, api_version, credentials,
-      address_override_func=address_override_func, is_async=is_async)
+      api_name,
+      api_version,
+      credentials,
+      address_override_func=address_override_func,
+      transport_choice=transport)
 
 
 def GetEffectiveApiEndpoint(api_name, api_version, client_class=None):

@@ -401,6 +401,16 @@ def AddEncryptionLogToRepositoryInfo(response, unused_args):
   return response
 
 
+def ConvertBytesToMB(response, unused_args):
+  if response.sizeBytes is not None:
+    log.status.Print("Repository Size: {0:.3f}MB".format(response.sizeBytes /
+                                                         1e6))
+  else:
+    log.status.Print("Repository Size: {0:.3f}MB".format(0))
+  response.sizeBytes = None
+  return response
+
+
 def SlashUnescapePackageNameHook(ref, args, req):
   package = args.package if args.package else ref.packagesId
   if "@" in package:

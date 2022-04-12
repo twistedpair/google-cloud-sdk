@@ -23,11 +23,52 @@ from googlecloudsdk.command_lib.compute.networks.subnets import flags
 import six
 
 
+def _CreateSecondaryRange(client, name, ip_cidr_range, reserved_internal_range):
+  """Creates a subnetwork secondary range."""
+  if reserved_internal_range and ip_cidr_range:
+    return client.messages.SubnetworkSecondaryRange(
+        rangeName=name,
+        reservedInternalRange=reserved_internal_range,
+        ipCidrRange=ip_cidr_range)
+  elif reserved_internal_range:
+    return client.messages.SubnetworkSecondaryRange(
+        rangeName=name, reservedInternalRange=reserved_internal_range)
+  else:
+    return client.messages.SubnetworkSecondaryRange(
+        rangeName=name, ipCidrRange=ip_cidr_range)
+
+
+def CreateSecondaryRanges(client, secondary_range,
+                          secondary_range_with_reserved_internal_range):
+  """Creates all secondary ranges of a subnet."""
+  secondary_ranges = []
+  range_name_to_cidr = {}
+  range_name_to_reserved_internal_range = {}
+  range_names = set()
+  if secondary_range:
+    for secondary_range in secondary_range:
+      for range_name, ip_cidr_range in six.iteritems(secondary_range):
+        range_name_to_cidr[range_name] = ip_cidr_range
+        range_names.add(range_name)
+  if secondary_range_with_reserved_internal_range:
+    for secondary_range in secondary_range_with_reserved_internal_range:
+      for range_name, internal_range in six.iteritems(secondary_range):
+        range_name_to_reserved_internal_range[range_name] = internal_range
+        range_names.add(range_name)
+  for range_name in sorted(range_names):
+    secondary_ranges.append(
+        _CreateSecondaryRange(
+            client, range_name, range_name_to_cidr.get(range_name),
+            range_name_to_reserved_internal_range.get(range_name)))
+  return secondary_ranges
+
+
 def MakeSubnetworkUpdateRequest(
     client,
     subnet_ref,
     enable_private_ip_google_access=None,
     add_secondary_ranges=None,
+    add_secondary_ranges_with_reserved_internal_range=None,
     remove_secondary_ranges=None,
     enable_flow_logs=None,
     aggregation_interval=None,
@@ -51,6 +92,8 @@ def MakeSubnetworkUpdateRequest(
       from this subnet for instances without a public ip address.
     add_secondary_ranges: List of secondary IP ranges to add to the subnetwork
       for use in IP aliasing.
+    add_secondary_ranges_with_reserved_internal_range: List of secondary IP
+    ranges that are associated with InternalRange resources.
     remove_secondary_ranges: List of secondary ranges to remove from the
       subnetwork.
     enable_flow_logs: Enable/disable flow logging for this subnet.
@@ -87,7 +130,8 @@ def MakeSubnetworkUpdateRequest(
         (client.apitools_client.subnetworks, 'SetPrivateIpGoogleAccess',
          google_access_request)
     ])
-  elif add_secondary_ranges is not None:
+  elif (add_secondary_ranges is not None or
+        add_secondary_ranges_with_reserved_internal_range is not None):
     subnetwork = client.messages.Subnetwork()
     original_subnetwork = client.MakeRequests([
         (client.apitools_client.subnetworks, 'Get',
@@ -96,11 +140,10 @@ def MakeSubnetworkUpdateRequest(
     subnetwork.secondaryIpRanges = original_subnetwork.secondaryIpRanges
     subnetwork.fingerprint = original_subnetwork.fingerprint
 
-    for secondary_range in add_secondary_ranges:
-      for range_name, ip_cidr_range in sorted(six.iteritems(secondary_range)):
-        subnetwork.secondaryIpRanges.append(
-            client.messages.SubnetworkSecondaryRange(
-                rangeName=range_name, ipCidrRange=ip_cidr_range))
+    subnetwork.secondaryIpRanges.extend(
+        CreateSecondaryRanges(
+            client, add_secondary_ranges,
+            add_secondary_ranges_with_reserved_internal_range))
 
     return client.MakeRequests(
         [CreateSubnetworkPatchRequest(client, subnet_ref, subnetwork)])
@@ -130,12 +173,9 @@ def MakeSubnetworkUpdateRequest(
     with client.apitools_client.IncludeFields(cleared_fields):
       return client.MakeRequests(
           [CreateSubnetworkPatchRequest(client, subnet_ref, subnetwork)])
-  elif (enable_flow_logs is not None or
-        aggregation_interval is not None or
-        flow_sampling is not None or
-        metadata is not None or
-        filter_expr is not None or
-        metadata_fields is not None):
+  elif (enable_flow_logs is not None or aggregation_interval is not None or
+        flow_sampling is not None or metadata is not None or
+        filter_expr is not None or metadata_fields is not None):
     subnetwork = client.messages.Subnetwork()
     original_subnetwork = client.MakeRequests([
         (client.apitools_client.subnetworks, 'Get',
@@ -239,11 +279,8 @@ def ConvertPrivateIpv6GoogleAccess(choice):
     choice: Enum value of PrivateIpv6GoogleAccess defined in gcloud.
   """
   choices_to_enum = {
-      'DISABLE':
-          'DISABLE_GOOGLE_ACCESS',
-      'ENABLE_BIDIRECTIONAL_ACCESS':
-          'ENABLE_BIDIRECTIONAL_ACCESS_TO_GOOGLE',
-      'ENABLE_OUTBOUND_VM_ACCESS':
-          'ENABLE_OUTBOUND_VM_ACCESS_TO_GOOGLE',
+      'DISABLE': 'DISABLE_GOOGLE_ACCESS',
+      'ENABLE_BIDIRECTIONAL_ACCESS': 'ENABLE_BIDIRECTIONAL_ACCESS_TO_GOOGLE',
+      'ENABLE_OUTBOUND_VM_ACCESS': 'ENABLE_OUTBOUND_VM_ACCESS_TO_GOOGLE',
   }
   return choices_to_enum.get(choice)

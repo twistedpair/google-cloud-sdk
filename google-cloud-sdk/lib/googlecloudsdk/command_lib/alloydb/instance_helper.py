@@ -40,7 +40,7 @@ def ConstructCreateRequestFromArgs(client, alloydb_messages, project_ref, args):
   instance_resource.availabilityType = _ParseAvailabilityType(
       alloydb_messages, args.availability_type)
   instance_resource.machineConfig = alloydb_messages.MachineConfig(
-      cpuCount=args.machine_cpu)
+      cpuCount=args.cpu_count)
   instance_ref = client.resource_parser.Create(
       'alloydb.projects.locations.clusters.instances',
       projectsId=properties.VALUES.core.project.GetOrFail,
@@ -61,10 +61,6 @@ def ConstructCreateRequestFromArgs(client, alloydb_messages, project_ref, args):
     instance_resource.readPoolConfig = alloydb_messages.ReadPoolConfig(
         nodeCount=args.read_pool_node_count)
 
-  # TODO(b/185795425): Need better understanding of use cases before adding
-  # instance_resource.networkConfig
-  #   sslRequired (--require-ssl)
-  # instance_resource.labels (--labels)
   return (
       alloydb_messages.AlloydbProjectsLocationsClustersInstancesCreateRequest(
           instance=instance_resource,
@@ -73,7 +69,7 @@ def ConstructCreateRequestFromArgs(client, alloydb_messages, project_ref, args):
 
 
 def ConstructPatchRequestFromArgs(alloydb_messages, instance_ref, args):
-  """Validates command line input arguments and passes parent's resources.
+  """Constructs the request to update an AlloyDB instance.
 
   Args:
     alloydb_messages: Messages module for the API client.
@@ -83,34 +79,68 @@ def ConstructPatchRequestFromArgs(alloydb_messages, instance_ref, args):
   Returns:
     Fully-constructed request to update an AlloyDB instance.
   """
-  instance_resource = alloydb_messages.Instance()
+  instance_resource, mask = ConstructInstanceAndMaskFromArgs(
+      alloydb_messages, instance_ref, args)
 
-  # set availability-type if provided
-  instance_resource.availabilityType = _ParseAvailabilityType(
-      alloydb_messages, args.availability_type)
-  instance_resource.machineConfig = alloydb_messages.MachineConfig(
-      cpuCount=args.machine_cpu)
-  instance_resource.name = instance_ref.RelativeName()
-
-  instance_resource.databaseFlags = labels_util.ParseCreateArgs(
-      args,
-      alloydb_messages.Instance.DatabaseFlagsValue,
-      labels_dest='database_flags')
-  instance_resource.gceZone = args.zone
-  instance_resource.instanceType = _ParseInstanceType(alloydb_messages,
-                                                      args.instance_type)
-  if args.read_pool_node_count:
-    instance_resource.readPoolConfig = alloydb_messages.ReadPoolConfig(
-        nodeCount=args.read_pool_node_count)
-
-  # TODO(b/185795425): Need better understanding of use cases before adding
-  # instance_resource.networkConfig
-  #   sslRequired (--require-ssl)
-  # instance_resource.labels (--labels)
   return (
       alloydb_messages.AlloydbProjectsLocationsClustersInstancesPatchRequest(
           instance=instance_resource,
-          name=instance_ref.RelativeName()))
+          name=instance_ref.RelativeName(),
+          updateMask=mask))
+
+
+def ConstructInstanceAndMaskFromArgs(alloydb_messages, instance_ref, args):
+  """Validates command line arguments and creates the instance and field mask.
+
+  Args:
+    alloydb_messages: Messages module for the API client.
+    instance_ref: parent resource path of the resource being updated
+    args: Command line input arguments.
+
+  Returns:
+    An AlloyDB instance and mask for update.
+  """
+  availability_type_path = 'availabilityType'
+  database_flags_path = 'databaseFlags'
+  cpu_count_path = 'machineConfig.cpuCount'
+  read_pool_node_count_path = 'readPoolConfig.nodeCount'
+  zone_path = 'gce_zone'
+
+  instance_resource = alloydb_messages.Instance()
+  paths = []
+
+  instance_resource.name = instance_ref.RelativeName()
+
+  availability_type = _ParseAvailabilityType(
+      alloydb_messages, args.availability_type)
+  if availability_type:
+    instance_resource.availabilityType = availability_type
+    paths.append(availability_type_path)
+
+  database_flags = labels_util.ParseCreateArgs(
+      args,
+      alloydb_messages.Instance.DatabaseFlagsValue,
+      labels_dest='database_flags')
+  if database_flags:
+    instance_resource.databaseFlags = database_flags
+    paths.append(database_flags_path)
+
+  if args.cpu_count:
+    instance_resource.machineConfig = alloydb_messages.MachineConfig(
+        cpuCount=args.cpu_count)
+    paths.append(cpu_count_path)
+
+  if args.read_pool_node_count:
+    instance_resource.readPoolConfig = alloydb_messages.ReadPoolConfig(
+        nodeCount=args.read_pool_node_count)
+    paths.append(read_pool_node_count_path)
+
+  if args.zone:
+    instance_resource.gceZone = args.zone
+    paths.append(zone_path)
+
+  mask = ','.join(paths) if paths else None
+  return instance_resource, mask
 
 
 def _ParseAvailabilityType(alloydb_messages, availability_type):

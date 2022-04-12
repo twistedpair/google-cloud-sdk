@@ -241,15 +241,16 @@ def AddForce(parser):
             'are instances present in the cluster.'))
 
 
-def AddMachineCPU(parser):
-  """Adds a --machine-cpu flag to parser.
+def AddCPUCount(parser, required=True):
+  """Adds a --cpu-count flag to parser.
 
   Args:
     parser: argparse.Parser: Parser object for command line inputs.
+    required: Whether or not --cpu-count is required.
   """
   parser.add_argument(
-      '--machine-cpu',
-      required=True,
+      '--cpu-count',
+      required=required,
       type=int,
       choices=[4, 8, 16, 32, 64],
       help=(

@@ -1450,6 +1450,16 @@
             "BALANCED",
             "ANY"
           ]
+        },
+        "totalMinNodeCount": {
+          "description": "Minimum number of nodes in the node pool. Must be greater than 1 less than total_max_node_count. The total_*_node_count fields are mutually exclusive with the *_node_count fields.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "totalMaxNodeCount": {
+          "description": "Maximum number of nodes in the node pool. Must be greater than total_min_node_count. There has to be enough quota to scale up the cluster. The total_*_node_count fields are mutually exclusive with the *_node_count fields.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -1605,6 +1615,10 @@
         "blueGreenSettings": {
           "description": "Settings for blue\/green update strategy.",
           "$ref": "BlueGreenSettings"
+        },
+        "rollingSettings": {
+          "description": "Settings for rolling update strategy.",
+          "$ref": "RollingSettings"
         }
       }
     },
@@ -1643,6 +1657,23 @@
           "description": "Soak time after each batch gets drained. Default to zero.",
           "type": "string",
           "format": "google-duration"
+        }
+      }
+    },
+    "RollingSettings": {
+      "id": "RollingSettings",
+      "description": "Settings for rolling update.",
+      "type": "object",
+      "properties": {
+        "maxSurgePercentage": {
+          "description": "Percentage of the maximum number of nodes that can be created beyond the current size of the node pool during the upgrade process. The range of this field should be [0, 100].",
+          "type": "integer",
+          "format": "int32"
+        },
+        "maxUnavailablePercentage": {
+          "description": "Percentage of the maximum number of nodes that can be unavailable during during the upgrade process.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },

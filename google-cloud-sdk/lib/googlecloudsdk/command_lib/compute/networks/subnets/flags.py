@@ -42,8 +42,8 @@ DEFAULT_LIST_FORMAT_WITH_IPV6_FIELD = """\
       ipCidrRange:label=RANGE,
       stackType,
       ipv6AccessType,
-      ipv6CidrRange,
-      externalIpv6Prefix:label=EXTERNAL_IPV6_CIDR_RANGE
+      internalIpv6Prefix,
+      externalIpv6Prefix
     )"""
 
 
@@ -102,7 +102,8 @@ def SubnetworkResolver():
 
 def AddUpdateArgs(parser, include_alpha_logging,
                   include_l7_internal_load_balancing,
-                  include_internal_ipv6_access_type, api_version):
+                  include_internal_ipv6_access_type,
+                  include_reserved_internal_range, api_version):
   """Add args to the parser for subnet update.
 
   Args:
@@ -110,6 +111,7 @@ def AddUpdateArgs(parser, include_alpha_logging,
     include_alpha_logging: Include alpha-specific logging args.
     include_l7_internal_load_balancing: Include Internal HTTP(S) LB args.
     include_internal_ipv6_access_type: Include internal IPv6 access type args.
+    include_reserved_internal_range: Include reserved internal range args.
     api_version: The api version of the request.
   """
   messages = apis.GetMessagesModule('compute',
@@ -137,6 +139,24 @@ def AddUpdateArgs(parser, include_alpha_logging,
       * `RANGE_NAME` - Name of the secondary range.
       * `RANGE` - `IP range in CIDR format.`
       """)
+
+  if include_reserved_internal_range:
+    parser.add_argument(
+        '--add-secondary-ranges-with-reserved-internal-range',
+        type=arg_parsers.ArgDict(min_length=1),
+        action='append',
+        metavar='RANGE_NAME=INTERNAL_RANGE_URL',
+        help="""\
+         Adds secondary IP ranges that are associated with InternalRange
+         resources.
+
+         For example, `--add-secondary-ranges-with-reserved-internal-range
+         range1=//networkconnectivity.googleapis.com/projects/PROJECT/locations/global/internalRanges/RANGE`
+         adds a secondary range with the reserved internal range resource.
+
+         * `RANGE_NAME` - Name of the secondary range.
+         * `INTERNAL_RANGE_URL` - `URL of an InternalRange resource.`
+         """)
 
   updated_field.add_argument(
       '--remove-secondary-ranges',

@@ -1848,7 +1848,7 @@ class AiplatformProjectsLocationsListRequest(_messages.Message):
 
   Fields:
     filter: A filter to narrow down results to a preferred subset. The
-      filtering language accepts strings like "displayName=tokyo", and is
+      filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
     name: The resource that owns the locations collection, if applicable.
     pageSize: The maximum number of results to return. If not set, the service
@@ -5108,7 +5108,7 @@ class GoogleCloudAiplatformInternalDeployedModel(_messages.Message):
     model: Required. The name of the Model that this is the deployment of.
       Note that the Model may be in a different location than the
       DeployedModel's Endpoint.
-    modelVersionId: The version ID of the model that is deployed.
+    modelVersionId: Output only. The version ID of the model that is deployed.
     serviceAccount: The service account that the DeployedModel's container
       runs as. Specify the email address of the service account. If this
       service account is not specified, the container runs as a service
@@ -5239,6 +5239,21 @@ class GoogleCloudAiplatformInternalEncryptionSpec(_messages.Message):
   """
 
   kmsKeyName = _messages.StringField(1)
+
+
+class GoogleCloudAiplatformInternalExamples(_messages.Message):
+  r"""Example-based explainability that returns the nearest neighbors from the
+  provided dataset.
+
+  Fields:
+    gcsSource: The Cloud Storage location for the input instances.
+    nearestNeighborSearchConfig: The configuration for the generated index,
+      the semantics are the same as metadata and should match
+      NearestNeighborSearchConfig.
+  """
+
+  gcsSource = _messages.MessageField('GoogleCloudAiplatformInternalGcsSource', 1)
+  nearestNeighborSearchConfig = _messages.MessageField('extra_types.JsonValue', 2)
 
 
 class GoogleCloudAiplatformInternalExplanationMetadata(_messages.Message):
@@ -5699,6 +5714,8 @@ class GoogleCloudAiplatformInternalExplanationParameters(_messages.Message):
   r"""Parameters to configure explaining for Model's predictions.
 
   Fields:
+    examples: Example-based explanations that returns the nearest neighbors
+      from the provided dataset.
     integratedGradientsAttribution: An attribution method that computes
       Aumann-Shapley values taking advantage of the model's fully
       differentiable structure. Refer to this paper for more details:
@@ -5715,8 +5732,6 @@ class GoogleCloudAiplatformInternalExplanationParameters(_messages.Message):
       sampling strategy is used to approximate the value rather than
       considering all subsets of features. Refer to this paper for model
       details: https://arxiv.org/abs/1306.4265.
-    similarity: Similarity explainability that returns the nearest neighbors
-      from the provided dataset.
     topK: If populated, returns attributions for top K indices of outputs
       (defaults to 1). Only applies to Models that predicts more than one
       outputs (e,g, multi-class Models). When set to -1, returns explanations
@@ -5731,10 +5746,10 @@ class GoogleCloudAiplatformInternalExplanationParameters(_messages.Message):
       use Integrated Gradients instead.
   """
 
-  integratedGradientsAttribution = _messages.MessageField('GoogleCloudAiplatformInternalIntegratedGradientsAttribution', 1)
-  outputIndices = _messages.MessageField('extra_types.JsonValue', 2, repeated=True)
-  sampledShapleyAttribution = _messages.MessageField('GoogleCloudAiplatformInternalSampledShapleyAttribution', 3)
-  similarity = _messages.MessageField('GoogleCloudAiplatformInternalSimilarity', 4)
+  examples = _messages.MessageField('GoogleCloudAiplatformInternalExamples', 1)
+  integratedGradientsAttribution = _messages.MessageField('GoogleCloudAiplatformInternalIntegratedGradientsAttribution', 2)
+  outputIndices = _messages.MessageField('extra_types.JsonValue', 3, repeated=True)
+  sampledShapleyAttribution = _messages.MessageField('GoogleCloudAiplatformInternalSampledShapleyAttribution', 4)
   topK = _messages.IntegerField(5, variant=_messages.Variant.INT32)
   xraiAttribution = _messages.MessageField('GoogleCloudAiplatformInternalXraiAttribution', 6)
 
@@ -6896,21 +6911,6 @@ class GoogleCloudAiplatformInternalSendHumanInTheLoopEntryResponse(_messages.Mes
   state = _messages.EnumField('StateValueValuesEnum', 6)
 
 
-class GoogleCloudAiplatformInternalSimilarity(_messages.Message):
-  r"""Similarity explainability that returns the nearest neighbors from the
-  provided dataset.
-
-  Fields:
-    gcsSource: The Cloud Storage location for the input instances.
-    nearestNeighborSearchConfig: The configuration for the generated index,
-      the semantics are the same as metadata and should match
-      NearestNeighborSearchConfig.
-  """
-
-  gcsSource = _messages.MessageField('GoogleCloudAiplatformInternalGcsSource', 1)
-  nearestNeighborSearchConfig = _messages.MessageField('extra_types.JsonValue', 2)
-
-
 class GoogleCloudAiplatformInternalSmoothGradConfig(_messages.Message):
   r"""Config for SmoothGrad approximation of gradients. When enabled, the
   gradients are approximated by averaging the gradients from noisy samples in
@@ -7907,7 +7907,7 @@ class GoogleCloudAiplatformUiDeployedModel(_messages.Message):
       enable monitoring for the newly deployed model.
     modelObjective: Output only. The objective of the Model this DeployedModel
       was created from.
-    modelVersionId: The version ID of the model that is deployed.
+    modelVersionId: Output only. The version ID of the model that is deployed.
     privateEndpoints: Output only. Provide paths for users to send
       predict/explain/health requests directly to the deployed model services
       running on Cloud via private services access. This field is populated if
@@ -7962,6 +7962,21 @@ class GoogleCloudAiplatformUiDeployedModel(_messages.Message):
   privateEndpoints = _messages.MessageField('GoogleCloudAiplatformUiPrivateEndpoints', 15)
   serviceAccount = _messages.StringField(16)
   uiState = _messages.EnumField('UiStateValueValuesEnum', 17)
+
+
+class GoogleCloudAiplatformUiExamples(_messages.Message):
+  r"""Example-based explainability that returns the nearest neighbors from the
+  provided dataset.
+
+  Fields:
+    gcsSource: The Cloud Storage location for the input instances.
+    nearestNeighborSearchConfig: The configuration for the generated index,
+      the semantics are the same as metadata and should match
+      NearestNeighborSearchConfig.
+  """
+
+  gcsSource = _messages.MessageField('GoogleCloudAiplatformUiGcsSource', 1)
+  nearestNeighborSearchConfig = _messages.MessageField('extra_types.JsonValue', 2)
 
 
 class GoogleCloudAiplatformUiExplanationMetadata(_messages.Message):
@@ -8420,6 +8435,8 @@ class GoogleCloudAiplatformUiExplanationParameters(_messages.Message):
   r"""Parameters to configure explaining for Model's predictions.
 
   Fields:
+    examples: Example-based explanations that returns the nearest neighbors
+      from the provided dataset.
     integratedGradientsAttribution: An attribution method that computes
       Aumann-Shapley values taking advantage of the model's fully
       differentiable structure. Refer to this paper for more details:
@@ -8436,8 +8453,6 @@ class GoogleCloudAiplatformUiExplanationParameters(_messages.Message):
       sampling strategy is used to approximate the value rather than
       considering all subsets of features. Refer to this paper for model
       details: https://arxiv.org/abs/1306.4265.
-    similarity: Similarity explainability that returns the nearest neighbors
-      from the provided dataset.
     topK: If populated, returns attributions for top K indices of outputs
       (defaults to 1). Only applies to Models that predicts more than one
       outputs (e,g, multi-class Models). When set to -1, returns explanations
@@ -8452,10 +8467,10 @@ class GoogleCloudAiplatformUiExplanationParameters(_messages.Message):
       use Integrated Gradients instead.
   """
 
-  integratedGradientsAttribution = _messages.MessageField('GoogleCloudAiplatformUiIntegratedGradientsAttribution', 1)
-  outputIndices = _messages.MessageField('extra_types.JsonValue', 2, repeated=True)
-  sampledShapleyAttribution = _messages.MessageField('GoogleCloudAiplatformUiSampledShapleyAttribution', 3)
-  similarity = _messages.MessageField('GoogleCloudAiplatformUiSimilarity', 4)
+  examples = _messages.MessageField('GoogleCloudAiplatformUiExamples', 1)
+  integratedGradientsAttribution = _messages.MessageField('GoogleCloudAiplatformUiIntegratedGradientsAttribution', 2)
+  outputIndices = _messages.MessageField('extra_types.JsonValue', 3, repeated=True)
+  sampledShapleyAttribution = _messages.MessageField('GoogleCloudAiplatformUiSampledShapleyAttribution', 4)
   topK = _messages.IntegerField(5, variant=_messages.Variant.INT32)
   xraiAttribution = _messages.MessageField('GoogleCloudAiplatformUiXraiAttribution', 6)
 
@@ -9559,7 +9574,7 @@ class GoogleCloudAiplatformUiMigrateResourceResponse(_messages.Message):
 
 
 class GoogleCloudAiplatformUiModelMonitoringObjectiveConfig(_messages.Message):
-  r"""Next ID: 7
+  r"""Next ID: 8
 
   Fields:
     explanationConfig: The config for integrating with Vertex Explainable AI.
@@ -10698,21 +10713,6 @@ class GoogleCloudAiplatformUiSchemaVisualInspectionMaskSavedQueryMetadata(_messa
   object.
   """
 
-
-
-class GoogleCloudAiplatformUiSimilarity(_messages.Message):
-  r"""Similarity explainability that returns the nearest neighbors from the
-  provided dataset.
-
-  Fields:
-    gcsSource: The Cloud Storage location for the input instances.
-    nearestNeighborSearchConfig: The configuration for the generated index,
-      the semantics are the same as metadata and should match
-      NearestNeighborSearchConfig.
-  """
-
-  gcsSource = _messages.MessageField('GoogleCloudAiplatformUiGcsSource', 1)
-  nearestNeighborSearchConfig = _messages.MessageField('extra_types.JsonValue', 2)
 
 
 class GoogleCloudAiplatformUiSmoothGradConfig(_messages.Message):
@@ -11871,7 +11871,7 @@ class GoogleCloudAiplatformV1DeployedModel(_messages.Message):
     model: Required. The name of the Model that this is the deployment of.
       Note that the Model may be in a different location than the
       DeployedModel's Endpoint.
-    modelVersionId: The version ID of the model that is deployed.
+    modelVersionId: Output only. The version ID of the model that is deployed.
     privateEndpoints: Output only. Provide paths for users to send
       predict/explain/health requests directly to the deployed model services
       running on Cloud via private services access. This field is populated if
@@ -14572,9 +14572,10 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputs(
       between 0 and 1, exclusive. Required if the value of
       optimization_objective is minimize-quantile-loss. Represents the percent
       quantiles to use for that objective. Quantiles must be unique.
-    targetColumn: The name of the column that the model is to predict.
+    targetColumn: The name of the column that the Model is to predict values
+      for. This column must be unavailable at forecast.
     timeColumn: The name of the column that identifies time order in the time
-      series.
+      series. This column must be available at forecast.
     timeSeriesAttributeColumns: Column names that should be used as attribute
       columns. The value of these columns does not vary as a function of time.
       For example, store ID or item color.
@@ -14607,6 +14608,7 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputs(
       training. The column must have numeric values between 0 and 10000
       inclusively; 0 means the row is ignored for training. If weight column
       field is not set, then all rows are assumed to have equal weight of 1.
+      This column must be available at forecast.
   """
 
   additionalExperiments = _messages.StringField(1, repeated=True)
@@ -17275,8 +17277,8 @@ class GoogleCloudAiplatformV1alpha1BatchPredictionJob(_messages.Message):
     modelParameters: The parameters that govern the predictions. The schema of
       the parameters may be specified via the Model's PredictSchemata's
       parameters_schema_uri.
-    modelVersionId: The version ID of the Model that produces the predictions
-      via this job.
+    modelVersionId: Output only. The version ID of the Model that produces the
+      predictions via this job.
     name: Output only. Resource name of the BatchPredictionJob.
     outputConfig: Required. The Configuration specifying where output
       predictions should be written. The schema of any single prediction may
@@ -18735,7 +18737,7 @@ class GoogleCloudAiplatformV1alpha1DeployedModel(_messages.Message):
     model: Required. The name of the Model that this is the deployment of.
       Note that the Model may be in a different location than the
       DeployedModel's Endpoint.
-    modelVersionId: The version ID of the model that is deployed.
+    modelVersionId: Output only. The version ID of the model that is deployed.
   """
 
   automaticResources = _messages.MessageField('GoogleCloudAiplatformV1alpha1AutomaticResources', 1)
@@ -19010,6 +19012,21 @@ class GoogleCloudAiplatformV1alpha1Event(_messages.Message):
   execution = _messages.StringField(3)
   labels = _messages.MessageField('LabelsValue', 4)
   type = _messages.EnumField('TypeValueValuesEnum', 5)
+
+
+class GoogleCloudAiplatformV1alpha1Examples(_messages.Message):
+  r"""Example-based explainability that returns the nearest neighbors from the
+  provided dataset.
+
+  Fields:
+    gcsSource: The Cloud Storage location for the input instances.
+    nearestNeighborSearchConfig: The configuration for the generated index,
+      the semantics are the same as metadata and should match
+      NearestNeighborSearchConfig.
+  """
+
+  gcsSource = _messages.MessageField('GoogleCloudAiplatformV1alpha1GcsSource', 1)
+  nearestNeighborSearchConfig = _messages.MessageField('extra_types.JsonValue', 2)
 
 
 class GoogleCloudAiplatformV1alpha1Execution(_messages.Message):
@@ -19496,17 +19513,17 @@ class GoogleCloudAiplatformV1alpha1ExplanationParameters(_messages.Message):
   r"""Parameters to configure explaining for Model's predictions.
 
   Fields:
+    examples: Example-based explanations that returns the nearest neighbors
+      from the provided dataset.
     sampledShapleyAttribution: An attribution method that approximates Shapley
       values for features that contribute to the label being predicted. A
       sampling strategy is used to approximate the value rather than
       considering all subsets of features. Refer to this paper for model
       details: https://arxiv.org/abs/1306.4265.
-    similarity: Similarity explainability that returns the nearest neighbors
-      from the provided dataset.
   """
 
-  sampledShapleyAttribution = _messages.MessageField('GoogleCloudAiplatformV1alpha1SampledShapleyAttribution', 1)
-  similarity = _messages.MessageField('GoogleCloudAiplatformV1alpha1Similarity', 2)
+  examples = _messages.MessageField('GoogleCloudAiplatformV1alpha1Examples', 1)
+  sampledShapleyAttribution = _messages.MessageField('GoogleCloudAiplatformV1alpha1SampledShapleyAttribution', 2)
 
 
 class GoogleCloudAiplatformV1alpha1ExplanationSpec(_messages.Message):
@@ -21663,6 +21680,8 @@ class GoogleCloudAiplatformV1alpha1ModelDeploymentMonitoringJob(_messages.Messag
       letters, numeric characters, underscores and dashes. International
       characters are allowed. See https://goo.gl/xmQnxf for more information
       and examples of labels.
+    latestMonitoringPipelineMetadata: Latest triggered monitoring pipeline
+      metadata.
     logTtl: The TTL of BigQuery tables in user projects which stores logs. A
       day is the basic unit of the TTL and we take the ceil of TTL/86400(a
       day). e.g. { second: 3600} indicates ttl = 1 day.
@@ -21788,19 +21807,33 @@ class GoogleCloudAiplatformV1alpha1ModelDeploymentMonitoringJob(_messages.Messag
   endpoint = _messages.StringField(7)
   error = _messages.MessageField('GoogleRpcStatus', 8)
   labels = _messages.MessageField('LabelsValue', 9)
-  logTtl = _messages.StringField(10)
-  loggingSamplingStrategy = _messages.MessageField('GoogleCloudAiplatformV1alpha1SamplingStrategy', 11)
-  modelDeploymentMonitoringObjectiveConfigs = _messages.MessageField('GoogleCloudAiplatformV1alpha1ModelDeploymentMonitoringObjectiveConfig', 12, repeated=True)
-  modelDeploymentMonitoringScheduleConfig = _messages.MessageField('GoogleCloudAiplatformV1alpha1ModelDeploymentMonitoringScheduleConfig', 13)
-  modelMonitoringAlertConfig = _messages.MessageField('GoogleCloudAiplatformV1alpha1ModelMonitoringAlertConfig', 14)
-  name = _messages.StringField(15)
-  nextScheduleTime = _messages.StringField(16)
-  predictInstanceSchemaUri = _messages.StringField(17)
-  samplePredictInstance = _messages.MessageField('extra_types.JsonValue', 18)
-  scheduleState = _messages.EnumField('ScheduleStateValueValuesEnum', 19)
-  state = _messages.EnumField('StateValueValuesEnum', 20)
-  statsAnomaliesBaseDirectory = _messages.MessageField('GoogleCloudAiplatformV1alpha1GcsDestination', 21)
-  updateTime = _messages.StringField(22)
+  latestMonitoringPipelineMetadata = _messages.MessageField('GoogleCloudAiplatformV1alpha1ModelDeploymentMonitoringJobLatestMonitoringPipelineMetadata', 10)
+  logTtl = _messages.StringField(11)
+  loggingSamplingStrategy = _messages.MessageField('GoogleCloudAiplatformV1alpha1SamplingStrategy', 12)
+  modelDeploymentMonitoringObjectiveConfigs = _messages.MessageField('GoogleCloudAiplatformV1alpha1ModelDeploymentMonitoringObjectiveConfig', 13, repeated=True)
+  modelDeploymentMonitoringScheduleConfig = _messages.MessageField('GoogleCloudAiplatformV1alpha1ModelDeploymentMonitoringScheduleConfig', 14)
+  modelMonitoringAlertConfig = _messages.MessageField('GoogleCloudAiplatformV1alpha1ModelMonitoringAlertConfig', 15)
+  name = _messages.StringField(16)
+  nextScheduleTime = _messages.StringField(17)
+  predictInstanceSchemaUri = _messages.StringField(18)
+  samplePredictInstance = _messages.MessageField('extra_types.JsonValue', 19)
+  scheduleState = _messages.EnumField('ScheduleStateValueValuesEnum', 20)
+  state = _messages.EnumField('StateValueValuesEnum', 21)
+  statsAnomaliesBaseDirectory = _messages.MessageField('GoogleCloudAiplatformV1alpha1GcsDestination', 22)
+  updateTime = _messages.StringField(23)
+
+
+class GoogleCloudAiplatformV1alpha1ModelDeploymentMonitoringJobLatestMonitoringPipelineMetadata(_messages.Message):
+  r"""All metadata of most recent monitoring pipelines.
+
+  Fields:
+    runTime: The time that most recent monitoring pipelines that is related to
+      this run.
+    status: The status of the most recent monitoring pipeline.
+  """
+
+  runTime = _messages.StringField(1)
+  status = _messages.MessageField('GoogleRpcStatus', 2)
 
 
 class GoogleCloudAiplatformV1alpha1ModelDeploymentMonitoringObjectiveConfig(_messages.Message):
@@ -21968,7 +22001,7 @@ class GoogleCloudAiplatformV1alpha1ModelMonitoringAlertConfigEmailAlertConfig(_m
 
 
 class GoogleCloudAiplatformV1alpha1ModelMonitoringObjectiveConfig(_messages.Message):
-  r"""Next ID: 7
+  r"""Next ID: 8
 
   Fields:
     explanationConfig: The config for integrating with Vertex Explainable AI.
@@ -23829,21 +23862,6 @@ class GoogleCloudAiplatformV1alpha1SearchModelDeploymentMonitoringStatsAnomalies
 
   monitoringStats = _messages.MessageField('GoogleCloudAiplatformV1alpha1ModelMonitoringStatsAnomalies', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
-
-
-class GoogleCloudAiplatformV1alpha1Similarity(_messages.Message):
-  r"""Similarity explainability that returns the nearest neighbors from the
-  provided dataset.
-
-  Fields:
-    gcsSource: The Cloud Storage location for the input instances.
-    nearestNeighborSearchConfig: The configuration for the generated index,
-      the semantics are the same as metadata and should match
-      NearestNeighborSearchConfig.
-  """
-
-  gcsSource = _messages.MessageField('GoogleCloudAiplatformV1alpha1GcsSource', 1)
-  nearestNeighborSearchConfig = _messages.MessageField('extra_types.JsonValue', 2)
 
 
 class GoogleCloudAiplatformV1alpha1SpecialistPool(_messages.Message):
@@ -26060,7 +26078,7 @@ class GoogleCloudAiplatformV1beta1DeployedModel(_messages.Message):
     model: Required. The name of the Model that this is the deployment of.
       Note that the Model may be in a different location than the
       DeployedModel's Endpoint.
-    modelVersionId: The version ID of the model that is deployed.
+    modelVersionId: Output only. The version ID of the model that is deployed.
     privateEndpoints: Output only. Provide paths for users to send
       predict/explain/health requests directly to the deployed model services
       running on Cloud via private services access. This field is populated if
@@ -26099,6 +26117,21 @@ class GoogleCloudAiplatformV1beta1DiskSpec(_messages.Message):
 
   bootDiskSizeGb = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   bootDiskType = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1beta1Examples(_messages.Message):
+  r"""Example-based explainability that returns the nearest neighbors from the
+  provided dataset.
+
+  Fields:
+    gcsSource: The Cloud Storage location for the input instances.
+    nearestNeighborSearchConfig: The configuration for the generated index,
+      the semantics are the same as metadata and should match
+      NearestNeighborSearchConfig.
+  """
+
+  gcsSource = _messages.MessageField('GoogleCloudAiplatformV1beta1GcsSource', 1)
+  nearestNeighborSearchConfig = _messages.MessageField('extra_types.JsonValue', 2)
 
 
 class GoogleCloudAiplatformV1beta1ExplanationMetadata(_messages.Message):
@@ -26511,6 +26544,8 @@ class GoogleCloudAiplatformV1beta1ExplanationParameters(_messages.Message):
   r"""Parameters to configure explaining for Model's predictions.
 
   Fields:
+    examples: Example-based explanations that returns the nearest neighbors
+      from the provided dataset.
     integratedGradientsAttribution: An attribution method that computes
       Aumann-Shapley values taking advantage of the model's fully
       differentiable structure. Refer to this paper for more details:
@@ -26527,8 +26562,6 @@ class GoogleCloudAiplatformV1beta1ExplanationParameters(_messages.Message):
       sampling strategy is used to approximate the value rather than
       considering all subsets of features. Refer to this paper for model
       details: https://arxiv.org/abs/1306.4265.
-    similarity: Similarity explainability that returns the nearest neighbors
-      from the provided dataset.
     topK: If populated, returns attributions for top K indices of outputs
       (defaults to 1). Only applies to Models that predicts more than one
       outputs (e,g, multi-class Models). When set to -1, returns explanations
@@ -26543,10 +26576,10 @@ class GoogleCloudAiplatformV1beta1ExplanationParameters(_messages.Message):
       use Integrated Gradients instead.
   """
 
-  integratedGradientsAttribution = _messages.MessageField('GoogleCloudAiplatformV1beta1IntegratedGradientsAttribution', 1)
-  outputIndices = _messages.MessageField('extra_types.JsonValue', 2, repeated=True)
-  sampledShapleyAttribution = _messages.MessageField('GoogleCloudAiplatformV1beta1SampledShapleyAttribution', 3)
-  similarity = _messages.MessageField('GoogleCloudAiplatformV1beta1Similarity', 4)
+  examples = _messages.MessageField('GoogleCloudAiplatformV1beta1Examples', 1)
+  integratedGradientsAttribution = _messages.MessageField('GoogleCloudAiplatformV1beta1IntegratedGradientsAttribution', 2)
+  outputIndices = _messages.MessageField('extra_types.JsonValue', 3, repeated=True)
+  sampledShapleyAttribution = _messages.MessageField('GoogleCloudAiplatformV1beta1SampledShapleyAttribution', 4)
   topK = _messages.IntegerField(5, variant=_messages.Variant.INT32)
   xraiAttribution = _messages.MessageField('GoogleCloudAiplatformV1beta1XraiAttribution', 6)
 
@@ -28909,9 +28942,10 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingIn
       between 0 and 1, exclusive. Required if the value of
       optimization_objective is minimize-quantile-loss. Represents the percent
       quantiles to use for that objective. Quantiles must be unique.
-    targetColumn: The name of the column that the model is to predict.
+    targetColumn: The name of the column that the Model is to predict values
+      for. This column must be unavailable at forecast.
     timeColumn: The name of the column that identifies time order in the time
-      series.
+      series. This column must be available at forecast.
     timeSeriesAttributeColumns: Column names that should be used as attribute
       columns. The value of these columns does not vary as a function of time.
       For example, store ID or item color.
@@ -28944,6 +28978,7 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingIn
       training. The column must have numeric values between 0 and 10000
       inclusively; 0 means the row is ignored for training. If weight column
       field is not set, then all rows are assumed to have equal weight of 1.
+      This column must be available at forecast.
   """
 
   additionalExperiments = _messages.StringField(1, repeated=True)
@@ -30143,21 +30178,6 @@ class GoogleCloudAiplatformV1beta1SchemaVisualInspectionMaskSavedQueryMetadata(_
   object.
   """
 
-
-
-class GoogleCloudAiplatformV1beta1Similarity(_messages.Message):
-  r"""Similarity explainability that returns the nearest neighbors from the
-  provided dataset.
-
-  Fields:
-    gcsSource: The Cloud Storage location for the input instances.
-    nearestNeighborSearchConfig: The configuration for the generated index,
-      the semantics are the same as metadata and should match
-      NearestNeighborSearchConfig.
-  """
-
-  gcsSource = _messages.MessageField('GoogleCloudAiplatformV1beta1GcsSource', 1)
-  nearestNeighborSearchConfig = _messages.MessageField('extra_types.JsonValue', 2)
 
 
 class GoogleCloudAiplatformV1beta1SmoothGradConfig(_messages.Message):

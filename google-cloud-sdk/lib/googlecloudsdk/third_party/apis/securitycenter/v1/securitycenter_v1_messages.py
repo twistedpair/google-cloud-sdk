@@ -620,6 +620,7 @@ class Finding(_messages.Message):
       can be found. This field is guaranteed to be either empty or a well
       formed URL.
     findingClass: The class of the finding.
+    iamBindings: Represents IAM bindings associated with the Finding.
     indicator: Represents what's commonly known as an Indicator of compromise
       (IoC) in computer forensics. This is an artifact observed on a network
       or in an operating system that, with high confidence, indicates a
@@ -832,20 +833,21 @@ class Finding(_messages.Message):
   externalSystems = _messages.MessageField('ExternalSystemsValue', 6)
   externalUri = _messages.StringField(7)
   findingClass = _messages.EnumField('FindingClassValueValuesEnum', 8)
-  indicator = _messages.MessageField('Indicator', 9)
-  mitreAttack = _messages.MessageField('MitreAttack', 10)
-  mute = _messages.EnumField('MuteValueValuesEnum', 11)
-  muteAnnotation = _messages.StringField(12)
-  muteInitiator = _messages.StringField(13)
-  muteUpdateTime = _messages.StringField(14)
-  name = _messages.StringField(15)
-  parent = _messages.StringField(16)
-  resourceName = _messages.StringField(17)
-  securityMarks = _messages.MessageField('SecurityMarks', 18)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 19)
-  sourceProperties = _messages.MessageField('SourcePropertiesValue', 20)
-  state = _messages.EnumField('StateValueValuesEnum', 21)
-  vulnerability = _messages.MessageField('Vulnerability', 22)
+  iamBindings = _messages.MessageField('IamBinding', 9, repeated=True)
+  indicator = _messages.MessageField('Indicator', 10)
+  mitreAttack = _messages.MessageField('MitreAttack', 11)
+  mute = _messages.EnumField('MuteValueValuesEnum', 12)
+  muteAnnotation = _messages.StringField(13)
+  muteInitiator = _messages.StringField(14)
+  muteUpdateTime = _messages.StringField(15)
+  name = _messages.StringField(16)
+  parent = _messages.StringField(17)
+  resourceName = _messages.StringField(18)
+  securityMarks = _messages.MessageField('SecurityMarks', 19)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 20)
+  sourceProperties = _messages.MessageField('SourcePropertiesValue', 21)
+  state = _messages.EnumField('StateValueValuesEnum', 22)
+  vulnerability = _messages.MessageField('Vulnerability', 23)
 
 
 class Folder(_messages.Message):
@@ -1670,6 +1672,38 @@ class GroupResult(_messages.Message):
 
   count = _messages.IntegerField(1)
   properties = _messages.MessageField('PropertiesValue', 2)
+
+
+class IamBinding(_messages.Message):
+  r"""Represents a particular IAM binding, which captures a member's role
+  addition, removal, or state.
+
+  Enums:
+    ActionValueValuesEnum: The action that was performed on a Binding.
+
+  Fields:
+    action: The action that was performed on a Binding.
+    member: A single identity requesting access for a Cloud Platform resource,
+      e.g. "foo@google.com".
+    role: Role that is assigned to "members". For example, "roles/viewer",
+      "roles/editor", or "roles/owner".
+  """
+
+  class ActionValueValuesEnum(_messages.Enum):
+    r"""The action that was performed on a Binding.
+
+    Values:
+      ACTION_UNSPECIFIED: Unspecified.
+      ADD: Addition of a Binding.
+      REMOVE: Removal of a Binding.
+    """
+    ACTION_UNSPECIFIED = 0
+    ADD = 1
+    REMOVE = 2
+
+  action = _messages.EnumField('ActionValueValuesEnum', 1)
+  member = _messages.StringField(2)
+  role = _messages.StringField(3)
 
 
 class IamPolicy(_messages.Message):

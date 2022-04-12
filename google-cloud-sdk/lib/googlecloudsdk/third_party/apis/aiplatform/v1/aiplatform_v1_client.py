@@ -3519,6 +3519,33 @@ class AiplatformV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Import(self, request, global_params=None):
+      r"""Imports an externally generated ModelEvaluation.
+
+      Args:
+        request: (AiplatformProjectsLocationsModelsEvaluationsImportRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1ModelEvaluation) The response message.
+      """
+      config = self.GetMethodConfig('Import')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Import.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/models/{modelsId}/evaluations:import',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.models.evaluations.import',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/evaluations:import',
+        request_field='googleCloudAiplatformV1ImportModelEvaluationRequest',
+        request_type_name='AiplatformProjectsLocationsModelsEvaluationsImportRequest',
+        response_type_name='GoogleCloudAiplatformV1ModelEvaluation',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists ModelEvaluations in a Model.
 

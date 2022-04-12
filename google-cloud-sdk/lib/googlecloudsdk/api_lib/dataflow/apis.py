@@ -54,7 +54,7 @@ def GetProject():
   return properties.VALUES.core.project.Get(required=True)
 
 
-class Jobs(object):
+class Jobs:
   """The Jobs set of Dataflow API functions."""
 
   GET_REQUEST = GetMessagesModule().DataflowProjectsLocationsJobsGetRequest
@@ -205,7 +205,7 @@ class Jobs(object):
       raise exceptions.HttpException(error)
 
 
-class Metrics(object):
+class Metrics:
   """The Metrics set of Dataflow API functions."""
 
   GET_REQUEST = GetMessagesModule(
@@ -244,7 +244,7 @@ class Metrics(object):
       raise exceptions.HttpException(error)
 
 
-class TemplateArguments(object):
+class TemplateArguments:
   """Wrapper class for template arguments."""
 
   project_id = None
@@ -323,7 +323,7 @@ class TemplateArguments(object):
     self.flexrs_goal = flexrs_goal
 
 
-class Templates(object):
+class Templates:
   """The Templates set of Dataflow API functions."""
 
   CREATE_REQUEST = GetMessagesModule().CreateJobFromTemplateRequest
@@ -753,9 +753,15 @@ class Templates(object):
       return storage_client.CopyFileToGCS(local_path, obj_ref)
 
   @staticmethod
-  def BuildAndStoreFlexTemplateFile(template_file_gcs_location, image,
-                                    template_metadata_json, sdk_language,
-                                    print_only, template_args=None):
+  def BuildAndStoreFlexTemplateFile(template_file_gcs_location,
+                                    image,
+                                    template_metadata_json,
+                                    sdk_language,
+                                    print_only,
+                                    template_args=None,
+                                    image_repository_username_secret_id=None,
+                                    image_repository_password_secret_id=None,
+                                    image_repository_cert_path=None):
     """Builds container spec and stores it in the flex template file in GCS.
 
     Args:
@@ -765,6 +771,12 @@ class Templates(object):
       sdk_language: SDK language of the flex template.
       print_only: Only prints the container spec and skips write to GCS.
       template_args: Default runtime parameters specified by template authors.
+      image_repository_username_secret_id: Secret manager secret id for username
+        to authenticate to private registry.
+      image_repository_password_secret_id: Secret manager secret id for password
+        to authenticate to private registry.
+      image_repository_cert_path: The full URL to self-signed certificate of
+        private registry in Cloud Storage.
 
     Returns:
       Container spec json if print_only is set. A sucess message with template
@@ -806,8 +818,13 @@ class Templates(object):
               additionalProperties=user_labels_list
           ) if user_labels_list else None)
     container_spec = Templates.CONTAINER_SPEC(
-        image=image, metadata=template_metadata, sdkInfo=sdk_info,
-        defaultEnvironment=default_environment)
+        image=image,
+        metadata=template_metadata,
+        sdkInfo=sdk_info,
+        defaultEnvironment=default_environment,
+        imageRepositoryUsernameSecretId=image_repository_username_secret_id,
+        imageRepositoryPasswordSecretId=image_repository_password_secret_id,
+        imageRepositoryCertPath=image_repository_cert_path)
     container_spec_json = encoding.MessageToJson(container_spec)
     container_spec_pretty_json = json.dumps(
         json.loads(container_spec_json),
@@ -888,7 +905,7 @@ class Templates(object):
 
   @staticmethod
   def CreateJobFromFlexTemplate(template_args=None):
-    """Call the create job from flex template APIs.
+    """Calls the create job from flex template APIs.
 
     Args:
       template_args: Arguments for create template.
@@ -969,7 +986,7 @@ class Templates(object):
       raise exceptions.HttpException(error)
 
 
-class Messages(object):
+class Messages:
   """The Messages set of Dataflow API functions."""
 
   LIST_REQUEST = GetMessagesModule(
@@ -1029,7 +1046,7 @@ class Messages(object):
       raise exceptions.HttpException(error)
 
 
-class Snapshots(object):
+class Snapshots:
   """Cloud Dataflow snapshots api."""
 
   @staticmethod

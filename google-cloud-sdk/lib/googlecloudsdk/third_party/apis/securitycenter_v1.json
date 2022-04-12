@@ -391,6 +391,13 @@
         "muteInitiator": {
           "description": "First known as mute_annotation. Records additional information about the mute operation e.g. mute config that muted the finding, user who muted the finding, etc. Unlike other attributes of a finding, a finding provider shouldn't set the value of mute.",
           "type": "string"
+        },
+        "iamBindings": {
+          "description": "Represents IAM bindings associated with the Finding.",
+          "type": "array",
+          "items": {
+            "$ref": "IamBinding"
+          }
         }
       }
     },
@@ -926,6 +933,35 @@
       "properties": {
         "regionCode": {
           "description": "A CLDR.",
+          "type": "string"
+        }
+      }
+    },
+    "IamBinding": {
+      "id": "IamBinding",
+      "description": "Represents a particular IAM binding, which captures a member's role addition, removal, or state.",
+      "type": "object",
+      "properties": {
+        "action": {
+          "description": "The action that was performed on a Binding.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified.",
+            "Addition of a Binding.",
+            "Removal of a Binding."
+          ],
+          "enum": [
+            "ACTION_UNSPECIFIED",
+            "ADD",
+            "REMOVE"
+          ]
+        },
+        "role": {
+          "description": "Role that is assigned to \"members\". For example, \"roles\/viewer\", \"roles\/editor\", or \"roles\/owner\".",
+          "type": "string"
+        },
+        "member": {
+          "description": "A single identity requesting access for a Cloud Platform resource, e.g. \"foo@google.com\".",
           "type": "string"
         }
       }

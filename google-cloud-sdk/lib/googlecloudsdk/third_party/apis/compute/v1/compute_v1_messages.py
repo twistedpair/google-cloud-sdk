@@ -33655,11 +33655,11 @@ class InstanceGroupManagerStatusStateful(_messages.Message):
     hasStatefulConfig: [Output Only] A bit indicating whether the managed
       instance group has stateful configuration, that is, if you have
       configured any items in a stateful policy or in per-instance configs.
-      The group might report that it has no stateful config even when there is
-      still some preserved state on a managed instance, for example, if you
-      have deleted all PICs but not yet applied those deletions.
-    perInstanceConfigs: [Output Only] Status of per-instance configs on the
-      instance.
+      The group might report that it has no stateful configuration even when
+      there is still some preserved state on a managed instance, for example,
+      if you have deleted all PICs but not yet applied those deletions.
+    perInstanceConfigs: [Output Only] Status of per-instance configurations on
+      the instance.
   """
 
   hasStatefulConfig = _messages.BooleanField(1)
@@ -33670,9 +33670,9 @@ class InstanceGroupManagerStatusStatefulPerInstanceConfigs(_messages.Message):
   r"""A InstanceGroupManagerStatusStatefulPerInstanceConfigs object.
 
   Fields:
-    allEffective: A bit indicating if all of the group's per-instance configs
-      (listed in the output of a listPerInstanceConfigs API call) have status
-      EFFECTIVE or there are no per-instance-configs.
+    allEffective: A bit indicating if all of the group's per-instance
+      configurations (listed in the output of a listPerInstanceConfigs API
+      call) have status EFFECTIVE or there are no per-instance-configs.
   """
 
   allEffective = _messages.BooleanField(1)
@@ -34221,8 +34221,8 @@ class InstanceGroupManagersPatchPerInstanceConfigsReq(_messages.Message):
   r"""InstanceGroupManagers.patchPerInstanceConfigs
 
   Fields:
-    perInstanceConfigs: The list of per-instance configs to insert or patch on
-      this managed instance group.
+    perInstanceConfigs: The list of per-instance configurations to insert or
+      patch on this managed instance group.
   """
 
   perInstanceConfigs = _messages.MessageField('PerInstanceConfig', 1, repeated=True)
@@ -34420,8 +34420,8 @@ class InstanceGroupManagersUpdatePerInstanceConfigsReq(_messages.Message):
   r"""InstanceGroupManagers.updatePerInstanceConfigs
 
   Fields:
-    perInstanceConfigs: The list of per-instance configs to insert or patch on
-      this managed instance group.
+    perInstanceConfigs: The list of per-instance configurations to insert or
+      patch on this managed instance group.
   """
 
   perInstanceConfigs = _messages.MessageField('PerInstanceConfig', 1, repeated=True)
@@ -45402,46 +45402,47 @@ class PerInstanceConfig(_messages.Message):
   r"""A PerInstanceConfig object.
 
   Enums:
-    StatusValueValuesEnum: The status of applying this per-instance config on
-      the corresponding managed instance.
+    StatusValueValuesEnum: The status of applying this per-instance
+      configuration on the corresponding managed instance.
 
   Fields:
     fingerprint: Fingerprint of this per-instance config. This field can be
       used in optimistic locking. It is ignored when inserting a per-instance
       config. An up-to-date fingerprint must be provided in order to update an
-      existing per-instance config or the field needs to be unset.
-    name: The name of a per-instance config and its corresponding instance.
-      Serves as a merge key during UpdatePerInstanceConfigs operations, that
-      is, if a per-instance config with the same name exists then it will be
-      updated, otherwise a new one will be created for the VM instance with
-      the same name. An attempt to create a per-instance config for a VM
-      instance that either doesn't exist or is not part of the group will
-      result in an error.
+      existing per-instance configuration or the field needs to be unset.
+    name: The name of a per-instance configuration and its corresponding
+      instance. Serves as a merge key during UpdatePerInstanceConfigs
+      operations, that is, if a per-instance configuration with the same name
+      exists then it will be updated, otherwise a new one will be created for
+      the VM instance with the same name. An attempt to create a per-instance
+      configconfiguration for a VM instance that either doesn't exist or is
+      not part of the group will result in an error.
     preservedState: The intended preserved state for the given instance. Does
       not contain preserved state generated from a stateful policy.
-    status: The status of applying this per-instance config on the
+    status: The status of applying this per-instance configuration on the
       corresponding managed instance.
   """
 
   class StatusValueValuesEnum(_messages.Enum):
-    r"""The status of applying this per-instance config on the corresponding
-    managed instance.
+    r"""The status of applying this per-instance configuration on the
+    corresponding managed instance.
 
     Values:
-      APPLYING: The per-instance config is being applied to the instance, but
-        is not yet effective, possibly waiting for the instance to, for
-        example, REFRESH.
-      DELETING: The per-instance config deletion is being applied on the
-        instance, possibly waiting for the instance to, for example, REFRESH.
-      EFFECTIVE: The per-instance config is effective on the instance, meaning
-        that all disks, ips and metadata specified in this config are attached
-        or set on the instance.
-      NONE: *[Default]* The default status, when no per-instance config
+      APPLYING: The per-instance configuration is being applied to the
+        instance, but is not yet effective, possibly waiting for the instance
+        to, for example, REFRESH.
+      DELETING: The per-instance configuration deletion is being applied on
+        the instance, possibly waiting for the instance to, for example,
+        REFRESH.
+      EFFECTIVE: The per-instance configuration is effective on the instance,
+        meaning that all disks, ips and metadata specified in this
+        configuration are attached or set on the instance.
+      NONE: *[Default]* The default status, when no per-instance configuration
         exists.
-      UNAPPLIED: The per-instance config is set on an instance but not been
-        applied yet.
-      UNAPPLIED_DELETION: The per-instance config has been deleted, but the
-        deletion is not yet applied.
+      UNAPPLIED: The per-instance configuration is set on an instance but not
+        been applied yet.
+      UNAPPLIED_DELETION: The per-instance configuration has been deleted, but
+        the deletion is not yet applied.
     """
     APPLYING = 0
     DELETING = 1
@@ -47722,8 +47723,8 @@ class RegionInstanceGroupManagerPatchInstanceConfigReq(_messages.Message):
   r"""RegionInstanceGroupManagers.patchPerInstanceConfigs
 
   Fields:
-    perInstanceConfigs: The list of per-instance configs to insert or patch on
-      this managed instance group.
+    perInstanceConfigs: The list of per-instance configurations to insert or
+      patch on this managed instance group.
   """
 
   perInstanceConfigs = _messages.MessageField('PerInstanceConfig', 1, repeated=True)
@@ -47733,8 +47734,8 @@ class RegionInstanceGroupManagerUpdateInstanceConfigReq(_messages.Message):
   r"""RegionInstanceGroupManagers.updatePerInstanceConfigs
 
   Fields:
-    perInstanceConfigs: The list of per-instance configs to insert or patch on
-      this managed instance group.
+    perInstanceConfigs: The list of per-instance configurations to insert or
+      patch on this managed instance group.
   """
 
   perInstanceConfigs = _messages.MessageField('PerInstanceConfig', 1, repeated=True)

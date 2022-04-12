@@ -183,17 +183,22 @@ def _GetClientInstance(api_name,
   return client_instance
 
 
-def _GetGapicClientClass(api_name, api_version, is_async=False):
+def _GetGapicClientClass(api_name,
+                         api_version,
+                         transport_choice=apis_util.GapicTransport.GRPC):
   """Returns the GAPIC client class for the API def specified by the args.
 
   Args:
     api_name: str, The API name (or the command surface name, if different).
     api_version: str, The version of the API.
-    is_async: bool, If True, return the asyncio version of the gapic client.
+    transport_choice: apis_util.GapicTransport,
+        The transport to be used by the client.
   """
   api_def = _GetApiDef(api_name, api_version)
-  if is_async:
+  if transport_choice == apis_util.GapicTransport.GRPC_ASYNCIO:
     client_full_classpath = api_def.gapic.async_client_full_classpath
+  elif transport_choice == apis_util.GapicTransport.REST:
+    client_full_classpath = api_def.gapic.rest_client_full_classpath
   else:
     client_full_classpath = api_def.gapic.client_full_classpath
 
@@ -202,8 +207,11 @@ def _GetGapicClientClass(api_name, api_version, is_async=False):
   return getattr(module_obj, client_class_name)
 
 
-def _GetGapicClientInstance(api_name, api_version, credentials,
-                            address_override_func=None, is_async=False):
+def _GetGapicClientInstance(api_name,
+                            api_version,
+                            credentials,
+                            address_override_func=None,
+                            transport_choice=apis_util.GapicTransport.GRPC):
   """Returns an instance of the GAPIC API client specified in the args.
 
   For apitools API clients, the API endpoint override is something like
@@ -217,7 +225,8 @@ def _GetGapicClientInstance(api_name, api_version, credentials,
     credentials: google.auth.credentials.Credentials, the credentials to use.
     address_override_func: function, function to call to override the client
         host. It takes a single argument which is the original host.
-    is_async: bool, If True, return the asyncio version of the gapic client.
+    transport_choice: apis_util.GapicTransport,
+        The transport to be used by the client.
 
   Returns:
     An instance of the specified GAPIC API client.
@@ -237,7 +246,8 @@ def _GetGapicClientInstance(api_name, api_version, credentials,
       return address
     return address_override_func(address)
 
-  client_class = _GetGapicClientClass(api_name, api_version, is_async=is_async)
+  client_class = _GetGapicClientClass(
+      api_name, api_version, transport_choice=transport_choice)
 
   return client_class(credentials, address_override_func=AddressOverride,
                       mtls_enabled=mtls_enabled)

@@ -409,6 +409,11 @@
           "description": "The identifier of the transaction in which to read. A transaction identifier is returned by a call to Datastore.BeginTransaction.",
           "type": "string",
           "format": "byte"
+        },
+        "readTime": {
+          "description": "Reads entities as they were at the given time. This may not be older than 270 seconds. This value is only supported for Cloud Firestore in Datastore mode.",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },
@@ -490,6 +495,11 @@
           "items": {
             "$ref": "Key"
           }
+        },
+        "readTime": {
+          "description": "The time at which these entities were read or found missing.",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },
@@ -506,6 +516,11 @@
           "description": "The version of the entity, a strictly positive number that monotonically increases with changes to the entity. This field is set for `FULL` entity results. For missing entities in `LookupResponse`, this is the version of the snapshot that was used to look up the entity, and it is always set except for eventually consistent reads.",
           "type": "string",
           "format": "int64"
+        },
+        "updateTime": {
+          "description": "The time at which the entity was last changed. This field is set for `FULL` entity results. If this entity is missing, this field will not be set.",
+          "type": "string",
+          "format": "google-datetime"
         },
         "cursor": {
           "description": "A cursor that points to the position after the result entity. Set only when the `EntityResult` is part of a `QueryResultBatch` message.",
@@ -982,6 +997,11 @@
           "description": "The version number of the snapshot this batch was returned from. This applies to the range of results from the query's `start_cursor` (or the beginning of the query if no cursor was given) to this batch's `end_cursor` (not the query's `end_cursor`). In a single transaction, subsequent query result batches for the same query can have a greater snapshot version number. Each batch's snapshot version is valid for all preceding batches. The value will be zero for eventually consistent queries.",
           "type": "string",
           "format": "int64"
+        },
+        "readTime": {
+          "description": "Read timestamp this batch was returned from. This applies to the range of results from the query's `start_cursor` (or the beginning of the query if no cursor was given) to this batch's `end_cursor` (not the query's `end_cursor`). In a single transaction, subsequent query result batches for the same query can have a greater timestamp. Each batch's read timestamp is valid for all preceding batches. This value will not be set for eventually consistent queries in Cloud Datastore.",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },
@@ -1028,6 +1048,11 @@
       "description": "Options specific to read-only transactions.",
       "type": "object",
       "properties": {
+        "readTime": {
+          "description": "Reads entities at the given time. This may not be older than 60 seconds.",
+          "type": "string",
+          "format": "google-datetime"
+        }
       }
     },
     "BeginTransactionResponse": {
@@ -1100,6 +1125,11 @@
           "description": "The version of the entity that this mutation is being applied to. If this does not match the current version on the server, the mutation conflicts.",
           "type": "string",
           "format": "int64"
+        },
+        "updateTime": {
+          "description": "The update time of the entity that this mutation is being applied to. If this does not match the current update time on the server, the mutation conflicts.",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },
@@ -1119,6 +1149,11 @@
           "description": "The number of index entries updated during the commit, or zero if none were updated.",
           "type": "integer",
           "format": "int32"
+        },
+        "commitTime": {
+          "description": "The transaction commit timestamp. Not set for non-transactional commits.",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },
@@ -1135,6 +1170,11 @@
           "description": "The version of the entity on the server after processing the mutation. If the mutation doesn't change anything on the server, then the version will be the version of the current entity or, if no entity is present, a version that is strictly greater than the version of any previous entity and less than the version of any possible future entity.",
           "type": "string",
           "format": "int64"
+        },
+        "updateTime": {
+          "description": "The update time of the entity on the server after processing the mutation. If the mutation doesn't change anything on the server, then the timestamp will be the update timestamp of the current entity. This field will not be set after a 'delete'.",
+          "type": "string",
+          "format": "google-datetime"
         },
         "conflictDetected": {
           "description": "Whether a conflict was detected for this mutation. Always false when a conflict detection strategy field is not set in the mutation.",

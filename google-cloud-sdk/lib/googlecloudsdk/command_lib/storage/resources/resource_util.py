@@ -86,23 +86,20 @@ def get_formatted_timestamp_in_utc(datetime_object):
   return datetime_object.strftime('%Y-%m-%dT%H:%M:%SZ')
 
 
-def get_metadata_json_section_string(key_string, value_to_convert_to_json,
-                                     json_dump_method):
+def get_metadata_json_section_string(key_string, value_to_convert_to_json,):
   """Returns metadata section with potentially multiple lines of JSON.
 
   Args:
     key_string (str): Key to give section.
     value_to_convert_to_json (list|object): json_dump_method run on this.
-    json_dump_method (function): Function for converting specific data type to
-      JSON.
 
   Returns:
     String with key followed by JSON version of value.
   """
   json_string = textwrap.indent(
-      configured_json_dumps(json_dump_method(value_to_convert_to_json)),
+      configured_json_dumps(value_to_convert_to_json),
       prefix=METADATA_LINE_INDENT_STRING)
-  return '{indent}{key}:\n{json}\n'.format(
+  return '{indent}{key}:\n{json}'.format(
       indent=METADATA_LINE_INDENT_STRING, key=key_string, json=json_string)
 
 
@@ -112,7 +109,7 @@ def get_padded_metadata_key_value_line(key_string, value_string):
   spaces_left_of_value = (
       LONGEST_METADATA_KEY_LENGTH - len(key_string) +
       METADATA_LINE_INDENT_LENGTH)
-  return '{indent}{key}:{_:>{left_spacing}}{value}\n'.format(
+  return '{indent}{key}:{_:>{left_spacing}}{value}'.format(
       _='',
       indent=METADATA_LINE_INDENT_STRING,
       key=key_string,

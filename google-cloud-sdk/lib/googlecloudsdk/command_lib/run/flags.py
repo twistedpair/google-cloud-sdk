@@ -973,13 +973,13 @@ def AddMaxRetriesFlag(parser):
       'retried on failure.')
 
 
-def AddWaitForCompletionFlag(parser, implies_run_now=False):
+def AddWaitForCompletionFlag(parser, implies_execute_now=False):
   """Add job flag to poll until completion on create."""
   help_text = (
       'Wait until the execution has completed running before exiting. '
       'If not set, gcloud exits successfully when the execution has started.')
-  if implies_run_now:
-    help_text += '  Implies --run-now.'
+  if implies_execute_now:
+    help_text += '  Implies --execute-now.'
   parser.add_argument(
       '--wait', default=False, action='store_true', help=help_text)
 
@@ -2225,12 +2225,12 @@ def AddTaskFilterFlags(parser):
       help='Include pending and abandoned tasks.')
 
 
-def AddRunNowFlag(parser):
-  """Add --run-now flag for Job creation."""
+def AddExecuteNowFlag(parser):
+  """Add --execute-now flag for Job creation."""
   parser.add_argument(
-      '--run-now',
+      '--execute-now',
       action='store_true',
-      help='Run the job immediately after creation.')
+      help='Execute the job immediately after creation.')
 
 
 def AddSourceAndImageFlags(parser):

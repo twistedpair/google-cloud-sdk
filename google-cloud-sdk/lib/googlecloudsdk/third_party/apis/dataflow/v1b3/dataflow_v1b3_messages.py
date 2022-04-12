@@ -315,6 +315,12 @@ class ContainerSpec(_messages.Message):
   Fields:
     defaultEnvironment: Default runtime environment for the job.
     image: Name of the docker container image. E.g., gcr.io/project/some-image
+    imageRepositoryCertPath: Cloud Storage path to self-signed certificate of
+      private registry.
+    imageRepositoryPasswordSecretId: Secret Manager secret id for password to
+      authenticate to private registry.
+    imageRepositoryUsernameSecretId: Secret Manager secret id for username to
+      authenticate to private registry.
     metadata: Metadata describing a template including description and
       validation rules.
     sdkInfo: Required. SDK info of the Flex Template.
@@ -322,8 +328,11 @@ class ContainerSpec(_messages.Message):
 
   defaultEnvironment = _messages.MessageField('FlexTemplateRuntimeEnvironment', 1)
   image = _messages.StringField(2)
-  metadata = _messages.MessageField('TemplateMetadata', 3)
-  sdkInfo = _messages.MessageField('SDKInfo', 4)
+  imageRepositoryCertPath = _messages.StringField(3)
+  imageRepositoryPasswordSecretId = _messages.StringField(4)
+  imageRepositoryUsernameSecretId = _messages.StringField(5)
+  metadata = _messages.MessageField('TemplateMetadata', 6)
+  sdkInfo = _messages.MessageField('SDKInfo', 7)
 
 
 class CounterMetadata(_messages.Message):
@@ -3335,7 +3344,8 @@ class IntegerMean(_messages.Message):
 
 
 class Job(_messages.Message):
-  r"""Defines a job to be run by the Cloud Dataflow service.
+  r"""Defines a job to be run by the Cloud Dataflow service. Do not enter
+  confidential information when you supply string values using the API.
 
   Enums:
     CurrentStateValueValuesEnum: The current state of the job. Jobs are
@@ -4039,7 +4049,10 @@ class LaunchFlexTemplateResponse(_messages.Message):
 
 
 class LaunchTemplateParameters(_messages.Message):
-  r"""Parameters to provide to the template being launched.
+  r"""Parameters to provide to the template being launched. Note that the
+  [metadata in the pipeline code]
+  (https://cloud.google.com/dataflow/docs/guides/templates/creating-
+  templates#metadata) determines which runtime parameters are valid.
 
   Messages:
     ParametersValue: The runtime parameters to pass to the job.
@@ -5415,7 +5428,7 @@ class RuntimeEnvironment(_messages.Message):
       made available to your pipeline during execution, from 1 to 1000.
     network: Network to which VMs will be assigned. If empty or unspecified,
       the service will use the network "default".
-    numWorkers: The initial number of Google Compute Engine instnaces for the
+    numWorkers: The initial number of Google Compute Engine instances for the
       job.
     serviceAccountEmail: The email address of the service account to run the
       job as.

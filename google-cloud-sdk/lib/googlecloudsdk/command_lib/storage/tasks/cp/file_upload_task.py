@@ -129,7 +129,7 @@ class FileUploadTask(task.Task, copy_util.CopyTaskExitHandlerMixin):
           offset=0,
           length=size,
           user_request_args=self._user_request_args).execute(task_status_queue)
-      if self._print_created_message:
+      if self._print_created_message and task_output and task_output.messages:
         for message in task_output.messages:
           if message.topic == task.Topic.UPLOADED_COMPONENT:
             log.status.Print('Created: {}'.format(

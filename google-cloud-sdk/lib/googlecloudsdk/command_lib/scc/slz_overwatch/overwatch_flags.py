@@ -54,6 +54,12 @@ def get_blueprint_plan_flag():
       help='Path of the JSON file containing the blueprint plan.')
 
 
+def get_update_mask_flag():
+  return base.Argument(
+      '--update-mask',
+      help='Update mask providing the fields that are required to be updated.')
+
+
 def get_operation_flag():
   return base.Argument(
       'OPERATION',

@@ -21,3 +21,8 @@ from __future__ import unicode_literals
 def DefaultToGlobal():
   """Returns 'global' to be used as a fallthrough hook in resources.yaml."""
   return 'global'
+
+
+def ParseContentVersionTag(content_version_tag):
+  """Returns the content_version_tag as a dictionary."""
+  return {'content_version_tag': content_version_tag}

@@ -442,13 +442,14 @@ class _ApitoolsRequests():
       method='GET',
       body=None,
       headers=None,
-      redirections=None,
+      redirections=0,
       connection_type=None,
   ):  # pylint: disable=invalid-name
     """Makes an HTTP request using httplib2 semantics."""
     del connection_type  # Unused
 
-    self.session.max_redirects = redirections
+    if redirections > 0:
+      self.session.max_redirects = redirections
 
     hooks = {}
     if self._response_handler is not None:

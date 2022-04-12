@@ -986,7 +986,7 @@ class BigtableadminProjectsLocationsListRequest(_messages.Message):
 
   Fields:
     filter: A filter to narrow down results to a preferred subset. The
-      filtering language accepts strings like "displayName=tokyo", and is
+      filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
     name: The resource that owns the locations collection, if applicable.
     pageSize: The maximum number of results to return. If not set, the service
@@ -1464,9 +1464,8 @@ class EncryptionConfig(_messages.Message):
       that contains this cluster must be granted the
       `cloudkms.cryptoKeyEncrypterDecrypter` role on the CMEK key. 2) Only
       regional keys can be used and the region of the CMEK key must match the
-      region of the cluster. 3) All clusters within an instance must use the
-      same CMEK key. Values are of the form `projects/{project}/locations/{loc
-      ation}/keyRings/{keyring}/cryptoKeys/{key}`
+      region of the cluster. Values are of the form `projects/{project}/locati
+      ons/{location}/keyRings/{keyring}/cryptoKeys/{key}`
   """
 
   kmsKeyName = _messages.StringField(1)

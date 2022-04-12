@@ -76,16 +76,44 @@ def AddDestGroupArgs(parser):
       help='Region of the Destination Group.')
 
 
-def AddDestGroupIpAndFqdnArgs(parser):
+def AddDestGroupCreateIpAndFqdnArgs(parser):
+  """Adds IP and FQDN args for DestGroup Create command.
+
+  Args:
+    parser: An argparse.ArgumentParser-like object. It is mocked out in order to
+      capture some information, but behaves like an ArgumentParser.
+  """
   parser.add_argument(
       '--ip-range-list',
       help='List of ip-ranges in the Destination Group.')
   parser.add_argument(
       '--fqdn-list',
-      help='List of fqdn-list in the Destination Group.')
+      help='List of FQDNs in the Destination Group.')
+
+
+def AddDestGroupUpdateIpAndFqdnArgs(parser):
+  """Adds IP and FQDN args for DestGroup Update command.
+
+  Args:
+    parser: An argparse.ArgumentParser-like object. It is mocked out in order to
+      capture some information, but behaves like an ArgumentParser.
+  """
+  group = parser.add_group(required=True)
+  group.add_argument(
+      '--ip-range-list',
+      help='List of ip-ranges in the Destination Group.')
+  group.add_argument(
+      '--fqdn-list',
+      help='List of FQDNs in the Destination Group.')
 
 
 def AddDestGroupListRegionArgs(parser):
+  """Adds Region arg for DestGroup List command.
+
+  Args:
+    parser: An argparse.ArgumentParser-like object. It is mocked out in order to
+      capture some information, but behaves like an ArgumentParser.
+  """
   parser.add_argument(
       '--region',
       metavar='REGION',

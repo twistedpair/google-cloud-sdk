@@ -1805,6 +1805,11 @@
           "description": "Required. Spec related to how a task is executed.",
           "$ref": "GoogleCloudDataplexV1TaskExecutionSpec"
         },
+        "executionStatus": {
+          "description": "Output only. Status of the latest task executions.",
+          "readOnly": true,
+          "$ref": "GoogleCloudDataplexV1TaskExecutionStatus"
+        },
         "spark": {
           "description": "Config related to running custom Spark tasks.",
           "$ref": "GoogleCloudDataplexV1TaskSparkTaskConfig"
@@ -1870,6 +1875,105 @@
           "description": "Optional. The maximum duration after which the job execution is expired.",
           "type": "string",
           "format": "google-duration"
+        }
+      }
+    },
+    "GoogleCloudDataplexV1TaskExecutionStatus": {
+      "id": "GoogleCloudDataplexV1TaskExecutionStatus",
+      "description": "Status of the task execution (e.g. Jobs).",
+      "type": "object",
+      "properties": {
+        "updateTime": {
+          "description": "Output only. Last update time of the status.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "latestJob": {
+          "description": "Output only. latest job execution",
+          "readOnly": true,
+          "$ref": "GoogleCloudDataplexV1Job"
+        }
+      }
+    },
+    "GoogleCloudDataplexV1Job": {
+      "id": "GoogleCloudDataplexV1Job",
+      "description": "A job represents an instance of a task.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The relative resource name of the job, of the form: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id}\/ tasks\/{task_id}\/jobs\/{job_id}.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "uid": {
+          "description": "Output only. System generated globally unique ID for the job.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "startTime": {
+          "description": "Output only. The time when the job was started.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "Output only. The time when the job ended.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "state": {
+          "description": "Output only. Execution state for the job.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "The job state is unknown.",
+            "The job is running.",
+            "The job is cancelling.",
+            "The job cancellation was successful.",
+            "The job completed successfully.",
+            "The job is no longer running due to an error.",
+            "The job was cancelled outside of Dataplex."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "RUNNING",
+            "CANCELLING",
+            "CANCELLED",
+            "SUCCEEDED",
+            "FAILED",
+            "ABORTED"
+          ]
+        },
+        "retryCount": {
+          "description": "Output only. . The number of times the job has been retried (excluding the initial attempt).",
+          "readOnly": true,
+          "type": "integer",
+          "format": "uint32"
+        },
+        "service": {
+          "description": "Output only. The underlying service running a job.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Service used to run the job is unspecified.",
+            "Dataproc service is used to run this job."
+          ],
+          "enum": [
+            "SERVICE_UNSPECIFIED",
+            "DATAPROC"
+          ]
+        },
+        "serviceJob": {
+          "description": "Output only. The full resource name for the job run under a particular service.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "message": {
+          "description": "Output only. Additional information about the current state.",
+          "readOnly": true,
+          "type": "string"
         }
       }
     },
@@ -2043,87 +2147,6 @@
         },
         "nextPageToken": {
           "description": "Token to retrieve the next page of results, or empty if there are no more results in the list.",
-          "type": "string"
-        }
-      }
-    },
-    "GoogleCloudDataplexV1Job": {
-      "id": "GoogleCloudDataplexV1Job",
-      "description": "A job represents an instance of a task.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "Output only. The relative resource name of the job, of the form: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id}\/ tasks\/{task_id}\/jobs\/{job_id}.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "uid": {
-          "description": "Output only. System generated globally unique ID for the job.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "startTime": {
-          "description": "Output only. The time when the job was started.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "endTime": {
-          "description": "Output only. The time when the job ended.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "state": {
-          "description": "Output only. Execution state for the job.",
-          "readOnly": true,
-          "type": "string",
-          "enumDescriptions": [
-            "The job state is unknown.",
-            "The job is running.",
-            "The job is cancelling.",
-            "The job cancellation was successful.",
-            "The job completed successfully.",
-            "The job is no longer running due to an error.",
-            "The job was cancelled outside of Dataplex."
-          ],
-          "enum": [
-            "STATE_UNSPECIFIED",
-            "RUNNING",
-            "CANCELLING",
-            "CANCELLED",
-            "SUCCEEDED",
-            "FAILED",
-            "ABORTED"
-          ]
-        },
-        "retryCount": {
-          "description": "Output only. . The number of times the job has been retried (excluding the initial attempt).",
-          "readOnly": true,
-          "type": "integer",
-          "format": "uint32"
-        },
-        "service": {
-          "description": "Output only. The underlying service running a job.",
-          "readOnly": true,
-          "type": "string",
-          "enumDescriptions": [
-            "Service used to run the job is unspecified.",
-            "Dataproc service is used to run this job."
-          ],
-          "enum": [
-            "SERVICE_UNSPECIFIED",
-            "DATAPROC"
-          ]
-        },
-        "serviceJob": {
-          "description": "Output only. The full resource name for the job run under a particular service.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "message": {
-          "description": "Output only. Additional information about the current state.",
-          "readOnly": true,
           "type": "string"
         }
       }

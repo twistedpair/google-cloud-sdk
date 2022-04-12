@@ -174,15 +174,7 @@ class Secrets(Client):
         limit=limit,
         batch_size_attribute='pageSize')
 
-  def AddVersion(self, secret_ref, data):
-    """Adds a new version of an existing secret."""
-    request = self.messages.SecretmanagerProjectsSecretsAddVersionRequest(
-        parent=secret_ref.RelativeName(),
-        addSecretVersionRequest=self.messages.AddSecretVersionRequest(
-            payload=self.messages.SecretPayload(data=data)))
-    return self.service.AddVersion(request)
-
-  def AddVersionBeta(self, secret_ref, data, data_crc32c):
+  def AddVersion(self, secret_ref, data, data_crc32c):
     """Adds a new version of an existing secret."""
     request = self.messages.SecretmanagerProjectsSecretsAddVersionRequest(
         parent=secret_ref.RelativeName(),

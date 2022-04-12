@@ -42,7 +42,6 @@ class VmwareengineV1(base_api.BaseApiClient):
     self.projects_locations_global_networkPeerings_peeringRoutes = self.ProjectsLocationsGlobalNetworkPeeringsPeeringRoutesService(self)
     self.projects_locations_global_networkPeerings = self.ProjectsLocationsGlobalNetworkPeeringsService(self)
     self.projects_locations_global = self.ProjectsLocationsGlobalService(self)
-    self.projects_locations_networkPeerings = self.ProjectsLocationsNetworkPeeringsService(self)
     self.projects_locations_networkPolicies_externalAccessRules = self.ProjectsLocationsNetworkPoliciesExternalAccessRulesService(self)
     self.projects_locations_networkPolicies = self.ProjectsLocationsNetworkPoliciesService(self)
     self.projects_locations_nodeTypes = self.ProjectsLocationsNodeTypesService(self)
@@ -210,31 +209,11 @@ class VmwareengineV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-  class ProjectsLocationsGlobalService(base_api.BaseApiService):
-    """Service class for the projects_locations_global resource."""
-
-    _NAME = 'projects_locations_global'
-
-    def __init__(self, client):
-      super(VmwareengineV1.ProjectsLocationsGlobalService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-  class ProjectsLocationsNetworkPeeringsService(base_api.BaseApiService):
-    """Service class for the projects_locations_networkPeerings resource."""
-
-    _NAME = 'projects_locations_networkPeerings'
-
-    def __init__(self, client):
-      super(VmwareengineV1.ProjectsLocationsNetworkPeeringsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
     def Patch(self, request, global_params=None):
       r"""Modifies a `NetworkPeering` resource. Only the `description` field can be updated. Only fields specified in `updateMask` are applied.
 
       Args:
-        request: (VmwareengineProjectsLocationsNetworkPeeringsPatchRequest) input message
+        request: (VmwareengineProjectsLocationsGlobalNetworkPeeringsPatchRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -244,18 +223,28 @@ class VmwareengineV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/networkPeerings/{networkPeeringsId}',
+        flat_path='v1/projects/{projectsId}/locations/global/networkPeerings/{networkPeeringsId}',
         http_method='PATCH',
-        method_id='vmwareengine.projects.locations.networkPeerings.patch',
+        method_id='vmwareengine.projects.locations.global.networkPeerings.patch',
         ordered_params=['name'],
         path_params=['name'],
         query_params=['requestId', 'updateMask'],
         relative_path='v1/{+name}',
         request_field='networkPeering',
-        request_type_name='VmwareengineProjectsLocationsNetworkPeeringsPatchRequest',
+        request_type_name='VmwareengineProjectsLocationsGlobalNetworkPeeringsPatchRequest',
         response_type_name='Operation',
         supports_download=False,
     )
+
+  class ProjectsLocationsGlobalService(base_api.BaseApiService):
+    """Service class for the projects_locations_global resource."""
+
+    _NAME = 'projects_locations_global'
+
+    def __init__(self, client):
+      super(VmwareengineV1.ProjectsLocationsGlobalService, self).__init__(client)
+      self._upload_configs = {
+          }
 
   class ProjectsLocationsNetworkPoliciesExternalAccessRulesService(base_api.BaseApiService):
     """Service class for the projects_locations_networkPolicies_externalAccessRules resource."""

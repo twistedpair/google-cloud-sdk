@@ -37,9 +37,9 @@ from googlecloudsdk.api_lib.containeranalysis import filter_util
 from googlecloudsdk.api_lib.containeranalysis import requests
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core import exceptions
-from googlecloudsdk.core import http
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
+from googlecloudsdk.core import transports
 from googlecloudsdk.core.credentials import store as c_store
 from googlecloudsdk.core.docker import constants
 from googlecloudsdk.core.docker import docker
@@ -399,7 +399,7 @@ def GetDigestFromName(image_name):
   def ResolveV2Tag(tag):
     with v2_image.FromRegistry(
         basic_creds=CredentialProvider(), name=tag,
-        transport=http.Http()) as v2_img:
+        transport=Http()) as v2_img:
       if v2_img.exists():
         return v2_img.digest()
       return None
@@ -408,7 +408,7 @@ def GetDigestFromName(image_name):
     with v2_2_image.FromRegistry(
         basic_creds=CredentialProvider(),
         name=tag,
-        transport=http.Http(),
+        transport=Http(),
         accepted_mimes=v2_2_docker_http.SUPPORTED_MANIFEST_MIMES) as v2_2_img:
       if v2_2_img.exists():
         return v2_2_img.digest()
@@ -417,7 +417,7 @@ def GetDigestFromName(image_name):
   def ResolveManifestListTag(tag):
     with docker_image_list.FromRegistry(
         basic_creds=CredentialProvider(), name=tag,
-        transport=http.Http()) as manifest_list:
+        transport=Http()) as manifest_list:
       if manifest_list.exists():
         return manifest_list.digest()
       return None
@@ -459,7 +459,7 @@ def GetDockerDigestFromPrefix(digest):
   repository = ValidateRepositoryPath(repository_path)
   with v2_2_image.FromRegistry(
       basic_creds=CredentialProvider(), name=repository,
-      transport=http.Http()) as image:
+      transport=Http()) as image:
     matches = [d for d in image.manifests() if d.startswith(prefix)]
 
     if len(matches) == 1:
@@ -489,3 +489,16 @@ def WrapExpectedDockerlessErrors(optional_image_name=None):
   except (v2_docker_http.TokenRefreshException,
           v2_2_docker_http.TokenRefreshException) as err:
     raise TokenRefreshError(six.text_type(err))
+
+
+def Http():
+  """Gets an transport client for use with containerregistry.
+
+  For now, this just calls into GetApitoolsTransport, but if we find that
+  implementation does not satisfy our needs, we may need to fork it. This
+  small amount of indirection will make that change a bit cleaner.
+
+  Returns:
+    1. A httplib2.Http-like object backed by httplib2 or requests.
+  """
+  return transports.GetApitoolsTransport()

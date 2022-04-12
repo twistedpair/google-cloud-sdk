@@ -201,7 +201,8 @@ class FileDownloadTask(task.Task, copy_util.CopyTaskExitHandlerMixin):
             self._temporary_destination_resource,
             self._destination_resource,
             delete_source=self._delete_source,
-            do_not_decompress=self._do_not_decompress)
+            do_not_decompress=self._do_not_decompress,
+            user_request_args=self._user_request_args)
     ]
 
     return (download_component_task_list, finalize_sliced_download_task_list)

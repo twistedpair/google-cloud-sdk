@@ -56,6 +56,7 @@ from .types.logging_config import GetExclusionRequest
 from .types.logging_config import GetSettingsRequest
 from .types.logging_config import GetSinkRequest
 from .types.logging_config import GetViewRequest
+from .types.logging_config import IndexConfig
 from .types.logging_config import ListBucketsRequest
 from .types.logging_config import ListBucketsResponse
 from .types.logging_config import ListExclusionsRequest
@@ -76,6 +77,7 @@ from .types.logging_config import UpdateExclusionRequest
 from .types.logging_config import UpdateSettingsRequest
 from .types.logging_config import UpdateSinkRequest
 from .types.logging_config import UpdateViewRequest
+from .types.logging_config import IndexType
 from .types.logging_config import LifecycleState
 from .types.logging_config import OperationState
 from .types.logging_metrics import CreateLogMetricRequest
@@ -114,6 +116,8 @@ __all__ = (
 'GetSettingsRequest',
 'GetSinkRequest',
 'GetViewRequest',
+'IndexConfig',
+'IndexType',
 'LifecycleState',
 'ListBucketsRequest',
 'ListBucketsResponse',

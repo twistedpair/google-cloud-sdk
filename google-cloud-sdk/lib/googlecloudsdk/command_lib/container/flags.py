@@ -3013,6 +3013,21 @@ def AddWorkloadConfigAuditFlag(parser):
       """))
 
 
+def AddWorkloadVulnScanningFlag(parser):
+  """Adds Protect Config's Enable Workload Vulnerability Scanning flag to the parser."""
+  parser.add_argument(
+      '--enable-workload-vulnerability-scanning',
+      default=None,
+      action='store_true',
+      hidden=True,
+      help=textwrap.dedent("""\
+      Enables Protect API's workload vulnerability scanning.
+
+      To disable in an existing cluster, explicitly set flag to
+      `--no-enable-workload-vulnerability-scanning`.
+      """))
+
+
 def AddGkeOidcFlag(parser):
   parser.add_argument(
       '--enable-gke-oidc',
@@ -3723,7 +3738,7 @@ The duration between batches is specified by batch-soak-duration.
   --standard-rollout-policy=batch-node-count=3,batch-soak-duration=60s
 
   $ {command} node-pool-1 --cluster=example-cluster\
-  --standard-rollout-policy=batch-percent=3,batch-soak-duration=60s
+  --standard-rollout-policy=batch-percent=0.3,batch-soak-duration=60s
 """
   else:
     standard_rollout_policy_help += """\
@@ -3731,7 +3746,7 @@ The duration between batches is specified by batch-soak-duration.
   --standard-rollout-policy=batch-node-count=3,batch-soak-duration=60s
 
   $ {command} example-cluster\
-  --standard-rollout-policy=batch-percent=3,batch-soak-duration=60s
+  --standard-rollout-policy=batch-percent=0.3,batch-soak-duration=60s
 """
 
   spec = {

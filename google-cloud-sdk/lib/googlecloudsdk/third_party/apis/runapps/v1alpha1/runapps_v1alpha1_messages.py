@@ -864,6 +864,9 @@ class RedisConfig(_messages.Message):
 class RedisInstanceConfig(_messages.Message):
   r"""Message for Redis instance configs.
 
+  Enums:
+    TierValueValuesEnum: The Redis instance tier, e.g. "STANDARD_HA".
+
   Messages:
     RedisParametersValue: The "raw" Redis configs:
       https://redis.io/topics/config
@@ -874,6 +877,18 @@ class RedisInstanceConfig(_messages.Message):
     tier: The Redis instance tier, e.g. "STANDARD_HA".
     version: The Redis instance version, e.g. "REDIS_4_0".
   """
+
+  class TierValueValuesEnum(_messages.Enum):
+    r"""The Redis instance tier, e.g. "STANDARD_HA".
+
+    Values:
+      TIER_UNSPECIFIED: Tier unset.
+      BASIC: Basic standalone instance.
+      STANDARD_HA: Highly available primary/replica instances.
+    """
+    TIER_UNSPECIFIED = 0
+    BASIC = 1
+    STANDARD_HA = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class RedisParametersValue(_messages.Message):
@@ -902,12 +917,8 @@ class RedisInstanceConfig(_messages.Message):
 
   memory_size_gb = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   redis_parameters = _messages.MessageField('RedisParametersValue', 2)
-  tier = _messages.StringField(3)
+  tier = _messages.EnumField('TierValueValuesEnum', 3)
   version = _messages.StringField(4)
-
-
-class RedisStatus(_messages.Message):
-  r"""Detail Status of Redis resource."""
 
 
 class Render(_messages.Message):
@@ -948,11 +959,10 @@ class ResourceComponentStatus(_messages.Message):
       resource that makes up the SAF resource.
     diverged: Indicates that this resource component has been altered and may
       not match the expected state.
-    errorMessage: The error message associated with the resource component, if
-      applicable.
     name: The name the resource component. Usually it's the name of the GCP
       resource, which was used inside the Terraform Resource block that
       defines it. (e.g. cri-domain-cert)
+    reason: The reason why this resource component to be in its state.
     selfLink: Fully qualified URL to the object represented by this resource
       component.
     state: The state of the resource component.
@@ -982,8 +992,8 @@ class ResourceComponentStatus(_messages.Message):
 
   consoleLink = _messages.StringField(1)
   diverged = _messages.BooleanField(2)
-  errorMessage = _messages.StringField(3)
-  name = _messages.StringField(4)
+  name = _messages.StringField(3)
+  reason = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   state = _messages.EnumField('StateValueValuesEnum', 6)
   type = _messages.StringField(7)
@@ -1020,16 +1030,13 @@ class ResourceStatus(_messages.Message):
       domain will link to the GCLB page.
     diverged: Indicates that a child component of this resource has been
       altered and may not match the expected state.
-    errorMessage: The error message associated with the resource, if
-      applicable.
-    redisDetails: Detail Status of Redis resource.
+    reason: The reason why this resource is in the current state.
     resourceComponentStatuses: Repeated field with status per component
       created for this resource.
     resourceName: Name of the resource, pulled from the Application Config.
     routerDetails: Detail Status of Router resource.
     state: The enum state of the resource.
     type: Type of resource.
-    vpcDetails: Detail Status of VPC resource.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -1055,14 +1062,12 @@ class ResourceStatus(_messages.Message):
   cloudSqlDetails = _messages.MessageField('CloudSqlStatus', 2)
   consoleLink = _messages.StringField(3)
   diverged = _messages.BooleanField(4)
-  errorMessage = _messages.StringField(5)
-  redisDetails = _messages.MessageField('RedisStatus', 6)
-  resourceComponentStatuses = _messages.MessageField('ResourceComponentStatus', 7, repeated=True)
-  resourceName = _messages.StringField(8)
-  routerDetails = _messages.MessageField('RouterStatus', 9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  type = _messages.StringField(11)
-  vpcDetails = _messages.MessageField('VPCStatus', 12)
+  reason = _messages.StringField(5)
+  resourceComponentStatuses = _messages.MessageField('ResourceComponentStatus', 6, repeated=True)
+  resourceName = _messages.StringField(7)
+  routerDetails = _messages.MessageField('RouterStatus', 8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  type = _messages.StringField(10)
 
 
 class Route(_messages.Message):
@@ -1308,7 +1313,7 @@ class RunappsProjectsLocationsListRequest(_messages.Message):
 
   Fields:
     filter: A filter to narrow down results to a preferred subset. The
-      filtering language accepts strings like "displayName=tokyo", and is
+      filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
     name: The resource that owns the locations collection, if applicable.
     pageSize: The maximum number of results to return. If not set, the service
@@ -1576,10 +1581,6 @@ class VPCConfig(_messages.Message):
   """
 
   network = _messages.StringField(1)
-
-
-class VPCStatus(_messages.Message):
-  r"""Detail Status of VPC resource."""
 
 
 encoding.AddCustomJsonFieldMapping(

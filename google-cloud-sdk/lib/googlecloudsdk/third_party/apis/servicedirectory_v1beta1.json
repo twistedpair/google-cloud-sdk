@@ -306,6 +306,10 @@
         "zone": {
           "description": "Optional. GCP zone of the underlying resource. Meant to be populated only for zonal resources, left unset for others.",
           "type": "string"
+        },
+        "gcpFleetMembership": {
+          "description": "Optional. Membership URI (scheme-less URI) for resources registered to Google Cloud Fleet. Currently populated only for kubernetes resources. Sample URI: `\/\/gkehub.googleapis.com\/projects\/my-project\/locations\/global\/memberships\/my-membership`",
+          "type": "string"
         }
       }
     },
@@ -933,7 +937,7 @@
                   "type": "string"
                 },
                 "filter": {
-                  "description": "A filter to narrow down results to a preferred subset. The filtering language accepts strings like \"displayName=tokyo\", and is documented in more detail in [AIP-160](https:\/\/google.aip.dev\/160).",
+                  "description": "A filter to narrow down results to a preferred subset. The filtering language accepts strings like `\"displayName=tokyo\"`, and is documented in more detail in [AIP-160](https:\/\/google.aip.dev\/160).",
                   "location": "query",
                   "type": "string"
                 },

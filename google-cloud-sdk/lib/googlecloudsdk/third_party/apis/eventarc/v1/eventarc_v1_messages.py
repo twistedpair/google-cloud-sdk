@@ -589,7 +589,7 @@ class EventarcProjectsLocationsListRequest(_messages.Message):
 
   Fields:
     filter: A filter to narrow down results to a preferred subset. The
-      filtering language accepts strings like "displayName=tokyo", and is
+      filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
     name: The resource that owns the locations collection, if applicable.
     pageSize: The maximum number of results to return. If not set, the service
@@ -1636,13 +1636,9 @@ class Transport(_messages.Message):
 class Trigger(_messages.Message):
   r"""A representation of the trigger resource.
 
-  Enums:
-    StateValueValuesEnum: Output only. The overall state of the trigger. The
-      state of associated trigger resources. This is a computed field. If the
-      trigger is in FAILED state, the field `conditions` will contain details
-      of the reason of the failure.
-
   Messages:
+    ConditionsValue: Output only. The reason(s) why a trigger is in FAILED
+      state.
     LabelsValue: Optional. User labels attached to the triggers that can be
       used to group resources.
 
@@ -1677,10 +1673,6 @@ class Trigger(_messages.Message):
       account for information on how to invoke authenticated Cloud Run
       services. To create Audit Log triggers, the service account should also
       have the `roles/eventarc.eventReceiver` IAM role.
-    state: Output only. The overall state of the trigger. The state of
-      associated trigger resources. This is a computed field. If the trigger
-      is in FAILED state, the field `conditions` will contain details of the
-      reason of the failure.
     transport: Optional. To deliver messages, Eventarc might use other GCP
       products as a transport intermediary. This field contains a reference to
       that transport intermediary. This information can be used for debugging
@@ -1691,27 +1683,29 @@ class Trigger(_messages.Message):
     updateTime: Output only. The last-modified time.
   """
 
-  class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. The overall state of the trigger. The state of associated
-    trigger resources. This is a computed field. If the trigger is in FAILED
-    state, the field `conditions` will contain details of the reason of the
-    failure.
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ConditionsValue(_messages.Message):
+    r"""Output only. The reason(s) why a trigger is in FAILED state.
 
-    Values:
-      STATE_UNSPECIFIED: The default value. This value is used if the state is
-        omitted.
-      ACTIVE: The trigger is active and has no detected conditions.
-      CREATING: The trigger is being created.
-      REPAIRING: The trigger has error conditions and is being repairing.
-      FAILED: The trigger has error conditions.
-      DELETED: The trigger has been deleted.
+    Messages:
+      AdditionalProperty: An additional property for a ConditionsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ConditionsValue
     """
-    STATE_UNSPECIFIED = 0
-    ACTIVE = 1
-    CREATING = 2
-    REPAIRING = 3
-    FAILED = 4
-    DELETED = 5
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ConditionsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A StateCondition attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('StateCondition', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1739,7 +1733,7 @@ class Trigger(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   channel = _messages.StringField(1)
-  conditions = _messages.MessageField('StateCondition', 2, repeated=True)
+  conditions = _messages.MessageField('ConditionsValue', 2)
   createTime = _messages.StringField(3)
   destination = _messages.MessageField('Destination', 4)
   etag = _messages.StringField(5)
@@ -1747,10 +1741,9 @@ class Trigger(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 7)
   name = _messages.StringField(8)
   serviceAccount = _messages.StringField(9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  transport = _messages.MessageField('Transport', 11)
-  uid = _messages.StringField(12)
-  updateTime = _messages.StringField(13)
+  transport = _messages.MessageField('Transport', 10)
+  uid = _messages.StringField(11)
+  updateTime = _messages.StringField(12)
 
 
 encoding.AddCustomJsonFieldMapping(

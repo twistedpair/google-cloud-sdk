@@ -3016,6 +3016,13 @@ class NodePoolAutoscaling(_messages.Message):
       cluster.
     minNodeCount: Minimum number of nodes for one location in the NodePool.
       Must be >= 1 and <= max_node_count.
+    totalMaxNodeCount: Maximum number of nodes in the node pool. Must be
+      greater than total_min_node_count. There has to be enough quota to scale
+      up the cluster. The total_*_node_count fields are mutually exclusive
+      with the *_node_count fields.
+    totalMinNodeCount: Minimum number of nodes in the node pool. Must be
+      greater than 1 less than total_max_node_count. The total_*_node_count
+      fields are mutually exclusive with the *_node_count fields.
   """
 
   class LocationPolicyValueValuesEnum(_messages.Enum):
@@ -3036,6 +3043,8 @@ class NodePoolAutoscaling(_messages.Message):
   locationPolicy = _messages.EnumField('LocationPolicyValueValuesEnum', 3)
   maxNodeCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   minNodeCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  totalMaxNodeCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  totalMinNodeCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
 
 
 class NodePoolDefaults(_messages.Message):
@@ -3526,6 +3535,21 @@ class RollbackNodePoolUpgradeRequest(_messages.Message):
   projectId = _messages.StringField(4)
   respectPdb = _messages.BooleanField(5)
   zone = _messages.StringField(6)
+
+
+class RollingSettings(_messages.Message):
+  r"""Settings for rolling update.
+
+  Fields:
+    maxSurgePercentage: Percentage of the maximum number of nodes that can be
+      created beyond the current size of the node pool during the upgrade
+      process. The range of this field should be [0, 100].
+    maxUnavailablePercentage: Percentage of the maximum number of nodes that
+      can be unavailable during during the upgrade process.
+  """
+
+  maxSurgePercentage = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  maxUnavailablePercentage = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class SandboxConfig(_messages.Message):
@@ -4631,6 +4655,7 @@ class UpgradeSettings(_messages.Message):
     maxUnavailable: The maximum number of nodes that can be simultaneously
       unavailable during the upgrade process. A node is considered available
       if its status is Ready.
+    rollingSettings: Settings for rolling update strategy.
     strategy: Update strategy of the node pool.
   """
 
@@ -4651,7 +4676,8 @@ class UpgradeSettings(_messages.Message):
   blueGreenSettings = _messages.MessageField('BlueGreenSettings', 1)
   maxSurge = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   maxUnavailable = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  strategy = _messages.EnumField('StrategyValueValuesEnum', 4)
+  rollingSettings = _messages.MessageField('RollingSettings', 4)
+  strategy = _messages.EnumField('StrategyValueValuesEnum', 5)
 
 
 class UsableSubnetwork(_messages.Message):

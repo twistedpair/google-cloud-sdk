@@ -222,7 +222,7 @@
       "type": "object",
       "properties": {
         "serviceName": {
-          "description": "The name of the service. See the [overview](\/service-management\/overview) for naming requirements.",
+          "description": "The name of the service. See the [overview](https:\/\/cloud.google.com\/service-management\/overview) for naming requirements.",
           "type": "string"
         },
         "producerProjectId": {
@@ -3171,7 +3171,7 @@
           "httpMethod": "DELETE",
           "parameters": {
             "serviceName": {
-              "description": "Required. The name of the service. See the [overview](\/service-management\/overview) for naming requirements. For example: `example.googleapis.com`.",
+              "description": "Required. The name of the service. See the [overview](https:\/\/cloud.google.com\/service-management\/overview) for naming requirements. For example: `example.googleapis.com`.",
               "location": "path",
               "required": true,
               "type": "string"
@@ -3196,7 +3196,7 @@
           "httpMethod": "POST",
           "parameters": {
             "serviceName": {
-              "description": "Required. The name of the service. See the [overview](\/service-management\/overview) for naming requirements. For example: `example.googleapis.com`.",
+              "description": "Required. The name of the service. See the [overview](https:\/\/cloud.google.com\/service-management\/overview) for naming requirements. For example: `example.googleapis.com`.",
               "location": "path",
               "required": true,
               "type": "string"
@@ -3221,7 +3221,7 @@
           "httpMethod": "GET",
           "parameters": {
             "serviceName": {
-              "description": "Required. The name of the service. See the [overview](\/service-management\/overview) for naming requirements. For example: `example.googleapis.com`.",
+              "description": "Required. The name of the service. See the [overview](https:\/\/cloud.google.com\/service-management\/overview) for naming requirements. For example: `example.googleapis.com`.",
               "location": "path",
               "required": true,
               "type": "string"
@@ -3408,7 +3408,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "serviceName": {
-                  "description": "Required. The name of the service. See the [overview](\/service-management\/overview) for naming requirements. For example: `example.googleapis.com`.",
+                  "description": "Required. The name of the service. See the [overview](https:\/\/cloud.google.com\/service-management\/overview) for naming requirements. For example: `example.googleapis.com`.",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -3446,7 +3446,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "serviceName": {
-                  "description": "Required. The name of the service. See the [overview](\/service-management\/overview) for naming requirements. For example: `example.googleapis.com`.",
+                  "description": "Required. The name of the service. See the [overview](https:\/\/cloud.google.com\/service-management\/overview) for naming requirements. For example: `example.googleapis.com`.",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -3493,7 +3493,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "serviceName": {
-                  "description": "Required. The name of the service. See the [overview](\/service-management\/overview) for naming requirements. For example: `example.googleapis.com`.",
+                  "description": "Required. The name of the service. See the [overview](https:\/\/cloud.google.com\/service-management\/overview) for naming requirements. For example: `example.googleapis.com`.",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -3521,7 +3521,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "serviceName": {
-                  "description": "Required. The name of the service. See the [overview](\/service-management\/overview) for naming requirements. For example: `example.googleapis.com`.",
+                  "description": "Required. The name of the service. See the [overview](https:\/\/cloud.google.com\/service-management\/overview) for naming requirements. For example: `example.googleapis.com`.",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -3553,7 +3553,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "serviceName": {
-                  "description": "Required. The name of the service. See the [overview](\/service-management\/overview) for naming requirements. For example: `example.googleapis.com`.",
+                  "description": "Required. The name of the service. See the [overview](https:\/\/cloud.google.com\/service-management\/overview) for naming requirements. For example: `example.googleapis.com`.",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -3570,7 +3570,7 @@
                   "format": "int32"
                 },
                 "filter": {
-                  "description": "Required. Use `filter` to return subset of rollouts. The following filters are supported: -- To limit the results to only those in [status](google.api.servicemanagement.v1.RolloutStatus) 'SUCCESS', use filter='status=SUCCESS' -- To limit the results to those in [status](google.api.servicemanagement.v1.RolloutStatus) 'CANCELLED' or 'FAILED', use filter='status=CANCELLED OR status=FAILED'",
+                  "description": "Required. Use `filter` to return subset of rollouts. The following filters are supported: -- To limit the results to only those in status 'SUCCESS', use filter='status=SUCCESS' -- To limit the results to those in status 'CANCELLED' or 'FAILED', use filter='status=CANCELLED OR status=FAILED'",
                   "location": "query",
                   "type": "string"
                 }
@@ -3596,7 +3596,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "serviceName": {
-                  "description": "Required. The name of the service. See the [overview](\/service-management\/overview) for naming requirements. For example: `example.googleapis.com`.",
+                  "description": "Required. The name of the service. See the [overview](https:\/\/cloud.google.com\/service-management\/overview) for naming requirements. For example: `example.googleapis.com`.",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -3630,7 +3630,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "serviceName": {
-                  "description": "Required. The name of the service. See the [overview](\/service-management\/overview) for naming requirements. For example: `example.googleapis.com`.",
+                  "description": "Required. The name of the service. See the [overview](https:\/\/cloud.google.com\/service-management\/overview) for naming requirements. For example: `example.googleapis.com`.",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -3703,7 +3703,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "serviceName": {
-                  "description": "The name of the service. See the [overview](\/service-management\/overview) for naming requirements. For example: `example.googleapis.com`. This field is required.",
+                  "description": "The name of the service. See the [overview](https:\/\/cloud.google.com\/service-management\/overview) for naming requirements. For example: `example.googleapis.com`. This field is required.",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -3760,7 +3760,7 @@
               "httpMethod": "PATCH",
               "parameters": {
                 "serviceName": {
-                  "description": "The name of the service. See the [overview](\/service-management\/overview) for naming requirements. For example: `example.googleapis.com`. This field is required.",
+                  "description": "The name of the service. See the [overview](https:\/\/cloud.google.com\/service-management\/overview) for naming requirements. For example: `example.googleapis.com`. This field is required.",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -3805,7 +3805,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "serviceName": {
-                  "description": "The name of the service. See the [overview](\/service-management\/overview) for naming requirements. For example: `example.googleapis.com`.",
+                  "description": "The name of the service. See the [overview](https:\/\/cloud.google.com\/service-management\/overview) for naming requirements. For example: `example.googleapis.com`.",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -3862,7 +3862,7 @@
               "httpMethod": "PATCH",
               "parameters": {
                 "serviceName": {
-                  "description": "The name of the service. See the [overview](\/service-management\/overview) for naming requirements. For example: `example.googleapis.com`.",
+                  "description": "The name of the service. See the [overview](https:\/\/cloud.google.com\/service-management\/overview) for naming requirements. For example: `example.googleapis.com`.",
                   "location": "path",
                   "required": true,
                   "type": "string"

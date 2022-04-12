@@ -42,7 +42,8 @@ class FinalizeSlicedDownloadTask(task.Task, copy_util.CopyTaskExitHandlerMixin):
                final_destination_resource,
                delete_source=False,
                do_not_decompress=False,
-               print_created_message=False):
+               print_created_message=False,
+               user_request_args=None):
     """Initializes task.
 
     Args:
@@ -59,6 +60,7 @@ class FinalizeSlicedDownloadTask(task.Task, copy_util.CopyTaskExitHandlerMixin):
         downloaded gzips.
       print_created_message (bool): Print a message containing the versioned
         URL of the copy result.
+      user_request_args (UserRequestArgs|None): Values for RequestConfig.
     """
     super(FinalizeSlicedDownloadTask, self).__init__()
     self._source_resource = source_resource
@@ -67,6 +69,7 @@ class FinalizeSlicedDownloadTask(task.Task, copy_util.CopyTaskExitHandlerMixin):
     self._delete_source = delete_source
     self._do_not_decompress = do_not_decompress
     self._print_created_message = print_created_message
+    self._user_request_args = user_request_args
 
   def execute(self, task_status_queue=None):
     """Validates and clean ups after sliced download."""

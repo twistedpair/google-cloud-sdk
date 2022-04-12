@@ -42,10 +42,6 @@ class SslPolicyHelper(object):
   def _messages(self):
     return self._compute_client.messages
 
-  @property
-  def _service(self):
-    return self._client.sslPolicies
-
   def GetSslPolicyForInsert(self, name, description, profile, min_tls_version,
                             custom_features):
     """Returns the SslPolicy message for an insert request.
@@ -53,13 +49,13 @@ class SslPolicyHelper(object):
     Args:
       name: String representing the name of the SSL policy resource.
       description: String representing the description for the SSL policy
-          resource.
+        resource.
       profile: String representing the SSL policy profile. Can be one of
-          'COMPATIBLE', 'MODERN', 'RESTRICTED' or 'CUSTOM'.
+        'COMPATIBLE', 'MODERN', 'RESTRICTED' or 'CUSTOM'.
       min_tls_version: String representing the minimum TLS version of the SSL
-          policy. Can be one of 'TLS_1_0', 'TLS_1_1', 'TLS_1_2'.
-      custom_features: The list of strings representing the custom features
-          to use.
+        policy. Can be one of 'TLS_1_0', 'TLS_1_1', 'TLS_1_2'.
+      custom_features: The list of strings representing the custom features to
+        use.
 
     Returns:
       The SslPolicy message object that can be used in an insert request.
@@ -81,13 +77,13 @@ class SslPolicyHelper(object):
 
     Args:
       fingerprint: String representing the existing fingerprint of the SSL
-          policy resource.
+        policy resource.
       profile: String representing the SSL policy profile. Can be one of
-          'COMPATIBLE', 'MODERN', 'RESTRICTED' or 'CUSTOM'.
+        'COMPATIBLE', 'MODERN', 'RESTRICTED' or 'CUSTOM'.
       min_tls_version: String representing the minimum TLS version of the SSL
-          policy. Can be one of 'TLS_1_0', 'TLS_1_1', 'TLS_1_2'.
-      custom_features: The list of strings representing the custom features
-          to use.
+        policy. Can be one of 'TLS_1_0', 'TLS_1_1', 'TLS_1_2'.
+      custom_features: The list of strings representing the custom features to
+        use.
     """
     messages = self._messages
     ssl_policy = messages.SslPolicy(fingerprint=fingerprint)
@@ -107,12 +103,17 @@ class SslPolicyHelper(object):
       ssl_policy_ref: The SSL policy reference object.
       operation_ref: The operation reference object to wait for.
       wait_message: String representing the wait message to display while the
-          operation is in progress.
+        operation is in progress.
 
     Returns:
       The resulting resource object after the operation completes.
     """
-    operation_poller = poller.Poller(self._service, ssl_policy_ref)
+    if ssl_policy_ref.Collection() == 'compute.regionSslPolicies':
+      operation_poller = poller.Poller(self._client.regionSslPolicies,
+                                       ssl_policy_ref)
+      return waiter.WaitFor(operation_poller, operation_ref, wait_message)
+
+    operation_poller = poller.Poller(self._client.sslPolicies, ssl_policy_ref)
     return waiter.WaitFor(operation_poller, operation_ref, wait_message)
 
   def Create(self, ref, ssl_policy):
@@ -125,9 +126,16 @@ class SslPolicyHelper(object):
     Returns:
       The operation reference object for the insert request.
     """
+    if ref.Collection() == 'compute.regionSslPolicies':
+      request = self._messages.ComputeRegionSslPoliciesInsertRequest(
+          project=ref.project, region=ref.region, sslPolicy=ssl_policy)
+      operation = self._client.regionSslPolicies.Insert(request)
+      return self._resources.Parse(
+          operation.selfLink, collection='compute.regionOperations')
+
     request = self._messages.ComputeSslPoliciesInsertRequest(
         project=ref.project, sslPolicy=ssl_policy)
-    operation = self._service.Insert(request)
+    operation = self._client.sslPolicies.Insert(request)
     return self._resources.Parse(
         operation.selfLink, collection='compute.globalOperations')
 
@@ -140,9 +148,14 @@ class SslPolicyHelper(object):
     Returns:
       The SSL policy resource object.
     """
+    if ref.Collection() == 'compute.regionSslPolicies':
+      request = self._messages.ComputeRegionSslPoliciesGetRequest(
+          project=ref.project, region=ref.region, sslPolicy=ref.Name())
+      return self._client.regionSslPolicies.Get(request)
+
     request = self._messages.ComputeSslPoliciesGetRequest(
         project=ref.project, sslPolicy=ref.Name())
-    return self._service.Get(request)
+    return self._client.sslPolicies.Get(request)
 
   def Patch(self, ref, ssl_policy, clear_custom_features):
     """Sends a Patch request for an SSL policy and returns the operation.
@@ -150,25 +163,35 @@ class SslPolicyHelper(object):
     Args:
       ref: The SSL policy reference object.
       ssl_policy: The SSL policy message object to use in the patch request.
-      clear_custom_features: If True, customFeatures field is explicitly
-        cleared by including it in the request even if empty. Otherwise it is
-        included only if the SSL policy message has non-empty customFeatures
-        field.
+      clear_custom_features: If True, customFeatures field is explicitly cleared
+        by including it in the request even if empty. Otherwise it is included
+        only if the SSL policy message has non-empty customFeatures field.
 
     Returns:
       The operation reference object for the patch request.
     """
-    request = self._messages.ComputeSslPoliciesPatchRequest(
-        project=ref.project, sslPolicy=ref.Name(), sslPolicyResource=ssl_policy)
     cleared_fields = []
     # Since custom_features is a repeated field, we need to explicitly indicate
     # that the field must be cleared when it is empty, for patch requests.
     # Otherwise the field is ignored and will not be part of the request.
     if clear_custom_features:
       cleared_fields.append('customFeatures')
-    with self._client.IncludeFields(cleared_fields):
-      operation = self._service.Patch(request)
 
+    if ref.Collection() == 'compute.regionSslPolicies':
+      request = self._messages.ComputeRegionSslPoliciesPatchRequest(
+          project=ref.project,
+          region=ref.region,
+          sslPolicy=ref.Name(),
+          sslPolicyResource=ssl_policy)
+      with self._client.IncludeFields(cleared_fields):
+        operation = self._client.regionSslPolicies.Patch(request)
+      return self._resources.Parse(
+          operation.selfLink, collection='compute.regionOperations')
+
+    request = self._messages.ComputeSslPoliciesPatchRequest(
+        project=ref.project, sslPolicy=ref.Name(), sslPolicyResource=ssl_policy)
+    with self._client.IncludeFields(cleared_fields):
+      operation = self._client.sslPolicies.Patch(request)
     return self._resources.Parse(
         operation.selfLink, collection='compute.globalOperations')
 
@@ -181,21 +204,35 @@ class SslPolicyHelper(object):
     Returns:
       The operation reference object for the delete request.
     """
+    if ref.Collection() == 'compute.regionSslPolicies':
+      request = self._messages.ComputeRegionSslPoliciesDeleteRequest(
+          project=ref.project, region=ref.region, sslPolicy=ref.Name())
+      operation = self._client.regionSslPolicies.Delete(request)
+      return self._resources.Parse(
+          operation.selfLink, collection='compute.regionOperations')
+
     request = self._messages.ComputeSslPoliciesDeleteRequest(
         project=ref.project, sslPolicy=ref.Name())
-    operation = self._service.Delete(request)
+    operation = self._client.sslPolicies.Delete(request)
     return self._resources.Parse(
         operation.selfLink, collection='compute.globalOperations')
 
-  def ListAvailableFeatures(self, project):
+  def ListAvailableFeatures(self, project, region):
     """Sends a ListAvailableFeatures request and returns the features.
 
     Args:
       project: String representing the project to use for the request.
+      region: The region to use. If not set, the global scope is used.
 
     Returns:
       List of strings representing the list of available features.
     """
+    if region:
+      request = self._messages.ComputeRegionSslPoliciesListAvailableFeaturesRequest(
+          project=project, region=region)
+      return self._client.regionSslPolicies.ListAvailableFeatures(
+          request).features
+
     request = self._messages.ComputeSslPoliciesListAvailableFeaturesRequest(
         project=project)
-    return self._service.ListAvailableFeatures(request).features
+    return self._client.sslPolicies.ListAvailableFeatures(request).features

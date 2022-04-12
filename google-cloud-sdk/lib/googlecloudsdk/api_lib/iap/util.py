@@ -558,14 +558,17 @@ class IapTunnelDestGroupResource(IapIamResource):
         },
         collection=IAP_TCP_LOCATIONS_COLLECTION)
 
-  def Create(self, cidr_list, fqdn_list):
-    """Creates a TunnelDestGroup."""
-
-    tunnel_dest_group = {
+  def _CreateTunnelDestGroupObject(self, cidr_list, fqdn_list):
+    return {
         'name': self.group_name,
         'cidrs': cidr_list.split(',') if cidr_list else [],
         'fqdns': fqdn_list.split(',') if fqdn_list else [],
     }
+
+  def Create(self, cidr_list, fqdn_list):
+    """Creates a TunnelDestGroup."""
+
+    tunnel_dest_group = self._CreateTunnelDestGroupObject(cidr_list, fqdn_list)
     request = self.messages.IapProjectsIapTunnelLocationsDestGroupsCreateRequest(
         parent=self._ParseWithoutGroupId().RelativeName(),
         tunnelDestGroup=tunnel_dest_group,
@@ -589,3 +592,20 @@ class IapTunnelDestGroupResource(IapIamResource):
         limit=limit,
         field='tunnelDestGroups',
         batch_size_attribute='pageSize')
+
+  def Get(self):
+    """Get TunnelDestGroup."""
+    request = self.messages.IapProjectsIapTunnelLocationsDestGroupsGetRequest(
+        name=self._Parse().RelativeName())
+    return self.ResourceService().Get(request)
+
+  def Update(self, cidr_list, fqdn_list, update_mask):
+    """Update TunnelDestGroup."""
+
+    tunnel_dest_group = self._CreateTunnelDestGroupObject(cidr_list, fqdn_list)
+
+    request = self.messages.IapProjectsIapTunnelLocationsDestGroupsPatchRequest(
+        name=self._Parse().RelativeName(),
+        tunnelDestGroup=tunnel_dest_group,
+        updateMask=update_mask)
+    return self.ResourceService().Patch(request)

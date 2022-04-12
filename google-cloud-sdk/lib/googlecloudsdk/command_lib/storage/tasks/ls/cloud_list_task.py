@@ -32,6 +32,7 @@ from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import plurality_checkable_iterator
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage import wildcard_iterator
+from googlecloudsdk.command_lib.storage.resources import gcloud_full_resource_formatter
 from googlecloudsdk.command_lib.storage.resources import resource_reference
 from googlecloudsdk.command_lib.storage.resources import resource_util
 from googlecloudsdk.command_lib.storage.tasks import task
@@ -113,7 +114,8 @@ class _ResourceFormatWrapper(_BaseFormatWrapper):
                all_versions=False,
                display_detail=DisplayDetail.SHORT,
                include_etag=False,
-               readable_sizes=False):
+               readable_sizes=False,
+               full_formatter=None):
     """Initializes wrapper instance.
 
     Args:
@@ -123,10 +125,13 @@ class _ResourceFormatWrapper(_BaseFormatWrapper):
       include_etag (bool): Display etag string of resource.
       readable_sizes (bool): Convert bytes to a more human readable format for
         long lising. For example, print 1024B as 1KiB.
+      full_formatter (FullResourceFormatter): A formatter to format the resource
+        if display_detail == DisplayDetail.FULL
     """
     self._all_versions = all_versions
     self._include_etag = include_etag
     self._readable_sizes = readable_sizes
+    self._full_formatter = full_formatter
     super(_ResourceFormatWrapper, self).__init__(resource, display_detail)
 
   def _format_for_list_long(self):
@@ -178,7 +183,7 @@ class _ResourceFormatWrapper(_BaseFormatWrapper):
     if self._display_detail == DisplayDetail.FULL and (
         isinstance(self.resource, resource_reference.BucketResource) or
         isinstance(self.resource, resource_reference.ObjectResource)):
-      return self.resource.get_full_metadata_string()
+      return self.resource.get_full_metadata_string(self._full_formatter)
     if self._display_detail == DisplayDetail.JSON:
       return self.resource.get_json_dump()
     if self._all_versions:
@@ -226,6 +231,8 @@ class CloudListTask(task.Task):
 
     self._only_display_buckets = self._cloud_url.is_provider() or (
         self._buckets_flag and self._cloud_url.is_bucket())
+    self._full_formatter = (
+        gcloud_full_resource_formatter.GcloudFullResourceFormatter())
 
   def _get_container_iterator(
       self, cloud_url, recursion_level):
@@ -284,7 +291,8 @@ class CloudListTask(task.Task):
             all_versions=self._all_versions,
             display_detail=self._display_detail,
             include_etag=self._include_etag,
-            readable_sizes=self._readable_sizes)
+            readable_sizes=self._readable_sizes,
+            full_formatter=self._full_formatter)
 
   def _print_json_list(self, resource_wrappers):
     """Prints ResourceWrapper objects as JSON list."""

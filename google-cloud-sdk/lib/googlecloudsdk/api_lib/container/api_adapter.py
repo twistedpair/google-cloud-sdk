@@ -95,6 +95,11 @@ in 'shieldedInstanceConfig' in --autoprovisioning-config-file to set \
 management settings.
 """
 
+BOTH_SHIELDED_INSTANCE_SETTINGS_ERROR_MSG = """\
+Must specify both or none of --shielded-secure-boot and \
+--shielded-integrity-monitoring.
+"""
+
 LIMITS_WITHOUT_AUTOPROVISIONING_FLAG_MSG = """\
 Must specify --enable-autoprovisioning to specify resource limits for autoscaling.
 """
@@ -606,6 +611,7 @@ class CreateClusterOptions(object):
       ipv6_access_type=None,
       enable_workload_config_audit=None,
       pod_autoscaling_direct_metrics_opt_in=None,
+      enable_workload_vulnerability_scanning=None,
   ):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
@@ -766,6 +772,7 @@ class CreateClusterOptions(object):
     self.ipv6_access_type = ipv6_access_type
     self.enable_workload_config_audit = enable_workload_config_audit
     self.pod_autoscaling_direct_metrics_opt_in = pod_autoscaling_direct_metrics_opt_in
+    self.enable_workload_vulnerability_scanning = enable_workload_vulnerability_scanning
 
 
 class UpdateClusterOptions(object):
@@ -870,6 +877,7 @@ class UpdateClusterOptions(object):
       dataplane_v2=None,
       enable_workload_config_audit=None,
       pod_autoscaling_direct_metrics_opt_in=None,
+      enable_workload_vulnerability_scanning=None,
   ):
     self.version = version
     self.update_master = bool(update_master)
@@ -969,6 +977,7 @@ class UpdateClusterOptions(object):
     self.dataplane_v2 = dataplane_v2
     self.enable_workload_config_audit = enable_workload_config_audit
     self.pod_autoscaling_direct_metrics_opt_in = pod_autoscaling_direct_metrics_opt_in
+    self.enable_workload_vulnerability_scanning = enable_workload_vulnerability_scanning
 
 
 class SetMasterAuthOptions(object):
@@ -1698,15 +1707,28 @@ class APIAdapter(object):
           enabled=options.enable_identity_service)
 
     if options.enable_workload_config_audit is not None:
-      protect_config = self.messages.ProtectConfig(
-          workloadConfig=self.messages.WorkloadConfig())
+      if cluster.protectConfig is None:
+        cluster.protectConfig = self.messages.ProtectConfig(
+            workloadConfig=self.messages.WorkloadConfig())
       if options.enable_workload_config_audit:
-        protect_config.workloadConfig.auditMode = (
+        cluster.protectConfig.workloadConfig.auditMode = (
             self.messages.WorkloadConfig.AuditModeValueValuesEnum.BASIC)
       else:
-        protect_config.workloadConfig.auditMode = (
+        cluster.protectConfig.workloadConfig.auditMode = (
             self.messages.WorkloadConfig.AuditModeValueValuesEnum.DISABLED)
-      cluster.protectConfig = protect_config
+
+    if options.enable_workload_vulnerability_scanning is not None:
+      if cluster.protectConfig is None:
+        cluster.protectConfig = self.messages.ProtectConfig(
+            workloadConfig=self.messages.WorkloadConfig())
+      if options.enable_workload_vulnerability_scanning:
+        cluster.protectConfig.workloadConfig.vulnerabilityScanningMode = (
+            self.messages.WorkloadConfig
+            .VulnerabilityScanningModeValueValuesEnum.BASIC)
+      else:
+        cluster.protectConfig.workloadConfig.vulnerabilityScanningMode = (
+            self.messages.WorkloadConfig
+            .VulnerabilityScanningModeValueValuesEnum.DISABLED)
 
     if options.pod_autoscaling_direct_metrics_opt_in is not None:
       pod_autoscaling_config = self.messages.PodAutoscaling(
@@ -2643,15 +2665,26 @@ class APIAdapter(object):
           desiredIdentityServiceConfig=self.messages.IdentityServiceConfig(
               enabled=options.enable_identity_service))
 
-    if options.enable_workload_config_audit is not None:
+    if options.enable_workload_config_audit is not None or options.enable_workload_vulnerability_scanning is not None:
       protect_config = self.messages.ProtectConfig(
           workloadConfig=self.messages.WorkloadConfig())
-      if options.enable_workload_config_audit:
-        protect_config.workloadConfig.auditMode = (
-            self.messages.WorkloadConfig.AuditModeValueValuesEnum.BASIC)
-      else:
-        protect_config.workloadConfig.auditMode = (
-            self.messages.WorkloadConfig.AuditModeValueValuesEnum.DISABLED)
+      if options.enable_workload_config_audit is not None:
+        if options.enable_workload_config_audit:
+          protect_config.workloadConfig.auditMode = (
+              self.messages.WorkloadConfig.AuditModeValueValuesEnum.BASIC)
+        else:
+          protect_config.workloadConfig.auditMode = (
+              self.messages.WorkloadConfig.AuditModeValueValuesEnum.DISABLED)
+
+      if options.enable_workload_vulnerability_scanning is not None:
+        if options.enable_workload_vulnerability_scanning:
+          protect_config.workloadConfig.vulnerabilityScanningMode = (
+              self.messages.WorkloadConfig
+              .VulnerabilityScanningModeValueValuesEnum.BASIC)
+        else:
+          protect_config.workloadConfig.vulnerabilityScanningMode = (
+              self.messages.WorkloadConfig
+              .VulnerabilityScanningModeValueValuesEnum.DISABLED)
       update = self.messages.ClusterUpdate(desiredProtectConfig=protect_config)
 
     if options.pod_autoscaling_direct_metrics_opt_in is not None:
@@ -4970,21 +5003,21 @@ def _AddShieldedInstanceConfigToNodeConfig(node_config, options, messages):
   """Adds ShieldedInstanceConfig to NodeConfig."""
   if (options.shielded_secure_boot is not None or
       options.shielded_integrity_monitoring is not None):
+
+    # Setting any of the ShieldedInstanceConfig options here
+    # overrides the defaulting on the server.
+    #
+    # Require all or none of the ShieldedInstanceConfig fields to be
+    # set.
+    secure_boot_set = options.shielded_secure_boot is not None
+    integrity_monitoring_set = options.shielded_integrity_monitoring is not None
+    if secure_boot_set != integrity_monitoring_set:
+      raise util.Error(BOTH_SHIELDED_INSTANCE_SETTINGS_ERROR_MSG)
+
     node_config.shieldedInstanceConfig = messages.ShieldedInstanceConfig()
     if options.shielded_secure_boot is not None:
       node_config.shieldedInstanceConfig.enableSecureBoot = (
           options.shielded_secure_boot)
-    else:
-      # Workaround for API proto3->proto2 conversion, preserve enableSecureBoot
-      # default value.
-      #
-      # When shieldedInstanceConfig is set in API request, server-side
-      # defaulting logic won't kick in. Instead, default proto values for unset
-      # fields will be used.
-      # By default, enableSecureBoot should be true. But if it's not set in
-      # shieldedInstanceConfig, it defaults to false on proto conversion in the
-      # API. Always send it as true explicitly when flag isn't set (is None).
-      node_config.shieldedInstanceConfig.enableSecureBoot = True
     if options.shielded_integrity_monitoring is not None:
       node_config.shieldedInstanceConfig.enableIntegrityMonitoring = (
           options.shielded_integrity_monitoring)

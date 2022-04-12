@@ -315,14 +315,12 @@ class SecuredlandingzoneOrganizationsLocationsEnableOverwatchRequest(_messages.M
     googleCloudSecuredlandingzoneV1betaEnableOverwatchRequest: A
       GoogleCloudSecuredlandingzoneV1betaEnableOverwatchRequest resource to be
       passed as the request body.
-    locationsId: A string attribute.
     organization: Required. Organization for which overwatch service has to be
       enabled. organizations/{org_id}
   """
 
   googleCloudSecuredlandingzoneV1betaEnableOverwatchRequest = _messages.MessageField('GoogleCloudSecuredlandingzoneV1betaEnableOverwatchRequest', 1)
-  locationsId = _messages.StringField(2, required=True)
-  organization = _messages.StringField(3, required=True)
+  organization = _messages.StringField(2, required=True)
 
 
 class SecuredlandingzoneOrganizationsLocationsOverwatchesActivateRequest(_messages.Message):

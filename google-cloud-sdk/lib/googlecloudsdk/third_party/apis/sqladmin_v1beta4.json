@@ -1444,20 +1444,6 @@
         "maintenanceVersion": {
           "description": "The current software version on the instance.",
           "type": "string"
-        },
-        "availableUpgradeDatabaseVersions": {
-          "description": "All available database versions in upgrade flow.",
-          "type": "array",
-          "items": {
-            "$ref": "MajorDatabaseVersion"
-          }
-        },
-        "availableBackupDatabaseVersions": {
-          "description": "All available database versions in restore flow.",
-          "type": "array",
-          "items": {
-            "$ref": "MajorDatabaseVersion"
-          }
         }
       }
     },
@@ -2252,67 +2238,6 @@
           "description": "The minimum recommended increase size in GigaBytes This field is consumed by the frontend * Writers: * the proactive database wellness job for OOD. * Readers:",
           "type": "integer",
           "format": "int32"
-        }
-      }
-    },
-    "MajorDatabaseVersion": {
-      "id": "MajorDatabaseVersion",
-      "description": "A database major version.",
-      "type": "object",
-      "properties": {
-        "version": {
-          "description": "The database version name.",
-          "type": "string"
-        },
-        "versionDisplayName": {
-          "description": "The database version's display name.",
-          "type": "string"
-        },
-        "majorVersion": {
-          "description": "The version's major version name.",
-          "type": "string"
-        },
-        "isDefault": {
-          "description": "Whether this version is a default database version.",
-          "type": "boolean"
-        },
-        "accessLevel": {
-          "description": "The access level of database version. The potential values could be `TEST`, `READ_ONLY`, `DEPRECATED`, ``",
-          "type": "string"
-        },
-        "minorVersions": {
-          "description": "A list of database minor versions of a given major database version.",
-          "type": "array",
-          "items": {
-            "$ref": "MinorDatabaseVersion"
-          }
-        }
-      }
-    },
-    "MinorDatabaseVersion": {
-      "id": "MinorDatabaseVersion",
-      "description": "A database minor version.",
-      "type": "object",
-      "properties": {
-        "version": {
-          "description": "The database version name.",
-          "type": "string"
-        },
-        "versionDisplayName": {
-          "description": "The database version's display name.",
-          "type": "string"
-        },
-        "fullVersion": {
-          "description": "The database version's full name.",
-          "type": "string"
-        },
-        "isDefault": {
-          "description": "Whether this version is a default database version.",
-          "type": "boolean"
-        },
-        "accessLevel": {
-          "description": "The access level of database version. The potential values could be `TEST`, `READ_ONLY`, `DEPRECATED`, ``",
-          "type": "string"
         }
       }
     },
@@ -3112,10 +3037,6 @@
         },
         "enablePasswordVerification": {
           "description": "If true, the user must specify the current password before changing the password. This flag is supported only for MySQL.",
-          "type": "boolean"
-        },
-        "enableRandomPasswordGeneration": {
-          "description": "If true, the database automatically generates the new password. This flag is supported only for MySQL.",
           "type": "boolean"
         }
       }

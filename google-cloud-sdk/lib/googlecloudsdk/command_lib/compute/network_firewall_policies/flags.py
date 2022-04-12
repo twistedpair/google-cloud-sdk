@@ -398,3 +398,31 @@ def AddDestRegionCodes(parser):
           'Dest Region Code to match for this rule. '
           'Can only be specified if DIRECTION is `egress`.'
       ))
+
+
+def AddSrcThreatIntelligence(parser):
+  """Adds source threat intelligence list names to this rule."""
+  parser.add_argument(
+      '--src-threat-intelligence',
+      type=arg_parsers.ArgList(),
+      metavar='SOURCE_THREAT_INTELLIGENCE_LISTS',
+      required=False,
+      hidden=True,
+      help=(
+          'Source Threat Intelligence lists to match for this rule. '
+          'Can only be specified if DIRECTION is `ingress`.'
+      ))
+
+
+def AddDestThreatIntelligence(parser):
+  """Adds destination threat intelligence list names to this rule."""
+  parser.add_argument(
+      '--dest-threat-intelligence',
+      type=arg_parsers.ArgList(),
+      metavar='DEST_THREAT_INTELLIGENCE_LISTS',
+      required=False,
+      hidden=True,
+      help=(
+          'Destination Threat Intelligence lists to match for this rule. '
+          'Can only be specified if DIRECTION is `egress`.'
+      ))

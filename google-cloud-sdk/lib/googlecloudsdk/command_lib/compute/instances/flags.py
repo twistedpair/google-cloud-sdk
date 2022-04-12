@@ -1627,17 +1627,30 @@ def AddLocationHintArg(parser):
       """)
 
 
-def AddPreemptibleVmArgs(parser):
-  parser.add_argument(
-      '--preemptible',
-      action='store_true',
-      default=False,
-      help="""\
+def AddPreemptibleVmArgs(parser, is_update=False):
+  """Set preemptible scheduling property for instances.
+
+  For set_scheduling operation, in addition we are providing no-preemptible flag
+  in use case when user wants to disable this property.
+
+  Args:
+     parser: ArgumentParser, parser to which flags will be added.
+     is_update: Bool. If True, flags are intended for set-scheduling operation.
+  """
+  help_text = """\
       If provided, instances will be preemptible and time-limited. Instances
       might be preempted to free up resources for standard VM instances,
       and will only be able to run for a limited amount of time. Preemptible
       instances can not be restarted and will not migrate.
-      """)
+      """
+  if is_update:
+    parser.add_argument(
+        '--preemptible',
+        action=arg_parsers.StoreTrueFalseAction,
+        help=help_text)
+  else:
+    parser.add_argument(
+        '--preemptible', action='store_true', default=False, help=help_text)
 
 
 def AddProvisioningModelVmArgs(parser):
@@ -1715,17 +1728,55 @@ def AddHostErrorTimeoutSecondsArgs(parser):
     """)
 
 
-def AddInstanceTerminationActionVmArgs(parser):
-  """Set arguments for specifing the termination action for the instance."""
-  parser.add_argument(
-      '--instance-termination-action',
-      choices={
-          'STOP': 'Default. Stop the VM without preserving memory. '
-                  'The VM can be restarted later.',
-          'DELETE': 'Permanently delete the VM.'
-      },
-      type=arg_utils.ChoiceToEnumName,
-      help="""\
+def AddInstanceTerminationActionVmArgs(parser, is_update=False):
+  """Set arguments for specifing the termination action for the instance.
+
+  For set_scheduling operation we are implementing this as argument group with
+  additional argument clear-* providing the functionality to clear the
+  instance-termination-action field.
+
+  Args:
+     parser: ArgumentParser, parser to which flags will be added.
+     is_update: Bool. If True, flags are intended for set-scheduling operation.
+  """
+
+  if is_update:
+    termination_action_group = parser.add_group(
+        'Instance Termination Action', mutex=True)
+    termination_action_group.add_argument(
+        '--instance-termination-action',
+        choices={
+            'STOP': 'Default. Stop the VM without preserving memory. '
+                    'The VM can be restarted later.',
+            'DELETE': 'Permanently delete the VM.'
+        },
+        type=arg_utils.ChoiceToEnumName,
+        help="""\
+      Specifies the termination action that will be taken upon VM preemption.
+      """)
+    termination_action_group.add_argument(
+        '--clear-instance-termination-action',
+        action='store_true',
+        help="""\
+        Disables the termination action for this VM if allowed OR
+        sets termination action to the default value.
+        Depending on a VM's availability settings, a termination action is
+        either required or not allowed. This flag is required when you are
+        updating a VM such that it's previously specified termination action is
+        no longer allowed.
+        If you use this flag when a VM requires a termination action,
+        it's termination action is just set to the default value (stop).
+        """)
+  else:
+    parser.add_argument(
+        '--instance-termination-action',
+        choices={
+            'STOP': 'Default. Stop the VM without preserving memory. '
+                    'The VM can be restarted later.',
+            'DELETE': 'Permanently delete the VM.'
+        },
+        type=arg_utils.ChoiceToEnumName,
+        help="""\
       Specifies the termination action that will be taken upon VM preemption.
       """)
 

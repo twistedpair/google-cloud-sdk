@@ -22,7 +22,7 @@ from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.datastream import util
 
 
-class StreamObjectsClient(object):
+class StreamObjectsClient:
   """Client for stream objects service in the API."""
 
   def __init__(self, client=None, messages=None):

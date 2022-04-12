@@ -30,7 +30,7 @@ def GetPrivateConnectionURI(resource):
   return private_connection.SelfLink()
 
 
-class PrivateConnectionsClient(object):
+class PrivateConnectionsClient:
   """Client for private connections service in the API."""
 
   def __init__(self, client=None, messages=None):

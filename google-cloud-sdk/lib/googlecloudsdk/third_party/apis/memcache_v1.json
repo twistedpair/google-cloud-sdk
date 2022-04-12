@@ -669,6 +669,34 @@
         }
       }
     },
+    "RescheduleMaintenanceRequest": {
+      "id": "RescheduleMaintenanceRequest",
+      "description": "Request for RescheduleMaintenance.",
+      "type": "object",
+      "properties": {
+        "rescheduleType": {
+          "description": "Required. If reschedule type is SPECIFIC_TIME, must set up schedule_time as well.",
+          "type": "string",
+          "enumDescriptions": [
+            "Not set.",
+            "If the user wants to schedule the maintenance to happen now.",
+            "If the user wants to use the existing maintenance policy to find the next available window.",
+            "If the user wants to reschedule the maintenance to a specific time."
+          ],
+          "enum": [
+            "RESCHEDULE_TYPE_UNSPECIFIED",
+            "IMMEDIATE",
+            "NEXT_AVAILABLE_WINDOW",
+            "SPECIFIC_TIME"
+          ]
+        },
+        "scheduleTime": {
+          "description": "Timestamp when the maintenance shall be rescheduled to if reschedule_type=SPECIFIC_TIME, in RFC 3339 format, for example `2012-11-15T16:19:00.094Z`.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
     "GoogleCloudMemcacheV1LocationMetadata": {
       "id": "GoogleCloudMemcacheV1LocationMetadata",
       "description": "Metadata for the given google.cloud.location.Location.",
@@ -804,7 +832,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Unique name of the resource. It uses the form: `projects\/{project_id|project_number}\/locations\/{location_id}\/instances\/{instance_id}` Note: Either project_id or project_number can be used, but keep it consistent with other APIs (e.g. RescheduleUpdate)",
+          "description": "Unique name of the resource. It uses the form: `projects\/{project_number}\/locations\/{location_id}\/instances\/{instance_id}` Note: This name is passed, stored and logged across the rollout system. So use of consumer project_id or any other consumer PII in the name is strongly discouraged for wipeout (go\/wipeout) compliance. See go\/elysium\/project_ids#storage-guidance for more details.",
           "type": "string"
         },
         "createTime": {
@@ -909,7 +937,7 @@
           "$ref": "GoogleCloudSaasacceleratorManagementProvidersV1MaintenanceSettings"
         },
         "instanceType": {
-          "description": "Optional. The instance_type of this instance of format: projects\/{project_id}\/locations\/{location_id}\/instanceTypes\/{instance_type_id}. Instance Type represents a high-level tier or SKU of the service that this instance belong to. When enabled(eg: Maintenance Rollout), Rollout uses 'instance_type' along with 'software_versions' to determine whether instance needs an update or not.",
+          "description": "Optional. The instance_type of this instance of format: projects\/{project_number}\/locations\/{location_id}\/instanceTypes\/{instance_type_id}. Instance Type represents a high-level tier or SKU of the service that this instance belong to. When enabled(eg: Maintenance Rollout), Rollout uses 'instance_type' along with 'software_versions' to determine whether instance needs an update or not.",
           "type": "string"
         },
         "notificationParameters": {
@@ -1300,7 +1328,7 @@
                   "type": "string"
                 },
                 "filter": {
-                  "description": "A filter to narrow down results to a preferred subset. The filtering language accepts strings like \"displayName=tokyo\", and is documented in more detail in [AIP-160](https:\/\/google.aip.dev\/160).",
+                  "description": "A filter to narrow down results to a preferred subset. The filtering language accepts strings like `\"displayName=tokyo\"`, and is documented in more detail in [AIP-160](https:\/\/google.aip.dev\/160).",
                   "location": "query",
                   "type": "string"
                 },
@@ -1698,6 +1726,34 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "`ApplyParameters` restarts the set of specified nodes in order to update them to the current set of parameters for the Memcached Instance."
+                },
+                "rescheduleMaintenance": {
+                  "id": "memcache.projects.locations.instances.rescheduleMaintenance",
+                  "path": "v1/{+instance}:rescheduleMaintenance",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:rescheduleMaintenance",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "instance": {
+                      "description": "Required. Memcache instance resource name using the form: `projects\/{project_id}\/locations\/{location_id}\/instances\/{instance_id}` where `location_id` refers to a GCP region.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "instance"
+                  ],
+                  "request": {
+                    "$ref": "RescheduleMaintenanceRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Reschedules upcoming maintenance event."
                 }
               }
             }

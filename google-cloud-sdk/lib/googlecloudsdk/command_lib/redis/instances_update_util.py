@@ -224,3 +224,10 @@ def UpdateReadReplicasMode(unused_instance_ref, args, patch_request):
   if args.IsSpecified('read_replicas_mode'):
     patch_request = AddFieldToUpdateMask('read_replicas_mode', patch_request)
   return patch_request
+
+
+def UpdateSecondaryIpRange(unused_instance_ref, args, patch_request):
+  """Hook to update secondary IP range."""
+  if args.IsSpecified('secondary_ip_range'):
+    patch_request = AddFieldToUpdateMask('secondary_ip_range', patch_request)
+  return patch_request

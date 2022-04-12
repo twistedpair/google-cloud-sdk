@@ -809,7 +809,7 @@ class DeidentifyDicomStoreRequest(_messages.Message):
   r"""Creates a new DICOM store with sensitive information de-identified.
 
   Fields:
-    config: De-identify configuration.
+    config: Deidentify configuration.
     destinationStore: The name of the DICOM store to create and write the
       redacted data to. For example, `projects/{project_id}/locations/{locatio
       n_id}/datasets/{dataset_id}/dicomStores/{dicom_store_id}`. * The
@@ -992,8 +992,7 @@ class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
   or the response type of an API method. For instance: service Foo { rpc
-  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
-  representation for `Empty` is empty JSON object `{}`.
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
 
 
@@ -1276,6 +1275,12 @@ class ExportResourcesRequest(_messages.Message):
   r"""Request to export resources.
 
   Fields:
+    _since: If provided, only resources updated after this time are exported.
+      The time uses the format YYYY-MM-DDThh:mm:ss.sss+zz:zz. For example,
+      `2015-02-07T13:28:17.239+02:00` or `2017-01-01T00:00:00Z`. The time must
+      be specified to the second and include a time zone.
+    _type: String of comma-delimited FHIR resource types. If provided, only
+      resources of the specified resource type(s) are exported.
     bigqueryDestination: The BigQuery output destination. The Cloud Healthcare
       Service Agent requires two IAM roles on the BigQuery location:
       `roles/bigquery.dataEditor` and `roles/bigquery.jobUser`. The output is
@@ -1290,8 +1295,10 @@ class ExportResourcesRequest(_messages.Message):
       resource.
   """
 
-  bigqueryDestination = _messages.MessageField('GoogleCloudHealthcareV1FhirBigQueryDestination', 1)
-  gcsDestination = _messages.MessageField('GoogleCloudHealthcareV1FhirGcsDestination', 2)
+  _since = _messages.StringField(1)
+  _type = _messages.StringField(2)
+  bigqueryDestination = _messages.MessageField('GoogleCloudHealthcareV1FhirBigQueryDestination', 3)
+  gcsDestination = _messages.MessageField('GoogleCloudHealthcareV1FhirGcsDestination', 4)
 
 
 class ExportResourcesResponse(_messages.Message):
@@ -1356,13 +1363,19 @@ class FhirConfig(_messages.Message):
   r"""Specifies how to handle de-identification of a FHIR store.
 
   Fields:
+    defaultKeepExtensions: The behaviour for handling FHIR extensions that
+      aren't otherwise specified for de-identification. If true, all
+      extensions are preserved during de-identification by default. If false
+      or unspecified, all extensions are removed during de-identification by
+      default.
     fieldMetadataList: Specifies FHIR paths to match and how to transform
       them. Any field that is not matched by a FieldMetadata is passed through
       to the output dataset unmodified. All extensions will be processed
       according to `default_keep_extensions`.
   """
 
-  fieldMetadataList = _messages.MessageField('FieldMetadata', 1, repeated=True)
+  defaultKeepExtensions = _messages.BooleanField(1)
+  fieldMetadataList = _messages.MessageField('FieldMetadata', 2, repeated=True)
 
 
 class FhirFilter(_messages.Message):
@@ -1565,9 +1578,9 @@ class FieldMetadata(_messages.Message):
       in the FHIR spec with the form: field[x]) we use two separate
       components. For example, "deceasedAge.unit" is matched by
       "Deceased.Age.unit". Supported types are: AdministrativeGenderCode,
-      Code, Date, DateTime, Decimal, HumanName, Id, LanguageCode, Markdown,
-      Oid, String, Uri, Uuid, Xhtml. Base64Binary is also supported, but may
-      only be kept as-is or have all the content removed.
+      Base64Binary, Boolean, Code, Date, DateTime, Decimal, HumanName, Id,
+      Instant, Integer, LanguageCode, Markdown, Oid, PositiveInt, String,
+      UnsignedInt, Uri, Uuid, Xhtml.
   """
 
   class ActionValueValuesEnum(_messages.Enum):
@@ -2374,12 +2387,16 @@ class HealthcareProjectsLocationsDatasetsConsentStoresGetIamPolicyRequest(_messa
   object.
 
   Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected. Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset. To learn
-      which resources support conditions in their IAM policies, see the [IAM
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
@@ -2712,12 +2729,16 @@ class HealthcareProjectsLocationsDatasetsDicomStoresGetIamPolicyRequest(_message
   object.
 
   Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected. Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset. To learn
-      which resources support conditions in their IAM policies, see the [IAM
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
@@ -3393,6 +3414,30 @@ class HealthcareProjectsLocationsDatasetsFhirStoresFhirResourcePurgeRequest(_mes
   name = _messages.StringField(1, required=True)
 
 
+class HealthcareProjectsLocationsDatasetsFhirStoresFhirResourceValidateRequest(_messages.Message):
+  r"""A
+  HealthcareProjectsLocationsDatasetsFhirStoresFhirResourceValidateRequest
+  object.
+
+  Fields:
+    httpBody: A HttpBody resource to be passed as the request body.
+    parent: The name of the FHIR store that holds the profiles being used for
+      validation.
+    profile: A profile that this resource should be validated against.
+    type: The FHIR resource type of the resource being validated. For a
+      complete list, see the FHIR Resource Index ([DSTU2](http://hl7.org/imple
+      ment/standards/fhir/DSTU2/resourcelist.html),
+      [STU3](http://hl7.org/implement/standards/fhir/STU3/resourcelist.html),
+      or [R4](http://hl7.org/implement/standards/fhir/R4/resourcelist.html)).
+      Must match the resource type in the provided content.
+  """
+
+  httpBody = _messages.MessageField('HttpBody', 1)
+  parent = _messages.StringField(2, required=True)
+  profile = _messages.StringField(3)
+  type = _messages.StringField(4, required=True)
+
+
 class HealthcareProjectsLocationsDatasetsFhirStoresFhirSearchRequest(_messages.Message):
   r"""A HealthcareProjectsLocationsDatasetsFhirStoresFhirSearchRequest object.
 
@@ -3453,12 +3498,16 @@ class HealthcareProjectsLocationsDatasetsFhirStoresGetIamPolicyRequest(_messages
   object.
 
   Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected. Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset. To learn
-      which resources support conditions in their IAM policies, see the [IAM
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
@@ -3590,12 +3639,16 @@ class HealthcareProjectsLocationsDatasetsGetIamPolicyRequest(_messages.Message):
   r"""A HealthcareProjectsLocationsDatasetsGetIamPolicyRequest object.
 
   Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected. Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset. To learn
-      which resources support conditions in their IAM policies, see the [IAM
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
@@ -3663,12 +3716,16 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresGetIamPolicyRequest(_message
   object.
 
   Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected. Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset. To learn
-      which resources support conditions in their IAM policies, see the [IAM
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
@@ -4110,7 +4167,7 @@ class HealthcareProjectsLocationsListRequest(_messages.Message):
 
   Fields:
     filter: A filter to narrow down results to a preferred subset. The
-      filtering language accepts strings like "displayName=tokyo", and is
+      filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
     name: The resource that owns the locations collection, if applicable.
     pageSize: The maximum number of results to return. If not set, the service
@@ -5133,9 +5190,10 @@ class ParserConfig(_messages.Message):
   the messages.
 
   Enums:
-    VersionValueValuesEnum: Immutable. Determines the version of the
-      unschematized parser to be used when `schema` is not given. This field
-      is immutable after store creation.
+    VersionValueValuesEnum: Immutable. Determines the version of both the
+      default parser to be used when `schema` is not given, as well as the
+      schematized parser used when `schema` is specified. This field is
+      immutable after HL7v2 store creation.
 
   Fields:
     allowNullHeader: Determines whether messages with no header are allowed.
@@ -5144,14 +5202,16 @@ class ParserConfig(_messages.Message):
     segmentTerminator: Byte(s) to use as the segment terminator. If this is
       unset, '\r' is used as segment terminator, matching the HL7 version 2
       specification.
-    version: Immutable. Determines the version of the unschematized parser to
-      be used when `schema` is not given. This field is immutable after store
-      creation.
+    version: Immutable. Determines the version of both the default parser to
+      be used when `schema` is not given, as well as the schematized parser
+      used when `schema` is specified. This field is immutable after HL7v2
+      store creation.
   """
 
   class VersionValueValuesEnum(_messages.Enum):
-    r"""Immutable. Determines the version of the unschematized parser to be
-    used when `schema` is not given. This field is immutable after store
+    r"""Immutable. Determines the version of both the default parser to be
+    used when `schema` is not given, as well as the schematized parser used
+    when `schema` is specified. This field is immutable after HL7v2 store
     creation.
 
     Values:
@@ -6073,6 +6133,9 @@ class ValidationConfig(_messages.Message):
       FHIR specification. This property only affects resource types that do
       not have profiles configured for them, any rules in enabled
       implementation guides will still be enforced.
+    disableProfileValidation: Whether to disable profile validation for this
+      FHIR store. Set this to true to disable checking incoming resources for
+      conformance against structure definitions in this FHIR store.
     disableReferenceTypeValidation: Whether to disable reference type
       validation for incoming resources. Set this to true to disable checking
       incoming resources for conformance against reference type requirement
@@ -6085,11 +6148,28 @@ class ValidationConfig(_messages.Message):
       defined in the FHIR specification. This property only affects resource
       types that do not have profiles configured for them, any rules in
       enabled implementation guides will still be enforced.
+    enabledImplementationGuides: A list of implementation guide URLs in this
+      FHIR store that are used to configure the profiles to use for
+      validation. For example, to use the US Core profiles for validation, set
+      `enabled_implementation_guides` to
+      `["http://hl7.org/fhir/us/core/ImplementationGuide/ig"]`. If
+      `enabled_implementation_guides` is empty or omitted, then incoming
+      resources are only required to conform to the base FHIR profiles.
+      Otherwise, a resource must conform to at least one profile listed in the
+      `global` property of one of the enabled ImplementationGuides. The Cloud
+      Healthcare API does not currently enforce all of the rules in a
+      StructureDefinition. The following rules are supported: - min/max -
+      minValue/maxValue - maxLength - type - fixed[x] - pattern[x] on simple
+      types - slicing, when using "value" as the discriminator type When a URL
+      cannot be resolved (for example, in a type assertion), the server does
+      not return an error.
   """
 
   disableFhirpathValidation = _messages.BooleanField(1)
-  disableReferenceTypeValidation = _messages.BooleanField(2)
-  disableRequiredFieldValidation = _messages.BooleanField(3)
+  disableProfileValidation = _messages.BooleanField(2)
+  disableReferenceTypeValidation = _messages.BooleanField(3)
+  disableRequiredFieldValidation = _messages.BooleanField(4)
+  enabledImplementationGuides = _messages.StringField(5, repeated=True)
 
 
 class VersionSource(_messages.Message):

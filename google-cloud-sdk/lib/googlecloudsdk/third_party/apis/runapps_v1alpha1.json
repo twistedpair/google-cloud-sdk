@@ -534,7 +534,17 @@
         },
         "tier": {
           "description": "The Redis instance tier, e.g. \"STANDARD_HA\".",
-          "type": "string"
+          "type": "string",
+          "enumDescriptions": [
+            "Tier unset.",
+            "Basic standalone instance.",
+            "Highly available primary\/replica instances."
+          ],
+          "enum": [
+            "TIER_UNSPECIFIED",
+            "BASIC",
+            "STANDARD_HA"
+          ]
         },
         "version": {
           "description": "The Redis instance version, e.g. \"REDIS_4_0\".",
@@ -644,8 +654,8 @@
             "NOT_READY"
           ]
         },
-        "errorMessage": {
-          "description": "The error message associated with the resource, if applicable.",
+        "reason": {
+          "description": "The reason why this resource is in the current state.",
           "type": "string"
         },
         "resourceComponentStatuses": {
@@ -673,14 +683,6 @@
         "cloudSqlDetails": {
           "description": "Detail Status of CloudSQL resource.",
           "$ref": "CloudSqlStatus"
-        },
-        "redisDetails": {
-          "description": "Detail Status of Redis resource.",
-          "$ref": "RedisStatus"
-        },
-        "vpcDetails": {
-          "description": "Detail Status of VPC resource.",
-          "$ref": "VPCStatus"
         },
         "consoleLink": {
           "description": "Pantheon link for the resource. For example, the custom domain will link to the GCLB page.",
@@ -721,8 +723,8 @@
             "FAILED"
           ]
         },
-        "errorMessage": {
-          "description": "The error message associated with the resource component, if applicable.",
+        "reason": {
+          "description": "The reason why this resource component to be in its state.",
           "type": "string"
         },
         "diverged": {
@@ -790,20 +792,6 @@
     "CloudSqlStatus": {
       "id": "CloudSqlStatus",
       "description": "Detail Status of CloudSQL resource.",
-      "type": "object",
-      "properties": {
-      }
-    },
-    "RedisStatus": {
-      "id": "RedisStatus",
-      "description": "Detail Status of Redis resource.",
-      "type": "object",
-      "properties": {
-      }
-    },
-    "VPCStatus": {
-      "id": "VPCStatus",
-      "description": "Detail Status of VPC resource.",
       "type": "object",
       "properties": {
       }
@@ -1130,7 +1118,7 @@
                   "type": "string"
                 },
                 "filter": {
-                  "description": "A filter to narrow down results to a preferred subset. The filtering language accepts strings like \"displayName=tokyo\", and is documented in more detail in [AIP-160](https:\/\/google.aip.dev\/160).",
+                  "description": "A filter to narrow down results to a preferred subset. The filtering language accepts strings like `\"displayName=tokyo\"`, and is documented in more detail in [AIP-160](https:\/\/google.aip.dev\/160).",
                   "location": "query",
                   "type": "string"
                 },

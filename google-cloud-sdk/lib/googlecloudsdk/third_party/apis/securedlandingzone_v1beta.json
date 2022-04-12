@@ -456,26 +456,20 @@
           "methods": {
             "enableOverwatch": {
               "id": "securedlandingzone.organizations.locations.enableOverwatch",
-              "path": "v1beta/{+organization}/locations/{locationsId}:enableOverwatch",
+              "path": "v1beta/{+organization}:enableOverwatch",
               "flatPath": "v1beta/organizations/{organizationsId}/locations/{locationsId}:enableOverwatch",
               "httpMethod": "POST",
               "parameters": {
                 "organization": {
                   "description": "Required. Organization for which overwatch service has to be enabled. organizations\/{org_id}",
-                  "pattern": "^organizations\/[^\/]+$",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                },
-                "locationsId": {
+                  "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+$",
                   "location": "path",
                   "required": true,
                   "type": "string"
                 }
               },
               "parameterOrder": [
-                "organization",
-                "locationsId"
+                "organization"
               ],
               "request": {
                 "$ref": "GoogleCloudSecuredlandingzoneV1betaEnableOverwatchRequest"

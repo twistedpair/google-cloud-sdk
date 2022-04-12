@@ -428,7 +428,7 @@ class ConnectionProfilesClient(object):
     location_ref = self.resource_parser.Create(
         'datamigration.projects.locations',
         projectsId=project_id,
-        locationsId=args.region)
+        locationsId=args.region if args.IsKnownAndSpecified('region') else '-')
 
     list_req_type = self.messages.DatamigrationProjectsLocationsConnectionProfilesListRequest
     list_req = list_req_type(

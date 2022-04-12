@@ -441,7 +441,7 @@ class DataflowV1b3(base_api.BaseApiClient):
     )
 
     def Create(self, request, global_params=None):
-      r"""Creates a Cloud Dataflow job. To create a job, we recommend using `projects.locations.jobs.create` with a [regional endpoint] (https://cloud.google.com/dataflow/docs/concepts/regional-endpoints). Using `projects.jobs.create` is not recommended, as your job will always start in `us-central1`.
+      r"""Creates a Cloud Dataflow job. To create a job, we recommend using `projects.locations.jobs.create` with a [regional endpoint] (https://cloud.google.com/dataflow/docs/concepts/regional-endpoints). Using `projects.jobs.create` is not recommended, as your job will always start in `us-central1`. Do not enter confidential information when you supply string values using the API.
 
       Args:
         request: (DataflowProjectsJobsCreateRequest) input message
@@ -1074,7 +1074,7 @@ class DataflowV1b3(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a Cloud Dataflow job. To create a job, we recommend using `projects.locations.jobs.create` with a [regional endpoint] (https://cloud.google.com/dataflow/docs/concepts/regional-endpoints). Using `projects.jobs.create` is not recommended, as your job will always start in `us-central1`.
+      r"""Creates a Cloud Dataflow job. To create a job, we recommend using `projects.locations.jobs.create` with a [regional endpoint] (https://cloud.google.com/dataflow/docs/concepts/regional-endpoints). Using `projects.jobs.create` is not recommended, as your job will always start in `us-central1`. Do not enter confidential information when you supply string values using the API.
 
       Args:
         request: (DataflowProjectsLocationsJobsCreateRequest) input message
@@ -1390,7 +1390,7 @@ class DataflowV1b3(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a Cloud Dataflow job from a template.
+      r"""Creates a Cloud Dataflow job from a template. Do not enter confidential information when you supply string values using the API.
 
       Args:
         request: (DataflowProjectsLocationsTemplatesCreateRequest) input message
@@ -1613,7 +1613,7 @@ class DataflowV1b3(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a Cloud Dataflow job from a template.
+      r"""Creates a Cloud Dataflow job from a template. Do not enter confidential information when you supply string values using the API.
 
       Args:
         request: (DataflowProjectsTemplatesCreateRequest) input message

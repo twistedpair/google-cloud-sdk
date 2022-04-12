@@ -186,12 +186,13 @@ def AddActivationPolicy(parser):
       required=False,
       choices=['always', 'never', 'on-demand'],
       default=None,
-      help_str=('Activation policy for this instance. This specifies when '
-                'the instance should be activated and is applicable only when '
-                'the instance state is `RUNNABLE`. The default is `on-demand`. '
-                'More information on activation policies can be found here: '
-                'https://cloud.google.com/sql/faq#activation_policy'
-               )).AddToParser(parser)
+      help_str=(
+          'Activation policy for this instance. This specifies when '
+          'the instance should be activated and is applicable only when '
+          'the instance state is `RUNNABLE`. The default is `on-demand`. '
+          'More information on activation policies can be found here: '
+          'https://cloud.google.com/sql/docs/mysql/start-stop-restart-instance#activation_policy'
+      )).AddToParser(parser)
 
 
 def AddAssignIp(parser):

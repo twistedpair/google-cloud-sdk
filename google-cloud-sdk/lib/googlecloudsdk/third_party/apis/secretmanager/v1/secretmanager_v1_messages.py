@@ -309,7 +309,8 @@ class ListSecretVersionsResponse(_messages.Message):
   Fields:
     nextPageToken: A token to retrieve the next page of results. Pass this
       value in ListSecretVersionsRequest.page_token to retrieve the next page.
-    totalSize: The total number of SecretVersions.
+    totalSize: The total number of SecretVersions but 0 when the
+      ListSecretsRequest.filter field is set.
     versions: The list of SecretVersions sorted in reverse by create_time
       (newest first).
   """
@@ -327,7 +328,8 @@ class ListSecretsResponse(_messages.Message):
       value in ListSecretsRequest.page_token to retrieve the next page.
     secrets: The list of Secrets sorted in reverse by create_time (newest
       first).
-    totalSize: The total number of Secrets.
+    totalSize: The total number of Secrets but 0 when the
+      ListSecretsRequest.filter field is set.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -845,7 +847,7 @@ class SecretmanagerProjectsLocationsListRequest(_messages.Message):
 
   Fields:
     filter: A filter to narrow down results to a preferred subset. The
-      filtering language accepts strings like "displayName=tokyo", and is
+      filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
     name: The resource that owns the locations collection, if applicable.
     pageSize: The maximum number of results to return. If not set, the service

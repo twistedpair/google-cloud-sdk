@@ -293,7 +293,7 @@
     },
     "Network": {
       "id": "Network",
-      "description": "Message describing Network object LINT.IfChange(Network)",
+      "description": "Message describing Network object",
       "type": "object",
       "properties": {
         "name": {
@@ -357,7 +357,7 @@
     },
     "Subnet": {
       "id": "Subnet",
-      "description": "Message describing Subnet object LINT.IfChange(Subnet)",
+      "description": "Message describing Subnet object",
       "type": "object",
       "properties": {
         "name": {
@@ -419,14 +419,16 @@
             "The resource has not been recognized by config push.",
             "The resource has reached config push.",
             "The resource has been pushed to device successfully by config push.",
-            "The resource failed to push to device by config push."
+            "The resource failed to push to device by config push.",
+            "The resource is under deletion."
           ],
           "enum": [
             "STATE_UNKNOWN",
             "STATE_PENDING",
             "STATE_PROVISIONING",
             "STATE_RUNNING",
-            "STATE_SUSPENDED"
+            "STATE_SUSPENDED",
+            "STATE_DELETING"
           ]
         }
       }
@@ -458,7 +460,7 @@
     },
     "Interconnect": {
       "id": "Interconnect",
-      "description": "Message describing Interconnect object LINT.IfChange(Interconnect)",
+      "description": "Message describing Interconnect object",
       "type": "object",
       "properties": {
         "name": {
@@ -547,7 +549,7 @@
     },
     "InterconnectAttachment": {
       "id": "InterconnectAttachment",
-      "description": "Message describing InterconnectAttachment object LINT.IfChange(InterconnectAttachment)",
+      "description": "Message describing InterconnectAttachment object",
       "type": "object",
       "properties": {
         "name": {
@@ -604,14 +606,16 @@
             "The resource has not been recognized by config push.",
             "The resource has reached config push.",
             "The resource has been pushed to device successfully by config push.",
-            "The resource failed to push to device by config push."
+            "The resource failed to push to device by config push.",
+            "The resource is under deletion."
           ],
           "enum": [
             "STATE_UNKNOWN",
             "STATE_PENDING",
             "STATE_PROVISIONING",
             "STATE_RUNNING",
-            "STATE_SUSPENDED"
+            "STATE_SUSPENDED",
+            "STATE_DELETING"
           ]
         }
       }
@@ -643,7 +647,7 @@
     },
     "Router": {
       "id": "Router",
-      "description": "Message describing Router object LINT.IfChange(Router)",
+      "description": "Message describing Router object",
       "type": "object",
       "properties": {
         "name": {
@@ -704,14 +708,16 @@
             "The resource has not been recognized by config push.",
             "The resource has reached config push.",
             "The resource has been pushed to device successfully by config push.",
-            "The resource failed to push to device by config push."
+            "The resource failed to push to device by config push.",
+            "The resource is under deletion."
           ],
           "enum": [
             "STATE_UNKNOWN",
             "STATE_PENDING",
             "STATE_PROVISIONING",
             "STATE_RUNNING",
-            "STATE_SUSPENDED"
+            "STATE_SUSPENDED",
+            "STATE_DELETING"
           ]
         }
       }
@@ -896,7 +902,7 @@
                   "type": "string"
                 },
                 "filter": {
-                  "description": "A filter to narrow down results to a preferred subset. The filtering language accepts strings like \"displayName=tokyo\", and is documented in more detail in [AIP-160](https:\/\/google.aip.dev\/160).",
+                  "description": "A filter to narrow down results to a preferred subset. The filtering language accepts strings like `\"displayName=tokyo\"`, and is documented in more detail in [AIP-160](https:\/\/google.aip.dev\/160).",
                   "location": "query",
                   "type": "string"
                 },

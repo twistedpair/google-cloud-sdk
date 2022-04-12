@@ -167,6 +167,7 @@ def update_bucket_metadata_from_request_config(bucket_metadata, request_config):
   resource_args = getattr(request_config, 'resource_args', None)
   if not resource_args:
     return
+
   if resource_args.cors_file_path is not None:
     bucket_metadata.cors = gcs_metadata_field_converters.process_cors(
         resource_args.cors_file_path)
@@ -178,7 +179,9 @@ def update_bucket_metadata_from_request_config(bucket_metadata, request_config):
     bucket_metadata.defaultEventBasedHold = (
         resource_args.default_event_based_hold)
   if resource_args.default_storage_class is not None:
-    bucket_metadata.storageClass = resource_args.default_storage_class
+    bucket_metadata.storageClass = (
+        gcs_metadata_field_converters.process_default_storage_class(
+            resource_args.default_storage_class))
   if resource_args.labels_file_path is not None:
     bucket_metadata.labels = gcs_metadata_field_converters.process_labels(
         resource_args.labels_file_path)
@@ -213,6 +216,50 @@ def update_bucket_metadata_from_request_config(bucket_metadata, request_config):
       resource_args.web_main_page_suffix is not None):
     bucket_metadata.website = gcs_metadata_field_converters.process_website(
         resource_args.web_error_page, resource_args.web_main_page_suffix)
+
+
+def get_cleared_bucket_fields(request_config):
+  """Gets a list of fields to be included in requests despite null values."""
+  cleared_fields = []
+  resource_args = getattr(request_config, 'resource_args', None)
+  if not resource_args:
+    return cleared_fields
+
+  if resource_args.cors_file_path == user_request_args_factory.CLEAR:
+    cleared_fields.append('cors')
+
+  if resource_args.default_encryption_key == user_request_args_factory.CLEAR:
+    cleared_fields.append('encryption')
+
+  if resource_args.default_storage_class == user_request_args_factory.CLEAR:
+    cleared_fields.append('storageClass')
+
+  if resource_args.labels_file_path == user_request_args_factory.CLEAR:
+    cleared_fields.append('labels')
+
+  if resource_args.lifecycle_file_path == user_request_args_factory.CLEAR:
+    cleared_fields.append('lifecycle')
+
+  if (resource_args.log_bucket == resource_args.log_object_prefix ==
+      user_request_args_factory.CLEAR):
+    cleared_fields.append('logging')
+  elif resource_args.log_bucket == user_request_args_factory.CLEAR:
+    cleared_fields.append('logging.logBucket')
+  elif resource_args.log_object_prefix == user_request_args_factory.CLEAR:
+    cleared_fields.append('logging.logObjectPrefix')
+
+  if resource_args.retention_period == user_request_args_factory.CLEAR:
+    cleared_fields.append('retentionPolicy')
+
+  if (resource_args.web_error_page
+      == resource_args.web_main_page_suffix == user_request_args_factory.CLEAR):
+    cleared_fields.append('website')
+  elif resource_args.web_error_page == user_request_args_factory.CLEAR:
+    cleared_fields.append('website.notFoundPage')
+  elif resource_args.web_main_page_suffix == user_request_args_factory.CLEAR:
+    cleared_fields.append('website.mainPageSuffix')
+
+  return cleared_fields
 
 
 def _process_value_or_clear_flag(metadata, key, value):

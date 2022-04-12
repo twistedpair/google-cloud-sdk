@@ -21,7 +21,7 @@ from __future__ import unicode_literals
 from googlecloudsdk.api_lib.datastream import util
 
 
-class RoutesClient(object):
+class RoutesClient:
   """Client for private connections routes service in the API."""
 
   def __init__(self, client=None, messages=None):

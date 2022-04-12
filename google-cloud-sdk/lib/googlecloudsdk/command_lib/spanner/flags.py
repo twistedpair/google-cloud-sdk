@@ -206,8 +206,7 @@ def Instance(positional=True, text='Cloud Spanner instance ID.'):
         help=text)
 
 
-# Set required=False for alpha.
-def Nodes(required=True):
+def Nodes(required=False):
   return base.Argument(
       '--nodes',
       required=required,

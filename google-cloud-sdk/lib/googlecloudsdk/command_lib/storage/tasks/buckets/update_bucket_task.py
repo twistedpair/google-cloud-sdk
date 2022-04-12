@@ -19,7 +19,9 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.storage import api_factory
+from googlecloudsdk.api_lib.storage import errors
 from googlecloudsdk.api_lib.storage import request_config_factory
+from googlecloudsdk.command_lib.artifacts import requests
 from googlecloudsdk.command_lib.storage import progress_callbacks
 from googlecloudsdk.command_lib.storage.tasks import task
 from googlecloudsdk.core import log
@@ -47,8 +49,24 @@ class UpdateBucketTask(task.Task):
     request_config = request_config_factory.get_request_config(
         self._bucket_resource.storage_url,
         user_request_args=self._user_request_args)
-    api_factory.get_api(provider).patch_bucket(
-        self._bucket_resource, request_config=request_config)
+
+    try:
+      api_factory.get_api(provider).patch_bucket(
+          self._bucket_resource, request_config=request_config)
+    except errors.GcsApiError as e:
+      # Service agent does not have the encrypter/decrypter role.
+      if (e.payload.status_code == 403 and
+          request_config.resource_args.default_encryption_key):
+
+        service_agent = api_factory.get_api(provider).get_service_agent()
+        requests.AddCryptoKeyPermission(
+            request_config.resource_args.default_encryption_key,
+            'serviceAccount:' + service_agent)
+
+        api_factory.get_api(provider).patch_bucket(
+            self._bucket_resource, request_config=request_config)
+      else:
+        raise
 
     if task_status_queue:
       progress_callbacks.increment_count_callback(task_status_queue)

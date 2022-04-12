@@ -165,7 +165,7 @@ def AddGkeClusterResourceArg(parser):
   concept_parsers.ConceptParser.ForResource(
       '--gke-cluster',
       _GetGkeClusterResourceSpec(),
-      'The GKE cluster to install Dataproc on.',
+      'The GKE cluster to install the Dataproc cluster on.',
       required=True).AddToParser(parser)
 
 
@@ -212,7 +212,8 @@ def HistoryServerClusterConfig():
 def _HistoryServerClusterRegionAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='history-server-cluster-region',
-      help_text='Dataproc region for the {resource}.',
+      help_text=('Compute Engine region for the {resource}. It must be the '
+                 'same region as the Dataproc cluster that is being created.'),
       fallthroughs=_DataprocRegionFallthrough())
 
 

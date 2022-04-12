@@ -915,7 +915,13 @@ def AddDropTrafficIfUnhealthy(parser, default):
       help="""\
       Enable dropping of traffic if there are no healthy VMs detected in both
       the primary and backup instance groups. Not compatible with the --global
-      flag and load balancing scheme must be INTERNAL or EXTERNAL.
+      flag. Applicable only for backend service-based network load balancers and
+      internal TCP/UDP load balancers as part of a connection tracking policy.
+      For details, see: [Connection persistence on unhealthy backends for
+      internal TCP/UDP load
+      balancing](https://cloud.google.com/load-balancing/docs/internal#connection-persistence)
+      and [Connection persistence on unhealthy backends for network load
+      balancing](https://cloud.google.com/load-balancing/docs/network/networklb-backend-service#connection-persistence).
       """)
 
 

@@ -68,3 +68,22 @@ def AddExportSubnetRoutesWithPublicIpFlag(parser):
         Use --no-export-subnet-routes-with-public-ip to disable it.
       """)
 
+
+def AddStackType(parser):
+  """Adds stackType flag to the argparse.ArgumentParser."""
+  parser.add_argument(
+      '--stack-type',
+      default=None,
+      help="""\
+        Stack type of the peering. If not specified, defaults to IPV4_ONLY.
+
+        STACK_TYPE must be one of:
+
+         IPV4_ONLY
+            Only IPv4 traffic and routes will be exchanged across this peering.
+
+         IPV4_IPV6
+            IPv4 traffic and routes will be exchanged across this peering.
+            IPv6 traffic and routes will be exchanged if the matching peering
+            also has stack_type IPV4_IPV6.
+      """)

@@ -2217,52 +2217,8 @@ class VmwareengineProjectsLocationsGlobalNetworkPeeringsListRequest(_messages.Me
   parent = _messages.StringField(5, required=True)
 
 
-class VmwareengineProjectsLocationsGlobalNetworkPeeringsPeeringRoutesListRequest(_messages.Message):
-  r"""A
-  VmwareengineProjectsLocationsGlobalNetworkPeeringsPeeringRoutesListRequest
-  object.
-
-  Fields:
-    pageSize: The maximum number of peering routes to return in one page. The
-      service may return fewer than this value. The maximum value is 25.
-    pageToken: A page token, received from a previous `ListPeeringRoutes`
-      call. Provide this to retrieve the subsequent page. When paginating, all
-      other parameters provided to `ListPeeringRoutes` must match the call
-      that provided the page token.
-    parent: Required. The resource name of the VPC network peering to retrieve
-      peering routes from. Resource names are schemeless URIs that follow the
-      conventions in https://cloud.google.com/apis/design/resource_names. For
-      example: `projects/my-project/locations/global/networkPeerings/my-
-      peering`
-  """
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-
-
-class VmwareengineProjectsLocationsListRequest(_messages.Message):
-  r"""A VmwareengineProjectsLocationsListRequest object.
-
-  Fields:
-    filter: A filter to narrow down results to a preferred subset. The
-      filtering language accepts strings like "displayName=tokyo", and is
-      documented in more detail in [AIP-160](https://google.aip.dev/160).
-    name: The resource that owns the locations collection, if applicable.
-    pageSize: The maximum number of results to return. If not set, the service
-      selects a default.
-    pageToken: A page token received from the `next_page_token` field in the
-      response. Send that page token to receive the subsequent page.
-  """
-
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-
-
-class VmwareengineProjectsLocationsNetworkPeeringsPatchRequest(_messages.Message):
-  r"""A VmwareengineProjectsLocationsNetworkPeeringsPatchRequest object.
+class VmwareengineProjectsLocationsGlobalNetworkPeeringsPatchRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsGlobalNetworkPeeringsPatchRequest object.
 
   Fields:
     name: Output only. The resource name of the VPC network peering. Resource
@@ -2294,6 +2250,50 @@ class VmwareengineProjectsLocationsNetworkPeeringsPatchRequest(_messages.Message
   networkPeering = _messages.MessageField('NetworkPeering', 2)
   requestId = _messages.StringField(3)
   updateMask = _messages.StringField(4)
+
+
+class VmwareengineProjectsLocationsGlobalNetworkPeeringsPeeringRoutesListRequest(_messages.Message):
+  r"""A
+  VmwareengineProjectsLocationsGlobalNetworkPeeringsPeeringRoutesListRequest
+  object.
+
+  Fields:
+    pageSize: The maximum number of peering routes to return in one page. The
+      service may return fewer than this value. The maximum value is 25.
+    pageToken: A page token, received from a previous `ListPeeringRoutes`
+      call. Provide this to retrieve the subsequent page. When paginating, all
+      other parameters provided to `ListPeeringRoutes` must match the call
+      that provided the page token.
+    parent: Required. The resource name of the VPC network peering to retrieve
+      peering routes from. Resource names are schemeless URIs that follow the
+      conventions in https://cloud.google.com/apis/design/resource_names. For
+      example: `projects/my-project/locations/global/networkPeerings/my-
+      peering`
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class VmwareengineProjectsLocationsListRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsListRequest object.
+
+  Fields:
+    filter: A filter to narrow down results to a preferred subset. The
+      filtering language accepts strings like `"displayName=tokyo"`, and is
+      documented in more detail in [AIP-160](https://google.aip.dev/160).
+    name: The resource that owns the locations collection, if applicable.
+    pageSize: The maximum number of results to return. If not set, the service
+      selects a default.
+    pageToken: A page token received from the `next_page_token` field in the
+      response. Send that page token to receive the subsequent page.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
 
 
 class VmwareengineProjectsLocationsNetworkPoliciesCreateRequest(_messages.Message):

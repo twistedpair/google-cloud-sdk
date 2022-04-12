@@ -5159,7 +5159,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def CreateInstances(self, request, global_params=None):
-      r"""Creates instances with per-instance configs in this managed instance group. Instances are created using the current instance template. The create instances operation is marked DONE if the createInstances request is successful. The underlying actions take additional time. You must separately verify the status of the creating or actions with the listmanagedinstances method.
+      r"""Creates instances with per-instance configurations in this managed instance group. Instances are created using the current instance template. The create instances operation is marked DONE if the createInstances request is successful. The underlying actions take additional time. You must separately verify the status of the creating or actions with the listmanagedinstances method.
 
       Args:
         request: (ComputeInstanceGroupManagersCreateInstancesRequest) input message
@@ -5237,7 +5237,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def DeletePerInstanceConfigs(self, request, global_params=None):
-      r"""Deletes selected per-instance configs for the managed instance group.
+      r"""Deletes selected per-instance configurations for the managed instance group.
 
       Args:
         request: (ComputeInstanceGroupManagersDeletePerInstanceConfigsRequest) input message
@@ -5393,7 +5393,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def ListPerInstanceConfigs(self, request, global_params=None):
-      r"""Lists all of the per-instance configs defined for the managed instance group. The orderBy query parameter is not supported.
+      r"""Lists all of the per-instance configurations defined for the managed instance group. The orderBy query parameter is not supported.
 
       Args:
         request: (ComputeInstanceGroupManagersListPerInstanceConfigsRequest) input message
@@ -5445,7 +5445,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def PatchPerInstanceConfigs(self, request, global_params=None):
-      r"""Inserts or patches per-instance configs for the managed instance group. perInstanceConfig.name serves as a key used to distinguish whether to perform insert or patch.
+      r"""Inserts or patches per-instance configurations for the managed instance group. perInstanceConfig.name serves as a key used to distinguish whether to perform insert or patch.
 
       Args:
         request: (ComputeInstanceGroupManagersPatchPerInstanceConfigsRequest) input message
@@ -5783,7 +5783,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def UpdatePerInstanceConfigs(self, request, global_params=None):
-      r"""Inserts or updates per-instance configs for the managed instance group. perInstanceConfig.name serves as a key used to distinguish whether to perform insert or patch.
+      r"""Inserts or updates per-instance configurations for the managed instance group. perInstanceConfig.name serves as a key used to distinguish whether to perform insert or patch.
 
       Args:
         request: (ComputeInstanceGroupManagersUpdatePerInstanceConfigsRequest) input message
@@ -13893,7 +13893,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def CreateInstances(self, request, global_params=None):
-      r"""Creates instances with per-instance configs in this regional managed instance group. Instances are created using the current instance template. The create instances operation is marked DONE if the createInstances request is successful. The underlying actions take additional time. You must separately verify the status of the creating or actions with the listmanagedinstances method.
+      r"""Creates instances with per-instance configurations in this regional managed instance group. Instances are created using the current instance template. The create instances operation is marked DONE if the createInstances request is successful. The underlying actions take additional time. You must separately verify the status of the creating or actions with the listmanagedinstances method.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersCreateInstancesRequest) input message
@@ -13971,7 +13971,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def DeletePerInstanceConfigs(self, request, global_params=None):
-      r"""Deletes selected per-instance configs for the managed instance group.
+      r"""Deletes selected per-instance configurations for the managed instance group.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersDeletePerInstanceConfigsRequest) input message
@@ -14127,7 +14127,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def ListPerInstanceConfigs(self, request, global_params=None):
-      r"""Lists all of the per-instance configs defined for the managed instance group. The orderBy query parameter is not supported.
+      r"""Lists all of the per-instance configurations defined for the managed instance group. The orderBy query parameter is not supported.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersListPerInstanceConfigsRequest) input message
@@ -14179,7 +14179,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def PatchPerInstanceConfigs(self, request, global_params=None):
-      r"""Inserts or patches per-instance configs for the managed instance group. perInstanceConfig.name serves as a key used to distinguish whether to perform insert or patch.
+      r"""Inserts or patches per-instance configurations for the managed instance group. perInstanceConfig.name serves as a key used to distinguish whether to perform insert or patch.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersPatchPerInstanceConfigsRequest) input message
@@ -14517,7 +14517,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def UpdatePerInstanceConfigs(self, request, global_params=None):
-      r"""Inserts or updates per-instance configs for the managed instance group. perInstanceConfig.name serves as a key used to distinguish whether to perform insert or patch.
+      r"""Inserts or updates per-instance configurations for the managed instance group. perInstanceConfig.name serves as a key used to distinguish whether to perform insert or patch.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersUpdatePerInstanceConfigsRequest) input message

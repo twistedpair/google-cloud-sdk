@@ -150,9 +150,6 @@ class IapLightWeightWebsocket(object):
 
   def send(self, data, opcode):
     """Sends data to the server."""
-    if not self.connected or not self.sock:
-      raise websocket_exceptions.WebSocketConnectionClosedException(
-          "Connection closed while sending data.")
     if opcode not in VALID_OPCODES:
       raise ValueError("Invalid opcode")
     # Create the frame, fin indicates the end, so we are sending only one frame.
@@ -169,6 +166,9 @@ class IapLightWeightWebsocket(object):
     # exception is not fatal.
     for attempt in range(1, WEBSOCKET_MAX_ATTEMPTS + 1):
       try:
+        if not self.connected or not self.sock:
+          raise websocket_exceptions.WebSocketConnectionClosedException(
+              "Connection closed while sending data.")
         bytes_sent = self.sock.send(frame_data)
         # No bytes sent means the socket is closed.
         if not bytes_sent:
@@ -206,9 +206,19 @@ class IapLightWeightWebsocket(object):
       # don't have to worry about it as native str are latin-1 encoded.
       if six.PY2:
         close_message = close_message.encode("latin-1")
-      self.send(
-          struct.pack("!H", close_code) + close_message,
-          websocket_frame_utils.ABNF.OPCODE_CLOSE)
+      try:
+        self.send(
+            struct.pack("!H", close_code) + close_message,
+            websocket_frame_utils.ABNF.OPCODE_CLOSE)
+      # Trying to send a close when the websocket is already closed will result
+      # in two different errors depending on which stage of the connection we
+      # are.
+      except (websocket_exceptions.WebSocketConnectionClosedException, OSError,
+              socket.error) as e:
+        # We don't throw the error if it's a socket closed exception, as we were
+        # trying to close it anyways.
+        if not self._is_closed_connection_exception(e):
+          raise
 
   def run_forever(self, sslopt, **options):
     """Main method that will stay running while the connection is open."""
@@ -283,10 +293,16 @@ class IapLightWeightWebsocket(object):
   def _throw_on_non_retriable_exception(self, e):
     """Decides if we throw or if we ignore the exception because it's retriable."""
 
+    if self._is_closed_connection_exception(e):
+      raise websocket_exceptions.WebSocketConnectionClosedException(
+          "Connection closed while waiting for retry.")
     if e is ssl.SSLError:
       # SSL_ERROR_WANT_WRITE can happen if the socket gives EAGAIN or
       # EWOULDBLOCK during the SSL handshake.
-      if e.args[0] != ssl.SSL_ERROR_WANT_WRITE:
+      # SSL_ERROR_EOF can happen if the socket gives EBADF during the SSL
+      # handshake.
+      if (e.args[0] != ssl.SSL_ERROR_WANT_WRITE and
+          e.args[0] != ssl.SSL_ERROR_EOF):
         raise e
     elif e is socket.error:
       error_code = websocket_utils.extract_error_code(e)
@@ -302,7 +318,8 @@ class IapLightWeightWebsocket(object):
     # We want to wait some time before we retry, just to make sure the
     # buffer is emptying, but if the socket gets ready before that then we
     # send.
-    if attempt < WEBSOCKET_MAX_ATTEMPTS and self.sock:
+    if (attempt < WEBSOCKET_MAX_ATTEMPTS and self.sock and
+        self.sock.fileno() != -1):
       try:
         _ = select.select([self.sock], (), (), WEBSOCKET_RETRY_TIMEOUT_SECS)
       except TypeError as e:
@@ -334,6 +351,10 @@ class IapLightWeightWebsocket(object):
   def _is_closed_connection_exception(self, exception):
     """Method to identify if the exception is of closed connection type."""
     if exception is websocket_exceptions.WebSocketConnectionClosedException:
+      return True
+    elif exception is OSError and exception.errno == errno.EBADF:
+      # Errno.EBADF means the file descriptor was already closed (common error
+      # when interacting with already closed websockets).
       return True
     else:
       error_code = websocket_utils.extract_error_code(exception)

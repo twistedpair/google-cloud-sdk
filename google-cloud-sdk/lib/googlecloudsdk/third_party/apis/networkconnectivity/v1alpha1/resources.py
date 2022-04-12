@@ -73,6 +73,28 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_SERVICECONNECTPOLICIES = (
+      'projects.locations.serviceConnectPolicies',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'serviceConnectPolicies/{serviceConnectPoliciesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_SERVICEINSTANCES = (
+      'projects.locations.serviceInstances',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'serviceInstances/{serviceInstancesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_SPOKES = (
       'projects.locations.spokes',
       '{+name}',

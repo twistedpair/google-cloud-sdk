@@ -47,7 +47,7 @@ def AddPoolsArg(parser):
       default=[],
       metavar='KEY=VALUE[;VALUE]',
       help="""
-        Each `--pools` flag represents a single GKE Node Pool associated with
+        Each `--pools` flag represents a single GKE node pool associated with
         the virtual cluster. It is comprised of a CSV in the form
         `KEY=VALUE[;VALUE]`, where certain keys may have multiple values.
 
@@ -55,21 +55,21 @@ def AddPoolsArg(parser):
 
         KEY | Type | Example | Description
         --- |  --- | --- | ---
-        name | string | `my-node-pool` | Name of the NodePool.
-        roles | repeated string | `default;spark-driver` | Roles that this NodePool should perform. Valid values are `default`, `controller`, `spark-driver`, `spark-executor`.
+        name | string | `my-node-pool` | Name of the node pool.
+        roles | repeated string | `default;spark-driver` | Roles that this node pool should perform. Valid values are `default`, `controller`, `spark-driver`, `spark-executor`.
 
         The following KEYs may be specified.
 
         KEY | Type | Example | Description
         --- | --- | --- | ---
         machineType | string | `n1-standard-8` | Compute Engine machine type to use.
-        preemptible | boolean | `false` | If true, then this NodePool uses preemptible VMs. This cannot be true on the NodePool with the `controllers` role (or `default` role if `controllers` role is not specified).
-        localSsdCount | int | `2` | The number of local SSDs to attach to each Node.
-        accelerator | repeated string | `nvidia-tesla-a100=1` | Accelerators to attach to each Node. In the format NAME=COUNT.
-        minCpuPlatform | string | `Intel Skylake` | Minimum CPU platform for each Node.
+        preemptible | boolean | `false` | If true, then this node pool uses preemptible VMs. This cannot be true on the node pool with the `controllers` role (or `default` role if `controllers` role is not specified).
+        localSsdCount | int | `2` | The number of local SSDs to attach to each node.
+        accelerator | repeated string | `nvidia-tesla-a100=1` | Accelerators to attach to each node. In the format NAME=COUNT.
+        minCpuPlatform | string | `Intel Skylake` | Minimum CPU platform for each node.
         locations | repeated string | `us-west1-a;us-west1-c` | Zones within the location of the GKE cluster. All `--pools` flags for a single Dataproc cluster must have identical locations.
-        min | int | `0` | Minimum number of Nodes per zone that this NodePool can scale down to.
-        max | int | `10` | Maximum number of Nodes per zone that this NodePool can scale up to.
+        min | int | `0` | Minimum number of nodes per zone that this node pool can scale down to.
+        max | int | `10` | Maximum number of nodes per zone that this node pool can scale up to.
         """)
 
 

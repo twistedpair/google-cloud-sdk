@@ -456,6 +456,33 @@ class ManagedidentitiesV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ExtendSchema(self, request, global_params=None):
+      r"""Extend Schema for Domain.
+
+      Args:
+        request: (ManagedidentitiesProjectsLocationsGlobalDomainsExtendSchemaRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('ExtendSchema')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ExtendSchema.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/global/domains/{domainsId}:extendSchema',
+        http_method='POST',
+        method_id='managedidentities.projects.locations.global.domains.extendSchema',
+        ordered_params=['domain'],
+        path_params=['domain'],
+        query_params=[],
+        relative_path='v1beta1/{+domain}:extendSchema',
+        request_field='extendSchemaRequest',
+        request_type_name='ManagedidentitiesProjectsLocationsGlobalDomainsExtendSchemaRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets information about a domain.
 

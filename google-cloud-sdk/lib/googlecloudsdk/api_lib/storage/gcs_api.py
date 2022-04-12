@@ -28,14 +28,12 @@ from __future__ import unicode_literals
 import contextlib
 import json
 
-from apitools.base.py import encoding
 from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import http_wrapper as apitools_http_wrapper
 from apitools.base.py import list_pager
 from apitools.base.py import transfer as apitools_transfer
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.api_lib.storage import errors as cloud_errors
-from googlecloudsdk.api_lib.storage import gcs_metadata_field_converters
 from googlecloudsdk.api_lib.storage import gcs_metadata_util
 from googlecloudsdk.api_lib.storage import gcs_upload
 from googlecloudsdk.api_lib.storage import patch_gcs_messages
@@ -394,42 +392,23 @@ class GcsApi(cloud_api.CloudApi):
     self._handle_append_and_remove_bucket_updates(
         bucket_resource, request_config, metadata)
 
-    # Blank metadata objects need to be explicitly emptied.
-    apitools_include_fields = []
-    for metadata_field in (
-        'billing',
-        'encryption',
-        'lifecycle',
-        'logging',
-        'retentionPolicy',
-        'versioning',
-        'website',
-    ):
-      attr = getattr(metadata, metadata_field, None)
-      if attr and not encoding.MessageToDict(attr):
-        apitools_include_fields.append(metadata_field)
-        setattr(metadata, metadata_field, None)
-
-    # Handle nulling lists with sentinel values.
-    if (metadata.cors and
-        metadata.cors == gcs_metadata_field_converters.REMOVE_CORS_CONFIG):
-      apitools_include_fields.append('cors')
-      metadata.cors = []
+    cleared_fields = gcs_metadata_util.get_cleared_bucket_fields(request_config)
     if (metadata.defaultObjectAcl and metadata.defaultObjectAcl[0]
         == gcs_metadata_util.PRIVATE_DEFAULT_OBJECT_ACL):
-      apitools_include_fields.append('defaultObjectAcl')
+      cleared_fields.append('defaultObjectAcl')
       metadata.defaultObjectAcl = []
 
     # Must null out existing ACLs to apply new ones.
     if request_config.predefined_acl_string:
-      apitools_include_fields.append('acl')
+      cleared_fields.append('acl')
       predefined_acl = getattr(
           self.messages.StorageBucketsPatchRequest.PredefinedAclValueValuesEnum,
           request_config.predefined_acl_string)
     else:
       predefined_acl = None
+
     if request_config.predefined_default_acl_string:
-      apitools_include_fields.append('defaultObjectAcl')
+      cleared_fields.append('defaultObjectAcl')
       predefined_default_acl = getattr(
           self.messages.StorageBucketsPatchRequest
           .PredefinedDefaultObjectAclValueValuesEnum,
@@ -445,7 +424,7 @@ class GcsApi(cloud_api.CloudApi):
         predefinedAcl=predefined_acl,
         predefinedDefaultObjectAcl=predefined_default_acl)
 
-    with self.client.IncludeFields(apitools_include_fields):
+    with self.client.IncludeFields(cleared_fields):
       return gcs_metadata_util.get_bucket_resource_from_metadata(
           self.client.buckets.Patch(apitools_request))
 

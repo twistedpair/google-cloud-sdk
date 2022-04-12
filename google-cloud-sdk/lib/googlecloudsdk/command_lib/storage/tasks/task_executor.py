@@ -93,7 +93,7 @@ def _execute_tasks_sequential(task_iterator,
 def execute_tasks(task_iterator,
                   parallelizable=False,
                   task_status_queue=None,
-                  progress_type=None,
+                  progress_manager_args=None,
                   continue_on_error=False):
   """Call appropriate executor.
 
@@ -102,8 +102,8 @@ def execute_tasks(task_iterator,
     parallelizable (boolean): Should tasks be executed in parallel.
     task_status_queue (multiprocessing.Queue|None): Used by task to report its
       progress to a central location.
-    progress_type (task_status.ProgressType|None): Determines what type of
-      progress indicator to display.
+    progress_manager_args (task_status.ProgressManagerArgs|None):
+      Determines what type of progress indicator to display.
     continue_on_error (bool): Only applicable for sequential mode. If True,
       execution will continue even if errors occur.
 
@@ -126,9 +126,9 @@ def execute_tasks(task_iterator,
         max_process_count=properties.VALUES.storage.process_count.GetInt(),
         thread_count=properties.VALUES.storage.thread_count.GetInt(),
         task_status_queue=task_status_queue,
-        progress_type=progress_type).run()
+        progress_manager_args=progress_manager_args).run()
   else:
-    with task_status.progress_manager(task_status_queue, progress_type):
+    with task_status.progress_manager(task_status_queue, progress_manager_args):
       exit_code, _ = _execute_tasks_sequential(
           plurality_checkable_task_iterator,
           task_status_queue=task_status_queue,

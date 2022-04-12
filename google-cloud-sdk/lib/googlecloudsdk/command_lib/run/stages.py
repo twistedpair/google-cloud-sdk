@@ -86,8 +86,8 @@ def ServiceDependencies():
   return {SERVICE_ROUTES_READY: {SERVICE_CONFIGURATIONS_READY}}
 
 
-def JobStages(run_now=False, include_completion=False):
-  if run_now:
+def JobStages(execute_now=False, include_completion=False):
+  if execute_now:
     return ExecutionStages(include_completion)
   return []
 

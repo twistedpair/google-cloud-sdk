@@ -34,15 +34,21 @@ class CopyTaskExitHandlerMixin:
           self.__class__.__name__ +
           ' requires attributes "_source_resource" and "_destination_resource".'
       )
-    if error and getattr(self, '_manifest_path', None):
-      if task_status_queue:
-        manifest_util.send_error_message(self._source_resource,
-                                         self._destination_resource, error,
-                                         task_status_queue)
-      else:
+
+    if getattr(
+        getattr(self, '_user_request_args', None), 'manifest_path', None):
+      if not task_status_queue:
         raise ValueError(
-            'Tried to send error message to manifest, but'
+            'Tried to send message to manifest, but'
             ' CopyTaskExitHandlerMixin did not receive task_status_queue.')
+      if error:
+        manifest_util.send_error_message(task_status_queue,
+                                         self._source_resource,
+                                         self._destination_resource, error)
+      else:
+        manifest_util.send_success_message(task_status_queue,
+                                           self._source_resource,
+                                           self._destination_resource)
 
 
 def get_no_clobber_message(destination_url):

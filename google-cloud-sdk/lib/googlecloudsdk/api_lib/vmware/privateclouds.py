@@ -20,7 +20,6 @@ from __future__ import unicode_literals
 
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.vmware import util
-from googlecloudsdk.command_lib.vmware import flags
 
 
 class PrivateCloudsClient(util.VmwareClientBase):
@@ -39,7 +38,6 @@ class PrivateCloudsClient(util.VmwareClientBase):
 
   def Create(self,
              resource,
-             labels=None,
              description=None,
              cluster_id=None,
              node_type=None,
@@ -48,16 +46,11 @@ class PrivateCloudsClient(util.VmwareClientBase):
              network=None,
              vmware_engine_network=None,
              network_project=None,
-             external_ip_access=None,
              node_custom_core_count=None):
     parent = resource.Parent().RelativeName()
     private_cloud_id = resource.Name()
     private_cloud = self.messages.PrivateCloud(description=description)
-    flags.AddLabelsToMessage(labels, private_cloud)
-    network_config = self.messages.NetworkConfig(
-        managementCidr=network_cidr,
-        externalIpAccess=external_ip_access,
-    )
+    network_config = self.messages.NetworkConfig(managementCidr=network_cidr)
 
     # old networking model
     if network_project is None:
@@ -87,19 +80,12 @@ class PrivateCloudsClient(util.VmwareClientBase):
 
   def Update(self,
              resource,
-             labels=None,
-             description=None,
-             external_ip_access=None):
+             description=None):
     private_cloud = self.Get(resource)
-    update_mask = ['labels']
-    if labels is not None:
-      flags.AddLabelsToMessage(labels, private_cloud)
+    update_mask = []
     if description is not None:
       private_cloud.description = description
       update_mask.append('description')
-    if external_ip_access is not None:
-      private_cloud.networkConfig.externalIpAccess = external_ip_access
-      update_mask.append('network_config.external_ip_access')
     request = self.messages.VmwareengineProjectsLocationsPrivateCloudsPatchRequest(
         privateCloud=private_cloud,
         name=resource.RelativeName(),

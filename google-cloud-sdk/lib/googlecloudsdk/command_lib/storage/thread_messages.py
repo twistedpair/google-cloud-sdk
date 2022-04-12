@@ -119,7 +119,7 @@ class ManifestMessage(ThreadMessage):
     source_url (StorageUrl): Source URL. Used to match information recorded by
       copy progress infra (FilesAndBytesStatusTracker).
     destination_url (StorageUrl): Destination URL.
-    end_time (str): Date and time in UTC and ISO 8601 format.
+    end_time (datetime): Date and time copy completed.
     size (int): Size of file or object.
     result_status (manifest_utils.ResultStatus): End status of copy. Either
       "OK", "skip", or "error".

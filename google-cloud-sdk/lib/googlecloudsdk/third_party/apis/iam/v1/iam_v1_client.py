@@ -2211,7 +2211,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def Upload(self, request, global_params=None):
-      r"""Creates a ServiceAccountKey, using a public key that you provide.
+      r"""Uploads the public key portion of a key pair that you manage, and associates the public key with a ServiceAccount. After you upload the public key, you can use the private key from the key pair as a service account key.
 
       Args:
         request: (IamProjectsServiceAccountsKeysUploadRequest) input message

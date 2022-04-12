@@ -25,7 +25,7 @@ from googlecloudsdk.command_lib.storage.resources import resource_reference
 from googlecloudsdk.command_lib.storage.resources import resource_util
 
 
-_INCOMPLETE_OBJECT_METADATA_WARNING = (
+INCOMPLETE_OBJECT_METADATA_WARNING = (
     'Use "-j", the JSON flag, to view additional S3 metadata.')
 
 
@@ -89,209 +89,8 @@ def _get_error_string_or_value(value):
   return value
 
 
-def _get_formatted_acl_section(acl_metadata):
-  """Returns formatted ACLs, error, or formatted none value."""
-  if isinstance(acl_metadata, errors.S3ApiError):
-    return resource_util.get_padded_metadata_key_value_line('ACL', acl_metadata)
-  elif acl_metadata:
-    return resource_util.get_metadata_json_section_string(
-        'ACL', acl_metadata, _json_dump_recursion_helper)
-  else:
-    return resource_util.get_padded_metadata_key_value_line('ACL', '[]')
-
-
-def _get_full_bucket_metadata_string(resource):
-  """Formats S3 resource metadata as string with rows.
-
-  Args:
-    resource (S3BucketResource): Resource with metadata.
-
-  Returns:
-    Formatted multi-line string.
-  """
-  # Hardcoded strings found in Boto docs:
-  # https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3.html
-  logging_enabled_value = _get_error_or_exists_string(
-      resource.metadata['LoggingEnabled'])
-  website_value = _get_error_or_exists_string(resource.metadata['Website'])
-  cors_value = _get_error_or_exists_string(resource.metadata['CORSRules'])
-  encryption_value = _get_error_or_exists_string(
-      resource.metadata['ServerSideEncryptionConfiguration'])
-  lifecycle_configuration_value = _get_error_or_exists_string(
-      resource.metadata['LifecycleConfiguration'])
-
-  if isinstance(resource.metadata['Versioning'], errors.S3ApiError):
-    versioning_enabled_value = resource.metadata['Versioning']
-  else:
-    versioning_status = resource.metadata['Versioning'].get('Status')
-    if versioning_status == 'Enabled':
-      versioning_enabled_value = True
-    elif versioning_status == 'Suspended':
-      versioning_enabled_value = False
-    else:
-      versioning_enabled_value = None
-
-  if isinstance(resource.metadata['Payer'], errors.S3ApiError):
-    requester_pays_value = resource.metadata['Payer']
-  elif resource.metadata['Payer'] == 'Requester':
-    requester_pays_value = True
-  elif resource.metadata['Payer'] == 'BucketOwner':
-    requester_pays_value = False
-  else:
-    requester_pays_value = None
-
-  return (
-      '{bucket_url}:\n'
-      '{location_constraint_line}'
-      '{versioning_enabled_line}'
-      '{logging_config_line}'
-      '{website_config_line}'
-      '{cors_config_line}'
-      '{encryption_config_line}'
-      '{lifecycle_config_line}'
-      '{requester_pays_line}'
-      '{acl_section}'
-  ).format(
-      bucket_url=resource.storage_url.versionless_url_string,
-      location_constraint_line=resource_util.get_padded_metadata_key_value_line(
-          'Location Constraint', resource.metadata['LocationConstraint']),
-      versioning_enabled_line=resource_util.get_padded_metadata_key_value_line(
-          'Versioning Enabled', versioning_enabled_value),
-      logging_config_line=resource_util.get_padded_metadata_key_value_line(
-          'Logging Configuration', logging_enabled_value),
-      website_config_line=resource_util.get_padded_metadata_key_value_line(
-          'Website Configuration', website_value),
-      cors_config_line=resource_util.get_padded_metadata_key_value_line(
-          'CORS Configuration', cors_value),
-      encryption_config_line=resource_util.get_padded_metadata_key_value_line(
-          'Encryption Configuration', encryption_value),
-      lifecycle_config_line=resource_util.get_padded_metadata_key_value_line(
-          'Lifecycle Configuration', lifecycle_configuration_value),
-      requester_pays_line=resource_util.get_padded_metadata_key_value_line(
-          'Requester Pays Enabled', requester_pays_value),
-      # Remove ending newline character because this is the last list item.
-      acl_section=_get_formatted_acl_section(resource.metadata['ACL'])[:-1])
-
-
-def _get_full_object_metadata_string(resource):
-  """Formats S3 resource metadata as string with rows.
-
-  Args:
-    resource (S3ObjectResource): Resource with metadata.
-
-  Returns:
-    Formatted multi-line string.
-  """
-  # Hardcoded strings found in Boto docs:
-  # https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3.html
-  if 'LastModified' in resource.metadata:
-    optional_time_updated_line = resource_util.get_padded_metadata_time_line(
-        'Update Time', resource.metadata['LastModified'])
-  else:
-    optional_time_updated_line = ''
-
-  if 'StorageClass' in resource.metadata:
-    optional_storage_class_line = resource_util.get_padded_metadata_key_value_line(
-        'Storage Class', resource.metadata['StorageClass'])
-  else:
-    optional_storage_class_line = ''
-
-  if 'CacheControl' in resource.metadata:
-    optional_cache_control_line = resource_util.get_padded_metadata_key_value_line(
-        'Cache-Control', resource.metadata['CacheControl'])
-  else:
-    optional_cache_control_line = ''
-
-  if 'CacheDisposition' in resource.metadata:
-    optional_content_disposition_line = resource_util.get_padded_metadata_key_value_line(
-        'Cache-Disposition', resource.metadata['CacheDisposition'])
-  else:
-    optional_content_disposition_line = ''
-
-  if 'ContentEncoding' in resource.metadata:
-    optional_content_encoding_line = resource_util.get_padded_metadata_key_value_line(
-        'Content-Encoding', resource.metadata['ContentEncoding'])
-  else:
-    optional_content_encoding_line = ''
-
-  if 'ContentLanguage' in resource.metadata:
-    optional_content_language_line = resource_util.get_padded_metadata_key_value_line(
-        'Content-Language', resource.metadata['ContentLanguage'])
-  else:
-    optional_content_language_line = ''
-
-  if 'PartsCount' in resource.metadata:
-    optional_component_count_line = (
-        resource_util.get_padded_metadata_key_value_line(
-            'Component-Count', resource.metadata['PartsCount']))
-  else:
-    optional_component_count_line = ''
-
-  if resource.md5_hash is not None:
-    optional_md5_line = resource_util.get_padded_metadata_key_value_line(
-        'Hash (MD5)', resource.md5_hash)
-  elif 'SSECustomerAlgorithm' in resource.metadata:
-    optional_md5_line = resource_util.get_padded_metadata_key_value_line(
-        'Hash (MD5)', 'Underlying data encrypted')
-  else:
-    optional_md5_line = ''
-
-  if 'SSECustomerAlgorithm' in resource.metadata:
-    optional_encryption_algorithm_line = (
-        resource_util.get_padded_metadata_key_value_line(
-            'Encryption Algorithm', resource.metadata['SSECustomerAlgorithm']))
-  else:
-    optional_encryption_algorithm_line = ''
-
-  if resource.generation:
-    optional_generation_line = resource_util.get_padded_metadata_key_value_line(
-        'Generation', resource.generation)
-  else:
-    optional_generation_line = ''
-
-  return (
-      '{object_url}:\n'
-      '{optional_time_updated_line}'
-      '{optional_storage_class_line}'
-      '{optional_cache_control_line}'
-      '{optional_content_disposition_line}'
-      '{optional_content_encoding_line}'
-      '{optional_content_language_line}'
-      '{content_length_line}'
-      '{content_type_line}'
-      '{optional_component_count_line}'
-      '{optional_md5_line}'
-      '{optional_encryption_algorithm_line}'
-      '{etag_line}'
-      '{optional_generation_line}'
-      '{acl_section}'
-      '  {incomplete_warning}').format(
-          object_url=resource.storage_url.versionless_url_string,
-          optional_time_updated_line=optional_time_updated_line,
-          optional_storage_class_line=optional_storage_class_line,
-          optional_cache_control_line=optional_cache_control_line,
-          optional_content_disposition_line=optional_content_disposition_line,
-          optional_content_encoding_line=optional_content_encoding_line,
-          optional_content_language_line=optional_content_language_line,
-          content_length_line=resource_util.get_padded_metadata_key_value_line(
-              'Content-Length', resource.size),
-          content_type_line=resource_util.get_padded_metadata_key_value_line(
-              'Content-Type', resource.metadata.get('ContentType')),
-          optional_component_count_line=optional_component_count_line,
-          optional_md5_line=optional_md5_line,
-          optional_encryption_algorithm_line=optional_encryption_algorithm_line,
-          etag_line=resource_util.get_padded_metadata_key_value_line(
-              'ETag', resource.etag),
-          optional_generation_line=optional_generation_line,
-          acl_section=_get_formatted_acl_section(resource.metadata.get('ACL')),
-          incomplete_warning=_INCOMPLETE_OBJECT_METADATA_WARNING)
-
-
 class S3BucketResource(resource_reference.BucketResource):
   """API-specific subclass for handling metadata."""
-
-  def get_full_metadata_string(self):
-    return _get_full_bucket_metadata_string(self)
 
   def get_displayable_bucket_data(self):
     # Handle versioning.
@@ -364,11 +163,7 @@ class S3ObjectResource(resource_reference.ObjectResource):
         metageneration=metageneration,
         size=size)
 
-  def get_full_metadata_string(self):
-    return _get_full_object_metadata_string(self)
-
   def get_displayable_object_data(self):
-
     return resource_reference.DisplayableObjectData(
         name=self.name,
         bucket=self.bucket,
@@ -376,17 +171,23 @@ class S3ObjectResource(resource_reference.ObjectResource):
         acl=_get_error_string_or_value(self.metadata.get('ACL')),
         cache_control=self.metadata.get('CacheControl'),
         component_count=self.metadata.get('PartsCount'),
-        content_disposition=self.metadata.get('CacheDisposition'),
+        content_disposition=self.metadata.get('ContentDisposition'),
         content_encoding=self.metadata.get('ContentEncoding'),
         content_language=self.metadata.get('ContentLanguage'),
         content_length=self.size,
         content_type=self.metadata.get('ContentType'),
+        # Setting crc32c_hash as DO_NOT_DISPLAY so that it can
+        # be ignored as expected by ls -L formatters. Setting it None will
+        # make the list/describe commands to ignore it, but ls -L might still
+        # display it if encryption_algorithm is present.
+        crc32c_hash=resource_reference.DO_NOT_DISPLAY,
         encryption_algorithm=self.metadata.get('SSECustomerAlgorithm'),
         etag=self.etag,
         generation=self.generation,
         md5_hash=self.md5_hash,
         storage_class=self.metadata.get('StorageClass'),
-        update_time=self.metadata.get('LastModified'))
+        update_time=self.metadata.get('LastModified'),
+        incomplete_warning=INCOMPLETE_OBJECT_METADATA_WARNING)
 
   def get_json_dump(self):
     return _get_json_dump(self)

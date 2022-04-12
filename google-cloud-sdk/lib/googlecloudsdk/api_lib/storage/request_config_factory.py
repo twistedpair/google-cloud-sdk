@@ -26,6 +26,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.command_lib.storage import encryption_util
+from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.core import log
 from googlecloudsdk.core.util import debug_output
@@ -486,6 +487,10 @@ def _get_request_config_resource_args(url,
     if decryption_key_hash:
       new_resource_args.decryption_key = encryption_util.get_decryption_key(
           decryption_key_hash)
+      if not new_resource_args.decryption_key:
+        raise errors.Error(
+            'Missing decryption key with SHA256 hash {}. No decryption key '
+            'matches object {}.'.format(decryption_key_hash, url))
 
     if user_resource_args:
       # User args should override existing settings.

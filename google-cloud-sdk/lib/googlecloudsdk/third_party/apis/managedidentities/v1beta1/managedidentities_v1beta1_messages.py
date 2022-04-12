@@ -409,6 +409,22 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
+class ExtendSchemaRequest(_messages.Message):
+  r"""ExtendSchemaRequest is the request message for ExtendSchema method.
+
+  Fields:
+    description: Required. Description for Schema Change.
+    fileContents: File uploaded as a byte stream input.
+    gcsPath: File stored in Cloud Storage bucket and represented in the form
+      projects/{project_id}/buckets/{bucket_name}/objects/{object_name} File
+      should be in the same project as the domain.
+  """
+
+  description = _messages.StringField(1)
+  fileContents = _messages.BytesField(2)
+  gcsPath = _messages.StringField(3)
+
+
 class GoogleCloudManagedidentitiesV1OpMetadata(_messages.Message):
   r"""Represents the metadata of the long-running operation.
 
@@ -518,8 +534,8 @@ class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message)
       to recognize their instances.
     createTime: Output only. Timestamp when the resource was created.
     instanceType: Optional. The instance_type of this instance of format: proj
-      ects/{project_id}/locations/{location_id}/instanceTypes/{instance_type_i
-      d}. Instance Type represents a high-level tier or SKU of the service
+      ects/{project_number}/locations/{location_id}/instanceTypes/{instance_ty
+      pe_id}. Instance Type represents a high-level tier or SKU of the service
       that this instance belong to. When enabled(eg: Maintenance Rollout),
       Rollout uses 'instance_type' along with 'software_versions' to determine
       whether instance needs an update or not.
@@ -536,10 +552,12 @@ class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message)
       software_versions.
     maintenanceSettings: Optional. The MaintenanceSettings associated with
       instance.
-    name: Unique name of the resource. It uses the form: `projects/{project_id
-      |project_number}/locations/{location_id}/instances/{instance_id}` Note:
-      Either project_id or project_number can be used, but keep it consistent
-      with other APIs (e.g. RescheduleUpdate)
+    name: Unique name of the resource. It uses the form: `projects/{project_nu
+      mber}/locations/{location_id}/instances/{instance_id}` Note: This name
+      is passed, stored and logged across the rollout system. So use of
+      consumer project_id or any other consumer PII in the name is strongly
+      discouraged for wipeout (go/wipeout) compliance. See
+      go/elysium/project_ids#storage-guidance for more details.
     notificationParameters: Optional. notification_parameter are information
       that service producers may like to include that is not relevant to
       Rollout. This parameter will only be passed to Gamma and Cloud Logging
@@ -1567,6 +1585,21 @@ class ManagedidentitiesProjectsLocationsGlobalDomainsDetachTrustRequest(_message
   name = _messages.StringField(2, required=True)
 
 
+class ManagedidentitiesProjectsLocationsGlobalDomainsExtendSchemaRequest(_messages.Message):
+  r"""A ManagedidentitiesProjectsLocationsGlobalDomainsExtendSchemaRequest
+  object.
+
+  Fields:
+    domain: Required. The domain resource name using the form:
+      `projects/{project_id}/locations/global/domains/{domain_name}`
+    extendSchemaRequest: A ExtendSchemaRequest resource to be passed as the
+      request body.
+  """
+
+  domain = _messages.StringField(1, required=True)
+  extendSchemaRequest = _messages.MessageField('ExtendSchemaRequest', 2)
+
+
 class ManagedidentitiesProjectsLocationsGlobalDomainsGetIamPolicyRequest(_messages.Message):
   r"""A ManagedidentitiesProjectsLocationsGlobalDomainsGetIamPolicyRequest
   object.
@@ -2012,7 +2045,7 @@ class ManagedidentitiesProjectsLocationsListRequest(_messages.Message):
 
   Fields:
     filter: A filter to narrow down results to a preferred subset. The
-      filtering language accepts strings like "displayName=tokyo", and is
+      filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
     name: The resource that owns the locations collection, if applicable.
     pageSize: The maximum number of results to return. If not set, the service

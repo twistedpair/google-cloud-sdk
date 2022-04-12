@@ -27,7 +27,7 @@ NODEPOOLS_FORMAT = """\
     name.basename(),
     version:label=NODE_VERSION,
     config.instanceType,
-    autoscaling.minNodeCount:label=MIN_NODES,
+    autoscaling.minNodeCount.yesno(no='0'):label=MIN_NODES,
     autoscaling.maxNodeCount:label=MAX_NODES,
     state)"""
 

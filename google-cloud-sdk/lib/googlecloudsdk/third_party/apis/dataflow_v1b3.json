@@ -308,7 +308,7 @@
     },
     "Job": {
       "id": "Job",
-      "description": "Defines a job to be run by the Cloud Dataflow service.",
+      "description": "Defines a job to be run by the Cloud Dataflow service. Do not enter confidential information when you supply string values using the API.",
       "type": "object",
       "properties": {
         "id": {
@@ -1657,7 +1657,7 @@
       "type": "object",
       "properties": {
         "numWorkers": {
-          "description": "The initial number of Google Compute Engine instnaces for the job.",
+          "description": "The initial number of Google Compute Engine instances for the job.",
           "type": "integer",
           "format": "int32"
         },
@@ -1742,7 +1742,7 @@
     },
     "LaunchTemplateParameters": {
       "id": "LaunchTemplateParameters",
-      "description": "Parameters to provide to the template being launched.",
+      "description": "Parameters to provide to the template being launched. Note that the [metadata in the pipeline code] (https:\/\/cloud.google.com\/dataflow\/docs\/guides\/templates\/creating-templates#metadata) determines which runtime parameters are valid.",
       "type": "object",
       "properties": {
         "jobName": {
@@ -2057,6 +2057,18 @@
         "defaultEnvironment": {
           "description": "Default runtime environment for the job.",
           "$ref": "FlexTemplateRuntimeEnvironment"
+        },
+        "imageRepositoryUsernameSecretId": {
+          "description": "Secret Manager secret id for username to authenticate to private registry.",
+          "type": "string"
+        },
+        "imageRepositoryPasswordSecretId": {
+          "description": "Secret Manager secret id for password to authenticate to private registry.",
+          "type": "string"
+        },
+        "imageRepositoryCertPath": {
+          "description": "Cloud Storage path to self-signed certificate of private registry.",
+          "type": "string"
         }
       }
     },
@@ -5755,7 +5767,7 @@
                 "https://www.googleapis.com/auth/compute.readonly",
                 "https://www.googleapis.com/auth/userinfo.email"
               ],
-              "description": "Creates a Cloud Dataflow job. To create a job, we recommend using `projects.locations.jobs.create` with a [regional endpoint] (https:\/\/cloud.google.com\/dataflow\/docs\/concepts\/regional-endpoints). Using `projects.jobs.create` is not recommended, as your job will always start in `us-central1`."
+              "description": "Creates a Cloud Dataflow job. To create a job, we recommend using `projects.locations.jobs.create` with a [regional endpoint] (https:\/\/cloud.google.com\/dataflow\/docs\/concepts\/regional-endpoints). Using `projects.jobs.create` is not recommended, as your job will always start in `us-central1`. Do not enter confidential information when you supply string values using the API."
             },
             "get": {
               "id": "dataflow.projects.jobs.get",
@@ -6369,7 +6381,7 @@
                 "https://www.googleapis.com/auth/compute.readonly",
                 "https://www.googleapis.com/auth/userinfo.email"
               ],
-              "description": "Creates a Cloud Dataflow job from a template."
+              "description": "Creates a Cloud Dataflow job from a template. Do not enter confidential information when you supply string values using the API."
             },
             "launch": {
               "id": "dataflow.projects.templates.launch",
@@ -6922,7 +6934,7 @@
                     "https://www.googleapis.com/auth/compute.readonly",
                     "https://www.googleapis.com/auth/userinfo.email"
                   ],
-                  "description": "Creates a Cloud Dataflow job. To create a job, we recommend using `projects.locations.jobs.create` with a [regional endpoint] (https:\/\/cloud.google.com\/dataflow\/docs\/concepts\/regional-endpoints). Using `projects.jobs.create` is not recommended, as your job will always start in `us-central1`."
+                  "description": "Creates a Cloud Dataflow job. To create a job, we recommend using `projects.locations.jobs.create` with a [regional endpoint] (https:\/\/cloud.google.com\/dataflow\/docs\/concepts\/regional-endpoints). Using `projects.jobs.create` is not recommended, as your job will always start in `us-central1`. Do not enter confidential information when you supply string values using the API."
                 },
                 "get": {
                   "id": "dataflow.projects.locations.jobs.get",
@@ -7683,7 +7695,7 @@
                     "https://www.googleapis.com/auth/compute.readonly",
                     "https://www.googleapis.com/auth/userinfo.email"
                   ],
-                  "description": "Creates a Cloud Dataflow job from a template."
+                  "description": "Creates a Cloud Dataflow job from a template. Do not enter confidential information when you supply string values using the API."
                 },
                 "launch": {
                   "id": "dataflow.projects.locations.templates.launch",

@@ -363,6 +363,10 @@ def AttemptRunWithRetries(command_name, worker, exit_statuses, cmd, env,
         sys.exit(exit_status)
     except ssh.CommandError as e:
       if i == max_attempts - 1:
+        if multiple_workers:
+          # We need to store the exit status, since the exception will not be
+          # caught by the calling thread.
+          exit_statuses[worker] = 255
         raise e
       if multiple_workers:
         log.status.Print('Failed to execute command on multiple workers. '

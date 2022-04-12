@@ -3485,6 +3485,7 @@ class GoogleCloudDataplexV1Task(_messages.Message):
     description: Optional. Description of the task.
     displayName: Optional. User friendly display name.
     executionSpec: Required. Spec related to how a task is executed.
+    executionStatus: Output only. Status of the latest task executions.
     labels: Optional. User-defined labels for the task.
     name: Output only. The relative resource name of the task, of the form:
       projects/{project_number}/locations/{location_id}/lakes/{lake_id}/
@@ -3543,13 +3544,14 @@ class GoogleCloudDataplexV1Task(_messages.Message):
   description = _messages.StringField(2)
   displayName = _messages.StringField(3)
   executionSpec = _messages.MessageField('GoogleCloudDataplexV1TaskExecutionSpec', 4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  spark = _messages.MessageField('GoogleCloudDataplexV1TaskSparkTaskConfig', 7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
-  triggerSpec = _messages.MessageField('GoogleCloudDataplexV1TaskTriggerSpec', 9)
-  uid = _messages.StringField(10)
-  updateTime = _messages.StringField(11)
+  executionStatus = _messages.MessageField('GoogleCloudDataplexV1TaskExecutionStatus', 5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  spark = _messages.MessageField('GoogleCloudDataplexV1TaskSparkTaskConfig', 8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  triggerSpec = _messages.MessageField('GoogleCloudDataplexV1TaskTriggerSpec', 10)
+  uid = _messages.StringField(11)
+  updateTime = _messages.StringField(12)
 
 
 class GoogleCloudDataplexV1TaskExecutionSpec(_messages.Message):
@@ -3620,6 +3622,18 @@ class GoogleCloudDataplexV1TaskExecutionSpec(_messages.Message):
   args = _messages.MessageField('ArgsValue', 1)
   maxJobExecutionLifetime = _messages.StringField(2)
   serviceAccount = _messages.StringField(3)
+
+
+class GoogleCloudDataplexV1TaskExecutionStatus(_messages.Message):
+  r"""Status of the task execution (e.g. Jobs).
+
+  Fields:
+    latestJob: Output only. latest job execution
+    updateTime: Output only. Last update time of the status.
+  """
+
+  latestJob = _messages.MessageField('GoogleCloudDataplexV1Job', 1)
+  updateTime = _messages.StringField(2)
 
 
 class GoogleCloudDataplexV1TaskInfrastructureSpec(_messages.Message):

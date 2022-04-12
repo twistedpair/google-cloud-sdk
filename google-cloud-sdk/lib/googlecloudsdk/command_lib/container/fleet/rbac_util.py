@@ -37,6 +37,8 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: gateway-impersonate-{metadata_name}
+  labels:
+    hub.gke.io/owner-feature: connect-gateway
 rules:
 - apiGroups:
   - ""
@@ -50,6 +52,8 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   name: gateway-impersonate-{metadata_name}
+  labels:
+    hub.gke.io/owner-feature: connect-gateway
 roleRef:
   kind: ClusterRole
   name: gateway-impersonate-{metadata_name}
@@ -65,6 +69,8 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   name: gateway-permission-{metadata_name}
+  labels:
+    hub.gke.io/owner-feature: connect-gateway
 subjects:{users}
 roleRef:
   kind: ClusterRole
@@ -78,6 +84,8 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: gateway-permission-{metadata_name}
+  labels:
+    hub.gke.io/owner-feature: connect-gateway
   namespace: {namespace}
 subjects:{users}
 roleRef:
@@ -92,6 +100,8 @@ kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: anthos-support-reader
+  labels:
+    hub.gke.io/owner-feature: connect-gateway
 rules:
 - apiGroups:
   - '*'
@@ -105,6 +115,8 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   name: gateway-anthos-support-permission-{metadata_name}
+  labels:
+    hub.gke.io/owner-feature: connect-gateway
 subjects:{users}
 roleRef:
   kind: ClusterRole

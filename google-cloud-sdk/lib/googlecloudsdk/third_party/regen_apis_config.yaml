@@ -1130,9 +1130,6 @@ apis:
       resources:
         projects.instanceConfigs.operations:
           path: projects/{projectsId}/instanceConfigs/{instanceConfigsId}/operations/{operationsId}
-    v1alpha:
-      discovery_doc: spanner_v1alpha.json
-      default: false
   speech:
     v1:
       discovery_doc: speech_v1.json

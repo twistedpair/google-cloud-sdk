@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 
 import contextlib
 import datetime
+import json
 import re
 
 from apitools.base.py import encoding
@@ -106,11 +107,21 @@ class RunAppsOperations(object):
       match_type_names: array of type/name pairs used for create selector.
       etag: the etag of the application if it's an incremental patch.
     """
-    self._UpdateApplication(appname, appconfig, message, etag)
-    if match_type_names is None:
-      match_type_names = [{'type': '*', 'name': '*'}]
-    create_selector = {'matchTypeNames': match_type_names}
-    self._CreateDeployment(appname, create_selector=create_selector)
+    try:
+      self._UpdateApplication(appname, appconfig, message, etag)
+      if match_type_names is None:
+        match_type_names = [{'type': '*', 'name': '*'}]
+      create_selector = {'matchTypeNames': match_type_names}
+      self._CreateDeployment(appname, create_selector=create_selector)
+    except api_exceptions.HttpConflictError as err:
+      content = json.loads(err.content)
+      msg = content['error']['message']
+      code = content['error']['code']
+      if msg == 'unable to queue the operation' and code == 409:
+        raise exceptions.IntegrationsOperationError(
+            'An integration is currently being configured.  Please wait ' +
+            'until the current process is complete and try again')
+      raise err
 
   def _UpdateApplication(self, appname, appconfig, message, etag):
     """Update Application config, waits for operation to finish.
@@ -822,10 +833,10 @@ class RunAppsOperations(object):
           url = job.jobUri
           break
 
-      error_msg = 'Configuration failed with error: {}.'.format(
-          response.status.errorMessage)
+      error_msg = 'Configuration failed with error:\n  {}'.format(
+          '\n  '.join(response.status.errorMessage.split('; ')))
       if url:
-        error_msg += ' Logs are available at {}'.format(url)
+        error_msg += '\nLogs are available at {}'.format(url)
 
       raise exceptions.IntegrationsOperationError(error_msg)
 

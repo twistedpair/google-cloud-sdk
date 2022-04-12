@@ -42,7 +42,7 @@ NODE_POOL_FORMAT = """
   table(name.segment(-1),
     version:label=NODE_VERSION,
     config.vmSize,
-    autoscaling.minNodeCount:label=MIN_NODES,
+    autoscaling.minNodeCount.yesno(no='0'):label=MIN_NODES,
     autoscaling.maxNodeCount:label=MAX_NODES,
     state)
 """

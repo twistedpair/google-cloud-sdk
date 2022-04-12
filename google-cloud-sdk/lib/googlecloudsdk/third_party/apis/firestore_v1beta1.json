@@ -5,7 +5,7 @@
   "name": "firestore",
   "canonicalName": "Firestore",
   "version": "v1beta1",
-  "revision": "20220328",
+  "revision": "20220401",
   "title": "Cloud Firestore API",
   "description": "Accesses the NoSQL document database built for automatic scaling, high performance, and ease of application development. ",
   "ownerDomain": "google.com",
@@ -906,7 +906,7 @@
           "type": "string",
           "enumDescriptions": [
             "Unspecified. This value must not be used.",
-            "The results are required to satisfy each of the combined filters."
+            "Documents are required to satisfy all of the combined filters."
           ],
           "enum": [
             "OPERATOR_UNSPECIFIED",
@@ -914,7 +914,7 @@
           ]
         },
         "filters": {
-          "description": "The list of filters to combine. Must contain at least one filter.",
+          "description": "The list of filters to combine. Requires: * At least one filter is present.",
           "type": "array",
           "items": {
             "$ref": "Filter"
@@ -1062,10 +1062,111 @@
           "description": "The number of results that have been skipped due to an offset between the last response and the current response.",
           "type": "integer",
           "format": "int32"
+        }
+      }
+    },
+    "RunAggregationQueryRequest": {
+      "id": "RunAggregationQueryRequest",
+      "description": "The request for Firestore.RunAggregationQuery.",
+      "type": "object",
+      "properties": {
+        "structuredAggregationQuery": {
+          "description": "An aggregation query.",
+          "$ref": "StructuredAggregationQuery"
         },
-        "done": {
-          "description": "If present, Firestore has completely finished the request and no more documents will be returned.",
-          "type": "boolean"
+        "transaction": {
+          "description": "Run the aggregation within an already active transaction. The value here is the opaque transaction ID to execute the query in.",
+          "type": "string",
+          "format": "byte"
+        },
+        "newTransaction": {
+          "description": "Starts a new transaction as part of the query, defaulting to read-only. The new transaction ID will be returned as the first response in the stream.",
+          "$ref": "TransactionOptions"
+        },
+        "readTime": {
+          "description": "Executes the query at the given timestamp. Requires: * Cannot be more than 270 seconds in the past.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "StructuredAggregationQuery": {
+      "id": "StructuredAggregationQuery",
+      "description": "Firestore query for running an aggregation over a StructuredQuery.",
+      "type": "object",
+      "properties": {
+        "structuredQuery": {
+          "description": "Nested structured query.",
+          "$ref": "StructuredQuery"
+        },
+        "aggregations": {
+          "description": "Optional. Series of aggregations to apply on top of the `structured_query`.",
+          "type": "array",
+          "items": {
+            "$ref": "Aggregation"
+          }
+        }
+      }
+    },
+    "Aggregation": {
+      "id": "Aggregation",
+      "description": "Defines a aggregation that produces a single result.",
+      "type": "object",
+      "properties": {
+        "count": {
+          "description": "Count aggregator.",
+          "$ref": "Count"
+        },
+        "alias": {
+          "description": "Required. The name of the field to store the result of the aggregation into. Requires: * Must be present. * Must be unique across all aggregation aliases. * Conform to existing document field name limitations.",
+          "type": "string"
+        }
+      }
+    },
+    "Count": {
+      "id": "Count",
+      "description": "Count of documents that match the query. The `COUNT(*)` aggregation function operates on the entire document so it does not require a field reference.",
+      "type": "object",
+      "properties": {
+        "upTo": {
+          "description": "Optional. Optional constraint on the maximum number of documents to count. This provides a way to set an upper bound on the number of documents to scan, limiting latency and cost. High-Level Example: ``` SELECT COUNT_UP_TO(1000) FROM ( SELECT * FROM k ); ``` Requires: * Must be greater than zero when present.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "RunAggregationQueryResponse": {
+      "id": "RunAggregationQueryResponse",
+      "description": "The response for Firestore.RunAggregationQuery.",
+      "type": "object",
+      "properties": {
+        "result": {
+          "description": "A single aggregation result. Not present when reporting partial progress or when the query produced zero results.",
+          "$ref": "AggregationResult"
+        },
+        "transaction": {
+          "description": "The transaction that was started as part of this request. Only present on the first response when the request requested to start a new transaction.",
+          "type": "string",
+          "format": "byte"
+        },
+        "readTime": {
+          "description": "The time at which the aggregate value is valid for.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "AggregationResult": {
+      "id": "AggregationResult",
+      "description": "The result of a single bucket from a Firestore aggregation query. The keys of `aggregate_fields` are the same for all results in an aggregation query, unlike document queries which can have different fields present for each result.",
+      "type": "object",
+      "properties": {
+        "aggregateFields": {
+          "description": "The result of the aggregation functions, ex: `COUNT(*) AS total_docs`. The key is the alias assigned to the aggregation function on input and the size of this map equals the number of aggregation functions in the query.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "Value"
+          }
         }
       }
     },
@@ -2356,6 +2457,64 @@
                     "https://www.googleapis.com/auth/datastore"
                   ],
                   "description": "Runs a query."
+                },
+                "runAggregationQuery": {
+                  "id": "firestore.projects.databases.documents.runAggregationQuery",
+                  "path": "v1beta1/{+parent}:runAggregationQuery",
+                  "flatPath": "v1beta1/projects/{projectsId}/databases/{databasesId}/documents:runAggregationQuery",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent resource name. In the format: `projects\/{project_id}\/databases\/{database_id}\/documents` or `projects\/{project_id}\/databases\/{database_id}\/documents\/{document_path}`. For example: `projects\/my-project\/databases\/my-database\/documents` or `projects\/my-project\/databases\/my-database\/documents\/chatrooms\/my-chatroom`",
+                      "pattern": "^projects\/[^\/]+\/databases\/[^\/]+\/documents$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "RunAggregationQueryRequest"
+                  },
+                  "response": {
+                    "$ref": "RunAggregationQueryResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/datastore"
+                  ],
+                  "description": "Runs an aggregation query. Rather than producing Document results like Firestore.RunQuery, this API allows running an aggregation to produce a series of AggregationResult server-side. High-Level Example: ``` -- Return the number of documents in table given a filter. SELECT COUNT(*) FROM ( SELECT * FROM k where a = true ); ```"
+                },
+                "runAggregationQuery": {
+                  "id": "firestore.projects.databases.documents.runAggregationQuery",
+                  "path": "v1beta1/{+parent}:runAggregationQuery",
+                  "flatPath": "v1beta1/projects/{projectsId}/databases/{databasesId}/documents/{documentsId}/{documentsId1}:runAggregationQuery",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent resource name. In the format: `projects\/{project_id}\/databases\/{database_id}\/documents` or `projects\/{project_id}\/databases\/{database_id}\/documents\/{document_path}`. For example: `projects\/my-project\/databases\/my-database\/documents` or `projects\/my-project\/databases\/my-database\/documents\/chatrooms\/my-chatroom`",
+                      "pattern": "^projects\/[^\/]+\/databases\/[^\/]+\/documents\/[^\/]+\/.*$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "RunAggregationQueryRequest"
+                  },
+                  "response": {
+                    "$ref": "RunAggregationQueryResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/datastore"
+                  ],
+                  "description": "Runs an aggregation query. Rather than producing Document results like Firestore.RunQuery, this API allows running an aggregation to produce a series of AggregationResult server-side. High-Level Example: ``` -- Return the number of documents in table given a filter. SELECT COUNT(*) FROM ( SELECT * FROM k where a = true ); ```"
                 },
                 "partitionQuery": {
                   "id": "firestore.projects.databases.documents.partitionQuery",

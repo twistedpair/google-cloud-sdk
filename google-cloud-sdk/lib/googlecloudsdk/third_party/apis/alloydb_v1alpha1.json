@@ -244,7 +244,7 @@
     },
     "Empty": {
       "id": "Empty",
-      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON representation for `Empty` is empty JSON object `{}`.",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }",
       "type": "object",
       "properties": {
       }
@@ -283,7 +283,7 @@
     },
     "Cluster": {
       "id": "Cluster",
-      "description": "Message describing Cluster object NEXT_ID: 18",
+      "description": "Message describing Cluster object NEXT_ID: 19",
       "type": "object",
       "properties": {
         "name": {
@@ -537,10 +537,6 @@
           "description": "The GCE zone that the instance should serve from. Optional. This can ONLY be specified for ZONAL instances. If present for a REGIONAL instance, an error will be thrown. If this is absent for a ZONAL instance, instance is created in a random zone with available capacity.",
           "type": "string"
         },
-        "networkConfig": {
-          "description": "The settings for Network \/ IP Management. This allows to enable\/disable public IP, enable\/disable SSL and manage which external networks can connect to the instance.",
-          "$ref": "NetworkConfig"
-        },
         "databaseFlags": {
           "description": "Database flags. Set at instance level. * They are copied from primary instance on read instance creation. * Read instances can set new or override existing flags that are relevant for reads, e.g. for enabling columnar cache on a read instance. Flags set on read instance may or may not be present on primary. ",
           "type": "object",
@@ -573,21 +569,6 @@
           "description": "The number of CPU's in the VM instance.",
           "type": "integer",
           "format": "int32"
-        }
-      }
-    },
-    "NetworkConfig": {
-      "id": "NetworkConfig",
-      "description": "Network Management configuration.",
-      "type": "object",
-      "properties": {
-        "publicIpEnabled": {
-          "description": "Whether the instance is assigned a public IP address or not.",
-          "type": "boolean"
-        },
-        "sslRequired": {
-          "description": "Whether SSL connections over IP are enforced or not.",
-          "type": "boolean"
         }
       }
     },

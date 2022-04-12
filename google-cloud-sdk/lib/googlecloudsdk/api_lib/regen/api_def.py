@@ -116,6 +116,8 @@ class GapicClientDef(object):
       version.
     async_client_full_classpath: str, Full path to the async client class for an
       API version.
+    rest_client_full_classpath: str, Full path to the rest client class for an
+      API version.
   """
 
   def __init__(self,
@@ -129,6 +131,10 @@ class GapicClientDef(object):
   @property
   def async_client_full_classpath(self):
     return self.class_path + '.async_client.GapicWrapperClient'
+
+  @property
+  def rest_client_full_classpath(self):
+    return self.class_path + '.rest_client.GapicWrapperClient'
 
   def __eq__(self, other):
     return (isinstance(other, self.__class__) and

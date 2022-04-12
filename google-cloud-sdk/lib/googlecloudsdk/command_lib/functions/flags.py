@@ -259,25 +259,9 @@ def AddGen2Flag(parser, track):
       action=actions.StoreBooleanProperty(properties.VALUES.functions.gen2),
       help=help_text)
 
-  if track is base.ReleaseTrack.ALPHA:
-    parser.add_argument(
-        '--v2',
-        help=help_text,
-        default=False,
-        hidden=True,
-        action=actions.DeprecationAction(
-            '--v2',
-            warn='The {flag_name} option is deprecated; use --gen2 instead.',
-            removed=False,
-            action=actions.StoreBooleanProperty(
-                properties.VALUES.functions.gen2)),
-    )
-
 
 def ShouldUseGen2():
-  gen2 = properties.VALUES.functions.gen2.GetBool()
-  v2 = properties.VALUES.functions.v2.GetBool()
-  return gen2 if gen2 is not None else bool(v2)
+  return bool(properties.VALUES.functions.gen2.GetBool())
 
 
 def _ShouldHideV2Flags(track):

@@ -505,6 +505,10 @@ class EndpointAttributes(_messages.Message):
   r"""Attributes associated with endpoints.
 
   Fields:
+    gcpFleetMembership: Optional. Membership URI (scheme-less URI) for
+      resources registered to Google Cloud Fleet. Currently populated only for
+      kubernetes resources. Sample URI: `//gkehub.googleapis.com/projects/my-
+      project/locations/global/memberships/my-membership`
     originResource: Optional. Reference to the underlying resource that this
       endpoint represents. This should be the full name of the resource that
       this endpoint was created from.
@@ -512,8 +516,9 @@ class EndpointAttributes(_messages.Message):
       only for zonal resources, left unset for others.
   """
 
-  originResource = _messages.StringField(1)
-  zone = _messages.StringField(2)
+  gcpFleetMembership = _messages.StringField(1)
+  originResource = _messages.StringField(2)
+  zone = _messages.StringField(3)
 
 
 class Expr(_messages.Message):
@@ -1122,7 +1127,7 @@ class ServicedirectoryProjectsLocationsListRequest(_messages.Message):
 
   Fields:
     filter: A filter to narrow down results to a preferred subset. The
-      filtering language accepts strings like "displayName=tokyo", and is
+      filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
     includeUnrevealedLocations: If true, the returned list will include
       locations which are not yet revealed.

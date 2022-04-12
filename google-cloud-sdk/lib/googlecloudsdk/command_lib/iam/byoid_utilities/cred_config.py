@@ -69,6 +69,11 @@ def get_generator(args, config_type):
   if args.credential_source_url:
     return UrlCredConfigGenerator(config_type, args.credential_source_url,
                                   args.credential_source_headers)
+  # In non-alpha tracks, 'executable_command' might not be a valid argument.
+  if args.IsKnownAndSpecified('executable_command'):
+    return ExecutableCredConfigGenerator(config_type, args.executable_command,
+                                         args.executable_timeout_millis,
+                                         args.executable_output_file)
   if args.aws:
     return AwsCredConfigGenerator()
   if args.azure:
@@ -167,6 +172,30 @@ class UrlCredConfigGenerator(CredConfigGenerator):
     if token_format:
       credential_source['format'] = token_format
     return credential_source
+
+
+class ExecutableCredConfigGenerator(CredConfigGenerator):
+  """The generator for executable-command-based credentials configs."""
+
+  def __init__(self, config_type, command, timeout_millis, output_file):
+    if timeout_millis:
+      timeout_millis = int(timeout_millis)
+
+    super(ExecutableCredConfigGenerator, self).__init__(config_type)
+    self.command = command
+    self.timeout_millis = timeout_millis or 30000  # default to 30s
+    self.output_file = output_file
+
+  def get_source(self, args):
+    executable_config = {
+        'command': self.command,
+        'timeout_millis': self.timeout_millis
+    }
+
+    if self.output_file:
+      executable_config['output_file'] = self.output_file
+
+    return {'executable': executable_config}
 
 
 class AwsCredConfigGenerator(CredConfigGenerator):

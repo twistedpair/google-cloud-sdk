@@ -500,7 +500,7 @@ class DescribeResult:
     source_hash = resource.get('sourceHash', '')
     mr = ManagedResource(resource['group'], resource['kind'],
                          resource['namespace'], resource['name'], source_hash,
-                         resource['status'], conditions, [membership])
+                         resource.get('status', ''), conditions, [membership])
     self.managed_resources.append(mr)
 
 
@@ -591,7 +591,8 @@ def _Describe(status_filter, repos_cross_clusters):
       status = single_repo_status.GetStatus()
       errors = single_repo_status.GetErrors()
       commit = single_repo_status.GetCommit()
-      for resource in pair.rg['status']['resourceStatuses']:
+      resources = pair.rg.get('status', {}).get('resourceStatuses', {})
+      for resource in resources:
         describe_result.AppendManagedResources(resource, cluster, status_filter)
       status_result = DetailedStatus(source_key, commit, status, errors,
                                      [cluster])

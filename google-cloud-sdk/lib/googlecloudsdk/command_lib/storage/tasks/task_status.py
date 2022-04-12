@@ -19,9 +19,12 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import abc
+import collections
+import datetime
 import enum
 import threading
 
+from googlecloudsdk.command_lib.storage import manifest_util
 from googlecloudsdk.command_lib.storage import metrics_util
 from googlecloudsdk.command_lib.storage import thread_messages
 from googlecloudsdk.core import log
@@ -43,10 +46,32 @@ class OperationName(enum.Enum):
   UPLOADING = 'Uploading'
 
 
-class ProgressType(enum.Enum):
-  COUNT = 'COUNT'
+class IncrementType(enum.Enum):
+  INTEGER = 'INTEGER'
   FILES_AND_BYTES = 'FILES_AND_BYTES'
-  FILES_AND_BYTES_AND_MANIFEST = 'FILES_AND_BYTES_AND_MANIFEST'
+
+
+ProgressManagerArgs = collections.namedtuple(
+    'ProgressManagerArgs', ['increment_type', 'manifest_path'])
+
+
+class FileProgress:
+  """Holds progress information for file being copied.
+
+  Attributes:
+    component_progress (dict<int,int>): Records bytes copied per component. If
+      not multi-component copy (e.g. "sliced download"), there will only be one
+      component.
+    start_time (datetime|None): Needed if writing file copy results to manifest.
+    total_bytes_copied (int|None): Sum of bytes copied for each component.
+      Needed because components are popped when completed, but we don't want to
+      lose info on them if writing to the manifest.
+  """
+
+  def __init__(self, component_count, start_time=None, total_bytes_copied=None):
+    self.component_progress = {i: 0 for i in range(component_count)}
+    self.start_time = start_time
+    self.total_bytes_copied = total_bytes_copied
 
 
 def _get_formatted_throughput(bytes_processed, time_delta):
@@ -90,11 +115,11 @@ class _StatusTracker(six.with_metaclass(abc.ABCMeta, object)):
       self._progress_tracker.__exit__(exc_type, exc_val, exc_tb)
 
 
-class _CountStatusTracker(_StatusTracker):
+class _IntegerStatusTracker(_StatusTracker):
   """See super class. Tracks both file count and byte amount."""
 
   def __init__(self):
-    super(_CountStatusTracker, self).__init__()
+    super(_IntegerStatusTracker, self).__init__()
     self._completed = 0
     self._total_estimation = 0
 
@@ -119,7 +144,7 @@ class _CountStatusTracker(_StatusTracker):
 class _FilesAndBytesStatusTracker(_StatusTracker, metrics_util.MetricsReporter):
   """See super class. Tracks both file count and byte amount."""
 
-  def __init__(self):
+  def __init__(self, manifest_path=None):
     super(_FilesAndBytesStatusTracker, self).__init__()
     # For displaying progress.
     self._completed_files = 0
@@ -140,6 +165,11 @@ class _FilesAndBytesStatusTracker(_StatusTracker, metrics_util.MetricsReporter):
 
     # For keeping track of progress on different files.
     self._tracked_file_progress = {}
+
+    if manifest_path:
+      self._manifest_manager = manifest_util.ManifestManager(manifest_path)
+    else:
+      self._manifest_manager = None
 
   def _get_status_string(self):
     """See super class."""
@@ -189,53 +219,63 @@ class _FilesAndBytesStatusTracker(_StatusTracker, metrics_util.MetricsReporter):
     self._total_files_estimation += status_message.item_count
     self._total_bytes_estimation += status_message.size
 
-  def _add_component_progress(self, status_message):
+  def _add_progress(self, status_message):
     """Track progress of a multipart file operation."""
     file_url_string = status_message.source_url.url_string
     if file_url_string not in self._tracked_file_progress:
-      self._tracked_file_progress[file_url_string] = {
-          component_number: 0
-          for component_number in range(status_message.total_components)
-      }
+      if status_message.total_components:
+        self._tracked_file_progress[file_url_string] = FileProgress(
+            component_count=status_message.total_components)
+      else:
+        self._tracked_file_progress[file_url_string] = FileProgress(
+            component_count=1)
+      if self._manifest_manager:
+        self._tracked_file_progress[file_url_string].start_time = (
+            datetime.datetime.fromtimestamp(status_message.time,
+                                            datetime.timezone.utc))
+        self._tracked_file_progress[file_url_string].total_bytes_copied = 0
 
-    component_tracker = self._tracked_file_progress[file_url_string]
-    component_number = status_message.component_number
+    component_tracker = self._tracked_file_progress[
+        file_url_string].component_progress
 
-    processed_component_bytes = status_message.current_byte - status_message.offset
+    if status_message.component_number:
+      component_number = status_message.component_number
+    else:
+      component_number = 0
+
+    processed_component_bytes = (
+        status_message.current_byte - status_message.offset)
     # status_message.current_byte includes bytes from past messages.
     newly_processed_bytes = (
         processed_component_bytes - component_tracker.get(component_number, 0))
     self._processed_bytes += newly_processed_bytes
     self._update_throughput(status_message, newly_processed_bytes)
 
+    if self._manifest_manager:
+      # Keep track of total bytes per file for writing to manifest.
+      self._tracked_file_progress[
+          file_url_string].total_bytes_copied += newly_processed_bytes
+
     if processed_component_bytes == status_message.length:
       # Operation complete.
       component_tracker.pop(component_number, None)
       if not component_tracker:
-        del self._tracked_file_progress[file_url_string]
         self._completed_files += 1
+        if not self._manifest_manager:
+          # If managing manifest, _add_to_manifest clears items from tracking.
+          del self._tracked_file_progress[file_url_string]
     else:
       component_tracker[component_number] = processed_component_bytes
 
-  def _add_file_progress(self, status_message):
-    """Track progress of a file operation."""
-    file_url_string = status_message.source_url.url_string
-    if file_url_string not in self._tracked_file_progress:
-      self._tracked_file_progress[file_url_string] = 0
-
-    processed_file_bytes = status_message.current_byte - status_message.offset
-    known_progress = self._tracked_file_progress[file_url_string]
-    # status_message.current_byte includes bytes from past messages.
-    newly_processed_bytes = processed_file_bytes - known_progress
-    self._processed_bytes += newly_processed_bytes
-    self._update_throughput(status_message, newly_processed_bytes)
-
-    if processed_file_bytes == status_message.length:
-      # Operation complete.
-      del self._tracked_file_progress[file_url_string]
-      self._completed_files += 1
-    else:
-      self._tracked_file_progress[file_url_string] = processed_file_bytes
+  def _add_to_manifest(self, status_message):
+    """Updates manifest file and pops file from tracking if needed."""
+    if not self._manifest_manager:
+      raise ValueError(
+          'Received ManifestMessage but StatusTracker was not initialized with'
+          ' manifest path.')
+    file_progress = self._tracked_file_progress.pop(
+        status_message.source_url.url_string)
+    self._manifest_manager.write_row(file_progress, status_message)
 
   def add_message(self, status_message):
     """See super class."""
@@ -244,10 +284,9 @@ class _FilesAndBytesStatusTracker(_StatusTracker, metrics_util.MetricsReporter):
     elif isinstance(status_message, thread_messages.DetailedProgressMessage):
       self._set_source_and_destination_schemes(status_message)
       # If files start getting counted twice, see b/225182075.
-      if status_message.total_components:
-        self._add_component_progress(status_message)
-      else:
-        self._add_file_progress(status_message)
+      self._add_progress(status_message)
+    elif isinstance(status_message, thread_messages.ManifestMessage):
+      self._add_to_manifest(status_message)
 
   def stop(self, exc_type, exc_val, exc_tb):
     super(_FilesAndBytesStatusTracker, self).stop(exc_type, exc_val, exc_tb)
@@ -282,19 +321,20 @@ def status_message_handler(task_status_queue, status_tracker):
                 ' manager to print it.')
 
 
-def progress_manager(task_status_queue=None, progress_type=None):
+def progress_manager(task_status_queue=None, progress_manager_args=None):
   """Factory function that returns a ProgressManager instance.
 
   Args:
     task_status_queue (multiprocessing.Queue|None): Tasks can submit their
       progress messages here.
-    progress_type (ProgressType|None): Determines what type of progress
-      indicator to display.
+    progress_manager_args (ProgressManagerArgs|None): Determines what type of
+      progress indicator to display.
+
   Returns:
     An instance of _ProgressManager or _NoOpProgressManager.
   """
   if task_status_queue is not None:
-    return _ProgressManager(task_status_queue, progress_type)
+    return _ProgressManager(task_status_queue, progress_manager_args)
   else:
     return _NoOpProgressManager()
 
@@ -306,25 +346,28 @@ class _ProgressManager:
   processes (if any) are started to prevent deadlock.
   """
 
-  def __init__(self, task_status_queue, progress_type=None):
+  def __init__(self, task_status_queue, progress_manager_args=None):
     """Initializes context manager.
 
     Args:
       task_status_queue (multiprocessing.Queue): Tasks can submit their progress
         messages here.
-      progress_type (ProgressType|None): Determines what type of progress
-        indicator to display.
+      progress_manager_args (ProgressManagerArgs|None): Determines what type of
+        progress indicator to display.
     """
-    self._progress_type = progress_type
+    self._progress_manager_args = progress_manager_args
     self._status_message_handler_thread = None
     self._status_tracker = None
     self._task_status_queue = task_status_queue
 
   def __enter__(self):
-    if self._progress_type is ProgressType.COUNT:
-      self._status_tracker = _CountStatusTracker()
-    elif self._progress_type is ProgressType.FILES_AND_BYTES:
-      self._status_tracker = _FilesAndBytesStatusTracker()
+    if self._progress_manager_args:
+      if self._progress_manager_args.increment_type is IncrementType.INTEGER:
+        self._status_tracker = _IntegerStatusTracker()
+      elif (self._progress_manager_args.increment_type is
+            IncrementType.FILES_AND_BYTES):
+        self._status_tracker = _FilesAndBytesStatusTracker(
+            self._progress_manager_args.manifest_path)
 
     self._status_message_handler_thread = threading.Thread(
         target=status_message_handler,

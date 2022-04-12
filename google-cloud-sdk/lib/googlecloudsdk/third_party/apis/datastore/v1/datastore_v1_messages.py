@@ -114,14 +114,17 @@ class CommitResponse(_messages.Message):
   r"""The response for Datastore.Commit.
 
   Fields:
+    commitTime: The transaction commit timestamp. Not set for non-
+      transactional commits.
     indexUpdates: The number of index entries updated during the commit, or
       zero if none were updated.
     mutationResults: The result of performing the mutations. The i-th mutation
       result corresponds to the i-th mutation in the request.
   """
 
-  indexUpdates = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  mutationResults = _messages.MessageField('MutationResult', 2, repeated=True)
+  commitTime = _messages.StringField(1)
+  indexUpdates = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  mutationResults = _messages.MessageField('MutationResult', 3, repeated=True)
 
 
 class CompositeFilter(_messages.Message):
@@ -430,6 +433,9 @@ class EntityResult(_messages.Message):
     cursor: A cursor that points to the position after the result entity. Set
       only when the `EntityResult` is part of a `QueryResultBatch` message.
     entity: The resulting entity.
+    updateTime: The time at which the entity was last changed. This field is
+      set for `FULL` entity results. If this entity is missing, this field
+      will not be set.
     version: The version of the entity, a strictly positive number that
       monotonically increases with changes to the entity. This field is set
       for `FULL` entity results. For missing entities in `LookupResponse`,
@@ -439,7 +445,8 @@ class EntityResult(_messages.Message):
 
   cursor = _messages.BytesField(1)
   entity = _messages.MessageField('Entity', 2)
-  version = _messages.IntegerField(3)
+  updateTime = _messages.StringField(3)
+  version = _messages.IntegerField(4)
 
 
 class Filter(_messages.Message):
@@ -1543,11 +1550,13 @@ class LookupResponse(_messages.Message):
     missing: Entities not found as `ResultType.KEY_ONLY` entities. The order
       of results in this field is undefined and has no relation to the order
       of the keys in the input.
+    readTime: The time at which these entities were read or found missing.
   """
 
   deferred = _messages.MessageField('Key', 1, repeated=True)
   found = _messages.MessageField('EntityResult', 2, repeated=True)
   missing = _messages.MessageField('EntityResult', 3, repeated=True)
+  readTime = _messages.StringField(4)
 
 
 class Mutation(_messages.Message):
@@ -1563,6 +1572,9 @@ class Mutation(_messages.Message):
       entity key's final path element may be incomplete.
     update: The entity to update. The entity must already exist. Must have a
       complete key path.
+    updateTime: The update time of the entity that this mutation is being
+      applied to. If this does not match the current update time on the
+      server, the mutation conflicts.
     upsert: The entity to upsert. The entity may or may not already exist. The
       entity key's final path element may be incomplete.
   """
@@ -1571,7 +1583,8 @@ class Mutation(_messages.Message):
   delete = _messages.MessageField('Key', 2)
   insert = _messages.MessageField('Entity', 3)
   update = _messages.MessageField('Entity', 4)
-  upsert = _messages.MessageField('Entity', 5)
+  updateTime = _messages.StringField(5)
+  upsert = _messages.MessageField('Entity', 6)
 
 
 class MutationResult(_messages.Message):
@@ -1583,6 +1596,10 @@ class MutationResult(_messages.Message):
       mutation.
     key: The automatically allocated key. Set only when the mutation allocated
       a key.
+    updateTime: The update time of the entity on the server after processing
+      the mutation. If the mutation doesn't change anything on the server,
+      then the timestamp will be the update timestamp of the current entity.
+      This field will not be set after a 'delete'.
     version: The version of the entity on the server after processing the
       mutation. If the mutation doesn't change anything on the server, then
       the version will be the version of the current entity or, if no entity
@@ -1592,7 +1609,8 @@ class MutationResult(_messages.Message):
 
   conflictDetected = _messages.BooleanField(1)
   key = _messages.MessageField('Key', 2)
-  version = _messages.IntegerField(3)
+  updateTime = _messages.StringField(3)
+  version = _messages.IntegerField(4)
 
 
 class PartitionId(_messages.Message):
@@ -1798,6 +1816,13 @@ class QueryResultBatch(_messages.Message):
     entityResultType: The result type for every entity in `entity_results`.
     entityResults: The results for this batch.
     moreResults: The state of the query after the current batch.
+    readTime: Read timestamp this batch was returned from. This applies to the
+      range of results from the query's `start_cursor` (or the beginning of
+      the query if no cursor was given) to this batch's `end_cursor` (not the
+      query's `end_cursor`). In a single transaction, subsequent query result
+      batches for the same query can have a greater timestamp. Each batch's
+      read timestamp is valid for all preceding batches. This value will not
+      be set for eventually consistent queries in Cloud Datastore.
     skippedCursor: A cursor that points to the position after the last skipped
       result. Will be set when `skipped_results` != 0.
     skippedResults: The number of results skipped, typically because of an
@@ -1849,13 +1874,21 @@ class QueryResultBatch(_messages.Message):
   entityResultType = _messages.EnumField('EntityResultTypeValueValuesEnum', 2)
   entityResults = _messages.MessageField('EntityResult', 3, repeated=True)
   moreResults = _messages.EnumField('MoreResultsValueValuesEnum', 4)
-  skippedCursor = _messages.BytesField(5)
-  skippedResults = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  snapshotVersion = _messages.IntegerField(7)
+  readTime = _messages.StringField(5)
+  skippedCursor = _messages.BytesField(6)
+  skippedResults = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  snapshotVersion = _messages.IntegerField(8)
 
 
 class ReadOnly(_messages.Message):
-  r"""Options specific to read-only transactions."""
+  r"""Options specific to read-only transactions.
+
+  Fields:
+    readTime: Reads entities at the given time. This may not be older than 60
+      seconds.
+  """
+
+  readTime = _messages.StringField(1)
 
 
 class ReadOptions(_messages.Message):
@@ -1868,6 +1901,9 @@ class ReadOptions(_messages.Message):
   Fields:
     readConsistency: The non-transactional read consistency to use. Cannot be
       set to `STRONG` for global queries.
+    readTime: Reads entities as they were at the given time. This may not be
+      older than 270 seconds. This value is only supported for Cloud Firestore
+      in Datastore mode.
     transaction: The identifier of the transaction in which to read. A
       transaction identifier is returned by a call to
       Datastore.BeginTransaction.
@@ -1887,7 +1923,8 @@ class ReadOptions(_messages.Message):
     EVENTUAL = 2
 
   readConsistency = _messages.EnumField('ReadConsistencyValueValuesEnum', 1)
-  transaction = _messages.BytesField(2)
+  readTime = _messages.StringField(2)
+  transaction = _messages.BytesField(3)
 
 
 class ReadWrite(_messages.Message):

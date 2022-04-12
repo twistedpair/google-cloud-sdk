@@ -34,7 +34,7 @@ def GetStreamURI(resource):
   return stream.SelfLink()
 
 
-class StreamsClient(object):
+class StreamsClient:
   """Client for streams service in the API."""
 
   def __init__(self, client=None, messages=None):

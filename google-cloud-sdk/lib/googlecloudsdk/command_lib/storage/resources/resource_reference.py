@@ -18,10 +18,16 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import abc
 import collections
 
 from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage.resources import resource_util
+
+import six
+
+
+DO_NOT_DISPLAY = 'DO_NOT_DISPLAY'
 
 
 class Resource(object):
@@ -93,6 +99,18 @@ class CloudResource(Resource):
     # TODO(b/168690302): Stop using string scheme in storage_url.py.
     return self.storage_url.scheme
 
+  def get_full_metadata_string(self, formatter):
+    """Returns a string representing the ls -L formatted output.
+
+    Args:
+      formatter (full_resource_formatter.FullResourceFormatter): A formatter
+        instance that defines how the Resource metadata should be formatted.
+
+    Returns:
+      A formatted string representing the Resource metadata.
+    """
+    raise NotImplementedError
+
 
 class BucketResource(CloudResource):
   """Class representing a bucket.
@@ -151,6 +169,11 @@ class BucketResource(CloudResource):
 
   def is_container(self):
     return True
+
+  def get_full_metadata_string(self, formatter):
+    """See parent class."""
+    return formatter.format_bucket(self.storage_url.versionless_url_string,
+                                   self.get_displayable_bucket_data())
 
 
 class ObjectResource(CloudResource):
@@ -225,6 +248,15 @@ class ObjectResource(CloudResource):
   def is_encrypted(self):
     raise NotImplementedError
 
+  def get_displayable_object_data(self):
+    """To be overridden by child classes."""
+    raise NotImplementedError
+
+  def get_full_metadata_string(self, formatter):
+    """See parent class."""
+    return formatter.format_object(self.storage_url.versionless_url_string,
+                                   self.get_displayable_object_data())
+
 
 class PrefixResource(Resource):
   """Class representing a  cloud object.
@@ -287,7 +319,14 @@ class UnknownResource(Resource):
         'Unknown whether or not UnknownResource is a container.')
 
 
-class DisplayableBucketData(object):
+class DisplayableResourceData(six.with_metaclass(abc.ABCMeta, object)):
+  """Abstract class representing CloudResource for display purpose."""
+
+  def get_incomplete_warning(self):
+    return None
+
+
+class DisplayableBucketData(DisplayableResourceData):
   """Class representing a BucketResource for display purpose.
 
   All the public attributes in this object will be displayed by
@@ -364,6 +403,7 @@ class DisplayableBucketData(object):
                versioning_enabled=None,
                website_config=None):
     """Initializes DisplayableBucketData."""
+    super(DisplayableBucketData, self).__init__()
     self.name = name
     self.url_string = url_string
     self.acl = acl
@@ -395,6 +435,11 @@ class DisplayableBucketData(object):
         if update_time is not None else None)
     self.versioning_enabled = versioning_enabled
     self.website_config = website_config
+    # This field is only required for ls -L command.
+    # Private members are ignored by list/describe commands.
+    self._bucket_policy_only_enabled = (
+        bucket_policy_only.get('enabled')
+        if bucket_policy_only is not None else None)
 
   def __eq__(self, other):
     if not isinstance(other, type(self)):
@@ -404,7 +449,7 @@ class DisplayableBucketData(object):
     return self.__dict__ == other.__dict__
 
 
-class DisplayableObjectData(object):
+class DisplayableObjectData(DisplayableResourceData):
   """Class representing an ObjectResource for display purpose.
 
   All the public attributes in this object will be displayed by
@@ -446,6 +491,8 @@ class DisplayableObjectData(object):
     storage_class_update_time (str|None): Storage class update time.
     temporary_hold (bool|None): Temporary hold information for the object.
     update_time (str|None): Time the object was updated.
+    incomplete_warning (str|None): Optional warning message to be displayed for
+      ls -L output.
   """
 
   def __init__(self,
@@ -477,8 +524,10 @@ class DisplayableObjectData(object):
                storage_class=None,
                storage_class_update_time=None,
                temporary_hold=None,
-               update_time=None):
+               update_time=None,
+               incomplete_warning=None):
     """Initializes DisplayableObjectData."""
+    super(DisplayableObjectData, self).__init__()
     self.name = name
     self.bucket = bucket
     self.url_string = url_string
@@ -491,7 +540,6 @@ class DisplayableObjectData(object):
     self.content_language = content_language
     self.content_length = content_length
     self.content_type = content_type
-    self.crc32c_hash = crc32c_hash
     self.creation_time = (
         resource_util.get_formatted_timestamp_in_utc(creation_time)
         if creation_time is not None else None)
@@ -516,6 +564,23 @@ class DisplayableObjectData(object):
     self.update_time = (
         resource_util.get_formatted_timestamp_in_utc(update_time)
         if update_time is not None else None)
+    self._crc32c_hash = crc32c_hash
+    # Keeping private so that it gets ignored for describe/list commands.
+    self._incomplete_warning = incomplete_warning
+
+  @property
+  def crc32c_hash(self):
+    """Returns the crc3c_hash value.
+
+    If the value is DO_NOT_DISPLAY, we return None so that it gets ignored
+    by commands like list/describe.
+    """
+    if self._crc32c_hash == DO_NOT_DISPLAY:
+      return None
+    return self._crc32c_hash
+
+  def get_incomplete_warning(self):
+    return self._incomplete_warning
 
   def __eq__(self, other):
     if not isinstance(other, type(self)):

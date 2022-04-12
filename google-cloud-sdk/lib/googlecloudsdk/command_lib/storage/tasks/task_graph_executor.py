@@ -319,7 +319,7 @@ class TaskGraphExecutor:
                max_process_count=multiprocessing.cpu_count(),
                thread_count=4,
                task_status_queue=None,
-               progress_type=None):
+               progress_manager_args=None):
     """Initializes a TaskGraphExecutor instance.
 
     No threads or processes are started by the constructor.
@@ -331,14 +331,14 @@ class TaskGraphExecutor:
       thread_count (int): The number of threads to start per process.
       task_status_queue (multiprocessing.Queue|None): Used by task to report its
         progress to a central location.
-      progress_type (task_status.ProgressType|None): Determines what type of
-        progress indicator to display.
+      progress_manager_args (task_status.ProgressManagerArgs|None):
+        Determines what type of progress indicator to display.
     """
     self._task_iterator = iter(task_iterator)
     self._max_process_count = max_process_count
     self._thread_count = thread_count
     self._task_status_queue = task_status_queue
-    self._progress_type = progress_type
+    self._progress_manager_args = progress_manager_args
 
     self._process_count = 0
     self._idle_thread_count = multiprocessing_context.Semaphore(value=0)
@@ -459,7 +459,7 @@ class TaskGraphExecutor:
 
     # It is now safe to start the progress_manager.
     with task_status.progress_manager(self._task_status_queue,
-                                      self._progress_type):
+                                      self._progress_manager_args):
       self._add_worker_process()
 
       get_tasks_from_iterator_thread = threading.Thread(

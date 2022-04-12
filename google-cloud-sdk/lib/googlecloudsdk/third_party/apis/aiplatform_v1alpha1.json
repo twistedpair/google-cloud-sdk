@@ -736,7 +736,8 @@
           "type": "string"
         },
         "modelVersionId": {
-          "description": "The version ID of the model that is deployed.",
+          "description": "Output only. The version ID of the model that is deployed.",
+          "readOnly": true,
           "type": "string"
         },
         "displayName": {
@@ -854,9 +855,9 @@
           "description": "An attribution method that approximates Shapley values for features that contribute to the label being predicted. A sampling strategy is used to approximate the value rather than considering all subsets of features. Refer to this paper for model details: https:\/\/arxiv.org\/abs\/1306.4265.",
           "$ref": "GoogleCloudAiplatformV1alpha1SampledShapleyAttribution"
         },
-        "similarity": {
-          "description": "Similarity explainability that returns the nearest neighbors from the provided dataset.",
-          "$ref": "GoogleCloudAiplatformV1alpha1Similarity"
+        "examples": {
+          "description": "Example-based explanations that returns the nearest neighbors from the provided dataset.",
+          "$ref": "GoogleCloudAiplatformV1alpha1Examples"
         }
       }
     },
@@ -872,9 +873,9 @@
         }
       }
     },
-    "GoogleCloudAiplatformV1alpha1Similarity": {
-      "id": "GoogleCloudAiplatformV1alpha1Similarity",
-      "description": "Similarity explainability that returns the nearest neighbors from the provided dataset.",
+    "GoogleCloudAiplatformV1alpha1Examples": {
+      "id": "GoogleCloudAiplatformV1alpha1Examples",
+      "description": "Example-based explainability that returns the nearest neighbors from the provided dataset.",
       "type": "object",
       "properties": {
         "gcsSource": {
@@ -2694,7 +2695,8 @@
           "type": "string"
         },
         "modelVersionId": {
-          "description": "The version ID of the Model that produces the predictions via this job.",
+          "description": "Output only. The version ID of the Model that produces the predictions via this job.",
+          "readOnly": true,
           "type": "string"
         },
         "unmanagedContainerModel": {
@@ -3170,6 +3172,10 @@
             "RUNNING"
           ]
         },
+        "latestMonitoringPipelineMetadata": {
+          "description": "Latest triggered monitoring pipeline metadata.",
+          "$ref": "GoogleCloudAiplatformV1alpha1ModelDeploymentMonitoringJobLatestMonitoringPipelineMetadata"
+        },
         "modelDeploymentMonitoringObjectiveConfigs": {
           "description": "Required. The config for monitoring objectives. This is a per DeployedModel config. Each DeployedModel needs to be configured separately.",
           "type": "array",
@@ -3258,6 +3264,22 @@
         }
       }
     },
+    "GoogleCloudAiplatformV1alpha1ModelDeploymentMonitoringJobLatestMonitoringPipelineMetadata": {
+      "id": "GoogleCloudAiplatformV1alpha1ModelDeploymentMonitoringJobLatestMonitoringPipelineMetadata",
+      "description": "All metadata of most recent monitoring pipelines.",
+      "type": "object",
+      "properties": {
+        "runTime": {
+          "description": "The time that most recent monitoring pipelines that is related to this run.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "status": {
+          "description": "The status of the most recent monitoring pipeline.",
+          "$ref": "GoogleRpcStatus"
+        }
+      }
+    },
     "GoogleCloudAiplatformV1alpha1ModelDeploymentMonitoringObjectiveConfig": {
       "id": "GoogleCloudAiplatformV1alpha1ModelDeploymentMonitoringObjectiveConfig",
       "description": "ModelDeploymentMonitoringObjectiveConfig contains the pair of deployed_model_id to ModelMonitoringObjectiveConfig.",
@@ -3275,7 +3297,7 @@
     },
     "GoogleCloudAiplatformV1alpha1ModelMonitoringObjectiveConfig": {
       "id": "GoogleCloudAiplatformV1alpha1ModelMonitoringObjectiveConfig",
-      "description": "Next ID: 7",
+      "description": "Next ID: 8",
       "type": "object",
       "properties": {
         "trainingDataset": {
@@ -7273,7 +7295,8 @@
           "type": "string"
         },
         "modelVersionId": {
-          "description": "The version ID of the model that is deployed.",
+          "description": "Output only. The version ID of the model that is deployed.",
+          "readOnly": true,
           "type": "string"
         },
         "displayName": {
@@ -7435,9 +7458,9 @@
           "description": "An attribution method that redistributes Integrated Gradients attribution to segmented regions, taking advantage of the model's fully differentiable structure. Refer to this paper for more details: https:\/\/arxiv.org\/abs\/1906.02825 XRAI currently performs better on natural images, like a picture of a house or an animal. If the images are taken in artificial environments, like a lab or manufacturing line, or from diagnostic equipment, like x-rays or quality-control cameras, use Integrated Gradients instead.",
           "$ref": "GoogleCloudAiplatformInternalXraiAttribution"
         },
-        "similarity": {
-          "description": "Similarity explainability that returns the nearest neighbors from the provided dataset.",
-          "$ref": "GoogleCloudAiplatformInternalSimilarity"
+        "examples": {
+          "description": "Example-based explanations that returns the nearest neighbors from the provided dataset.",
+          "$ref": "GoogleCloudAiplatformInternalExamples"
         },
         "topK": {
           "description": "If populated, returns attributions for top K indices of outputs (defaults to 1). Only applies to Models that predicts more than one outputs (e,g, multi-class Models). When set to -1, returns explanations for all outputs.",
@@ -7568,9 +7591,9 @@
         }
       }
     },
-    "GoogleCloudAiplatformInternalSimilarity": {
-      "id": "GoogleCloudAiplatformInternalSimilarity",
-      "description": "Similarity explainability that returns the nearest neighbors from the provided dataset.",
+    "GoogleCloudAiplatformInternalExamples": {
+      "id": "GoogleCloudAiplatformInternalExamples",
+      "description": "Example-based explainability that returns the nearest neighbors from the provided dataset.",
       "type": "object",
       "properties": {
         "gcsSource": {
@@ -10269,7 +10292,8 @@
           "type": "string"
         },
         "modelVersionId": {
-          "description": "The version ID of the model that is deployed.",
+          "description": "Output only. The version ID of the model that is deployed.",
+          "readOnly": true,
           "type": "string"
         },
         "displayName": {
@@ -10477,9 +10501,9 @@
           "description": "An attribution method that redistributes Integrated Gradients attribution to segmented regions, taking advantage of the model's fully differentiable structure. Refer to this paper for more details: https:\/\/arxiv.org\/abs\/1906.02825 XRAI currently performs better on natural images, like a picture of a house or an animal. If the images are taken in artificial environments, like a lab or manufacturing line, or from diagnostic equipment, like x-rays or quality-control cameras, use Integrated Gradients instead.",
           "$ref": "GoogleCloudAiplatformUiXraiAttribution"
         },
-        "similarity": {
-          "description": "Similarity explainability that returns the nearest neighbors from the provided dataset.",
-          "$ref": "GoogleCloudAiplatformUiSimilarity"
+        "examples": {
+          "description": "Example-based explanations that returns the nearest neighbors from the provided dataset.",
+          "$ref": "GoogleCloudAiplatformUiExamples"
         },
         "topK": {
           "description": "If populated, returns attributions for top K indices of outputs (defaults to 1). Only applies to Models that predicts more than one outputs (e,g, multi-class Models). When set to -1, returns explanations for all outputs.",
@@ -10610,9 +10634,9 @@
         }
       }
     },
-    "GoogleCloudAiplatformUiSimilarity": {
-      "id": "GoogleCloudAiplatformUiSimilarity",
-      "description": "Similarity explainability that returns the nearest neighbors from the provided dataset.",
+    "GoogleCloudAiplatformUiExamples": {
+      "id": "GoogleCloudAiplatformUiExamples",
+      "description": "Example-based explainability that returns the nearest neighbors from the provided dataset.",
       "type": "object",
       "properties": {
         "gcsSource": {
@@ -10926,7 +10950,7 @@
     },
     "GoogleCloudAiplatformUiModelMonitoringObjectiveConfig": {
       "id": "GoogleCloudAiplatformUiModelMonitoringObjectiveConfig",
-      "description": "Next ID: 7",
+      "description": "Next ID: 8",
       "type": "object",
       "properties": {
         "trainingDataset": {
@@ -15001,7 +15025,8 @@
           "type": "string"
         },
         "modelVersionId": {
-          "description": "The version ID of the model that is deployed.",
+          "description": "Output only. The version ID of the model that is deployed.",
+          "readOnly": true,
           "type": "string"
         },
         "displayName": {
@@ -15172,9 +15197,9 @@
           "description": "An attribution method that redistributes Integrated Gradients attribution to segmented regions, taking advantage of the model's fully differentiable structure. Refer to this paper for more details: https:\/\/arxiv.org\/abs\/1906.02825 XRAI currently performs better on natural images, like a picture of a house or an animal. If the images are taken in artificial environments, like a lab or manufacturing line, or from diagnostic equipment, like x-rays or quality-control cameras, use Integrated Gradients instead.",
           "$ref": "GoogleCloudAiplatformV1beta1XraiAttribution"
         },
-        "similarity": {
-          "description": "Similarity explainability that returns the nearest neighbors from the provided dataset.",
-          "$ref": "GoogleCloudAiplatformV1beta1Similarity"
+        "examples": {
+          "description": "Example-based explanations that returns the nearest neighbors from the provided dataset.",
+          "$ref": "GoogleCloudAiplatformV1beta1Examples"
         },
         "topK": {
           "description": "If populated, returns attributions for top K indices of outputs (defaults to 1). Only applies to Models that predicts more than one outputs (e,g, multi-class Models). When set to -1, returns explanations for all outputs.",
@@ -15305,9 +15330,9 @@
         }
       }
     },
-    "GoogleCloudAiplatformV1beta1Similarity": {
-      "id": "GoogleCloudAiplatformV1beta1Similarity",
-      "description": "Similarity explainability that returns the nearest neighbors from the provided dataset.",
+    "GoogleCloudAiplatformV1beta1Examples": {
+      "id": "GoogleCloudAiplatformV1beta1Examples",
+      "description": "Example-based explainability that returns the nearest neighbors from the provided dataset.",
       "type": "object",
       "properties": {
         "gcsSource": {
@@ -17045,7 +17070,7 @@
       "type": "object",
       "properties": {
         "targetColumn": {
-          "description": "The name of the column that the model is to predict.",
+          "description": "The name of the column that the Model is to predict values for. This column must be unavailable at forecast.",
           "type": "string"
         },
         "timeSeriesIdentifierColumn": {
@@ -17053,7 +17078,7 @@
           "type": "string"
         },
         "timeColumn": {
-          "description": "The name of the column that identifies time order in the time series.",
+          "description": "The name of the column that identifies time order in the time series. This column must be available at forecast.",
           "type": "string"
         },
         "transformations": {
@@ -17073,7 +17098,7 @@
           "format": "int64"
         },
         "weightColumn": {
-          "description": "Column name that should be used as the weight column. Higher values in this column give more importance to the row during model training. The column must have numeric values between 0 and 10000 inclusively; 0 means the row is ignored for training. If weight column field is not set, then all rows are assumed to have equal weight of 1.",
+          "description": "Column name that should be used as the weight column. Higher values in this column give more importance to the row during model training. The column must have numeric values between 0 and 10000 inclusively; 0 means the row is ignored for training. If weight column field is not set, then all rows are assumed to have equal weight of 1. This column must be available at forecast.",
           "type": "string"
         },
         "timeSeriesAttributeColumns": {
@@ -19985,7 +20010,8 @@
           "type": "string"
         },
         "modelVersionId": {
-          "description": "The version ID of the model that is deployed.",
+          "description": "Output only. The version ID of the model that is deployed.",
+          "readOnly": true,
           "type": "string"
         },
         "displayName": {
@@ -21985,7 +22011,7 @@
       "type": "object",
       "properties": {
         "targetColumn": {
-          "description": "The name of the column that the model is to predict.",
+          "description": "The name of the column that the Model is to predict values for. This column must be unavailable at forecast.",
           "type": "string"
         },
         "timeSeriesIdentifierColumn": {
@@ -21993,7 +22019,7 @@
           "type": "string"
         },
         "timeColumn": {
-          "description": "The name of the column that identifies time order in the time series.",
+          "description": "The name of the column that identifies time order in the time series. This column must be available at forecast.",
           "type": "string"
         },
         "transformations": {
@@ -22013,7 +22039,7 @@
           "format": "int64"
         },
         "weightColumn": {
-          "description": "Column name that should be used as the weight column. Higher values in this column give more importance to the row during model training. The column must have numeric values between 0 and 10000 inclusively; 0 means the row is ignored for training. If weight column field is not set, then all rows are assumed to have equal weight of 1.",
+          "description": "Column name that should be used as the weight column. Higher values in this column give more importance to the row during model training. The column must have numeric values between 0 and 10000 inclusively; 0 means the row is ignored for training. If weight column field is not set, then all rows are assumed to have equal weight of 1. This column must be available at forecast.",
           "type": "string"
         },
         "timeSeriesAttributeColumns": {
@@ -24150,7 +24176,7 @@
                   "type": "string"
                 },
                 "filter": {
-                  "description": "A filter to narrow down results to a preferred subset. The filtering language accepts strings like \"displayName=tokyo\", and is documented in more detail in [AIP-160](https:\/\/google.aip.dev\/160).",
+                  "description": "A filter to narrow down results to a preferred subset. The filtering language accepts strings like `\"displayName=tokyo\"`, and is documented in more detail in [AIP-160](https:\/\/google.aip.dev\/160).",
                   "location": "query",
                   "type": "string"
                 },

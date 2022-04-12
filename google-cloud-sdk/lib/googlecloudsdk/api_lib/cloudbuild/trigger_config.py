@@ -368,6 +368,11 @@ def AddGitRepoSource(flag_config):
       required=True,
       help='URI of the repository. Currently only HTTP URIs for GitHub and Cloud Source Repositories are supported.'
   )
+  repo_config.add_argument(
+      '--repo-type',
+      required=True,
+      help='Type of the repository. Currently only GitHub and Cloud Source Repository types are supported.'
+  )
 
   ref_config = repo_config.add_mutually_exclusive_group(required=True)
   ref_config.add_argument('--branch', help='Branch to build.')
@@ -397,16 +402,27 @@ def ParseGitRepoSource(trigger, args, messages, required=False):
   if not args.repo:
     return
 
+  if not args.repo_type:
+    raise c_exceptions.RequiredArgumentException(
+        'REPO_TYPE',
+        '--repo-type is required when specifying a --repo.')
+
   if args.branch:
     ref = 'refs/heads/' + args.branch
   else:
     ref = 'refs/tags/' + args.tag
 
-  trigger.sourceToBuild = messages.GitRepoSource(uri=args.repo, ref=ref)
+  trigger.sourceToBuild = messages.GitRepoSource(
+      uri=args.repo,
+      ref=ref,
+      repoType=messages.GitRepoSource.RepoTypeValueValuesEnum(args.repo_type))
 
   if args.build_config:
     trigger.gitFileSource = messages.GitFileSource(
-        path=args.build_config, uri=args.repo, revision=ref)
+        path=args.build_config,
+        uri=args.repo,
+        revision=ref,
+        repoType=messages.GitFileSource.RepoTypeValueValuesEnum(args.repo_type))
 
 
 def ParseRequireApproval(trigger, args, messages):

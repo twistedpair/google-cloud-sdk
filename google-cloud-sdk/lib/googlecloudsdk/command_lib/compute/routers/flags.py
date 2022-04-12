@@ -182,7 +182,8 @@ def AddInterfaceArgs(parser, for_update=False):
 
 def AddBgpPeerArgs(parser,
                    for_add_bgp_peer=False,
-                   is_update=False):
+                   is_update=False,
+                   support_md5_authentication_keys=False):
   """Adds common arguments for managing BGP peers."""
 
   operation = 'updated'
@@ -231,9 +232,8 @@ def AddBgpPeerArgs(parser,
       'the routes with lowest priority value win. 0 <= priority <= '
       '65535. If not specified, will use Google-managed priorities.')
 
-  bfd_group_help = (
-      'Arguments to {0} BFD (Bidirectional Forwarding Detection) '
-      'settings:'.format('update' if is_update else 'configure'))
+  bfd_group_help = ('Arguments to {0} BFD (Bidirectional Forwarding Detection) '
+                    'settings:'.format('update' if is_update else 'configure'))
   bfd_group = parser.add_group(help=bfd_group_help)
   bfd_group.add_argument(
       '--bfd-session-initialization-mode',
@@ -312,6 +312,19 @@ def AddBgpPeerArgs(parser,
       help='The IPv6 next hop address of the peer router. Must be a '
       'Google owned global unicast IPv6 address belonging to the range '
       '2600:2d00:0:2:0:0:0:0/64 or 2600:2d00:0:3:0:0:0:0/64.')
+
+  if support_md5_authentication_keys:
+    parser.add_argument(
+        '--md5-authentication-key',
+        type=str,
+        help='The MD5 authentication key for this BGP peer. Maximum length is '
+        '80 characters. Can contain only printable ASCII characters.')
+
+    if is_update:
+      parser.add_argument(
+          '--clear-md5-authentication-key',
+          action=arg_parsers.StoreTrueFalseAction,
+          help='Remove MD5 authentication from the BGP peer')
 
 
 def AddUpdateCustomAdvertisementArgs(parser, resource_str):

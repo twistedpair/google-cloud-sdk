@@ -402,7 +402,7 @@
     },
     "MultiClusterIngressFeatureSpec": {
       "id": "MultiClusterIngressFeatureSpec",
-      "description": "LINT.IfChange MultiClusterIngressFeatureSpec contains the input for the MultiClusterIngress feature.",
+      "description": "MultiClusterIngressFeatureSpec contains the input for the MultiClusterIngress feature.",
       "type": "object",
       "properties": {
         "configMembership": {
@@ -899,7 +899,7 @@
           "type": "boolean"
         },
         "clientSecret": {
-          "description": "Unencrypted OIDC client secret will be passed to the GKE Hub CLH.",
+          "description": "Input only. Unencrypted OIDC client secret will be passed to the GKE Hub CLH.",
           "type": "string"
         },
         "encryptedClientSecret": {
@@ -2551,7 +2551,7 @@
                   "type": "string"
                 },
                 "filter": {
-                  "description": "A filter to narrow down results to a preferred subset. The filtering language accepts strings like \"displayName=tokyo\", and is documented in more detail in [AIP-160](https:\/\/google.aip.dev\/160).",
+                  "description": "A filter to narrow down results to a preferred subset. The filtering language accepts strings like `\"displayName=tokyo\"`, and is documented in more detail in [AIP-160](https:\/\/google.aip.dev\/160).",
                   "location": "query",
                   "type": "string"
                 },

@@ -89,7 +89,8 @@ def _ValidateHardwareInWorkerPoolSpecArgs(worker_pool_specs, api_version):
         type_enum = api_util.GetMessage(
             'MachineSpec', api_version).AcceleratorTypeValueValuesEnum
         valid_types = [
-            type for type in type_enum.names() if type.startswith('NVIDIA')
+            type for type in type_enum.names()
+            if type.startswith('NVIDIA') or type.startswith('TPU')
         ]
         if accelerator_type not in valid_types:
           raise exceptions.InvalidArgumentException(

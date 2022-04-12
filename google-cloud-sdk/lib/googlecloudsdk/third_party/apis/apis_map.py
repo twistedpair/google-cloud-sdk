@@ -130,6 +130,10 @@ class GapicClientDef(object):
   def async_client_full_classpath(self):
     return self.class_path + '.async_client.GapicWrapperClient'
 
+  @property
+  def rest_client_full_classpath(self):
+    return self.class_path + '.rest_client.GapicWrapperClient'
+
   def __eq__(self, other):
     return (isinstance(other, self.__class__) and
             self.__dict__ == other.__dict__)
@@ -2679,15 +2683,6 @@ MAP = {
                     client_classpath='spanner_v1_client.SpannerV1',
                     messages_modulepath='spanner_v1_messages'),
                 default_version=True,
-                enable_mtls=True,
-                mtls_endpoint_override=''),
-        'v1alpha':
-            APIDef(
-                ApitoolsClientDef(
-                    class_path='googlecloudsdk.third_party.apis.spanner.v1alpha',
-                    client_classpath='spanner_v1alpha_client.SpannerV1alpha',
-                    messages_modulepath='spanner_v1alpha_messages'),
-                default_version=False,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },

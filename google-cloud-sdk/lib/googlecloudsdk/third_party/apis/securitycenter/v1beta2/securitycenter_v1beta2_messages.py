@@ -576,6 +576,7 @@ class Finding(_messages.Message):
       can be found. This field is guaranteed to be either empty or a well
       formed URL.
     findingClass: The class of the finding.
+    iamBindings: Represents IAM bindings associated with the Finding.
     indicator: Represents what's commonly known as an Indicator of compromise
       (IoC) in computer forensics. This is an artifact observed on a network
       or in an operating system that, with high confidence, indicates a
@@ -784,19 +785,20 @@ class Finding(_messages.Message):
   externalSystems = _messages.MessageField('ExternalSystemsValue', 6)
   externalUri = _messages.StringField(7)
   findingClass = _messages.EnumField('FindingClassValueValuesEnum', 8)
-  indicator = _messages.MessageField('Indicator', 9)
-  mitreAttack = _messages.MessageField('MitreAttack', 10)
-  mute = _messages.EnumField('MuteValueValuesEnum', 11)
-  muteInitiator = _messages.StringField(12)
-  muteUpdateTime = _messages.StringField(13)
-  name = _messages.StringField(14)
-  parent = _messages.StringField(15)
-  resourceName = _messages.StringField(16)
-  securityMarks = _messages.MessageField('SecurityMarks', 17)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 18)
-  sourceProperties = _messages.MessageField('SourcePropertiesValue', 19)
-  state = _messages.EnumField('StateValueValuesEnum', 20)
-  vulnerability = _messages.MessageField('Vulnerability', 21)
+  iamBindings = _messages.MessageField('IamBinding', 9, repeated=True)
+  indicator = _messages.MessageField('Indicator', 10)
+  mitreAttack = _messages.MessageField('MitreAttack', 11)
+  mute = _messages.EnumField('MuteValueValuesEnum', 12)
+  muteInitiator = _messages.StringField(13)
+  muteUpdateTime = _messages.StringField(14)
+  name = _messages.StringField(15)
+  parent = _messages.StringField(16)
+  resourceName = _messages.StringField(17)
+  securityMarks = _messages.MessageField('SecurityMarks', 18)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 19)
+  sourceProperties = _messages.MessageField('SourcePropertiesValue', 20)
+  state = _messages.EnumField('StateValueValuesEnum', 21)
+  vulnerability = _messages.MessageField('Vulnerability', 22)
 
 
 class Folder(_messages.Message):
@@ -1347,6 +1349,38 @@ class GoogleCloudSecuritycenterV1p1beta1SecurityMarks(_messages.Message):
   name = _messages.StringField(3)
 
 
+class IamBinding(_messages.Message):
+  r"""Represents a particular IAM binding, which captures a member's role
+  addition, removal, or state.
+
+  Enums:
+    ActionValueValuesEnum: The action that was performed on a Binding.
+
+  Fields:
+    action: The action that was performed on a Binding.
+    member: A single identity requesting access for a Cloud Platform resource,
+      e.g. "foo@google.com".
+    role: Role that is assigned to "members". For example, "roles/viewer",
+      "roles/editor", or "roles/owner".
+  """
+
+  class ActionValueValuesEnum(_messages.Enum):
+    r"""The action that was performed on a Binding.
+
+    Values:
+      ACTION_UNSPECIFIED: Unspecified.
+      ADD: Addition of a Binding.
+      REMOVE: Removal of a Binding.
+    """
+    ACTION_UNSPECIFIED = 0
+    ADD = 1
+    REMOVE = 2
+
+  action = _messages.EnumField('ActionValueValuesEnum', 1)
+  member = _messages.StringField(2)
+  role = _messages.StringField(3)
+
+
 class Indicator(_messages.Message):
   r"""Represents what's commonly known as an Indicator of compromise (IoC) in
   computer forensics. This is an artifact observed on a network or in an
@@ -1603,6 +1637,44 @@ class MitreAttack(_messages.Message):
   version = _messages.StringField(5)
 
 
+class OnboardingState(_messages.Message):
+  r"""Resource capturing onboarding information for a given CRM resource.
+
+  Enums:
+    OnboardingLevelValueValuesEnum: Describes the level a given organization,
+      folder, or project is onboarded with SCC. If the resource wasn't
+      onboarded, NOT_FOUND would have been thrown.
+
+  Fields:
+    name: The resource name of the OnboardingState. Format:
+      organizations/{organization}/onboardingState Format:
+      folders/{folder}/onboardingState Format:
+      projects/{project}/onboardingState
+    onboardingLevel: Describes the level a given organization, folder, or
+      project is onboarded with SCC. If the resource wasn't onboarded,
+      NOT_FOUND would have been thrown.
+  """
+
+  class OnboardingLevelValueValuesEnum(_messages.Enum):
+    r"""Describes the level a given organization, folder, or project is
+    onboarded with SCC. If the resource wasn't onboarded, NOT_FOUND would have
+    been thrown.
+
+    Values:
+      ONBOARDING_LEVEL_UNSPECIFIED: Unused.
+      ONBOARDING_LEVEL_PROJECT: This resource is onboarded at the project
+        level. Only possible for projects.
+      ONBOARDING_LEVEL_ORGANIZATION: This resource is onboarded at the
+        organization level. Possible for organizations, folders, and projects.
+    """
+    ONBOARDING_LEVEL_UNSPECIFIED = 0
+    ONBOARDING_LEVEL_PROJECT = 1
+    ONBOARDING_LEVEL_ORGANIZATION = 2
+
+  name = _messages.StringField(1)
+  onboardingLevel = _messages.EnumField('OnboardingLevelValueValuesEnum', 2)
+
+
 class Reference(_messages.Message):
   r"""Additional Links
 
@@ -1842,6 +1914,18 @@ class SecuritycenterFoldersGetEventThreatDetectionSettingsRequest(_messages.Mess
       Formats: * organizations/{organization}/eventThreatDetectionSettings *
       folders/{folder}/eventThreatDetectionSettings *
       projects/{project}/eventThreatDetectionSettings
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SecuritycenterFoldersGetOnboardingStateRequest(_messages.Message):
+  r"""A SecuritycenterFoldersGetOnboardingStateRequest object.
+
+  Fields:
+    name: Required. The name of the OnboardingState to retrieve. Formats: *
+      organizations/{organization}/onboardingState *
+      folders/{folder}/onboardingState * projects/{project}/onboardingState
   """
 
   name = _messages.StringField(1, required=True)
@@ -2091,6 +2175,18 @@ class SecuritycenterOrganizationsGetEventThreatDetectionSettingsRequest(_message
       Formats: * organizations/{organization}/eventThreatDetectionSettings *
       folders/{folder}/eventThreatDetectionSettings *
       projects/{project}/eventThreatDetectionSettings
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SecuritycenterOrganizationsGetOnboardingStateRequest(_messages.Message):
+  r"""A SecuritycenterOrganizationsGetOnboardingStateRequest object.
+
+  Fields:
+    name: Required. The name of the OnboardingState to retrieve. Formats: *
+      organizations/{organization}/onboardingState *
+      folders/{folder}/onboardingState * projects/{project}/onboardingState
   """
 
   name = _messages.StringField(1, required=True)
@@ -2365,6 +2461,18 @@ class SecuritycenterProjectsGetEventThreatDetectionSettingsRequest(_messages.Mes
       Formats: * organizations/{organization}/eventThreatDetectionSettings *
       folders/{folder}/eventThreatDetectionSettings *
       projects/{project}/eventThreatDetectionSettings
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SecuritycenterProjectsGetOnboardingStateRequest(_messages.Message):
+  r"""A SecuritycenterProjectsGetOnboardingStateRequest object.
+
+  Fields:
+    name: Required. The name of the OnboardingState to retrieve. Formats: *
+      organizations/{organization}/onboardingState *
+      folders/{folder}/onboardingState * projects/{project}/onboardingState
   """
 
   name = _messages.StringField(1, required=True)

@@ -23,7 +23,9 @@ __protobuf__ = proto.module(
     package='google.logging.v2',
     manifest={
         'LifecycleState',
+        'IndexType',
         'OperationState',
+        'IndexConfig',
         'LogBucket',
         'LogView',
         'LogSink',
@@ -74,6 +76,15 @@ class LifecycleState(proto.Enum):
     DELETE_REQUESTED = 2
 
 
+class IndexType(proto.Enum):
+    r"""IndexType is used for custom indexing. It describes the type
+    of an indexed field.
+    """
+    INDEX_TYPE_UNSPECIFIED = 0
+    INDEX_TYPE_STRING = 1
+    INDEX_TYPE_INTEGER = 2
+
+
 class OperationState(proto.Enum):
     r"""List of different operation states.
     High level state of the operation. This is used to report the
@@ -89,6 +100,44 @@ class OperationState(proto.Enum):
     OPERATION_STATE_SUCCEEDED = 4
     OPERATION_STATE_FAILED = 5
     OPERATION_STATE_CANCELLED = 6
+
+
+class IndexConfig(proto.Message):
+    r"""Configuration for an indexed field.
+
+    Attributes:
+        field_path (str):
+            Required. The LogEntry field path to index.
+
+            Note that some paths are automatically indexed, and other
+            paths are not eligible for indexing. See `indexing
+            documentation <https://cloud.google.com/logging/docs/view/advanced-queries#indexed-fields>`__
+            for details.
+
+            For example: ``jsonPayload.request.status``
+        type_ (googlecloudsdk.third_party.gapic_clients.logging_v2.types.IndexType):
+            Required. The type of data in this index.
+        create_time (google.protobuf.timestamp_pb2.Timestamp):
+            Output only. The timestamp when the index was
+            last modified.
+            This is used to return the timestamp, and will
+            be ignored if supplied during update.
+    """
+
+    field_path = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+    type_ = proto.Field(
+        proto.ENUM,
+        number=2,
+        enum='IndexType',
+    )
+    create_time = proto.Field(
+        proto.MESSAGE,
+        number=3,
+        message=timestamp_pb2.Timestamp,
+    )
 
 
 class LogBucket(proto.Message):
@@ -143,6 +192,9 @@ class LogBucket(proto.Message):
             Restricting a repeated field will restrict all values.
             Adding a parent will block all child fields. (e.g.
             ``foo.bar`` will block ``foo.bar.baz``)
+        index_configs (Sequence[googlecloudsdk.third_party.gapic_clients.logging_v2.types.IndexConfig]):
+            A list of indexed fields and related
+            configuration data.
         cmek_settings (googlecloudsdk.third_party.gapic_clients.logging_v2.types.CmekSettings):
             The CMEK settings of the log bucket. If
             present, new log entries written to this log
@@ -187,6 +239,11 @@ class LogBucket(proto.Message):
     restricted_fields = proto.RepeatedField(
         proto.STRING,
         number=15,
+    )
+    index_configs = proto.RepeatedField(
+        proto.MESSAGE,
+        number=17,
+        message='IndexConfig',
     )
     cmek_settings = proto.Field(
         proto.MESSAGE,

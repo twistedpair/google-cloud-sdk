@@ -330,7 +330,7 @@ class DatastreamProjectsLocationsListRequest(_messages.Message):
 
   Fields:
     filter: A filter to narrow down results to a preferred subset. The
-      filtering language accepts strings like "displayName=tokyo", and is
+      filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
     name: The resource that owns the locations collection, if applicable.
     pageSize: The maximum number of results to return. If not set, the service
@@ -805,6 +805,10 @@ class DiscoverConnectionProfileResponse(_messages.Message):
 
   mysqlRdbms = _messages.MessageField('MysqlRdbms', 1)
   oracleRdbms = _messages.MessageField('OracleRdbms', 2)
+
+
+class DropLargeObjects(_messages.Message):
+  r"""Configuration to drop large object values."""
 
 
 class Empty(_messages.Message):
@@ -1449,10 +1453,6 @@ class OracleColumn(_messages.Message):
   scale = _messages.IntegerField(9, variant=_messages.Variant.INT32)
 
 
-class OracleDropLargeObjects(_messages.Message):
-  r"""Configuration to drop large object values."""
-
-
 class OracleObjectIdentifier(_messages.Message):
   r"""Oracle data source object identifier.
 
@@ -1545,7 +1545,7 @@ class OracleSourceConfig(_messages.Message):
     includeObjects: Oracle objects to include in the stream.
   """
 
-  dropLargeObjects = _messages.MessageField('OracleDropLargeObjects', 1)
+  dropLargeObjects = _messages.MessageField('DropLargeObjects', 1)
   excludeObjects = _messages.MessageField('OracleRdbms', 2)
   includeObjects = _messages.MessageField('OracleRdbms', 3)
 

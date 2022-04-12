@@ -195,7 +195,7 @@
     },
     "GoogleProtobufEmpty": {
       "id": "GoogleProtobufEmpty",
-      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON representation for `Empty` is empty JSON object `{}`.",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }",
       "type": "object",
       "properties": {
       }
@@ -618,6 +618,10 @@
           "description": "Output only. Resource name of the Model Monitoring job associated with this Endpoint if monitoring is enabled by CreateModelDeploymentMonitoringJob. Format: `projects\/{project}\/locations\/{location}\/modelDeploymentMonitoringJobs\/{model_deployment_monitoring_job}`",
           "readOnly": true,
           "type": "string"
+        },
+        "predictRequestResponseLoggingConfig": {
+          "description": "Configures the request-response logging for online prediction.",
+          "$ref": "GoogleCloudAiplatformV1PredictRequestResponseLoggingConfig"
         }
       }
     },
@@ -640,6 +644,11 @@
         },
         "model": {
           "description": "Required. The name of the Model that this is the deployment of. Note that the Model may be in a different location than the DeployedModel's Endpoint.",
+          "type": "string"
+        },
+        "modelVersionId": {
+          "description": "Output only. The version ID of the model that is deployed.",
+          "readOnly": true,
           "type": "string"
         },
         "displayName": {
@@ -690,7 +699,7 @@
           "format": "int32"
         },
         "maxReplicaCount": {
-          "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If the requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, will use min_replica_count as the default value.",
+          "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If the requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, will use min_replica_count as the default value. The value of this field impacts the charge against Vertex CPU and GPU quotas. Specifically, you will be charged for max_replica_count * number of cores in the selected machine type) and (max_replica_count * number of GPUs per replica in the selected machine type).",
           "type": "integer",
           "format": "int32"
         },
@@ -722,7 +731,9 @@
             "Nvidia Tesla V100 GPU.",
             "Nvidia Tesla P4 GPU.",
             "Nvidia Tesla T4 GPU.",
-            "Nvidia Tesla A100 GPU."
+            "Nvidia Tesla A100 GPU.",
+            "TPU v2.",
+            "TPU v3."
           ],
           "enum": [
             "ACCELERATOR_TYPE_UNSPECIFIED",
@@ -731,7 +742,9 @@
             "NVIDIA_TESLA_V100",
             "NVIDIA_TESLA_P4",
             "NVIDIA_TESLA_T4",
-            "NVIDIA_TESLA_A100"
+            "NVIDIA_TESLA_A100",
+            "TPU_V2",
+            "TPU_V3"
           ]
         },
         "acceleratorCount": {
@@ -1202,6 +1215,37 @@
         }
       }
     },
+    "GoogleCloudAiplatformV1PredictRequestResponseLoggingConfig": {
+      "id": "GoogleCloudAiplatformV1PredictRequestResponseLoggingConfig",
+      "description": "Configuration for logging request-response to a BigQuery table.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "If logging is enabled or not.",
+          "type": "boolean"
+        },
+        "samplingRate": {
+          "description": "Percentage of requests to be logged, expressed as a fraction in range(0,1].",
+          "type": "number",
+          "format": "double"
+        },
+        "bigqueryDestination": {
+          "description": "BigQuery table for logging. If only given project, a new dataset will be created with name `logging__` where will be made BigQuery-dataset-name compatible (e.g. most special characters will become underscores). If no table name is given, a new table will be created with name `request_response_logging`",
+          "$ref": "GoogleCloudAiplatformV1BigQueryDestination"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1BigQueryDestination": {
+      "id": "GoogleCloudAiplatformV1BigQueryDestination",
+      "description": "The BigQuery location for the output content.",
+      "type": "object",
+      "properties": {
+        "outputUri": {
+          "description": "Required. BigQuery URI to a project or table, up to 2000 characters long. When only the project is specified, the Dataset and Table is created. When the full table reference is specified, the Dataset must exist and table must not exist. Accepted forms: * BigQuery path. For example: `bq:\/\/projectId` or `bq:\/\/projectId.bqDatasetId` or `bq:\/\/projectId.bqDatasetId.bqTableId`.",
+          "type": "string"
+        }
+      }
+    },
     "GoogleCloudAiplatformV1ListEndpointsResponse": {
       "id": "GoogleCloudAiplatformV1ListEndpointsResponse",
       "description": "Response message for EndpointService.ListEndpoints.",
@@ -1561,7 +1605,7 @@
           }
         },
         "onlineServingConfig": {
-          "description": "Required. Config for online serving resources.",
+          "description": "Optional. Config for online storage resources. If unset, the featurestore will not have an online store and cannot be used for online serving.",
           "$ref": "GoogleCloudAiplatformV1FeaturestoreOnlineServingConfig"
         },
         "state": {
@@ -1570,8 +1614,8 @@
           "type": "string",
           "enumDescriptions": [
             "Default value. This value is unused.",
-            "State when the Featurestore configuration is not being updated and the fields reflect the current configuration of the Featurestore. The Featurestore is usable in this state.",
-            "State when the Featurestore configuration is being updated and the fields reflect the updated configuration of the Featurestore, not the current one. For example, `online_serving_config.fixed_node_count` can take minutes to update. While the update is in progress, the Featurestore will be in the UPDATING state and the value of `fixed_node_count` will be the updated value. Until the update completes, the actual number of nodes can still be the original value of `fixed_node_count`. The Featurestore is still usable in this state."
+            "State when the featurestore configuration is not being updated and the fields reflect the current configuration of the featurestore. The featurestore is usable in this state.",
+            "The state of the featurestore configuration when it is being updated. During an update, the fields reflect either the original configuration or the updated configuration of the featurestore. For example, `online_serving_config.fixed_node_count` can take minutes to update. While the update is in progress, the featurestore is in the UPDATING state, and the value of `fixed_node_count` can be the original value or the updated value, depending on the progress of the operation. Until the update completes, the actual number of nodes can still be the original value of `fixed_node_count`. The featurestore is still usable in this state."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
@@ -1591,7 +1635,7 @@
       "type": "object",
       "properties": {
         "fixedNodeCount": {
-          "description": "The number of nodes for each cluster. The number of nodes will not scale automatically but can be scaled manually by providing different values when updating.",
+          "description": "The number of nodes for the online store. The number of nodes doesn't scale automatically, but you can manually update the number of nodes. If set to 0, the featurestore will not have an online store and cannot be used for online serving.",
           "type": "integer",
           "format": "int32"
         }
@@ -1650,6 +1694,105 @@
         "etag": {
           "description": "Optional. Used to perform a consistent read-modify-write updates. If not set, a blind \"overwrite\" update happens.",
           "type": "string"
+        },
+        "monitoringConfig": {
+          "description": "Optional. The default monitoring configuration for all Features with value type (Feature.ValueType) BOOL, STRING, DOUBLE or INT64 under this EntityType. If this is populated with [FeaturestoreMonitoringConfig.monitoring_interval] specified, snapshot analysis monitoring is enabled. Otherwise, snapshot analysis monitoring is disabled.",
+          "$ref": "GoogleCloudAiplatformV1FeaturestoreMonitoringConfig"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1FeaturestoreMonitoringConfig": {
+      "id": "GoogleCloudAiplatformV1FeaturestoreMonitoringConfig",
+      "description": "Configuration of how features in Featurestore are monitored.",
+      "type": "object",
+      "properties": {
+        "snapshotAnalysis": {
+          "description": "The config for Snapshot Analysis Based Feature Monitoring.",
+          "$ref": "GoogleCloudAiplatformV1FeaturestoreMonitoringConfigSnapshotAnalysis"
+        },
+        "importFeaturesAnalysis": {
+          "description": "The config for ImportFeatures Analysis Based Feature Monitoring.",
+          "$ref": "GoogleCloudAiplatformV1FeaturestoreMonitoringConfigImportFeaturesAnalysis"
+        },
+        "numericalThresholdConfig": {
+          "description": "Threshold for numerical features of anomaly detection. This is shared by all objectives of Featurestore Monitoring for numerical features (i.e. Features with type (Feature.ValueType) DOUBLE or INT64).",
+          "$ref": "GoogleCloudAiplatformV1FeaturestoreMonitoringConfigThresholdConfig"
+        },
+        "categoricalThresholdConfig": {
+          "description": "Threshold for categorical features of anomaly detection. This is shared by all types of Featurestore Monitoring for categorical features (i.e. Features with type (Feature.ValueType) BOOL or STRING).",
+          "$ref": "GoogleCloudAiplatformV1FeaturestoreMonitoringConfigThresholdConfig"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1FeaturestoreMonitoringConfigSnapshotAnalysis": {
+      "id": "GoogleCloudAiplatformV1FeaturestoreMonitoringConfigSnapshotAnalysis",
+      "description": "Configuration of the Featurestore's Snapshot Analysis Based Monitoring. This type of analysis generates statistics for each Feature based on a snapshot of the latest feature value of each entities every monitoring_interval.",
+      "type": "object",
+      "properties": {
+        "disabled": {
+          "description": "The monitoring schedule for snapshot analysis. For EntityType-level config: unset \/ disabled = true indicates disabled by default for Features under it; otherwise by default enable snapshot analysis monitoring with monitoring_interval for Features under it. Feature-level config: disabled = true indicates disabled regardless of the EntityType-level config; unset monitoring_interval indicates going with EntityType-level config; otherwise run snapshot analysis monitoring with monitoring_interval regardless of the EntityType-level config. Explicitly Disable the snapshot analysis based monitoring.",
+          "type": "boolean"
+        },
+        "monitoringIntervalDays": {
+          "description": "Configuration of the snapshot analysis based monitoring pipeline running interval. The value indicates number of days. If both FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval_days and FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval are set when creating\/updating EntityTypes\/Features, FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval_days will be used.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "stalenessDays": {
+          "description": "Customized export features time window for snapshot analysis. Unit is one day. Default value is 3 weeks. Minimum value is 1 day. Maximum value is 4000 days.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1FeaturestoreMonitoringConfigImportFeaturesAnalysis": {
+      "id": "GoogleCloudAiplatformV1FeaturestoreMonitoringConfigImportFeaturesAnalysis",
+      "description": "Configuration of the Featurestore's ImportFeature Analysis Based Monitoring. This type of analysis generates statistics for values of each Feature imported by every ImportFeatureValues operation.",
+      "type": "object",
+      "properties": {
+        "state": {
+          "description": "Whether to enable \/ disable \/ inherite default hebavior for import features analysis.",
+          "type": "string",
+          "enumDescriptions": [
+            "Should not be used.",
+            "The default behavior of whether to enable the monitoring. EntityType-level config: disabled. Feature-level config: inherited from the configuration of EntityType this Feature belongs to.",
+            "Explicitly enables import features analysis. EntityType-level config: by default enables import features analysis for all Features under it. Feature-level config: enables import features analysis regardless of the EntityType-level config.",
+            "Explicitly disables import features analysis. EntityType-level config: by default disables import features analysis for all Features under it. Feature-level config: disables import features analysis regardless of the EntityType-level config."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "DEFAULT",
+            "ENABLED",
+            "DISABLED"
+          ]
+        },
+        "anomalyDetectionBaseline": {
+          "description": "The baseline used to do anomaly detection for the statistics generated by import features analysis.",
+          "type": "string",
+          "enumDescriptions": [
+            "Should not be used.",
+            "Choose the later one statistics generated by either most recent snapshot analysis or previous import features analysis. If non of them exists, skip anomaly detection and only generate a statistics.",
+            "Use the statistics generated by the most recent snapshot analysis if exists.",
+            "Use the statistics generated by the previous import features analysis if exists."
+          ],
+          "enum": [
+            "BASELINE_UNSPECIFIED",
+            "LATEST_STATS",
+            "MOST_RECENT_SNAPSHOT_STATS",
+            "PREVIOUS_IMPORT_FEATURES_STATS"
+          ]
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1FeaturestoreMonitoringConfigThresholdConfig": {
+      "id": "GoogleCloudAiplatformV1FeaturestoreMonitoringConfigThresholdConfig",
+      "description": "The config for Featurestore Monitoring threshold.",
+      "type": "object",
+      "properties": {
+        "value": {
+          "description": "Specify a threshold value that can trigger the alert. 1. For categorical feature, the distribution distance is calculated by L-inifinity norm. 2. For numerical feature, the distribution distance is calculated by Jensen\u2013Shannon divergence. Each feature must have a non-zero threshold if they need to be monitored. Otherwise no alert will be triggered for that feature.",
+          "type": "number",
+          "format": "double"
         }
       }
     },
@@ -1734,6 +1877,85 @@
         "etag": {
           "description": "Used to perform a consistent read-modify-write updates. If not set, a blind \"overwrite\" update happens.",
           "type": "string"
+        },
+        "disableMonitoring": {
+          "description": "Optional. If not set, use the monitoring_config defined for the EntityType this Feature belongs to. Only Features with type (Feature.ValueType) BOOL, STRING, DOUBLE or INT64 can enable monitoring. If set to true, all types of data monitoring are disabled despite the config on EntityType.",
+          "type": "boolean"
+        },
+        "monitoringStatsAnomalies": {
+          "description": "Output only. The list of historical stats and anomalies with specified objectives.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1FeatureMonitoringStatsAnomaly"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1FeatureMonitoringStatsAnomaly": {
+      "id": "GoogleCloudAiplatformV1FeatureMonitoringStatsAnomaly",
+      "description": "A list of historical Snapshot Analysis or Import Feature Analysis stats requested by user, sorted by FeatureStatsAnomaly.start_time descending.",
+      "type": "object",
+      "properties": {
+        "objective": {
+          "description": "Output only. The objective for each stats.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "If it's OBJECTIVE_UNSPECIFIED, monitoring_stats will be empty.",
+            "Stats are generated by Import Feature Analysis.",
+            "Stats are generated by Snapshot Analysis."
+          ],
+          "enum": [
+            "OBJECTIVE_UNSPECIFIED",
+            "IMPORT_FEATURE_ANALYSIS",
+            "SNAPSHOT_ANALYSIS"
+          ]
+        },
+        "featureStatsAnomaly": {
+          "description": "Output only. The stats and anomalies generated at specific timestamp.",
+          "readOnly": true,
+          "$ref": "GoogleCloudAiplatformV1FeatureStatsAnomaly"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1FeatureStatsAnomaly": {
+      "id": "GoogleCloudAiplatformV1FeatureStatsAnomaly",
+      "description": "Stats and Anomaly generated at specific timestamp for specific Feature. The start_time and end_time are used to define the time range of the dataset that current stats belongs to, e.g. prediction traffic is bucketed into prediction datasets by time window. If the Dataset is not defined by time window, start_time = end_time. Timestamp of the stats and anomalies always refers to end_time. Raw stats and anomalies are stored in stats_uri or anomaly_uri in the tensorflow defined protos. Field data_stats contains almost identical information with the raw stats in Vertex AI defined proto, for UI to display.",
+      "type": "object",
+      "properties": {
+        "score": {
+          "description": "Feature importance score, only populated when cross-feature monitoring is enabled. For now only used to represent feature attribution score within range [0, 1] for ModelDeploymentMonitoringObjectiveType.FEATURE_ATTRIBUTION_SKEW and ModelDeploymentMonitoringObjectiveType.FEATURE_ATTRIBUTION_DRIFT.",
+          "type": "number",
+          "format": "double"
+        },
+        "statsUri": {
+          "description": "Path of the stats file for current feature values in Cloud Storage bucket. Format: gs:\/\/\/\/stats. Example: gs:\/\/monitoring_bucket\/feature_name\/stats. Stats are stored as binary format with Protobuf message [tensorflow.metadata.v0.FeatureNameStatistics](https:\/\/github.com\/tensorflow\/metadata\/blob\/master\/tensorflow_metadata\/proto\/v0\/statistics.proto).",
+          "type": "string"
+        },
+        "anomalyUri": {
+          "description": "Path of the anomaly file for current feature values in Cloud Storage bucket. Format: gs:\/\/\/\/anomalies. Example: gs:\/\/monitoring_bucket\/feature_name\/anomalies. Stats are stored as binary format with Protobuf message Anoamlies are stored as binary format with Protobuf message [tensorflow.metadata.v0.AnomalyInfo] (https:\/\/github.com\/tensorflow\/metadata\/blob\/master\/tensorflow_metadata\/proto\/v0\/anomalies.proto).",
+          "type": "string"
+        },
+        "distributionDeviation": {
+          "description": "Deviation from the current stats to baseline stats. 1. For categorical feature, the distribution distance is calculated by L-inifinity norm. 2. For numerical feature, the distribution distance is calculated by Jensen\u2013Shannon divergence.",
+          "type": "number",
+          "format": "double"
+        },
+        "anomalyDetectionThreshold": {
+          "description": "This is the threshold used when detecting anomalies. The threshold can be changed by user, so this one might be different from ThresholdConfig.value.",
+          "type": "number",
+          "format": "double"
+        },
+        "startTime": {
+          "description": "The start timestamp of window where stats were generated. For objectives where time window doesn't make sense (e.g. Featurestore Snapshot Monitoring), start_time is only used to indicate the monitoring intervals, so it always equals to (end_time - monitoring_interval).",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "The end timestamp of window where stats were generated. For objectives where time window doesn't make sense (e.g. Featurestore Snapshot Monitoring), end_time indicates the timestamp of the data used to generate stats (e.g. timestamp we take snapshots for feature values).",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },
@@ -1830,6 +2052,10 @@
           "description": "Specifies the number of workers that are used to write data to the Featurestore. Consider the online serving capacity that you require to achieve the desired import throughput without interfering with online serving. The value must be positive, and less than or equal to 100. If not set, defaults to using 1 worker. The low count ensures minimal impact on online serving performance.",
           "type": "integer",
           "format": "int32"
+        },
+        "disableIngestionAnalysis": {
+          "description": "If true, API doesn't start ingestion analysis pipeline.",
+          "type": "boolean"
         }
       }
     },
@@ -1930,17 +2156,6 @@
         "csvDestination": {
           "description": "Output in CSV format. Array Feature value types are not allowed in CSV format.",
           "$ref": "GoogleCloudAiplatformV1CsvDestination"
-        }
-      }
-    },
-    "GoogleCloudAiplatformV1BigQueryDestination": {
-      "id": "GoogleCloudAiplatformV1BigQueryDestination",
-      "description": "The BigQuery location for the output content.",
-      "type": "object",
-      "properties": {
-        "outputUri": {
-          "description": "Required. BigQuery URI to a project or table, up to 2000 characters long. When only the project is specified, the Dataset and Table is created. When the full table reference is specified, the Dataset must exist and table must not exist. Accepted forms: * BigQuery path. For example: `bq:\/\/projectId` or `bq:\/\/projectId.bqDatasetId` or `bq:\/\/projectId.bqDatasetId.bqTableId`.",
-          "type": "string"
         }
       }
     },
@@ -2237,7 +2452,7 @@
           "format": "google-datetime"
         },
         "network": {
-          "description": "Optional. The full name of the Google Compute Engine [network](https:\/\/cloud.google.com\/compute\/docs\/networks-and-firewalls#networks) to which the IndexEndpoint should be peered. Private services access must already be configured for the network. If left unspecified, the Endpoint is not peered with any network. Only one of the fields, network or enable_private_service_connect, can be set. [Format](https:\/\/cloud.google.com\/compute\/docs\/reference\/rest\/v1\/networks\/insert): projects\/{project}\/global\/networks\/{network}. Where {project} is a project number, as in '12345', and {network} is network name.",
+          "description": "Optional. The full name of the Google Compute Engine [network](https:\/\/cloud.google.com\/compute\/docs\/networks-and-firewalls#networks) to which the IndexEndpoint should be peered. Private services access must already be configured for the network. If left unspecified, the Endpoint is not peered with any network. network and private_service_connect_config are mutually exclusive. [Format](https:\/\/cloud.google.com\/compute\/docs\/reference\/rest\/v1\/networks\/insert): projects\/{project}\/global\/networks\/{network}. Where {project} is a project number, as in '12345', and {network} is network name.",
           "type": "string"
         },
         "enablePrivateServiceConnect": {
@@ -2283,6 +2498,10 @@
         "automaticResources": {
           "description": "Optional. A description of resources that the DeployedIndex uses, which to large degree are decided by Vertex AI, and optionally allows only a modest additional configuration. If min_replica_count is not set, the default value is 2 (we don't provide SLA when min_replica_count=1). If max_replica_count is not set, the default value is min_replica_count. The max allowed replica count is 1000.",
           "$ref": "GoogleCloudAiplatformV1AutomaticResources"
+        },
+        "dedicatedResources": {
+          "description": "Optional. A description of resources that are dedicated to the DeployedIndex, and that need a higher degree of manual configuration. If min_replica_count is not set, the default value is 2 (we don't provide SLA when min_replica_count=1). If max_replica_count is not set, the default value is min_replica_count. The max allowed replica count is 1000. Available machine types: n1-standard-16 n1-standard-32",
+          "$ref": "GoogleCloudAiplatformV1DedicatedResources"
         },
         "enableAccessLogging": {
           "description": "Optional. If true, private endpoint's access logs are sent to StackDriver Logging. These logs are like standard server access logs, containing information like timestamp and latency for each MatchRequest. Note that Stackdriver logs may incur a cost, especially if the deployed index receives a high queries per second rate (QPS). Estimate your costs before enabling this option.",
@@ -2426,7 +2645,8 @@
             "The job is being cancelled. From this state the job may only go to either `JOB_STATE_SUCCEEDED`, `JOB_STATE_FAILED` or `JOB_STATE_CANCELLED`.",
             "The job has been cancelled.",
             "The job has been stopped, and can be resumed.",
-            "The job has expired."
+            "The job has expired.",
+            "The job is being updated. The job is only able to be updated at RUNNING state; if the update operation succeeds, job goes back to RUNNING state; if the update operation fails, the job goes back to RUNNING state with error messages written to ModelDeploymentMonitoringJob.partial_errors field if it is a ModelDeploymentMonitoringJob."
           ],
           "enum": [
             "JOB_STATE_UNSPECIFIED",
@@ -2438,7 +2658,8 @@
             "JOB_STATE_CANCELLING",
             "JOB_STATE_CANCELLED",
             "JOB_STATE_PAUSED",
-            "JOB_STATE_EXPIRED"
+            "JOB_STATE_EXPIRED",
+            "JOB_STATE_UPDATING"
           ]
         },
         "createTime": {
@@ -2493,7 +2714,7 @@
     },
     "GoogleCloudAiplatformV1CustomJobSpec": {
       "id": "GoogleCloudAiplatformV1CustomJobSpec",
-      "description": "Represents the spec of a CustomJob.",
+      "description": "Represents the spec of a CustomJob. Next Id: 14",
       "type": "object",
       "properties": {
         "workerPoolSpecs": {
@@ -2514,6 +2735,13 @@
         "network": {
           "description": "The full name of the Compute Engine [network](\/compute\/docs\/networks-and-firewalls#networks) to which the Job should be peered. For example, `projects\/12345\/global\/networks\/myVPC`. [Format](\/compute\/docs\/reference\/rest\/v1\/networks\/insert) is of the form `projects\/{project}\/global\/networks\/{network}`. Where {project} is a project number, as in `12345`, and {network} is a network name. To specify this field, you must have already [configured VPC Network Peering for Vertex AI](https:\/\/cloud.google.com\/vertex-ai\/docs\/general\/vpc-peering). If this field is left unspecified, the job is not peered with any network.",
           "type": "string"
+        },
+        "reservedIpRanges": {
+          "description": "Optional. A list of names for the reserved ip ranges under the VPC network that can be used for this job. If set, we will deploy the job within the provided ip ranges. Otherwise, the job will be deployed to any ip ranges under the provided VPC network. Example: ['vertex-ai-ip-range'].",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         },
         "baseOutputDirectory": {
           "description": "The Cloud Storage location to store the output of this CustomJob or HyperparameterTuningJob. For HyperparameterTuningJob, the baseOutputDirectory of each child CustomJob backing a Trial is set to a subdirectory of name id under its parent HyperparameterTuningJob's baseOutputDirectory. The following Vertex AI environment variables will be passed to containers or python modules when this field is set: For CustomJob: * AIP_MODEL_DIR = `\/model\/` * AIP_CHECKPOINT_DIR = `\/checkpoints\/` * AIP_TENSORBOARD_LOG_DIR = `\/logs\/` For CustomJob backing a Trial of HyperparameterTuningJob: * AIP_MODEL_DIR = `\/\/model\/` * AIP_CHECKPOINT_DIR = `\/\/checkpoints\/` * AIP_TENSORBOARD_LOG_DIR = `\/\/logs\/`",
@@ -2550,6 +2778,13 @@
           "description": "Optional. The number of worker replicas to use for this worker pool.",
           "type": "string",
           "format": "int64"
+        },
+        "nfsMounts": {
+          "description": "Optional. List of NFS mount spec.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1NfsMount"
+          }
         },
         "diskSpec": {
           "description": "Disk spec.",
@@ -2637,6 +2872,25 @@
           "items": {
             "$ref": "GoogleCloudAiplatformV1EnvVar"
           }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1NfsMount": {
+      "id": "GoogleCloudAiplatformV1NfsMount",
+      "description": "Represents a mount configuration for Network File System (NFS) to mount.",
+      "type": "object",
+      "properties": {
+        "server": {
+          "description": "Required. IP address of the NFS server.",
+          "type": "string"
+        },
+        "path": {
+          "description": "Required. Source path exported from NFS server. Has to start with '\/', and combined with the ip address, it indicates the source mount path in the form of `server:path`",
+          "type": "string"
+        },
+        "mountPoint": {
+          "description": "Required. Destination mount path. The NFS will be mounted for the user under \/mnt\/nfs\/",
+          "type": "string"
         }
       }
     },
@@ -2756,7 +3010,8 @@
             "The job is being cancelled. From this state the job may only go to either `JOB_STATE_SUCCEEDED`, `JOB_STATE_FAILED` or `JOB_STATE_CANCELLED`.",
             "The job has been cancelled.",
             "The job has been stopped, and can be resumed.",
-            "The job has expired."
+            "The job has expired.",
+            "The job is being updated. The job is only able to be updated at RUNNING state; if the update operation succeeds, job goes back to RUNNING state; if the update operation fails, the job goes back to RUNNING state with error messages written to ModelDeploymentMonitoringJob.partial_errors field if it is a ModelDeploymentMonitoringJob."
           ],
           "enum": [
             "JOB_STATE_UNSPECIFIED",
@@ -2768,7 +3023,8 @@
             "JOB_STATE_CANCELLING",
             "JOB_STATE_CANCELLED",
             "JOB_STATE_PAUSED",
-            "JOB_STATE_EXPIRED"
+            "JOB_STATE_EXPIRED",
+            "JOB_STATE_UPDATING"
           ]
         },
         "labelingProgress": {
@@ -2994,7 +3250,8 @@
             "The job is being cancelled. From this state the job may only go to either `JOB_STATE_SUCCEEDED`, `JOB_STATE_FAILED` or `JOB_STATE_CANCELLED`.",
             "The job has been cancelled.",
             "The job has been stopped, and can be resumed.",
-            "The job has expired."
+            "The job has expired.",
+            "The job is being updated. The job is only able to be updated at RUNNING state; if the update operation succeeds, job goes back to RUNNING state; if the update operation fails, the job goes back to RUNNING state with error messages written to ModelDeploymentMonitoringJob.partial_errors field if it is a ModelDeploymentMonitoringJob."
           ],
           "enum": [
             "JOB_STATE_UNSPECIFIED",
@@ -3006,7 +3263,8 @@
             "JOB_STATE_CANCELLING",
             "JOB_STATE_CANCELLED",
             "JOB_STATE_PAUSED",
-            "JOB_STATE_EXPIRED"
+            "JOB_STATE_EXPIRED",
+            "JOB_STATE_UPDATING"
           ]
         },
         "createTime": {
@@ -3063,6 +3321,10 @@
         "medianAutomatedStoppingSpec": {
           "description": "The automated early stopping spec using median rule.",
           "$ref": "GoogleCloudAiplatformV1StudySpecMedianAutomatedStoppingSpec"
+        },
+        "convexAutomatedStoppingSpec": {
+          "description": "The automated early stopping spec using convex stopping rule.",
+          "$ref": "GoogleCloudAiplatformV1StudySpecConvexAutomatedStoppingSpec"
         },
         "metrics": {
           "description": "Required. Metric specs for the Study.",
@@ -3140,6 +3402,36 @@
       "properties": {
         "useElapsedDuration": {
           "description": "True if median automated stopping rule applies on Measurement.elapsed_duration. It means that elapsed_duration field of latest measurement of current Trial is used to compute median objective value for each completed Trials.",
+          "type": "boolean"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1StudySpecConvexAutomatedStoppingSpec": {
+      "id": "GoogleCloudAiplatformV1StudySpecConvexAutomatedStoppingSpec",
+      "description": "Configuration for ConvexAutomatedStoppingSpec. When there are enough completed trials (configured by min_measurement_count), for pending trials with enough measurements and steps, the policy first computes an overestimate of the objective value at max_num_steps according to the slope of the incomplete objective value curve. No prediction can be made if the curve is completely flat. If the overestimation is worse than the best objective value of the completed trials, this pending trial will be early-stopped, but a last measurement will be added to the pending trial with max_num_steps and predicted objective value from the autoregression model.",
+      "type": "object",
+      "properties": {
+        "maxStepCount": {
+          "description": "Steps used in predicting the final objective for early stopped trials. In general, it's set to be the same as the defined steps in training \/ tuning. If not defined, it will learn it from the completed trials. When use_steps is false, this field is set to the maximum elapsed seconds.",
+          "type": "string",
+          "format": "int64"
+        },
+        "minStepCount": {
+          "description": "Minimum number of steps for a trial to complete. Trials which do not have a measurement with step_count > min_step_count won't be considered for early stopping. It's ok to set it to 0, and a trial can be early stopped at any stage. By default, min_step_count is set to be one-tenth of the max_step_count. When use_elapsed_duration is true, this field is set to the minimum elapsed seconds.",
+          "type": "string",
+          "format": "int64"
+        },
+        "minMeasurementCount": {
+          "description": "The minimal number of measurements in a Trial. Early-stopping checks will not trigger if less than min_measurement_count+1 completed trials or pending trials with less than min_measurement_count measurements. If not defined, the default value is 5.",
+          "type": "string",
+          "format": "int64"
+        },
+        "learningRateParameterName": {
+          "description": "The hyper-parameter name used in the tuning job that stands for learning rate. Leave it blank if learning rate is not in a parameter in tuning. The learning_rate is used to estimate the objective value of the ongoing trial.",
+          "type": "string"
+        },
+        "useElapsedDuration": {
+          "description": "This bool determines whether or not the rule is applied based on elapsed_secs or steps. If use_elapsed_duration==false, the early stopping decision is made according to the predicted objective values according to the target steps. If use_elapsed_duration==true, elapsed_secs is used instead of steps. Also, in this case, the parameters max_num_steps and min_num_steps are overloaded to contain max_elapsed_seconds and min_elapsed_seconds.",
           "type": "boolean"
         }
       }
@@ -3567,6 +3859,11 @@
           "description": "The name of the Model resoure that produces the predictions via this job, must share the same ancestor Location. Starting this job has no impact on any existing deployments of the Model and their resources. Exactly one of model and unmanaged_container_model must be set.",
           "type": "string"
         },
+        "modelVersionId": {
+          "description": "Output only. The version ID of the Model that produces the predictions via this job.",
+          "readOnly": true,
+          "type": "string"
+        },
         "unmanagedContainerModel": {
           "description": "Contains model information necessary to perform batch prediction without requiring uploading to model registry. Exactly one of model and unmanaged_container_model must be set.",
           "$ref": "GoogleCloudAiplatformV1UnmanagedContainerModel"
@@ -3618,7 +3915,8 @@
             "The job is being cancelled. From this state the job may only go to either `JOB_STATE_SUCCEEDED`, `JOB_STATE_FAILED` or `JOB_STATE_CANCELLED`.",
             "The job has been cancelled.",
             "The job has been stopped, and can be resumed.",
-            "The job has expired."
+            "The job has expired.",
+            "The job is being updated. The job is only able to be updated at RUNNING state; if the update operation succeeds, job goes back to RUNNING state; if the update operation fails, the job goes back to RUNNING state with error messages written to ModelDeploymentMonitoringJob.partial_errors field if it is a ModelDeploymentMonitoringJob."
           ],
           "enum": [
             "JOB_STATE_UNSPECIFIED",
@@ -3630,7 +3928,8 @@
             "JOB_STATE_CANCELLING",
             "JOB_STATE_CANCELLED",
             "JOB_STATE_PAUSED",
-            "JOB_STATE_EXPIRED"
+            "JOB_STATE_EXPIRED",
+            "JOB_STATE_UPDATING"
           ]
         },
         "error": {
@@ -3733,7 +4032,7 @@
     },
     "GoogleCloudAiplatformV1ModelContainerSpec": {
       "id": "GoogleCloudAiplatformV1ModelContainerSpec",
-      "description": "Specification of a container for serving predictions. Some fields in this message correspond to fields in the [Kubernetes Container v1 core specification](https:\/\/v1-18.docs.kubernetes.io\/docs\/reference\/generated\/kubernetes-api\/v1.18\/#container-v1-core).",
+      "description": "Specification of a container for serving predictions. Some fields in this message correspond to fields in the [Kubernetes Container v1 core specification](https:\/\/kubernetes.io\/docs\/reference\/generated\/kubernetes-api\/v1.23\/#container-v1-core).",
       "type": "object",
       "properties": {
         "imageUri": {
@@ -3741,28 +4040,28 @@
           "type": "string"
         },
         "command": {
-          "description": "Immutable. Specifies the command that runs when the container starts. This overrides the container's [ENTRYPOINT](https:\/\/docs.docker.com\/engine\/reference\/builder\/#entrypoint). Specify this field as an array of executable and arguments, similar to a Docker `ENTRYPOINT`'s \"exec\" form, not its \"shell\" form. If you do not specify this field, then the container's `ENTRYPOINT` runs, in conjunction with the args field or the container's [`CMD`](https:\/\/docs.docker.com\/engine\/reference\/builder\/#cmd), if either exists. If this field is not specified and the container does not have an `ENTRYPOINT`, then refer to the Docker documentation about [how `CMD` and `ENTRYPOINT` interact](https:\/\/docs.docker.com\/engine\/reference\/builder\/#understand-how-cmd-and-entrypoint-interact). If you specify this field, then you can also specify the `args` field to provide additional arguments for this command. However, if you specify this field, then the container's `CMD` is ignored. See the [Kubernetes documentation about how the `command` and `args` fields interact with a container's `ENTRYPOINT` and `CMD`](https:\/\/kubernetes.io\/docs\/tasks\/inject-data-application\/define-command-argument-container\/#notes). In this field, you can reference [environment variables set by Vertex AI](https:\/\/cloud.google.com\/vertex-ai\/docs\/predictions\/custom-container-requirements#aip-variables) and environment variables set in the env field. You cannot reference environment variables set in the Docker image. In order for environment variables to be expanded, reference them by using the following syntax: $( VARIABLE_NAME) Note that this differs from Bash variable expansion, which does not use parentheses. If a variable cannot be resolved, the reference in the input string is used unchanged. To avoid variable expansion, you can escape this syntax with `$$`; for example: $$(VARIABLE_NAME) This field corresponds to the `command` field of the Kubernetes Containers [v1 core API](https:\/\/v1-18.docs.kubernetes.io\/docs\/reference\/generated\/kubernetes-api\/v1.18\/#container-v1-core).",
+          "description": "Immutable. Specifies the command that runs when the container starts. This overrides the container's [ENTRYPOINT](https:\/\/docs.docker.com\/engine\/reference\/builder\/#entrypoint). Specify this field as an array of executable and arguments, similar to a Docker `ENTRYPOINT`'s \"exec\" form, not its \"shell\" form. If you do not specify this field, then the container's `ENTRYPOINT` runs, in conjunction with the args field or the container's [`CMD`](https:\/\/docs.docker.com\/engine\/reference\/builder\/#cmd), if either exists. If this field is not specified and the container does not have an `ENTRYPOINT`, then refer to the Docker documentation about [how `CMD` and `ENTRYPOINT` interact](https:\/\/docs.docker.com\/engine\/reference\/builder\/#understand-how-cmd-and-entrypoint-interact). If you specify this field, then you can also specify the `args` field to provide additional arguments for this command. However, if you specify this field, then the container's `CMD` is ignored. See the [Kubernetes documentation about how the `command` and `args` fields interact with a container's `ENTRYPOINT` and `CMD`](https:\/\/kubernetes.io\/docs\/tasks\/inject-data-application\/define-command-argument-container\/#notes). In this field, you can reference [environment variables set by Vertex AI](https:\/\/cloud.google.com\/vertex-ai\/docs\/predictions\/custom-container-requirements#aip-variables) and environment variables set in the env field. You cannot reference environment variables set in the Docker image. In order for environment variables to be expanded, reference them by using the following syntax: $( VARIABLE_NAME) Note that this differs from Bash variable expansion, which does not use parentheses. If a variable cannot be resolved, the reference in the input string is used unchanged. To avoid variable expansion, you can escape this syntax with `$$`; for example: $$(VARIABLE_NAME) This field corresponds to the `command` field of the Kubernetes Containers [v1 core API](https:\/\/kubernetes.io\/docs\/reference\/generated\/kubernetes-api\/v1.23\/#container-v1-core).",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "args": {
-          "description": "Immutable. Specifies arguments for the command that runs when the container starts. This overrides the container's [`CMD`](https:\/\/docs.docker.com\/engine\/reference\/builder\/#cmd). Specify this field as an array of executable and arguments, similar to a Docker `CMD`'s \"default parameters\" form. If you don't specify this field but do specify the command field, then the command from the `command` field runs without any additional arguments. See the [Kubernetes documentation about how the `command` and `args` fields interact with a container's `ENTRYPOINT` and `CMD`](https:\/\/kubernetes.io\/docs\/tasks\/inject-data-application\/define-command-argument-container\/#notes). If you don't specify this field and don't specify the `command` field, then the container's [`ENTRYPOINT`](https:\/\/docs.docker.com\/engine\/reference\/builder\/#cmd) and `CMD` determine what runs based on their default behavior. See the Docker documentation about [how `CMD` and `ENTRYPOINT` interact](https:\/\/docs.docker.com\/engine\/reference\/builder\/#understand-how-cmd-and-entrypoint-interact). In this field, you can reference [environment variables set by Vertex AI](https:\/\/cloud.google.com\/vertex-ai\/docs\/predictions\/custom-container-requirements#aip-variables) and environment variables set in the env field. You cannot reference environment variables set in the Docker image. In order for environment variables to be expanded, reference them by using the following syntax: $( VARIABLE_NAME) Note that this differs from Bash variable expansion, which does not use parentheses. If a variable cannot be resolved, the reference in the input string is used unchanged. To avoid variable expansion, you can escape this syntax with `$$`; for example: $$(VARIABLE_NAME) This field corresponds to the `args` field of the Kubernetes Containers [v1 core API](https:\/\/v1-18.docs.kubernetes.io\/docs\/reference\/generated\/kubernetes-api\/v1.18\/#container-v1-core).",
+          "description": "Immutable. Specifies arguments for the command that runs when the container starts. This overrides the container's [`CMD`](https:\/\/docs.docker.com\/engine\/reference\/builder\/#cmd). Specify this field as an array of executable and arguments, similar to a Docker `CMD`'s \"default parameters\" form. If you don't specify this field but do specify the command field, then the command from the `command` field runs without any additional arguments. See the [Kubernetes documentation about how the `command` and `args` fields interact with a container's `ENTRYPOINT` and `CMD`](https:\/\/kubernetes.io\/docs\/tasks\/inject-data-application\/define-command-argument-container\/#notes). If you don't specify this field and don't specify the `command` field, then the container's [`ENTRYPOINT`](https:\/\/docs.docker.com\/engine\/reference\/builder\/#cmd) and `CMD` determine what runs based on their default behavior. See the Docker documentation about [how `CMD` and `ENTRYPOINT` interact](https:\/\/docs.docker.com\/engine\/reference\/builder\/#understand-how-cmd-and-entrypoint-interact). In this field, you can reference [environment variables set by Vertex AI](https:\/\/cloud.google.com\/vertex-ai\/docs\/predictions\/custom-container-requirements#aip-variables) and environment variables set in the env field. You cannot reference environment variables set in the Docker image. In order for environment variables to be expanded, reference them by using the following syntax: $( VARIABLE_NAME) Note that this differs from Bash variable expansion, which does not use parentheses. If a variable cannot be resolved, the reference in the input string is used unchanged. To avoid variable expansion, you can escape this syntax with `$$`; for example: $$(VARIABLE_NAME) This field corresponds to the `args` field of the Kubernetes Containers [v1 core API](https:\/\/kubernetes.io\/docs\/reference\/generated\/kubernetes-api\/v1.23\/#container-v1-core).",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "env": {
-          "description": "Immutable. List of environment variables to set in the container. After the container starts running, code running in the container can read these environment variables. Additionally, the command and args fields can reference these variables. Later entries in this list can also reference earlier entries. For example, the following example sets the variable `VAR_2` to have the value `foo bar`: ```json [ { \"name\": \"VAR_1\", \"value\": \"foo\" }, { \"name\": \"VAR_2\", \"value\": \"$(VAR_1) bar\" } ] ``` If you switch the order of the variables in the example, then the expansion does not occur. This field corresponds to the `env` field of the Kubernetes Containers [v1 core API](https:\/\/v1-18.docs.kubernetes.io\/docs\/reference\/generated\/kubernetes-api\/v1.18\/#container-v1-core).",
+          "description": "Immutable. List of environment variables to set in the container. After the container starts running, code running in the container can read these environment variables. Additionally, the command and args fields can reference these variables. Later entries in this list can also reference earlier entries. For example, the following example sets the variable `VAR_2` to have the value `foo bar`: ```json [ { \"name\": \"VAR_1\", \"value\": \"foo\" }, { \"name\": \"VAR_2\", \"value\": \"$(VAR_1) bar\" } ] ``` If you switch the order of the variables in the example, then the expansion does not occur. This field corresponds to the `env` field of the Kubernetes Containers [v1 core API](https:\/\/kubernetes.io\/docs\/reference\/generated\/kubernetes-api\/v1.23\/#container-v1-core).",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudAiplatformV1EnvVar"
           }
         },
         "ports": {
-          "description": "Immutable. List of ports to expose from the container. Vertex AI sends any prediction requests that it receives to the first port on this list. Vertex AI also sends [liveness and health checks](https:\/\/cloud.google.com\/vertex-ai\/docs\/predictions\/custom-container-requirements#liveness) to this port. If you do not specify this field, it defaults to following value: ```json [ { \"containerPort\": 8080 } ] ``` Vertex AI does not use ports other than the first one listed. This field corresponds to the `ports` field of the Kubernetes Containers [v1 core API](https:\/\/v1-18.docs.kubernetes.io\/docs\/reference\/generated\/kubernetes-api\/v1.18\/#container-v1-core).",
+          "description": "Immutable. List of ports to expose from the container. Vertex AI sends any prediction requests that it receives to the first port on this list. Vertex AI also sends [liveness and health checks](https:\/\/cloud.google.com\/vertex-ai\/docs\/predictions\/custom-container-requirements#liveness) to this port. If you do not specify this field, it defaults to following value: ```json [ { \"containerPort\": 8080 } ] ``` Vertex AI does not use ports other than the first one listed. This field corresponds to the `ports` field of the Kubernetes Containers [v1 core API](https:\/\/kubernetes.io\/docs\/reference\/generated\/kubernetes-api\/v1.23\/#container-v1-core).",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudAiplatformV1Port"
@@ -3978,7 +4277,8 @@
             "The job is being cancelled. From this state the job may only go to either `JOB_STATE_SUCCEEDED`, `JOB_STATE_FAILED` or `JOB_STATE_CANCELLED`.",
             "The job has been cancelled.",
             "The job has been stopped, and can be resumed.",
-            "The job has expired."
+            "The job has expired.",
+            "The job is being updated. The job is only able to be updated at RUNNING state; if the update operation succeeds, job goes back to RUNNING state; if the update operation fails, the job goes back to RUNNING state with error messages written to ModelDeploymentMonitoringJob.partial_errors field if it is a ModelDeploymentMonitoringJob."
           ],
           "enum": [
             "JOB_STATE_UNSPECIFIED",
@@ -3990,7 +4290,8 @@
             "JOB_STATE_CANCELLING",
             "JOB_STATE_CANCELLED",
             "JOB_STATE_PAUSED",
-            "JOB_STATE_EXPIRED"
+            "JOB_STATE_EXPIRED",
+            "JOB_STATE_UPDATING"
           ]
         },
         "scheduleState": {
@@ -4009,6 +4310,10 @@
             "OFFLINE",
             "RUNNING"
           ]
+        },
+        "latestMonitoringPipelineMetadata": {
+          "description": "Latest triggered monitoring pipeline metadata.",
+          "$ref": "GoogleCloudAiplatformV1ModelDeploymentMonitoringJobLatestMonitoringPipelineMetadata"
         },
         "modelDeploymentMonitoringObjectiveConfigs": {
           "description": "Required. The config for monitoring objectives. This is a per DeployedModel config. Each DeployedModel needs to be configured separately.",
@@ -4098,6 +4403,22 @@
         }
       }
     },
+    "GoogleCloudAiplatformV1ModelDeploymentMonitoringJobLatestMonitoringPipelineMetadata": {
+      "id": "GoogleCloudAiplatformV1ModelDeploymentMonitoringJobLatestMonitoringPipelineMetadata",
+      "description": "All metadata of most recent monitoring pipelines.",
+      "type": "object",
+      "properties": {
+        "runTime": {
+          "description": "The time that most recent monitoring pipelines that is related to this run.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "status": {
+          "description": "The status of the most recent monitoring pipeline.",
+          "$ref": "GoogleRpcStatus"
+        }
+      }
+    },
     "GoogleCloudAiplatformV1ModelDeploymentMonitoringObjectiveConfig": {
       "id": "GoogleCloudAiplatformV1ModelDeploymentMonitoringObjectiveConfig",
       "description": "ModelDeploymentMonitoringObjectiveConfig contains the pair of deployed_model_id to ModelMonitoringObjectiveConfig.",
@@ -4115,7 +4436,7 @@
     },
     "GoogleCloudAiplatformV1ModelMonitoringObjectiveConfig": {
       "id": "GoogleCloudAiplatformV1ModelMonitoringObjectiveConfig",
-      "description": "Next ID: 6",
+      "description": "Next ID: 8",
       "type": "object",
       "properties": {
         "trainingDataset": {
@@ -4294,7 +4615,7 @@
       "type": "object",
       "properties": {
         "monitorInterval": {
-          "description": "Required. The model monitoring job running interval. It will be rounded up to next full hour.",
+          "description": "Required. The model monitoring job scheduling interval. It will be rounded up to next full hour. This defines how often the monitoring jobs are triggered.",
           "type": "string",
           "format": "google-duration"
         }
@@ -4520,46 +4841,6 @@
           "items": {
             "$ref": "GoogleCloudAiplatformV1FeatureStatsAnomaly"
           }
-        }
-      }
-    },
-    "GoogleCloudAiplatformV1FeatureStatsAnomaly": {
-      "id": "GoogleCloudAiplatformV1FeatureStatsAnomaly",
-      "description": "Stats and Anomaly generated at specific timestamp for specific Feature. The start_time and end_time are used to define the time range of the dataset that current stats belongs to, e.g. prediction traffic is bucketed into prediction datasets by time window. If the Dataset is not defined by time window, start_time = end_time. Timestamp of the stats and anomalies always refers to end_time. Raw stats and anomalies are stored in stats_uri or anomaly_uri in the tensorflow defined protos. Field data_stats contains almost identical information with the raw stats in Vertex AI defined proto, for UI to display.",
-      "type": "object",
-      "properties": {
-        "score": {
-          "description": "Feature importance score, only populated when cross-feature monitoring is enabled. For now only used to represent feature attribution score within range [0, 1] for ModelDeploymentMonitoringObjectiveType.FEATURE_ATTRIBUTION_SKEW and ModelDeploymentMonitoringObjectiveType.FEATURE_ATTRIBUTION_DRIFT.",
-          "type": "number",
-          "format": "double"
-        },
-        "statsUri": {
-          "description": "Path of the stats file for current feature values in Cloud Storage bucket. Format: gs:\/\/\/\/stats. Example: gs:\/\/monitoring_bucket\/feature_name\/stats. Stats are stored as binary format with Protobuf message [tensorflow.metadata.v0.FeatureNameStatistics](https:\/\/github.com\/tensorflow\/metadata\/blob\/master\/tensorflow_metadata\/proto\/v0\/statistics.proto).",
-          "type": "string"
-        },
-        "anomalyUri": {
-          "description": "Path of the anomaly file for current feature values in Cloud Storage bucket. Format: gs:\/\/\/\/anomalies. Example: gs:\/\/monitoring_bucket\/feature_name\/anomalies. Stats are stored as binary format with Protobuf message Anoamlies are stored as binary format with Protobuf message [tensorflow.metadata.v0.AnomalyInfo] (https:\/\/github.com\/tensorflow\/metadata\/blob\/master\/tensorflow_metadata\/proto\/v0\/anomalies.proto).",
-          "type": "string"
-        },
-        "distributionDeviation": {
-          "description": "Deviation from the current stats to baseline stats. 1. For categorical feature, the distribution distance is calculated by L-inifinity norm. 2. For numerical feature, the distribution distance is calculated by Jensen\u2013Shannon divergence.",
-          "type": "number",
-          "format": "double"
-        },
-        "anomalyDetectionThreshold": {
-          "description": "This is the threshold used when detecting anomalies. The threshold can be changed by user, so this one might be different from ThresholdConfig.value.",
-          "type": "number",
-          "format": "double"
-        },
-        "startTime": {
-          "description": "The start timestamp of window where stats were generated. For objectives where time window doesn't make sense (e.g. Featurestore Snapshot Monitoring), start_time is only used to indicate the monitoring intervals, so it always equals to (end_time - monitoring_interval).",
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "endTime": {
-          "description": "The end timestamp of window where stats were generated. For objectives where time window doesn't make sense (e.g. Featurestore Snapshot Monitoring), end_time indicates the timestamp of the data used to generate stats (e.g. timestamp we take snapshots for feature values).",
-          "type": "string",
-          "format": "google-datetime"
         }
       }
     },
@@ -5709,6 +5990,17 @@
         }
       }
     },
+    "GoogleCloudAiplatformV1ImportModelEvaluationRequest": {
+      "id": "GoogleCloudAiplatformV1ImportModelEvaluationRequest",
+      "description": "Request message for ModelService.ImportModelEvaluation",
+      "type": "object",
+      "properties": {
+        "modelEvaluation": {
+          "description": "Required. Model evaluation resource to be imported.",
+          "$ref": "GoogleCloudAiplatformV1ModelEvaluation"
+        }
+      }
+    },
     "GoogleCloudAiplatformV1ModelEvaluation": {
       "id": "GoogleCloudAiplatformV1ModelEvaluation",
       "description": "A collection of metrics calculated by comparing Model's predictions on all of the test data against annotations from the test data.",
@@ -5720,13 +6012,11 @@
           "type": "string"
         },
         "metricsSchemaUri": {
-          "description": "Output only. Points to a YAML file stored on Google Cloud Storage describing the metrics of this ModelEvaluation. The schema is defined as an OpenAPI 3.0.2 [Schema Object](https:\/\/github.com\/OAI\/OpenAPI-Specification\/blob\/main\/versions\/3.0.2.md#schemaObject).",
-          "readOnly": true,
+          "description": "Points to a YAML file stored on Google Cloud Storage describing the metrics of this ModelEvaluation. The schema is defined as an OpenAPI 3.0.2 [Schema Object](https:\/\/github.com\/OAI\/OpenAPI-Specification\/blob\/main\/versions\/3.0.2.md#schemaObject).",
           "type": "string"
         },
         "metrics": {
-          "description": "Output only. Evaluation metrics of the Model. The schema of the metrics is stored in metrics_schema_uri",
-          "readOnly": true,
+          "description": "Evaluation metrics of the Model. The schema of the metrics is stored in metrics_schema_uri",
           "type": "any"
         },
         "createTime": {
@@ -5736,17 +6026,30 @@
           "format": "google-datetime"
         },
         "sliceDimensions": {
-          "description": "Output only. All possible dimensions of ModelEvaluationSlices. The dimensions can be used as the filter of the ModelService.ListModelEvaluationSlices request, in the form of `slice.dimension = `.",
-          "readOnly": true,
+          "description": "All possible dimensions of ModelEvaluationSlices. The dimensions can be used as the filter of the ModelService.ListModelEvaluationSlices request, in the form of `slice.dimension = `.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
+        "dataItemSchemaUri": {
+          "description": "Points to a YAML file stored on Google Cloud Storage describing EvaluatedDataItemView.data_item_payload and EvaluatedAnnotation.data_item_payload. The schema is defined as an OpenAPI 3.0.2 [Schema Object](https:\/\/github.com\/OAI\/OpenAPI-Specification\/blob\/main\/versions\/3.0.2.md#schemaObject). This field is not populated if there are neither EvaluatedDataItemViews nor EvaluatedAnnotations under this ModelEvaluation.",
+          "type": "string"
+        },
+        "annotationSchemaUri": {
+          "description": "Points to a YAML file stored on Google Cloud Storage describing EvaluatedDataItemView.predictions, EvaluatedDataItemView.ground_truths, EvaluatedAnnotation.predictions, and EvaluatedAnnotation.ground_truths. The schema is defined as an OpenAPI 3.0.2 [Schema Object](https:\/\/github.com\/OAI\/OpenAPI-Specification\/blob\/main\/versions\/3.0.2.md#schemaObject). This field is not populated if there are neither EvaluatedDataItemViews nor EvaluatedAnnotations under this ModelEvaluation.",
+          "type": "string"
+        },
         "modelExplanation": {
-          "description": "Output only. Aggregated explanation metrics for the Model's prediction output over the data this ModelEvaluation uses. This field is populated only if the Model is evaluated with explanations, and only for AutoML tabular Models. ",
-          "readOnly": true,
+          "description": "Aggregated explanation metrics for the Model's prediction output over the data this ModelEvaluation uses. This field is populated only if the Model is evaluated with explanations, and only for AutoML tabular Models. ",
           "$ref": "GoogleCloudAiplatformV1ModelExplanation"
+        },
+        "explanationSpecs": {
+          "description": "Describes the values of ExplanationSpec that are used for explaining the predicted values on the evaluated data.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1ModelEvaluationModelEvaluationExplanationSpec"
+          }
         }
       }
     },
@@ -5797,7 +6100,7 @@
           }
         },
         "outputDisplayName": {
-          "description": "Output only. The display name of the output identified by output_index. For example, the predicted class name by a multi-classification Model. This field is only populated iff the Model predicts display names as a separate field along with the explained output. The predicted display name must have the same shape of the explained output, and can be located using output_index.",
+          "description": "Output only. The display name of the output identified by output_index. For example, the predicted class name by a multi-classification Model. This field is only populated iff the Model predicts display names as a separate field along with the explained output. The predicted display name must has the same shape of the explained output, and can be located using output_index.",
           "readOnly": true,
           "type": "string"
         },
@@ -5811,6 +6114,20 @@
           "description": "Output only. Name of the explain output. Specified as the key in ExplanationMetadata.outputs.",
           "readOnly": true,
           "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1ModelEvaluationModelEvaluationExplanationSpec": {
+      "id": "GoogleCloudAiplatformV1ModelEvaluationModelEvaluationExplanationSpec",
+      "type": "object",
+      "properties": {
+        "explanationType": {
+          "description": "Explanation type. For AutoML Image Classification models, possible values are: * `image-integrated-gradients` * `image-xrai`",
+          "type": "string"
+        },
+        "explanationSpec": {
+          "description": "Explanation spec details.",
+          "$ref": "GoogleCloudAiplatformV1ExplanationSpec"
         }
       }
     },
@@ -6219,7 +6536,7 @@
           "format": "google-datetime"
         },
         "pipelineSpec": {
-          "description": "Required. The spec of the pipeline.",
+          "description": "The spec of the pipeline.",
           "type": "object",
           "additionalProperties": {
             "type": "any",
@@ -6638,6 +6955,11 @@
         },
         "model": {
           "description": "Output only. The resource name of the Model which is deployed as the DeployedModel that this prediction hits.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "modelVersionId": {
+          "description": "Output only. The version ID of the Model which is deployed as the DeployedModel that this prediction hits.",
           "readOnly": true,
           "type": "string"
         },
@@ -7513,7 +7835,7 @@
     },
     "GoogleCloudAiplatformV1Study": {
       "id": "GoogleCloudAiplatformV1Study",
-      "description": "LINT.IfChange A message representing a Study.",
+      "description": "A message representing a Study.",
       "type": "object",
       "properties": {
         "name": {
@@ -8043,6 +8365,17 @@
         }
       }
     },
+    "GoogleCloudAiplatformV1beta1CreateDeploymentResourcePoolOperationMetadata": {
+      "id": "GoogleCloudAiplatformV1beta1CreateDeploymentResourcePoolOperationMetadata",
+      "description": "Runtime operation information for CreateDeploymentResourcePool method.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The operation generic information.",
+          "$ref": "GoogleCloudAiplatformV1beta1GenericOperationMetadata"
+        }
+      }
+    },
     "GoogleCloudAiplatformV1beta1CreateEndpointOperationMetadata": {
       "id": "GoogleCloudAiplatformV1beta1CreateEndpointOperationMetadata",
       "description": "Runtime operation information for EndpointService.CreateEndpoint.",
@@ -8276,12 +8609,24 @@
           "description": "Optional. The custom monitoring configuration for this Feature, if not set, use the monitoring_config defined for the EntityType this Feature belongs to. Only Features with type (Feature.ValueType) BOOL, STRING, DOUBLE or INT64 can enable monitoring. If this is populated with FeaturestoreMonitoringConfig.disabled = true, snapshot analysis monitoring is disabled; if FeaturestoreMonitoringConfig.monitoring_interval specified, snapshot analysis monitoring is enabled. Otherwise, snapshot analysis monitoring config is same as the EntityType's this Feature belongs to.",
           "$ref": "GoogleCloudAiplatformV1beta1FeaturestoreMonitoringConfig"
         },
+        "disableMonitoring": {
+          "description": "Optional. If not set, use the monitoring_config defined for the EntityType this Feature belongs to. Only Features with type (Feature.ValueType) BOOL, STRING, DOUBLE or INT64 can enable monitoring. If set to true, all types of data monitoring are disabled despite the config on EntityType.",
+          "type": "boolean"
+        },
         "monitoringStats": {
           "description": "Output only. A list of historical Snapshot Analysis stats requested by user, sorted by FeatureStatsAnomaly.start_time descending.",
           "readOnly": true,
           "type": "array",
           "items": {
             "$ref": "GoogleCloudAiplatformV1beta1FeatureStatsAnomaly"
+          }
+        },
+        "monitoringStatsAnomalies": {
+          "description": "Output only. The list of historical stats and anomalies with specified objectives.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1FeatureMonitoringStatsAnomaly"
           }
         }
       }
@@ -8294,6 +8639,18 @@
         "snapshotAnalysis": {
           "description": "The config for Snapshot Analysis Based Feature Monitoring.",
           "$ref": "GoogleCloudAiplatformV1beta1FeaturestoreMonitoringConfigSnapshotAnalysis"
+        },
+        "importFeaturesAnalysis": {
+          "description": "The config for ImportFeatures Analysis Based Feature Monitoring.",
+          "$ref": "GoogleCloudAiplatformV1beta1FeaturestoreMonitoringConfigImportFeaturesAnalysis"
+        },
+        "numericalThresholdConfig": {
+          "description": "Threshold for numerical features of anomaly detection. This is shared by all objectives of Featurestore Monitoring for numerical features (i.e. Features with type (Feature.ValueType) DOUBLE or INT64).",
+          "$ref": "GoogleCloudAiplatformV1beta1FeaturestoreMonitoringConfigThresholdConfig"
+        },
+        "categoricalThresholdConfig": {
+          "description": "Threshold for categorical features of anomaly detection. This is shared by all types of Featurestore Monitoring for categorical features (i.e. Features with type (Feature.ValueType) BOOL or STRING).",
+          "$ref": "GoogleCloudAiplatformV1beta1FeaturestoreMonitoringConfigThresholdConfig"
         }
       }
     },
@@ -8315,6 +8672,62 @@
           "description": "Configuration of the snapshot analysis based monitoring pipeline running interval. The value indicates number of days. If both FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval_days and FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval are set when creating\/updating EntityTypes\/Features, FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval_days will be used.",
           "type": "integer",
           "format": "int32"
+        },
+        "stalenessDays": {
+          "description": "Customized export features time window for snapshot analysis. Unit is one day. Default value is 3 weeks. Minimum value is 1 day. Maximum value is 4000 days.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1FeaturestoreMonitoringConfigImportFeaturesAnalysis": {
+      "id": "GoogleCloudAiplatformV1beta1FeaturestoreMonitoringConfigImportFeaturesAnalysis",
+      "description": "Configuration of the Featurestore's ImportFeature Analysis Based Monitoring. This type of analysis generates statistics for values of each Feature imported by every ImportFeatureValues operation.",
+      "type": "object",
+      "properties": {
+        "state": {
+          "description": "Whether to enable \/ disable \/ inherite default hebavior for import features analysis.",
+          "type": "string",
+          "enumDescriptions": [
+            "Should not be used.",
+            "The default behavior of whether to enable the monitoring. EntityType-level config: disabled. Feature-level config: inherited from the configuration of EntityType this Feature belongs to.",
+            "Explicitly enables import features analysis. EntityType-level config: by default enables import features analysis for all Features under it. Feature-level config: enables import features analysis regardless of the EntityType-level config.",
+            "Explicitly disables import features analysis. EntityType-level config: by default disables import features analysis for all Features under it. Feature-level config: disables import features analysis regardless of the EntityType-level config."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "DEFAULT",
+            "ENABLED",
+            "DISABLED"
+          ]
+        },
+        "anomalyDetectionBaseline": {
+          "description": "The baseline used to do anomaly detection for the statistics generated by import features analysis.",
+          "type": "string",
+          "enumDescriptions": [
+            "Should not be used.",
+            "Choose the later one statistics generated by either most recent snapshot analysis or previous import features analysis. If non of them exists, skip anomaly detection and only generate a statistics.",
+            "Use the statistics generated by the most recent snapshot analysis if exists.",
+            "Use the statistics generated by the previous import features analysis if exists."
+          ],
+          "enum": [
+            "BASELINE_UNSPECIFIED",
+            "LATEST_STATS",
+            "MOST_RECENT_SNAPSHOT_STATS",
+            "PREVIOUS_IMPORT_FEATURES_STATS"
+          ]
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1FeaturestoreMonitoringConfigThresholdConfig": {
+      "id": "GoogleCloudAiplatformV1beta1FeaturestoreMonitoringConfigThresholdConfig",
+      "description": "The config for Featurestore Monitoring threshold.",
+      "type": "object",
+      "properties": {
+        "value": {
+          "description": "Specify a threshold value that can trigger the alert. 1. For categorical feature, the distribution distance is calculated by L-inifinity norm. 2. For numerical feature, the distribution distance is calculated by Jensen\u2013Shannon divergence. Each feature must have a non-zero threshold if they need to be monitored. Otherwise no alert will be triggered for that feature.",
+          "type": "number",
+          "format": "double"
         }
       }
     },
@@ -8355,6 +8768,33 @@
           "description": "The end timestamp of window where stats were generated. For objectives where time window doesn't make sense (e.g. Featurestore Snapshot Monitoring), end_time indicates the timestamp of the data used to generate stats (e.g. timestamp we take snapshots for feature values).",
           "type": "string",
           "format": "google-datetime"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1FeatureMonitoringStatsAnomaly": {
+      "id": "GoogleCloudAiplatformV1beta1FeatureMonitoringStatsAnomaly",
+      "description": "A list of historical Snapshot Analysis or Import Feature Analysis stats requested by user, sorted by FeatureStatsAnomaly.start_time descending.",
+      "type": "object",
+      "properties": {
+        "objective": {
+          "description": "Output only. The objective for each stats.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "If it's OBJECTIVE_UNSPECIFIED, monitoring_stats will be empty.",
+            "Stats are generated by Import Feature Analysis.",
+            "Stats are generated by Snapshot Analysis."
+          ],
+          "enum": [
+            "OBJECTIVE_UNSPECIFIED",
+            "IMPORT_FEATURE_ANALYSIS",
+            "SNAPSHOT_ANALYSIS"
+          ]
+        },
+        "featureStatsAnomaly": {
+          "description": "Output only. The stats and anomalies generated at specific timestamp.",
+          "readOnly": true,
+          "$ref": "GoogleCloudAiplatformV1beta1FeatureStatsAnomaly"
         }
       }
     },
@@ -8508,6 +8948,11 @@
           "description": "Required. The name of the Model that this is the deployment of. Note that the Model may be in a different location than the DeployedModel's Endpoint.",
           "type": "string"
         },
+        "modelVersionId": {
+          "description": "Output only. The version ID of the model that is deployed.",
+          "readOnly": true,
+          "type": "string"
+        },
         "displayName": {
           "description": "The display name of the DeployedModel. If not provided upon creation, the Model's display_name is used.",
           "type": "string"
@@ -8556,7 +9001,7 @@
           "format": "int32"
         },
         "maxReplicaCount": {
-          "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If the requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, will use min_replica_count as the default value.",
+          "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If the requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, will use min_replica_count as the default value. The value of this field impacts the charge against Vertex CPU and GPU quotas. Specifically, you will be charged for max_replica_count * number of cores in the selected machine type) and (max_replica_count * number of GPUs per replica in the selected machine type).",
           "type": "integer",
           "format": "int32"
         },
@@ -8588,7 +9033,9 @@
             "Nvidia Tesla V100 GPU.",
             "Nvidia Tesla P4 GPU.",
             "Nvidia Tesla T4 GPU.",
-            "Nvidia Tesla A100 GPU."
+            "Nvidia Tesla A100 GPU.",
+            "TPU v2.",
+            "TPU v3."
           ],
           "enum": [
             "ACCELERATOR_TYPE_UNSPECIFIED",
@@ -8597,7 +9044,9 @@
             "NVIDIA_TESLA_V100",
             "NVIDIA_TESLA_P4",
             "NVIDIA_TESLA_T4",
-            "NVIDIA_TESLA_A100"
+            "NVIDIA_TESLA_A100",
+            "TPU_V2",
+            "TPU_V3"
           ]
         },
         "acceleratorCount": {
@@ -9164,6 +9613,10 @@
         "automaticResources": {
           "description": "Optional. A description of resources that the DeployedIndex uses, which to large degree are decided by Vertex AI, and optionally allows only a modest additional configuration. If min_replica_count is not set, the default value is 2 (we don't provide SLA when min_replica_count=1). If max_replica_count is not set, the default value is min_replica_count. The max allowed replica count is 1000.",
           "$ref": "GoogleCloudAiplatformV1beta1AutomaticResources"
+        },
+        "dedicatedResources": {
+          "description": "Optional. A description of resources that are dedicated to the DeployedIndex, and that need a higher degree of manual configuration. If min_replica_count is not set, the default value is 2 (we don't provide SLA when min_replica_count=1). If max_replica_count is not set, the default value is min_replica_count. The max allowed replica count is 1000. Available machine types: n1-standard-16 n1-standard-32",
+          "$ref": "GoogleCloudAiplatformV1beta1DedicatedResources"
         },
         "enableAccessLogging": {
           "description": "Optional. If true, private endpoint's access logs are sent to StackDriver Logging. These logs are like standard server access logs, containing information like timestamp and latency for each MatchRequest. Note that Stackdriver logs may incur a cost, especially if the deployed index receives a high queries per second rate (QPS). Estimate your costs before enabling this option.",
@@ -9794,6 +10247,17 @@
       "properties": {
       }
     },
+    "GoogleCloudAiplatformV1beta1UpdateDeploymentResourcePoolOperationMetadata": {
+      "id": "GoogleCloudAiplatformV1beta1UpdateDeploymentResourcePoolOperationMetadata",
+      "description": "Runtime operation information for UpdateDeploymentResourcePool method.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The operation generic information.",
+          "$ref": "GoogleCloudAiplatformV1beta1GenericOperationMetadata"
+        }
+      }
+    },
     "GoogleCloudAiplatformV1beta1UpdateFeaturestoreOperationMetadata": {
       "id": "GoogleCloudAiplatformV1beta1UpdateFeaturestoreOperationMetadata",
       "description": "Details of operations that perform update Featurestore.",
@@ -9876,6 +10340,11 @@
       "properties": {
         "model": {
           "description": "The name of the uploaded Model resource. Format: `projects\/{project}\/locations\/{location}\/models\/{model}`",
+          "type": "string"
+        },
+        "modelVersionId": {
+          "description": "Output only. The version ID of the model that is uploaded.",
+          "readOnly": true,
           "type": "string"
         }
       }
@@ -10525,7 +10994,7 @@
       "type": "object",
       "properties": {
         "targetColumn": {
-          "description": "The name of the column that the model is to predict.",
+          "description": "The name of the column that the Model is to predict values for. This column must be unavailable at forecast.",
           "type": "string"
         },
         "timeSeriesIdentifierColumn": {
@@ -10533,7 +11002,7 @@
           "type": "string"
         },
         "timeColumn": {
-          "description": "The name of the column that identifies time order in the time series.",
+          "description": "The name of the column that identifies time order in the time series. This column must be available at forecast.",
           "type": "string"
         },
         "transformations": {
@@ -10553,7 +11022,7 @@
           "format": "int64"
         },
         "weightColumn": {
-          "description": "Column name that should be used as the weight column. Higher values in this column give more importance to the row during model training. The column must have numeric values between 0 and 10000 inclusively; 0 means the row is ignored for training. If weight column field is not set, then all rows are assumed to have equal weight of 1.",
+          "description": "Column name that should be used as the weight column. Higher values in this column give more importance to the row during model training. The column must have numeric values between 0 and 10000 inclusively; 0 means the row is ignored for training. If weight column field is not set, then all rows are assumed to have equal weight of 1. This column must be available at forecast.",
           "type": "string"
         },
         "timeSeriesAttributeColumns": {
@@ -11358,7 +11827,7 @@
     },
     "GoogleCloudAiplatformV1beta1CustomJobSpec": {
       "id": "GoogleCloudAiplatformV1beta1CustomJobSpec",
-      "description": "Represents the spec of a CustomJob.",
+      "description": "Represents the spec of a CustomJob. Next Id: 14",
       "type": "object",
       "properties": {
         "workerPoolSpecs": {
@@ -11379,6 +11848,13 @@
         "network": {
           "description": "The full name of the Compute Engine [network](\/compute\/docs\/networks-and-firewalls#networks) to which the Job should be peered. For example, `projects\/12345\/global\/networks\/myVPC`. [Format](\/compute\/docs\/reference\/rest\/v1\/networks\/insert) is of the form `projects\/{project}\/global\/networks\/{network}`. Where {project} is a project number, as in `12345`, and {network} is a network name. To specify this field, you must have already [configured VPC Network Peering for Vertex AI](https:\/\/cloud.google.com\/vertex-ai\/docs\/general\/vpc-peering). If this field is left unspecified, the job is not peered with any network.",
           "type": "string"
+        },
+        "reservedIpRanges": {
+          "description": "Optional. A list of names for the reserved ip ranges under the VPC network that can be used for this job. If set, we will deploy the job within the provided ip ranges. Otherwise, the job will be deployed to any ip ranges under the provided VPC network. Example: ['vertex-ai-ip-range'].",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         },
         "baseOutputDirectory": {
           "description": "The Cloud Storage location to store the output of this CustomJob or HyperparameterTuningJob. For HyperparameterTuningJob, the baseOutputDirectory of each child CustomJob backing a Trial is set to a subdirectory of name id under its parent HyperparameterTuningJob's baseOutputDirectory. The following Vertex AI environment variables will be passed to containers or python modules when this field is set: For CustomJob: * AIP_MODEL_DIR = `\/model\/` * AIP_CHECKPOINT_DIR = `\/checkpoints\/` * AIP_TENSORBOARD_LOG_DIR = `\/logs\/` For CustomJob backing a Trial of HyperparameterTuningJob: * AIP_MODEL_DIR = `\/\/model\/` * AIP_CHECKPOINT_DIR = `\/\/checkpoints\/` * AIP_TENSORBOARD_LOG_DIR = `\/\/logs\/`",
@@ -11415,6 +11891,13 @@
           "description": "Optional. The number of worker replicas to use for this worker pool.",
           "type": "string",
           "format": "int64"
+        },
+        "nfsMounts": {
+          "description": "Optional. List of NFS mount spec.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1NfsMount"
+          }
         },
         "diskSpec": {
           "description": "Disk spec.",
@@ -11473,6 +11956,25 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1NfsMount": {
+      "id": "GoogleCloudAiplatformV1beta1NfsMount",
+      "description": "Represents a mount configuration for Network File System (NFS) to mount.",
+      "type": "object",
+      "properties": {
+        "server": {
+          "description": "Required. IP address of the NFS server.",
+          "type": "string"
+        },
+        "path": {
+          "description": "Required. Source path exported from NFS server. Has to start with '\/', and combined with the ip address, it indicates the source mount path in the form of `server:path`",
+          "type": "string"
+        },
+        "mountPoint": {
+          "description": "Required. Destination mount path. The NFS will be mounted for the user under \/mnt\/nfs\/",
+          "type": "string"
         }
       }
     },
@@ -11590,6 +12092,10 @@
           "description": "Deprecated. The automated early stopping using convex stopping rule.",
           "$ref": "GoogleCloudAiplatformV1beta1StudySpecConvexStopConfig"
         },
+        "convexAutomatedStoppingSpec": {
+          "description": "The automated early stopping spec using convex stopping rule.",
+          "$ref": "GoogleCloudAiplatformV1beta1StudySpecConvexAutomatedStoppingSpec"
+        },
         "metrics": {
           "description": "Required. Metric specs for the Study.",
           "type": "array",
@@ -11696,6 +12202,36 @@
         },
         "useSeconds": {
           "description": "This bool determines whether or not the rule is applied based on elapsed_secs or steps. If use_seconds==false, the early stopping decision is made according to the predicted objective values according to the target steps. If use_seconds==true, elapsed_secs is used instead of steps. Also, in this case, the parameters max_num_steps and min_num_steps are overloaded to contain max_elapsed_seconds and min_elapsed_seconds.",
+          "type": "boolean"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1StudySpecConvexAutomatedStoppingSpec": {
+      "id": "GoogleCloudAiplatformV1beta1StudySpecConvexAutomatedStoppingSpec",
+      "description": "Configuration for ConvexAutomatedStoppingSpec. When there are enough completed trials (configured by min_measurement_count), for pending trials with enough measurements and steps, the policy first computes an overestimate of the objective value at max_num_steps according to the slope of the incomplete objective value curve. No prediction can be made if the curve is completely flat. If the overestimation is worse than the best objective value of the completed trials, this pending trial will be early-stopped, but a last measurement will be added to the pending trial with max_num_steps and predicted objective value from the autoregression model.",
+      "type": "object",
+      "properties": {
+        "maxStepCount": {
+          "description": "Steps used in predicting the final objective for early stopped trials. In general, it's set to be the same as the defined steps in training \/ tuning. If not defined, it will learn it from the completed trials. When use_steps is false, this field is set to the maximum elapsed seconds.",
+          "type": "string",
+          "format": "int64"
+        },
+        "minStepCount": {
+          "description": "Minimum number of steps for a trial to complete. Trials which do not have a measurement with step_count > min_step_count won't be considered for early stopping. It's ok to set it to 0, and a trial can be early stopped at any stage. By default, min_step_count is set to be one-tenth of the max_step_count. When use_elapsed_duration is true, this field is set to the minimum elapsed seconds.",
+          "type": "string",
+          "format": "int64"
+        },
+        "minMeasurementCount": {
+          "description": "The minimal number of measurements in a Trial. Early-stopping checks will not trigger if less than min_measurement_count+1 completed trials or pending trials with less than min_measurement_count measurements. If not defined, the default value is 5.",
+          "type": "string",
+          "format": "int64"
+        },
+        "learningRateParameterName": {
+          "description": "The hyper-parameter name used in the tuning job that stands for learning rate. Leave it blank if learning rate is not in a parameter in tuning. The learning_rate is used to estimate the objective value of the ongoing trial.",
+          "type": "string"
+        },
+        "useElapsedDuration": {
+          "description": "This bool determines whether or not the rule is applied based on elapsed_secs or steps. If use_elapsed_duration==false, the early stopping decision is made according to the predicted objective values according to the target steps. If use_elapsed_duration==true, elapsed_secs is used instead of steps. Also, in this case, the parameters max_num_steps and min_num_steps are overloaded to contain max_elapsed_seconds and min_elapsed_seconds.",
           "type": "boolean"
         }
       }
@@ -13501,6 +14037,11 @@
         "model": {
           "description": "The name of the uploaded Model resource. Format: `projects\/{project}\/locations\/{location}\/models\/{model}`",
           "type": "string"
+        },
+        "modelVersionId": {
+          "description": "Output only. The version ID of the model that is uploaded.",
+          "readOnly": true,
+          "type": "string"
         }
       }
     },
@@ -14149,7 +14690,7 @@
       "type": "object",
       "properties": {
         "targetColumn": {
-          "description": "The name of the column that the model is to predict.",
+          "description": "The name of the column that the Model is to predict values for. This column must be unavailable at forecast.",
           "type": "string"
         },
         "timeSeriesIdentifierColumn": {
@@ -14157,7 +14698,7 @@
           "type": "string"
         },
         "timeColumn": {
-          "description": "The name of the column that identifies time order in the time series.",
+          "description": "The name of the column that identifies time order in the time series. This column must be available at forecast.",
           "type": "string"
         },
         "transformations": {
@@ -14177,7 +14718,7 @@
           "format": "int64"
         },
         "weightColumn": {
-          "description": "Column name that should be used as the weight column. Higher values in this column give more importance to the row during model training. The column must have numeric values between 0 and 10000 inclusively; 0 means the row is ignored for training. If weight column field is not set, then all rows are assumed to have equal weight of 1.",
+          "description": "Column name that should be used as the weight column. Higher values in this column give more importance to the row during model training. The column must have numeric values between 0 and 10000 inclusively; 0 means the row is ignored for training. If weight column field is not set, then all rows are assumed to have equal weight of 1. This column must be available at forecast.",
           "type": "string"
         },
         "timeSeriesAttributeColumns": {
@@ -15690,6 +16231,33 @@
       "type": "object",
       "properties": {
       }
+    },
+    "GoogleRpcContextHttpHeaderContext": {
+      "id": "GoogleRpcContextHttpHeaderContext",
+      "description": "`HttpHeaderContext` provides access to all HTTP headers of a request. Use this with care as it makes your API dependent from HTTP entry points.",
+      "type": "object",
+      "properties": {
+        "headers": {
+          "description": "A map from all headers in the request to their value. If a header occurs multiple times, it will be normalized into a comma-separated list of values as specified in [RFC2616](http:\/\/www.w3.org\/Protocols\/rfc2616\/rfc2616-sec4.html#sec4.2) Note: When used in the request path, there is no guarantee of casing for header keys. Please use ignore-case string comparison while searching for a header. Warning: The map keys are case-sensitive, and the case may be different between HTTP1.x and HTTP2 requests.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "requestPath": {
+          "description": "Request path string. It is the path following the host:port without the query parameters. For example, if the request URL is \"https:\/\/ml.googleapis.com\/v1\/parent\/jobs?key=key\", request_path will contain \"\/v1\/parent\/jobs\". Not used in response path.",
+          "type": "string"
+        },
+        "responseCode": {
+          "description": "HTTP status code. If the backend sets this code, it will be used to set HTTP status for the response. It is unused for HTTP requests reaching the backend.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "requestFirstline": {
+          "description": "The first line of the HTTP request, including the HTTP method, request url, and protocol. Not used in response path.",
+          "type": "string"
+        }
+      }
     }
   },
   "resources": {
@@ -16974,7 +17542,7 @@
                           "type": "string"
                         },
                         "updateMask": {
-                          "description": "Field mask is used to specify the fields to be overwritten in the EntityType resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then only the non-empty fields present in the request will be overwritten. Set the update_mask to `*` to override all fields. Updatable fields: * `description` * `labels` * `monitoring_config.snapshot_analysis.disabled` * `monitoring_config.snapshot_analysis.monitoring_interval`",
+                          "description": "Field mask is used to specify the fields to be overwritten in the EntityType resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then only the non-empty fields present in the request will be overwritten. Set the update_mask to `*` to override all fields. Updatable fields: * `description` * `labels` * `monitoring_config.snapshot_analysis.disabled` * `monitoring_config.snapshot_analysis.monitoring_interval_days` * `monitoring_config.snapshot_analysis.staleness_days` * `monitoring_config.import_features_analysis.state` * `monitoring_config.import_features_analysis.anomaly_detection_baseline` * `monitoring_config.numerical_threshold_config.value` * `monitoring_config.categorical_threshold_config.value`",
                           "location": "query",
                           "type": "string",
                           "format": "google-fieldmask"
@@ -17243,7 +17811,7 @@
                               "type": "string"
                             },
                             "updateMask": {
-                              "description": "Field mask is used to specify the fields to be overwritten in the Features resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then only the non-empty fields present in the request will be overwritten. Set the update_mask to `*` to override all fields. Updatable fields: * `description` * `labels` * `monitoring_config.snapshot_analysis.disabled` * `monitoring_config.snapshot_analysis.monitoring_interval`",
+                              "description": "Field mask is used to specify the fields to be overwritten in the Features resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then only the non-empty fields present in the request will be overwritten. Set the update_mask to `*` to override all fields. Updatable fields: * `description` * `labels` * `disable_monitoring`",
                               "location": "query",
                               "type": "string",
                               "format": "google-fieldmask"
@@ -18374,7 +18942,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "modelDeploymentMonitoringJob": {
-                      "description": "Required. ModelDeploymentMonitoring Job resource name. Format: `projects\/{project}\/locations\/{location}\/modelDeploymentMonitoringJobs\/{model_deployment_monitoring_job}",
+                      "description": "Required. ModelDeploymentMonitoring Job resource name. Format: `projects\/{project}\/locations\/{location}\/modelDeploymentMonitoringJobs\/{model_deployment_monitoring_job}`",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/modelDeploymentMonitoringJobs\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -18828,7 +19396,7 @@
                           "type": "string"
                         },
                         "updateMask": {
-                          "description": "Required. A FieldMask indicating which fields should be updated. Functionality of this field is not yet supported.",
+                          "description": "Optional. A FieldMask indicating which fields should be updated. Functionality of this field is not yet supported.",
                           "location": "query",
                           "type": "string",
                           "format": "google-fieldmask"
@@ -19064,7 +19632,7 @@
                           "type": "string"
                         },
                         "updateMask": {
-                          "description": "Required. A FieldMask indicating which fields should be updated. Functionality of this field is not yet supported.",
+                          "description": "Optional. A FieldMask indicating which fields should be updated. Functionality of this field is not yet supported.",
                           "location": "query",
                           "type": "string",
                           "format": "google-fieldmask"
@@ -19350,7 +19918,7 @@
                           "type": "string"
                         },
                         "updateMask": {
-                          "description": "Required. A FieldMask indicating which fields should be updated. Functionality of this field is not yet supported.",
+                          "description": "Optional. A FieldMask indicating which fields should be updated. Functionality of this field is not yet supported.",
                           "location": "query",
                           "type": "string",
                           "format": "google-fieldmask"
@@ -19852,6 +20420,34 @@
               "resources": {
                 "evaluations": {
                   "methods": {
+                    "import": {
+                      "id": "aiplatform.projects.locations.models.evaluations.import",
+                      "path": "v1/{+parent}/evaluations:import",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/models/{modelsId}/evaluations:import",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The name of the parent model resource. Format: `projects\/{project}\/locations\/{location}\/models\/{model}`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/models\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "GoogleCloudAiplatformV1ImportModelEvaluationRequest"
+                      },
+                      "response": {
+                        "$ref": "GoogleCloudAiplatformV1ModelEvaluation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Imports an externally generated ModelEvaluation."
+                    },
                     "get": {
                       "id": "aiplatform.projects.locations.models.evaluations.get",
                       "path": "v1/{+name}",
@@ -20238,7 +20834,7 @@
                       "type": "string"
                     },
                     "filter": {
-                      "description": "Lists the PipelineJobs that match the filter expression. The following fields are supported: * `pipeline_name`: Supports `=` and `!=` comparisons. * `display_name`: Supports `=`, `!=` comparisons, and `:` wildcard. * `pipeline_job_user_id`: Supports `=`, `!=` comparisons, and `:` wildcard. for example, can check if pipeline's display_name contains *step* by doing display_name:\\\"*step*\\\" * `state`: Supports `=` and `!=` comparisons. * `create_time`: Supports `=`, `!=`, `<`, `>`, `<=`, and `>=` comparisons. Values must be in RFC 3339 format. * `update_time`: Supports `=`, `!=`, `<`, `>`, `<=`, and `>=` comparisons. Values must be in RFC 3339 format. * `end_time`: Supports `=`, `!=`, `<`, `>`, `<=`, and `>=` comparisons. Values must be in RFC 3339 format. * `labels`: Supports key-value equality and key presence. Filter expressions can be combined together using logical operators (`AND` & `OR`). For example: `pipeline_name=\"test\" AND create_time>\"2020-05-18T13:30:00Z\"`. The syntax to define filter expression is based on https:\/\/google.aip.dev\/160. Examples: * `create_time>\"2021-05-18T00:00:00Z\" OR update_time>\"2020-05-18T00:00:00Z\"` PipelineJobs created or updated after 2020-05-18 00:00:00 UTC. * `labels.env = \"prod\"` PipelineJobs with label \"env\" set to \"prod\".",
+                      "description": "Lists the PipelineJobs that match the filter expression. The following fields are supported: * `pipeline_name`: Supports `=` and `!=` comparisons. * `display_name`: Supports `=`, `!=` comparisons, and `:` wildcard. * `pipeline_job_user_id`: Supports `=`, `!=` comparisons, and `:` wildcard. for example, can check if pipeline's display_name contains *step* by doing display_name:\\\"*step*\\\" * `state`: Supports `=` and `!=` comparisons. * `create_time`: Supports `=`, `!=`, `<`, `>`, `<=`, and `>=` comparisons. Values must be in RFC 3339 format. * `update_time`: Supports `=`, `!=`, `<`, `>`, `<=`, and `>=` comparisons. Values must be in RFC 3339 format. * `end_time`: Supports `=`, `!=`, `<`, `>`, `<=`, and `>=` comparisons. Values must be in RFC 3339 format. * `labels`: Supports key-value equality and key presence. * `template_uri`: Supports `=`, `!=` comparisons, and `:` wildcard. * `template_metadata.version_name`: Supports `=`, `!=` comparisons, and `:` wildcard. Filter expressions can be combined together using logical operators (`AND` & `OR`). For example: `pipeline_name=\"test\" AND create_time>\"2020-05-18T13:30:00Z\"`. The syntax to define filter expression is based on https:\/\/google.aip.dev\/160. Examples: * `create_time>\"2021-05-18T00:00:00Z\" OR update_time>\"2020-05-18T00:00:00Z\"` PipelineJobs created or updated after 2020-05-18 00:00:00 UTC. * `labels.env = \"prod\"` PipelineJobs with label \"env\" set to \"prod\".",
                       "location": "query",
                       "type": "string"
                     },

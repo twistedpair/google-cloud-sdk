@@ -337,7 +337,11 @@ def _ExecAuthPlugin():
   # Check if command is in PATH and executable. Else, print critical(RED)
   # warning as kubectl will break if command is not executable.
   try:
-    subprocess.run([command, '--version'], timeout=5, check=False)
+    subprocess.run([command, '--version'],
+                   timeout=5,
+                   check=False,
+                   stdout=subprocess.DEVNULL,
+                   stderr=subprocess.DEVNULL)
   except Exception:  # pylint: disable=broad-except
     log.critical(GKE_GCLOUD_AUTH_PLUGIN_NOT_FOUND)
 

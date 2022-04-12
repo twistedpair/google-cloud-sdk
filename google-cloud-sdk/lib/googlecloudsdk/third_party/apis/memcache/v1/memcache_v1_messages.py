@@ -235,8 +235,8 @@ class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message)
       to recognize their instances.
     createTime: Output only. Timestamp when the resource was created.
     instanceType: Optional. The instance_type of this instance of format: proj
-      ects/{project_id}/locations/{location_id}/instanceTypes/{instance_type_i
-      d}. Instance Type represents a high-level tier or SKU of the service
+      ects/{project_number}/locations/{location_id}/instanceTypes/{instance_ty
+      pe_id}. Instance Type represents a high-level tier or SKU of the service
       that this instance belong to. When enabled(eg: Maintenance Rollout),
       Rollout uses 'instance_type' along with 'software_versions' to determine
       whether instance needs an update or not.
@@ -253,10 +253,12 @@ class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message)
       software_versions.
     maintenanceSettings: Optional. The MaintenanceSettings associated with
       instance.
-    name: Unique name of the resource. It uses the form: `projects/{project_id
-      |project_number}/locations/{location_id}/instances/{instance_id}` Note:
-      Either project_id or project_number can be used, but keep it consistent
-      with other APIs (e.g. RescheduleUpdate)
+    name: Unique name of the resource. It uses the form: `projects/{project_nu
+      mber}/locations/{location_id}/instances/{instance_id}` Note: This name
+      is passed, stored and logged across the rollout system. So use of
+      consumer project_id or any other consumer PII in the name is strongly
+      discouraged for wipeout (go/wipeout) compliance. See
+      go/elysium/project_ids#storage-guidance for more details.
     notificationParameters: Optional. notification_parameter are information
       that service producers may like to include that is not relevant to
       Rollout. This parameter will only be passed to Gamma and Cloud Logging
@@ -1349,6 +1351,21 @@ class MemcacheProjectsLocationsInstancesPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class MemcacheProjectsLocationsInstancesRescheduleMaintenanceRequest(_messages.Message):
+  r"""A MemcacheProjectsLocationsInstancesRescheduleMaintenanceRequest object.
+
+  Fields:
+    instance: Required. Memcache instance resource name using the form:
+      `projects/{project_id}/locations/{location_id}/instances/{instance_id}`
+      where `location_id` refers to a GCP region.
+    rescheduleMaintenanceRequest: A RescheduleMaintenanceRequest resource to
+      be passed as the request body.
+  """
+
+  instance = _messages.StringField(1, required=True)
+  rescheduleMaintenanceRequest = _messages.MessageField('RescheduleMaintenanceRequest', 2)
+
+
 class MemcacheProjectsLocationsInstancesUpdateParametersRequest(_messages.Message):
   r"""A MemcacheProjectsLocationsInstancesUpdateParametersRequest object.
 
@@ -1368,7 +1385,7 @@ class MemcacheProjectsLocationsListRequest(_messages.Message):
 
   Fields:
     filter: A filter to narrow down results to a preferred subset. The
-      filtering language accepts strings like "displayName=tokyo", and is
+      filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
     name: The resource that owns the locations collection, if applicable.
     pageSize: The maximum number of results to return. If not set, the service
@@ -1617,6 +1634,42 @@ class OperationMetadata(_messages.Message):
   statusDetail = _messages.StringField(5)
   target = _messages.StringField(6)
   verb = _messages.StringField(7)
+
+
+class RescheduleMaintenanceRequest(_messages.Message):
+  r"""Request for RescheduleMaintenance.
+
+  Enums:
+    RescheduleTypeValueValuesEnum: Required. If reschedule type is
+      SPECIFIC_TIME, must set up schedule_time as well.
+
+  Fields:
+    rescheduleType: Required. If reschedule type is SPECIFIC_TIME, must set up
+      schedule_time as well.
+    scheduleTime: Timestamp when the maintenance shall be rescheduled to if
+      reschedule_type=SPECIFIC_TIME, in RFC 3339 format, for example
+      `2012-11-15T16:19:00.094Z`.
+  """
+
+  class RescheduleTypeValueValuesEnum(_messages.Enum):
+    r"""Required. If reschedule type is SPECIFIC_TIME, must set up
+    schedule_time as well.
+
+    Values:
+      RESCHEDULE_TYPE_UNSPECIFIED: Not set.
+      IMMEDIATE: If the user wants to schedule the maintenance to happen now.
+      NEXT_AVAILABLE_WINDOW: If the user wants to use the existing maintenance
+        policy to find the next available window.
+      SPECIFIC_TIME: If the user wants to reschedule the maintenance to a
+        specific time.
+    """
+    RESCHEDULE_TYPE_UNSPECIFIED = 0
+    IMMEDIATE = 1
+    NEXT_AVAILABLE_WINDOW = 2
+    SPECIFIC_TIME = 3
+
+  rescheduleType = _messages.EnumField('RescheduleTypeValueValuesEnum', 1)
+  scheduleTime = _messages.StringField(2)
 
 
 class Schedule(_messages.Message):

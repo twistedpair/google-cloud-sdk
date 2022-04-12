@@ -96,6 +96,7 @@ class EndpointsClient(object):
              display_name,
              labels,
              description=None,
+             network=None,
              endpoint_id=None):
     """Creates a new endpoint using v1 API.
 
@@ -104,6 +105,7 @@ class EndpointsClient(object):
       display_name: str, the display name of the new endpoint.
       labels: list, the labels to organize the new endpoint.
       description: str or None, the description of the new endpoint.
+      network: str, the full name of the Google Compute Engine network.
       endpoint_id: str or None, the id of the new endpoint.
 
     Returns:
@@ -114,7 +116,10 @@ class EndpointsClient(object):
         endpointId=endpoint_id,
         googleCloudAiplatformV1Endpoint=self.messages
         .GoogleCloudAiplatformV1Endpoint(
-            displayName=display_name, description=description, labels=labels))
+            displayName=display_name,
+            description=description,
+            labels=labels,
+            network=network))
     return self.client.projects_locations_endpoints.Create(req)
 
   def CreateBeta(self,

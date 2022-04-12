@@ -678,7 +678,8 @@ class KubernetesClient(object):
     return err is None
 
   def DeleteNamespace(self, namespace):
-    _, err = self._RunKubectl(['delete', 'namespace', namespace])
+    _, err = self._RunKubectl(['delete', 'namespace', namespace],
+                              timeout_flag='--timeout')
     return err
 
   def GetResourceField(self, namespace, resource, json_path):
@@ -837,12 +838,13 @@ class KubernetesClient(object):
       raise exceptions.Error('Failed to get JSON Web Key Set '
                              'from {}: {}'.format(url, e))
 
-  def _RunKubectl(self, args, stdin=None):
+  def _RunKubectl(self, args, stdin=None, timeout_flag='--request-timeout'):
     """Runs a kubectl command with the cluster referenced by this client.
 
     Args:
       args: command line arguments to pass to kubectl
       stdin: text to be passed to kubectl via stdin
+      timeout_flag: kubectl command flag used to set timeout
 
     Returns:
       The contents of stdout if the return code is 0, stderr (or a fabricated
@@ -855,7 +857,7 @@ class KubernetesClient(object):
     if self.kubeconfig:
       cmd.extend(['--kubeconfig', self.kubeconfig])
 
-    cmd.extend(['--request-timeout', self.kubectl_timeout])
+    cmd.extend([timeout_flag, self.kubectl_timeout])
     cmd.extend(args)
     out = io.StringIO()
     err = io.StringIO()

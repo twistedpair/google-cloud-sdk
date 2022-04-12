@@ -37,7 +37,7 @@ def GetConnectionProfileURI(resource):
   return connection_profile.SelfLink()
 
 
-class ConnectionProfilesClient(object):
+class ConnectionProfilesClient:
   """Client for connection profiles service in the API."""
 
   def __init__(self, client=None, messages=None):

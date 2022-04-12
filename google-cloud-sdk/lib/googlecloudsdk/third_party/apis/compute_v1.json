@@ -4,7 +4,7 @@
   "id": "compute:v1",
   "name": "compute",
   "version": "v1",
-  "revision": "20220329",
+  "revision": "20220401",
   "title": "Compute Engine API",
   "description": "Creates and runs virtual machines on Google Cloud Platform. ",
   "ownerDomain": "google.com",
@@ -7929,11 +7929,11 @@
       "type": "object",
       "properties": {
         "hasStatefulConfig": {
-          "description": "[Output Only] A bit indicating whether the managed instance group has stateful configuration, that is, if you have configured any items in a stateful policy or in per-instance configs. The group might report that it has no stateful config even when there is still some preserved state on a managed instance, for example, if you have deleted all PICs but not yet applied those deletions.",
+          "description": "[Output Only] A bit indicating whether the managed instance group has stateful configuration, that is, if you have configured any items in a stateful policy or in per-instance configs. The group might report that it has no stateful configuration even when there is still some preserved state on a managed instance, for example, if you have deleted all PICs but not yet applied those deletions.",
           "type": "boolean"
         },
         "perInstanceConfigs": {
-          "description": "[Output Only] Status of per-instance configs on the instance.",
+          "description": "[Output Only] Status of per-instance configurations on the instance.",
           "$ref": "InstanceGroupManagerStatusStatefulPerInstanceConfigs"
         }
       }
@@ -7943,7 +7943,7 @@
       "type": "object",
       "properties": {
         "allEffective": {
-          "description": "A bit indicating if all of the group's per-instance configs (listed in the output of a listPerInstanceConfigs API call) have status EFFECTIVE or there are no per-instance-configs.",
+          "description": "A bit indicating if all of the group's per-instance configurations (listed in the output of a listPerInstanceConfigs API call) have status EFFECTIVE or there are no per-instance-configs.",
           "type": "boolean"
         }
       }
@@ -8830,7 +8830,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The name of a per-instance config and its corresponding instance. Serves as a merge key during UpdatePerInstanceConfigs operations, that is, if a per-instance config with the same name exists then it will be updated, otherwise a new one will be created for the VM instance with the same name. An attempt to create a per-instance config for a VM instance that either doesn't exist or is not part of the group will result in an error.",
+          "description": "The name of a per-instance configuration and its corresponding instance. Serves as a merge key during UpdatePerInstanceConfigs operations, that is, if a per-instance configuration with the same name exists then it will be updated, otherwise a new one will be created for the VM instance with the same name. An attempt to create a per-instance configconfiguration for a VM instance that either doesn't exist or is not part of the group will result in an error.",
           "type": "string"
         },
         "preservedState": {
@@ -8838,15 +8838,15 @@
           "$ref": "PreservedState"
         },
         "status": {
-          "description": "The status of applying this per-instance config on the corresponding managed instance.",
+          "description": "The status of applying this per-instance configuration on the corresponding managed instance.",
           "type": "string",
           "enumDescriptions": [
-            "The per-instance config is being applied to the instance, but is not yet effective, possibly waiting for the instance to, for example, REFRESH.",
-            "The per-instance config deletion is being applied on the instance, possibly waiting for the instance to, for example, REFRESH.",
-            "The per-instance config is effective on the instance, meaning that all disks, ips and metadata specified in this config are attached or set on the instance.",
-            "*[Default]* The default status, when no per-instance config exists.",
-            "The per-instance config is set on an instance but not been applied yet.",
-            "The per-instance config has been deleted, but the deletion is not yet applied."
+            "The per-instance configuration is being applied to the instance, but is not yet effective, possibly waiting for the instance to, for example, REFRESH.",
+            "The per-instance configuration deletion is being applied on the instance, possibly waiting for the instance to, for example, REFRESH.",
+            "The per-instance configuration is effective on the instance, meaning that all disks, ips and metadata specified in this configuration are attached or set on the instance.",
+            "*[Default]* The default status, when no per-instance configuration exists.",
+            "The per-instance configuration is set on an instance but not been applied yet.",
+            "The per-instance configuration has been deleted, but the deletion is not yet applied."
           ],
           "enum": [
             "APPLYING",
@@ -8858,7 +8858,7 @@
           ]
         },
         "fingerprint": {
-          "description": "Fingerprint of this per-instance config. This field can be used in optimistic locking. It is ignored when inserting a per-instance config. An up-to-date fingerprint must be provided in order to update an existing per-instance config or the field needs to be unset.",
+          "description": "Fingerprint of this per-instance config. This field can be used in optimistic locking. It is ignored when inserting a per-instance config. An up-to-date fingerprint must be provided in order to update an existing per-instance configuration or the field needs to be unset.",
           "type": "string",
           "format": "byte"
         }
@@ -8870,7 +8870,7 @@
       "type": "object",
       "properties": {
         "perInstanceConfigs": {
-          "description": "The list of per-instance configs to insert or patch on this managed instance group.",
+          "description": "The list of per-instance configurations to insert or patch on this managed instance group.",
           "type": "array",
           "items": {
             "$ref": "PerInstanceConfig"
@@ -8884,7 +8884,7 @@
       "type": "object",
       "properties": {
         "perInstanceConfigs": {
-          "description": "The list of per-instance configs to insert or patch on this managed instance group.",
+          "description": "The list of per-instance configurations to insert or patch on this managed instance group.",
           "type": "array",
           "items": {
             "$ref": "PerInstanceConfig"
@@ -9299,7 +9299,7 @@
       "type": "object",
       "properties": {
         "perInstanceConfigs": {
-          "description": "The list of per-instance configs to insert or patch on this managed instance group.",
+          "description": "The list of per-instance configurations to insert or patch on this managed instance group.",
           "type": "array",
           "items": {
             "$ref": "PerInstanceConfig"
@@ -9313,7 +9313,7 @@
       "type": "object",
       "properties": {
         "perInstanceConfigs": {
-          "description": "The list of per-instance configs to insert or patch on this managed instance group.",
+          "description": "The list of per-instance configurations to insert or patch on this managed instance group.",
           "type": "array",
           "items": {
             "$ref": "PerInstanceConfig"
@@ -43233,7 +43233,7 @@
             "https://www.googleapis.com/auth/compute",
             "https://www.googleapis.com/auth/compute.readonly"
           ],
-          "description": "Lists all of the per-instance configs defined for the managed instance group. The orderBy query parameter is not supported."
+          "description": "Lists all of the per-instance configurations defined for the managed instance group. The orderBy query parameter is not supported."
         },
         "updatePerInstanceConfigs": {
           "id": "compute.instanceGroupManagers.updatePerInstanceConfigs",
@@ -43281,7 +43281,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/compute"
           ],
-          "description": "Inserts or updates per-instance configs for the managed instance group. perInstanceConfig.name serves as a key used to distinguish whether to perform insert or patch."
+          "description": "Inserts or updates per-instance configurations for the managed instance group. perInstanceConfig.name serves as a key used to distinguish whether to perform insert or patch."
         },
         "patchPerInstanceConfigs": {
           "id": "compute.instanceGroupManagers.patchPerInstanceConfigs",
@@ -43329,7 +43329,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/compute"
           ],
-          "description": "Inserts or patches per-instance configs for the managed instance group. perInstanceConfig.name serves as a key used to distinguish whether to perform insert or patch."
+          "description": "Inserts or patches per-instance configurations for the managed instance group. perInstanceConfig.name serves as a key used to distinguish whether to perform insert or patch."
         },
         "deletePerInstanceConfigs": {
           "id": "compute.instanceGroupManagers.deletePerInstanceConfigs",
@@ -43372,7 +43372,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/compute"
           ],
-          "description": "Deletes selected per-instance configs for the managed instance group."
+          "description": "Deletes selected per-instance configurations for the managed instance group."
         },
         "applyUpdatesToInstances": {
           "id": "compute.instanceGroupManagers.applyUpdatesToInstances",
@@ -43463,7 +43463,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/compute"
           ],
-          "description": "Creates instances with per-instance configs in this managed instance group. Instances are created using the current instance template. The create instances operation is marked DONE if the createInstances request is successful. The underlying actions take additional time. You must separately verify the status of the creating or actions with the listmanagedinstances method."
+          "description": "Creates instances with per-instance configurations in this managed instance group. Instances are created using the current instance template. The create instances operation is marked DONE if the createInstances request is successful. The underlying actions take additional time. You must separately verify the status of the creating or actions with the listmanagedinstances method."
         }
       }
     },
@@ -44205,7 +44205,7 @@
             "https://www.googleapis.com/auth/compute",
             "https://www.googleapis.com/auth/compute.readonly"
           ],
-          "description": "Lists all of the per-instance configs defined for the managed instance group. The orderBy query parameter is not supported."
+          "description": "Lists all of the per-instance configurations defined for the managed instance group. The orderBy query parameter is not supported."
         },
         "updatePerInstanceConfigs": {
           "id": "compute.regionInstanceGroupManagers.updatePerInstanceConfigs",
@@ -44253,7 +44253,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/compute"
           ],
-          "description": "Inserts or updates per-instance configs for the managed instance group. perInstanceConfig.name serves as a key used to distinguish whether to perform insert or patch."
+          "description": "Inserts or updates per-instance configurations for the managed instance group. perInstanceConfig.name serves as a key used to distinguish whether to perform insert or patch."
         },
         "patchPerInstanceConfigs": {
           "id": "compute.regionInstanceGroupManagers.patchPerInstanceConfigs",
@@ -44301,7 +44301,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/compute"
           ],
-          "description": "Inserts or patches per-instance configs for the managed instance group. perInstanceConfig.name serves as a key used to distinguish whether to perform insert or patch."
+          "description": "Inserts or patches per-instance configurations for the managed instance group. perInstanceConfig.name serves as a key used to distinguish whether to perform insert or patch."
         },
         "deletePerInstanceConfigs": {
           "id": "compute.regionInstanceGroupManagers.deletePerInstanceConfigs",
@@ -44344,7 +44344,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/compute"
           ],
-          "description": "Deletes selected per-instance configs for the managed instance group."
+          "description": "Deletes selected per-instance configurations for the managed instance group."
         },
         "applyUpdatesToInstances": {
           "id": "compute.regionInstanceGroupManagers.applyUpdatesToInstances",
@@ -44435,7 +44435,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/compute"
           ],
-          "description": "Creates instances with per-instance configs in this regional managed instance group. Instances are created using the current instance template. The create instances operation is marked DONE if the createInstances request is successful. The underlying actions take additional time. You must separately verify the status of the creating or actions with the listmanagedinstances method."
+          "description": "Creates instances with per-instance configurations in this regional managed instance group. Instances are created using the current instance template. The create instances operation is marked DONE if the createInstances request is successful. The underlying actions take additional time. You must separately verify the status of the creating or actions with the listmanagedinstances method."
         }
       }
     },

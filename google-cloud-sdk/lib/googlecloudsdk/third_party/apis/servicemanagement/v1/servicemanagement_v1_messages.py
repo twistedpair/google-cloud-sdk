@@ -1822,8 +1822,9 @@ class ManagedService(_messages.Message):
       instead.
     serviceConfig: The service's generated configuration. DEPRECATED, should
       call GetServiceConfig instead.
-    serviceName: The name of the service. See the [overview](/service-
-      management/overview) for naming requirements.
+    serviceName: The name of the service. See the
+      [overview](https://cloud.google.com/service-management/overview) for
+      naming requirements.
   """
 
   generation = _messages.IntegerField(1)
@@ -3549,8 +3550,8 @@ class ServicemanagementServicesConfigsCreateRequest(_messages.Message):
   Fields:
     service: A Service resource to be passed as the request body.
     serviceName: Required. The name of the service. See the
-      [overview](/service-management/overview) for naming requirements. For
-      example: `example.googleapis.com`.
+      [overview](https://cloud.google.com/service-management/overview) for
+      naming requirements. For example: `example.googleapis.com`.
   """
 
   service = _messages.MessageField('Service', 1)
@@ -3569,8 +3570,8 @@ class ServicemanagementServicesConfigsGetRequest(_messages.Message):
       field must be specified for the server to return all fields, including
       `SourceInfo`.
     serviceName: Required. The name of the service. See the
-      [overview](/service-management/overview) for naming requirements. For
-      example: `example.googleapis.com`.
+      [overview](https://cloud.google.com/service-management/overview) for
+      naming requirements. For example: `example.googleapis.com`.
     view: Specifies which parts of the Service Config should be returned in
       the response.
   """
@@ -3602,8 +3603,8 @@ class ServicemanagementServicesConfigsListRequest(_messages.Message):
       size is 50 if not specified. Maximum value is 100.
     pageToken: The token of the page to retrieve.
     serviceName: Required. The name of the service. See the
-      [overview](/service-management/overview) for naming requirements. For
-      example: `example.googleapis.com`.
+      [overview](https://cloud.google.com/service-management/overview) for
+      naming requirements. For example: `example.googleapis.com`.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -3616,8 +3617,8 @@ class ServicemanagementServicesConfigsSubmitRequest(_messages.Message):
 
   Fields:
     serviceName: Required. The name of the service. See the
-      [overview](/service-management/overview) for naming requirements. For
-      example: `example.googleapis.com`.
+      [overview](https://cloud.google.com/service-management/overview) for
+      naming requirements. For example: `example.googleapis.com`.
     submitConfigSourceRequest: A SubmitConfigSourceRequest resource to be
       passed as the request body.
   """
@@ -3688,9 +3689,10 @@ class ServicemanagementServicesCustomerSettingsGetRequest(_messages.Message):
       `CustomerSettings.customer_id` field of message for its format. This
       field is required.
     expand: Fields to expand in any results.
-    serviceName: The name of the service. See the [overview](/service-
-      management/overview) for naming requirements. For example:
-      `example.googleapis.com`. This field is required.
+    serviceName: The name of the service. See the
+      [overview](https://cloud.google.com/service-management/overview) for
+      naming requirements. For example: `example.googleapis.com`. This field
+      is required.
     view: Request only fields for the specified view.
   """
 
@@ -3726,9 +3728,10 @@ class ServicemanagementServicesCustomerSettingsPatchRequest(_messages.Message):
       field is required.
     customerSettings: A CustomerSettings resource to be passed as the request
       body.
-    serviceName: The name of the service. See the [overview](/service-
-      management/overview) for naming requirements. For example:
-      `example.googleapis.com`. This field is required.
+    serviceName: The name of the service. See the
+      [overview](https://cloud.google.com/service-management/overview) for
+      naming requirements. For example: `example.googleapis.com`. This field
+      is required.
     updateMask: The field mask specifying which fields are to be updated.
   """
 
@@ -3743,8 +3746,8 @@ class ServicemanagementServicesDeleteRequest(_messages.Message):
 
   Fields:
     serviceName: Required. The name of the service. See the
-      [overview](/service-management/overview) for naming requirements. For
-      example: `example.googleapis.com`.
+      [overview](https://cloud.google.com/service-management/overview) for
+      naming requirements. For example: `example.googleapis.com`.
   """
 
   serviceName = _messages.StringField(1, required=True)
@@ -3776,8 +3779,8 @@ class ServicemanagementServicesGetConfigRequest(_messages.Message):
       field must be specified for the server to return all fields, including
       `SourceInfo`.
     serviceName: Required. The name of the service. See the
-      [overview](/service-management/overview) for naming requirements. For
-      example: `example.googleapis.com`.
+      [overview](https://cloud.google.com/service-management/overview) for
+      naming requirements. For example: `example.googleapis.com`.
     view: Specifies which parts of the Service Config should be returned in
       the response.
   """
@@ -3896,9 +3899,9 @@ class ServicemanagementServicesProjectSettingsGetRequest(_messages.Message):
     consumerProjectId: The project ID of the consumer.
     expand: Fields to expand in any results. By default, the following fields
       are not present in the result: - `operations` - `quota_usage`
-    serviceName: The name of the service. See the [overview](/service-
-      management/overview) for naming requirements. For example:
-      `example.googleapis.com`.
+    serviceName: The name of the service. See the
+      [overview](https://cloud.google.com/service-management/overview) for
+      naming requirements. For example: `example.googleapis.com`.
     view: Request only the fields for the specified view.
   """
 
@@ -3934,9 +3937,9 @@ class ServicemanagementServicesProjectSettingsPatchRequest(_messages.Message):
       in the operation response.
     projectSettings: A ProjectSettings resource to be passed as the request
       body.
-    serviceName: The name of the service. See the [overview](/service-
-      management/overview) for naming requirements. For example:
-      `example.googleapis.com`.
+    serviceName: The name of the service. See the
+      [overview](https://cloud.google.com/service-management/overview) for
+      naming requirements. For example: `example.googleapis.com`.
     updateMask: The field mask specifying which fields are to be updated.
   """
 
@@ -3971,8 +3974,8 @@ class ServicemanagementServicesRolloutsCreateRequest(_messages.Message):
       create multiple rollouts at least 1 hour apart.
     rollout: A Rollout resource to be passed as the request body.
     serviceName: Required. The name of the service. See the
-      [overview](/service-management/overview) for naming requirements. For
-      example: `example.googleapis.com`.
+      [overview](https://cloud.google.com/service-management/overview) for
+      naming requirements. For example: `example.googleapis.com`.
   """
 
   force = _messages.BooleanField(1)
@@ -3986,8 +3989,8 @@ class ServicemanagementServicesRolloutsGetRequest(_messages.Message):
   Fields:
     rolloutId: Required. The id of the rollout resource.
     serviceName: Required. The name of the service. See the
-      [overview](/service-management/overview) for naming requirements. For
-      example: `example.googleapis.com`.
+      [overview](https://cloud.google.com/service-management/overview) for
+      naming requirements. For example: `example.googleapis.com`.
   """
 
   rolloutId = _messages.StringField(1, required=True)
@@ -3999,17 +4002,16 @@ class ServicemanagementServicesRolloutsListRequest(_messages.Message):
 
   Fields:
     filter: Required. Use `filter` to return subset of rollouts. The following
-      filters are supported: -- To limit the results to only those in
-      [status](google.api.servicemanagement.v1.RolloutStatus) 'SUCCESS', use
-      filter='status=SUCCESS' -- To limit the results to those in
-      [status](google.api.servicemanagement.v1.RolloutStatus) 'CANCELLED' or
-      'FAILED', use filter='status=CANCELLED OR status=FAILED'
+      filters are supported: -- To limit the results to only those in status
+      'SUCCESS', use filter='status=SUCCESS' -- To limit the results to those
+      in status 'CANCELLED' or 'FAILED', use filter='status=CANCELLED OR
+      status=FAILED'
     pageSize: The max number of items to include in the response list. Page
       size is 50 if not specified. Maximum value is 100.
     pageToken: The token of the page to retrieve.
     serviceName: Required. The name of the service. See the
-      [overview](/service-management/overview) for naming requirements. For
-      example: `example.googleapis.com`.
+      [overview](https://cloud.google.com/service-management/overview) for
+      naming requirements. For example: `example.googleapis.com`.
   """
 
   filter = _messages.StringField(1)
@@ -4053,8 +4055,8 @@ class ServicemanagementServicesUndeleteRequest(_messages.Message):
 
   Fields:
     serviceName: Required. The name of the service. See the
-      [overview](/service-management/overview) for naming requirements. For
-      example: `example.googleapis.com`.
+      [overview](https://cloud.google.com/service-management/overview) for
+      naming requirements. For example: `example.googleapis.com`.
   """
 
   serviceName = _messages.StringField(1, required=True)
