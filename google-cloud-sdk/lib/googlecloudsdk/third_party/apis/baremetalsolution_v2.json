@@ -208,6 +208,10 @@
         "interactiveSerialConsoleEnabled": {
           "description": "True if the interactive serial console feature is enabled for the instance, false otherwise. The default value is false.",
           "type": "boolean"
+        },
+        "osImage": {
+          "description": "The OS image currently installed on the server.",
+          "type": "string"
         }
       }
     },
@@ -514,6 +518,13 @@
       "properties": {
       }
     },
+    "StopInstanceRequest": {
+      "id": "StopInstanceRequest",
+      "description": "Message requesting to stop a server.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "EnableInteractiveSerialConsoleRequest": {
       "id": "EnableInteractiveSerialConsoleRequest",
       "description": "Message for enabling the interactive serial console on an instance.",
@@ -526,6 +537,28 @@
       "description": "Message for disabling the interactive serial console on an instance.",
       "type": "object",
       "properties": {
+      }
+    },
+    "AttachVolumeRequest": {
+      "id": "AttachVolumeRequest",
+      "description": "Message for attaching Volume to an instance. All Luns of the Volume will be attached.",
+      "type": "object",
+      "properties": {
+        "volume": {
+          "description": "Required. Name of the Volume to attach.",
+          "type": "string"
+        }
+      }
+    },
+    "DetachVolumeRequest": {
+      "id": "DetachVolumeRequest",
+      "description": "Message for detaching Volume to an instance. All Luns of the Volume will be attached.",
+      "type": "object",
+      "properties": {
+        "volume": {
+          "description": "Required. Name of the Volume to detach from.",
+          "type": "string"
+        }
       }
     },
     "ListSSHKeysResponse": {
@@ -648,6 +681,11 @@
           "type": "string",
           "format": "int64"
         },
+        "emergencySizeGib": {
+          "description": "Additional emergency size that was requested for this Volume, in GiB. current_size_gib includes this value.",
+          "type": "string",
+          "format": "int64"
+        },
         "autoGrownSizeGib": {
           "description": "The size, in GiB, that this storage volume has expanded as a result of an auto grow policy. In the absence of auto-grow, the value is 0.",
           "type": "string",
@@ -717,6 +755,37 @@
         },
         "reservedSpacePercent": {
           "description": "Percent of the total Volume size reserved for snapshot copies. Enabling snapshots requires reserving 20% or more of the storage volume space for snapshots. Maximum reserved space for snapshots is 40%. Setting this field will effectively set snapshot_enabled to true.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "AllocateLunsRequest": {
+      "id": "AllocateLunsRequest",
+      "description": "Message for creating Luns for Volume.",
+      "type": "object",
+      "properties": {
+        "lunRanges": {
+          "description": "Required. LUN ranges to be allocated.",
+          "type": "array",
+          "items": {
+            "$ref": "AllocateLunsRequestLunRange"
+          }
+        }
+      }
+    },
+    "AllocateLunsRequestLunRange": {
+      "id": "AllocateLunsRequestLunRange",
+      "description": "A LUN(Logical Unit Number) range.",
+      "type": "object",
+      "properties": {
+        "quantity": {
+          "description": "Number of LUNs to create.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "sizeGb": {
+          "description": "The requested size of each LUN, in GB.",
           "type": "integer",
           "format": "int32"
         }
@@ -1240,12 +1309,20 @@
           "enumDescriptions": [
             "State wasn't specified.",
             "ProvisioningConfig is a draft and can be freely modified.",
-            "ProvisioningConfig was already submitted and cannot be modified."
+            "ProvisioningConfig was already submitted and cannot be modified.",
+            "ProvisioningConfig was in the provisioning state. Initially this state comes from the work order table in big query when SNOW is used. Later this field can be set by the work order API.",
+            "ProvisioningConfig was provisioned, meaning the resources exist.",
+            "ProvisioningConfig was validated. A validation tool will be run to set this state.",
+            "ProvisioningConfig was canceled."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
             "DRAFT",
-            "SUBMITTED"
+            "SUBMITTED",
+            "PROVISIONING",
+            "PROVISIONED",
+            "VALIDATED",
+            "CANCELLED"
           ]
         },
         "location": {
@@ -1587,6 +1664,109 @@
         }
       }
     },
+    "FetchInstanceProvisioningSettingsResponse": {
+      "id": "FetchInstanceProvisioningSettingsResponse",
+      "description": "Response with all provisioning settings.",
+      "type": "object",
+      "properties": {
+        "images": {
+          "description": "The OS images available.",
+          "type": "array",
+          "items": {
+            "$ref": "OSImage"
+          }
+        }
+      }
+    },
+    "OSImage": {
+      "id": "OSImage",
+      "description": "Operation System image.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. OS Image's unique name.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "code": {
+          "description": "OS Image code.",
+          "type": "string"
+        },
+        "description": {
+          "description": "OS Image description.",
+          "type": "string"
+        },
+        "applicableInstanceTypes": {
+          "description": "Instance types this image is applicable to. [Available types](https:\/\/cloud.google.com\/bare-metal\/docs\/bms-planning#server_configurations)",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "supportedNetworkTemplates": {
+          "description": "Network templates that can be used with this OS Image.",
+          "type": "array",
+          "items": {
+            "$ref": "ServerNetworkTemplate"
+          }
+        }
+      }
+    },
+    "ServerNetworkTemplate": {
+      "id": "ServerNetworkTemplate",
+      "description": "Network template.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. Template's unique name.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "applicableInstanceTypes": {
+          "description": "Instance types this template is applicable to.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "logicalInterfaces": {
+          "description": "Logical interfaces.",
+          "type": "array",
+          "items": {
+            "$ref": "LogicalInterface"
+          }
+        }
+      }
+    },
+    "LogicalInterface": {
+      "id": "LogicalInterface",
+      "description": "Logical interface.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Interface name. This is not a globally unique identifier. Name is unique only inside the ServerNetworkTemplate.",
+          "type": "string"
+        },
+        "type": {
+          "description": "Interface type.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified value.",
+            "Bond interface type.",
+            "NIC interface ytpe."
+          ],
+          "enum": [
+            "INTERFACE_TYPE_UNSPECIFIED",
+            "BOND",
+            "NIC"
+          ]
+        },
+        "required": {
+          "description": "If true, interface must have network connected.",
+          "type": "boolean"
+        }
+      }
+    },
     "ListLocationsResponse": {
       "id": "ListLocationsResponse",
       "description": "The response message for Locations.ListLocations.",
@@ -1796,7 +1976,7 @@
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "The list of fields to update. The only currently supported fields are: `labels`",
+                      "description": "The list of fields to update. The only currently supported fields are: `labels` `hyperthreading_enabled`",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
@@ -1872,6 +2052,34 @@
                   ],
                   "description": "Starts a server that was shutdown."
                 },
+                "stop": {
+                  "id": "baremetalsolution.projects.locations.instances.stop",
+                  "path": "v2/{+name}:stop",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:stop",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Name of the resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "StopInstanceRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Stop a running server."
+                },
                 "enableInteractiveSerialConsole": {
                   "id": "baremetalsolution.projects.locations.instances.enableInteractiveSerialConsole",
                   "path": "v2/{+name}:enableInteractiveSerialConsole",
@@ -1927,6 +2135,62 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Disable the interactive serial console feature on an instance."
+                },
+                "attachVolume": {
+                  "id": "baremetalsolution.projects.locations.instances.attachVolume",
+                  "path": "v2/{+instance}:attachVolume",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:attachVolume",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "instance": {
+                      "description": "Required. Name of the instance.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "instance"
+                  ],
+                  "request": {
+                    "$ref": "AttachVolumeRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Attach volume to instance."
+                },
+                "detachVolume": {
+                  "id": "baremetalsolution.projects.locations.instances.detachVolume",
+                  "path": "v2/{+instance}:detachVolume",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:detachVolume",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "instance": {
+                      "description": "Required. Name of the instance.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "instance"
+                  ],
+                  "request": {
+                    "$ref": "DetachVolumeRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Detach volume from instance."
                 }
               }
             },
@@ -2129,6 +2393,87 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Update details of a single storage volume."
+                },
+                "create": {
+                  "id": "baremetalsolution.projects.locations.volumes.create",
+                  "path": "v2/{+parent}/volumes",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/volumes",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent project and location.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "Volume"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Create a volume."
+                },
+                "delete": {
+                  "id": "baremetalsolution.projects.locations.volumes.delete",
+                  "path": "v2/{+name}",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the Volume to delete.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/volumes\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Delete a volume. Volume shouldn't have any Luns."
+                },
+                "allocateLuns": {
+                  "id": "baremetalsolution.projects.locations.volumes.allocateLuns",
+                  "path": "v2/{+parent}:allocateLuns",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}:allocateLuns",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. Parent volume.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/volumes\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "AllocateLunsRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Allocate Volume's Luns."
                 }
               }
               ,
@@ -2341,6 +2686,31 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "List storage volume luns for given storage volume."
+                    },
+                    "delete": {
+                      "id": "baremetalsolution.projects.locations.volumes.luns.delete",
+                      "path": "v2/{+name}",
+                      "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}/luns/{lunsId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The name of the Lun to delete.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/volumes\/[^\/]+\/luns\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Delete a Lun."
                     }
                   }
                 }
@@ -2907,6 +3277,35 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Update existing ProvisioningConfig."
+                }
+              }
+            },
+            "instanceProvisioningSettings": {
+              "methods": {
+                "fetch": {
+                  "id": "baremetalsolution.projects.locations.instanceProvisioningSettings.fetch",
+                  "path": "v2/{+location}/instanceProvisioningSettings:fetch",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/instanceProvisioningSettings:fetch",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "location": {
+                      "description": "Required. The parent project and location containing the ProvisioningSettings.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "location"
+                  ],
+                  "response": {
+                    "$ref": "FetchInstanceProvisioningSettingsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Get instance provisioning settings for a given project. This is hidden method used by UI only."
                 }
               }
             }

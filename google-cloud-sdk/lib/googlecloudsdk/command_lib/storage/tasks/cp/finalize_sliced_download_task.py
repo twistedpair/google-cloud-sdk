@@ -23,6 +23,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.command_lib.storage import errors
+from googlecloudsdk.command_lib.storage import manifest_util
 from googlecloudsdk.command_lib.storage import tracker_file_util
 from googlecloudsdk.command_lib.storage.tasks import task
 from googlecloudsdk.command_lib.storage.tasks.cp import copy_util
@@ -33,7 +34,7 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 
 
-class FinalizeSlicedDownloadTask(task.Task, copy_util.CopyTaskExitHandlerMixin):
+class FinalizeSlicedDownloadTask(copy_util.CopyTaskWithExitHandler):
   """Performs final steps of sliced download."""
 
   def __init__(self,
@@ -62,14 +63,15 @@ class FinalizeSlicedDownloadTask(task.Task, copy_util.CopyTaskExitHandlerMixin):
         URL of the copy result.
       user_request_args (UserRequestArgs|None): Values for RequestConfig.
     """
-    super(FinalizeSlicedDownloadTask, self).__init__()
-    self._source_resource = source_resource
+    super(FinalizeSlicedDownloadTask, self).__init__(
+        source_resource,
+        final_destination_resource,
+        user_request_args=user_request_args)
     self._temporary_destination_resource = temporary_destination_resource
     self._final_destination_resource = final_destination_resource
     self._delete_source = delete_source
     self._do_not_decompress = do_not_decompress
     self._print_created_message = print_created_message
-    self._user_request_args = user_request_args
 
   def execute(self, task_status_queue=None):
     """Validates and clean ups after sliced download."""
@@ -129,6 +131,11 @@ class FinalizeSlicedDownloadTask(task.Task, copy_util.CopyTaskExitHandlerMixin):
 
     if self._print_created_message:
       log.status.Print('Created: {}'.format(final_destination_object_path))
+    if self._send_manifest_messages:
+      # Does not send md5_hash because sliced download uses CRC32C.
+      manifest_util.send_success_message(task_status_queue,
+                                         self._source_resource,
+                                         self._final_destination_resource)
 
     if self._delete_source:
       return task.Output(

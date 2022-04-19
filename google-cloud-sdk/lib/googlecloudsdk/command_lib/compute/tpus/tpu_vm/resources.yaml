@@ -4,7 +4,7 @@ project:
   attributes:
   - parameter_name: projectsId
     attribute_name: project
-    help: The project ID.
+    help: Project ID.
 
 location:
   name: location
@@ -15,7 +15,7 @@ location:
     parameter_name: locationsId
     attribute_name: zone
     help: |
-      The compute/zone of the Cloud TPU.
+      Zone of the Cloud TPU.
 
       If not specified, will use `default` compute/zone.
     property: compute/zone
@@ -27,7 +27,7 @@ tpu:
   - *location
   - parameter_name: nodesId
     attribute_name: tpu
-    help: The identifier of the Cloud TPU
+    help: Identifier of the Cloud TPU.
 
 runtimeversion:
   name: runtime_version
@@ -36,7 +36,7 @@ runtimeversion:
   - *location
   - parameter_name: runtimeVersionsId
     attribute_name: version
-    help: The id of the runtime version.
+    help: ID of the runtime version.
 
 acceleratortype:
   name: accelerator_type
@@ -45,4 +45,4 @@ acceleratortype:
   - *location
   - parameter_name: acceleratorTypesId
     attribute_name: accelerator_type
-    help: The id of the accelerator type.
+    help: ID of the accelerator type.

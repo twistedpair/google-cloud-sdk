@@ -286,14 +286,16 @@ class AuthProvider(_messages.Message):
       of the issuer. - can be inferred from the email domain of the issuer
       (e.g. a Google service account). Example:
       https://www.googleapis.com/oauth2/v1/certs
-    jwtLocations: Defines the locations to extract the JWT. JWT locations can
-      be either from HTTP headers or URL query parameters. The rule is that
-      the first match wins. The checking order is: checking all headers first,
-      then URL query parameters. If not specified, default to use following 3
-      locations: 1) Authorization: Bearer 2) x-goog-iap-jwt-assertion 3)
-      access_token query parameter Default locations can be specified as
-      followings: jwt_locations: - header: Authorization value_prefix: "Bearer
-      " - header: x-goog-iap-jwt-assertion - query: access_token
+    jwtLocations: Defines the locations to extract the JWT. For now it is only
+      used by the Cloud Endpoints to store the OpenAPI extension [x-google-
+      jwt-locations] (https://cloud.google.com/endpoints/docs/openapi/openapi-
+      extensions#x-google-jwt-locations) JWT locations can be one of HTTP
+      headers, URL query parameters or cookies. The rule is that the first
+      match wins. If not specified, default to use following 3 locations: 1)
+      Authorization: Bearer 2) x-goog-iap-jwt-assertion 3) access_token query
+      parameter Default locations can be specified as followings:
+      jwt_locations: - header: Authorization value_prefix: "Bearer " - header:
+      x-goog-iap-jwt-assertion - query: access_token
   """
 
   audiences = _messages.StringField(1)
@@ -1341,6 +1343,7 @@ class JwtLocation(_messages.Message):
   r"""Specifies a location to extract JWT from an API request.
 
   Fields:
+    cookie: Specifies cookie name to extract JWT token.
     header: Specifies HTTP header name to extract JWT token.
     query: Specifies URL query parameter name to extract JWT token.
     valuePrefix: The value prefix. The value format is "value_prefix{token}"
@@ -1351,9 +1354,10 @@ class JwtLocation(_messages.Message):
       Bearer {JWT}", value_prefix="Bearer " with a space at the end.
   """
 
-  header = _messages.StringField(1)
-  query = _messages.StringField(2)
-  valuePrefix = _messages.StringField(3)
+  cookie = _messages.StringField(1)
+  header = _messages.StringField(2)
+  query = _messages.StringField(3)
+  valuePrefix = _messages.StringField(4)
 
 
 class LabelDescriptor(_messages.Message):

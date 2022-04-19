@@ -187,7 +187,7 @@ class Binding(_messages.Message):
       policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
-    members: Specifies the principals requesting access for a Cloud Platform
+    members: Specifies the principals requesting access for a Google Cloud
       resource. `members` can have the following values: * `allUsers`: A
       special identifier that represents anyone who is on the internet; with
       or without a Google account. * `allAuthenticatedUsers`: A special
@@ -3286,8 +3286,8 @@ class SetIamPolicyRequest(_messages.Message):
   Fields:
     policy: REQUIRED: The complete policy to be applied to the `resource`. The
       size of the policy is limited to a few 10s of KB. An empty policy is a
-      valid policy but certain Cloud Platform services (such as Projects)
-      might reject them.
+      valid policy but certain Google Cloud services (such as Projects) might
+      reject them.
   """
 
   policy = _messages.MessageField('Policy', 1)

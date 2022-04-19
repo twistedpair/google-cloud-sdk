@@ -275,6 +275,8 @@ class SecurityPolicyRule(object):
     Returns:
       An HttpHeaderAction object with a populated request_headers_to_add field.
     """
+    if not request_headers_to_add:
+      return None
     header_action = self._messages.SecurityPolicyRuleHttpHeaderAction()
     for hdr_name, hdr_val in request_headers_to_add.items():
       header_to_add = (

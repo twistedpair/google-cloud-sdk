@@ -793,6 +793,10 @@
           "items": {
             "$ref": "IamBinding"
           }
+        },
+        "nextSteps": {
+          "description": "Next steps associate to the finding.",
+          "type": "string"
         }
       }
     },
@@ -1105,7 +1109,8 @@
               "T1578",
               "T1190",
               "T1556",
-              "T1485"
+              "T1485",
+              "T1484"
             ],
             "enum": [
               "TECHNIQUE_UNSPECIFIED",
@@ -1137,7 +1142,8 @@
               "MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE",
               "EXPLOIT_PUBLIC_FACING_APPLICATION",
               "MODIFY_AUTHENTICATION_PROCESS",
-              "DATA_DESTRUCTION"
+              "DATA_DESTRUCTION",
+              "DOMAIN_POLICY_MODIFICATION"
             ]
           }
         },
@@ -1217,7 +1223,8 @@
               "T1578",
               "T1190",
               "T1556",
-              "T1485"
+              "T1485",
+              "T1484"
             ],
             "enum": [
               "TECHNIQUE_UNSPECIFIED",
@@ -1249,7 +1256,8 @@
               "MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE",
               "EXPLOIT_PUBLIC_FACING_APPLICATION",
               "MODIFY_AUTHENTICATION_PROCESS",
-              "DATA_DESTRUCTION"
+              "DATA_DESTRUCTION",
+              "DOMAIN_POLICY_MODIFICATION"
             ]
           }
         },

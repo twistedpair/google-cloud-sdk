@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 import abc
 import collections
+import os
 
 from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage.resources import resource_util
@@ -288,6 +289,7 @@ class FileObjectResource(Resource):
 
   Attributes:
     TYPE_STRING (str): String representing the resource's content type.
+    size (int|None): Size of local file in bytes or None if pipe or stream.
     storage_url (StorageUrl): A StorageUrl object representing the resource.
     md5_hash (bytes): Base64-encoded digest of md5 hash.
   """
@@ -300,6 +302,13 @@ class FileObjectResource(Resource):
 
   def is_container(self):
     return False
+
+  @property
+  def size(self):
+    """Returns file size or None if pipe or stream."""
+    if self.storage_url.is_pipe:
+      return None
+    return os.path.getsize(self.storage_url.object_name)
 
 
 class FileDirectoryResource(Resource):

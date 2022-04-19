@@ -1017,7 +1017,7 @@
     },
     "GoogleCloudCommerceConsumerProcurementV1alpha1Entitlement": {
       "id": "GoogleCloudCommerceConsumerProcurementV1alpha1Entitlement",
-      "description": "Entitlement represents the ability to use a product or services associated with a purchase within a Project. When the customer creates an Order, the system will create Entitlement resources under projects associated with the same billing account as the order, for all products\/services procured in the order. Users can enable\/disable Entitlements to allow\/disallow using the product\/service in a project. Next Id: 19",
+      "description": "Entitlement represents the ability to use a product or services associated with a purchase within a Project. When the customer creates an Order, the system will create Entitlement resources under projects associated with the same billing account as the order, for all products\/services procured in the order. Users can enable\/disable Entitlements to allow\/disallow using the product\/service in a project. Next Id: 21",
       "type": "object",
       "properties": {
         "name": {

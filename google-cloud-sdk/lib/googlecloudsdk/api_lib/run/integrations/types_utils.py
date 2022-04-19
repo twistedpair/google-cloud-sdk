@@ -32,8 +32,8 @@ _INTEGRATION_TYPES = frozenset([
             'Configure a custom domain for Cloud Run services with Google Cloud '
             'Load Balancer.',
         'example_command':
-            '$ gcloud run integration types create --type=custom-domain '
-            '--parameters=domain=example.com',
+            '$ gcloud run integration types create --service=[SERVICE] '
+            '--type=custom-domain --parameters=domain=example.com',
         'parameters':
             frozendict({
                 'domain': frozendict({
@@ -44,13 +44,6 @@ _INTEGRATION_TYPES = frozenset([
                     'required': True,
                     'update_allowed': False,
                 }),
-                'dns-zone': frozendict({
-                    'description':
-                        'The ID of the Cloud DNS Zone already configured for this '
-                        'domain. If not specified, manual DNS configuration is '
-                        'expected.',
-                    'type': 'string',
-                }),
                 'paths': frozendict({
                     'description':
                         'The paths at the domain for your Cloud Run service. '
@@ -58,19 +51,29 @@ _INTEGRATION_TYPES = frozenset([
                         '"example.com/foo/*")',
                     'type': 'path_matcher',
                 }),
+                'dns-zone': frozendict({
+                    'description':
+                        'The ID of the Cloud DNS Zone already configured for this '
+                        'domain. If not specified, manual DNS configuration is '
+                        'expected.',
+                    'type': 'string',
+                    'hidden': True,
+                }),
             })
     }),
     frozendict({
         'name':
             'redis',
         'description':
-            'Configure a Memorystore-Redis instance for Cloud Run Services.',
+            'Configure a Redis instance (Cloud Memorystore) and connect it '
+            'to a Cloud Run Service.',
         'example_command':
-            '$ gcloud run integration types create --type=redis',
+            '$ gcloud run integration types create --service=[SERVICE] '
+            '--type=redis --parameters=memory-size-gb=2',
         'parameters':
             frozendict({
                 'memory-size-gb': frozendict({
-                    'description': 'Memory capacity of Redis instance.',
+                    'description': 'Memory capacity of the Redis instance.',
                     'type': 'int',
                     'default': 1,
                 }),
@@ -81,6 +84,7 @@ _INTEGRATION_TYPES = frozenset([
                         'instance and STANDARD_HA for highly available '
                         'primary/replica instances.',
                     'type': 'string',
+                    'hidden': True,
                 }),
                 'version': frozendict({
                     'description':
@@ -90,6 +94,7 @@ _INTEGRATION_TYPES = frozenset([
                         'REDIS_4_0 and REDIS_3_2.',
                     'type': 'string',
                     'update_allowed': False,
+                    'hidden': True,
                 }),
             }),
     }),

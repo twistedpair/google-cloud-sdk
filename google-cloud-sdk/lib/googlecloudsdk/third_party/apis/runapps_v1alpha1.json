@@ -283,7 +283,7 @@
     },
     "Application": {
       "id": "Application",
-      "description": "Message describing Application object Next tag: 8",
+      "description": "Message describing Application object Next tag: 9",
       "type": "object",
       "properties": {
         "name": {
@@ -326,6 +326,10 @@
           "description": "The application configuration. On output, both intent repo and application config are populated. On input, only one can be modified at a time.",
           "$ref": "Config"
         },
+        "displayName": {
+          "description": "A mutable, user-defined name for the application.",
+          "type": "string"
+        },
         "reconciling": {
           "description": "Output only. Indicates whether the resource's reconciliation is still in progress.",
           "readOnly": true,
@@ -365,10 +369,6 @@
         "router": {
           "description": "Router configuration.",
           "$ref": "RouterConfig"
-        },
-        "cloudsql": {
-          "description": "CloudSql configuration.",
-          "$ref": "CloudSqlConfig"
         },
         "service": {
           "description": "Cloud Run service configuration.",
@@ -432,49 +432,6 @@
         }
       }
     },
-    "CloudSqlConfig": {
-      "id": "CloudSqlConfig",
-      "description": "Message for a Cloud SQL resource.",
-      "type": "object",
-      "properties": {
-        "version": {
-          "description": "The database version. e.g. \"MYSQL_8_0\". The version must match one of the values at https:\/\/cloud.google.com\/sql\/docs\/mysql\/admin-api\/rest\/v1beta4\/SqlDatabaseVersion.",
-          "type": "string"
-        },
-        "settings": {
-          "description": "Settings for the Cloud SQL instance.",
-          "$ref": "CloudSqlSettings"
-        }
-      }
-    },
-    "CloudSqlSettings": {
-      "id": "CloudSqlSettings",
-      "description": "Message for settings for a CloudSql instance.",
-      "type": "object",
-      "properties": {
-        "tier": {
-          "description": "Tier of the Cloud SQL instance. e.g. \"db-f1-micro\".",
-          "type": "string"
-        },
-        "activation-policy": {
-          "description": "The activation policy of the Cloud SQL instance. e.g. \"ALWAYS\".",
-          "type": "string"
-        },
-        "disk-size": {
-          "description": "The disk size of the Cloud SQL instance, in GB. This value cannot be decreased on Update.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "disk-type": {
-          "description": "The type of disk for the Cloud SQL instance. e.g. \"PD_SSD\".",
-          "type": "string"
-        },
-        "availability-type": {
-          "description": "The availability type of the Cloud SQL instance. e.g. \"REGIONAL\".",
-          "type": "string"
-        }
-      }
-    },
     "CloudRunServiceConfig": {
       "id": "CloudRunServiceConfig",
       "description": "Message for Cloud Run service configs.",
@@ -486,10 +443,6 @@
           "items": {
             "$ref": "ServiceResourceBindingConfig"
           }
-        },
-        "image": {
-          "description": "The container image to deploy the service with.",
-          "type": "string"
         }
       }
     },
@@ -680,10 +633,6 @@
           "description": "Detail Status of Router resource.",
           "$ref": "RouterStatus"
         },
-        "cloudSqlDetails": {
-          "description": "Detail Status of CloudSQL resource.",
-          "$ref": "CloudSqlStatus"
-        },
         "consoleLink": {
           "description": "Pantheon link for the resource. For example, the custom domain will link to the GCLB page.",
           "type": "string"
@@ -787,13 +736,6 @@
           "description": "IP Address of the Google Cloud Load Balancer.",
           "type": "string"
         }
-      }
-    },
-    "CloudSqlStatus": {
-      "id": "CloudSqlStatus",
-      "description": "Detail Status of CloudSQL resource.",
-      "type": "object",
-      "properties": {
       }
     },
     "ListDeploymentsResponse": {
@@ -940,13 +882,12 @@
       "description": "Message to encapsulate the current status deployment job.",
       "type": "object",
       "properties": {
-        "createSelector": {
-          "description": "Create selector applied to deployment job.",
-          "$ref": "Selector"
-        },
-        "deleteSelector": {
-          "description": "Delete selector applied to deployment job.",
-          "$ref": "Selector"
+        "components": {
+          "description": "Components to be actuated by the job.",
+          "type": "array",
+          "items": {
+            "$ref": "JobComponent"
+          }
         },
         "jobUri": {
           "description": "URI of deployment job within Google Cloud Console.",
@@ -957,7 +898,7 @@
           "type": "string"
         },
         "state": {
-          "description": "State of deployment job",
+          "description": "State of deployment job.",
           "type": "string",
           "enumDescriptions": [
             "Default value. This value is unused.",
@@ -971,6 +912,46 @@
             "SUCCEEDED",
             "IN_PROGRESS"
           ]
+        }
+      }
+    },
+    "JobComponent": {
+      "id": "JobComponent",
+      "description": "Message to encapsulate component actuated by a job. JobComponent does not represent a GCP API resource.",
+      "type": "object",
+      "properties": {
+        "typedName": {
+          "description": "TypedName is the component name and its type.",
+          "$ref": "TypedName"
+        },
+        "operation": {
+          "description": "Operation to be performed on component.",
+          "type": "string",
+          "enumDescriptions": [
+            "ComponentOperation unset.",
+            "Apply configuration to component.",
+            "Destroy component."
+          ],
+          "enum": [
+            "COMPONENT_OPERATION_UNSPECIFIED",
+            "APPLY",
+            "DESTROY"
+          ]
+        }
+      }
+    },
+    "TypedName": {
+      "id": "TypedName",
+      "description": "TypedName is a resource name + its type. Next tag: 3",
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "The type of the resource.",
+          "type": "string"
+        },
+        "name": {
+          "description": "The name of the resource.",
+          "type": "string"
         }
       }
     },
@@ -992,21 +973,6 @@
           "items": {
             "$ref": "TypedName"
           }
-        }
-      }
-    },
-    "TypedName": {
-      "id": "TypedName",
-      "description": "TypedName is a resource name + its type. Next tag: 3",
-      "type": "object",
-      "properties": {
-        "type": {
-          "description": "The type of the resource.",
-          "type": "string"
-        },
-        "name": {
-          "description": "The name of the resource.",
-          "type": "string"
         }
       }
     },

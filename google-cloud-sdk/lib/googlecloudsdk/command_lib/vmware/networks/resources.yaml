@@ -17,7 +17,7 @@ location:
   - &location
     parameter_name: locationsId
     attribute_name: location
-    help: The resource name of the location
+    help: The resource name of the location.
     fallthroughs:
     - hook: googlecloudsdk.command_lib.vmware.networks.util:DefaultToGlobal
       hint: set location as 'global' (default) or a region
@@ -33,4 +33,15 @@ vmware_engine_network:
     parameter_name: vmwareEngineNetworksId
     attribute_name: vmware-engine-network
     help: VMware Engine network
+  disable_auto_completers: false
+
+network_peering:
+  name: VMware Engine VPC network peering
+  collection: vmwareengine.projects.locations.global.networkPeerings
+  attributes:
+  - *project
+  - &network_peering
+    parameter_name: networkPeeringsId
+    attribute_name: network-peering
+    help: VMware Engine VPC network peering
   disable_auto_completers: false

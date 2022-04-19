@@ -819,6 +819,10 @@
         "configmanagement": {
           "description": "Config Management-specific spec.",
           "$ref": "ConfigManagementMembershipSpec"
+        },
+        "mesh": {
+          "description": "Anthos Service Mesh-specific spec",
+          "$ref": "ServiceMeshMembershipSpec"
         }
       }
     },
@@ -977,6 +981,27 @@
         }
       }
     },
+    "ServiceMeshMembershipSpec": {
+      "id": "ServiceMeshMembershipSpec",
+      "description": "**Service Mesh**: Spec for a single Membership for the servicemesh feature",
+      "type": "object",
+      "properties": {
+        "controlPlane": {
+          "description": "Enables automatic control plane management.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified",
+            "Google should provision a control plane revision and make it available in the cluster. Google will enroll this revision in a release channel and keep it up to date. The control plane revision may be a managed service, or a managed install.",
+            "User will manually configure the control plane (e.g. via CLI, or via the ControlPlaneRevision KRM API)"
+          ],
+          "enum": [
+            "CONTROL_PLANE_MANAGEMENT_UNSPECIFIED",
+            "AUTOMATIC",
+            "MANUAL"
+          ]
+        }
+      }
+    },
     "CommonFeatureState": {
       "id": "CommonFeatureState",
       "description": "CommonFeatureState contains Hub-wide Feature status information.",
@@ -1079,6 +1104,10 @@
       "description": "MembershipFeatureState contains Feature status information for a single Membership.",
       "type": "object",
       "properties": {
+        "servicemesh": {
+          "description": "Service Mesh-specific state.",
+          "$ref": "ServiceMeshMembershipState"
+        },
         "helloworld": {
           "description": "Hello World-specific state.",
           "$ref": "HelloWorldMembershipState"
@@ -1094,6 +1123,71 @@
         "state": {
           "description": "The high-level state of this Feature for a single membership.",
           "$ref": "FeatureState"
+        }
+      }
+    },
+    "ServiceMeshMembershipState": {
+      "id": "ServiceMeshMembershipState",
+      "description": "**Service Mesh**: State for a single Membership, as analyzed by the Service Mesh Hub Controller.",
+      "type": "object",
+      "properties": {
+        "controlPlaneManagement": {
+          "description": "Output only. Status of control plane management",
+          "readOnly": true,
+          "$ref": "ServiceMeshControlPlaneManagement"
+        }
+      }
+    },
+    "ServiceMeshControlPlaneManagement": {
+      "id": "ServiceMeshControlPlaneManagement",
+      "description": "Status of control plane management.",
+      "type": "object",
+      "properties": {
+        "details": {
+          "description": "Explanation of state.",
+          "type": "array",
+          "items": {
+            "$ref": "ServiceMeshStatusDetails"
+          }
+        },
+        "state": {
+          "description": "LifecycleState of control plane management.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified",
+            "DISABLED means that the component is not enabled.",
+            "FAILED_PRECONDITION means that provisioning cannot proceed because of some characteristic of the member cluster.",
+            "PROVISIONING means that provisioning is in progress.",
+            "ACTIVE means that the component is ready for use.",
+            "STALLED means that provisioning could not be done.",
+            "NEEDS_ATTENTION means that the component is ready, but some user intervention is required. (For example that the user should migrate workloads to a new control plane revision.)",
+            "DEGRADED means that the component is ready, but operating in a degraded state."
+          ],
+          "enum": [
+            "LIFECYCLE_STATE_UNSPECIFIED",
+            "DISABLED",
+            "FAILED_PRECONDITION",
+            "PROVISIONING",
+            "ACTIVE",
+            "STALLED",
+            "NEEDS_ATTENTION",
+            "DEGRADED"
+          ]
+        }
+      }
+    },
+    "ServiceMeshStatusDetails": {
+      "id": "ServiceMeshStatusDetails",
+      "description": "Structured and human-readable details for a status.",
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "A machine-readable code that further describes a broad status.",
+          "type": "string"
+        },
+        "details": {
+          "description": "Human-readable explanation of code.",
+          "type": "string"
         }
       }
     },
@@ -1712,7 +1806,7 @@
       "type": "object",
       "properties": {
         "policy": {
-          "description": "REQUIRED: The complete policy to be applied to the `resource`. The size of the policy is limited to a few 10s of KB. An empty policy is a valid policy but certain Cloud Platform services (such as Projects) might reject them.",
+          "description": "REQUIRED: The complete policy to be applied to the `resource`. The size of the policy is limited to a few 10s of KB. An empty policy is a valid policy but certain Google Cloud services (such as Projects) might reject them.",
           "$ref": "Policy"
         },
         "updateMask": {
@@ -1763,7 +1857,7 @@
           "type": "string"
         },
         "members": {
-          "description": "Specifies the principals requesting access for a Cloud Platform resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
+          "description": "Specifies the principals requesting access for a Google Cloud resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
           "type": "array",
           "items": {
             "type": "string"
@@ -1852,7 +1946,7 @@
       "type": "object",
       "properties": {
         "permissions": {
-          "description": "The set of permissions to check for the `resource`. Permissions with wildcards (such as '*' or 'storage.*') are not allowed. For more information see [IAM Overview](https:\/\/cloud.google.com\/iam\/docs\/overview#permissions).",
+          "description": "The set of permissions to check for the `resource`. Permissions with wildcards (such as `*` or `storage.*`) are not allowed. For more information see [IAM Overview](https:\/\/cloud.google.com\/iam\/docs\/overview#permissions).",
           "type": "array",
           "items": {
             "type": "string"

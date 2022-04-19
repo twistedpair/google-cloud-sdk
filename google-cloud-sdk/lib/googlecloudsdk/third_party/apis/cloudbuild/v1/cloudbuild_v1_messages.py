@@ -936,6 +936,9 @@ class BuildTrigger(_messages.Message):
     github: GitHubEventsConfig describes the configuration of a trigger that
       creates a build whenever a GitHub event is received. Mutually exclusive
       with `trigger_template`.
+    gitlabEnterpriseEventsConfig: GitLabEnterpriseEventsConfig describes the
+      configuration of a trigger that creates a build whenever a GitLab
+      Enterprise event is received.
     id: Output only. Unique identifier of the trigger.
     ignoredFiles: ignored_files and included_files are file glob matches using
       https://golang.org/pkg/path/filepath/#Match extended with support for
@@ -1057,19 +1060,20 @@ class BuildTrigger(_messages.Message):
   filter = _messages.StringField(11)
   gitFileSource = _messages.MessageField('GitFileSource', 12)
   github = _messages.MessageField('GitHubEventsConfig', 13)
-  id = _messages.StringField(14)
-  ignoredFiles = _messages.StringField(15, repeated=True)
-  includeBuildLogs = _messages.EnumField('IncludeBuildLogsValueValuesEnum', 16)
-  includedFiles = _messages.StringField(17, repeated=True)
-  name = _messages.StringField(18)
-  pubsubConfig = _messages.MessageField('PubsubConfig', 19)
-  resourceName = _messages.StringField(20)
-  serviceAccount = _messages.StringField(21)
-  sourceToBuild = _messages.MessageField('GitRepoSource', 22)
-  substitutions = _messages.MessageField('SubstitutionsValue', 23)
-  tags = _messages.StringField(24, repeated=True)
-  triggerTemplate = _messages.MessageField('RepoSource', 25)
-  webhookConfig = _messages.MessageField('WebhookConfig', 26)
+  gitlabEnterpriseEventsConfig = _messages.MessageField('GitLabEventsConfig', 14)
+  id = _messages.StringField(15)
+  ignoredFiles = _messages.StringField(16, repeated=True)
+  includeBuildLogs = _messages.EnumField('IncludeBuildLogsValueValuesEnum', 17)
+  includedFiles = _messages.StringField(18, repeated=True)
+  name = _messages.StringField(19)
+  pubsubConfig = _messages.MessageField('PubsubConfig', 20)
+  resourceName = _messages.StringField(21)
+  serviceAccount = _messages.StringField(22)
+  sourceToBuild = _messages.MessageField('GitRepoSource', 23)
+  substitutions = _messages.MessageField('SubstitutionsValue', 24)
+  tags = _messages.StringField(25, repeated=True)
+  triggerTemplate = _messages.MessageField('RepoSource', 26)
+  webhookConfig = _messages.MessageField('WebhookConfig', 27)
 
 
 class BuiltImage(_messages.Message):
@@ -1763,6 +1767,82 @@ class CloudbuildProjectsLocationsBuildsListRequest(_messages.Message):
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
   projectId = _messages.StringField(5)
+
+
+class CloudbuildProjectsLocationsGitLabConfigsCreateRequest(_messages.Message):
+  r"""A CloudbuildProjectsLocationsGitLabConfigsCreateRequest object.
+
+  Fields:
+    gitLabConfig: A GitLabConfig resource to be passed as the request body.
+    gitlabConfigId: Optional. The ID to use for the GitLabConfig, which will
+      become the final component of the GitLabConfig's resource name.
+      gitlab_config_id must meet the following requirements: + They must
+      contain only alphanumeric characters and dashes. + They can be 1-64
+      characters long. + They must begin and end with an alphanumeric
+      character
+    parent: Required. Name of the parent resource.
+  """
+
+  gitLabConfig = _messages.MessageField('GitLabConfig', 1)
+  gitlabConfigId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class CloudbuildProjectsLocationsGitLabConfigsDeleteRequest(_messages.Message):
+  r"""A CloudbuildProjectsLocationsGitLabConfigsDeleteRequest object.
+
+  Fields:
+    name: Required. The config resource name.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class CloudbuildProjectsLocationsGitLabConfigsGetRequest(_messages.Message):
+  r"""A CloudbuildProjectsLocationsGitLabConfigsGetRequest object.
+
+  Fields:
+    name: Required. The config resource name.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class CloudbuildProjectsLocationsGitLabConfigsListRequest(_messages.Message):
+  r"""A CloudbuildProjectsLocationsGitLabConfigsListRequest object.
+
+  Fields:
+    pageSize: The maximum number of configs to return. The service may return
+      fewer than this value. If unspecified, at most 50 configs will be
+      returned. The maximum value is 1000;, values above 1000 will be coerced
+      to 1000.
+    pageToken: A page token, received from a previous
+      'ListGitlabConfigsRequest' call. Provide this to retrieve the subsequent
+      page. When paginating, all other parameters provided to
+      'ListGitlabConfigsRequest' must match the call that provided the page
+      token.
+    parent: Required. Name of the parent resource
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class CloudbuildProjectsLocationsGitLabConfigsPatchRequest(_messages.Message):
+  r"""A CloudbuildProjectsLocationsGitLabConfigsPatchRequest object.
+
+  Fields:
+    gitLabConfig: A GitLabConfig resource to be passed as the request body.
+    name: The resource name for the config.
+    updateMask: Update mask for the resource. If this is set, the server will
+      only update the fields specified in the field mask. Otherwise, a full
+      update of the mutable resource fields will be performed.
+  """
+
+  gitLabConfig = _messages.MessageField('GitLabConfig', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class CloudbuildProjectsLocationsGithubEnterpriseConfigsCreateRequest(_messages.Message):
@@ -2799,6 +2879,105 @@ class GitHubRepositorySettingList(_messages.Message):
   repositorySettings = _messages.MessageField('GitHubRepositorySetting', 1, repeated=True)
 
 
+class GitLabConfig(_messages.Message):
+  r"""GitLabConfig represents the configuration for a GitLab integration.
+
+  Fields:
+    connectedRepositories: Connected GitLab.com or GitLabEnterprise
+      repositories for this config.
+    createTime: Output only. Time when the config was created.
+    enterpriseConfig: Optional. GitLabEnterprise config.
+    name: The resource name for the config.
+    secrets: Required. Secret Manager secrets needed by the config.
+    username: Username of the GitLab.com or GitLab Enterprise account Cloud
+      Build will use.
+    webhookKey: Output only. UUID included in webhook requests. The UUID is
+      used to look up the corresponding config.
+  """
+
+  connectedRepositories = _messages.MessageField('GitLabRepositoryId', 1, repeated=True)
+  createTime = _messages.StringField(2)
+  enterpriseConfig = _messages.MessageField('GitLabEnterpriseConfig', 3)
+  name = _messages.StringField(4)
+  secrets = _messages.MessageField('GitLabSecrets', 5)
+  username = _messages.StringField(6)
+  webhookKey = _messages.StringField(7)
+
+
+class GitLabEnterpriseConfig(_messages.Message):
+  r"""GitLabEnterpriseConfig represents the configuration for a
+  GitLabEnterprise integration.
+
+  Fields:
+    hostUri: Immutable. The URI of the GitlabEnterprise host.
+    sslCa: The SSL certificate to use in requests to GitLab Enterprise
+      instances.
+  """
+
+  hostUri = _messages.StringField(1)
+  sslCa = _messages.StringField(2)
+
+
+class GitLabEventsConfig(_messages.Message):
+  r"""GitLabEventsConfig describes the configuration of a trigger that creates
+  a build whenever a GitLab event is received.
+
+  Fields:
+    gitlabConfig: Output only. The GitLabConfig specified in the
+      gitlab_config_resource field.
+    gitlabConfigResource: The GitLab config resource that this trigger config
+      maps to.
+    projectNamespace: Namespace of the GitLab project.
+    pullRequest: Filter to match changes in pull requests.
+    push: Filter to match changes in refs like branches, tags.
+  """
+
+  gitlabConfig = _messages.MessageField('GitLabConfig', 1)
+  gitlabConfigResource = _messages.StringField(2)
+  projectNamespace = _messages.StringField(3)
+  pullRequest = _messages.MessageField('PullRequestFilter', 4)
+  push = _messages.MessageField('PushFilter', 5)
+
+
+class GitLabRepositoryId(_messages.Message):
+  r"""GitLabRepositoryId identifies a specific repository hosted on GitLab.com
+  or GitLabEnterprise
+
+  Fields:
+    id: Required. Identifier for the repository. example: "namespace/project-
+      slug", namespace is usually the username or group ID
+    webhookId: Output only. The ID of the webhook that was created for
+      receiving events from this repo. We only create and manage a single
+      webhook for each repo.
+  """
+
+  id = _messages.StringField(1)
+  webhookId = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class GitLabSecrets(_messages.Message):
+  r"""GitLabSecrets represents the secrets in Secret Manager for a GitLab
+  integration.
+
+  Fields:
+    apiAccessTokenVersion: Required. The resource name for the api access
+      token's secret version
+    apiKeyVersion: Required. Immutable. API Key that will be attached to
+      webhook requests from GitLab to Cloud Build.
+    readAccessTokenVersion: Required. The resource name for the read access
+      token's secret version
+    webhookSecretVersion: Required. Immutable. The resource name for the
+      webhook secret's secret version. Once this field has been set, it cannot
+      be changed. If you need to change it, please create another
+      GitLabConfig.
+  """
+
+  apiAccessTokenVersion = _messages.StringField(1)
+  apiKeyVersion = _messages.StringField(2)
+  readAccessTokenVersion = _messages.StringField(3)
+  webhookSecretVersion = _messages.StringField(4)
+
+
 class GitRepoSource(_messages.Message):
   r"""GitRepoSource describes a repo and ref of a code repository.
 
@@ -3220,6 +3399,19 @@ class ListGitHubInstallationsResponse(_messages.Message):
   """
 
   installations = _messages.MessageField('Installation', 1, repeated=True)
+
+
+class ListGitLabConfigsResponse(_messages.Message):
+  r"""RPC response object returned by ListGitLabConfigs RPC method.
+
+  Fields:
+    gitlabConfigs: A list of GitLabConfigs
+    nextPageToken: A token that can be sent as `page_token` to retrieve the
+      next page If this field is omitted, there are no subsequent pages.
+  """
+
+  gitlabConfigs = _messages.MessageField('GitLabConfig', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
 class ListGithubEnterpriseConfigsResponse(_messages.Message):

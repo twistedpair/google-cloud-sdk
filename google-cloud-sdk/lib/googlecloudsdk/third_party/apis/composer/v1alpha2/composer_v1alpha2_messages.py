@@ -693,6 +693,19 @@ class DagStats(_messages.Message):
   successfulRunCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
+class DataRetentionConfig(_messages.Message):
+  r"""The configuration setting for Airflow database data retention mechanism.
+
+  Fields:
+    airflowDatabaseRetentionDays: Optional. The number of days describing for
+      how long to store event-based records in airflow database. If the
+      retention mechanism is enabled this value must be a positive integer
+      otherwise, value should be set to 0.
+  """
+
+  airflowDatabaseRetentionDays = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
 class DatabaseConfig(_messages.Message):
   r"""The configuration of Cloud SQL instance that is used by the Apache
   Airflow software.
@@ -716,21 +729,6 @@ class DatabaseConfig(_messages.Message):
   highAvailability = _messages.BooleanField(1)
   machineType = _messages.StringField(2)
   zone = _messages.StringField(3)
-
-
-class DatabaseDataRetentionConfig(_messages.Message):
-  r"""The configuration setting for Airflow database data retention mechanism.
-
-  Fields:
-    enabled: Optional. Whether database data retention mechanism should be
-      enabled.
-    retentionDays: Optional. The number of days describing for how long to
-      store event-based records. If the data retention mechanism is enabled
-      this value must be a positive integer.
-  """
-
-  enabled = _messages.BooleanField(1)
-  retentionDays = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class Date(_messages.Message):
@@ -894,10 +892,10 @@ class EnvironmentConfig(_messages.Message):
       a hierarchical file tree can be simulated using "/"-delimited object
       name prefixes. DAG objects for this environment reside in a simulated
       directory with the given prefix.
+    dataRetentionConfig: Optional. The configuration setting for Airflow
+      database data retention mechanism.
     databaseConfig: Optional. The configuration settings for Cloud SQL
       instance used internally by Apache Airflow software.
-    databaseDataRetentionConfig: Optional. The configuration setting for
-      Airflow database data retention mechanism.
     encryptionConfig: Optional. The encryption options for the Cloud Composer
       environment and its dependencies. Cannot be updated.
     environmentSize: Optional. The size of the Cloud Composer environment.
@@ -962,8 +960,8 @@ class EnvironmentConfig(_messages.Message):
 
   airflowUri = _messages.StringField(1)
   dagGcsPrefix = _messages.StringField(2)
-  databaseConfig = _messages.MessageField('DatabaseConfig', 3)
-  databaseDataRetentionConfig = _messages.MessageField('DatabaseDataRetentionConfig', 4)
+  dataRetentionConfig = _messages.MessageField('DataRetentionConfig', 3)
+  databaseConfig = _messages.MessageField('DatabaseConfig', 4)
   encryptionConfig = _messages.MessageField('EncryptionConfig', 5)
   environmentSize = _messages.EnumField('EnvironmentSizeValueValuesEnum', 6)
   gkeCluster = _messages.StringField(7)

@@ -132,6 +132,7 @@ class GoogleCloudOrgpolicyV2alpha1Policy(_messages.Message):
   `Constraints` for configurations of Cloud Platform resources.
 
   Fields:
+    dryRunSpec: dry-run policy. go/op-dryrun-dd
     name: Immutable. The resource name of the Policy. Must be one of the
       following forms, where constraint_name is the name of the constraint
       which this Policy configures: *
@@ -145,8 +146,9 @@ class GoogleCloudOrgpolicyV2alpha1Policy(_messages.Message):
     spec: A GoogleCloudOrgpolicyV2alpha1PolicySpec attribute.
   """
 
-  name = _messages.StringField(1)
-  spec = _messages.MessageField('GoogleCloudOrgpolicyV2alpha1PolicySpec', 2)
+  dryRunSpec = _messages.MessageField('GoogleCloudOrgpolicyV2alpha1PolicySpec', 1)
+  name = _messages.StringField(2)
+  spec = _messages.MessageField('GoogleCloudOrgpolicyV2alpha1PolicySpec', 3)
 
 
 class GoogleCloudOrgpolicyV2alpha1PolicySpec(_messages.Message):

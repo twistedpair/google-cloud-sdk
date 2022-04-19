@@ -116,6 +116,8 @@ class GapicClientDef(object):
       version.
     async_client_full_classpath: str, Full path to the async client class for an
       API version.
+    rest_client_full_classpath: str, Full path to the rest client class for an
+      API version.
   """
 
   def __init__(self,
@@ -1618,7 +1620,7 @@ MAP = {
                     class_path='googlecloudsdk.third_party.apis.gkebackup.v1',
                     client_classpath='gkebackup_v1_client.GkebackupV1',
                     messages_modulepath='gkebackup_v1_messages'),
-                default_version=False,
+                default_version=True,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
         'v1alpha1':
@@ -1627,7 +1629,7 @@ MAP = {
                     class_path='googlecloudsdk.third_party.apis.gkebackup.v1alpha1',
                     client_classpath='gkebackup_v1alpha1_client.GkebackupV1alpha1',
                     messages_modulepath='gkebackup_v1alpha1_messages'),
-                default_version=True,
+                default_version=False,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },

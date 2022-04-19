@@ -13,6 +13,94 @@ from apitools.base.py import encoding
 package = 'dns'
 
 
+class AuditConfig(_messages.Message):
+  r"""A AuditConfig object.
+
+  Fields:
+    auditLogConfigs: A AuditLogConfig attribute.
+    service: A string attribute.
+  """
+
+  auditLogConfigs = _messages.MessageField('AuditLogConfig', 1, repeated=True)
+  service = _messages.StringField(2)
+
+
+class AuditLogConfig(_messages.Message):
+  r"""A AuditLogConfig object.
+
+  Enums:
+    LogTypeValueValuesEnum:
+
+  Fields:
+    exemptedMembers: A string attribute.
+    ignoreChildExemptions: A boolean attribute.
+    logType: A LogTypeValueValuesEnum attribute.
+  """
+
+  class LogTypeValueValuesEnum(_messages.Enum):
+    r"""LogTypeValueValuesEnum enum type.
+
+    Values:
+      adminRead: <no description>
+      dataRead: <no description>
+      dataWrite: <no description>
+      logTypeUnspecified: <no description>
+    """
+    adminRead = 0
+    dataRead = 1
+    dataWrite = 2
+    logTypeUnspecified = 3
+
+  exemptedMembers = _messages.StringField(1, repeated=True)
+  ignoreChildExemptions = _messages.BooleanField(2)
+  logType = _messages.EnumField('LogTypeValueValuesEnum', 3)
+
+
+class AuthorizationLoggingOptions(_messages.Message):
+  r"""A AuthorizationLoggingOptions object.
+
+  Enums:
+    PermissionTypeValueValuesEnum:
+
+  Fields:
+    permissionType: A PermissionTypeValueValuesEnum attribute.
+  """
+
+  class PermissionTypeValueValuesEnum(_messages.Enum):
+    r"""PermissionTypeValueValuesEnum enum type.
+
+    Values:
+      adminRead: <no description>
+      adminWrite: <no description>
+      dataRead: <no description>
+      dataWrite: <no description>
+      permissionTypeUnspecified: <no description>
+    """
+    adminRead = 0
+    adminWrite = 1
+    dataRead = 2
+    dataWrite = 3
+    permissionTypeUnspecified = 4
+
+  permissionType = _messages.EnumField('PermissionTypeValueValuesEnum', 1)
+
+
+class Binding(_messages.Message):
+  r"""A Binding object.
+
+  Fields:
+    bindingId: A string attribute.
+    condition: A Expr attribute.
+    members: A string attribute.
+    role: A string attribute.
+  """
+
+  bindingId = _messages.StringField(1)
+  condition = _messages.MessageField('Expr', 2)
+  members = _messages.StringField(3, repeated=True)
+  role = _messages.StringField(4)
+
+
 class Change(_messages.Message):
   r"""A Change object.
 
@@ -63,6 +151,85 @@ class ChangesListResponse(_messages.Message):
   header = _messages.MessageField('ResponseHeader', 2)
   kind = _messages.StringField(3, default='dns#changesListResponse')
   nextPageToken = _messages.StringField(4)
+
+
+class Condition(_messages.Message):
+  r"""A Condition object.
+
+  Enums:
+    IamValueValuesEnum:
+    OpValueValuesEnum:
+    SysValueValuesEnum:
+
+  Fields:
+    iam: A IamValueValuesEnum attribute.
+    op: A OpValueValuesEnum attribute.
+    svc: A string attribute.
+    sys: A SysValueValuesEnum attribute.
+    values: A string attribute.
+  """
+
+  class IamValueValuesEnum(_messages.Enum):
+    r"""IamValueValuesEnum enum type.
+
+    Values:
+      approver: <no description>
+      attribution: <no description>
+      authority: <no description>
+      credentialsType: <no description>
+      credsAssertion: <no description>
+      justificationType: <no description>
+      noAttr: <no description>
+      securityRealm: <no description>
+    """
+    approver = 0
+    attribution = 1
+    authority = 2
+    credentialsType = 3
+    credsAssertion = 4
+    justificationType = 5
+    noAttr = 6
+    securityRealm = 7
+
+  class OpValueValuesEnum(_messages.Enum):
+    r"""OpValueValuesEnum enum type.
+
+    Values:
+      discharged: <no description>
+      equals: <no description>
+      in_: <no description>
+      noOp: <no description>
+      notEquals: <no description>
+      notIn: <no description>
+    """
+    discharged = 0
+    equals = 1
+    in_ = 2
+    noOp = 3
+    notEquals = 4
+    notIn = 5
+
+  class SysValueValuesEnum(_messages.Enum):
+    r"""SysValueValuesEnum enum type.
+
+    Values:
+      ip: <no description>
+      name: <no description>
+      noAttr: <no description>
+      region: <no description>
+      service: <no description>
+    """
+    ip = 0
+    name = 1
+    noAttr = 2
+    region = 3
+    service = 4
+
+  iam = _messages.EnumField('IamValueValuesEnum', 1)
+  op = _messages.EnumField('OpValueValuesEnum', 2)
+  svc = _messages.StringField(3)
+  sys = _messages.EnumField('SysValueValuesEnum', 4)
+  values = _messages.StringField(5, repeated=True)
 
 
 class DnsChangesCreateRequest(_messages.Message):
@@ -866,6 +1033,162 @@ class DnsResponsePolicyRulesUpdateRequest(_messages.Message):
   responsePolicy = _messages.StringField(3, required=True)
   responsePolicyRule = _messages.StringField(4, required=True)
   responsePolicyRuleResource = _messages.MessageField('ResponsePolicyRule', 5)
+
+
+class Expr(_messages.Message):
+  r"""A Expr object.
+
+  Fields:
+    description: A string attribute.
+    expression: A string attribute.
+    location: A string attribute.
+    title: A string attribute.
+  """
+
+  description = _messages.StringField(1)
+  expression = _messages.StringField(2)
+  location = _messages.StringField(3)
+  title = _messages.StringField(4)
+
+
+class FieldMask(_messages.Message):
+  r"""A FieldMask object.
+
+  Fields:
+    paths: A string attribute.
+  """
+
+  paths = _messages.StringField(1, repeated=True)
+
+
+class GetIamPolicyRequest(_messages.Message):
+  r"""A GetIamPolicyRequest object.
+
+  Fields:
+    options: A GetPolicyOptions attribute.
+    resource: A string attribute.
+  """
+
+  options = _messages.MessageField('GetPolicyOptions', 1)
+  resource = _messages.StringField(2)
+
+
+class GetPolicyOptions(_messages.Message):
+  r"""A GetPolicyOptions object.
+
+  Fields:
+    requestedPolicyVersion: A integer attribute.
+  """
+
+  requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
+class GoogleIamV1Policy(_messages.Message):
+  r"""A GoogleIamV1Policy object.
+
+  Fields:
+    auditConfigs: A AuditConfig attribute.
+    bindings: A Binding attribute.
+    etag: A byte attribute.
+    rules: A Rule attribute.
+    version: A integer attribute.
+  """
+
+  auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)
+  bindings = _messages.MessageField('Binding', 2, repeated=True)
+  etag = _messages.BytesField(3)
+  rules = _messages.MessageField('Rule', 4, repeated=True)
+  version = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+
+
+class LogConfig(_messages.Message):
+  r"""A LogConfig object.
+
+  Fields:
+    cloudAudit: A LogConfigCloudAuditOptions attribute.
+    counter: A LogConfigCounterOptions attribute.
+    dataAccess: A LogConfigDataAccessOptions attribute.
+  """
+
+  cloudAudit = _messages.MessageField('LogConfigCloudAuditOptions', 1)
+  counter = _messages.MessageField('LogConfigCounterOptions', 2)
+  dataAccess = _messages.MessageField('LogConfigDataAccessOptions', 3)
+
+
+class LogConfigCloudAuditOptions(_messages.Message):
+  r"""A LogConfigCloudAuditOptions object.
+
+  Enums:
+    LogNameValueValuesEnum:
+
+  Fields:
+    authorizationLoggingOptions: A AuthorizationLoggingOptions attribute.
+    logName: A LogNameValueValuesEnum attribute.
+  """
+
+  class LogNameValueValuesEnum(_messages.Enum):
+    r"""LogNameValueValuesEnum enum type.
+
+    Values:
+      adminActivity: <no description>
+      dataAccess: <no description>
+      unspecifiedLogName: <no description>
+    """
+    adminActivity = 0
+    dataAccess = 1
+    unspecifiedLogName = 2
+
+  authorizationLoggingOptions = _messages.MessageField('AuthorizationLoggingOptions', 1)
+  logName = _messages.EnumField('LogNameValueValuesEnum', 2)
+
+
+class LogConfigCounterOptions(_messages.Message):
+  r"""A LogConfigCounterOptions object.
+
+  Fields:
+    customFields: A LogConfigCounterOptionsCustomField attribute.
+    field: A string attribute.
+    metric: A string attribute.
+  """
+
+  customFields = _messages.MessageField('LogConfigCounterOptionsCustomField', 1, repeated=True)
+  field = _messages.StringField(2)
+  metric = _messages.StringField(3)
+
+
+class LogConfigCounterOptionsCustomField(_messages.Message):
+  r"""A LogConfigCounterOptionsCustomField object.
+
+  Fields:
+    name: A string attribute.
+    value: A string attribute.
+  """
+
+  name = _messages.StringField(1)
+  value = _messages.StringField(2)
+
+
+class LogConfigDataAccessOptions(_messages.Message):
+  r"""A LogConfigDataAccessOptions object.
+
+  Enums:
+    LogModeValueValuesEnum:
+
+  Fields:
+    logMode: A LogModeValueValuesEnum attribute.
+  """
+
+  class LogModeValueValuesEnum(_messages.Enum):
+    r"""LogModeValueValuesEnum enum type.
+
+    Values:
+      logFailClosed: <no description>
+      logModeUnspecified: <no description>
+    """
+    logFailClosed = 0
+    logModeUnspecified = 1
+
+  logMode = _messages.EnumField('LogModeValueValuesEnum', 1)
 
 
 class ManagedZone(_messages.Message):
@@ -1741,6 +2064,63 @@ class ResponsePolicyRulesUpdateResponse(_messages.Message):
   responsePolicyRule = _messages.MessageField('ResponsePolicyRule', 2)
 
 
+class Rule(_messages.Message):
+  r"""A Rule object.
+
+  Enums:
+    ActionValueValuesEnum:
+
+  Fields:
+    action: A ActionValueValuesEnum attribute.
+    conditions: A Condition attribute.
+    description: A string attribute.
+    ins: A string attribute.
+    logConfigs: A LogConfig attribute.
+    notIns: A string attribute.
+    permissions: A string attribute.
+  """
+
+  class ActionValueValuesEnum(_messages.Enum):
+    r"""ActionValueValuesEnum enum type.
+
+    Values:
+      allow: <no description>
+      allowWithLog: <no description>
+      deny: <no description>
+      denyWithLog: <no description>
+      log: <no description>
+      noAction: <no description>
+    """
+    allow = 0
+    allowWithLog = 1
+    deny = 2
+    denyWithLog = 3
+    log = 4
+    noAction = 5
+
+  action = _messages.EnumField('ActionValueValuesEnum', 1)
+  conditions = _messages.MessageField('Condition', 2, repeated=True)
+  description = _messages.StringField(3)
+  ins = _messages.StringField(4, repeated=True)
+  logConfigs = _messages.MessageField('LogConfig', 5, repeated=True)
+  notIns = _messages.StringField(6, repeated=True)
+  permissions = _messages.StringField(7, repeated=True)
+
+
+class SetIamPolicyRequest(_messages.Message):
+  r"""A SetIamPolicyRequest object.
+
+  Fields:
+    policy: A GoogleIamV1Policy attribute.
+    resource: A string attribute.
+    updateMask: A FieldMask attribute.
+  """
+
+  policy = _messages.MessageField('GoogleIamV1Policy', 1)
+  resource = _messages.StringField(2)
+  updateMask = _messages.MessageField('FieldMask', 3)
+
+
 class StandardQueryParameters(_messages.Message):
   r"""Query parameters accepted by all methods.
 
@@ -1780,3 +2160,27 @@ class StandardQueryParameters(_messages.Message):
   userIp = _messages.StringField(8)
 
 
+class TestIamPermissionsRequest(_messages.Message):
+  r"""A TestIamPermissionsRequest object.
+
+  Fields:
+    permissions: A string attribute.
+    resource: A string attribute.
+  """
+
+  permissions = _messages.StringField(1, repeated=True)
+  resource = _messages.StringField(2)
+
+
+class TestIamPermissionsResponse(_messages.Message):
+  r"""A TestIamPermissionsResponse object.
+
+  Fields:
+    permissions: A string attribute.
+  """
+
+  permissions = _messages.StringField(1, repeated=True)
+
+
+encoding.AddCustomJsonEnumMapping(
+    Condition.OpValueValuesEnum, 'in_', 'in')

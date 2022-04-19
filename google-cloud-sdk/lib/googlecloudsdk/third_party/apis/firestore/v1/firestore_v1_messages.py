@@ -15,70 +15,6 @@ from apitools.base.py import extra_types
 package = 'firestore'
 
 
-class Aggregation(_messages.Message):
-  r"""Defines a aggregation that produces a single result.
-
-  Fields:
-    alias: Required. The name of the field to store the result of the
-      aggregation into. Requires: * Must be present. * Must be unique across
-      all aggregation aliases. * Conform to existing document field name
-      limitations.
-    count: Count aggregator.
-  """
-
-  alias = _messages.StringField(1)
-  count = _messages.MessageField('Count', 2)
-
-
-class AggregationResult(_messages.Message):
-  r"""The result of a single bucket from a Firestore aggregation query. The
-  keys of `aggregate_fields` are the same for all results in an aggregation
-  query, unlike document queries which can have different fields present for
-  each result.
-
-  Messages:
-    AggregateFieldsValue: The result of the aggregation functions, ex:
-      `COUNT(*) AS total_docs`. The key is the alias assigned to the
-      aggregation function on input and the size of this map equals the number
-      of aggregation functions in the query.
-
-  Fields:
-    aggregateFields: The result of the aggregation functions, ex: `COUNT(*) AS
-      total_docs`. The key is the alias assigned to the aggregation function
-      on input and the size of this map equals the number of aggregation
-      functions in the query.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class AggregateFieldsValue(_messages.Message):
-    r"""The result of the aggregation functions, ex: `COUNT(*) AS total_docs`.
-    The key is the alias assigned to the aggregation function on input and the
-    size of this map equals the number of aggregation functions in the query.
-
-    Messages:
-      AdditionalProperty: An additional property for a AggregateFieldsValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type AggregateFieldsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a AggregateFieldsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A Value attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('Value', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  aggregateFields = _messages.MessageField('AggregateFieldsValue', 1)
-
-
 class ArrayValue(_messages.Message):
   r"""An array value.
 
@@ -279,22 +215,6 @@ class CompositeFilter(_messages.Message):
 
   filters = _messages.MessageField('Filter', 1, repeated=True)
   op = _messages.EnumField('OpValueValuesEnum', 2)
-
-
-class Count(_messages.Message):
-  r"""Count of documents that match the query. The `COUNT(*)` aggregation
-  function operates on the entire document so it does not require a field
-  reference.
-
-  Fields:
-    upTo: Optional. Optional constraint on the maximum number of documents to
-      count. This provides a way to set an upper bound on the number of
-      documents to scan, limiting latency and cost. High-Level Example: ```
-      SELECT COUNT_UP_TO(1000) FROM ( SELECT * FROM k ); ``` Requires: * Must
-      be greater than zero when present.
-  """
-
-  upTo = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
 class Cursor(_messages.Message):
@@ -1092,24 +1012,6 @@ class FirestoreProjectsDatabasesDocumentsRollbackRequest(_messages.Message):
 
   database = _messages.StringField(1, required=True)
   rollbackRequest = _messages.MessageField('RollbackRequest', 2)
-
-
-class FirestoreProjectsDatabasesDocumentsRunAggregationQueryRequest(_messages.Message):
-  r"""A FirestoreProjectsDatabasesDocumentsRunAggregationQueryRequest object.
-
-  Fields:
-    parent: Required. The parent resource name. In the format:
-      `projects/{project_id}/databases/{database_id}/documents` or `projects/{
-      project_id}/databases/{database_id}/documents/{document_path}`. For
-      example: `projects/my-project/databases/my-database/documents` or
-      `projects/my-project/databases/my-database/documents/chatrooms/my-
-      chatroom`
-    runAggregationQueryRequest: A RunAggregationQueryRequest resource to be
-      passed as the request body.
-  """
-
-  parent = _messages.StringField(1, required=True)
-  runAggregationQueryRequest = _messages.MessageField('RunAggregationQueryRequest', 2)
 
 
 class FirestoreProjectsDatabasesDocumentsRunQueryRequest(_messages.Message):
@@ -2460,43 +2362,6 @@ class RollbackRequest(_messages.Message):
   transaction = _messages.BytesField(1)
 
 
-class RunAggregationQueryRequest(_messages.Message):
-  r"""The request for Firestore.RunAggregationQuery.
-
-  Fields:
-    newTransaction: Starts a new transaction as part of the query, defaulting
-      to read-only. The new transaction ID will be returned as the first
-      response in the stream.
-    readTime: Executes the query at the given timestamp. Requires: * Cannot be
-      more than 270 seconds in the past.
-    structuredAggregationQuery: An aggregation query.
-    transaction: Run the aggregation within an already active transaction. The
-      value here is the opaque transaction ID to execute the query in.
-  """
-
-  newTransaction = _messages.MessageField('TransactionOptions', 1)
-  readTime = _messages.StringField(2)
-  structuredAggregationQuery = _messages.MessageField('StructuredAggregationQuery', 3)
-  transaction = _messages.BytesField(4)
-
-
-class RunAggregationQueryResponse(_messages.Message):
-  r"""The response for Firestore.RunAggregationQuery.
-
-  Fields:
-    readTime: The time at which the aggregate value is valid for.
-    result: A single aggregation result. Not present when reporting partial
-      progress or when the query produced zero results.
-    transaction: The transaction that was started as part of this request.
-      Only present on the first response when the request requested to start a
-      new transaction.
-  """
-
-  readTime = _messages.StringField(1)
-  result = _messages.MessageField('AggregationResult', 2)
-  transaction = _messages.BytesField(3)
-
-
 class RunQueryRequest(_messages.Message):
   r"""The request for Firestore.RunQuery.
 
@@ -2654,19 +2519,6 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
-
-
-class StructuredAggregationQuery(_messages.Message):
-  r"""Firestore query for running an aggregation over a StructuredQuery.
-
-  Fields:
-    aggregations: Optional. Series of aggregations to apply on top of the
-      `structured_query`.
-    structuredQuery: Nested structured query.
-  """
-
-  aggregations = _messages.MessageField('Aggregation', 1, repeated=True)
-  structuredQuery = _messages.MessageField('StructuredQuery', 2)
 
 
 class StructuredQuery(_messages.Message):

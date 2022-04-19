@@ -308,16 +308,17 @@ class CopyTaskIterator:
         if unsupported_type:
           message = 'Skipping item {} with unsupported object type: {}'.format(
               source.resource.storage_url, unsupported_type.value)
+          if (self._user_request_args and
+              self._user_request_args.manifest_path and
+              self._task_status_queue):
+            manifest_util.send_skip_message(self._task_status_queue,
+                                            source.resource,
+                                            self._raw_destination, message)
         else:
           message = ('Skipping item {} because manifest marks it as'
                      ' skipped or completed.').format(
                          source.resource.storage_url)
         log.status.Print(message)
-        if (self._user_request_args and
-            self._user_request_args.manifest_path and self._task_status_queue):
-          manifest_util.send_skip_message(self._task_status_queue,
-                                          source.resource,
-                                          self._raw_destination, message)
         continue
 
       destination_resource = self._get_copy_destination(self._raw_destination,

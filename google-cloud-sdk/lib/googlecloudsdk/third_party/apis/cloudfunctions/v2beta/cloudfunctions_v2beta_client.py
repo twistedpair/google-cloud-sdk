@@ -418,7 +418,7 @@ class CloudfunctionsV2beta(base_api.BaseApiClient):
         method_id='cloudfunctions.projects.locations.runtimes.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=[],
+        query_params=['filter'],
         relative_path='v2beta/{+parent}/runtimes',
         request_field='',
         request_type_name='CloudfunctionsProjectsLocationsRuntimesListRequest',

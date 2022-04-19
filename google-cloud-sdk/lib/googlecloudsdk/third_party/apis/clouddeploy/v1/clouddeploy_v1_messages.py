@@ -115,7 +115,7 @@ class Binding(_messages.Message):
       policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
-    members: Specifies the principals requesting access for a Cloud Platform
+    members: Specifies the principals requesting access for a Google Cloud
       resource. `members` can have the following values: * `allUsers`: A
       special identifier that represents anyone who is on the internet; with
       or without a Google account. * `allAuthenticatedUsers`: A special
@@ -1000,6 +1000,40 @@ class DeliveryPipeline(_messages.Message):
   updateTime = _messages.StringField(10)
 
 
+class DeliveryPipelineNotificationEvent(_messages.Message):
+  r"""Payload proto for
+  "clouddeploy.googleapis.com/deliverypipeline_notification" Platform Log
+  event that describes the failure to send delivery pipeline status change
+  Pub/Sub notification.
+
+  Enums:
+    TypeValueValuesEnum: Type of this notification, e.g. for a Pub/Sub
+      failure.
+
+  Fields:
+    deliveryPipeline: The name of the `Delivery Pipeline`.
+    message: Debug message for when a notification fails to send.
+    type: Type of this notification, e.g. for a Pub/Sub failure.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Type of this notification, e.g. for a Pub/Sub failure.
+
+    Values:
+      TYPE_UNSPECIFIED: Type is unspecified.
+      TYPE_PUBSUB_NOTIFICATION_FAILURE: A Pub/Sub notification failed to be
+        sent.
+      TYPE_RENDER_STATUES_CHANGE: Release render status changed notification.
+    """
+    TYPE_UNSPECIFIED = 0
+    TYPE_PUBSUB_NOTIFICATION_FAILURE = 1
+    TYPE_RENDER_STATUES_CHANGE = 2
+
+  deliveryPipeline = _messages.StringField(1)
+  message = _messages.StringField(2)
+  type = _messages.EnumField('TypeValueValuesEnum', 3)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -1755,6 +1789,53 @@ class Release(_messages.Message):
   uid = _messages.StringField(18)
 
 
+class ReleaseNotificationEvent(_messages.Message):
+  r"""Payload proto for "clouddeploy.googleapis.com/release_notification"
+  Platform Log event that describes the failure to send release status change
+  Pub/Sub notification.
+
+  Enums:
+    TypeValueValuesEnum: Type of this notification, e.g. for a Pub/Sub
+      failure.
+
+  Fields:
+    message: Debug message for when a notification fails to send.
+    release: The name of the `Release`.
+    type: Type of this notification, e.g. for a Pub/Sub failure.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Type of this notification, e.g. for a Pub/Sub failure.
+
+    Values:
+      TYPE_UNSPECIFIED: Type is unspecified.
+      TYPE_PUBSUB_NOTIFICATION_FAILURE: A Pub/Sub notification failed to be
+        sent.
+      TYPE_RENDER_STATUES_CHANGE: Release render status changed notification.
+    """
+    TYPE_UNSPECIFIED = 0
+    TYPE_PUBSUB_NOTIFICATION_FAILURE = 1
+    TYPE_RENDER_STATUES_CHANGE = 2
+
+  message = _messages.StringField(1)
+  release = _messages.StringField(2)
+  type = _messages.EnumField('TypeValueValuesEnum', 3)
+
+
+class ReleaseRenderEvent(_messages.Message):
+  r"""Payload proto for "clouddeploy.googleapis.com/release_render" Platform
+  Log event that describes the render status change.
+
+  Fields:
+    message: Debug message for when a render transition occurs. Provides
+      further details as rendering progresses through render states.
+    release: The name of the `Release`.
+  """
+
+  message = _messages.StringField(1)
+  release = _messages.StringField(2)
+
+
 class Rollout(_messages.Message):
   r"""A `Rollout` resource in the Google Cloud Deploy API. A `Rollout`
   contains information around a specific deployment to a `Target`.
@@ -1961,6 +2042,45 @@ class Rollout(_messages.Message):
   uid = _messages.StringField(17)
 
 
+class RolloutNotificationEvent(_messages.Message):
+  r"""Payload proto for "clouddeploy.googleapis.com/rollout_notification"
+  Platform Log event that describes the failure to send rollout status change
+  Pub/Sub notification.
+
+  Enums:
+    TypeValueValuesEnum: Type of this notification, e.g. for a Pub/Sub
+      failure.
+
+  Fields:
+    message: Debug message for when a notification fails to send.
+    pipelineUid: Unique identifier of the `DeliveryPipeline`.
+    releaseUid: Unique identifier of the `Release`.
+    rollout: The name of the `Rollout`.
+    targetId: ID of the `Target` that the rollout is deployed to.
+    type: Type of this notification, e.g. for a Pub/Sub failure.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Type of this notification, e.g. for a Pub/Sub failure.
+
+    Values:
+      TYPE_UNSPECIFIED: Type is unspecified.
+      TYPE_PUBSUB_NOTIFICATION_FAILURE: A Pub/Sub notification failed to be
+        sent.
+      TYPE_RENDER_STATUES_CHANGE: Release render status changed notification.
+    """
+    TYPE_UNSPECIFIED = 0
+    TYPE_PUBSUB_NOTIFICATION_FAILURE = 1
+    TYPE_RENDER_STATUES_CHANGE = 2
+
+  message = _messages.StringField(1)
+  pipelineUid = _messages.StringField(2)
+  releaseUid = _messages.StringField(3)
+  rollout = _messages.StringField(4)
+  targetId = _messages.StringField(5)
+  type = _messages.EnumField('TypeValueValuesEnum', 6)
+
+
 class SerialPipeline(_messages.Message):
   r"""SerialPipeline defines a sequential set of stages for a
   `DeliveryPipeline`.
@@ -1979,8 +2099,8 @@ class SetIamPolicyRequest(_messages.Message):
   Fields:
     policy: REQUIRED: The complete policy to be applied to the `resource`. The
       size of the policy is limited to a few 10s of KB. An empty policy is a
-      valid policy but certain Cloud Platform services (such as Projects)
-      might reject them.
+      valid policy but certain Google Cloud services (such as Projects) might
+      reject them.
     updateMask: OPTIONAL: A FieldMask specifying which fields of the policy to
       modify. Only the fields in the mask will be modified. If no mask is
       provided, the following default mask is used: `paths: "bindings, etag"`
@@ -2282,6 +2402,39 @@ class TargetArtifact(_messages.Message):
   skaffoldConfigPath = _messages.StringField(3)
 
 
+class TargetNotificationEvent(_messages.Message):
+  r"""Payload proto for "clouddeploy.googleapis.com/target_notification"
+  Platform Log event that describes the failure to send target status change
+  Pub/Sub notification.
+
+  Enums:
+    TypeValueValuesEnum: Type of this notification, e.g. for a Pub/Sub
+      failure.
+
+  Fields:
+    message: Debug message for when a notification fails to send.
+    target: The name of the `Target`.
+    type: Type of this notification, e.g. for a Pub/Sub failure.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Type of this notification, e.g. for a Pub/Sub failure.
+
+    Values:
+      TYPE_UNSPECIFIED: Type is unspecified.
+      TYPE_PUBSUB_NOTIFICATION_FAILURE: A Pub/Sub notification failed to be
+        sent.
+      TYPE_RENDER_STATUES_CHANGE: Release render status changed notification.
+    """
+    TYPE_UNSPECIFIED = 0
+    TYPE_PUBSUB_NOTIFICATION_FAILURE = 1
+    TYPE_RENDER_STATUES_CHANGE = 2
+
+  message = _messages.StringField(1)
+  target = _messages.StringField(2)
+  type = _messages.EnumField('TypeValueValuesEnum', 3)
+
+
 class TargetRender(_messages.Message):
   r"""Details of rendering for a single target.
 
@@ -2359,7 +2512,7 @@ class TestIamPermissionsRequest(_messages.Message):
 
   Fields:
     permissions: The set of permissions to check for the `resource`.
-      Permissions with wildcards (such as '*' or 'storage.*') are not allowed.
+      Permissions with wildcards (such as `*` or `storage.*`) are not allowed.
       For more information see [IAM
       Overview](https://cloud.google.com/iam/docs/overview#permissions).
   """

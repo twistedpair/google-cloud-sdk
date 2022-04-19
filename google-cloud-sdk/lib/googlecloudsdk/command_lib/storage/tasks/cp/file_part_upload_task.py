@@ -113,16 +113,19 @@ class FilePartUploadTask(file_part_task.FilePartTask):
         progress_callback=progress_callback)
 
   def _get_output(self, destination_resource):
+    messages = []
     if self._component_number is not None:
-      return task.Output(
-          additional_task_iterators=None,
-          messages=[
-              task.Message(
-                  topic=task.Topic.UPLOADED_COMPONENT,
-                  payload=UploadedComponent(
-                      component_number=self._component_number,
-                      object_resource=destination_resource)),
-          ])
+      messages.append(
+          task.Message(
+              topic=task.Topic.UPLOADED_COMPONENT,
+              payload=UploadedComponent(
+                  component_number=self._component_number,
+                  object_resource=destination_resource)))
+    else:
+      messages.append(
+          task.Message(
+              topic=task.Topic.CREATED_RESOURCE, payload=destination_resource))
+    return task.Output(additional_task_iterators=None, messages=messages)
 
   def _get_digesters(self):
     provider = self._destination_resource.storage_url.scheme

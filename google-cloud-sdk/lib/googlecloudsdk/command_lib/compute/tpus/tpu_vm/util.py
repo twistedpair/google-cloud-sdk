@@ -24,6 +24,7 @@ from googlecloudsdk.api_lib.compute import base_classes
 from googlecloudsdk.api_lib.compute import metadata_utils
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import waiter
+from googlecloudsdk.calliope import base
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
@@ -42,49 +43,62 @@ def InvertBoolean(boolean):
   return not boolean
 
 
-def MergeMetadata(unused_ref, args, request):
-  """Request hook for merging the metadata and metadata from file.
+def MergeMetadata(api_version='v2'):
+  """Request hook for merging the metadata and metadata from file."""
 
-  Args:
-    unused_ref: ref to the service.
-    args:  The args for this method.
-    request: The request to be made.
+  def Process(unused_ref, args, request):
+    """Request hook for merging the metadata and metadata from file.
 
-  Returns:
-    Request with metadata field populated.
-  """
-  metadata_dict = metadata_utils.ConstructMetadataDict(args.metadata,
-                                                       args.metadata_from_file)
-  tpu_messages = TPUNode().GetMessages()
-  if request.node.metadata is None:
-    request.node.metadata = tpu_messages.Node.MetadataValue()
-  for key, value in six.iteritems(metadata_dict):
-    request.node.metadata.additionalProperties.append(
-        tpu_messages.Node.MetadataValue.AdditionalProperty(
-            key=key, value=value))
-  return request
+    Args:
+      unused_ref: ref to the service.
+      args:  The args for this method.
+      request: The request to be made.
+
+    Returns:
+      Request with metadata field populated.
+    """
+    metadata_dict = metadata_utils.ConstructMetadataDict(
+        args.metadata, args.metadata_from_file)
+    tpu_messages = GetMessagesModule(version=api_version)
+    if request.node.metadata is None:
+      request.node.metadata = tpu_messages.Node.MetadataValue()
+    for key, value in six.iteritems(metadata_dict):
+      request.node.metadata.additionalProperties.append(
+          tpu_messages.Node.MetadataValue.AdditionalProperty(
+              key=key, value=value))
+    return request
+
+  return Process
 
 
-def GetMessagesModule(version='v2alpha1'):
+def GetMessagesModule(version='v2'):
   return apis.GetMessagesModule('tpu', version)
 
 
-def StartRequestHook(ref, args, request):
+def StartRequestHook(api_version='v2'):
   """Declarative request hook for TPU Start command."""
-  del ref
-  del args
-  start_request = GetMessagesModule().StartNodeRequest()
-  request.startNodeRequest = start_request
-  return request
+
+  def Process(ref, args, request):
+    del ref
+    del args
+    start_request = GetMessagesModule(version=api_version).StartNodeRequest()
+    request.startNodeRequest = start_request
+    return request
+
+  return Process
 
 
-def StopRequestHook(ref, args, request):
+def StopRequestHook(api_version='v2'):
   """Declarative request hook for TPU Stop command."""
-  del ref
-  del args
-  stop_request = GetMessagesModule().StopNodeRequest()
-  request.stopNodeRequest = stop_request
-  return request
+
+  def Process(ref, args, request):
+    del ref
+    del args
+    stop_request = GetMessagesModule(version=api_version).StopNodeRequest()
+    request.stopNodeRequest = stop_request
+    return request
+
+  return Process
 
 
 def IsTPUVMNode(node):
@@ -164,8 +178,11 @@ def CheckTPUVMNode(response, args):
 class TPUNode(object):
   """Helper to create and modify TPU nodes."""
 
-  def __init__(self):
-    self._api_version = 'v2alpha1'
+  def __init__(self, release_track):
+    if release_track == base.ReleaseTrack.ALPHA:
+      self._api_version = 'v2alpha1'
+    else:
+      self._api_version = 'v2'
     self.client = apis.GetClientInstance('tpu', self._api_version)
     self.messages = apis.GetMessagesModule('tpu', self._api_version)
 

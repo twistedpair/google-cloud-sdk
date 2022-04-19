@@ -13,6 +13,18 @@ from apitools.base.py import extra_types
 package = 'edgenetwork'
 
 
+class ARPEntry(_messages.Message):
+  r"""Describing the ARP neighbor entry.
+
+  Fields:
+    ipAddress: The IP address of this ARP neighbor.
+    macAddress: The MAC address of this ARP neighbor.
+  """
+
+  ipAddress = _messages.StringField(1)
+  macAddress = _messages.StringField(2)
+
+
 class Bgp(_messages.Message):
   r"""A Bgp object.
 
@@ -46,8 +58,87 @@ class BgpPeer(_messages.Message):
   peerIpv4Cidr = _messages.StringField(5)
 
 
+class BgpPeerStatus(_messages.Message):
+  r"""Status of a BGP peer.
+
+  Enums:
+    StatusValueValuesEnum: The current status of BGP.
+
+  Fields:
+    ipAddress: IP address of the local BGP interface.
+    name: Name of this BGP peer. Unique within the Routers resource.
+    peerIpAddress: IP address of the remote BGP interface.
+    prefixCounter: A collection of counts for prefixes.
+    state: BGP state as specified in RFC1771.
+    status: The current status of BGP.
+    uptime: Time this session has been up. Format: 14 years, 51 weeks, 6 days,
+      23 hours, 59 minutes, 59 seconds
+    uptimeSeconds: Time this session has been up, in seconds.
+  """
+
+  class StatusValueValuesEnum(_messages.Enum):
+    r"""The current status of BGP.
+
+    Values:
+      UNKNOWN: The default status indicating BGP session is in unknown state.
+      UP: The UP status indicating BGP session is established.
+      DOWN: The DOWN state indicating BGP session is not established yet.
+    """
+    UNKNOWN = 0
+    UP = 1
+    DOWN = 2
+
+  ipAddress = _messages.StringField(1)
+  name = _messages.StringField(2)
+  peerIpAddress = _messages.StringField(3)
+  prefixCounter = _messages.MessageField('PrefixCounter', 4)
+  state = _messages.StringField(5)
+  status = _messages.EnumField('StatusValueValuesEnum', 6)
+  uptime = _messages.StringField(7)
+  uptimeSeconds = _messages.IntegerField(8)
+
+
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
+
+
+class DiagnoseInterconnectResponse(_messages.Message):
+  r"""DiagnoseInterconnectResponse contains the current diagnostics for a
+  specific interconnect.
+
+  Fields:
+    error: Used to show errors while retrieving and processing data.
+    result: The network status of a specific interconnect.
+  """
+
+  error = _messages.StringField(1)
+  result = _messages.MessageField('InterconnectDiagnostics', 2)
+
+
+class DiagnoseNetworkResponse(_messages.Message):
+  r"""DiagnoseNetworkResponse contains the current status for a specific
+  network.
+
+  Fields:
+    error: Used to show errors while retrieving and processing data.
+    result: The network status of a specific network.
+  """
+
+  error = _messages.StringField(1)
+  result = _messages.MessageField('NetworkStatus', 2)
+
+
+class DiagnoseRouterResponse(_messages.Message):
+  r"""DiagnoseRouterResponse contains the current status for a specific
+  router.
+
+  Fields:
+    error: Used to show errors while retrieving and processing data.
+    result: The network status of a specific router.
+  """
+
+  error = _messages.StringField(1)
+  result = _messages.MessageField('RouterStatus', 2)
 
 
 class EdgenetworkProjectsLocationsGetRequest(_messages.Message):
@@ -323,6 +414,16 @@ class EdgenetworkProjectsLocationsZonesInterconnectsDeleteRequest(_messages.Mess
   requestId = _messages.StringField(2)
 
 
+class EdgenetworkProjectsLocationsZonesInterconnectsDiagnoseRequest(_messages.Message):
+  r"""A EdgenetworkProjectsLocationsZonesInterconnectsDiagnoseRequest object.
+
+  Fields:
+    name: Required. The name of the interconnect resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class EdgenetworkProjectsLocationsZonesInterconnectsGetRequest(_messages.Message):
   r"""A EdgenetworkProjectsLocationsZonesInterconnectsGetRequest object.
 
@@ -421,6 +522,16 @@ class EdgenetworkProjectsLocationsZonesNetworksDeleteRequest(_messages.Message):
   requestId = _messages.StringField(2)
 
 
+class EdgenetworkProjectsLocationsZonesNetworksDiagnoseRequest(_messages.Message):
+  r"""A EdgenetworkProjectsLocationsZonesNetworksDiagnoseRequest object.
+
+  Fields:
+    name: Required. The name of the network resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class EdgenetworkProjectsLocationsZonesNetworksGetRequest(_messages.Message):
   r"""A EdgenetworkProjectsLocationsZonesNetworksGetRequest object.
 
@@ -498,6 +609,16 @@ class EdgenetworkProjectsLocationsZonesRoutersDeleteRequest(_messages.Message):
 
   name = _messages.StringField(1, required=True)
   requestId = _messages.StringField(2)
+
+
+class EdgenetworkProjectsLocationsZonesRoutersDiagnoseRequest(_messages.Message):
+  r"""A EdgenetworkProjectsLocationsZonesRoutersDiagnoseRequest object.
+
+  Fields:
+    name: Required. The name of the router resource.
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class EdgenetworkProjectsLocationsZonesRoutersGetRequest(_messages.Message):
@@ -838,6 +959,23 @@ class InterconnectAttachment(_messages.Message):
   vlanId = _messages.IntegerField(10, variant=_messages.Variant.INT32)
 
 
+class InterconnectDiagnostics(_messages.Message):
+  r"""Diagnostics information about interconnect, contains detailed and
+  current technical information about Google's side of the connection.
+
+  Fields:
+    arpEntries: A list of ARPEntry, describing the ARP neighbor entries seen
+      on this interconnect.
+    links: A list of LinkStatus objects, used to describe the status for each
+      link on the Interconnect.
+    macAddress: The MAC address of the Interconnect's bundle interface.
+  """
+
+  arpEntries = _messages.MessageField('ARPEntry', 1, repeated=True)
+  links = _messages.MessageField('LinkStatus', 2, repeated=True)
+  macAddress = _messages.StringField(3)
+
+
 class Interface(_messages.Message):
   r"""A Interface object.
 
@@ -854,6 +992,89 @@ class Interface(_messages.Message):
   linkedInterconnectAttachment = _messages.StringField(2)
   name = _messages.StringField(3)
   subnetwork = _messages.StringField(4)
+
+
+class LinkLACPStatus(_messages.Message):
+  r"""Describing the status of a LACP link.
+
+  Enums:
+    StateValueValuesEnum: The state of a LACP link.
+
+  Fields:
+    aggregatable: A true value indicates that the participant will allow the
+      link to be used as part of the aggregate. A false value indicates the
+      link should be used as an individual link.
+    collecting: If true, the participant is collecting incoming frames on the
+      link, otherwise false
+    distributing: When true, the participant is distributing outgoing frames;
+      when false, distribution is disabled
+    googleSystemId: System ID of the port on Google's side of the LACP
+      exchange.
+    neighborSystemId: System ID of the port on the neighbor's side of the LACP
+      exchange.
+    state: The state of a LACP link.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""The state of a LACP link.
+
+    Values:
+      UNKNOWN: The default state indicating state is in unknown state.
+      ACTIVE: The link is configured and active within the bundle.
+      DETACHED: The link is not configured within the bundle, this means the
+        rest of the object should be empty.
+    """
+    UNKNOWN = 0
+    ACTIVE = 1
+    DETACHED = 2
+
+  aggregatable = _messages.BooleanField(1)
+  collecting = _messages.BooleanField(2)
+  distributing = _messages.BooleanField(3)
+  googleSystemId = _messages.StringField(4)
+  neighborSystemId = _messages.StringField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+
+
+class LinkLLDPStatus(_messages.Message):
+  r"""Describing a LLDP link.
+
+  Fields:
+    peerChassisId: The peer chassis component of the endpoint identifier
+      associated with the transmitting LLDP agent.
+    peerChassisIdType: The format and source of the peer chassis identifier
+      string.
+    peerPortId: The port component of the endpoint identifier associated with
+      the transmitting LLDP agent. If the specified port is an IEEE 802.3
+      Repeater port, then this TLV is optional.
+    peerPortIdType: The format and source of the peer port identifier string.
+    peerSystemDescription: The textual description of the network entity of
+      LLDP peer.
+    peerSystemName: The peer system's administratively assigned name.
+  """
+
+  peerChassisId = _messages.StringField(1)
+  peerChassisIdType = _messages.StringField(2)
+  peerPortId = _messages.StringField(3)
+  peerPortIdType = _messages.StringField(4)
+  peerSystemDescription = _messages.StringField(5)
+  peerSystemName = _messages.StringField(6)
+
+
+class LinkStatus(_messages.Message):
+  r"""Describing the status for each link on the Interconnect.
+
+  Fields:
+    circuitId: The unique ID for this link assigned during turn up by Google.
+    lacpStatus: Describing the state of a LACP link.
+    lldpStatus: Describing the state of a LLDP link.
+    packetCounts: Packet counts specific statistics for this link.
+  """
+
+  circuitId = _messages.StringField(1)
+  lacpStatus = _messages.MessageField('LinkLACPStatus', 2)
+  lldpStatus = _messages.MessageField('LinkLLDPStatus', 3)
+  packetCounts = _messages.MessageField('PacketCounts', 4)
 
 
 class ListInterconnectAttachmentsResponse(_messages.Message):
@@ -1101,6 +1322,17 @@ class Network(_messages.Message):
   updateTime = _messages.StringField(6)
 
 
+class NetworkStatus(_messages.Message):
+  r"""NetworkStatus has a list of status for the subnets under the current
+  network.
+
+  Fields:
+    subnetStatus: A list of status for the subnets under the current network.
+  """
+
+  subnetStatus = _messages.MessageField('SubnetStatus', 1, repeated=True)
+
+
 class Operation(_messages.Message):
   r"""This resource represents a long-running operation that is the result of
   a network API call.
@@ -1236,6 +1468,52 @@ class OperationMetadata(_messages.Message):
   verb = _messages.StringField(7)
 
 
+class PacketCounts(_messages.Message):
+  r"""Containing a collection of interface-related statistics objects.
+
+  Fields:
+    inboundDiscards: The number of inbound packets that were chosen to be
+      discarded even though no errors had been detected to prevent their being
+      deliverable.
+    inboundErrors: The number of inbound packets that contained errors.
+    inboundUnicast: The number of packets that are delivered.
+    outboundDiscards: The number of outbound packets that were chosen to be
+      discarded even though no errors had been detected to prevent their being
+      transmitted.
+    outboundErrors: The number of outbound packets that could not be
+      transmitted because of errors.
+    outboundUnicast: The total number of packets that are requested be
+      transmitted.
+  """
+
+  inboundDiscards = _messages.IntegerField(1)
+  inboundErrors = _messages.IntegerField(2)
+  inboundUnicast = _messages.IntegerField(3)
+  outboundDiscards = _messages.IntegerField(4)
+  outboundErrors = _messages.IntegerField(5)
+  outboundUnicast = _messages.IntegerField(6)
+
+
+class PrefixCounter(_messages.Message):
+  r"""PrefixCounter contains a collection of prefixes related counts.
+
+  Fields:
+    advertised: Number of prefixes advertised.
+    denied: Number of prefixes denied.
+    received: Number of prefixes received.
+    sent: Number of prefixes sent.
+    suppressed: Number of prefixes suppressed.
+    withdrawn: Number of prefixes withdrawn.
+  """
+
+  advertised = _messages.IntegerField(1)
+  denied = _messages.IntegerField(2)
+  received = _messages.IntegerField(3)
+  sent = _messages.IntegerField(4)
+  suppressed = _messages.IntegerField(5)
+  withdrawn = _messages.IntegerField(6)
+
+
 class Router(_messages.Message):
   r"""Message describing Router object
 
@@ -1317,6 +1595,19 @@ class Router(_messages.Message):
   network = _messages.StringField(8)
   state = _messages.EnumField('StateValueValuesEnum', 9)
   updateTime = _messages.StringField(10)
+
+
+class RouterStatus(_messages.Message):
+  r"""Describing the current status of a router.
+
+  Fields:
+    bgpPeerStatus: A list of BgpPeerStatus objects, describing all BGP peers
+      related to this router.
+    network: The canonical name of the network to which this router belongs.
+  """
+
+  bgpPeerStatus = _messages.MessageField('BgpPeerStatus', 1, repeated=True)
+  network = _messages.StringField(2)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -1513,6 +1804,22 @@ class Subnet(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 8)
   updateTime = _messages.StringField(9)
   vlanId = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+
+
+class SubnetStatus(_messages.Message):
+  r"""SubnetStatus contains detailed and current technical information about
+  this subnet resource.
+
+  Fields:
+    arpEntries: A list of ARPEntry, describing the ARP neighbor entries seen
+      on this subnet.
+    macAddress: BVI MAC address.
+    name: The name of CCFE subnet resource.
+  """
+
+  arpEntries = _messages.MessageField('ARPEntry', 1, repeated=True)
+  macAddress = _messages.StringField(2)
+  name = _messages.StringField(3)
 
 
 class Zone(_messages.Message):

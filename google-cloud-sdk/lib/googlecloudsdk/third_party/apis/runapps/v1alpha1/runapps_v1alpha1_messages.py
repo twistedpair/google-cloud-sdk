@@ -14,7 +14,7 @@ package = 'runapps'
 
 
 class Application(_messages.Message):
-  r"""Message describing Application object Next tag: 8
+  r"""Message describing Application object Next tag: 9
 
   Messages:
     AnnotationsValue: Unstructured key value map that may be set by external
@@ -36,6 +36,7 @@ class Application(_messages.Message):
     createTime: Output only. Create time stamp
     deleteTime: Output only. For a deleted resource, the deletion time. It is
       only populated as a response to a Delete request.
+    displayName: A mutable, user-defined name for the application.
     etag: Output only. A system-generated fingerprint for this version of the
       resource. May be used to detect modification conflict during updates.
     labels: Labels as key value pairs
@@ -102,11 +103,12 @@ class Application(_messages.Message):
   config = _messages.MessageField('Config', 2)
   createTime = _messages.StringField(3)
   deleteTime = _messages.StringField(4)
-  etag = _messages.StringField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  name = _messages.StringField(7)
-  reconciling = _messages.BooleanField(8)
-  updateTime = _messages.StringField(9)
+  displayName = _messages.StringField(5)
+  etag = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  name = _messages.StringField(8)
+  reconciling = _messages.BooleanField(9)
+  updateTime = _messages.StringField(10)
 
 
 class ApplicationStatus(_messages.Message):
@@ -293,51 +295,10 @@ class CloudRunServiceConfig(_messages.Message):
   r"""Message for Cloud Run service configs.
 
   Fields:
-    image: The container image to deploy the service with.
     resources: Bindings to other resources.
   """
 
-  image = _messages.StringField(1)
-  resources = _messages.MessageField('ServiceResourceBindingConfig', 2, repeated=True)
-
-
-class CloudSqlConfig(_messages.Message):
-  r"""Message for a Cloud SQL resource.
-
-  Fields:
-    settings: Settings for the Cloud SQL instance.
-    version: The database version. e.g. "MYSQL_8_0". The version must match
-      one of the values at https://cloud.google.com/sql/docs/mysql/admin-
-      api/rest/v1beta4/SqlDatabaseVersion.
-  """
-
-  settings = _messages.MessageField('CloudSqlSettings', 1)
-  version = _messages.StringField(2)
-
-
-class CloudSqlSettings(_messages.Message):
-  r"""Message for settings for a CloudSql instance.
-
-  Fields:
-    activation_policy: The activation policy of the Cloud SQL instance. e.g.
-      "ALWAYS".
-    availability_type: The availability type of the Cloud SQL instance. e.g.
-      "REGIONAL".
-    disk_size: The disk size of the Cloud SQL instance, in GB. This value
-      cannot be decreased on Update.
-    disk_type: The type of disk for the Cloud SQL instance. e.g. "PD_SSD".
-    tier: Tier of the Cloud SQL instance. e.g. "db-f1-micro".
-  """
-
-  activation_policy = _messages.StringField(1)
-  availability_type = _messages.StringField(2)
-  disk_size = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  disk_type = _messages.StringField(4)
-  tier = _messages.StringField(5)
-
-
-class CloudSqlStatus(_messages.Message):
-  r"""Detail Status of CloudSQL resource."""
+  resources = _messages.MessageField('ServiceResourceBindingConfig', 1, repeated=True)
 
 
 class CloudStorage(_messages.Message):
@@ -546,23 +507,50 @@ class Empty(_messages.Message):
 
 
 
+class JobComponent(_messages.Message):
+  r"""Message to encapsulate component actuated by a job. JobComponent does
+  not represent a GCP API resource.
+
+  Enums:
+    OperationValueValuesEnum: Operation to be performed on component.
+
+  Fields:
+    operation: Operation to be performed on component.
+    typedName: TypedName is the component name and its type.
+  """
+
+  class OperationValueValuesEnum(_messages.Enum):
+    r"""Operation to be performed on component.
+
+    Values:
+      COMPONENT_OPERATION_UNSPECIFIED: ComponentOperation unset.
+      APPLY: Apply configuration to component.
+      DESTROY: Destroy component.
+    """
+    COMPONENT_OPERATION_UNSPECIFIED = 0
+    APPLY = 1
+    DESTROY = 2
+
+  operation = _messages.EnumField('OperationValueValuesEnum', 1)
+  typedName = _messages.MessageField('TypedName', 2)
+
+
 class JobDetails(_messages.Message):
   r"""Message to encapsulate the current status deployment job.
 
   Enums:
-    StateValueValuesEnum: State of deployment job
+    StateValueValuesEnum: State of deployment job.
 
   Fields:
-    createSelector: Create selector applied to deployment job.
-    deleteSelector: Delete selector applied to deployment job.
+    components: Components to be actuated by the job.
     jobName: Name of deployment job. Format:
       projects/{project}/locations/{location}/builds/{build}
     jobUri: URI of deployment job within Google Cloud Console.
-    state: State of deployment job
+    state: State of deployment job.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""State of deployment job
+    r"""State of deployment job.
 
     Values:
       STATE_UNSPECIFIED: Default value. This value is unused.
@@ -575,11 +563,10 @@ class JobDetails(_messages.Message):
     SUCCEEDED = 2
     IN_PROGRESS = 3
 
-  createSelector = _messages.MessageField('Selector', 1)
-  deleteSelector = _messages.MessageField('Selector', 2)
-  jobName = _messages.StringField(3)
-  jobUri = _messages.StringField(4)
-  state = _messages.EnumField('StateValueValuesEnum', 5)
+  components = _messages.MessageField('JobComponent', 1, repeated=True)
+  jobName = _messages.StringField(2)
+  jobUri = _messages.StringField(3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
 
 
 class ListApplicationsResponse(_messages.Message):
@@ -1003,18 +990,16 @@ class ResourceConfig(_messages.Message):
   r"""Message for the Resource configuration.
 
   Fields:
-    cloudsql: CloudSql configuration.
     redis: Redis configuration.
     router: Router configuration.
     service: Cloud Run service configuration.
     vpc: VPC configuration.
   """
 
-  cloudsql = _messages.MessageField('CloudSqlConfig', 1)
-  redis = _messages.MessageField('RedisConfig', 2)
-  router = _messages.MessageField('RouterConfig', 3)
-  service = _messages.MessageField('CloudRunServiceConfig', 4)
-  vpc = _messages.MessageField('VPCConfig', 5)
+  redis = _messages.MessageField('RedisConfig', 1)
+  router = _messages.MessageField('RouterConfig', 2)
+  service = _messages.MessageField('CloudRunServiceConfig', 3)
+  vpc = _messages.MessageField('VPCConfig', 4)
 
 
 class ResourceStatus(_messages.Message):
@@ -1025,7 +1010,6 @@ class ResourceStatus(_messages.Message):
 
   Fields:
     bindingStatus: The binding status related to this resource.
-    cloudSqlDetails: Detail Status of CloudSQL resource.
     consoleLink: Pantheon link for the resource. For example, the custom
       domain will link to the GCLB page.
     diverged: Indicates that a child component of this resource has been
@@ -1059,15 +1043,14 @@ class ResourceStatus(_messages.Message):
     NOT_READY = 5
 
   bindingStatus = _messages.MessageField('BindingStatus', 1, repeated=True)
-  cloudSqlDetails = _messages.MessageField('CloudSqlStatus', 2)
-  consoleLink = _messages.StringField(3)
-  diverged = _messages.BooleanField(4)
-  reason = _messages.StringField(5)
-  resourceComponentStatuses = _messages.MessageField('ResourceComponentStatus', 6, repeated=True)
-  resourceName = _messages.StringField(7)
-  routerDetails = _messages.MessageField('RouterStatus', 8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
-  type = _messages.StringField(10)
+  consoleLink = _messages.StringField(2)
+  diverged = _messages.BooleanField(3)
+  reason = _messages.StringField(4)
+  resourceComponentStatuses = _messages.MessageField('ResourceComponentStatus', 5, repeated=True)
+  resourceName = _messages.StringField(6)
+  routerDetails = _messages.MessageField('RouterStatus', 7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  type = _messages.StringField(9)
 
 
 class Route(_messages.Message):
@@ -1583,14 +1566,6 @@ class VPCConfig(_messages.Message):
   network = _messages.StringField(1)
 
 
-encoding.AddCustomJsonFieldMapping(
-    CloudSqlSettings, 'activation_policy', 'activation-policy')
-encoding.AddCustomJsonFieldMapping(
-    CloudSqlSettings, 'availability_type', 'availability-type')
-encoding.AddCustomJsonFieldMapping(
-    CloudSqlSettings, 'disk_size', 'disk-size')
-encoding.AddCustomJsonFieldMapping(
-    CloudSqlSettings, 'disk_type', 'disk-type')
 encoding.AddCustomJsonFieldMapping(
     RedisInstanceConfig, 'memory_size_gb', 'memory-size-gb')
 encoding.AddCustomJsonFieldMapping(

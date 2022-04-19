@@ -313,6 +313,14 @@ def ParseUpdateOptionsBase(args, locations):
           args, 'autoprovisioning_max_surge_upgrade', None),
       autoprovisioning_max_unavailable_upgrade=getattr(
           args, 'autoprovisioning_max_unavailable_upgrade', None),
+      enable_autoprovisioning_rolling_update=getattr(
+          args, 'enable_autoprovisioning_rolling_update', None),
+      enable_autoprovisioning_blue_green_update=getattr(
+          args, 'enable_autoprovisioning_blue_green_update', None),
+      autoprovisioning_standard_rollout_policy=getattr(
+          args, 'autoprovisioning_standard_rollout_policy', None),
+      autoprovisioning_node_pool_soak_duration=getattr(
+          args, 'autoprovisioning_node_pool_soak_duration', None),
       enable_autoprovisioning_autorepair=getattr(
           args, 'enable_autoprovisioning_autorepair', None),
       enable_autoprovisioning_autoupgrade=getattr(

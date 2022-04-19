@@ -12,7 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """API helpers for interacting with IAM."""
 
 from __future__ import absolute_import
@@ -35,8 +34,8 @@ class Client(object):
     return self.client.projects_policy.GetIamPolicy(
         self.messages.BinaryauthorizationProjectsPolicyGetIamPolicyRequest(
             resource=any_ref.RelativeName(),
-        )
-    )
+            options_requestedPolicyVersion=iam_util
+            .MAX_LIBRARY_IAM_SUPPORTED_VERSION))
 
   def Set(self, any_ref, policy):
     """Sets a resource's IamPolicy to the one provided.
@@ -51,14 +50,13 @@ class Client(object):
     Returns:
         The IAM Policy.
     """
+    policy.version = iam_util.MAX_LIBRARY_IAM_SUPPORTED_VERSION
     return self.client.projects_policy.SetIamPolicy(
         self.messages.BinaryauthorizationProjectsPolicySetIamPolicyRequest(
             resource=any_ref.RelativeName(),
             setIamPolicyRequest=self.messages.SetIamPolicyRequest(
-                policy=policy,
-            ),
-        )
-    )
+                policy=policy,),
+        ))
 
   def AddBinding(self, any_ref, member, role):
     """Does an atomic Read-Modify-Write, adding the member to the role."""

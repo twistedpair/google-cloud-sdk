@@ -395,7 +395,7 @@ class Binding(_messages.Message):
       learn which resources support conditions in their IAM policies, see the
       IAM documentation
       (https://cloud.google.com/iam/help/conditions/resource-policies).
-    members: Specifies the principals requesting access for a Cloud Platform
+    members: Specifies the principals requesting access for a Google Cloud
       resource. members can have the following values: allUsers: A special
       identifier that represents anyone who is on the internet; with or
       without a Google account. allAuthenticatedUsers: A special identifier
@@ -456,7 +456,8 @@ class Cluster(_messages.Message):
       Dataproc generates this value when it creates the cluster.
     config: Optional. The cluster config for a cluster of Compute Engine
       Instances. Note that Dataproc may set default values, and values may
-      change when clusters are updated.
+      change when clusters are updated.Exactly one of ClusterConfig or
+      VirtualClusterConfig must be specified.
     labels: Optional. The labels to associate with this cluster. Label keys
       must contain 1 to 63 characters, and must conform to RFC 1035
       (https://www.ietf.org/rfc/rfc1035.txt). Label values may be empty, but,
@@ -544,11 +545,12 @@ class ClusterConfig(_messages.Message):
     endpointConfig: Optional. Port/endpoint configuration for this cluster
     gceClusterConfig: Optional. The shared Compute Engine config settings for
       all instances in a cluster.
-    gkeClusterConfig: Optional. BETA. The Kubernetes Engine config for
-      Dataproc clusters deployed to Kubernetes. Setting this is considered
-      mutually exclusive with Compute Engine-based options such as
-      gce_cluster_config, master_config, worker_config,
-      secondary_worker_config, and autoscaling_config.
+    gkeClusterConfig: Optional. Deprecated. Use VirtualClusterConfig based
+      clusters instead. BETA. The Kubernetes Engine config for Dataproc
+      clusters deployed to Kubernetes. Setting this is considered mutually
+      exclusive with Compute Engine-based options such as gce_cluster_config,
+      master_config, worker_config, secondary_worker_config, and
+      autoscaling_config.
     initializationActions: Optional. Commands to execute on each node after
       config is completed. By default, executables are run on master and all
       worker nodes. You can test a node's role metadata to run an executable
@@ -2769,7 +2771,8 @@ class GkeClusterConfig(_messages.Message):
       in the same project and region as the Dataproc cluster (the GKE cluster
       can be zonal or regional). Format:
       'projects/{project}/locations/{location}/clusters/{cluster_id}'
-    namespacedGkeDeploymentTarget: Optional. A target for the deployment.
+    namespacedGkeDeploymentTarget: Optional. Deprecated. Use gkeClusterTarget.
+      Used only for the deprecated beta. A target for the deployment.
     nodePoolTarget: Optional. GKE NodePools where workloads will be scheduled.
       At least one node pool must be assigned the 'default' role. Each role
       can be given to only a single NodePoolTarget. All NodePools must have
@@ -4142,8 +4145,8 @@ class Metric(_messages.Message):
 
 
 class NamespacedGkeDeploymentTarget(_messages.Message):
-  r"""A full, namespace-isolated deployment target for an existing GKE
-  cluster.
+  r"""Deprecated. Used only for the deprecated beta. A full, namespace-
+  isolated deployment target for an existing GKE cluster.
 
   Fields:
     clusterNamespace: Optional. A namespace within the GKE cluster to deploy
@@ -5122,8 +5125,8 @@ class SetIamPolicyRequest(_messages.Message):
   Fields:
     policy: REQUIRED: The complete policy to be applied to the resource. The
       size of the policy is limited to a few 10s of KB. An empty policy is a
-      valid policy but certain Cloud Platform services (such as Projects)
-      might reject them.
+      valid policy but certain Google Cloud services (such as Projects) might
+      reject them.
   """
 
   policy = _messages.MessageField('Policy', 1)
@@ -5940,7 +5943,7 @@ class TestIamPermissionsRequest(_messages.Message):
 
   Fields:
     permissions: The set of permissions to check for the resource. Permissions
-      with wildcards (such as '*' or 'storage.*') are not allowed. For more
+      with wildcards (such as * or storage.*) are not allowed. For more
       information see IAM Overview
       (https://cloud.google.com/iam/docs/overview#permissions).
   """

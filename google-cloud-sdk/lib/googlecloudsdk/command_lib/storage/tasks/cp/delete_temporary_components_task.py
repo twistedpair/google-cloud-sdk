@@ -82,7 +82,10 @@ class DeleteTemporaryComponentsTask(task.Task):
             component_resource.storage_url, verbose=False))
       os.remove(component_tracker_path)
 
-    return task.Output(additional_task_iterators=[delete_tasks], messages=None)
+    # TODO(b/228956264): May be able to remove after task graph improvements.
+    additional_task_iterators = [delete_tasks] if delete_tasks else None
+    return task.Output(
+        additional_task_iterators=additional_task_iterators, messages=None)
 
   def __eq__(self, other):
     if not isinstance(other, type(self)):

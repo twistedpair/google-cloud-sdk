@@ -21,34 +21,41 @@ from __future__ import unicode_literals
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.api_lib.storage import errors
 from googlecloudsdk.command_lib.storage import manifest_util
+from googlecloudsdk.command_lib.storage.tasks import task
 
 
-class CopyTaskExitHandlerMixin:
-  """Mixin that overrides exit handler to copy tasks."""
+class CopyTaskWithExitHandler(task.Task):
+  """Parent task that overrides exit handler to copy tasks."""
+
+  def __init__(self,
+               source_resource,
+               destination_resource,
+               user_request_args=None):
+    """Initializes task.
+
+    Args:
+      source_resource (resource_reference.Resource): Source resource to copy.
+      destination_resource (resource_reference.Resource): Target resource to
+        copy to.
+      user_request_args (UserRequestArgs|None): Various user-set values
+        typically converted to an API-specific RequestConfig.
+    """
+    super(CopyTaskWithExitHandler, self).__init__()
+    self._source_resource = source_resource
+    self._destination_resource = destination_resource
+    self._user_request_args = user_request_args
+    self._send_manifest_messages = bool(self._user_request_args and
+                                        self._user_request_args.manifest_path)
 
   def exit_handler(self, error=None, task_status_queue=None):
     """Send copy result info to manifest if requested."""
-    if not (getattr(self, '_source_resource', None) and
-            getattr(self, '_destination_resource', None)):
-      raise KeyError(
-          self.__class__.__name__ +
-          ' requires attributes "_source_resource" and "_destination_resource".'
-      )
-
-    if getattr(
-        getattr(self, '_user_request_args', None), 'manifest_path', None):
+    if error and self._send_manifest_messages:
       if not task_status_queue:
         raise ValueError(
-            'Tried to send message to manifest, but'
-            ' CopyTaskExitHandlerMixin did not receive task_status_queue.')
-      if error:
-        manifest_util.send_error_message(task_status_queue,
-                                         self._source_resource,
-                                         self._destination_resource, error)
-      else:
-        manifest_util.send_success_message(task_status_queue,
-                                           self._source_resource,
-                                           self._destination_resource)
+            'Unable to send message to manifest for source: {}'.format(
+                self._source_resource))
+      manifest_util.send_error_message(task_status_queue, self._source_resource,
+                                       self._destination_resource, error)
 
 
 def get_no_clobber_message(destination_url):

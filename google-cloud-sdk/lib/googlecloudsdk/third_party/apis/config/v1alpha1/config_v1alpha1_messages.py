@@ -145,7 +145,7 @@ class Binding(_messages.Message):
       policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
-    members: Specifies the principals requesting access for a Cloud Platform
+    members: Specifies the principals requesting access for a Google Cloud
       resource. `members` can have the following values: * `allUsers`: A
       special identifier that represents anyone who is on the internet; with
       or without a Google account. * `allAuthenticatedUsers`: A special
@@ -567,6 +567,11 @@ class Deployment(_messages.Message):
       Controller does not manage this Config Controller instance and only
       creates it.
     createTime: Output only. Time the deployment was created.
+    deleteBuild: Output only. Cloud Build instance UUID associated with
+      deleting this deployment.
+    deleteLogs: Output only. Location of Cloud Build logs in Google Cloud
+      Storage, populated when deleting this deployment. Format:
+      `gs://{bucket}/{object}`.
     deleteResults: Output only. Locations of outputs from delete operation.
     errorCode: Output only. Code describing any errors that may have occurred.
     gitTarget: Required. If set, then the hydrated blueprint will be uploaded
@@ -672,16 +677,18 @@ class Deployment(_messages.Message):
   configController = _messages.StringField(3)
   createConfigController = _messages.BooleanField(4)
   createTime = _messages.StringField(5)
-  deleteResults = _messages.MessageField('ApplyResults', 6)
-  errorCode = _messages.EnumField('ErrorCodeValueValuesEnum', 7)
-  gitTarget = _messages.MessageField('GitTarget', 8)
-  labels = _messages.MessageField('LabelsValue', 9)
-  latestRevision = _messages.StringField(10)
-  name = _messages.StringField(11)
-  reconcileTimeout = _messages.StringField(12)
-  state = _messages.EnumField('StateValueValuesEnum', 13)
-  stateDetail = _messages.StringField(14)
-  updateTime = _messages.StringField(15)
+  deleteBuild = _messages.StringField(6)
+  deleteLogs = _messages.StringField(7)
+  deleteResults = _messages.MessageField('ApplyResults', 8)
+  errorCode = _messages.EnumField('ErrorCodeValueValuesEnum', 9)
+  gitTarget = _messages.MessageField('GitTarget', 10)
+  labels = _messages.MessageField('LabelsValue', 11)
+  latestRevision = _messages.StringField(12)
+  name = _messages.StringField(13)
+  reconcileTimeout = _messages.StringField(14)
+  state = _messages.EnumField('StateValueValuesEnum', 15)
+  stateDetail = _messages.StringField(16)
+  updateTime = _messages.StringField(17)
 
 
 class DeploymentOperationMetadata(_messages.Message):
@@ -693,6 +700,10 @@ class DeploymentOperationMetadata(_messages.Message):
 
   Fields:
     applyResults: Locations of outputs from config application.
+    build: Output only. Cloud Build instance UUID associated with this
+      operation.
+    logs: Output only. Location of Deployment operations logs in
+      `gs://{bucket}/{object}` format.
     pipelineResults: Locations of outputs from kpt pipeline execution.
     step: The current step the deployment operation is running.
   """
@@ -722,8 +733,10 @@ class DeploymentOperationMetadata(_messages.Message):
     RUNNING_PREVIEW = 6
 
   applyResults = _messages.MessageField('ApplyResults', 1)
-  pipelineResults = _messages.MessageField('PipelineResults', 2)
-  step = _messages.EnumField('StepValueValuesEnum', 3)
+  build = _messages.StringField(2)
+  logs = _messages.StringField(3)
+  pipelineResults = _messages.MessageField('PipelineResults', 4)
+  step = _messages.EnumField('StepValueValuesEnum', 5)
 
 
 class Empty(_messages.Message):
@@ -1263,9 +1276,13 @@ class Preview(_messages.Message):
 
   Fields:
     applyInput: Input parameters for preview of apply operation.
+    build: Output only. Cloud Build instance UUID associated with this
+      preview.
     createTime: Output only. Time the preview was created.
     deleteInput: Input parameters for preview of delete operation.
     errorCode: Output only. Code describing any errors that may have occurred.
+    logs: Output only. Location of Preview operation logs in
+      `gs://{bucket}/{object}` format.
     name: Output only. Resource name of the preview. Format:
       `projects/{project}/locations/{location}/previews/{preview}`
     pipelineResults: Output only. Locations of outputs from kpt pipeline
@@ -1327,14 +1344,16 @@ class Preview(_messages.Message):
     FAILED = 3
 
   applyInput = _messages.MessageField('ApplyInput', 1)
-  createTime = _messages.StringField(2)
-  deleteInput = _messages.MessageField('DeleteInput', 3)
-  errorCode = _messages.EnumField('ErrorCodeValueValuesEnum', 4)
-  name = _messages.StringField(5)
-  pipelineResults = _messages.MessageField('PipelineResults', 6)
-  previewResults = _messages.MessageField('PreviewResults', 7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
-  stateDetail = _messages.StringField(9)
+  build = _messages.StringField(2)
+  createTime = _messages.StringField(3)
+  deleteInput = _messages.MessageField('DeleteInput', 4)
+  errorCode = _messages.EnumField('ErrorCodeValueValuesEnum', 5)
+  logs = _messages.StringField(6)
+  name = _messages.StringField(7)
+  pipelineResults = _messages.MessageField('PipelineResults', 8)
+  previewResults = _messages.MessageField('PreviewResults', 9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  stateDetail = _messages.StringField(11)
 
 
 class PreviewResults(_messages.Message):
@@ -1376,8 +1395,12 @@ class Revision(_messages.Message):
     action: Output only. The type of action that this revision represents.
     applyResults: Output only. Locations of outputs from config application.
     blueprint: Output only. Blueprint that was deployed.
+    build: Output only. Cloud Build instance UUID associated with this
+      revision.
     createTime: Output only. Time the revision was created.
     errorCode: Output only. Code describing any errors that may have occurred.
+    logs: Output only. Location of Revision operation logs in
+      `gs://{bucket}/{object}` format.
     name: Resource name of the revision. Format:
       `projects/{project}/locations/{location}/deployments/{deployment}/
       revisions/{revision}`
@@ -1459,14 +1482,16 @@ class Revision(_messages.Message):
   action = _messages.EnumField('ActionValueValuesEnum', 1)
   applyResults = _messages.MessageField('ApplyResults', 2)
   blueprint = _messages.MessageField('Blueprint', 3)
-  createTime = _messages.StringField(4)
-  errorCode = _messages.EnumField('ErrorCodeValueValuesEnum', 5)
-  name = _messages.StringField(6)
-  pipelineResults = _messages.MessageField('PipelineResults', 7)
-  reconcileTimeout = _messages.StringField(8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
-  stateDetail = _messages.StringField(10)
-  updateTime = _messages.StringField(11)
+  build = _messages.StringField(4)
+  createTime = _messages.StringField(5)
+  errorCode = _messages.EnumField('ErrorCodeValueValuesEnum', 6)
+  logs = _messages.StringField(7)
+  name = _messages.StringField(8)
+  pipelineResults = _messages.MessageField('PipelineResults', 9)
+  reconcileTimeout = _messages.StringField(10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  stateDetail = _messages.StringField(12)
+  updateTime = _messages.StringField(13)
 
 
 class SetIamPolicyRequest(_messages.Message):
@@ -1475,8 +1500,8 @@ class SetIamPolicyRequest(_messages.Message):
   Fields:
     policy: REQUIRED: The complete policy to be applied to the `resource`. The
       size of the policy is limited to a few 10s of KB. An empty policy is a
-      valid policy but certain Cloud Platform services (such as Projects)
-      might reject them.
+      valid policy but certain Google Cloud services (such as Projects) might
+      reject them.
     updateMask: OPTIONAL: A FieldMask specifying which fields of the policy to
       modify. Only the fields in the mask will be modified. If no mask is
       provided, the following default mask is used: `paths: "bindings, etag"`
@@ -1605,7 +1630,7 @@ class TestIamPermissionsRequest(_messages.Message):
 
   Fields:
     permissions: The set of permissions to check for the `resource`.
-      Permissions with wildcards (such as '*' or 'storage.*') are not allowed.
+      Permissions with wildcards (such as `*` or `storage.*`) are not allowed.
       For more information see [IAM
       Overview](https://cloud.google.com/iam/docs/overview#permissions).
   """

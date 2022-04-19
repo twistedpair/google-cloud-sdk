@@ -274,8 +274,8 @@ class _FilesAndBytesStatusTracker(_StatusTracker, metrics_util.MetricsReporter):
           'Received ManifestMessage but StatusTracker was not initialized with'
           ' manifest path.')
     file_progress = self._tracked_file_progress.pop(
-        status_message.source_url.url_string)
-    self._manifest_manager.write_row(file_progress, status_message)
+        status_message.source_url.url_string, None)
+    self._manifest_manager.write_row(status_message, file_progress)
 
   def add_message(self, status_message):
     """See super class."""

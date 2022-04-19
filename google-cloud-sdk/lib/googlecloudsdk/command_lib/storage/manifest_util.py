@@ -57,23 +57,46 @@ class ManifestManager:
     with files.FileWriter(manifest_path, newline='\n') as file_writer:
       csv.DictWriter(file_writer, _MANIFEST_CSV_HEADERS).writeheader()
 
-  def write_row(self, file_progress, manifest_message):
-    if manifest_message.result_status is not ResultStatus.OK:
-      bytes_copied = 0
-    else:
+  def write_row(self, manifest_message, file_progress=None):
+    """Writes data to manifest file."""
+    if file_progress and manifest_message.result_status is ResultStatus.OK:
       bytes_copied = file_progress.total_bytes_copied
+    else:
+      bytes_copied = 0
+
+    end_time = manifest_message.end_time.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+    if file_progress:
+      start_time = file_progress.start_time.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+    else:
+      start_time = end_time
+    if manifest_message.description:
+      # Print raw newlines and carriage returns in CSV.
+      description = manifest_message.description.replace('\n', '\\n').replace(
+          '\r', '\\r')
+    else:
+      description = ''
+
     with files.FileWriter(
         self._manifest_path, append=True, newline='\n') as file_writer:
       csv.DictWriter(file_writer, _MANIFEST_CSV_HEADERS).writerow({
-          'Source': manifest_message.source_url.url_string,
-          'Destination': manifest_message.destination_url.url_string,
-          'Start': file_progress.start_time.isoformat() + 'Z',
-          'End': manifest_message.end_time.isoformat() + 'Z',
-          'Md5': manifest_message.md5_hash or '',
-          'Source Size': manifest_message.size,
-          'Bytes Transferred': bytes_copied,
-          'Result': manifest_message.result_status.value,
-          'Description': manifest_message.description or '',
+          'Source':
+              manifest_message.source_url.url_string,
+          'Destination':
+              manifest_message.destination_url.versionless_url_string,
+          'Start':
+              start_time,
+          'End':
+              end_time,
+          'Md5':
+              manifest_message.md5_hash or '',
+          'Source Size':
+              manifest_message.size,
+          'Bytes Transferred':
+              bytes_copied,
+          'Result':
+              manifest_message.result_status.value,
+          'Description':
+              description,
       })
 
 
@@ -94,6 +117,7 @@ def _send_manifest_message(task_status_queue,
                            source_resource,
                            destination_resource,
                            result_status,
+                           md5_hash=None,
                            description=None):
   """Send ManifestMessage to task_status_queue for processing."""
   task_status_queue.put(
@@ -101,9 +125,12 @@ def _send_manifest_message(task_status_queue,
           source_url=source_resource.storage_url,
           destination_url=destination_resource.storage_url,
           end_time=datetime.datetime.utcnow(),
+          # Ignores transforms that change file size at destination, like STET.
           size=source_resource.size,
           result_status=result_status,
-          md5_hash=source_resource.md5_hash,
+          # Will be None if a multi-component copy (they use CRC32C hashing)
+          # or if the "storage/check_hashes" property is set to "never".
+          md5_hash=md5_hash,
           description=description,
       ))
 
@@ -116,6 +143,7 @@ def send_error_message(task_status_queue, source_resource, destination_resource,
       source_resource,
       destination_resource,
       ResultStatus.ERROR,
+      md5_hash=None,
       description=str(error))
 
 
@@ -127,11 +155,14 @@ def send_skip_message(task_status_queue, source_resource, destination_resource,
       source_resource,
       destination_resource,
       ResultStatus.SKIP,
+      md5_hash=None,
       description=message)
 
 
-def send_success_message(task_status_queue, source_resource,
-                         destination_resource):
+def send_success_message(task_status_queue,
+                         source_resource,
+                         destination_resource,
+                         md5_hash=None):
   """Send ManifestMessage for successful copy to central processing."""
   _send_manifest_message(task_status_queue, source_resource,
-                         destination_resource, ResultStatus.OK)
+                         destination_resource, ResultStatus.OK, md5_hash)

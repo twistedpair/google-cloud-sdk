@@ -165,6 +165,16 @@ class ManifestMessage(ThreadMessage):
                 md5_hash=md5_hash_string,
                 description=description_string)
 
+  def __eq__(self, other):
+    if not isinstance(other, type(self)):
+      return NotImplemented
+    return (self.source_url == other.source_url and
+            self.destination_url == other.destination_url and
+            self.end_time == other.end_time and self.size == other.size and
+            self.result_status == other.result_status and
+            self.md5_hash == other.md5_hash and
+            self.description == other.description)
+
 
 class WorkloadEstimatorMessage(ThreadMessage):
   """Message class for estimating total workload of operation.

@@ -86,8 +86,8 @@ def _get_digesters(component_number, resource):
   tasks through the task graph.
 
   Args:
-    component_number (int): Used to determine if downloading a slice in a sliced
-      download, which uses CRC32C for hashing.
+    component_number (int|None): Used to determine if downloading a slice in a
+      sliced download, which uses CRC32C for hashing.
     resource (resource_reference.ObjectResource): For checking if object has
       known hash to validate against.
 
@@ -104,7 +104,7 @@ def _get_digesters(component_number, resource):
     if component_number is None and resource.md5_hash:
       digesters[hash_util.HashAlgorithm.MD5] = hashing.get_md5()
 
-    elif (component_number is not None and resource.crc32c_hash and
+    elif (resource.crc32c_hash and
           (crc32c.IS_FAST_GOOGLE_CRC32C_AVAILABLE or
            check_hashes == properties.CheckHashes.ALWAYS.value)):
       digesters[hash_util.HashAlgorithm.CRC32C] = crc32c.get_crc32c()
@@ -185,13 +185,21 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
         # ensure that the file count gets updated.
         progress_callback(0)
 
-    # CRC32C validated in FinalizeSlicedDownloadTask.
     if hash_util.HashAlgorithm.MD5 in digesters:
       calculated_digest = hash_util.get_base64_hash_digest_string(
           digesters[hash_util.HashAlgorithm.MD5])
       download_util.validate_download_hash_and_delete_corrupt_files(
           self._destination_resource.storage_url.object_name,
           self._source_resource.md5_hash, calculated_digest)
+    # Only for one-shot composite object downloads as final CRC32C validated in
+    # FinalizeSlicedDownloadTask.
+    elif (hash_util.HashAlgorithm.CRC32C in digesters and
+          self._component_number is None):
+      calculated_digest = crc32c.get_hash(
+          digesters[hash_util.HashAlgorithm.CRC32C])
+      download_util.validate_download_hash_and_delete_corrupt_files(
+          self._destination_resource.storage_url.object_name,
+          self._source_resource.crc32c_hash, calculated_digest)
 
   def _perform_one_shot_download(self, request_config, progress_callback,
                                  digesters):
@@ -241,22 +249,25 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
                            end_byte, write_mode, digesters)
 
   def _get_output(self, digesters):
-    if hash_util.HashAlgorithm.CRC32C not in digesters:
-      return None
+    messages = []
+    if hash_util.HashAlgorithm.MD5 in digesters:
+      md5_digest = hash_util.get_base64_hash_digest_string(
+          digesters[hash_util.HashAlgorithm.MD5])
+      messages.append(task.Message(topic=task.Topic.MD5, payload=md5_digest))
 
-    crc32c_checksum = crc32c.get_checksum(
-        digesters[hash_util.HashAlgorithm.CRC32C])
-    return task.Output(
-        additional_task_iterators=None,
-        messages=[
-            task.Message(
-                topic=task.Topic.CRC32C,
-                payload={
-                    'component_number': self._component_number,
-                    'crc32c_checksum': crc32c_checksum,
-                    'length': self._length,
-                })
-        ])
+    if hash_util.HashAlgorithm.CRC32C in digesters:
+      crc32c_checksum = crc32c.get_checksum(
+          digesters[hash_util.HashAlgorithm.CRC32C])
+      messages.append(
+          task.Message(
+              topic=task.Topic.CRC32C,
+              payload={
+                  'component_number': self._component_number,
+                  'crc32c_checksum': crc32c_checksum,
+                  'length': self._length,
+              }))
+
+    return task.Output(additional_task_iterators=None, messages=messages)
 
   def _perform_component_download(self, request_config, progress_callback,
                                   digesters):
@@ -338,3 +349,4 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
     else:
       self._perform_one_shot_download(request_config, progress_callback,
                                       digesters)
+    return self._get_output(digesters)

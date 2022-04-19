@@ -570,13 +570,13 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  ORGANIZATIONS_SENSEPROFILES = (
-      'organizations.senseProfiles',
+  ORGANIZATIONS_SECURITYPROFILES = (
+      'organizations.securityProfiles',
       '{+name}',
       {
           '':
-              'organizations/{organizationsId}/senseProfiles/'
-              '{senseProfilesId}',
+              'organizations/{organizationsId}/securityProfiles/'
+              '{securityProfilesId}',
       },
       ['name'],
       True

@@ -80,6 +80,33 @@ def ResolveSslCertificates(args, ssl_certificate_arg, target_https_proxy_ref,
   return ssl_certificate_arg.ResolveAsResource(args, resources)
 
 
+def ResolveSslPolicy(args, ssl_policy_arg, target_https_proxy_ref, resources):
+  """Parses the SSL policies that are pointed to by a Target HTTPS Proxy from args.
+
+  This function handles parsing regional/global SSL policies that are
+  pointed to by a regional/global Target HTTPS Proxy.
+
+  Args:
+    args: The arguments provided to the target_https_proxies command.
+    ssl_policy_arg: The ResourceArgument specification for the ssl_policies
+      argument.
+    target_https_proxy_ref: The resource reference to the Target HTTPS Proxy.
+      This is obtained by parsing the Target HTTPS Proxy arguments provided.
+    resources: ComputeApiHolder resources.
+
+  Returns:
+    Returns the SSL policy resource
+  """
+
+  if IsRegionalTargetHttpsProxiesRef(target_https_proxy_ref):
+    if not getattr(args, 'ssl_policy_region', None):
+      args.ssl_policy_region = target_https_proxy_ref.region
+  else:
+    if not getattr(args, 'global_ssl_policy', None):
+      args.global_ssl_policy = bool(args.ssl_policy)
+  return ssl_policy_arg.ResolveAsResource(args, resources)
+
+
 def IsRegionalTargetHttpsProxiesRef(target_https_proxy_ref):
   """Returns True if the Target HTTPS Proxy reference is regional."""
 

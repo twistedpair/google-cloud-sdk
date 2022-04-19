@@ -15,6 +15,28 @@ from apitools.base.py import extra_types
 package = 'baremetalsolution'
 
 
+class AllocateLunsRequest(_messages.Message):
+  r"""Message for creating Luns for Volume.
+
+  Fields:
+    lunRanges: Required. LUN ranges to be allocated.
+  """
+
+  lunRanges = _messages.MessageField('AllocateLunsRequestLunRange', 1, repeated=True)
+
+
+class AllocateLunsRequestLunRange(_messages.Message):
+  r"""A LUN(Logical Unit Number) range.
+
+  Fields:
+    quantity: Number of LUNs to create.
+    sizeGb: The requested size of each LUN, in GB.
+  """
+
+  quantity = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  sizeGb = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
 class AllowedClient(_messages.Message):
   r"""Represents an 'access point' for the share.
 
@@ -56,6 +78,17 @@ class AllowedClient(_messages.Message):
   shareIp = _messages.StringField(7)
 
 
+class AttachVolumeRequest(_messages.Message):
+  r"""Message for attaching Volume to an instance. All Luns of the Volume will
+  be attached.
+
+  Fields:
+    volume: Required. Name of the Volume to attach.
+  """
+
+  volume = _messages.StringField(1)
+
+
 class BaremetalsolutionProjectsLocationsGetRequest(_messages.Message):
   r"""A BaremetalsolutionProjectsLocationsGetRequest object.
 
@@ -64,6 +97,45 @@ class BaremetalsolutionProjectsLocationsGetRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class BaremetalsolutionProjectsLocationsInstanceProvisioningSettingsFetchRequest(_messages.Message):
+  r"""A
+  BaremetalsolutionProjectsLocationsInstanceProvisioningSettingsFetchRequest
+  object.
+
+  Fields:
+    location: Required. The parent project and location containing the
+      ProvisioningSettings.
+  """
+
+  location = _messages.StringField(1, required=True)
+
+
+class BaremetalsolutionProjectsLocationsInstancesAttachVolumeRequest(_messages.Message):
+  r"""A BaremetalsolutionProjectsLocationsInstancesAttachVolumeRequest object.
+
+  Fields:
+    attachVolumeRequest: A AttachVolumeRequest resource to be passed as the
+      request body.
+    instance: Required. Name of the instance.
+  """
+
+  attachVolumeRequest = _messages.MessageField('AttachVolumeRequest', 1)
+  instance = _messages.StringField(2, required=True)
+
+
+class BaremetalsolutionProjectsLocationsInstancesDetachVolumeRequest(_messages.Message):
+  r"""A BaremetalsolutionProjectsLocationsInstancesDetachVolumeRequest object.
+
+  Fields:
+    detachVolumeRequest: A DetachVolumeRequest resource to be passed as the
+      request body.
+    instance: Required. Name of the instance.
+  """
+
+  detachVolumeRequest = _messages.MessageField('DetachVolumeRequest', 1)
+  instance = _messages.StringField(2, required=True)
 
 
 class BaremetalsolutionProjectsLocationsInstancesDisableInteractiveSerialConsoleRequest(_messages.Message):
@@ -133,7 +205,7 @@ class BaremetalsolutionProjectsLocationsInstancesPatchRequest(_messages.Message)
       https://cloud.google.com/apis/design/resource_names. Format:
       `projects/{project}/locations/{location}/instances/{instance}`
     updateMask: The list of fields to update. The only currently supported
-      fields are: `labels`
+      fields are: `labels` `hyperthreading_enabled`
   """
 
   instance = _messages.MessageField('Instance', 1)
@@ -165,6 +237,19 @@ class BaremetalsolutionProjectsLocationsInstancesStartRequest(_messages.Message)
 
   name = _messages.StringField(1, required=True)
   startInstanceRequest = _messages.MessageField('StartInstanceRequest', 2)
+
+
+class BaremetalsolutionProjectsLocationsInstancesStopRequest(_messages.Message):
+  r"""A BaremetalsolutionProjectsLocationsInstancesStopRequest object.
+
+  Fields:
+    name: Required. Name of the resource.
+    stopInstanceRequest: A StopInstanceRequest resource to be passed as the
+      request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  stopInstanceRequest = _messages.MessageField('StopInstanceRequest', 2)
 
 
 class BaremetalsolutionProjectsLocationsListRequest(_messages.Message):
@@ -485,6 +570,41 @@ class BaremetalsolutionProjectsLocationsSshKeysListRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
 
 
+class BaremetalsolutionProjectsLocationsVolumesAllocateLunsRequest(_messages.Message):
+  r"""A BaremetalsolutionProjectsLocationsVolumesAllocateLunsRequest object.
+
+  Fields:
+    allocateLunsRequest: A AllocateLunsRequest resource to be passed as the
+      request body.
+    parent: Required. Parent volume.
+  """
+
+  allocateLunsRequest = _messages.MessageField('AllocateLunsRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class BaremetalsolutionProjectsLocationsVolumesCreateRequest(_messages.Message):
+  r"""A BaremetalsolutionProjectsLocationsVolumesCreateRequest object.
+
+  Fields:
+    parent: Required. The parent project and location.
+    volume: A Volume resource to be passed as the request body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  volume = _messages.MessageField('Volume', 2)
+
+
+class BaremetalsolutionProjectsLocationsVolumesDeleteRequest(_messages.Message):
+  r"""A BaremetalsolutionProjectsLocationsVolumesDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the Volume to delete.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class BaremetalsolutionProjectsLocationsVolumesGetRequest(_messages.Message):
   r"""A BaremetalsolutionProjectsLocationsVolumesGetRequest object.
 
@@ -510,6 +630,16 @@ class BaremetalsolutionProjectsLocationsVolumesListRequest(_messages.Message):
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
+
+
+class BaremetalsolutionProjectsLocationsVolumesLunsDeleteRequest(_messages.Message):
+  r"""A BaremetalsolutionProjectsLocationsVolumesLunsDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the Lun to delete.
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class BaremetalsolutionProjectsLocationsVolumesLunsGetRequest(_messages.Message):
@@ -621,6 +751,17 @@ class BaremetalsolutionProjectsLocationsVolumesSnapshotsRestoreVolumeSnapshotReq
   volumeSnapshot = _messages.StringField(2, required=True)
 
 
+class DetachVolumeRequest(_messages.Message):
+  r"""Message for detaching Volume to an instance. All Luns of the Volume will
+  be attached.
+
+  Fields:
+    volume: Required. Name of the Volume to detach from.
+  """
+
+  volume = _messages.StringField(1)
+
+
 class DisableInteractiveSerialConsoleRequest(_messages.Message):
   r"""Message for disabling the interactive serial console on an instance."""
 
@@ -636,6 +777,16 @@ class Empty(_messages.Message):
 
 class EnableInteractiveSerialConsoleRequest(_messages.Message):
   r"""Message for enabling the interactive serial console on an instance."""
+
+
+class FetchInstanceProvisioningSettingsResponse(_messages.Message):
+  r"""Response with all provisioning settings.
+
+  Fields:
+    images: The OS images available.
+  """
+
+  images = _messages.MessageField('OSImage', 1, repeated=True)
 
 
 class Instance(_messages.Message):
@@ -665,6 +816,7 @@ class Instance(_messages.Message):
       https://cloud.google.com/apis/design/resource_names. Format:
       `projects/{project}/locations/{location}/instances/{instance}`
     networks: List of networks associated with this server.
+    osImage: The OS image currently installed on the server.
     state: The state of the server.
     updateTime: Output only. Update a time stamp.
   """
@@ -716,8 +868,9 @@ class Instance(_messages.Message):
   machineType = _messages.StringField(7)
   name = _messages.StringField(8)
   networks = _messages.MessageField('Network', 9, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  updateTime = _messages.StringField(11)
+  osImage = _messages.StringField(10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  updateTime = _messages.StringField(12)
 
 
 class InstanceConfig(_messages.Message):
@@ -1008,6 +1161,36 @@ class Location(_messages.Message):
   locationId = _messages.StringField(3)
   metadata = _messages.MessageField('MetadataValue', 4)
   name = _messages.StringField(5)
+
+
+class LogicalInterface(_messages.Message):
+  r"""Logical interface.
+
+  Enums:
+    TypeValueValuesEnum: Interface type.
+
+  Fields:
+    name: Interface name. This is not a globally unique identifier. Name is
+      unique only inside the ServerNetworkTemplate.
+    required: If true, interface must have network connected.
+    type: Interface type.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Interface type.
+
+    Values:
+      INTERFACE_TYPE_UNSPECIFIED: Unspecified value.
+      BOND: Bond interface type.
+      NIC: NIC interface ytpe.
+    """
+    INTERFACE_TYPE_UNSPECIFIED = 0
+    BOND = 1
+    NIC = 2
+
+  name = _messages.StringField(1)
+  required = _messages.BooleanField(2)
+  type = _messages.EnumField('TypeValueValuesEnum', 3)
 
 
 class Lun(_messages.Message):
@@ -1397,6 +1580,27 @@ class NfsShare(_messages.Message):
   volume = _messages.StringField(6)
 
 
+class OSImage(_messages.Message):
+  r"""Operation System image.
+
+  Fields:
+    applicableInstanceTypes: Instance types this image is applicable to.
+      [Available types](https://cloud.google.com/bare-metal/docs/bms-
+      planning#server_configurations)
+    code: OS Image code.
+    description: OS Image description.
+    name: Output only. OS Image's unique name.
+    supportedNetworkTemplates: Network templates that can be used with this OS
+      Image.
+  """
+
+  applicableInstanceTypes = _messages.StringField(1, repeated=True)
+  code = _messages.StringField(2)
+  description = _messages.StringField(3)
+  name = _messages.StringField(4)
+  supportedNetworkTemplates = _messages.MessageField('ServerNetworkTemplate', 5, repeated=True)
+
+
 class Operation(_messages.Message):
   r"""This resource represents a long-running operation that is the result of
   a network API call.
@@ -1537,10 +1741,22 @@ class ProvisioningConfig(_messages.Message):
       DRAFT: ProvisioningConfig is a draft and can be freely modified.
       SUBMITTED: ProvisioningConfig was already submitted and cannot be
         modified.
+      PROVISIONING: ProvisioningConfig was in the provisioning state.
+        Initially this state comes from the work order table in big query when
+        SNOW is used. Later this field can be set by the work order API.
+      PROVISIONED: ProvisioningConfig was provisioned, meaning the resources
+        exist.
+      VALIDATED: ProvisioningConfig was validated. A validation tool will be
+        run to set this state.
+      CANCELLED: ProvisioningConfig was canceled.
     """
     STATE_UNSPECIFIED = 0
     DRAFT = 1
     SUBMITTED = 2
+    PROVISIONING = 3
+    PROVISIONED = 4
+    VALIDATED = 5
+    CANCELLED = 6
 
   cloudConsoleUri = _messages.StringField(1)
   email = _messages.StringField(2)
@@ -1645,6 +1861,20 @@ class Schedule(_messages.Message):
   crontabSpec = _messages.StringField(1)
   prefix = _messages.StringField(2)
   retentionCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
+class ServerNetworkTemplate(_messages.Message):
+  r"""Network template.
+
+  Fields:
+    applicableInstanceTypes: Instance types this template is applicable to.
+    logicalInterfaces: Logical interfaces.
+    name: Output only. Template's unique name.
+  """
+
+  applicableInstanceTypes = _messages.StringField(1, repeated=True)
+  logicalInterfaces = _messages.MessageField('LogicalInterface', 2, repeated=True)
+  name = _messages.StringField(3)
 
 
 class SnapshotReservationDetail(_messages.Message):
@@ -1853,6 +2083,10 @@ class Status(_messages.Message):
   message = _messages.StringField(3)
 
 
+class StopInstanceRequest(_messages.Message):
+  r"""Message requesting to stop a server."""
+
+
 class SubmitProvisioningConfigRequest(_messages.Message):
   r"""Request for SubmitProvisioningConfig.
 
@@ -1941,6 +2175,8 @@ class Volume(_messages.Message):
       space reserved for snapshots. This size might be different than the
       requested size if the storage volume has been configured with auto grow
       or auto shrink.
+    emergencySizeGib: Additional emergency size that was requested for this
+      Volume, in GiB. current_size_gib includes this value.
     id: An identifier for the `Volume`, generated by the backend.
     labels: Labels as key value pairs.
     name: Output only. The resource name of this `Volume`. Resource names are
@@ -2028,17 +2264,18 @@ class Volume(_messages.Message):
 
   autoGrownSizeGib = _messages.IntegerField(1)
   currentSizeGib = _messages.IntegerField(2)
-  id = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  remainingSpaceGib = _messages.IntegerField(6)
-  requestedSizeGib = _messages.IntegerField(7)
-  snapshotAutoDeleteBehavior = _messages.EnumField('SnapshotAutoDeleteBehaviorValueValuesEnum', 8)
-  snapshotEnabled = _messages.BooleanField(9)
-  snapshotReservationDetail = _messages.MessageField('SnapshotReservationDetail', 10)
-  snapshotSchedulePolicy = _messages.StringField(11)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
-  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 13)
+  emergencySizeGib = _messages.IntegerField(3)
+  id = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  remainingSpaceGib = _messages.IntegerField(7)
+  requestedSizeGib = _messages.IntegerField(8)
+  snapshotAutoDeleteBehavior = _messages.EnumField('SnapshotAutoDeleteBehaviorValueValuesEnum', 9)
+  snapshotEnabled = _messages.BooleanField(10)
+  snapshotReservationDetail = _messages.MessageField('SnapshotReservationDetail', 11)
+  snapshotSchedulePolicy = _messages.StringField(12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 14)
 
 
 class VolumeConfig(_messages.Message):

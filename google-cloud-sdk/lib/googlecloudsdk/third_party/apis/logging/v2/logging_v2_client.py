@@ -44,6 +44,7 @@ class LoggingV2(base_api.BaseApiClient):
     self.billingAccounts_buckets = self.BillingAccountsBucketsService(self)
     self.billingAccounts_exclusions = self.BillingAccountsExclusionsService(self)
     self.billingAccounts_locations_buckets_links = self.BillingAccountsLocationsBucketsLinksService(self)
+    self.billingAccounts_locations_buckets_views_logs = self.BillingAccountsLocationsBucketsViewsLogsService(self)
     self.billingAccounts_locations_buckets_views = self.BillingAccountsLocationsBucketsViewsService(self)
     self.billingAccounts_locations_buckets = self.BillingAccountsLocationsBucketsService(self)
     self.billingAccounts_locations_operations = self.BillingAccountsLocationsOperationsService(self)
@@ -56,6 +57,7 @@ class LoggingV2(base_api.BaseApiClient):
     self.exclusions = self.ExclusionsService(self)
     self.folders_exclusions = self.FoldersExclusionsService(self)
     self.folders_locations_buckets_links = self.FoldersLocationsBucketsLinksService(self)
+    self.folders_locations_buckets_views_logs = self.FoldersLocationsBucketsViewsLogsService(self)
     self.folders_locations_buckets_views = self.FoldersLocationsBucketsViewsService(self)
     self.folders_locations_buckets = self.FoldersLocationsBucketsService(self)
     self.folders_locations_operations = self.FoldersLocationsOperationsService(self)
@@ -72,6 +74,7 @@ class LoggingV2(base_api.BaseApiClient):
     self.monitoredResourceDescriptors = self.MonitoredResourceDescriptorsService(self)
     self.organizations_exclusions = self.OrganizationsExclusionsService(self)
     self.organizations_locations_buckets_links = self.OrganizationsLocationsBucketsLinksService(self)
+    self.organizations_locations_buckets_views_logs = self.OrganizationsLocationsBucketsViewsLogsService(self)
     self.organizations_locations_buckets_views = self.OrganizationsLocationsBucketsViewsService(self)
     self.organizations_locations_buckets = self.OrganizationsLocationsBucketsService(self)
     self.organizations_locations_operations = self.OrganizationsLocationsOperationsService(self)
@@ -81,6 +84,7 @@ class LoggingV2(base_api.BaseApiClient):
     self.organizations = self.OrganizationsService(self)
     self.projects_exclusions = self.ProjectsExclusionsService(self)
     self.projects_locations_buckets_links = self.ProjectsLocationsBucketsLinksService(self)
+    self.projects_locations_buckets_views_logs = self.ProjectsLocationsBucketsViewsLogsService(self)
     self.projects_locations_buckets_views = self.ProjectsLocationsBucketsViewsService(self)
     self.projects_locations_buckets = self.ProjectsLocationsBucketsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
@@ -436,6 +440,43 @@ class LoggingV2(base_api.BaseApiClient):
         request_field='',
         request_type_name='LoggingBillingAccountsLocationsBucketsLinksListRequest',
         response_type_name='ListLinksResponse',
+        supports_download=False,
+    )
+
+  class BillingAccountsLocationsBucketsViewsLogsService(base_api.BaseApiService):
+    """Service class for the billingAccounts_locations_buckets_views_logs resource."""
+
+    _NAME = 'billingAccounts_locations_buckets_views_logs'
+
+    def __init__(self, client):
+      super(LoggingV2.BillingAccountsLocationsBucketsViewsLogsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists the logs in projects, organizations, folders, or billing accounts. Only logs that have entries are listed.
+
+      Args:
+        request: (LoggingBillingAccountsLocationsBucketsViewsLogsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListLogsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/billingAccounts/{billingAccountsId}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}/logs',
+        http_method='GET',
+        method_id='logging.billingAccounts.locations.buckets.views.logs.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken', 'resourceNames'],
+        relative_path='v2/{+parent}/logs',
+        request_field='',
+        request_type_name='LoggingBillingAccountsLocationsBucketsViewsLogsListRequest',
+        response_type_name='ListLogsResponse',
         supports_download=False,
     )
 
@@ -1712,6 +1753,43 @@ class LoggingV2(base_api.BaseApiClient):
         request_field='',
         request_type_name='LoggingFoldersLocationsBucketsLinksListRequest',
         response_type_name='ListLinksResponse',
+        supports_download=False,
+    )
+
+  class FoldersLocationsBucketsViewsLogsService(base_api.BaseApiService):
+    """Service class for the folders_locations_buckets_views_logs resource."""
+
+    _NAME = 'folders_locations_buckets_views_logs'
+
+    def __init__(self, client):
+      super(LoggingV2.FoldersLocationsBucketsViewsLogsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists the logs in projects, organizations, folders, or billing accounts. Only logs that have entries are listed.
+
+      Args:
+        request: (LoggingFoldersLocationsBucketsViewsLogsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListLogsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/folders/{foldersId}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}/logs',
+        http_method='GET',
+        method_id='logging.folders.locations.buckets.views.logs.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken', 'resourceNames'],
+        relative_path='v2/{+parent}/logs',
+        request_field='',
+        request_type_name='LoggingFoldersLocationsBucketsViewsLogsListRequest',
+        response_type_name='ListLogsResponse',
         supports_download=False,
     )
 
@@ -3467,6 +3545,43 @@ class LoggingV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class OrganizationsLocationsBucketsViewsLogsService(base_api.BaseApiService):
+    """Service class for the organizations_locations_buckets_views_logs resource."""
+
+    _NAME = 'organizations_locations_buckets_views_logs'
+
+    def __init__(self, client):
+      super(LoggingV2.OrganizationsLocationsBucketsViewsLogsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists the logs in projects, organizations, folders, or billing accounts. Only logs that have entries are listed.
+
+      Args:
+        request: (LoggingOrganizationsLocationsBucketsViewsLogsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListLogsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}/logs',
+        http_method='GET',
+        method_id='logging.organizations.locations.buckets.views.logs.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken', 'resourceNames'],
+        relative_path='v2/{+parent}/logs',
+        request_field='',
+        request_type_name='LoggingOrganizationsLocationsBucketsViewsLogsListRequest',
+        response_type_name='ListLogsResponse',
+        supports_download=False,
+    )
+
   class OrganizationsLocationsBucketsViewsService(base_api.BaseApiService):
     """Service class for the organizations_locations_buckets_views resource."""
 
@@ -4553,6 +4668,43 @@ class LoggingV2(base_api.BaseApiClient):
         request_field='',
         request_type_name='LoggingProjectsLocationsBucketsLinksListRequest',
         response_type_name='ListLinksResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsBucketsViewsLogsService(base_api.BaseApiService):
+    """Service class for the projects_locations_buckets_views_logs resource."""
+
+    _NAME = 'projects_locations_buckets_views_logs'
+
+    def __init__(self, client):
+      super(LoggingV2.ProjectsLocationsBucketsViewsLogsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists the logs in projects, organizations, folders, or billing accounts. Only logs that have entries are listed.
+
+      Args:
+        request: (LoggingProjectsLocationsBucketsViewsLogsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListLogsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}/logs',
+        http_method='GET',
+        method_id='logging.projects.locations.buckets.views.logs.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken', 'resourceNames'],
+        relative_path='v2/{+parent}/logs',
+        request_field='',
+        request_type_name='LoggingProjectsLocationsBucketsViewsLogsListRequest',
+        response_type_name='ListLogsResponse',
         supports_download=False,
     )
 

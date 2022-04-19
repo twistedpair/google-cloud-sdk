@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import enum
+import os
 
 from googlecloudsdk.core.util import debug_output
 
@@ -160,7 +161,8 @@ class _UserRequestArgs:
                resource_args=None):
     """Sets properties."""
     self.gzip_in_flight = gzip_in_flight
-    self.manifest_path = manifest_path
+    self.manifest_path = (
+        os.path.expanduser(manifest_path) if manifest_path else None)
     self.max_bytes_per_call = max_bytes_per_call
     self.no_clobber = no_clobber
     self.precondition_generation_match = precondition_generation_match

@@ -140,7 +140,7 @@ class AssuredworkloadsV1beta1(base_api.BaseApiClient):
         method_id='assuredworkloads.organizations.locations.workloads.organizations.locations.workloads.analyzeWorkloadMove',
         ordered_params=['source', 'target'],
         path_params=['source', 'target'],
-        query_params=[],
+        query_params=['project'],
         relative_path='v1beta1/{+source}/{+target}:analyzeWorkloadMove',
         request_field='',
         request_type_name='AssuredworkloadsOrganizationsLocationsWorkloadsOrganizationsLocationsWorkloadsAnalyzeWorkloadMoveRequest',

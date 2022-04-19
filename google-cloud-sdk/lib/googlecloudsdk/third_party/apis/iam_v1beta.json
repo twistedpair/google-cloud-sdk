@@ -429,7 +429,7 @@
           "type": "string"
         },
         "member": {
-          "description": "A single identity requesting access for a Cloud Platform resource. Follows the same format of Binding.members. Required",
+          "description": "A single identity requesting access for a Google Cloud resource. Follows the same format of Binding.members. Required",
           "type": "string"
         },
         "condition": {

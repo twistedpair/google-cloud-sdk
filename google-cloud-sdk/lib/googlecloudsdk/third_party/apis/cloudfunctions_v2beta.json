@@ -196,7 +196,7 @@
       "type": "object",
       "properties": {
         "policy": {
-          "description": "REQUIRED: The complete policy to be applied to the `resource`. The size of the policy is limited to a few 10s of KB. An empty policy is a valid policy but certain Cloud Platform services (such as Projects) might reject them.",
+          "description": "REQUIRED: The complete policy to be applied to the `resource`. The size of the policy is limited to a few 10s of KB. An empty policy is a valid policy but certain Google Cloud services (such as Projects) might reject them.",
           "$ref": "Policy"
         },
         "updateMask": {
@@ -247,7 +247,7 @@
           "type": "string"
         },
         "members": {
-          "description": "Specifies the principals requesting access for a Cloud Platform resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
+          "description": "Specifies the principals requesting access for a Google Cloud resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
           "type": "array",
           "items": {
             "type": "string"
@@ -336,7 +336,7 @@
       "type": "object",
       "properties": {
         "permissions": {
-          "description": "The set of permissions to check for the `resource`. Permissions with wildcards (such as '*' or 'storage.*') are not allowed. For more information see [IAM Overview](https:\/\/cloud.google.com\/iam\/docs\/overview#permissions).",
+          "description": "The set of permissions to check for the `resource`. Permissions with wildcards (such as `*` or `storage.*`) are not allowed. For more information see [IAM Overview](https:\/\/cloud.google.com\/iam\/docs\/overview#permissions).",
           "type": "array",
           "items": {
             "type": "string"
@@ -404,7 +404,7 @@
           "enumDescriptions": [
             "Not specified. Invalid state.",
             "Function has been successfully deployed and is serving.",
-            "Function deployment failed and the function isn\u2019t serving.",
+            "Function deployment failed and the function is not serving.",
             "Function is being created or updated.",
             "Function is being deleted.",
             "Function deployment failed and the function serving state is undefined. The function should be updated or deleted to move it out of this state."
@@ -645,11 +645,6 @@
           "readOnly": true,
           "type": "string"
         },
-        "gcfUri": {
-          "description": "Output only. URIs of the Service deployed",
-          "readOnly": true,
-          "type": "string"
-        },
         "serviceAccountEmail": {
           "description": "The email of the service's service account. If empty, defaults to `{project_number}-compute@developer.gserviceaccount.com`.",
           "type": "string"
@@ -657,6 +652,41 @@
         "allTrafficOnLatestRevision": {
           "description": "Whether 100% of traffic is routed to the latest revision. On CreateFunction and UpdateFunction, when set to true, the revision being deployed will serve 100% of traffic, ignoring any traffic split settings, if any. On GetFunction, true will be returned if the latest revision is serving 100% of traffic.",
           "type": "boolean"
+        },
+        "secretEnvironmentVariables": {
+          "description": "Secret environment variables configuration.",
+          "type": "array",
+          "items": {
+            "$ref": "SecretEnvVar"
+          }
+        },
+        "revision": {
+          "description": "Output only. The name of service revision.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "SecretEnvVar": {
+      "id": "SecretEnvVar",
+      "description": "Configuration for a secret environment variable. It has the information necessary to fetch the secret value from secret manager and expose it as an environment variable.",
+      "type": "object",
+      "properties": {
+        "key": {
+          "description": "Name of the environment variable.",
+          "type": "string"
+        },
+        "projectId": {
+          "description": "Project identifier (preferably project number but can also be the project ID) of the project that contains the secret. If not set, it will be populated with the function's project assuming that the secret exists in the same project as of the function.",
+          "type": "string"
+        },
+        "secret": {
+          "description": "Name of the secret in secret manager (not the full resource name).",
+          "type": "string"
+        },
+        "version": {
+          "description": "Version of the secret (version number or the string 'latest'). It is recommended to use a numeric version for secret environment variables as any updates to the secret value is not reflected until new instances start.",
+          "type": "string"
         }
       }
     },
@@ -706,6 +736,10 @@
             "RETRY_POLICY_DO_NOT_RETRY",
             "RETRY_POLICY_RETRY"
           ]
+        },
+        "channel": {
+          "description": "Optional. The name of the channel associated with the trigger in `projects\/{project}\/locations\/{location}\/channels\/{channel}` format. You must provide a channel to receive events from Eventarc SaaS partners.",
+          "type": "string"
         }
       }
     },
@@ -720,6 +754,10 @@
         },
         "value": {
           "description": "Required. The value for the attribute.",
+          "type": "string"
+        },
+        "operator": {
+          "description": "Optional. The operator used for matching the events with the value of the filter. If not specified, only events that have an exact key-value pair specified in the filter are matched. The only allowed value is `match-path-pattern`.",
           "type": "string"
         }
       }
@@ -843,6 +881,10 @@
           "description": "The name of the runtime, e.g., 'go113', 'nodejs12', etc.",
           "type": "string"
         },
+        "displayName": {
+          "description": "The user facing name, eg 'Go 1.13', 'Node.js 12', etc.",
+          "type": "string"
+        },
         "stage": {
           "description": "The stage of life this runtime is in, e.g., BETA, GA, etc.",
           "type": "string",
@@ -871,6 +913,20 @@
           "items": {
             "type": "string"
           }
+        },
+        "environment": {
+          "description": "The environment for the runtime.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified",
+            "Gen 1",
+            "Gen 2"
+          ],
+          "enum": [
+            "ENVIRONMENT_UNSPECIFIED",
+            "GEN_1",
+            "GEN_2"
+          ]
         }
       }
     },
@@ -1266,7 +1322,7 @@
                   "type": "string"
                 },
                 "filter": {
-                  "description": "A filter to narrow down results to a preferred subset. The filtering language accepts strings like \"displayName=tokyo\", and is documented in more detail in [AIP-160](https:\/\/google.aip.dev\/160).",
+                  "description": "A filter to narrow down results to a preferred subset. The filtering language accepts strings like `\"displayName=tokyo\"`, and is documented in more detail in [AIP-160](https:\/\/google.aip.dev\/160).",
                   "location": "query",
                   "type": "string"
                 },
@@ -1689,6 +1745,11 @@
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "The filter for Runtimes that match the filter expression, following the syntax outlined in https:\/\/google.aip.dev\/160.",
+                      "location": "query",
                       "type": "string"
                     }
                   },

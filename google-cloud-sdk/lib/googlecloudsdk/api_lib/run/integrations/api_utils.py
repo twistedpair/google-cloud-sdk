@@ -149,45 +149,42 @@ def CreateDeployment(client, app_ref, deployment, validate_only=False):
       )
 
 
-def WaitForApplicationOperation(client, operation, message):
+def WaitForApplicationOperation(client, operation):
   """Waits for an operation to complete.
 
   Args:
     client:  GAPIC API client, client used to make requests.
     operation: run_apps.v1alpha1.operation object to wait for.
-    message: str, the message to display during the wait.
 
   Returns:
     run_apps.v1alpha1.application, from operation.
   """
 
-  return _WaitForOperation(client, operation, message,
+  return _WaitForOperation(client, operation,
                            client.projects_locations_applications)
 
 
-def WaitForDeploymentOperation(client, operation, message):
+def WaitForDeploymentOperation(client, operation):
   """Waits for an operation to complete.
 
   Args:
     client:  GAPIC API client, client used to make requests.
     operation: run_apps.v1alpha1.operation, object to wait for.
-    message: str, message to display during the wait.
 
   Returns:
     run_apps.v1alpha1.Deployment, from operation.
   """
 
-  return _WaitForOperation(client, operation, message,
+  return _WaitForOperation(client, operation,
                            client.projects_locations_applications_deployments)
 
 
-def _WaitForOperation(client, operation, message, resource_type):
+def _WaitForOperation(client, operation, resource_type):
   """Waits for an operation to complete.
 
   Args:
     client:  GAPIC API client, client used to make requests.
     operation: run_apps.v1alpha1.operation, object to wait for.
-    message: str, the message to display during the wait.
     resource_type: type, the expected type of resource response
 
   Returns:
@@ -199,12 +196,11 @@ def _WaitForOperation(client, operation, message, resource_type):
       operation.name,
       collection='{}.projects.locations.operations'.format(API_NAME))
   try:
-    return waiter.WaitFor(
+    return poller.GetResult(waiter.PollUntilDone(
         poller,
         operation_ref,
-        message,
         max_wait_ms=_POLLING_TIMEOUT_MS,
-        wait_ceiling_ms=_RETRY_TIMEOUT_MS)
+        wait_ceiling_ms=_RETRY_TIMEOUT_MS))
   except waiter.OperationError:
     operation = poller.Poll(operation_ref)
     raise exceptions.IntegrationsOperationError(

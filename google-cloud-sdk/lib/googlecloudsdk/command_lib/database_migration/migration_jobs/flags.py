@@ -44,12 +44,15 @@ def AddDumpPathFlag(parser):
 
 def AddConnectivityGroupFlag(parser, required=False):
   """Adds connectivity flag group to the given parser."""
-  connectivity_group = parser.add_group(mutex=True)
+  connectivity_group = parser.add_group(
+      'The connectivity method used by the migration job. If not specified, uses the default IP allowlist method which will create a public IP when used with a Cloud SQL destination DB.',
+      mutex=True)
   connectivity_group.add_argument(
       '--peer-vpc',
       help='Name of the VPC network to peer with the Cloud SQL private network.'
   )
-  reverse_ssh_group = connectivity_group.add_group()
+  reverse_ssh_group = connectivity_group.add_group(
+      'Parameters for the reverse-SSH tunnel connectivity method.')
   reverse_ssh_group.add_argument(
       '--vm-ip',
       help='Bastion Virtual Machine IP.',

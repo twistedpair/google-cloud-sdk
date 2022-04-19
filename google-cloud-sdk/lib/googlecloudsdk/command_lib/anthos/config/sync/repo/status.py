@@ -496,7 +496,11 @@ class DescribeResult:
         return
     conditions = None
     if 'conditions' in resource:
-      conditions = resource['conditions']
+      conditions = resource['conditions'][:]
+    reconcile_condition = utils.GetActuationCondition(resource)
+    if reconcile_condition is not None:
+      conditions = [] if conditions is None else conditions
+      conditions.insert(0, reconcile_condition)
     source_hash = resource.get('sourceHash', '')
     mr = ManagedResource(resource['group'], resource['kind'],
                          resource['namespace'], resource['name'], source_hash,

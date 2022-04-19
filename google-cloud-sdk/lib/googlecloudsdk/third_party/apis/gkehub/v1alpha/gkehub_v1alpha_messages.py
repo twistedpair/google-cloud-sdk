@@ -184,7 +184,7 @@ class Binding(_messages.Message):
       policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
-    members: Specifies the principals requesting access for a Cloud Platform
+    members: Specifies the principals requesting access for a Google Cloud
       resource. `members` can have the following values: * `allUsers`: A
       special identifier that represents anyone who is on the internet; with
       or without a Google account. * `allAuthenticatedUsers`: A special
@@ -1325,7 +1325,8 @@ class Fleet(_messages.Message):
       + prod-fleet + xn--wlq33vhyw9jb \uff08Punycode form for
       "\u751f\u4ea7\u73af\u5883")
     managedNamespaces: Optional. If true, namespaces must be explicitly
-      declared in a `FleetNamespace` object in order to use Fleet Features.
+      declared in a `Namespace` object in order to use Fleet Features.
+      Deprecated, not included in final fleet namespaces design
     name: Output only. The full, unique resource name of this fleet in the
       format of `projects/{project}/locations/{location}/fleets/{fleet}`. Each
       GCP project can have at most one fleet resource, named "default".
@@ -1343,17 +1344,6 @@ class Fleet(_messages.Message):
   name = _messages.StringField(6)
   uid = _messages.StringField(7)
   updateTime = _messages.StringField(8)
-
-
-class FleetNamespace(_messages.Message):
-  r"""FleetNamespace represents a namespace across the Fleet
-
-  Fields:
-    name: The name for the Fleet Namespace `projects/{project}/locations/{loca
-      tion}/fleetNamespaces/{fleet_namespace}`
-  """
-
-  name = _messages.StringField(1)
 
 
 class GenerateConnectManifestResponse(_messages.Message):
@@ -1574,58 +1564,6 @@ class GkehubProjectsLocationsFeaturesTestIamPermissionsRequest(_messages.Message
 
   resource = _messages.StringField(1, required=True)
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
-
-
-class GkehubProjectsLocationsFleetNamespacesCreateRequest(_messages.Message):
-  r"""A GkehubProjectsLocationsFleetNamespacesCreateRequest object.
-
-  Fields:
-    fleetNamespace: A FleetNamespace resource to be passed as the request
-      body.
-    fleetNamespaceId: Required. Client chosen ID for the FleetNamespace.
-      `fleet_namespace_id` must be a valid RFC 1123 compliant DNS label: 1. At
-      most 63 characters in length 2. It must consist of lower case
-      alphanumeric characters or `-` 3. It must start and end with an
-      alphanumeric character Which can be expressed as the regex:
-      `[a-z0-9]([-a-z0-9]*[a-z0-9])?`, with a maximum length of 63 characters.
-    parent: Required. The parent (project and location) where the
-      FleetNamespace will be created. Specified in the format
-      `projects/*/locations/*`.
-  """
-
-  fleetNamespace = _messages.MessageField('FleetNamespace', 1)
-  fleetNamespaceId = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-
-
-class GkehubProjectsLocationsFleetNamespacesDeleteRequest(_messages.Message):
-  r"""A GkehubProjectsLocationsFleetNamespacesDeleteRequest object.
-
-  Fields:
-    name: Required. The FleetNamespace resource name in the format
-      `projects/*/locations/*/fleetNamespaces/*`.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class GkehubProjectsLocationsFleetNamespacesListRequest(_messages.Message):
-  r"""A GkehubProjectsLocationsFleetNamespacesListRequest object.
-
-  Fields:
-    pageSize: Optional. When requesting a 'page' of resources, `page_size`
-      specifies number of resources to return. If unspecified or set to 0, all
-      resources will be returned.
-    pageToken: Optional. Token returned by previous call to `ListFeatures`
-      which specifies the position in the list from where to continue listing
-      the resources.
-    parent: Required. The parent (project and location) where the Features
-      will be listed. Specified in the format `projects/*/locations/*`.
-  """
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
 
 
 class GkehubProjectsLocationsFleetsCreateRequest(_messages.Message):
@@ -1963,6 +1901,82 @@ class GkehubProjectsLocationsMembershipsTestIamPermissionsRequest(_messages.Mess
 
   resource = _messages.StringField(1, required=True)
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class GkehubProjectsLocationsNamespacesCreateRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsNamespacesCreateRequest object.
+
+  Fields:
+    namespace: A Namespace resource to be passed as the request body.
+    namespaceId: Required. Client chosen ID for the Namespace. `namespace_id`
+      must be a valid RFC 1123 compliant DNS label: 1. At most 63 characters
+      in length 2. It must consist of lower case alphanumeric characters or
+      `-` 3. It must start and end with an alphanumeric character Which can be
+      expressed as the regex: `[a-z0-9]([-a-z0-9]*[a-z0-9])?`, with a maximum
+      length of 63 characters.
+    parent: Required. The parent (project and location) where the Namespace
+      will be created. Specified in the format `projects/*/locations/*`.
+  """
+
+  namespace = _messages.MessageField('Namespace', 1)
+  namespaceId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class GkehubProjectsLocationsNamespacesDeleteRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsNamespacesDeleteRequest object.
+
+  Fields:
+    name: Required. The Namespace resource name in the format
+      `projects/*/locations/*/namespaces/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class GkehubProjectsLocationsNamespacesGetRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsNamespacesGetRequest object.
+
+  Fields:
+    name: Required. The Namespace resource name in the format
+      `projects/*/locations/*/namespaces/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class GkehubProjectsLocationsNamespacesListRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsNamespacesListRequest object.
+
+  Fields:
+    pageSize: Optional. When requesting a 'page' of resources, `page_size`
+      specifies number of resources to return. If unspecified or set to 0, all
+      resources will be returned.
+    pageToken: Optional. Token returned by previous call to `ListFeatures`
+      which specifies the position in the list from where to continue listing
+      the resources.
+    parent: Required. The parent (project and location) where the Features
+      will be listed. Specified in the format `projects/*/locations/*`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class GkehubProjectsLocationsNamespacesPatchRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsNamespacesPatchRequest object.
+
+  Fields:
+    name: The resource name for the namespace
+      `projects/{project}/locations/{location}/namespaces/{namespace}`
+    namespace: A Namespace resource to be passed as the request body.
+    updateMask: Required. The fields to be updated.
+  """
+
+  name = _messages.StringField(1, required=True)
+  namespace = _messages.MessageField('Namespace', 2)
+  updateMask = _messages.StringField(3)
 
 
 class GkehubProjectsLocationsOperationsCancelRequest(_messages.Message):
@@ -2408,20 +2422,6 @@ class ListFeaturesResponse(_messages.Message):
   resources = _messages.MessageField('Feature', 2, repeated=True)
 
 
-class ListFleetNamespacesResponse(_messages.Message):
-  r"""List of fleet namespaces.
-
-  Fields:
-    fleetNamespaces: The list of fleet namespaces
-    nextPageToken: A token to request the next page of resources from the
-      `ListFleetNamespaces` method. The value of an empty string means that
-      there are no more resources to return.
-  """
-
-  fleetNamespaces = _messages.MessageField('FleetNamespace', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
-
-
 class ListFleetsResponse(_messages.Message):
   r"""Response message for the `GkeHub.ListFleetsResponse` method.
 
@@ -2463,6 +2463,20 @@ class ListMembershipsResponse(_messages.Message):
   nextPageToken = _messages.StringField(1)
   resources = _messages.MessageField('Membership', 2, repeated=True)
   unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListNamespacesResponse(_messages.Message):
+  r"""List of fleet namespaces.
+
+  Fields:
+    namespaces: The list of fleet namespaces
+    nextPageToken: A token to request the next page of resources from the
+      `ListNamespaces` method. The value of an empty string means that there
+      are no more resources to return.
+  """
+
+  namespaces = _messages.MessageField('Namespace', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
 class ListOperationsResponse(_messages.Message):
@@ -2866,6 +2880,59 @@ class MultiClusterIngressFeatureSpec(_messages.Message):
 
   billing = _messages.EnumField('BillingValueValuesEnum', 1)
   configMembership = _messages.StringField(2)
+
+
+class Namespace(_messages.Message):
+  r"""Namespace represents a namespace across the Fleet
+
+  Fields:
+    createTime: Output only. When the namespace was created.
+    deleteTime: Output only. When the namespace was deleted.
+    name: The resource name for the namespace
+      `projects/{project}/locations/{location}/namespaces/{namespace}`
+    state: Output only. State of the namespace resource.
+    uid: Output only. Google-generated UUID for this resource. This is unique
+      across all namespace resources. If a namespace resource is deleted and
+      another resource with the same name is created, it gets a different uid.
+    updateTime: Output only. When the namespace was last updated.
+  """
+
+  createTime = _messages.StringField(1)
+  deleteTime = _messages.StringField(2)
+  name = _messages.StringField(3)
+  state = _messages.MessageField('NamespaceLifecycleState', 4)
+  uid = _messages.StringField(5)
+  updateTime = _messages.StringField(6)
+
+
+class NamespaceLifecycleState(_messages.Message):
+  r"""NamespaceLifecycleState describes the state of a Namespace resource.
+
+  Enums:
+    CodeValueValuesEnum: Output only. The current state of the Namespace
+      resource.
+
+  Fields:
+    code: Output only. The current state of the Namespace resource.
+  """
+
+  class CodeValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of the Namespace resource.
+
+    Values:
+      CODE_UNSPECIFIED: The code is not set.
+      CREATING: The namespace is being created.
+      READY: The namespace active.
+      DELETING: The namespace is being deleted.
+      UPDATING: The namespace is being updated.
+    """
+    CODE_UNSPECIFIED = 0
+    CREATING = 1
+    READY = 2
+    DELETING = 3
+    UPDATING = 4
+
+  code = _messages.EnumField('CodeValueValuesEnum', 1)
 
 
 class OnPremCluster(_messages.Message):
@@ -3802,8 +3869,8 @@ class SetIamPolicyRequest(_messages.Message):
   Fields:
     policy: REQUIRED: The complete policy to be applied to the `resource`. The
       size of the policy is limited to a few 10s of KB. An empty policy is a
-      valid policy but certain Cloud Platform services (such as Projects)
-      might reject them.
+      valid policy but certain Google Cloud services (such as Projects) might
+      reject them.
     updateMask: OPTIONAL: A FieldMask specifying which fields of the policy to
       modify. Only the fields in the mask will be modified. If no mask is
       provided, the following default mask is used: `paths: "bindings, etag"`
@@ -3916,7 +3983,7 @@ class TestIamPermissionsRequest(_messages.Message):
 
   Fields:
     permissions: The set of permissions to check for the `resource`.
-      Permissions with wildcards (such as '*' or 'storage.*') are not allowed.
+      Permissions with wildcards (such as `*` or `storage.*`) are not allowed.
       For more information see [IAM
       Overview](https://cloud.google.com/iam/docs/overview#permissions).
   """

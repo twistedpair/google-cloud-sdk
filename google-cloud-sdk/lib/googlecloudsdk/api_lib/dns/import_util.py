@@ -132,7 +132,7 @@ def _FilterOutRecord(name, rdtype, origin, replace_origin_ns=False):
 
   Args:
     name: string, The name of the resord set we are considering
-    rdtype: RDataType, type of Record we are considering approving.
+    rdtype: RDataType or string, type of Record we are considering approving.
     origin: Name, The origin domain of the zone we are considering
     replace_origin_ns: Bool, Whether origin NS records should be imported
 
@@ -202,11 +202,34 @@ def RecordSetsFromZoneFile(zone_file, domain, api_version='v1'):
   return record_sets
 
 
-def RecordSetsFromYamlFile(yaml_file, api_version='v1'):
+def _ToStandardEnumTypeSafe(string_type):
+  """Converts string_type to an RdataType enum value if it is a standard type.
+
+  Only standard record types can be converted to a RdataType, all other types
+  will cause an exception. This method allow getting the standard enum type if
+  available without throwing an exception if an extended type is provided.
+
+  Args:
+    string_type: [str] The record type as a string.
+
+  Returns:
+    The record type as an RdataType enum or None if the type is not a standard
+    DNS type.
+  """
+  if string_type in record_types.CLOUD_DNS_EXTENDED_TYPES:
+    return None
+  return rdatatype.from_text(string_type)
+
+
+def RecordSetsFromYamlFile(yaml_file,
+                           include_extended_records=False,
+                           api_version='v1'):
   """Returns record-sets read from the given yaml file.
 
   Args:
     yaml_file: file, A yaml file with records.
+    include_extended_records: [bool], If extended record should be included
+      (otherwise they are silently skipped).
     api_version: [str], the api version to use for creating the records.
 
   Returns:
@@ -220,8 +243,10 @@ def RecordSetsFromYamlFile(yaml_file, api_version='v1'):
 
   yaml_record_sets = yaml.load_all(yaml_file)
   for yaml_record_set in yaml_record_sets:
-    rdata_type = rdatatype.from_text(yaml_record_set['type'])
-    if rdata_type not in record_types.SUPPORTED_TYPES:
+    rdata_type = _ToStandardEnumTypeSafe(yaml_record_set['type'])
+    if rdata_type not in record_types.SUPPORTED_TYPES and (
+        not include_extended_records or
+        yaml_record_set['type'] not in record_types.CLOUD_DNS_EXTENDED_TYPES):
       continue
 
     record_set = messages.ResourceRecordSet()
@@ -346,18 +371,22 @@ def IsOnlySOAIncrement(change, api_version='v1'):
   Returns:
     True if the change only contains an SOA increment, False otherwise.
   """
-  return (
-      len(change.additions) == len(change.deletions) == 1 and
-      rdatatype.from_text(change.deletions[0].type) is rdatatype.SOA and
-      NextSOARecordSet(change.deletions[0], api_version) == change.additions[0])
+  return (len(change.additions) == len(change.deletions) == 1 and
+          _ToStandardEnumTypeSafe(change.deletions[0].type) is rdatatype.SOA and
+          NextSOARecordSet(change.deletions[0],
+                           api_version) == change.additions[0])
 
 
 def _NameAndType(record):
   return '{0} {1}'.format(record.name, record.type)
 
 
-def ComputeChange(current, to_be_imported, replace_all=False,
-                  origin=None, replace_origin_ns=False, api_version='v1'):
+def ComputeChange(current,
+                  to_be_imported,
+                  replace_all=False,
+                  origin=None,
+                  replace_origin_ns=False,
+                  api_version='v1'):
   """Returns a change for importing the given record-sets.
 
   Args:
@@ -393,7 +422,7 @@ def ComputeChange(current, to_be_imported, replace_all=False,
   for key in intersecting_keys:
     current_record = current[key]
     record_to_be_imported = to_be_imported[key]
-    rdtype = rdatatype.from_text(key[1])
+    rdtype = _ToStandardEnumTypeSafe(key[1])
     if not _FilterOutRecord(current_record.name,
                             rdtype,
                             origin,
@@ -409,7 +438,7 @@ def ComputeChange(current, to_be_imported, replace_all=False,
 
   for key in current_keys.difference(keys_to_be_imported):
     current_record = current[key]
-    rdtype = rdatatype.from_text(key[1])
+    rdtype = _ToStandardEnumTypeSafe(key[1])
     if rdtype is rdatatype.SOA:
       change.deletions.append(current_record)
       change.additions.append(NextSOARecordSet(current_record, api_version))

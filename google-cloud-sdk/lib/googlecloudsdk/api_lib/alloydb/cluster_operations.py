@@ -22,12 +22,13 @@ from googlecloudsdk.api_lib.alloydb import api_util
 from googlecloudsdk.api_lib.util import waiter
 
 
-def Await(op_ref, message, creates_resource=True):
+def Await(op_ref, message, release_track, creates_resource=True):
   """Waits for the given google.longrunning.Operation to complete.
 
   Args:
     op_ref: The operation to poll.
     message: String to display for default progress_tracker.
+    release_track: The API release track (e.g. ALPHA, BETA, etc.)
     creates_resource: Whether or not the operation creates a resource.
 
   Raises:
@@ -36,7 +37,7 @@ def Await(op_ref, message, creates_resource=True):
   Returns:
     The Operation or the Resource the Operation is associated with.
   """
-  client = api_util.AlloyDBClient(api_util.API_VERSION_DEFAULT)
+  client = api_util.AlloyDBClient(release_track)
   alloydb_client = client.alloydb_client
   if creates_resource:
     poller = waiter.CloudOperationPoller(

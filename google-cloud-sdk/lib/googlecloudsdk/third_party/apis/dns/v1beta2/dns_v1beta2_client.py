@@ -349,6 +349,32 @@ class DnsV1beta2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Getiampolicy(self, request, global_params=None):
+      r"""Getiampolicy method for the managedZones service.
+
+      Args:
+        request: (GetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1Policy) The response message.
+      """
+      config = self.GetMethodConfig('Getiampolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Getiampolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='dns.managedZones.getiampolicy',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path='managedZones/getiampolicy',
+        request_field='<request>',
+        request_type_name='GetIamPolicyRequest',
+        response_type_name='GoogleIamV1Policy',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""List method for the managedZones service.
 
@@ -398,6 +424,58 @@ class DnsV1beta2(base_api.BaseApiClient):
         request_field='managedZoneResource',
         request_type_name='DnsManagedZonesPatchRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Setiampolicy(self, request, global_params=None):
+      r"""Setiampolicy method for the managedZones service.
+
+      Args:
+        request: (SetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1Policy) The response message.
+      """
+      config = self.GetMethodConfig('Setiampolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Setiampolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='dns.managedZones.setiampolicy',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path='managedZones/setiampolicy',
+        request_field='<request>',
+        request_type_name='SetIamPolicyRequest',
+        response_type_name='GoogleIamV1Policy',
+        supports_download=False,
+    )
+
+    def Testiampermissions(self, request, global_params=None):
+      r"""Testiampermissions method for the managedZones service.
+
+      Args:
+        request: (TestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('Testiampermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Testiampermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='dns.managedZones.testiampermissions',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path='managedZones/testiampermissions',
+        request_field='<request>',
+        request_type_name='TestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 

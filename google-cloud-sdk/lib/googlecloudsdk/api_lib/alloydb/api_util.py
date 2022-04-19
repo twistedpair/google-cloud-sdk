@@ -19,16 +19,23 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.calliope import base
 from googlecloudsdk.core import resources
 
 # API version constants
 API_VERSION_DEFAULT = 'v1alpha1'
+VERSION_MAP = {
+    base.ReleaseTrack.ALPHA: 'v1alpha1',
+    base.ReleaseTrack.BETA: 'v1beta'
+}
 
 
 class AlloyDBClient(object):
   """Wrapper for alloydb API client and associated resources."""
 
-  def __init__(self, api_version):
+  def __init__(self, release_track):
+    api_version = VERSION_MAP[release_track]
+    self.release_track = release_track
     self.alloydb_client = apis.GetClientInstance('alloydb', api_version)
     self.alloydb_messages = self.alloydb_client.MESSAGES_MODULE
     self.resource_parser = resources.Registry()

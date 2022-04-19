@@ -122,7 +122,7 @@ class Binding(_messages.Message):
       policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
-    members: Specifies the principals requesting access for a Cloud Platform
+    members: Specifies the principals requesting access for a Google Cloud
       resource. `members` can have the following values: * `allUsers`: A
       special identifier that represents anyone who is on the internet; with
       or without a Google account. * `allAuthenticatedUsers`: A special
@@ -913,8 +913,8 @@ class SetIamPolicyRequest(_messages.Message):
   Fields:
     policy: REQUIRED: The complete policy to be applied to the `resource`. The
       size of the policy is limited to a few 10s of KB. An empty policy is a
-      valid policy but certain Cloud Platform services (such as Projects)
-      might reject them.
+      valid policy but certain Google Cloud services (such as Projects) might
+      reject them.
     updateMask: OPTIONAL: A FieldMask specifying which fields of the policy to
       modify. Only the fields in the mask will be modified. If no mask is
       provided, the following default mask is used: `paths: "bindings, etag"`
@@ -1071,7 +1071,7 @@ class TestIamPermissionsRequest(_messages.Message):
 
   Fields:
     permissions: The set of permissions to check for the `resource`.
-      Permissions with wildcards (such as '*' or 'storage.*') are not allowed.
+      Permissions with wildcards (such as `*` or `storage.*`) are not allowed.
       For more information see [IAM
       Overview](https://cloud.google.com/iam/docs/overview#permissions).
   """
@@ -1282,6 +1282,8 @@ class WorkstationConfig(_messages.Message):
       permission to pull the specified container image. If not set, VMs will
       run without a service account, in which case the image must be publicly
       accessible.
+    serviceAccountScopes: Scopes to grant to the service account. Various
+      scopes are automatically added based on feature usage.
     tags: Network tags to add to the Google Compute Engine machines backing
       the Workstations.
     uid: Output only. A system-assigned unique identified for this resource.
@@ -1327,9 +1329,10 @@ class WorkstationConfig(_messages.Message):
   persistentDirectories = _messages.MessageField('PersistentDirectory', 11, repeated=True)
   reconciling = _messages.BooleanField(12)
   serviceAccount = _messages.StringField(13)
-  tags = _messages.StringField(14, repeated=True)
-  uid = _messages.StringField(15)
-  updateTime = _messages.StringField(16)
+  serviceAccountScopes = _messages.StringField(14, repeated=True)
+  tags = _messages.StringField(15, repeated=True)
+  uid = _messages.StringField(16)
+  updateTime = _messages.StringField(17)
 
 
 class WorkstationsProjectsLocationsOperationsCancelRequest(_messages.Message):

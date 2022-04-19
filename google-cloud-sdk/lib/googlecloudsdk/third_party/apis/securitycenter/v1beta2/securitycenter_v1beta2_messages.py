@@ -597,6 +597,7 @@ class Finding(_messages.Message):
       https://cloud.google.com/apis/design/resource_names#relative_resource_na
       me Example: "organizations/{organization_id}/sources/{source_id}/finding
       s/{finding_id}"
+    nextSteps: Next steps associate to the finding.
     parent: The relative resource name of the source the finding belongs to.
       See: https://cloud.google.com/apis/design/resource_names#relative_resour
       ce_name This field is immutable after creation time. For example:
@@ -792,13 +793,14 @@ class Finding(_messages.Message):
   muteInitiator = _messages.StringField(13)
   muteUpdateTime = _messages.StringField(14)
   name = _messages.StringField(15)
-  parent = _messages.StringField(16)
-  resourceName = _messages.StringField(17)
-  securityMarks = _messages.MessageField('SecurityMarks', 18)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 19)
-  sourceProperties = _messages.MessageField('SourcePropertiesValue', 20)
-  state = _messages.EnumField('StateValueValuesEnum', 21)
-  vulnerability = _messages.MessageField('Vulnerability', 22)
+  nextSteps = _messages.StringField(16)
+  parent = _messages.StringField(17)
+  resourceName = _messages.StringField(18)
+  securityMarks = _messages.MessageField('SecurityMarks', 19)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 20)
+  sourceProperties = _messages.MessageField('SourcePropertiesValue', 21)
+  state = _messages.EnumField('StateValueValuesEnum', 22)
+  vulnerability = _messages.MessageField('Vulnerability', 23)
 
 
 class Folder(_messages.Message):
@@ -1495,6 +1497,7 @@ class MitreAttack(_messages.Message):
       EXPLOIT_PUBLIC_FACING_APPLICATION: T1190
       MODIFY_AUTHENTICATION_PROCESS: T1556
       DATA_DESTRUCTION: T1485
+      DOMAIN_POLICY_MODIFICATION: T1484
     """
     TECHNIQUE_UNSPECIFIED = 0
     ACTIVE_SCANNING = 1
@@ -1526,6 +1529,7 @@ class MitreAttack(_messages.Message):
     EXPLOIT_PUBLIC_FACING_APPLICATION = 27
     MODIFY_AUTHENTICATION_PROCESS = 28
     DATA_DESTRUCTION = 29
+    DOMAIN_POLICY_MODIFICATION = 30
 
   class PrimaryTacticValueValuesEnum(_messages.Enum):
     r"""The MITRE ATT&CK tactic most closely represented by this finding, if
@@ -1598,6 +1602,7 @@ class MitreAttack(_messages.Message):
       EXPLOIT_PUBLIC_FACING_APPLICATION: T1190
       MODIFY_AUTHENTICATION_PROCESS: T1556
       DATA_DESTRUCTION: T1485
+      DOMAIN_POLICY_MODIFICATION: T1484
     """
     TECHNIQUE_UNSPECIFIED = 0
     ACTIVE_SCANNING = 1
@@ -1629,6 +1634,7 @@ class MitreAttack(_messages.Message):
     EXPLOIT_PUBLIC_FACING_APPLICATION = 27
     MODIFY_AUTHENTICATION_PROCESS = 28
     DATA_DESTRUCTION = 29
+    DOMAIN_POLICY_MODIFICATION = 30
 
   additionalTactics = _messages.EnumField('AdditionalTacticsValueListEntryValuesEnum', 1, repeated=True)
   additionalTechniques = _messages.EnumField('AdditionalTechniquesValueListEntryValuesEnum', 2, repeated=True)

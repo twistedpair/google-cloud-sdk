@@ -187,13 +187,20 @@ def GetInstancePlacement(args):
     return _TenancyEnumMapper().GetEnumForChoice(args.instance_placement)
 
 
-def AddClearProxyConfig(parser):
+def AddClearProxyConfig(parser, noun):
+  """Adds flag for clearing the proxy configuration.
+
+  Args:
+    parser: The argparse.parser to add the arguments to.
+    noun: The resource type to which the flag is applicable.
+  """
+
   parser.add_argument(
       '--clear-proxy-config',
       action='store_true',
       default=None,
-      help=('Clear the proxy configuration, if any, associated with the '
-            'cluster.'))
+      help='Clear the proxy configuration, if any, associated with the '
+      '{}.'.format(noun))
 
 
 def AddProxySecretArn(parser, required=False):
@@ -224,11 +231,12 @@ def AddProxyConfig(parser):
   AddProxySecretVersionId(group, required=True)
 
 
-def AddProxyConfigForUpdate(parser):
+def AddProxyConfigForUpdate(parser, noun):
   """Adds proxy configuration flags for update.
 
   Args:
     parser: The argparse.parser to add the arguments to.
+    noun: The resource type to which the flags are applicable.
   """
 
   group = parser.add_group('Proxy config', mutex=True)
@@ -236,4 +244,4 @@ def AddProxyConfigForUpdate(parser):
                                        'parameters')
   AddProxySecretArn(update_proxy_group)
   AddProxySecretVersionId(update_proxy_group)
-  AddClearProxyConfig(group)
+  AddClearProxyConfig(group, noun)

@@ -81,7 +81,9 @@ Must enable node autoprovisioning to specify defaults for node autoprovisioning.
 
 BOTH_AUTOPROVISIONING_UPGRADE_SETTINGS_ERROR_MSG = """\
 Must specify both 'maxSurgeUpgrade' and 'maxUnavailableUpgrade' in \
-'upgradeSettings' in --autoprovisioning-config-file to set upgrade settings.
+'upgradeSettings' in --autoprovisioning-config-file, or both \
+'--autoprovisioning-max-surge-upgrade' and '--autoprovisioning-max-unavailable-upgrade' \
+from cmd argument to set a rolling update strategy.
 """
 
 BOTH_AUTOPROVISIONING_MANAGEMENT_SETTINGS_ERROR_MSG = """\
@@ -612,6 +614,10 @@ class CreateClusterOptions(object):
       enable_workload_config_audit=None,
       pod_autoscaling_direct_metrics_opt_in=None,
       enable_workload_vulnerability_scanning=None,
+      enable_autoprovisioning_rolling_update=None,
+      enable_autoprovisioning_blue_green_update=None,
+      autoprovisioning_standard_rollout_policy=None,
+      autoprovisioning_node_pool_soak_duration=None,
   ):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
@@ -773,6 +779,10 @@ class CreateClusterOptions(object):
     self.enable_workload_config_audit = enable_workload_config_audit
     self.pod_autoscaling_direct_metrics_opt_in = pod_autoscaling_direct_metrics_opt_in
     self.enable_workload_vulnerability_scanning = enable_workload_vulnerability_scanning
+    self.enable_autoprovisioning_rolling_update = enable_autoprovisioning_rolling_update
+    self.enable_autoprovisioning_blue_green_update = enable_autoprovisioning_blue_green_update
+    self.autoprovisioning_standard_rollout_policy = autoprovisioning_standard_rollout_policy
+    self.autoprovisioning_node_pool_soak_duration = autoprovisioning_node_pool_soak_duration
 
 
 class UpdateClusterOptions(object):
@@ -878,6 +888,10 @@ class UpdateClusterOptions(object):
       enable_workload_config_audit=None,
       pod_autoscaling_direct_metrics_opt_in=None,
       enable_workload_vulnerability_scanning=None,
+      enable_autoprovisioning_rolling_update=None,
+      enable_autoprovisioning_blue_green_update=None,
+      autoprovisioning_standard_rollout_policy=None,
+      autoprovisioning_node_pool_soak_duration=None,
   ):
     self.version = version
     self.update_master = bool(update_master)
@@ -978,6 +992,10 @@ class UpdateClusterOptions(object):
     self.enable_workload_config_audit = enable_workload_config_audit
     self.pod_autoscaling_direct_metrics_opt_in = pod_autoscaling_direct_metrics_opt_in
     self.enable_workload_vulnerability_scanning = enable_workload_vulnerability_scanning
+    self.enable_autoprovisioning_rolling_update = enable_autoprovisioning_rolling_update
+    self.enable_autoprovisioning_blue_green_update = enable_autoprovisioning_blue_green_update
+    self.autoprovisioning_standard_rollout_policy = autoprovisioning_standard_rollout_policy
+    self.autoprovisioning_node_pool_soak_duration = autoprovisioning_node_pool_soak_duration
 
 
 class SetMasterAuthOptions(object):
@@ -2238,10 +2256,14 @@ class APIAdapter(object):
         scopes = []
       management = None
       upgrade_settings = None
-      if max_surge_upgrade is not None or max_unavailable_upgrade is not None:
-        upgrade_settings = self.messages.UpgradeSettings()
-        upgrade_settings.maxUnavailable = max_unavailable_upgrade
-        upgrade_settings.maxSurge = max_surge_upgrade
+      if (max_surge_upgrade is not None or
+          max_unavailable_upgrade is not None or
+          options.enable_autoprovisioning_blue_green_update or
+          options.enable_autoprovisioning_rolling_update or
+          options.autoprovisioning_standard_rollout_policy is not None or
+          options.autoprovisioning_node_pool_soak_duration is not None):
+        upgrade_settings = self.UpdateUpgradeSettingsForNAP(
+            options, max_surge_upgrade, max_unavailable_upgrade)
       if enable_autorepair is not None or enable_autoupgrade is not None:
         management = (
             self.messages.NodeManagement(
@@ -2275,6 +2297,56 @@ class APIAdapter(object):
 
     self.ValidateClusterAutoscaling(autoscaling, for_update)
     return autoscaling
+
+  def UpdateUpgradeSettingsForNAP(self, options, max_surge, max_unavailable):
+    """Updates upgrade setting for autoprovisioned node pool."""
+
+    if options.enable_autoprovisioning_rolling_update and options.enable_autoprovisioning_blue_green_update:
+      raise util.Error(
+          'UpgradeSettings must contain only one of: --enable-autoprovisioning-rolling-update, --enable-autoprovisioning-blue-green-update'
+      )
+
+    upgrade_settings = self.messages.UpgradeSettings()
+    upgrade_settings.maxSurge = max_surge
+    upgrade_settings.maxUnavailable = max_unavailable
+    if options.enable_autoprovisioning_rolling_update:
+      upgrade_settings.strategy = self.messages.UpgradeSettings.StrategyValueValuesEnum.ROLLING
+    if options.enable_autoprovisioning_blue_green_update:
+      upgrade_settings.strategy = self.messages.UpgradeSettings.StrategyValueValuesEnum.BLUE_GREEN
+    if options.autoprovisioning_standard_rollout_policy is not None or options.autoprovisioning_node_pool_soak_duration is not None:
+      upgrade_settings.blueGreenSettings = self.UpdateBlueGreenSettingsForNAP(
+          upgrade_settings, options)
+    return upgrade_settings
+
+  def UpdateBlueGreenSettingsForNAP(self, upgrade_settings, options):
+    """Update blue green settings field in upgrade_settings for autoprovisioned node pool."""
+    blue_green_settings = upgrade_settings.blueGreenSettings or self.messages.BlueGreenSettings(
+    )
+    if options.autoprovisioning_node_pool_soak_duration is not None:
+      blue_green_settings.nodePoolSoakDuration = options.autoprovisioning_node_pool_soak_duration
+
+    if options.autoprovisioning_standard_rollout_policy is not None:
+      standard_rollout_policy = blue_green_settings.standardRolloutPolicy or self.messages.StandardRolloutPolicy(
+      )
+
+      if 'batch-node-count' in options.autoprovisioning_standard_rollout_policy and 'batch-percent' in options.autoprovisioning_standard_rollout_policy:
+        raise util.Error(
+            'Autoprovisioning StandardRolloutPolicy must contain only one of: batch-node-count, batch-percent'
+        )
+
+      standard_rollout_policy.batchPercentage = standard_rollout_policy.batchNodeCount = None
+      if 'batch-node-count' in options.autoprovisioning_standard_rollout_policy:
+        standard_rollout_policy.batchNodeCount = options.autoprovisioning_standard_rollout_policy[
+            'batch-node-count']
+      elif 'batch-percent' in options.autoprovisioning_standard_rollout_policy:
+        standard_rollout_policy.batchPercentage = options.autoprovisioning_standard_rollout_policy[
+            'batch-percent']
+
+      if 'batch-soak-duration' in options.autoprovisioning_standard_rollout_policy:
+        standard_rollout_policy.batchSoakDuration = options.autoprovisioning_standard_rollout_policy[
+            'batch-soak-duration']
+      blue_green_settings.standardRolloutPolicy = standard_rollout_policy
+    return blue_green_settings
 
   def CreateAutoscalingProfileCommon(self, options):
     """Create and validate cluster's autoscaling profile configuration.
@@ -4297,10 +4369,14 @@ class V1Beta1Adapter(V1Adapter):
         scopes = []
       management = None
       upgrade_settings = None
-      if max_surge_upgrade is not None or max_unavailable_upgrade is not None:
-        upgrade_settings = self.messages.UpgradeSettings()
-        upgrade_settings.maxUnavailable = max_unavailable_upgrade
-        upgrade_settings.maxSurge = max_surge_upgrade
+      if (max_surge_upgrade is not None or
+          max_unavailable_upgrade is not None or
+          options.enable_autoprovisioning_blue_green_update or
+          options.enable_autoprovisioning_rolling_update or
+          options.autoprovisioning_standard_rollout_policy is not None or
+          options.autoprovisioning_node_pool_soak_duration is not None):
+        upgrade_settings = self.UpdateUpgradeSettingsForNAP(
+            options, max_surge_upgrade, max_unavailable_upgrade)
       if enable_autorepair is not None or enable_autoupgrade is not None:
         management = (
             self.messages.NodeManagement(
@@ -4834,10 +4910,14 @@ class V1Alpha1Adapter(V1Beta1Adapter):
         scopes = []
       management = None
       upgrade_settings = None
-      if max_surge_upgrade is not None or max_unavailable_upgrade is not None:
-        upgrade_settings = self.messages.UpgradeSettings()
-        upgrade_settings.maxUnavailable = max_unavailable_upgrade
-        upgrade_settings.maxSurge = max_surge_upgrade
+      if (max_surge_upgrade is not None or
+          max_unavailable_upgrade is not None or
+          options.enable_autoprovisioning_blue_green_update or
+          options.enable_autoprovisioning_rolling_update or
+          options.autoprovisioning_standard_rollout_policy is not None or
+          options.autoprovisioning_node_pool_soak_duration is not None):
+        upgrade_settings = self.UpdateUpgradeSettingsForNAP(
+            options, max_surge_upgrade, max_unavailable_upgrade)
       if enable_autorepair is not None or enable_autorepair is not None:
         management = self.messages \
           .NodeManagement(autoUpgrade=enable_autoupgrade,

@@ -664,9 +664,9 @@ apis:
   gkebackup:
     v1alpha1:
       discovery_doc: gkebackup_v1alpha1.json
-      default: true
     v1:
       discovery_doc: gkebackup_v1.json
+      default: true
   gkehub:
     v1alpha:
       discovery_doc: gkehub_v1alpha.json
@@ -1125,11 +1125,6 @@ apis:
     v1:
       discovery_doc: spanner_v1.json
       default: true
-      # TODO(b/213356452): Replace resources once spanner/v1 contain rest bindings for
-      # instanceConfigs LROs.
-      resources:
-        projects.instanceConfigs.operations:
-          path: projects/{projectsId}/instanceConfigs/{instanceConfigsId}/operations/{operationsId}
   speech:
     v1:
       discovery_doc: speech_v1.json

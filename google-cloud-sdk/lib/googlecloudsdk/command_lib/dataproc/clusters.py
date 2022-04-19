@@ -683,6 +683,8 @@ def _AddDiskArgsDeprecated(parser):
       help=boot_disk_size_detailed_help)
 
 
+# DEPRECATED Beta release track should no longer be used, Google Cloud
+# no longer supports it.
 def BetaArgsForClusterRef(parser):
   """Register beta-only flags for creating a Dataproc cluster."""
   pass

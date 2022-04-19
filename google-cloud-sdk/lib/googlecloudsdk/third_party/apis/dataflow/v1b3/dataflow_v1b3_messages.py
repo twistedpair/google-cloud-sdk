@@ -236,7 +236,7 @@ class CommitTemplateVersionRequest(_messages.Message):
   r"""Commit will add a new TemplateVersion to an existing template.
 
   Fields:
-    templateVersion: TemplateVersion obejct to create.
+    templateVersion: TemplateVersion object to create.
   """
 
   templateVersion = _messages.MessageField('TemplateVersion', 1)
@@ -3409,9 +3409,10 @@ class Job(_messages.Message):
       (https://cloud.google.com/dataflow/docs/concepts/regional-endpoints)
       that contains this job.
     name: The user-specified Cloud Dataflow job name. Only one Job with a
-      given name may exist in a project at any given time. If a caller
-      attempts to create a Job with the same name as an already-existing Job,
-      the attempt returns the existing Job. The name must match the regular
+      given name can exist in a project within one region at any given time.
+      Jobs in different regions can have the same name. If a caller attempts
+      to create a Job with the same name as an already-existing Job, the
+      attempt returns the existing Job. The name must match the regular
       expression `[a-z]([-a-z0-9]{0,38}[a-z0-9])?`
     pipelineDescription: Preliminary field: The format of this data may change
       at any time. A description of the user pipeline and stages through which
@@ -5558,12 +5559,13 @@ class SDKInfo(_messages.Message):
 
 
 class SdkHarnessContainerImage(_messages.Message):
-  r"""Defines a SDK harness container for executing Dataflow pipelines.
+  r"""Defines an SDK harness container for executing Dataflow pipelines.
 
   Fields:
     capabilities: The set of capabilities enumerated in the above Environment
-      proto. See also https://github.com/apache/beam/blob/master/model/pipelin
-      e/src/main/proto/beam_runner_api.proto
+      proto. See also [beam_runner_api.proto](https://github.com/apache/beam/b
+      lob/master/model/pipeline/src/main/proto/org/apache/beam/model/pipeline/
+      v1/beam_runner_api.proto)
     containerImage: A docker container image that resides in Google Container
       Registry.
     environmentId: Environment ID for the Beam runner API proto Environment

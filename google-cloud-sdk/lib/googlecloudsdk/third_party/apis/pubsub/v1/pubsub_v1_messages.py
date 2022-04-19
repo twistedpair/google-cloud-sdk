@@ -90,7 +90,7 @@ class Binding(_messages.Message):
       policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
-    members: Specifies the principals requesting access for a Cloud Platform
+    members: Specifies the principals requesting access for a Google Cloud
       resource. `members` can have the following values: * `allUsers`: A
       special identifier that represents anyone who is on the internet; with
       or without a Google account. * `allAuthenticatedUsers`: A special
@@ -406,6 +406,10 @@ class ModifyPushConfigRequest(_messages.Message):
 class OidcToken(_messages.Message):
   r"""Contains information needed for generating an [OpenID Connect
   token](https://developers.google.com/identity/protocols/OpenIDConnect).
+  [Service account email](https://cloud.google.com/iam/docs/service-accounts)
+  used for generating the OIDC token. For more information on setting up
+  authentication, see [Push
+  subscriptions](https://cloud.google.com/pubsub/docs/push).
 
   Fields:
     audience: Audience to be used when generating OIDC token. The audience
@@ -415,11 +419,7 @@ class OidcToken(_messages.Message):
       OIDC JWT token audience here:
       https://tools.ietf.org/html/rfc7519#section-4.1.3 Note: if not
       specified, the Push endpoint URL will be used.
-    serviceAccountEmail: [Service account
-      email](https://cloud.google.com/iam/docs/service-accounts) to be used
-      for generating the OIDC token. See [Setting up push
-      authentication](/pubsub/docs/push#setting_up_for_push_authentication)
-      for more details.
+    serviceAccountEmail: A string attribute.
   """
 
   audience = _messages.StringField(1)
@@ -556,7 +556,8 @@ class PubsubMessage(_messages.Message):
       same non-empty `ordering_key` value will be delivered to subscribers in
       the order in which they are received by the Pub/Sub system. All
       `PubsubMessage`s published in a given `PublishRequest` must specify the
-      same `ordering_key` value.
+      same `ordering_key` value. For more information, see [ordering
+      messages](https://cloud.google.com/pubsub/docs/ordering).
     publishTime: The time at which the message was published, populated by the
       server when it receives the `Publish` call. It must not be populated by
       the publisher in a `Publish` call.
@@ -1524,8 +1525,8 @@ class SetIamPolicyRequest(_messages.Message):
   Fields:
     policy: REQUIRED: The complete policy to be applied to the `resource`. The
       size of the policy is limited to a few 10s of KB. An empty policy is a
-      valid policy but certain Cloud Platform services (such as Projects)
-      might reject them.
+      valid policy but certain Google Cloud services (such as Projects) might
+      reject them.
   """
 
   policy = _messages.MessageField('Policy', 1)
@@ -1830,7 +1831,7 @@ class TestIamPermissionsRequest(_messages.Message):
 
   Fields:
     permissions: The set of permissions to check for the `resource`.
-      Permissions with wildcards (such as '*' or 'storage.*') are not allowed.
+      Permissions with wildcards (such as `*` or `storage.*`) are not allowed.
       For more information see [IAM
       Overview](https://cloud.google.com/iam/docs/overview#permissions).
   """

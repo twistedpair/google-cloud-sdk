@@ -280,7 +280,14 @@ def AddConnectionTrackingPolicy(parser):
       default=None,
       help="""\
       Specifies the connection key used for connection tracking.
-      The default value is PER_CONNECTION.
+      The default value is PER_CONNECTION. Applicable only for backend
+      service-based network load balancers and
+      internal TCP/UDP load balancers as part of a connection tracking policy.
+      For details, see: [Connection tracking mode for
+      internal TCP/UDP load
+      balancing](https://cloud.google.com/load-balancing/docs/internal#tracking-mode)
+      and [Connection tracking mode for network load
+      balancing](https://cloud.google.com/load-balancing/docs/network/networklb-backend-service#tracking-mode).
       """)
   parser.add_argument(
       '--idle-timeout-sec',

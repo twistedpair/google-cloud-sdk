@@ -357,7 +357,7 @@ class Binding(_messages.Message):
       policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
-    members: Specifies the principals requesting access for a Cloud Platform
+    members: Specifies the principals requesting access for a Google Cloud
       resource. `members` can have the following values: * `allUsers`: A
       special identifier that represents anyone who is on the internet; with
       or without a Google account. * `allAuthenticatedUsers`: A special
@@ -1135,11 +1135,12 @@ class CloudassetSearchAllResourcesRequest(_messages.Message):
       `"name,versionedResources"`. The read_mask paths must be valid field
       paths listed but not limited to (both snake_case and camelCase are
       supported): * name * assetType * project * displayName * description *
-      location * labels * networkTags * kmsKey * createTime * updateTime *
-      state * additionalAttributes * versionedResources If read_mask is not
-      specified, all fields except versionedResources will be returned. If
-      only '*' is specified, all fields including versionedResources will be
-      returned. Any invalid field path will trigger INVALID_ARGUMENT error.
+      location * tagKeys * tagValues * tagValueIds * labels * networkTags *
+      kmsKey * createTime * updateTime * state * additionalAttributes *
+      versionedResources If read_mask is not specified, all fields except
+      versionedResources will be returned. If only '*' is specified, all
+      fields including versionedResources will be returned. Any invalid field
+      path will trigger INVALID_ARGUMENT error.
     scope: Required. A scope can be a project, a folder, or an organization.
       The search is limited to the resources within the `scope`. The caller
       must be granted the
@@ -4079,6 +4080,21 @@ class ResourceSearchResult(_messages.Message):
       manager/reference/rest/v1/projects). To search against the `state`: *
       use a field query. Example: `state:RUNNING` * use a free text query.
       Example: `RUNNING`
+    tagKeys: TagKey namespaced names, in the format of
+      {ORG_ID}/{TAG_KEY_SHORT_NAME}. To search against the `tagKeys`: * use a
+      field query. Example: - `tagKeys:"123456789/e*"` -
+      `tagKeys="123456789/env"` - `tagKeys:"env"` * use a free text query.
+      Example: - `env`
+    tagValueIds: TagValue IDs, in the format of tagValues/{TAG_VALUE_ID}. To
+      search against the `tagValueIds`: * use a field query. Example: -
+      `tagValueIds:"456"` - `tagValueIds="tagValues/456"` * use a free text
+      query. Example: - `456`
+    tagValues: TagValue namespaced names, in the format of
+      {ORG_ID}/{TAG_KEY_SHORT_NAME}/{TAG_VALUE_SHORT_NAME}. To search against
+      the `tagValues`: * use a field query. Example: - `tagValues:"env"` -
+      `tagValues:"env/prod"` - `tagValues:"123456789/env/pr*"` -
+      `tagValues="123456789/env/prod"` * use a free text query. Example: -
+      `prod`
     updateTime: The last update timestamp of this resource, at which the
       resource was last modified or deleted. The granularity is in seconds.
       Timestamp.nanos will always be 0. This field is available only when the
@@ -4212,8 +4228,11 @@ class ResourceSearchResult(_messages.Message):
   project = _messages.StringField(16)
   relationships = _messages.MessageField('RelationshipsValue', 17)
   state = _messages.StringField(18)
-  updateTime = _messages.StringField(19)
-  versionedResources = _messages.MessageField('VersionedResource', 20, repeated=True)
+  tagKeys = _messages.StringField(19, repeated=True)
+  tagValueIds = _messages.StringField(20, repeated=True)
+  tagValues = _messages.StringField(21, repeated=True)
+  updateTime = _messages.StringField(22)
+  versionedResources = _messages.MessageField('VersionedResource', 23, repeated=True)
 
 
 class ResourceSelector(_messages.Message):

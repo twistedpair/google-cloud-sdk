@@ -947,9 +947,9 @@ def AddParallelismFlag(parser):
   """Add job parallelism/concurrency flag."""
   parser.add_argument(
       '--parallelism',
-      type=arg_parsers.BoundedInt(lower_bound=1),
+      type=arg_parsers.BoundedInt(lower_bound=0),
       help='Number of tasks that may run concurrently. '
-      'Must be less than or equal to the number of tasks.')
+      'Must be less than or equal to the number of tasks. Set to 0 to unset.')
 
 
 def AddTasksFlag(parser):

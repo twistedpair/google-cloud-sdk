@@ -21,16 +21,17 @@ from __future__ import unicode_literals
 import os
 
 from googlecloudsdk.command_lib.storage import errors
+from googlecloudsdk.command_lib.storage import manifest_util
 from googlecloudsdk.command_lib.storage import tracker_file_util
 from googlecloudsdk.command_lib.storage.tasks import compose_objects_task
 from googlecloudsdk.command_lib.storage.tasks import task
+from googlecloudsdk.command_lib.storage.tasks import task_util
 from googlecloudsdk.command_lib.storage.tasks.cp import copy_util
 from googlecloudsdk.command_lib.storage.tasks.cp import delete_temporary_components_task
 from googlecloudsdk.core import log
 
 
-class FinalizeCompositeUploadTask(task.Task,
-                                  copy_util.CopyTaskExitHandlerMixin):
+class FinalizeCompositeUploadTask(copy_util.CopyTaskWithExitHandler):
   """Composes and deletes object resources received as messages."""
 
   def __init__(self,
@@ -56,14 +57,14 @@ class FinalizeCompositeUploadTask(task.Task,
         URL of the copy result.
       user_request_args (UserRequestArgs|None): Values for RequestConfig.
     """
-    super(FinalizeCompositeUploadTask, self).__init__()
+    super(FinalizeCompositeUploadTask, self).__init__(
+        source_resource,
+        destination_resource,
+        user_request_args=user_request_args)
     self._expected_component_count = expected_component_count
-    self._source_resource = source_resource
-    self._destination_resource = destination_resource
     self._random_prefix = random_prefix
     self._delete_source = delete_source
     self._print_created_message = print_created_message
-    self._user_request_args = user_request_args
 
   def execute(self, task_status_queue=None):
     uploaded_components = [
@@ -90,11 +91,17 @@ class FinalizeCompositeUploadTask(task.Task,
     compose_task_output = compose_task.execute(
         task_status_queue=task_status_queue)
 
-    if self._print_created_message:
-      for message in compose_task_output.messages:
-        if message.topic == task.Topic.CREATED_RESOURCE:
-          log.status.Print('Created: {}'.format(message.payload.storage_url))
-          break
+    result_resource = task_util.get_first_matching_message_payload(
+        compose_task_output.messages, task.Topic.CREATED_RESOURCE)
+    if result_resource:
+      if self._print_created_message:
+        log.status.Print('Created: {}'.format(result_resource.storage_url))
+      if self._send_manifest_messages:
+        manifest_util.send_success_message(
+            task_status_queue,
+            self._source_resource,
+            self._destination_resource,
+            md5_hash=result_resource.md5_hash)
 
     # After a successful compose call, we consider the upload complete and can
     # delete tracker files.

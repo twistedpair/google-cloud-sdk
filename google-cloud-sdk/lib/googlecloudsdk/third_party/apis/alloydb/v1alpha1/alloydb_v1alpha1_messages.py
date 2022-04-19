@@ -438,35 +438,14 @@ class AlloydbProjectsLocationsClustersRestoreRequest(_messages.Message):
   r"""A AlloydbProjectsLocationsClustersRestoreRequest object.
 
   Fields:
-    backupSource_backupName: Required. The name of the backup resource with
-      the format: * projects/{project}/locations/{region}/backups/{backup_id}
-    cluster: A Cluster resource to be passed as the request body.
-    clusterId: Required. Id of the requesting object If auto-generating Id
-      server-side, remove this field and cluster_id from the method_signature
-      of Create RPC
     parent: Required. The name of the parent resource. For the required
       format, see the comment on the Cluster.name field.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    validateOnly: Optional. If set, the backend validates the request, but
-      doesn't actually execute it.
+    restoreClusterRequest: A RestoreClusterRequest resource to be passed as
+      the request body.
   """
 
-  backupSource_backupName = _messages.StringField(1)
-  cluster = _messages.MessageField('Cluster', 2)
-  clusterId = _messages.StringField(3)
-  parent = _messages.StringField(4, required=True)
-  requestId = _messages.StringField(5)
-  validateOnly = _messages.BooleanField(6)
+  parent = _messages.StringField(1, required=True)
+  restoreClusterRequest = _messages.MessageField('RestoreClusterRequest', 2)
 
 
 class AlloydbProjectsLocationsGetRequest(_messages.Message):
@@ -484,7 +463,7 @@ class AlloydbProjectsLocationsListRequest(_messages.Message):
 
   Fields:
     filter: A filter to narrow down results to a preferred subset. The
-      filtering language accepts strings like "displayName=tokyo", and is
+      filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
     name: The resource that owns the locations collection, if applicable.
     pageSize: The maximum number of results to return. If not set, the service
@@ -567,6 +546,62 @@ class AlloydbProjectsLocationsSupportedDatabaseFlagsListRequest(_messages.Messag
   parent = _messages.StringField(3, required=True)
 
 
+class AutomatedBackupPolicy(_messages.Message):
+  r"""Message describing the user-specified automated backup policy. NEXT_ID:
+  8
+
+  Messages:
+    LabelsValue: Labels to apply to backups created using this configuration.
+
+  Fields:
+    backupWindow: Optional. The length of the time window during which a
+      backup can be taken. If a backup does not succeed within this time
+      window, it will be canceled and considered failed. The backup window
+      must be at least 5 minutes long. There is no upper bound on the window.
+      If not set, it will default to 1 hour.
+    enabled: Whether automated automated backups are enabled.
+    labels: Labels to apply to backups created using this configuration.
+    location: The location where the backup will be stored. Currently, the
+      only supported option is to store the backup in the same region as the
+      cluster.
+    quantityBasedRetention: A QuantityBasedRetention attribute.
+    timeBasedRetention: A TimeBasedRetention attribute.
+    weeklySchedule: A WeeklySchedule attribute.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Labels to apply to backups created using this configuration.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  backupWindow = _messages.StringField(1)
+  enabled = _messages.BooleanField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  location = _messages.StringField(4)
+  quantityBasedRetention = _messages.MessageField('QuantityBasedRetention', 5)
+  timeBasedRetention = _messages.MessageField('TimeBasedRetention', 6)
+  weeklySchedule = _messages.MessageField('WeeklySchedule', 7)
+
+
 class Backup(_messages.Message):
   r"""Message describing Backup object NEXT ID: 13
 
@@ -627,8 +662,8 @@ class Backup(_messages.Message):
       TYPE_UNSPECIFIED: <no description>
       ON_DEMAND: ON_DEMAND backups that were triggered by the customer (e.g.,
         not AUTOMATED).
-      AUTOMATED: AUTOMATED backups triggered by the managed backups scheduler
-        pursuant to a managed backup policy.
+      AUTOMATED: AUTOMATED backups triggered by the automated backups
+        scheduler pursuant to an automated backup policy.
     """
     TYPE_UNSPECIFIED = 0
     ON_DEMAND = 1
@@ -670,6 +705,17 @@ class Backup(_messages.Message):
   updateTime = _messages.StringField(10)
 
 
+class BackupSource(_messages.Message):
+  r"""Message describing a BackupSource.
+
+  Fields:
+    backupName: Required. The name of the backup resource with the format: *
+      projects/{project}/locations/{region}/backups/{backup_id}
+  """
+
+  backupName = _messages.StringField(1)
+
+
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
@@ -688,6 +734,11 @@ class Cluster(_messages.Message):
     LabelsValue: Labels as key value pairs
 
   Fields:
+    automatedBackupPolicy: Optional. The automated backup policy for this
+      cluster. If no policy is provided then the default policy will be used.
+      The default policy takes one backup a day, has a backup window of 1
+      hour, and retains backups for 14 days.
+    backupSource: A BackupSource attribute.
     createTime: Output only. Create time stamp
     databaseVersion: Output only. The database engine major version. This is
       an output-only field and it's populated at the Cluster creation time.
@@ -789,17 +840,19 @@ class Cluster(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 2)
-  initialUser = _messages.MessageField('UserPassword', 3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  migrationSource = _messages.MessageField('MigrationSource', 5)
-  name = _messages.StringField(6)
-  network = _messages.StringField(7)
-  reconciling = _messages.BooleanField(8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
-  uid = _messages.StringField(10)
-  updateTime = _messages.StringField(11)
+  automatedBackupPolicy = _messages.MessageField('AutomatedBackupPolicy', 1)
+  backupSource = _messages.MessageField('BackupSource', 2)
+  createTime = _messages.StringField(3)
+  databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 4)
+  initialUser = _messages.MessageField('UserPassword', 5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  migrationSource = _messages.MessageField('MigrationSource', 7)
+  name = _messages.StringField(8)
+  network = _messages.StringField(9)
+  reconciling = _messages.BooleanField(10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  uid = _messages.StringField(12)
+  updateTime = _messages.StringField(13)
 
 
 class Empty(_messages.Message):
@@ -1373,6 +1426,17 @@ class OperationMetadata(_messages.Message):
   verb = _messages.StringField(7)
 
 
+class QuantityBasedRetention(_messages.Message):
+  r"""A quantity based policy specifies that a certain number of the most
+  recent successful backups should be retained.
+
+  Fields:
+    count: The number of backups to retain.
+  """
+
+  count = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
 class ReadPoolConfig(_messages.Message):
   r"""Configuration for a read pool instance.
 
@@ -1404,6 +1468,38 @@ class RestartInstanceRequest(_messages.Message):
 
   requestId = _messages.StringField(1)
   validateOnly = _messages.BooleanField(2)
+
+
+class RestoreClusterRequest(_messages.Message):
+  r"""Message for restoring a Cluster from a backup
+
+  Fields:
+    backupSource: A BackupSource attribute.
+    cluster: Required. The resource being created Passing initial_user is
+      ignored by `RestoreCluster`
+    clusterId: Required. Id of the requesting object If auto-generating Id
+      server-side, remove this field and cluster_id from the method_signature
+      of Create RPC
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    validateOnly: Optional. If set, the backend validates the request, but
+      doesn't actually execute it.
+  """
+
+  backupSource = _messages.MessageField('BackupSource', 1)
+  cluster = _messages.MessageField('Cluster', 2)
+  clusterId = _messages.StringField(3)
+  requestId = _messages.StringField(4)
+  validateOnly = _messages.BooleanField(5)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -1599,6 +1695,38 @@ class SupportedDatabaseFlag(_messages.Message):
   valueType = _messages.EnumField('ValueTypeValueValuesEnum', 8)
 
 
+class TimeBasedRetention(_messages.Message):
+  r"""A time based retention policy specifies that all backups within a
+  certain time period should be retained.
+
+  Fields:
+    retentionPeriod: The retention period.
+  """
+
+  retentionPeriod = _messages.StringField(1)
+
+
+class TimeOfDay(_messages.Message):
+  r"""Represents a time of day. The date and time zone are either not
+  significant or are specified elsewhere. An API may choose to allow leap
+  seconds. Related types are google.type.Date and `google.protobuf.Timestamp`.
+
+  Fields:
+    hours: Hours of day in 24 hour format. Should be from 0 to 23. An API may
+      choose to allow the value "24:00:00" for scenarios like business closing
+      time.
+    minutes: Minutes of hour of day. Must be from 0 to 59.
+    nanos: Fractions of seconds in nanoseconds. Must be from 0 to 999,999,999.
+    seconds: Seconds of minutes of the time. Must normally be from 0 to 59. An
+      API may allow the value 60 if it allows leap-seconds.
+  """
+
+  hours = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  minutes = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  nanos = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  seconds = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
 class UserPassword(_messages.Message):
   r"""The username/password for a database user. Used for specifying initial
   users at cluster creation time.
@@ -1610,6 +1738,51 @@ class UserPassword(_messages.Message):
 
   password = _messages.StringField(1)
   user = _messages.StringField(2)
+
+
+class WeeklySchedule(_messages.Message):
+  r"""A weekly schedule starts a backup at prescribed start times within a
+  day, for the specified days of the week. The weekly schedule message is
+  flexible and can be used to create many types of schedules. For example, to
+  have a daily backup that starts at 22:00, configure the `start_times` field
+  to have one element "22:00" and the `days_of_week` field to have all seven
+  days of the week.
+
+  Enums:
+    DaysOfWeekValueListEntryValuesEnum:
+
+  Fields:
+    daysOfWeek: The days of the week to perform a backup. At least one day of
+      the week must be provided.
+    startTimes: The times during the day to start a backup. At least one start
+      time must be provided. The start times are assumed to be in UTC and
+      required to be an exact hour (e.g., 04:00:00).
+  """
+
+  class DaysOfWeekValueListEntryValuesEnum(_messages.Enum):
+    r"""DaysOfWeekValueListEntryValuesEnum enum type.
+
+    Values:
+      DAY_OF_WEEK_UNSPECIFIED: The day of the week is unspecified.
+      MONDAY: Monday
+      TUESDAY: Tuesday
+      WEDNESDAY: Wednesday
+      THURSDAY: Thursday
+      FRIDAY: Friday
+      SATURDAY: Saturday
+      SUNDAY: Sunday
+    """
+    DAY_OF_WEEK_UNSPECIFIED = 0
+    MONDAY = 1
+    TUESDAY = 2
+    WEDNESDAY = 3
+    THURSDAY = 4
+    FRIDAY = 5
+    SATURDAY = 6
+    SUNDAY = 7
+
+  daysOfWeek = _messages.EnumField('DaysOfWeekValueListEntryValuesEnum', 1, repeated=True)
+  startTimes = _messages.MessageField('TimeOfDay', 2, repeated=True)
 
 
 encoding.AddCustomJsonFieldMapping(

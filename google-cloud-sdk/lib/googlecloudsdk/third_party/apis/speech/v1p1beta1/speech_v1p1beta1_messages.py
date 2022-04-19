@@ -904,8 +904,8 @@ class SpeechProjectsLocationsCustomClassesCreateRequest(_messages.Message):
       Speech-to-Text supports three locations: `global`, `us` (US North
       America), and `eu` (Europe). If you are calling the
       `speech.googleapis.com` endpoint, use the `global` location. To specify
-      a region, use a [regional endpoint](/speech-to-text/docs/endpoints) with
-      matching `us` or `eu` location value.
+      a region, use a [regional endpoint](https://cloud.google.com/speech-to-
+      text/docs/endpoints) with matching `us` or `eu` location value.
   """
 
   createCustomClassRequest = _messages.MessageField('CreateCustomClassRequest', 1)
@@ -921,8 +921,8 @@ class SpeechProjectsLocationsCustomClassesDeleteRequest(_messages.Message):
       Speech-to-Text supports three locations: `global`, `us` (US North
       America), and `eu` (Europe). If you are calling the
       `speech.googleapis.com` endpoint, use the `global` location. To specify
-      a region, use a [regional endpoint](/speech-to-text/docs/endpoints) with
-      matching `us` or `eu` location value.
+      a region, use a [regional endpoint](https://cloud.google.com/speech-to-
+      text/docs/endpoints) with matching `us` or `eu` location value.
   """
 
   name = _messages.StringField(1, required=True)
@@ -956,8 +956,8 @@ class SpeechProjectsLocationsCustomClassesListRequest(_messages.Message):
       Speech-to-Text supports three locations: `global`, `us` (US North
       America), and `eu` (Europe). If you are calling the
       `speech.googleapis.com` endpoint, use the `global` location. To specify
-      a region, use a [regional endpoint](/speech-to-text/docs/endpoints) with
-      matching `us` or `eu` location value.
+      a region, use a [regional endpoint](https://cloud.google.com/speech-to-
+      text/docs/endpoints) with matching `us` or `eu` location value.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -990,8 +990,8 @@ class SpeechProjectsLocationsPhraseSetsCreateRequest(_messages.Message):
       Speech-to-Text supports three locations: `global`, `us` (US North
       America), and `eu` (Europe). If you are calling the
       `speech.googleapis.com` endpoint, use the `global` location. To specify
-      a region, use a [regional endpoint](/speech-to-text/docs/endpoints) with
-      matching `us` or `eu` location value.
+      a region, use a [regional endpoint](https://cloud.google.com/speech-to-
+      text/docs/endpoints) with matching `us` or `eu` location value.
   """
 
   createPhraseSetRequest = _messages.MessageField('CreatePhraseSetRequest', 1)
@@ -1018,8 +1018,8 @@ class SpeechProjectsLocationsPhraseSetsGetRequest(_messages.Message):
       Speech-to-Text supports three locations: `global`, `us` (US North
       America), and `eu` (Europe). If you are calling the
       `speech.googleapis.com` endpoint, use the `global` location. To specify
-      a region, use a [regional endpoint](/speech-to-text/docs/endpoints) with
-      matching `us` or `eu` location value.
+      a region, use a [regional endpoint](https://cloud.google.com/speech-to-
+      text/docs/endpoints) with matching `us` or `eu` location value.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1042,8 +1042,8 @@ class SpeechProjectsLocationsPhraseSetsListRequest(_messages.Message):
       supports three locations: `global`, `us` (US North America), and `eu`
       (Europe). If you are calling the `speech.googleapis.com` endpoint, use
       the `global` location. To specify a region, use a [regional
-      endpoint](/speech-to-text/docs/endpoints) with matching `us` or `eu`
-      location value.
+      endpoint](https://cloud.google.com/speech-to-text/docs/endpoints) with
+      matching `us` or `eu` location value.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)

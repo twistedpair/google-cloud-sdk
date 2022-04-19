@@ -2059,6 +2059,37 @@ class LoggingBillingAccountsLocationsBucketsViewsListRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
 
 
+class LoggingBillingAccountsLocationsBucketsViewsLogsListRequest(_messages.Message):
+  r"""A LoggingBillingAccountsLocationsBucketsViewsLogsListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of results to return from this
+      request. Non-positive values are ignored. The presence of nextPageToken
+      in the response indicates that more results might be available.
+    pageToken: Optional. If present, then retrieve the next batch of results
+      from the preceding call to this method. pageToken must be the value of
+      nextPageToken from the previous response. The values of other method
+      parameters should be identical to those in the previous call.
+    parent: Required. The resource name that owns the logs:
+      projects/[PROJECT_ID] organizations/[ORGANIZATION_ID]
+      billingAccounts/[BILLING_ACCOUNT_ID] folders/[FOLDER_ID]
+    resourceNames: Optional. The resource name that owns the logs: projects/[P
+      ROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID] o
+      rganizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_I
+      D]/views/[VIEW_ID] billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCAT
+      ION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID] folders/[FOLDER_ID]/location
+      s/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]To support legacy
+      queries, it could also be: projects/[PROJECT_ID]
+      organizations/[ORGANIZATION_ID] billingAccounts/[BILLING_ACCOUNT_ID]
+      folders/[FOLDER_ID]
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  resourceNames = _messages.StringField(4, repeated=True)
+
+
 class LoggingBillingAccountsLocationsBucketsViewsPatchRequest(_messages.Message):
   r"""A LoggingBillingAccountsLocationsBucketsViewsPatchRequest object.
 
@@ -2824,6 +2855,37 @@ class LoggingFoldersLocationsBucketsViewsListRequest(_messages.Message):
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+
+
+class LoggingFoldersLocationsBucketsViewsLogsListRequest(_messages.Message):
+  r"""A LoggingFoldersLocationsBucketsViewsLogsListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of results to return from this
+      request. Non-positive values are ignored. The presence of nextPageToken
+      in the response indicates that more results might be available.
+    pageToken: Optional. If present, then retrieve the next batch of results
+      from the preceding call to this method. pageToken must be the value of
+      nextPageToken from the previous response. The values of other method
+      parameters should be identical to those in the previous call.
+    parent: Required. The resource name that owns the logs:
+      projects/[PROJECT_ID] organizations/[ORGANIZATION_ID]
+      billingAccounts/[BILLING_ACCOUNT_ID] folders/[FOLDER_ID]
+    resourceNames: Optional. The resource name that owns the logs: projects/[P
+      ROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID] o
+      rganizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_I
+      D]/views/[VIEW_ID] billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCAT
+      ION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID] folders/[FOLDER_ID]/location
+      s/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]To support legacy
+      queries, it could also be: projects/[PROJECT_ID]
+      organizations/[ORGANIZATION_ID] billingAccounts/[BILLING_ACCOUNT_ID]
+      folders/[FOLDER_ID]
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  resourceNames = _messages.StringField(4, repeated=True)
 
 
 class LoggingFoldersLocationsBucketsViewsPatchRequest(_messages.Message):
@@ -3973,6 +4035,37 @@ class LoggingOrganizationsLocationsBucketsViewsListRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
 
 
+class LoggingOrganizationsLocationsBucketsViewsLogsListRequest(_messages.Message):
+  r"""A LoggingOrganizationsLocationsBucketsViewsLogsListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of results to return from this
+      request. Non-positive values are ignored. The presence of nextPageToken
+      in the response indicates that more results might be available.
+    pageToken: Optional. If present, then retrieve the next batch of results
+      from the preceding call to this method. pageToken must be the value of
+      nextPageToken from the previous response. The values of other method
+      parameters should be identical to those in the previous call.
+    parent: Required. The resource name that owns the logs:
+      projects/[PROJECT_ID] organizations/[ORGANIZATION_ID]
+      billingAccounts/[BILLING_ACCOUNT_ID] folders/[FOLDER_ID]
+    resourceNames: Optional. The resource name that owns the logs: projects/[P
+      ROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID] o
+      rganizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_I
+      D]/views/[VIEW_ID] billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCAT
+      ION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID] folders/[FOLDER_ID]/location
+      s/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]To support legacy
+      queries, it could also be: projects/[PROJECT_ID]
+      organizations/[ORGANIZATION_ID] billingAccounts/[BILLING_ACCOUNT_ID]
+      folders/[FOLDER_ID]
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  resourceNames = _messages.StringField(4, repeated=True)
+
+
 class LoggingOrganizationsLocationsBucketsViewsPatchRequest(_messages.Message):
   r"""A LoggingOrganizationsLocationsBucketsViewsPatchRequest object.
 
@@ -4695,6 +4788,37 @@ class LoggingProjectsLocationsBucketsViewsListRequest(_messages.Message):
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+
+
+class LoggingProjectsLocationsBucketsViewsLogsListRequest(_messages.Message):
+  r"""A LoggingProjectsLocationsBucketsViewsLogsListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of results to return from this
+      request. Non-positive values are ignored. The presence of nextPageToken
+      in the response indicates that more results might be available.
+    pageToken: Optional. If present, then retrieve the next batch of results
+      from the preceding call to this method. pageToken must be the value of
+      nextPageToken from the previous response. The values of other method
+      parameters should be identical to those in the previous call.
+    parent: Required. The resource name that owns the logs:
+      projects/[PROJECT_ID] organizations/[ORGANIZATION_ID]
+      billingAccounts/[BILLING_ACCOUNT_ID] folders/[FOLDER_ID]
+    resourceNames: Optional. The resource name that owns the logs: projects/[P
+      ROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID] o
+      rganizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_I
+      D]/views/[VIEW_ID] billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCAT
+      ION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID] folders/[FOLDER_ID]/location
+      s/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]To support legacy
+      queries, it could also be: projects/[PROJECT_ID]
+      organizations/[ORGANIZATION_ID] billingAccounts/[BILLING_ACCOUNT_ID]
+      folders/[FOLDER_ID]
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  resourceNames = _messages.StringField(4, repeated=True)
 
 
 class LoggingProjectsLocationsBucketsViewsPatchRequest(_messages.Message):
@@ -6431,12 +6555,12 @@ class WriteLogEntriesRequest(_messages.Message):
       organization, billing account, or folder that is receiving new log
       entries, whether the resource is specified in logName or in an
       individual log entry.
-    partialSuccess: Optional. Whether valid entries should be written even if
-      some other entries fail due to INVALID_ARGUMENT or PERMISSION_DENIED
-      errors. If any entry is not written, then the response status is the
-      error associated with one of the failed entries and the response
-      includes error details keyed by the entries' zero-based index in the
-      entries.write method.
+    partialSuccess: Optional. Whether a batch's valid entries should be
+      written even if some other entry failed due to a permanent error such as
+      INVALID_ARGUMENT or PERMISSION_DENIED. If any entry failed, then the
+      response status is the response status is the status of one of the
+      failed entries. The response will include error details keyed by the
+      entries' zero-based index in the entries.write method.
     resource: Optional. A default monitored resource object that is assigned
       to all log entries in entries that do not specify a value for resource.
       Example: { "type": "gce_instance", "labels": { "zone": "us-central1-a",

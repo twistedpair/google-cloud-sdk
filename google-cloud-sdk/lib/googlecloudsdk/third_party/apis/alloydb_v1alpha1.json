@@ -110,58 +110,6 @@
     }
   },
   "schemas": {
-    "ListLocationsResponse": {
-      "id": "ListLocationsResponse",
-      "description": "The response message for Locations.ListLocations.",
-      "type": "object",
-      "properties": {
-        "locations": {
-          "description": "A list of locations that matches the specified filter in the request.",
-          "type": "array",
-          "items": {
-            "$ref": "Location"
-          }
-        },
-        "nextPageToken": {
-          "description": "The standard List next-page token.",
-          "type": "string"
-        }
-      }
-    },
-    "Location": {
-      "id": "Location",
-      "description": "A resource that represents Google Cloud Platform location.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "Resource name for the location, which may vary between implementations. For example: `\"projects\/example-project\/locations\/us-east1\"`",
-          "type": "string"
-        },
-        "locationId": {
-          "description": "The canonical id for this location. For example: `\"us-east1\"`.",
-          "type": "string"
-        },
-        "displayName": {
-          "description": "The friendly name for this location, typically a nearby city name. For example, \"Tokyo\".",
-          "type": "string"
-        },
-        "labels": {
-          "description": "Cross-service attributes for the location. For example {\"cloud.googleapis.com\/region\": \"us-east1\"}",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        },
-        "metadata": {
-          "description": "Service-specific metadata. For example the available capacity at the given location.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "any",
-            "description": "Properties of the object. Contains field @type with type URL."
-          }
-        }
-      }
-    },
     "ListOperationsResponse": {
       "id": "ListOperationsResponse",
       "description": "The response message for Operations.ListOperations.",
@@ -254,6 +202,58 @@
       "description": "The request message for Operations.CancelOperation.",
       "type": "object",
       "properties": {
+      }
+    },
+    "ListLocationsResponse": {
+      "id": "ListLocationsResponse",
+      "description": "The response message for Locations.ListLocations.",
+      "type": "object",
+      "properties": {
+        "locations": {
+          "description": "A list of locations that matches the specified filter in the request.",
+          "type": "array",
+          "items": {
+            "$ref": "Location"
+          }
+        },
+        "nextPageToken": {
+          "description": "The standard List next-page token.",
+          "type": "string"
+        }
+      }
+    },
+    "Location": {
+      "id": "Location",
+      "description": "A resource that represents Google Cloud Platform location.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Resource name for the location, which may vary between implementations. For example: `\"projects\/example-project\/locations\/us-east1\"`",
+          "type": "string"
+        },
+        "locationId": {
+          "description": "The canonical id for this location. For example: `\"us-east1\"`.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The friendly name for this location, typically a nearby city name. For example, \"Tokyo\".",
+          "type": "string"
+        },
+        "labels": {
+          "description": "Cross-service attributes for the location. For example {\"cloud.googleapis.com\/region\": \"us-east1\"}",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "metadata": {
+          "description": "Service-specific metadata. For example the available capacity at the given location.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        }
       }
     },
     "ListClustersResponse": {
@@ -363,9 +363,17 @@
           "description": "Input only. Initial user to setup during cluster creation. Required. If used in `RestoreCluster` this is ignored. We intend to deprecate this post private preview, once we have separate User resources.",
           "$ref": "UserPassword"
         },
+        "backupSource": {
+          "readOnly": true,
+          "$ref": "BackupSource"
+        },
         "migrationSource": {
           "readOnly": true,
           "$ref": "MigrationSource"
+        },
+        "automatedBackupPolicy": {
+          "description": "Optional. The automated backup policy for this cluster. If no policy is provided then the default policy will be used. The default policy takes one backup a day, has a backup window of 1 hour, and retains backups for 14 days.",
+          "$ref": "AutomatedBackupPolicy"
         },
         "reconciling": {
           "description": "Output only. Reconciling (https:\/\/google.aip.dev\/128#reconciliation), if true, indicates that the service is actively updating the resource. This can happen due to user-triggered updates or system actions like failover or maintenance.",
@@ -385,6 +393,17 @@
         },
         "password": {
           "description": "The initial password for the user.",
+          "type": "string"
+        }
+      }
+    },
+    "BackupSource": {
+      "id": "BackupSource",
+      "description": "Message describing a BackupSource.",
+      "type": "object",
+      "properties": {
+        "backupName": {
+          "description": "Required. The name of the backup resource with the format: * projects\/{project}\/locations\/{region}\/backups\/{backup_id}",
           "type": "string"
         }
       }
@@ -415,6 +434,160 @@
             "MIGRATION_SOURCE_TYPE_UNSPECIFIED",
             "DMS"
           ]
+        }
+      }
+    },
+    "AutomatedBackupPolicy": {
+      "id": "AutomatedBackupPolicy",
+      "description": "Message describing the user-specified automated backup policy. NEXT_ID: 8",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Whether automated automated backups are enabled.",
+          "type": "boolean"
+        },
+        "weeklySchedule": {
+          "$ref": "WeeklySchedule"
+        },
+        "backupWindow": {
+          "description": "Optional. The length of the time window during which a backup can be taken. If a backup does not succeed within this time window, it will be canceled and considered failed. The backup window must be at least 5 minutes long. There is no upper bound on the window. If not set, it will default to 1 hour.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "timeBasedRetention": {
+          "$ref": "TimeBasedRetention"
+        },
+        "quantityBasedRetention": {
+          "$ref": "QuantityBasedRetention"
+        },
+        "location": {
+          "description": "The location where the backup will be stored. Currently, the only supported option is to store the backup in the same region as the cluster.",
+          "type": "string"
+        },
+        "labels": {
+          "description": "Labels to apply to backups created using this configuration.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "WeeklySchedule": {
+      "id": "WeeklySchedule",
+      "description": "A weekly schedule starts a backup at prescribed start times within a day, for the specified days of the week. The weekly schedule message is flexible and can be used to create many types of schedules. For example, to have a daily backup that starts at 22:00, configure the `start_times` field to have one element \"22:00\" and the `days_of_week` field to have all seven days of the week.",
+      "type": "object",
+      "properties": {
+        "startTimes": {
+          "description": "The times during the day to start a backup. At least one start time must be provided. The start times are assumed to be in UTC and required to be an exact hour (e.g., 04:00:00).",
+          "type": "array",
+          "items": {
+            "$ref": "TimeOfDay"
+          }
+        },
+        "daysOfWeek": {
+          "description": "The days of the week to perform a backup. At least one day of the week must be provided.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enumDescriptions": [
+              "The day of the week is unspecified.",
+              "Monday",
+              "Tuesday",
+              "Wednesday",
+              "Thursday",
+              "Friday",
+              "Saturday",
+              "Sunday"
+            ],
+            "enum": [
+              "DAY_OF_WEEK_UNSPECIFIED",
+              "MONDAY",
+              "TUESDAY",
+              "WEDNESDAY",
+              "THURSDAY",
+              "FRIDAY",
+              "SATURDAY",
+              "SUNDAY"
+            ]
+          }
+        }
+      }
+    },
+    "TimeOfDay": {
+      "id": "TimeOfDay",
+      "description": "Represents a time of day. The date and time zone are either not significant or are specified elsewhere. An API may choose to allow leap seconds. Related types are google.type.Date and `google.protobuf.Timestamp`.",
+      "type": "object",
+      "properties": {
+        "hours": {
+          "description": "Hours of day in 24 hour format. Should be from 0 to 23. An API may choose to allow the value \"24:00:00\" for scenarios like business closing time.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "minutes": {
+          "description": "Minutes of hour of day. Must be from 0 to 59.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "seconds": {
+          "description": "Seconds of minutes of the time. Must normally be from 0 to 59. An API may allow the value 60 if it allows leap-seconds.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "nanos": {
+          "description": "Fractions of seconds in nanoseconds. Must be from 0 to 999,999,999.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "TimeBasedRetention": {
+      "id": "TimeBasedRetention",
+      "description": "A time based retention policy specifies that all backups within a certain time period should be retained.",
+      "type": "object",
+      "properties": {
+        "retentionPeriod": {
+          "description": "The retention period.",
+          "type": "string",
+          "format": "google-duration"
+        }
+      }
+    },
+    "QuantityBasedRetention": {
+      "id": "QuantityBasedRetention",
+      "description": "A quantity based policy specifies that a certain number of the most recent successful backups should be retained.",
+      "type": "object",
+      "properties": {
+        "count": {
+          "description": "The number of backups to retain.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "RestoreClusterRequest": {
+      "id": "RestoreClusterRequest",
+      "description": "Message for restoring a Cluster from a backup",
+      "type": "object",
+      "properties": {
+        "clusterId": {
+          "description": "Required. Id of the requesting object If auto-generating Id server-side, remove this field and cluster_id from the method_signature of Create RPC",
+          "type": "string"
+        },
+        "cluster": {
+          "description": "Required. The resource being created Passing initial_user is ignored by `RestoreCluster`",
+          "$ref": "Cluster"
+        },
+        "backupSource": {
+          "$ref": "BackupSource"
+        },
+        "requestId": {
+          "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+          "type": "string"
+        },
+        "validateOnly": {
+          "description": "Optional. If set, the backend validates the request, but doesn't actually execute it.",
+          "type": "boolean"
         }
       }
     },
@@ -697,7 +870,7 @@
           "enumDescriptions": [
             "",
             "ON_DEMAND backups that were triggered by the customer (e.g., not AUTOMATED).",
-            "AUTOMATED backups triggered by the managed backups scheduler pursuant to a managed backup policy."
+            "AUTOMATED backups triggered by the automated backups scheduler pursuant to an automated backup policy."
           ],
           "enum": [
             "TYPE_UNSPECIFIED",
@@ -896,7 +1069,7 @@
                   "type": "string"
                 },
                 "filter": {
-                  "description": "A filter to narrow down results to a preferred subset. The filtering language accepts strings like \"displayName=tokyo\", and is documented in more detail in [AIP-160](https:\/\/google.aip.dev\/160).",
+                  "description": "A filter to narrow down results to a preferred subset. The filtering language accepts strings like `\"displayName=tokyo\"`, and is documented in more detail in [AIP-160](https:\/\/google.aip.dev\/160).",
                   "location": "query",
                   "type": "string"
                 },
@@ -1286,33 +1459,13 @@
                       "location": "path",
                       "required": true,
                       "type": "string"
-                    },
-                    "clusterId": {
-                      "description": "Required. Id of the requesting object If auto-generating Id server-side, remove this field and cluster_id from the method_signature of Create RPC",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "backupSource.backupName": {
-                      "description": "Required. The name of the backup resource with the format: * projects\/{project}\/locations\/{region}\/backups\/{backup_id}",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "requestId": {
-                      "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "validateOnly": {
-                      "description": "Optional. If set, the backend validates the request, but doesn't actually execute it.",
-                      "location": "query",
-                      "type": "boolean"
                     }
                   },
                   "parameterOrder": [
                     "parent"
                   ],
                   "request": {
-                    "$ref": "Cluster"
+                    "$ref": "RestoreClusterRequest"
                   },
                   "response": {
                     "$ref": "Operation"

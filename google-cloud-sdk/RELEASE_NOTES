@@ -5,6 +5,68 @@ Copyright 2014-2022 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 382.0.0 (2022-04-19)
+
+### Access Approval
+
+* Added `--active_key_version` flag to `gcloud access-approval settings update`
+  to set the crypto key version to use for signing approval requests.
+
+### Anthos Multi-Cloud
+
+*   Added `--proxy-secret-arn` flag to `gcloud container aws node-pools
+    update` to update the Amazon Resource Name (ARN) of the AWS Secrets Manager
+    secret containing a proxy configuration.
+*   Added `--proxy-secret-version-id` flag to `gcloud container aws node-pools
+    update` to update the version ID of the AWS Secrets Manager secret
+    containing a proxy configuration.
+*   Added `--clear-proxy-config` flag to `gcloud container aws node-pools
+    update` to clear the proxy configuration associated with the node pool.
+
+### Apigee
+
+*   Fixed issue where `gcloud beta apigee archives list` would only list the
+    first 25 archive deployments, even if more existed in the environment.
+
+### Binauthz
+
+* Updated the following beta commands to better support IAM Conditions:
+  * `gcloud beta attestors get-iam-policy` outputs conditions associated with each binding.
+  * `gcloud beta attestors set-iam-policy` accepts policies with conditional bindings.
+  * `gcloud beta attestors <add|remove>-iam-policy-binding` accepts conditional bindings via new `--condition` and `--condition-from-file` flags.
+  * `gcloud beta policy get-iam-policy` outputs conditions associated with each binding.
+  * `gcloud beta policy set-iam-policy` accepts policies with conditional bindings.
+  * `gcloud beta policy <add|remove>-iam-policy-binding` accepts conditional bindings via new `--condition` and `--condition-from-file` flags.
+
+### Cloud Composer
+
+* Enabled nested Airflow commands for Airflow 1.10.14 and 1.10.15 in `gcloud composer environments run`.
+
+### Cloud Logging
+
+*   Added `--location`, `--bucket`, and `--view` flags to `gcloud logging logs list`
+    to add the ability to limit the results to a view.
+
+### Cloud TPU
+
+* Promoted `gcloud compute tpus tpu-vm` to GA. Commands in this group
+ allow creation and management of Cloud TPU VMs.
+
+### Compute Engine
+
+* Added `INTERNAL` as a choice for `--ipv6-access-type` flag in `compute networks subnets create` and `compute networks subnets update`.
+* Promoted `unspecified` value for `--protocol` flag of `gcloud compute backend-services <create|update>` to GA.
+* Promoted `l3_default` value for `--ip-protocol` flag of `gcloud compute forwarding-rules create` to GA.
+
+### Config Connector
+
+* Updated Google Cloud Config Connector to version 1.81.0.
+  See Config Connector Overview for more details [https://cloud.google.com/config-connector/docs/overview](https://cloud.google.com/config-connector/docs/overview).
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 381.0.0 (2022-04-12)
 
 ### App Engine

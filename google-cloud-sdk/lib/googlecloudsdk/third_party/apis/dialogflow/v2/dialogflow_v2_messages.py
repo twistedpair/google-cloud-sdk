@@ -4783,8 +4783,11 @@ class GoogleCloudDialogflowCxV3Fulfillment(_messages.Message):
       fulfillment but only the first 3 partial responses will be returned. You
       may only want to apply it to fulfillments that have slow webhooks.
     setParameterActions: Set parameter values before executing the webhook.
-    tag: The tag used by the webhook to identify which fulfillment is being
-      called. This field is required if `webhook` is specified.
+    tag: The value of this field will be populated in the WebhookRequest
+      `fulfillmentInfo.tag` field by Dialogflow when the associated webhook is
+      called. The tag is typically used by the webhook service to identify
+      which fulfillment is being called, but it could be used for other
+      purposes. This field is required if `webhook` is specified.
     webhook: The webhook to call. Format:
       `projects//locations//agents//webhooks/`.
   """
@@ -5242,7 +5245,7 @@ class GoogleCloudDialogflowCxV3Page(_messages.Message):
 
   Fields:
     displayName: Required. The human-readable name of the page, unique within
-      the agent.
+      the flow.
     entryFulfillment: The fulfillment to call when the session is entering the
       page.
     eventHandlers: Handlers associated with the page to handle events such as
@@ -6062,8 +6065,11 @@ class GoogleCloudDialogflowCxV3WebhookRequestFulfillmentInfo(_messages.Message):
   r"""Represents fulfillment information communicated to the webhook.
 
   Fields:
-    tag: Always present. The tag used to identify which fulfillment is being
-      called.
+    tag: Always present. The value of the Fulfillment.tag field will be
+      populated in this field by Dialogflow when the associated webhook is
+      called. The tag is typically used by the webhook service to identify
+      which fulfillment is being called, but it could be used for other
+      purposes.
   """
 
   tag = _messages.StringField(1)
@@ -6778,8 +6784,11 @@ class GoogleCloudDialogflowCxV3beta1Fulfillment(_messages.Message):
       fulfillment but only the first 3 partial responses will be returned. You
       may only want to apply it to fulfillments that have slow webhooks.
     setParameterActions: Set parameter values before executing the webhook.
-    tag: The tag used by the webhook to identify which fulfillment is being
-      called. This field is required if `webhook` is specified.
+    tag: The value of this field will be populated in the WebhookRequest
+      `fulfillmentInfo.tag` field by Dialogflow when the associated webhook is
+      called. The tag is typically used by the webhook service to identify
+      which fulfillment is being called, but it could be used for other
+      purposes. This field is required if `webhook` is specified.
     webhook: The webhook to call. Format:
       `projects//locations//agents//webhooks/`.
   """
@@ -7237,7 +7246,7 @@ class GoogleCloudDialogflowCxV3beta1Page(_messages.Message):
 
   Fields:
     displayName: Required. The human-readable name of the page, unique within
-      the agent.
+      the flow.
     entryFulfillment: The fulfillment to call when the session is entering the
       page.
     eventHandlers: Handlers associated with the page to handle events such as
@@ -8057,8 +8066,11 @@ class GoogleCloudDialogflowCxV3beta1WebhookRequestFulfillmentInfo(_messages.Mess
   r"""Represents fulfillment information communicated to the webhook.
 
   Fields:
-    tag: Always present. The tag used to identify which fulfillment is being
-      called.
+    tag: Always present. The value of the Fulfillment.tag field will be
+      populated in this field by Dialogflow when the associated webhook is
+      called. The tag is typically used by the webhook service to identify
+      which fulfillment is being called, but it could be used for other
+      purposes.
   """
 
   tag = _messages.StringField(1)

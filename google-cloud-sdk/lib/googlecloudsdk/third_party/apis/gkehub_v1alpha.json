@@ -2674,7 +2674,7 @@
           "type": "string"
         },
         "managedNamespaces": {
-          "description": "Optional. If true, namespaces must be explicitly declared in a `FleetNamespace` object in order to use Fleet Features.",
+          "description": "Optional. If true, namespaces must be explicitly declared in a `Namespace` object in order to use Fleet Features. Deprecated, not included in final fleet namespaces design",
           "type": "boolean"
         },
         "fleetName": {
@@ -2701,31 +2701,85 @@
         }
       }
     },
-    "FleetNamespace": {
-      "id": "FleetNamespace",
-      "description": "FleetNamespace represents a namespace across the Fleet",
+    "Namespace": {
+      "id": "Namespace",
+      "description": "Namespace represents a namespace across the Fleet",
       "type": "object",
       "properties": {
         "name": {
-          "description": "The name for the Fleet Namespace `projects\/{project}\/locations\/{location}\/fleetNamespaces\/{fleet_namespace}`",
+          "description": "The resource name for the namespace `projects\/{project}\/locations\/{location}\/namespaces\/{namespace}`",
           "type": "string"
+        },
+        "uid": {
+          "description": "Output only. Google-generated UUID for this resource. This is unique across all namespace resources. If a namespace resource is deleted and another resource with the same name is created, it gets a different uid.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. When the namespace was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. When the namespace was last updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "deleteTime": {
+          "description": "Output only. When the namespace was deleted.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "state": {
+          "description": "Output only. State of the namespace resource.",
+          "readOnly": true,
+          "$ref": "NamespaceLifecycleState"
         }
       }
     },
-    "ListFleetNamespacesResponse": {
-      "id": "ListFleetNamespacesResponse",
+    "NamespaceLifecycleState": {
+      "id": "NamespaceLifecycleState",
+      "description": "NamespaceLifecycleState describes the state of a Namespace resource.",
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "Output only. The current state of the Namespace resource.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "The code is not set.",
+            "The namespace is being created.",
+            "The namespace active.",
+            "The namespace is being deleted.",
+            "The namespace is being updated."
+          ],
+          "enum": [
+            "CODE_UNSPECIFIED",
+            "CREATING",
+            "READY",
+            "DELETING",
+            "UPDATING"
+          ]
+        }
+      }
+    },
+    "ListNamespacesResponse": {
+      "id": "ListNamespacesResponse",
       "description": "List of fleet namespaces.",
       "type": "object",
       "properties": {
-        "fleetNamespaces": {
+        "namespaces": {
           "description": "The list of fleet namespaces",
           "type": "array",
           "items": {
-            "$ref": "FleetNamespace"
+            "$ref": "Namespace"
           }
         },
         "nextPageToken": {
-          "description": "A token to request the next page of resources from the `ListFleetNamespaces` method. The value of an empty string means that there are no more resources to return.",
+          "description": "A token to request the next page of resources from the `ListNamespaces` method. The value of an empty string means that there are no more resources to return.",
           "type": "string"
         }
       }
@@ -2788,7 +2842,7 @@
       "type": "object",
       "properties": {
         "policy": {
-          "description": "REQUIRED: The complete policy to be applied to the `resource`. The size of the policy is limited to a few 10s of KB. An empty policy is a valid policy but certain Cloud Platform services (such as Projects) might reject them.",
+          "description": "REQUIRED: The complete policy to be applied to the `resource`. The size of the policy is limited to a few 10s of KB. An empty policy is a valid policy but certain Google Cloud services (such as Projects) might reject them.",
           "$ref": "Policy"
         },
         "updateMask": {
@@ -2839,7 +2893,7 @@
           "type": "string"
         },
         "members": {
-          "description": "Specifies the principals requesting access for a Cloud Platform resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
+          "description": "Specifies the principals requesting access for a Google Cloud resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
           "type": "array",
           "items": {
             "type": "string"
@@ -2928,7 +2982,7 @@
       "type": "object",
       "properties": {
         "permissions": {
-          "description": "The set of permissions to check for the `resource`. Permissions with wildcards (such as '*' or 'storage.*') are not allowed. For more information see [IAM Overview](https:\/\/cloud.google.com\/iam\/docs\/overview#permissions).",
+          "description": "The set of permissions to check for the `resource`. Permissions with wildcards (such as `*` or `storage.*`) are not allowed. For more information see [IAM Overview](https:\/\/cloud.google.com\/iam\/docs\/overview#permissions).",
           "type": "array",
           "items": {
             "type": "string"
@@ -3984,23 +4038,48 @@
                 }
               }
             },
-            "fleetNamespaces": {
+            "namespaces": {
               "methods": {
+                "get": {
+                  "id": "gkehub.projects.locations.namespaces.get",
+                  "path": "v1alpha/{+name}",
+                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The Namespace resource name in the format `projects\/*\/locations\/*\/namespaces\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Namespace"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Returns the details of a fleet namespace."
+                },
                 "create": {
-                  "id": "gkehub.projects.locations.fleetNamespaces.create",
-                  "path": "v1alpha/{+parent}/fleetNamespaces",
-                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/fleetNamespaces",
+                  "id": "gkehub.projects.locations.namespaces.create",
+                  "path": "v1alpha/{+parent}/namespaces",
+                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/namespaces",
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent (project and location) where the FleetNamespace will be created. Specified in the format `projects\/*\/locations\/*`.",
+                      "description": "Required. The parent (project and location) where the Namespace will be created. Specified in the format `projects\/*\/locations\/*`.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
-                    "fleetNamespaceId": {
-                      "description": "Required. Client chosen ID for the FleetNamespace. `fleet_namespace_id` must be a valid RFC 1123 compliant DNS label: 1. At most 63 characters in length 2. It must consist of lower case alphanumeric characters or `-` 3. It must start and end with an alphanumeric character Which can be expressed as the regex: `[a-z0-9]([-a-z0-9]*[a-z0-9])?`, with a maximum length of 63 characters.",
+                    "namespaceId": {
+                      "description": "Required. Client chosen ID for the Namespace. `namespace_id` must be a valid RFC 1123 compliant DNS label: 1. At most 63 characters in length 2. It must consist of lower case alphanumeric characters or `-` 3. It must start and end with an alphanumeric character Which can be expressed as the regex: `[a-z0-9]([-a-z0-9]*[a-z0-9])?`, with a maximum length of 63 characters.",
                       "location": "query",
                       "type": "string"
                     }
@@ -4009,7 +4088,7 @@
                     "parent"
                   ],
                   "request": {
-                    "$ref": "FleetNamespace"
+                    "$ref": "Namespace"
                   },
                   "response": {
                     "$ref": "Operation"
@@ -4019,15 +4098,49 @@
                   ],
                   "description": "Creates a fleet namespace."
                 },
-                "delete": {
-                  "id": "gkehub.projects.locations.fleetNamespaces.delete",
+                "patch": {
+                  "id": "gkehub.projects.locations.namespaces.patch",
                   "path": "v1alpha/{+name}",
-                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/fleetNamespaces/{fleetNamespacesId}",
+                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "The resource name for the namespace `projects\/{project}\/locations\/{location}\/namespaces\/{namespace}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Required. The fields to be updated.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "Namespace"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Updates a fleet namespace."
+                },
+                "delete": {
+                  "id": "gkehub.projects.locations.namespaces.delete",
+                  "path": "v1alpha/{+name}",
+                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}",
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Required. The FleetNamespace resource name in the format `projects\/*\/locations\/*\/fleetNamespaces\/*`.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/fleetNamespaces\/[^\/]+$",
+                      "description": "Required. The Namespace resource name in the format `projects\/*\/locations\/*\/namespaces\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -4045,9 +4158,9 @@
                   "description": "Deletes a fleet namespace."
                 },
                 "list": {
-                  "id": "gkehub.projects.locations.fleetNamespaces.list",
-                  "path": "v1alpha/{+parent}/fleetNamespaces",
-                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/fleetNamespaces",
+                  "id": "gkehub.projects.locations.namespaces.list",
+                  "path": "v1alpha/{+parent}/namespaces",
+                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/namespaces",
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
@@ -4073,7 +4186,7 @@
                     "parent"
                   ],
                   "response": {
-                    "$ref": "ListFleetNamespacesResponse"
+                    "$ref": "ListNamespacesResponse"
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"

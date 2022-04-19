@@ -58,7 +58,7 @@ class DatafusionV1beta1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Add DNS peering on the given resource.
+      r"""Creates DNS peering on the given resource.
 
       Args:
         request: (DatafusionProjectsLocationsInstancesDnsPeeringsCreateRequest) input message
@@ -76,7 +76,7 @@ class DatafusionV1beta1(base_api.BaseApiClient):
         method_id='datafusion.projects.locations.instances.dnsPeerings.create',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=[],
+        query_params=['dnsPeeringId'],
         relative_path='v1beta1/{+parent}/dnsPeerings',
         request_field='dnsPeering',
         request_type_name='DatafusionProjectsLocationsInstancesDnsPeeringsCreateRequest',
@@ -85,7 +85,7 @@ class DatafusionV1beta1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Remove DNS peering on the given resource.
+      r"""Deletes DNS peering on the given resource.
 
       Args:
         request: (DatafusionProjectsLocationsInstancesDnsPeeringsDeleteRequest) input message
@@ -112,7 +112,7 @@ class DatafusionV1beta1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""List DNS peering for a given resource.
+      r"""Lists DNS peerings for a given resource.
 
       Args:
         request: (DatafusionProjectsLocationsInstancesDnsPeeringsListRequest) input message

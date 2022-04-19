@@ -34,6 +34,8 @@ from googlecloudsdk.command_lib.run import exceptions
 from googlecloudsdk.command_lib.run import flags as run_flags
 from googlecloudsdk.command_lib.run import serverless_operations
 from googlecloudsdk.command_lib.run.integrations import flags
+from googlecloudsdk.command_lib.run.integrations import messages_util
+from googlecloudsdk.command_lib.run.integrations import stages
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 
@@ -67,6 +69,25 @@ def Connect(conn_context):
   yield RunAppsOperations(client, conn_context.api_version, conn_context.region)
 
 
+def _HandleQueueingException(err):
+  """Reraises the error if with better message if it's a queueing error.
+
+  Args:
+    err: the exception to be handled.
+
+  Raises:
+    exceptions.IntegrationsOperationError: this is a queueing error.
+  """
+  content = json.loads(err.content)
+  msg = content['error']['message']
+  code = content['error']['code']
+  if msg == 'unable to queue the operation' and code == 409:
+    raise exceptions.IntegrationsOperationError(
+        'An integration is currently being configured.  Please wait ' +
+        'until the current process is complete and try again')
+  raise err
+
+
 class RunAppsOperations(object):
   """Client used by Cloud Run Integrations to communicate with the API."""
 
@@ -92,45 +113,68 @@ class RunAppsOperations(object):
     return self._client.MESSAGES_MODULE
 
   def ApplyAppConfig(self,
+                     tracker,
                      appname,
                      appconfig,
-                     message=None,
+                     integration_name=None,
+                     deploy_message=None,
                      match_type_names=None,
                      etag=None):
     """Applies the application config.
 
     Args:
+      tracker: StagedProgressTracker, to report on the progress.
       appname:  name of the application.
       appconfig: config of the application.
-      message: the message to display when waiting for API call to finish.
-        If not given, default messages will be used.
+      integration_name: name of the integration that's being updated.
+      deploy_message: message to display when deployment in progress.
       match_type_names: array of type/name pairs used for create selector.
       etag: the etag of the application if it's an incremental patch.
     """
+    tracker.StartStage(stages.UPDATE_APPLICATION)
+    if integration_name:
+      tracker.UpdateStage(
+          stages.UPDATE_APPLICATION,
+          'You can check the status at any time by running '
+          '`gcloud alpha run integrations describe {}`'.format(
+              integration_name))
     try:
-      self._UpdateApplication(appname, appconfig, message, etag)
-      if match_type_names is None:
-        match_type_names = [{'type': '*', 'name': '*'}]
-      create_selector = {'matchTypeNames': match_type_names}
+      self._UpdateApplication(appname, appconfig, etag)
+    except api_exceptions.HttpConflictError as err:
+      _HandleQueueingException(err)
+    except exceptions.IntegrationsOperationError as err:
+      tracker.FailStage(stages.UPDATE_APPLICATION, err)
+    else:
+      tracker.CompleteStage(stages.UPDATE_APPLICATION)
+
+    if match_type_names is None:
+      match_type_names = [{'type': '*', 'name': '*'}]
+    create_selector = {'matchTypeNames': match_type_names}
+
+    tracker.UpdateHeaderMessage(
+        'Deployment started. This process will continue even if '
+        'your terminal session is interrupted.')
+    tracker.StartStage(stages.CREATE_DEPLOYMENT)
+    if deploy_message:
+      tracker.UpdateStage(stages.CREATE_DEPLOYMENT, deploy_message)
+    try:
       self._CreateDeployment(appname, create_selector=create_selector)
     except api_exceptions.HttpConflictError as err:
-      content = json.loads(err.content)
-      msg = content['error']['message']
-      code = content['error']['code']
-      if msg == 'unable to queue the operation' and code == 409:
-        raise exceptions.IntegrationsOperationError(
-            'An integration is currently being configured.  Please wait ' +
-            'until the current process is complete and try again')
-      raise err
+      _HandleQueueingException(err)
+    except exceptions.IntegrationsOperationError as err:
+      tracker.FailStage(stages.CREATE_DEPLOYMENT, err)
+    else:
+      tracker.UpdateStage(stages.CREATE_DEPLOYMENT, '')
+      tracker.CompleteStage(stages.CREATE_DEPLOYMENT)
 
-  def _UpdateApplication(self, appname, appconfig, message, etag):
+    tracker.UpdateHeaderMessage('Done.')
+
+  def _UpdateApplication(self, appname, appconfig, etag):
     """Update Application config, waits for operation to finish.
 
     Args:
       appname:  name of the application.
       appconfig: config of the application.
-      message: the message to display when waiting for API call to finish.
-        If not given, default messages will be used.
       etag: the etag of the application if it's an incremental patch.
     """
     app_ref = self.GetAppRef(appname)
@@ -139,28 +183,21 @@ class RunAppsOperations(object):
     is_patch = etag or api_utils.GetApplication(self._client, app_ref)
     if is_patch:
       operation = api_utils.PatchApplication(self._client, app_ref, application)
-      if message is None:
-        message = 'Updating Application [{}]'.format(appname)
     else:
       operation = api_utils.CreateApplication(self._client, app_ref,
                                               application)
-      if message is None:
-        message = 'Creating Application [{}]'.format(appname)
-    api_utils.WaitForApplicationOperation(self._client, operation, message)
+    api_utils.WaitForApplicationOperation(self._client, operation)
 
   def _CreateDeployment(self,
                         appname,
                         create_selector=None,
-                        delete_selector=None,
-                        message='Configuring Integration'):
+                        delete_selector=None):
     """Create a deployment, waits for operation to finish.
 
     Args:
       appname:  name of the application.
       create_selector: create selector for the deployment.
       delete_selector: delete selector for the deployment.
-      message: the message to display when waiting for API call to finish.
-        If not given, default messages will be used.
     """
     app_ref = self.GetAppRef(appname)
     deployment_name = self._GetDeploymentName(app_ref.Name())
@@ -176,7 +213,7 @@ class RunAppsOperations(object):
                                                 deployment)
 
     dep_response = api_utils.WaitForDeploymentOperation(
-        self._client, deployment_ops, message)
+        self._client, deployment_ops)
     self.CheckDeploymentState(dep_response)
 
   def _GetDeploymentName(self, appname):
@@ -184,8 +221,8 @@ class RunAppsOperations(object):
         appname,
         datetime.datetime.now().strftime('%Y%m%d%H%M%S'))
 
-  def GetIntegrationTypeFromConfig(self, resource_config):
-    """Gets the integration type.
+  def GetResourceTypeFromConfig(self, resource_config):
+    """Gets the resource type.
 
     The input is converted from proto with "oneof" property. Thus the dictionary
     is expected to have only one key, matching the type of the matching oneof.
@@ -242,10 +279,16 @@ class RunAppsOperations(object):
     except api_exceptions.HttpError:
       return None
 
-  def CreateIntegration(self, integration_type, parameters, service, name=None):
+  def CreateIntegration(self,
+                        tracker,
+                        integration_type,
+                        parameters,
+                        service,
+                        name=None):
     """Create an integration.
 
     Args:
+      tracker: StagedProgressTracker, to report on the progress of releasing.
       integration_type:  type of the integration.
       parameters: parameter dictionary from args.
       service: the service to attach to the new integration.
@@ -277,16 +320,26 @@ class RunAppsOperations(object):
 
     self.CheckCloudRunServices([service])
 
+    deploy_message = messages_util.GetDeployMessage(resource_type, create=True)
     application = encoding.DictToMessage(app_dict, self.messages.Application)
-    self.ApplyAppConfig(
-        appname=_DEFAULT_APP_NAME,
-        appconfig=application.config,
-        message='Saving Configuration for Integration [{}]'.format(name),
-        match_type_names=match_type_names,
-        etag=application.etag)
+    try:
+      self.ApplyAppConfig(
+          tracker=tracker,
+          appname=_DEFAULT_APP_NAME,
+          appconfig=application.config,
+          integration_name=name,
+          deploy_message=deploy_message,
+          match_type_names=match_type_names,
+          etag=application.etag)
+    except exceptions.IntegrationsOperationError as err:
+      tracker.AddWarning('To retry the deployment, use update command ' +
+                         'gcloud alpha run integrations update {}'.format(name))
+      raise err
+
     return name
 
   def UpdateIntegration(self,
+                        tracker,
                         name,
                         parameters,
                         add_service=None,
@@ -294,6 +347,7 @@ class RunAppsOperations(object):
     """Update an integration.
 
     Args:
+      tracker: StagedProgressTracker, to report on the progress of releasing.
       name:  str, the name of the resource to update.
       parameters: dict, the parameters from args.
       add_service: the service to attach to the integration.
@@ -312,7 +366,7 @@ class RunAppsOperations(object):
       raise exceptions.IntegrationNotFoundError(
           'Integration [{}] cannot be found'.format(name))
 
-    resource_type = self.GetIntegrationTypeFromConfig(existing_resource)
+    resource_type = self.GetResourceTypeFromConfig(existing_resource)
     integration_type = types_utils.GetIntegrationType(resource_type)
     flags.ValidateUpdateParameters(integration_type, parameters)
     resource_config = self._GetResourceConfig(resource_type, parameters,
@@ -341,22 +395,33 @@ class RunAppsOperations(object):
           match_type_names.append({'type': 'service', 'name': service})
     elif add_service:
       services.append(add_service)
+    elif self._IsBackingResource(resource_type) and remove_service is None:
+      services.extend(
+          self._GetRefServices(name, resource_type, resource_config,
+                               resources_map))
+      for service in services:
+        match_type_names.append({'type': 'service', 'name': service})
+
     if services:
       self.CheckCloudRunServices(services)
 
+    deploy_message = messages_util.GetDeployMessage(resource_type)
     application = encoding.DictToMessage(app_dict, self.messages.Application)
     return self.ApplyAppConfig(
+        tracker=tracker,
         appname=_DEFAULT_APP_NAME,
         appconfig=application.config,
-        message='Updating Integration [{}]'.format(name),
+        integration_name=name,
+        deploy_message=deploy_message,
         match_type_names=match_type_names,
         etag=application.etag)
 
-  def DeleteIntegration(self, name):
+  def DeleteIntegration(self, name, tracker):
     """Delete an integration.
 
     Args:
       name:  str, the name of the resource to update.
+      tracker: StagedProgressTracker, to report on the progress.
 
     Raises:
       IntegrationNotFoundError: If the integration is not found.
@@ -370,62 +435,72 @@ class RunAppsOperations(object):
     if resource is None:
       raise exceptions.IntegrationNotFoundError(
           'Integration [{}] cannot be found'.format(name))
-    resource_type = self.GetIntegrationTypeFromConfig(resource)
+    resource_type = self.GetResourceTypeFromConfig(resource)
 
     # TODO(b/222748706): revisit whether this apply to future ingress services.
+    services = []
     if not self._IsIngressResource(resource_type):
       # Unbind services
       services = self._GetRefServices(name, resource_type, resource,
                                       resources_map)
-      if services:
-        match_type_names = []
-        for service in services:
-          self._RemoveServiceToIntegrationRef(name, resource_type,
-                                              resources_map[service])
-          match_type_names.append({'type': 'service', 'name': service})
-        application = encoding.DictToMessage(app_dict,
-                                             self.messages.Application)
-        # TODO(b/222748706): refine message on failure.
-        self.ApplyAppConfig(
-            appname=_DEFAULT_APP_NAME,
-            appconfig=application.config,
-            message='Removing services from integration [{}]'.format(name),
-            match_type_names=match_type_names,
-            etag=application.etag)
+    if services:
+      match_type_names = []
+      for service in services:
+        self._RemoveServiceToIntegrationRef(name, resource_type,
+                                            resources_map[service])
+        match_type_names.append({'type': 'service', 'name': service})
+      application = encoding.DictToMessage(app_dict,
+                                           self.messages.Application)
+      # TODO(b/222748706): refine message on failure.
+      self.ApplyAppConfig(
+          tracker=tracker,
+          appname=_DEFAULT_APP_NAME,
+          appconfig=application.config,
+          match_type_names=match_type_names,
+          etag=application.etag)
+    else:
+      tracker.CompleteStage(stages.UPDATE_APPLICATION)
+      tracker.CompleteStage(stages.CREATE_DEPLOYMENT)
 
     # TODO(b/222748706): refine message on failure.
     # Undeploy integration resource
-    self._UndeployResource(resource_type, name)
+    self._UndeployResource(resource_type, name, tracker)
 
     integration_type = types_utils.GetIntegrationType(resource_type)
     return integration_type
 
-  def _UndeployResource(self, resource_type, name):
+  def _UndeployResource(self, resource_type, name, tracker):
     """Undeploy a resource.
 
     Args:
       resource_type: type of the resource
       name: name of the resource
+      tracker: StagedProgressTracker, to report on the progress.
     """
     delete_selector = self._GetDeleteSelectors(name, resource_type)
 
+    tracker.StartStage(stages.UNDEPLOY_RESOURCE)
     self._CreateDeployment(
         appname=_DEFAULT_APP_NAME,
-        delete_selector=delete_selector,
-        message='Deleting Integration resources')
+        delete_selector=delete_selector,)
+    tracker.CompleteStage(stages.UNDEPLOY_RESOURCE)
 
     # Get application again to refresh etag before update
     app_dict = self._GetDefaultAppDict()
     del app_dict[_CONFIG_KEY][_RESOURCES_KEY][name]
     application = encoding.DictToMessage(app_dict, self.messages.Application)
+    tracker.StartStage(stages.CLEANUP_CONFIGURATION)
     self._UpdateApplication(
         appname=_DEFAULT_APP_NAME,
         appconfig=application.config,
-        message='Saving Integration Configurations',
         etag=application.etag)
+    tracker.CompleteStage(stages.CLEANUP_CONFIGURATION)
 
   def _IsIngressResource(self, resource_type):
     return resource_type == 'router'
+
+  def _IsBackingResource(self, resource_type):
+    return resource_type == 'redis'
 
   def ListIntegrationTypes(self):
     """Returns the list of integration type definitions.
@@ -474,7 +549,7 @@ class RunAppsOperations(object):
     # Filter by type and/or service.
     output = []
     for name, resource in app_resources.items():
-      resource_type = self.GetIntegrationTypeFromConfig(resource)
+      resource_type = self.GetResourceTypeFromConfig(resource)
       integration_type = types_utils.GetIntegrationType(resource_type)
 
       # Remove invalid integrations.

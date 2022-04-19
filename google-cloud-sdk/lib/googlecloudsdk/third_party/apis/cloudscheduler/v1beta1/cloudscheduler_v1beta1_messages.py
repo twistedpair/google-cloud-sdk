@@ -835,7 +835,8 @@ class PubsubMessage(_messages.Message):
       same non-empty `ordering_key` value will be delivered to subscribers in
       the order in which they are received by the Pub/Sub system. All
       `PubsubMessage`s published in a given `PublishRequest` must specify the
-      same `ordering_key` value.
+      same `ordering_key` value. For more information, see [ordering
+      messages](https://cloud.google.com/pubsub/docs/ordering).
     publishTime: The time at which the message was published, populated by the
       server when it receives the `Publish` call. It must not be populated by
       the publisher in a `Publish` call.

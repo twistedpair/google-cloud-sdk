@@ -679,11 +679,29 @@ https://cloud.google.com/sdk/gcloud/reference/container/clusters/create#--scopes
       'Flags to specify upgrade settings for autoprovisioned nodes:',
       hidden=hidden,
   )
+  upgrade_option_enablement_group = upgrade_settings_group.add_argument_group(
+      'Flag group to choose the top level upgrade option:',
+      hidden=True,
+      mutex=True,
+  )
+  upgrade_option_enablement_group.add_argument(
+      '--enable-autoprovisioning-rolling-update',
+      action='store_true',
+      hidden=True,
+      help="""\
+Whether to use rolling (surge) update for the autoprovisioned node pool.
+""")
+  upgrade_option_enablement_group.add_argument(
+      '--enable-autoprovisioning-blue-green-update',
+      action='store_true',
+      hidden=True,
+      help="""\
+Whether to use blue/green update for the autoprovisioned node pool.
+""")
   upgrade_settings_group.add_argument(
       '--autoprovisioning-max-surge-upgrade',
       type=int,
       hidden=hidden,
-      required=True,
       help="""\
 Number of extra (surge) nodes to be created on each upgrade of an
 autoprovisioned node pool.
@@ -692,10 +710,41 @@ autoprovisioned node pool.
       '--autoprovisioning-max-unavailable-upgrade',
       type=int,
       hidden=hidden,
-      required=True,
       help="""\
 Number of nodes that can be unavailable at the same time on each
 upgrade of an autoprovisioned node pool.
+""")
+  spec = {
+      'batch-node-count': int,
+      'batch-percent': float,
+      'batch-soak-duration': str,
+  }
+  upgrade_settings_group.add_argument(
+      '--autoprovisioning-standard-rollout-policy',
+      metavar='batch-node-count=BATCH_NODE_COUNT,batch-percent=BATCH_NODE_PERCENTAGE,batch-soak-duration=BATCH_SOAK_DURATION',
+      type=arg_parsers.ArgDict(spec=spec),
+      hidden=True,
+      help="""\
+Standard rollout policy options for Blue Green Update.
+This argument should be used in conjunction with
+`--enable-autoprovisioning-blue-green-update` to take effect.
+
+Batch sizes are specfied by one of, batch-node-count or batch-percent.
+The duration between batches is specified by batch-soak-duration.
+
+Example:
+`--standard-rollout-policy=batch-node-count=3,batch-soak-duration=60s`
+`--standard-rollout-policy=batch-percent=0.05,batch-soak-duration=180s`
+""")
+  upgrade_settings_group.add_argument(
+      '--autoprovisioning-node-pool-soak-duration',
+      type=str,
+      hidden=True,
+      help="""\
+Time in seconds to be spent waiting during blue green update before
+deleting the blue pool and completing the update.
+This argument should be used in conjunction with
+`--enable-autoprovisioning-blue-green-update` to take effect.
 """)
   management_settings_group = from_flags_group.add_argument_group(
       'Flags to specify node management settings for autoprovisioned nodes:',

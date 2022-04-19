@@ -22,6 +22,14 @@ from __future__ import unicode_literals
 from googlecloudsdk.core import properties
 
 
+def get_first_matching_message_payload(messages, topic):
+  """Gets first item with matching topic from list of task output messages."""
+  for message in messages:
+    if topic is message.topic:
+      return message.payload
+  return None
+
+
 def should_use_parallelism():
   """Checks execution settings to determine if parallelism should be used.
 

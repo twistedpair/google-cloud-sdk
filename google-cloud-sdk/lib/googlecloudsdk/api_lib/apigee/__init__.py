@@ -73,7 +73,7 @@ class RevisionsClient(base.BaseClient):
   _entity_path = ["organization", "api", "revision"]
 
 
-class _DeveloperApplicationsClient(base.PagedListClient):
+class _DeveloperApplicationsClient(base.FieldPagedListClient):
   _entity_path = ["organization", "developer", "app"]
   _list_container = "app"
   _page_field = "name"
@@ -119,7 +119,7 @@ class ProjectsClient(base.BaseClient):
                                         body=json.dumps(org_info))
 
 
-class ApplicationsClient(base.PagedListClient):
+class ApplicationsClient(base.FieldPagedListClient):
   """REST client for Apigee applications."""
   _entity_path = ["organization", "app"]
   _list_container = "app"
@@ -139,7 +139,7 @@ class ApplicationsClient(base.PagedListClient):
       yield {"appId": item["appId"], "name": item["name"]}
 
 
-class DevelopersClient(base.PagedListClient):
+class DevelopersClient(base.FieldPagedListClient):
   _entity_path = ["organization", "developer"]
   _list_container = "developer"
   _page_field = "email"
@@ -205,7 +205,7 @@ ProductsInfo = collections.namedtuple("ProductsInfo", [
 ])
 
 
-class ProductsClient(base.PagedListClient):
+class ProductsClient(base.FieldPagedListClient):
   """REST client for Apigee API products."""
   _entity_path = ["organization", "product"]
   _list_container = "apiProduct"
@@ -243,10 +243,11 @@ class ProductsClient(base.PagedListClient):
         body=json.dumps(product_dict))
 
 
-class ArchivesClient(base.BaseClient):
+class ArchivesClient(base.TokenPagedListClient):
   """Client for the Apigee archiveDeployments API."""
   # These are the entity names used internally by gcloud.
   _entity_path = ["organization", "environment", "archive_deployment"]
+  _list_container = "archiveDeployments"
 
   @classmethod
   def Update(cls, identifiers, labels):
@@ -283,18 +284,14 @@ class ArchivesClient(base.BaseClient):
         include "organizationsId" and "environmentsId".
 
     Returns:
-      A dict of the API response in the form of:
-        {"archiveDeployments": [list of archive deployments]}
+      An iterable of archive deployments.
 
     Raises:
       command_lib.apigee.errors.RequestError if there is an error with the API
         request.
     """
     try:
-      return request.ResponseToApiRequest(
-          identifiers,
-          entity_path=cls._entity_path[:-1],
-          entity_collection=cls._entity_path[-1])
+      return super(ArchivesClient, cls).List(identifiers)
     except errors.RequestError as error:
       raise error.RewrittenError("archive deployment", "list")
 

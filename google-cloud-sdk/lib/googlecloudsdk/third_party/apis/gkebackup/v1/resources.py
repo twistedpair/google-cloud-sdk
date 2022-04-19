@@ -18,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://gkebackup.googleapis.com/v1/'
-DOCS_URL = 'https://cloud.google.com/kubernetes-engine'
+DOCS_URL = 'https://cloud.google.com/kubernetes-engine/docs/add-on/backup-for-gke'
 
 
 class Collections(enum.Enum):

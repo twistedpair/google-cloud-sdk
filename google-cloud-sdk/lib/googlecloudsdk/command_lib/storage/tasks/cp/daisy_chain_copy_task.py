@@ -32,6 +32,7 @@ from googlecloudsdk.api_lib.storage import api_factory
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.api_lib.storage import request_config_factory
 from googlecloudsdk.command_lib.storage import errors
+from googlecloudsdk.command_lib.storage import manifest_util
 from googlecloudsdk.command_lib.storage import progress_callbacks
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage.tasks import task
@@ -418,7 +419,7 @@ class BufferController:
       self.exception_raised = error
 
 
-class DaisyChainCopyTask(task.Task, copy_util.CopyTaskExitHandlerMixin):
+class DaisyChainCopyTask(copy_util.CopyTaskWithExitHandler):
   """Represents an operation to copy by downloading and uploading.
 
   This task downloads from one cloud location and uplaods to another cloud
@@ -447,18 +448,19 @@ class DaisyChainCopyTask(task.Task, copy_util.CopyTaskExitHandlerMixin):
         URL of the copy result.
       user_request_args (UserRequestArgs|None): Values for RequestConfig.
     """
-    super(DaisyChainCopyTask, self).__init__()
+    super(DaisyChainCopyTask, self).__init__(
+        source_resource,
+        destination_resource,
+        user_request_args=user_request_args)
     if (not isinstance(source_resource.storage_url, storage_url.CloudUrl)
         or not isinstance(destination_resource.storage_url,
                           storage_url.CloudUrl)):
       raise ValueError('DaisyChainCopyTask is for copies between cloud'
                        ' providers.')
 
-    self._source_resource = source_resource
-    self._destination_resource = destination_resource
     self._delete_source = delete_source
     self._print_created_message = print_created_message
-    self._user_request_args = user_request_args
+
     self.parallel_processing_key = (
         self._destination_resource.storage_url.url_string)
 
@@ -490,6 +492,12 @@ class DaisyChainCopyTask(task.Task, copy_util.CopyTaskExitHandlerMixin):
       log.status.Print(
           copy_util.get_no_clobber_message(
               self._destination_resource.storage_url))
+      if self._send_manifest_messages:
+        manifest_util.send_skip_message(
+            task_status_queue, self._source_resource,
+            self._destination_resource,
+            copy_util.get_no_clobber_message(
+                self._destination_resource.storage_url))
       return
 
     progress_callback = progress_callbacks.FilesAndBytesProgressCallback(
@@ -524,6 +532,7 @@ class DaisyChainCopyTask(task.Task, copy_util.CopyTaskExitHandlerMixin):
         size=self._source_resource.size,
         user_request_args=self._user_request_args)
 
+    result_resource = None
     try:
       upload_strategy = upload_util.get_upload_strategy(
           api=destination_client,
@@ -549,8 +558,15 @@ class DaisyChainCopyTask(task.Task, copy_util.CopyTaskExitHandlerMixin):
     if buffer_controller.exception_raised:
       raise buffer_controller.exception_raised
 
-    if self._print_created_message:
-      log.status.Print('Created: {}'.format(result_resource.storage_url))
+    if result_resource:
+      if self._print_created_message:
+        log.status.Print('Created: {}'.format(result_resource.storage_url))
+      if self._send_manifest_messages:
+        manifest_util.send_success_message(
+            task_status_queue,
+            self._source_resource,
+            self._destination_resource,
+            md5_hash=result_resource.md5_hash)
 
     if self._delete_source:
       return task.Output(

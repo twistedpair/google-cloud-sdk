@@ -78,7 +78,7 @@ class Binding(_messages.Message):
       policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
-    members: Specifies the principals requesting access for a Cloud Platform
+    members: Specifies the principals requesting access for a Google Cloud
       resource. `members` can have the following values: * `allUsers`: A
       special identifier that represents anyone who is on the internet; with
       or without a Google account. * `allAuthenticatedUsers`: A special
@@ -796,11 +796,13 @@ class Instance(_messages.Message):
       PD_STANDARD: Standard persistent disk type.
       PD_SSD: SSD persistent disk type.
       PD_BALANCED: Balanced persistent disk type.
+      PD_EXTREME: Extreme persistent disk type.
     """
     DISK_TYPE_UNSPECIFIED = 0
     PD_STANDARD = 1
     PD_SSD = 2
     PD_BALANCED = 3
+    PD_EXTREME = 4
 
   class DataDiskTypeValueValuesEnum(_messages.Enum):
     r"""Input only. The type of the data disk attached to this instance,
@@ -811,11 +813,13 @@ class Instance(_messages.Message):
       PD_STANDARD: Standard persistent disk type.
       PD_SSD: SSD persistent disk type.
       PD_BALANCED: Balanced persistent disk type.
+      PD_EXTREME: Extreme persistent disk type.
     """
     DISK_TYPE_UNSPECIFIED = 0
     PD_STANDARD = 1
     PD_SSD = 2
     PD_BALANCED = 3
+    PD_EXTREME = 4
 
   class DiskEncryptionValueValuesEnum(_messages.Enum):
     r"""Input only. Disk encryption method used on the boot and data disks,
@@ -1210,11 +1214,13 @@ class LocalDiskInitializeParams(_messages.Message):
       PD_STANDARD: Standard persistent disk type.
       PD_SSD: SSD persistent disk type.
       PD_BALANCED: Balanced persistent disk type.
+      PD_EXTREME: Extreme persistent disk type.
     """
     DISK_TYPE_UNSPECIFIED = 0
     PD_STANDARD = 1
     PD_SSD = 2
     PD_BALANCED = 3
+    PD_EXTREME = 4
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -2913,8 +2919,8 @@ class SetIamPolicyRequest(_messages.Message):
   Fields:
     policy: REQUIRED: The complete policy to be applied to the `resource`. The
       size of the policy is limited to a few 10s of KB. An empty policy is a
-      valid policy but certain Cloud Platform services (such as Projects)
-      might reject them.
+      valid policy but certain Google Cloud services (such as Projects) might
+      reject them.
   """
 
   policy = _messages.MessageField('Policy', 1)
@@ -3207,7 +3213,7 @@ class TestIamPermissionsRequest(_messages.Message):
 
   Fields:
     permissions: The set of permissions to check for the `resource`.
-      Permissions with wildcards (such as '*' or 'storage.*') are not allowed.
+      Permissions with wildcards (such as `*` or `storage.*`) are not allowed.
       For more information see [IAM
       Overview](https://cloud.google.com/iam/docs/overview#permissions).
   """

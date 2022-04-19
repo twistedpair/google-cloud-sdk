@@ -90,7 +90,8 @@ class Client(object):
             detail_message_callback=poller.GetDetailMessage,
             aborted_message='Aborting wait for operation {}.\n'.format(
                 operation_ref)),
-        wait_ceiling_ms=constants.MAX_LRO_POLL_INTERVAL_MS)
+        wait_ceiling_ms=constants.MAX_LRO_POLL_INTERVAL_MS,
+        max_wait_ms=constants.MAX_LRO_WAIT_MS)
 
 
 class _Poller(waiter.CloudOperationPollerNoResources):

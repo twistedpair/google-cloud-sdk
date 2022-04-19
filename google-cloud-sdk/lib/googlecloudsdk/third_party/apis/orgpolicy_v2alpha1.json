@@ -220,6 +220,10 @@
         },
         "spec": {
           "$ref": "GoogleCloudOrgpolicyV2alpha1PolicySpec"
+        },
+        "dryRunSpec": {
+          "description": "dry-run policy. go\/op-dryrun-dd",
+          "$ref": "GoogleCloudOrgpolicyV2alpha1PolicySpec"
         }
       }
     },

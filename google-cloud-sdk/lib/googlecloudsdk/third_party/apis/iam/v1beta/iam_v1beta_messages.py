@@ -53,7 +53,7 @@ class GoogleIamV1BindingDelta(_messages.Message):
   Fields:
     action: The action that was performed on a Binding. Required
     condition: The condition that is associated with this binding.
-    member: A single identity requesting access for a Cloud Platform resource.
+    member: A single identity requesting access for a Google Cloud resource.
       Follows the same format of Binding.members. Required
     role: Role that is assigned to `members`. For example, `roles/viewer`,
       `roles/editor`, or `roles/owner`. Required

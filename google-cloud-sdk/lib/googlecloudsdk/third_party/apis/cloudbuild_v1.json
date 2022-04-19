@@ -1369,6 +1369,10 @@
           "description": "BitbucketServerTriggerConfig describes the configuration of a trigger that creates a build whenever a Bitbucket Server event is received.",
           "$ref": "BitbucketServerTriggerConfig"
         },
+        "gitlabEnterpriseEventsConfig": {
+          "description": "GitLabEnterpriseEventsConfig describes the configuration of a trigger that creates a build whenever a GitLab Enterprise event is received.",
+          "$ref": "GitLabEventsConfig"
+        },
         "autodetect": {
           "description": "Autodetect build configuration. The following precedence is used (case insensitive): 1. cloudbuild.yaml 2. cloudbuild.yml 3. cloudbuild.json 4. Dockerfile Currently only available for GitHub App Triggers.",
           "type": "boolean"
@@ -1865,6 +1869,130 @@
         }
       }
     },
+    "GitLabEventsConfig": {
+      "id": "GitLabEventsConfig",
+      "description": "GitLabEventsConfig describes the configuration of a trigger that creates a build whenever a GitLab event is received.",
+      "type": "object",
+      "properties": {
+        "projectNamespace": {
+          "description": "Namespace of the GitLab project.",
+          "type": "string"
+        },
+        "pullRequest": {
+          "description": "Filter to match changes in pull requests.",
+          "$ref": "PullRequestFilter"
+        },
+        "push": {
+          "description": "Filter to match changes in refs like branches, tags.",
+          "$ref": "PushFilter"
+        },
+        "gitlabConfigResource": {
+          "description": "The GitLab config resource that this trigger config maps to.",
+          "type": "string"
+        },
+        "gitlabConfig": {
+          "description": "Output only. The GitLabConfig specified in the gitlab_config_resource field.",
+          "readOnly": true,
+          "$ref": "GitLabConfig"
+        }
+      }
+    },
+    "GitLabConfig": {
+      "id": "GitLabConfig",
+      "description": "GitLabConfig represents the configuration for a GitLab integration.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The resource name for the config.",
+          "type": "string"
+        },
+        "username": {
+          "description": "Username of the GitLab.com or GitLab Enterprise account Cloud Build will use.",
+          "type": "string"
+        },
+        "secrets": {
+          "description": "Required. Secret Manager secrets needed by the config.",
+          "$ref": "GitLabSecrets"
+        },
+        "createTime": {
+          "description": "Output only. Time when the config was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "webhookKey": {
+          "description": "Output only. UUID included in webhook requests. The UUID is used to look up the corresponding config.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "connectedRepositories": {
+          "description": "Connected GitLab.com or GitLabEnterprise repositories for this config.",
+          "type": "array",
+          "items": {
+            "$ref": "GitLabRepositoryId"
+          }
+        },
+        "enterpriseConfig": {
+          "description": "Optional. GitLabEnterprise config.",
+          "$ref": "GitLabEnterpriseConfig"
+        }
+      }
+    },
+    "GitLabSecrets": {
+      "id": "GitLabSecrets",
+      "description": "GitLabSecrets represents the secrets in Secret Manager for a GitLab integration.",
+      "type": "object",
+      "properties": {
+        "webhookSecretVersion": {
+          "description": "Required. Immutable. The resource name for the webhook secret\u2019s secret version. Once this field has been set, it cannot be changed. If you need to change it, please create another GitLabConfig.",
+          "type": "string"
+        },
+        "apiKeyVersion": {
+          "description": "Required. Immutable. API Key that will be attached to webhook requests from GitLab to Cloud Build.",
+          "type": "string"
+        },
+        "apiAccessTokenVersion": {
+          "description": "Required. The resource name for the api access token\u2019s secret version",
+          "type": "string"
+        },
+        "readAccessTokenVersion": {
+          "description": "Required. The resource name for the read access token\u2019s secret version",
+          "type": "string"
+        }
+      }
+    },
+    "GitLabRepositoryId": {
+      "id": "GitLabRepositoryId",
+      "description": "GitLabRepositoryId identifies a specific repository hosted on GitLab.com or GitLabEnterprise",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "Required. Identifier for the repository. example: \"namespace\/project-slug\", namespace is usually the username or group ID",
+          "type": "string"
+        },
+        "webhookId": {
+          "description": "Output only. The ID of the webhook that was created for receiving events from this repo. We only create and manage a single webhook for each repo.",
+          "readOnly": true,
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GitLabEnterpriseConfig": {
+      "id": "GitLabEnterpriseConfig",
+      "description": "GitLabEnterpriseConfig represents the configuration for a GitLabEnterprise integration.",
+      "type": "object",
+      "properties": {
+        "hostUri": {
+          "description": "Immutable. The URI of the GitlabEnterprise host.",
+          "type": "string"
+        },
+        "sslCa": {
+          "description": "The SSL certificate to use in requests to GitLab Enterprise instances.",
+          "type": "string"
+        }
+      }
+    },
     "GitFileSource": {
       "id": "GitFileSource",
       "description": "GitFileSource describes a file within a (possibly remote) code repository.",
@@ -2238,6 +2366,24 @@
           "description": "Output only. The status of the repo connection request.",
           "readOnly": true,
           "$ref": "Status"
+        }
+      }
+    },
+    "ListGitLabConfigsResponse": {
+      "id": "ListGitLabConfigsResponse",
+      "description": "RPC response object returned by ListGitLabConfigs RPC method.",
+      "type": "object",
+      "properties": {
+        "gitlabConfigs": {
+          "description": "A list of GitLabConfigs",
+          "type": "array",
+          "items": {
+            "$ref": "GitLabConfig"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token that can be sent as `page_token` to retrieve the next page If this field is omitted, there are no subsequent pages.",
+          "type": "string"
         }
       }
     },
@@ -4175,7 +4321,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Remove a Bitbucket Server repository from an given BitbucketServerConfig\u2019s connected repositories. This API is experimental."
+                  "description": "Remove a Bitbucket Server repository from a given BitbucketServerConfig's connected repositories. This API is experimental."
                 }
               }
               ,
@@ -4251,6 +4397,163 @@
                       "description": "Batch connecting Bitbucket Server repositories to Cloud Build."
                     }
                   }
+                }
+              }
+            },
+            "gitLabConfigs": {
+              "methods": {
+                "create": {
+                  "id": "cloudbuild.projects.locations.gitLabConfigs.create",
+                  "path": "v1/{+parent}/gitLabConfigs",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/gitLabConfigs",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. Name of the parent resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "gitlabConfigId": {
+                      "description": "Optional. The ID to use for the GitLabConfig, which will become the final component of the GitLabConfig\u2019s resource name. gitlab_config_id must meet the following requirements: + They must contain only alphanumeric characters and dashes. + They can be 1-64 characters long. + They must begin and end with an alphanumeric character",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "GitLabConfig"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a new `GitLabConfig`. This API is experimental"
+                },
+                "patch": {
+                  "id": "cloudbuild.projects.locations.gitLabConfigs.patch",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/gitLabConfigs/{gitLabConfigsId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "The resource name for the config.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/gitLabConfigs\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Update mask for the resource. If this is set, the server will only update the fields specified in the field mask. Otherwise, a full update of the mutable resource fields will be performed.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "GitLabConfig"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Updates an existing `GitLabConfig`. This API is experimental"
+                },
+                "get": {
+                  "id": "cloudbuild.projects.locations.gitLabConfigs.get",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/gitLabConfigs/{gitLabConfigsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The config resource name.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/gitLabConfigs\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "GitLabConfig"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Retrieves a `GitLabConfig`. This API is experimental"
+                },
+                "list": {
+                  "id": "cloudbuild.projects.locations.gitLabConfigs.list",
+                  "path": "v1/{+parent}/gitLabConfigs",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/gitLabConfigs",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. Name of the parent resource",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The maximum number of configs to return. The service may return fewer than this value. If unspecified, at most 50 configs will be returned. The maximum value is 1000;, values above 1000 will be coerced to 1000.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "A page token, received from a previous \u2018ListGitlabConfigsRequest\u2019 call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to \u2018ListGitlabConfigsRequest\u2019 must match the call that provided the page token.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListGitLabConfigsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "List all `GitLabConfigs` for a given project. This API is experimental"
+                },
+                "delete": {
+                  "id": "cloudbuild.projects.locations.gitLabConfigs.delete",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/gitLabConfigs/{gitLabConfigsId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The config resource name.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/gitLabConfigs\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Delete a `GitLabConfig`. This API is experimental"
                 }
               }
             },

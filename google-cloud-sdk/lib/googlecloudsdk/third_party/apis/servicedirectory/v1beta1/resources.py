@@ -74,6 +74,28 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_NAMESPACES_WORKLOADGROUPS = (
+      'projects.locations.namespaces.workloadGroups',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/namespaces/'
+              '{namespacesId}/workloadGroups/{workloadGroupsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_NAMESPACES_WORKLOADS = (
+      'projects.locations.namespaces.workloads',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/namespaces/'
+              '{namespacesId}/workloads/{workloadsId}',
+      },
+      ['name'],
+      True
+  )
 
   def __init__(self, collection_name, path, flat_paths, params,
                enable_uri_parsing):

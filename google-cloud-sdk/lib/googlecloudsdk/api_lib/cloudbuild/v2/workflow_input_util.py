@@ -117,7 +117,7 @@ def _WorkspaceBindingTransform(workspace_binding):
       if access_mode == "read":
         access_modes.append("READ_ONLY_MANY")
       if access_mode == "read-write":
-        access_modes.append("READ_WRITE_MANY")
+        access_modes.append("READ_WRITE_ONCE")
     workspace_binding["volumeClaimTemplate"]["spec"][
         "accessModes"] = access_modes
 

@@ -343,7 +343,25 @@ def _ExecAuthPlugin():
                    stdout=subprocess.DEVNULL,
                    stderr=subprocess.DEVNULL)
   except Exception:  # pylint: disable=broad-except
-    log.critical(GKE_GCLOUD_AUTH_PLUGIN_NOT_FOUND)
+    # Provide SDK Full path if command is not in PATH. This helps work
+    # around scenarios where cloud-sdk install location is not in PATH
+    # as sdk was installed using other distributions methods Eg: brew
+    try:
+      # config.Paths().sdk_bin_path throws an exception in some test envs,
+      # but is commonly defined in prod environments
+      sdk_bin_path = config.Paths().sdk_bin_path
+      if sdk_bin_path is None:
+        log.critical(GKE_GCLOUD_AUTH_PLUGIN_NOT_FOUND)
+      else:
+        sdk_path_bin_name = os.path.join(sdk_bin_path, command)
+        subprocess.run([sdk_path_bin_name, '--version'],
+                       timeout=5,
+                       check=False,
+                       stdout=subprocess.DEVNULL,
+                       stderr=subprocess.DEVNULL)
+        command = sdk_path_bin_name  # update command if sdk_path_bin_name works
+    except Exception:  # pylint: disable=broad-except
+      log.critical(GKE_GCLOUD_AUTH_PLUGIN_NOT_FOUND)
 
   exec_cfg = {
       'command': command,

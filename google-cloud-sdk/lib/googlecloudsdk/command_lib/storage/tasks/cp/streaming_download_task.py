@@ -31,11 +31,10 @@ from googlecloudsdk.api_lib.storage import request_config_factory
 from googlecloudsdk.command_lib.storage import progress_callbacks
 from googlecloudsdk.command_lib.storage.tasks import task
 from googlecloudsdk.command_lib.storage.tasks import task_status
-from googlecloudsdk.command_lib.storage.tasks.cp import copy_util
 from googlecloudsdk.core import log
 
 
-class StreamingDownloadTask(task.Task, copy_util.CopyTaskExitHandlerMixin):
+class StreamingDownloadTask(task.Task):
   """Represents a command operation triggering a streaming download."""
 
   def __init__(self,

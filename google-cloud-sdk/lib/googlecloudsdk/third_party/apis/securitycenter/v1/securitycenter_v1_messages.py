@@ -226,7 +226,7 @@ class Binding(_messages.Message):
       policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
-    members: Specifies the principals requesting access for a Cloud Platform
+    members: Specifies the principals requesting access for a Google Cloud
       resource. `members` can have the following values: * `allUsers`: A
       special identifier that represents anyone who is on the internet; with
       or without a Google account. * `allAuthenticatedUsers`: A special
@@ -645,6 +645,7 @@ class Finding(_messages.Message):
       https://cloud.google.com/apis/design/resource_names#relative_resource_na
       me Example: "organizations/{organization_id}/sources/{source_id}/finding
       s/{finding_id}"
+    nextSteps: Next steps associate to the finding.
     parent: The relative resource name of the source the finding belongs to.
       See: https://cloud.google.com/apis/design/resource_names#relative_resour
       ce_name This field is immutable after creation time. For example:
@@ -841,13 +842,14 @@ class Finding(_messages.Message):
   muteInitiator = _messages.StringField(14)
   muteUpdateTime = _messages.StringField(15)
   name = _messages.StringField(16)
-  parent = _messages.StringField(17)
-  resourceName = _messages.StringField(18)
-  securityMarks = _messages.MessageField('SecurityMarks', 19)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 20)
-  sourceProperties = _messages.MessageField('SourcePropertiesValue', 21)
-  state = _messages.EnumField('StateValueValuesEnum', 22)
-  vulnerability = _messages.MessageField('Vulnerability', 23)
+  nextSteps = _messages.StringField(17)
+  parent = _messages.StringField(18)
+  resourceName = _messages.StringField(19)
+  securityMarks = _messages.MessageField('SecurityMarks', 20)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 21)
+  sourceProperties = _messages.MessageField('SourcePropertiesValue', 22)
+  state = _messages.EnumField('StateValueValuesEnum', 23)
+  vulnerability = _messages.MessageField('Vulnerability', 24)
 
 
 class Folder(_messages.Message):
@@ -2003,6 +2005,7 @@ class MitreAttack(_messages.Message):
       EXPLOIT_PUBLIC_FACING_APPLICATION: T1190
       MODIFY_AUTHENTICATION_PROCESS: T1556
       DATA_DESTRUCTION: T1485
+      DOMAIN_POLICY_MODIFICATION: T1484
     """
     TECHNIQUE_UNSPECIFIED = 0
     ACTIVE_SCANNING = 1
@@ -2034,6 +2037,7 @@ class MitreAttack(_messages.Message):
     EXPLOIT_PUBLIC_FACING_APPLICATION = 27
     MODIFY_AUTHENTICATION_PROCESS = 28
     DATA_DESTRUCTION = 29
+    DOMAIN_POLICY_MODIFICATION = 30
 
   class PrimaryTacticValueValuesEnum(_messages.Enum):
     r"""The MITRE ATT&CK tactic most closely represented by this finding, if
@@ -2106,6 +2110,7 @@ class MitreAttack(_messages.Message):
       EXPLOIT_PUBLIC_FACING_APPLICATION: T1190
       MODIFY_AUTHENTICATION_PROCESS: T1556
       DATA_DESTRUCTION: T1485
+      DOMAIN_POLICY_MODIFICATION: T1484
     """
     TECHNIQUE_UNSPECIFIED = 0
     ACTIVE_SCANNING = 1
@@ -2137,6 +2142,7 @@ class MitreAttack(_messages.Message):
     EXPLOIT_PUBLIC_FACING_APPLICATION = 27
     MODIFY_AUTHENTICATION_PROCESS = 28
     DATA_DESTRUCTION = 29
+    DOMAIN_POLICY_MODIFICATION = 30
 
   additionalTactics = _messages.EnumField('AdditionalTacticsValueListEntryValuesEnum', 1, repeated=True)
   additionalTechniques = _messages.EnumField('AdditionalTechniquesValueListEntryValuesEnum', 2, repeated=True)
@@ -4547,8 +4553,8 @@ class SetIamPolicyRequest(_messages.Message):
   Fields:
     policy: REQUIRED: The complete policy to be applied to the `resource`. The
       size of the policy is limited to a few 10s of KB. An empty policy is a
-      valid policy but certain Cloud Platform services (such as Projects)
-      might reject them.
+      valid policy but certain Google Cloud services (such as Projects) might
+      reject them.
     updateMask: OPTIONAL: A FieldMask specifying which fields of the policy to
       modify. Only the fields in the mask will be modified. If no mask is
       provided, the following default mask is used: `paths: "bindings, etag"`
@@ -4757,7 +4763,7 @@ class TestIamPermissionsRequest(_messages.Message):
 
   Fields:
     permissions: The set of permissions to check for the `resource`.
-      Permissions with wildcards (such as '*' or 'storage.*') are not allowed.
+      Permissions with wildcards (such as `*` or `storage.*`) are not allowed.
       For more information see [IAM
       Overview](https://cloud.google.com/iam/docs/overview#permissions).
   """

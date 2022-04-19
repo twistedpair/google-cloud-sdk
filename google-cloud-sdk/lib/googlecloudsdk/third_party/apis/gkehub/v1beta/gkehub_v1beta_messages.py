@@ -133,7 +133,7 @@ class Binding(_messages.Message):
       policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
-    members: Specifies the principals requesting access for a Cloud Platform
+    members: Specifies the principals requesting access for a Google Cloud
       resource. `members` can have the following values: * `allUsers`: A
       special identifier that represents anyone who is on the internet; with
       or without a Google account. * `allAuthenticatedUsers`: A special
@@ -1713,6 +1713,7 @@ class MembershipFeatureSpec(_messages.Message):
     cloudbuild: Cloud Build-specific spec
     configmanagement: Config Management-specific spec.
     identityservice: Identity Service-specific spec.
+    mesh: Anthos Service Mesh-specific spec
     policycontroller: Policy Controller spec.
   """
 
@@ -1720,7 +1721,8 @@ class MembershipFeatureSpec(_messages.Message):
   cloudbuild = _messages.MessageField('MembershipSpec', 2)
   configmanagement = _messages.MessageField('ConfigManagementMembershipSpec', 3)
   identityservice = _messages.MessageField('IdentityServiceMembershipSpec', 4)
-  policycontroller = _messages.MessageField('PolicyControllerMembershipSpec', 5)
+  mesh = _messages.MessageField('ServiceMeshMembershipSpec', 5)
+  policycontroller = _messages.MessageField('PolicyControllerMembershipSpec', 6)
 
 
 class MembershipFeatureState(_messages.Message):
@@ -1733,6 +1735,7 @@ class MembershipFeatureState(_messages.Message):
     identityservice: Identity Service-specific state.
     metering: Metering-specific spec.
     policycontroller: Policycontroller-specific state.
+    servicemesh: Service Mesh-specific state.
     state: The high-level state of this Feature for a single membership.
   """
 
@@ -1741,7 +1744,8 @@ class MembershipFeatureState(_messages.Message):
   identityservice = _messages.MessageField('IdentityServiceMembershipState', 3)
   metering = _messages.MessageField('MeteringMembershipState', 4)
   policycontroller = _messages.MessageField('PolicyControllerMembershipState', 5)
-  state = _messages.MessageField('FeatureState', 6)
+  servicemesh = _messages.MessageField('ServiceMeshMembershipState', 6)
+  state = _messages.MessageField('FeatureState', 7)
 
 
 class MembershipSpec(_messages.Message):
@@ -2262,14 +2266,108 @@ class PolicyControllerTemplateLibraryConfig(_messages.Message):
   included = _messages.BooleanField(1)
 
 
+class ServiceMeshControlPlaneManagement(_messages.Message):
+  r"""Status of control plane management.
+
+  Enums:
+    StateValueValuesEnum: LifecycleState of control plane management.
+
+  Fields:
+    details: Explanation of state.
+    state: LifecycleState of control plane management.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""LifecycleState of control plane management.
+
+    Values:
+      LIFECYCLE_STATE_UNSPECIFIED: Unspecified
+      DISABLED: DISABLED means that the component is not enabled.
+      FAILED_PRECONDITION: FAILED_PRECONDITION means that provisioning cannot
+        proceed because of some characteristic of the member cluster.
+      PROVISIONING: PROVISIONING means that provisioning is in progress.
+      ACTIVE: ACTIVE means that the component is ready for use.
+      STALLED: STALLED means that provisioning could not be done.
+      NEEDS_ATTENTION: NEEDS_ATTENTION means that the component is ready, but
+        some user intervention is required. (For example that the user should
+        migrate workloads to a new control plane revision.)
+      DEGRADED: DEGRADED means that the component is ready, but operating in a
+        degraded state.
+    """
+    LIFECYCLE_STATE_UNSPECIFIED = 0
+    DISABLED = 1
+    FAILED_PRECONDITION = 2
+    PROVISIONING = 3
+    ACTIVE = 4
+    STALLED = 5
+    NEEDS_ATTENTION = 6
+    DEGRADED = 7
+
+  details = _messages.MessageField('ServiceMeshStatusDetails', 1, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
+
+
+class ServiceMeshMembershipSpec(_messages.Message):
+  r"""**Service Mesh**: Spec for a single Membership for the servicemesh
+  feature
+
+  Enums:
+    ControlPlaneValueValuesEnum: Enables automatic control plane management.
+
+  Fields:
+    controlPlane: Enables automatic control plane management.
+  """
+
+  class ControlPlaneValueValuesEnum(_messages.Enum):
+    r"""Enables automatic control plane management.
+
+    Values:
+      CONTROL_PLANE_MANAGEMENT_UNSPECIFIED: Unspecified
+      AUTOMATIC: Google should provision a control plane revision and make it
+        available in the cluster. Google will enroll this revision in a
+        release channel and keep it up to date. The control plane revision may
+        be a managed service, or a managed install.
+      MANUAL: User will manually configure the control plane (e.g. via CLI, or
+        via the ControlPlaneRevision KRM API)
+    """
+    CONTROL_PLANE_MANAGEMENT_UNSPECIFIED = 0
+    AUTOMATIC = 1
+    MANUAL = 2
+
+  controlPlane = _messages.EnumField('ControlPlaneValueValuesEnum', 1)
+
+
+class ServiceMeshMembershipState(_messages.Message):
+  r"""**Service Mesh**: State for a single Membership, as analyzed by the
+  Service Mesh Hub Controller.
+
+  Fields:
+    controlPlaneManagement: Output only. Status of control plane management
+  """
+
+  controlPlaneManagement = _messages.MessageField('ServiceMeshControlPlaneManagement', 1)
+
+
+class ServiceMeshStatusDetails(_messages.Message):
+  r"""Structured and human-readable details for a status.
+
+  Fields:
+    code: A machine-readable code that further describes a broad status.
+    details: Human-readable explanation of code.
+  """
+
+  code = _messages.StringField(1)
+  details = _messages.StringField(2)
+
+
 class SetIamPolicyRequest(_messages.Message):
   r"""Request message for `SetIamPolicy` method.
 
   Fields:
     policy: REQUIRED: The complete policy to be applied to the `resource`. The
       size of the policy is limited to a few 10s of KB. An empty policy is a
-      valid policy but certain Cloud Platform services (such as Projects)
-      might reject them.
+      valid policy but certain Google Cloud services (such as Projects) might
+      reject them.
     updateMask: OPTIONAL: A FieldMask specifying which fields of the policy to
       modify. Only the fields in the mask will be modified. If no mask is
       provided, the following default mask is used: `paths: "bindings, etag"`
@@ -2382,7 +2480,7 @@ class TestIamPermissionsRequest(_messages.Message):
 
   Fields:
     permissions: The set of permissions to check for the `resource`.
-      Permissions with wildcards (such as '*' or 'storage.*') are not allowed.
+      Permissions with wildcards (such as `*` or `storage.*`) are not allowed.
       For more information see [IAM
       Overview](https://cloud.google.com/iam/docs/overview#permissions).
   """

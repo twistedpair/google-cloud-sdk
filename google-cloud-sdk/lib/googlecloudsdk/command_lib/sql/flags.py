@@ -342,6 +342,8 @@ def AddDatabaseVersion(parser,
   mvs_choices = [
       'MYSQL_8_0_18',
       'MYSQL_8_0_26',
+      'MYSQL_8_0_27',
+      'MYSQL_8_0_28',
   ]
 
   if expose_mvs_versions:

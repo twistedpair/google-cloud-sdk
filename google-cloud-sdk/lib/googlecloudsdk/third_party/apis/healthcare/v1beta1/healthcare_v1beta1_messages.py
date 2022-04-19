@@ -393,7 +393,7 @@ class Binding(_messages.Message):
       policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
-    members: Specifies the principals requesting access for a Cloud Platform
+    members: Specifies the principals requesting access for a Google Cloud
       resource. `members` can have the following values: * `allUsers`: A
       special identifier that represents anyone who is on the internet; with
       or without a Google account. * `allAuthenticatedUsers`: A special
@@ -1002,7 +1002,8 @@ class DeidentifyDatasetRequest(_messages.Message):
   r"""Redacts identifying information from the specified dataset.
 
   Fields:
-    config: Deidentify configuration.
+    config: Deidentify configuration. Only one of `config` and
+      `gcs_config_uri` can be specified.
     destinationDataset: The name of the dataset resource to create and write
       the redacted data to. * The destination dataset must not exist. * The
       destination dataset must be in the same location as the source dataset.
@@ -1025,7 +1026,8 @@ class DeidentifyDicomStoreRequest(_messages.Message):
   r"""Creates a new DICOM store with sensitive information de-identified.
 
   Fields:
-    config: Deidentify configuration.
+    config: Deidentify configuration. Only one of `config` and
+      `gcs_config_uri` can be specified.
     destinationStore: The name of the DICOM store to create and write the
       redacted data to. For example, `projects/{project_id}/locations/{locatio
       n_id}/datasets/{dataset_id}/dicomStores/{dicom_store_id}`. * The
@@ -1054,7 +1056,8 @@ class DeidentifyFhirStoreRequest(_messages.Message):
   r"""Creates a new FHIR store with sensitive information de-identified.
 
   Fields:
-    config: Deidentify configuration.
+    config: Deidentify configuration. Only one of `config` and
+      `gcs_config_uri` can be specified.
     destinationStore: The name of the FHIR store to create and write the
       redacted data to. For example, `projects/{project_id}/locations/{locatio
       n_id}/datasets/{dataset_id}/fhirStores/{fhir_store_id}`. * The
@@ -7118,8 +7121,8 @@ class SetIamPolicyRequest(_messages.Message):
   Fields:
     policy: REQUIRED: The complete policy to be applied to the `resource`. The
       size of the policy is limited to a few 10s of KB. An empty policy is a
-      valid policy but certain Cloud Platform services (such as Projects)
-      might reject them.
+      valid policy but certain Google Cloud services (such as Projects) might
+      reject them.
     updateMask: OPTIONAL: A FieldMask specifying which fields of the policy to
       modify. Only the fields in the mask will be modified. If no mask is
       provided, the following default mask is used: `paths: "bindings, etag"`
@@ -7353,7 +7356,7 @@ class TestIamPermissionsRequest(_messages.Message):
 
   Fields:
     permissions: The set of permissions to check for the `resource`.
-      Permissions with wildcards (such as '*' or 'storage.*') are not allowed.
+      Permissions with wildcards (such as `*` or `storage.*`) are not allowed.
       For more information see [IAM
       Overview](https://cloud.google.com/iam/docs/overview#permissions).
   """

@@ -20,6 +20,12 @@ from __future__ import unicode_literals
 
 MAX_LRO_POLL_INTERVAL_MS = 10000
 
+# MAX_LRO_WAIT_MS is the limit on the amount of time to poll LROs.
+# Note that gkemulticloud LRO has its own timeout.
+# This value is not None/unbounded to safeguard against (unlikely) broken
+# control flow in which we poll indefinitely.
+MAX_LRO_WAIT_MS = 43200000  # 12 hours
+
 LRO_KIND = 'Operation'
 
 AZURE_CLIENT_KIND = 'Azure Client'

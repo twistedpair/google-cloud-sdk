@@ -3009,6 +3009,17 @@ class ApigeeOrganizationsGetDeployedIngressConfigRequest(_messages.Message):
   view = _messages.EnumField('ViewValueValuesEnum', 2)
 
 
+class ApigeeOrganizationsGetProjectMappingRequest(_messages.Message):
+  r"""A ApigeeOrganizationsGetProjectMappingRequest object.
+
+  Fields:
+    name: Required. Apigee organization name in the following format:
+      `organizations/{org}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class ApigeeOrganizationsGetRequest(_messages.Message):
   r"""A ApigeeOrganizationsGetRequest object.
 
@@ -3756,10 +3767,9 @@ class ApigeeOrganizationsReportsListRequest(_messages.Message):
   parent = _messages.StringField(2, required=True)
 
 
-class ApigeeOrganizationsSenseProfilesEnvironmentsComputeEnvironmentScoresRequest(_messages.Message):
-  r"""A
-  ApigeeOrganizationsSenseProfilesEnvironmentsComputeEnvironmentScoresRequest
-  object.
+class ApigeeOrganizationsSecurityProfilesEnvironmentsComputeEnvironmentScoresRequest(_messages.Message):
+  r"""A ApigeeOrganizationsSecurityProfilesEnvironmentsComputeEnvironmentScore
+  sRequest object.
 
   Fields:
     googleCloudApigeeV1ComputeEnvironmentScoresRequest: A
@@ -3767,63 +3777,63 @@ class ApigeeOrganizationsSenseProfilesEnvironmentsComputeEnvironmentScoresReques
       as the request body.
     profileEnvironment: Required. Name of organization and environment and
       profile id for which score needs to be computed. Format:
-      organizations/{org}/senseProfiles/{profile}/environments/{env}
+      organizations/{org}/securityProfiles/{profile}/environments/{env}
   """
 
   googleCloudApigeeV1ComputeEnvironmentScoresRequest = _messages.MessageField('GoogleCloudApigeeV1ComputeEnvironmentScoresRequest', 1)
   profileEnvironment = _messages.StringField(2, required=True)
 
 
-class ApigeeOrganizationsSenseProfilesEnvironmentsCreateRequest(_messages.Message):
-  r"""A ApigeeOrganizationsSenseProfilesEnvironmentsCreateRequest object.
+class ApigeeOrganizationsSecurityProfilesEnvironmentsCreateRequest(_messages.Message):
+  r"""A ApigeeOrganizationsSecurityProfilesEnvironmentsCreateRequest object.
 
   Fields:
-    googleCloudApigeeV1SenseProfileEnvironmentAssociation: A
-      GoogleCloudApigeeV1SenseProfileEnvironmentAssociation resource to be
+    googleCloudApigeeV1SecurityProfileEnvironmentAssociation: A
+      GoogleCloudApigeeV1SecurityProfileEnvironmentAssociation resource to be
       passed as the request body.
-    parent: Required. Name of organization and Sense profile ID. Format:
-      organizations/{org}/senseProfiles/{profile}
+    parent: Required. Name of organization and security profile ID. Format:
+      organizations/{org}/securityProfiles/{profile}
   """
 
-  googleCloudApigeeV1SenseProfileEnvironmentAssociation = _messages.MessageField('GoogleCloudApigeeV1SenseProfileEnvironmentAssociation', 1)
+  googleCloudApigeeV1SecurityProfileEnvironmentAssociation = _messages.MessageField('GoogleCloudApigeeV1SecurityProfileEnvironmentAssociation', 1)
   parent = _messages.StringField(2, required=True)
 
 
-class ApigeeOrganizationsSenseProfilesEnvironmentsDeleteRequest(_messages.Message):
-  r"""A ApigeeOrganizationsSenseProfilesEnvironmentsDeleteRequest object.
+class ApigeeOrganizationsSecurityProfilesEnvironmentsDeleteRequest(_messages.Message):
+  r"""A ApigeeOrganizationsSecurityProfilesEnvironmentsDeleteRequest object.
 
   Fields:
     name: Required. The name of the environment attachment to delete. Format:
-      organizations/{org}/senseProfiles/{profile}/environments/{env}
+      organizations/{org}/securityProfiles/{profile}/environments/{env}
   """
 
   name = _messages.StringField(1, required=True)
 
 
-class ApigeeOrganizationsSenseProfilesGetRequest(_messages.Message):
-  r"""A ApigeeOrganizationsSenseProfilesGetRequest object.
+class ApigeeOrganizationsSecurityProfilesGetRequest(_messages.Message):
+  r"""A ApigeeOrganizationsSecurityProfilesGetRequest object.
 
   Fields:
-    name: Required. Sense Profile in the following format:
-      `organizations/{org}/senseProfiles/{profile}'. Profile may optionally
+    name: Required. Security profile in the following format:
+      `organizations/{org}/securityProfiles/{profile}'. Profile may optionally
       contain revision ID. If revision ID is not provided, the response will
       contain latest revision by default. Example:
-      organizations/testOrg/senseProfiles/testProfile@5
+      organizations/testOrg/securityProfiles/testProfile@5
   """
 
   name = _messages.StringField(1, required=True)
 
 
-class ApigeeOrganizationsSenseProfilesListRequest(_messages.Message):
-  r"""A ApigeeOrganizationsSenseProfilesListRequest object.
+class ApigeeOrganizationsSecurityProfilesListRequest(_messages.Message):
+  r"""A ApigeeOrganizationsSecurityProfilesListRequest object.
 
   Fields:
     pageSize: The maximum number of profiles to return. The service may return
       fewer than this value. If unspecified, at most 50 profiles will be
       returned.
-    pageToken: A page token, received from a previous `ListSenseProfiles`
+    pageToken: A page token, received from a previous `ListSecurityProfiles`
       call. Provide this to retrieve the subsequent page.
-    parent: Required. For a specific organization, list of all the Sense
+    parent: Required. For a specific organization, list of all the security
       profiles. Format: `organizations/{org}`
   """
 
@@ -3832,17 +3842,17 @@ class ApigeeOrganizationsSenseProfilesListRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
 
 
-class ApigeeOrganizationsSenseProfilesListRevisionsRequest(_messages.Message):
-  r"""A ApigeeOrganizationsSenseProfilesListRevisionsRequest object.
+class ApigeeOrganizationsSecurityProfilesListRevisionsRequest(_messages.Message):
+  r"""A ApigeeOrganizationsSecurityProfilesListRevisionsRequest object.
 
   Fields:
     name: Required. For a specific profile, list all the revisions. Format:
-      `organizations/{org}/senseProfiles/{profile}`
+      `organizations/{org}/securityProfiles/{profile}`
     pageSize: The maximum number of profile revisions to return. The service
       may return fewer than this value. If unspecified, at most 50 revisions
       will be returned.
     pageToken: A page token, received from a previous
-      `ListSenseProfileRevisions` call. Provide this to retrieve the
+      `ListSecurityProfileRevisions` call. Provide this to retrieve the
       subsequent page.
   """
 
@@ -7009,7 +7019,8 @@ class GoogleCloudApigeeV1ListApiProductsResponse(_messages.Message):
 
 
 class GoogleCloudApigeeV1ListApiProxiesResponse(_messages.Message):
-  r"""A GoogleCloudApigeeV1ListApiProxiesResponse object.
+  r"""To change this message, in the same CL add a change log in go/changing-
+  api-proto-breaks-ui
 
   Fields:
     proxies: A GoogleCloudApigeeV1ApiProxy attribute.
@@ -7298,6 +7309,35 @@ class GoogleCloudApigeeV1ListRatePlansResponse(_messages.Message):
   ratePlans = _messages.MessageField('GoogleCloudApigeeV1RatePlan', 2, repeated=True)
 
 
+class GoogleCloudApigeeV1ListSecurityProfileRevisionsResponse(_messages.Message):
+  r"""Response for ListSecurityProfileRevisions.
+
+  Fields:
+    nextPageToken: A token that can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    securityProfiles: List of security profile revisions. The revisions may be
+      attached or unattached to any environment.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  securityProfiles = _messages.MessageField('GoogleCloudApigeeV1SecurityProfile', 2, repeated=True)
+
+
+class GoogleCloudApigeeV1ListSecurityProfilesResponse(_messages.Message):
+  r"""Response for ListSecurityProfiles.
+
+  Fields:
+    nextPageToken: A token that can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    securityProfiles: List of security profiles in the organization. The
+      profiles may be attached or unattached to any environment. This will
+      return latest revision of each profile.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  securityProfiles = _messages.MessageField('GoogleCloudApigeeV1SecurityProfile', 2, repeated=True)
+
+
 class GoogleCloudApigeeV1ListSecurityReportsResponse(_messages.Message):
   r"""The response for SecurityReports.
 
@@ -7313,37 +7353,9 @@ class GoogleCloudApigeeV1ListSecurityReportsResponse(_messages.Message):
   securityReports = _messages.MessageField('GoogleCloudApigeeV1SecurityReport', 2, repeated=True)
 
 
-class GoogleCloudApigeeV1ListSenseProfileRevisionsResponse(_messages.Message):
-  r"""Response for ListSenseProfileRevisions.
-
-  Fields:
-    nextPageToken: A token that can be sent as `page_token` to retrieve the
-      next page. If this field is omitted, there are no subsequent pages.
-    senseProfiles: List of Sense profile revisions. The revisions may be
-      attached or unattached to any environment.
-  """
-
-  nextPageToken = _messages.StringField(1)
-  senseProfiles = _messages.MessageField('GoogleCloudApigeeV1SenseProfile', 2, repeated=True)
-
-
-class GoogleCloudApigeeV1ListSenseProfilesResponse(_messages.Message):
-  r"""Response for ListSenseProfiles.
-
-  Fields:
-    nextPageToken: A token that can be sent as `page_token` to retrieve the
-      next page. If this field is omitted, there are no subsequent pages.
-    senseProfiles: List of Sense profiles in the organization. The profiles
-      may be attached or unattached to any environment. This will return
-      latest revision of each profile.
-  """
-
-  nextPageToken = _messages.StringField(1)
-  senseProfiles = _messages.MessageField('GoogleCloudApigeeV1SenseProfile', 2, repeated=True)
-
-
 class GoogleCloudApigeeV1ListSharedFlowsResponse(_messages.Message):
-  r"""A GoogleCloudApigeeV1ListSharedFlowsResponse object.
+  r"""To change this message, in the same CL add a change log in go/changing-
+  api-proto-breaks-ui
 
   Fields:
     sharedFlows: A GoogleCloudApigeeV1SharedFlow attribute.
@@ -7542,6 +7554,7 @@ class GoogleCloudApigeeV1OperationMetadata(_messages.Message):
     state: A StateValueValuesEnum attribute.
     targetResourceName: Name of the resource for which the operation is
       operating on.
+    warnings: Warnings encountered while executing the operation.
   """
 
   class OperationTypeValueValuesEnum(_messages.Enum):
@@ -7576,6 +7589,7 @@ class GoogleCloudApigeeV1OperationMetadata(_messages.Message):
   progress = _messages.MessageField('GoogleCloudApigeeV1OperationMetadataProgress', 2)
   state = _messages.EnumField('StateValueValuesEnum', 3)
   targetResourceName = _messages.StringField(4)
+  warnings = _messages.StringField(5, repeated=True)
 
 
 class GoogleCloudApigeeV1OperationMetadataProgress(_messages.Message):
@@ -7945,15 +7959,19 @@ class GoogleCloudApigeeV1OrganizationProjectMapping(_messages.Message):
   r"""A GoogleCloudApigeeV1OrganizationProjectMapping object.
 
   Fields:
+    location: Output only. The Google Cloud region where control plane data is
+      located. For more information, see
+      https://cloud.google.com/about/locations/.
     organization: Name of the Apigee organization.
     projectId: GCP project associated with the Apigee organization
     projectIds: DEPRECATED: Use `project_id`. An Apigee Organization is mapped
       to a single project.
   """
 
-  organization = _messages.StringField(1)
-  projectId = _messages.StringField(2)
-  projectIds = _messages.StringField(3, repeated=True)
+  location = _messages.StringField(1)
+  organization = _messages.StringField(2)
+  projectId = _messages.StringField(3)
+  projectIds = _messages.StringField(4, repeated=True)
 
 
 class GoogleCloudApigeeV1PodStatus(_messages.Message):
@@ -8890,6 +8908,84 @@ class GoogleCloudApigeeV1ScoreComponentRecommendationActionActionContext(_messag
   documentationLink = _messages.StringField(1)
 
 
+class GoogleCloudApigeeV1SecurityProfile(_messages.Message):
+  r"""Represents a SecurityProfile resource.
+
+  Fields:
+    displayName: Display name of the security profile.
+    environments: List of environments attached to security profile.
+    maxScore: Output only. Maximum security score that can be generated by
+      this profile.
+    minScore: Output only. Minimum security score that can be generated by
+      this profile.
+    name: Immutable. Name of the security profile resource. Format:
+      organizations/{org}/securityProfiles/{profile}
+    revisionCreateTime: Output only. The time when revision was created.
+    revisionId: Output only. Revision ID of the security profile.
+    revisionPublishTime: Output only. The time when revision was published.
+      Once published, the security profile revision cannot be updated further
+      and can be attached to environments.
+    revisionUpdateTime: Output only. The time when revision was updated.
+    scoringConfigs: List of profile scoring configs in this revision.
+  """
+
+  displayName = _messages.StringField(1)
+  environments = _messages.MessageField('GoogleCloudApigeeV1SecurityProfileEnvironment', 2, repeated=True)
+  maxScore = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  minScore = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  name = _messages.StringField(5)
+  revisionCreateTime = _messages.StringField(6)
+  revisionId = _messages.IntegerField(7)
+  revisionPublishTime = _messages.StringField(8)
+  revisionUpdateTime = _messages.StringField(9)
+  scoringConfigs = _messages.MessageField('GoogleCloudApigeeV1SecurityProfileScoringConfig', 10, repeated=True)
+
+
+class GoogleCloudApigeeV1SecurityProfileEnvironment(_messages.Message):
+  r"""Environment information of attached environments. Scoring an environment
+  is enabled only if it is attached to a security profile.
+
+  Fields:
+    attachTime: Output only. Time at which environment was attached to the
+      security profile.
+    environment: Output only. Name of the environment.
+  """
+
+  attachTime = _messages.StringField(1)
+  environment = _messages.StringField(2)
+
+
+class GoogleCloudApigeeV1SecurityProfileEnvironmentAssociation(_messages.Message):
+  r"""Represents a SecurityProfileEnvironmentAssociation resource.
+
+  Fields:
+    attachTime: Output only. The time when environment was attached to the
+      security profile.
+    name: Immutable. Name of the profile-environment association resource.
+      Format:
+      organizations/{org}/securityProfiles/{profile}/environments/{env}
+    securityProfileRevisionId: Revision ID of the security profile.
+  """
+
+  attachTime = _messages.StringField(1)
+  name = _messages.StringField(2)
+  securityProfileRevisionId = _messages.IntegerField(3)
+
+
+class GoogleCloudApigeeV1SecurityProfileScoringConfig(_messages.Message):
+  r"""Security configurations to manage scoring.
+
+  Fields:
+    description: Description of the config.
+    scorePath: Path of the component config used for scoring.
+    title: Title of the config.
+  """
+
+  description = _messages.StringField(1)
+  scorePath = _messages.StringField(2)
+  title = _messages.StringField(3)
+
+
 class GoogleCloudApigeeV1SecurityReport(_messages.Message):
   r"""SecurityReport saves all the information about the created security
   report.
@@ -9062,83 +9158,6 @@ class GoogleCloudApigeeV1SecurityReportResultView(_messages.Message):
   metadata = _messages.MessageField('GoogleCloudApigeeV1SecurityReportMetadata', 3)
   rows = _messages.MessageField('extra_types.JsonValue', 4, repeated=True)
   state = _messages.StringField(5)
-
-
-class GoogleCloudApigeeV1SenseProfile(_messages.Message):
-  r"""Represents a SenseProfile resource.
-
-  Fields:
-    displayName: Display name of the Sense profile.
-    environments: List of environments attached to Sense profile.
-    maxScore: Output only. Maximum security score that can be generated by
-      this profile.
-    minScore: Output only. Minimum security score that can be generated by
-      this profile.
-    name: Immutable. Name of the Sense profile resource. Format:
-      organizations/{org}/senseProfiles/{profile}
-    revisionCreateTime: Output only. The time when revision was created.
-    revisionId: Output only. Revision ID of the Sense profile.
-    revisionPublishTime: Output only. The time when revision was published.
-      Once published, the Sense revision cannot be updated further and can be
-      attached to environments.
-    revisionUpdateTime: Output only. The time when revision was updated.
-    scoringConfigs: List of profile scoring configs in this revision.
-  """
-
-  displayName = _messages.StringField(1)
-  environments = _messages.MessageField('GoogleCloudApigeeV1SenseProfileEnvironment', 2, repeated=True)
-  maxScore = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  minScore = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  name = _messages.StringField(5)
-  revisionCreateTime = _messages.StringField(6)
-  revisionId = _messages.IntegerField(7)
-  revisionPublishTime = _messages.StringField(8)
-  revisionUpdateTime = _messages.StringField(9)
-  scoringConfigs = _messages.MessageField('GoogleCloudApigeeV1SenseProfileScoringConfig', 10, repeated=True)
-
-
-class GoogleCloudApigeeV1SenseProfileEnvironment(_messages.Message):
-  r"""Environment information of attached environments. Scoring an environment
-  is enabled only if it is attached to a Sense profile.
-
-  Fields:
-    attachTime: Output only. Time at which environment was attached to the
-      Sense profile.
-    environment: Output only. Name of the environment.
-  """
-
-  attachTime = _messages.StringField(1)
-  environment = _messages.StringField(2)
-
-
-class GoogleCloudApigeeV1SenseProfileEnvironmentAssociation(_messages.Message):
-  r"""Represents a SenseProfileEnvironmentAssociation resource.
-
-  Fields:
-    attachTime: Output only. The time when environment was attached to the
-      Sense profile.
-    name: Immutable. Name of the profile-environment association resource.
-      Format: organizations/{org}/senseProfiles/{profile}/environments/{env}
-    senseProfileRevisionId: Revision ID of the Sense profile.
-  """
-
-  attachTime = _messages.StringField(1)
-  name = _messages.StringField(2)
-  senseProfileRevisionId = _messages.IntegerField(3)
-
-
-class GoogleCloudApigeeV1SenseProfileScoringConfig(_messages.Message):
-  r"""Security configurations to manage scoring.
-
-  Fields:
-    description: Description of the config.
-    scorePath: Path of the component config used for scoring.
-    title: Title of the config.
-  """
-
-  description = _messages.StringField(1)
-  scorePath = _messages.StringField(2)
-  title = _messages.StringField(3)
 
 
 class GoogleCloudApigeeV1ServiceIssuersMapping(_messages.Message):
@@ -9862,7 +9881,7 @@ class GoogleIamV1Binding(_messages.Message):
       policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
-    members: Specifies the principals requesting access for a Cloud Platform
+    members: Specifies the principals requesting access for a Google Cloud
       resource. `members` can have the following values: * `allUsers`: A
       special identifier that represents anyone who is on the internet; with
       or without a Google account. * `allAuthenticatedUsers`: A special
@@ -9985,8 +10004,8 @@ class GoogleIamV1SetIamPolicyRequest(_messages.Message):
   Fields:
     policy: REQUIRED: The complete policy to be applied to the `resource`. The
       size of the policy is limited to a few 10s of KB. An empty policy is a
-      valid policy but certain Cloud Platform services (such as Projects)
-      might reject them.
+      valid policy but certain Google Cloud services (such as Projects) might
+      reject them.
     updateMask: OPTIONAL: A FieldMask specifying which fields of the policy to
       modify. Only the fields in the mask will be modified. If no mask is
       provided, the following default mask is used: `paths: "bindings, etag"`
@@ -10001,7 +10020,7 @@ class GoogleIamV1TestIamPermissionsRequest(_messages.Message):
 
   Fields:
     permissions: The set of permissions to check for the `resource`.
-      Permissions with wildcards (such as '*' or 'storage.*') are not allowed.
+      Permissions with wildcards (such as `*` or `storage.*`) are not allowed.
       For more information see [IAM
       Overview](https://cloud.google.com/iam/docs/overview#permissions).
   """

@@ -415,6 +415,10 @@
         "nodePoolAutoConfig": {
           "description": "Node pool configs that apply to all auto-provisioned node pools in autopilot clusters and node auto-provisioning enabled clusters.",
           "$ref": "NodePoolAutoConfig"
+        },
+        "etag": {
+          "description": "This checksum is computed by the server based on the value of cluster fields, and may be sent on update requests to ensure the client has an up-to-date value before proceeding.",
+          "type": "string"
         }
       }
     },
@@ -1099,6 +1103,10 @@
           "description": "Output only. [Output only] Update info contains relevant information during a node pool update.",
           "readOnly": true,
           "$ref": "UpdateInfo"
+        },
+        "etag": {
+          "description": "This checksum is computed by the server based on the value of node pool fields, and may be sent on update requests to ensure the client has an up-to-date value before proceeding.",
+          "type": "string"
         }
       }
     },
@@ -2397,7 +2405,7 @@
       "type": "object",
       "properties": {
         "projectId": {
-          "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/support.google.com\/cloud\/answer\/6158840). This field has been deprecated and replaced by the parent field.",
+          "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/cloud.google.com\/resource-manager\/docs\/creating-managing-projects). This field has been deprecated and replaced by the parent field.",
           "type": "string"
         },
         "zone": {
@@ -2642,7 +2650,7 @@
       "type": "object",
       "properties": {
         "projectId": {
-          "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/support.google.com\/cloud\/answer\/6158840). This field has been deprecated and replaced by the name field.",
+          "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/cloud.google.com\/resource-manager\/docs\/creating-managing-projects). This field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "zone": {
@@ -2821,6 +2829,10 @@
           "description": "The desired monitoring configuration.",
           "$ref": "MonitoringConfig"
         },
+        "desiredIdentityServiceConfig": {
+          "description": "The desired Identity Service component configuration.",
+          "$ref": "IdentityServiceConfig"
+        },
         "desiredServiceExternalIpsConfig": {
           "description": "ServiceExternalIPsConfig specifies the config for the use of Services with ExternalIPs field.",
           "$ref": "ServiceExternalIPsConfig"
@@ -2845,9 +2857,9 @@
           "description": "The desired network tags that apply to all auto-provisioned node pools in autopilot clusters and node auto-provisioning enabled clusters.",
           "$ref": "NetworkTags"
         },
-        "desiredIdentityServiceConfig": {
-          "description": "The desired Identity Service component configuration.",
-          "$ref": "IdentityServiceConfig"
+        "etag": {
+          "description": "The current etag of the cluster. If an etag is provided and does not match the current etag of the cluster, update will be blocked and an ABORTED error will be returned.",
+          "type": "string"
         }
       }
     },
@@ -2879,7 +2891,7 @@
       "type": "object",
       "properties": {
         "projectId": {
-          "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/support.google.com\/cloud\/answer\/6158840). This field has been deprecated and replaced by the name field.",
+          "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/cloud.google.com\/resource-manager\/docs\/creating-managing-projects). This field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "zone": {
@@ -2964,6 +2976,10 @@
         "gvnic": {
           "description": "Enable or disable gvnic on the node pool.",
           "$ref": "VirtualNIC"
+        },
+        "etag": {
+          "description": "The current etag of the node pool. If an etag is provided and does not match the current etag of the node pool, update will be blocked and an ABORTED error will be returned.",
+          "type": "string"
         }
       }
     },
@@ -3001,7 +3017,7 @@
       "type": "object",
       "properties": {
         "projectId": {
-          "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/support.google.com\/cloud\/answer\/6158840). This field has been deprecated and replaced by the name field.",
+          "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/cloud.google.com\/resource-manager\/docs\/creating-managing-projects). This field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "zone": {
@@ -3032,7 +3048,7 @@
       "type": "object",
       "properties": {
         "projectId": {
-          "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/support.google.com\/cloud\/answer\/6158840). This field has been deprecated and replaced by the name field.",
+          "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/cloud.google.com\/resource-manager\/docs\/creating-managing-projects). This field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "zone": {
@@ -3059,7 +3075,7 @@
       "type": "object",
       "properties": {
         "projectId": {
-          "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/support.google.com\/cloud\/answer\/6158840). This field has been deprecated and replaced by the name field.",
+          "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/cloud.google.com\/resource-manager\/docs\/creating-managing-projects). This field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "zone": {
@@ -3086,7 +3102,7 @@
       "type": "object",
       "properties": {
         "projectId": {
-          "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/support.google.com\/cloud\/answer\/6158840). This field has been deprecated and replaced by the name field.",
+          "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/cloud.google.com\/resource-manager\/docs\/creating-managing-projects). This field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "zone": {
@@ -3113,7 +3129,7 @@
       "type": "object",
       "properties": {
         "projectId": {
-          "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/support.google.com\/cloud\/answer\/6158840). This field has been deprecated and replaced by the name field.",
+          "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/cloud.google.com\/resource-manager\/docs\/creating-managing-projects). This field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "zone": {
@@ -3143,7 +3159,7 @@
       "type": "object",
       "properties": {
         "projectId": {
-          "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/support.google.com\/cloud\/answer\/6158840). This field has been deprecated and replaced by the name field.",
+          "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/cloud.google.com\/resource-manager\/docs\/creating-managing-projects). This field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "zone": {
@@ -3170,7 +3186,7 @@
       "type": "object",
       "properties": {
         "projectId": {
-          "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/support.google.com\/cloud\/answer\/6158840). This field has been deprecated and replaced by the name field.",
+          "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/cloud.google.com\/resource-manager\/docs\/creating-managing-projects). This field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "zone": {
@@ -3234,7 +3250,7 @@
       "type": "object",
       "properties": {
         "projectId": {
-          "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/support.google.com\/cloud\/answer\/6158840). This field has been deprecated and replaced by the name field.",
+          "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/cloud.google.com\/resource-manager\/docs\/creating-managing-projects). This field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "zone": {
@@ -3490,7 +3506,7 @@
       "type": "object",
       "properties": {
         "projectId": {
-          "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/developers.google.com\/console\/help\/new\/#projectnumber). This field has been deprecated and replaced by the parent field.",
+          "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/cloud.google.com\/resource-manager\/docs\/creating-managing-projects). This field has been deprecated and replaced by the parent field.",
           "type": "string"
         },
         "zone": {
@@ -3524,7 +3540,7 @@
       "type": "object",
       "properties": {
         "projectId": {
-          "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/support.google.com\/cloud\/answer\/6158840). This field has been deprecated and replaced by the name field.",
+          "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/cloud.google.com\/resource-manager\/docs\/creating-managing-projects). This field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "zone": {
@@ -3555,7 +3571,7 @@
       "type": "object",
       "properties": {
         "projectId": {
-          "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/support.google.com\/cloud\/answer\/6158840). This field has been deprecated and replaced by the name field.",
+          "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/cloud.google.com\/resource-manager\/docs\/creating-managing-projects). This field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "zone": {
@@ -3586,7 +3602,7 @@
       "type": "object",
       "properties": {
         "projectId": {
-          "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/developers.google.com\/console\/help\/new\/#projectnumber). This field has been deprecated and replaced by the name field.",
+          "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/cloud.google.com\/resource-manager\/docs\/creating-managing-projects). This field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "zone": {
@@ -3620,7 +3636,7 @@
       "type": "object",
       "properties": {
         "projectId": {
-          "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/support.google.com\/cloud\/answer\/6158840). This field has been deprecated and replaced by the name field.",
+          "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/cloud.google.com\/resource-manager\/docs\/creating-managing-projects). This field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "zone": {
@@ -3647,7 +3663,7 @@
       "type": "object",
       "properties": {
         "projectId": {
-          "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/developers.google.com\/console\/help\/new\/#projectnumber). This field has been deprecated and replaced by the name field.",
+          "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/cloud.google.com\/resource-manager\/docs\/creating-managing-projects). This field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "zone": {
@@ -3674,7 +3690,7 @@
       "type": "object",
       "properties": {
         "projectId": {
-          "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/developers.google.com\/console\/help\/new\/#projectnumber). This field has been deprecated and replaced by the name field.",
+          "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/cloud.google.com\/resource-manager\/docs\/creating-managing-projects). This field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "zone": {
@@ -3697,7 +3713,7 @@
       "type": "object",
       "properties": {
         "projectId": {
-          "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/support.google.com\/cloud\/answer\/6158840). This field has been deprecated and replaced by the name field.",
+          "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/cloud.google.com\/resource-manager\/docs\/creating-managing-projects). This field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "zone": {
@@ -3729,7 +3745,7 @@
       "type": "object",
       "properties": {
         "projectId": {
-          "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/developers.google.com\/console\/help\/new\/#projectnumber). This field has been deprecated and replaced by the name field.",
+          "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/cloud.google.com\/resource-manager\/docs\/creating-managing-projects). This field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "zone": {
@@ -3756,7 +3772,7 @@
       "type": "object",
       "properties": {
         "projectId": {
-          "description": "Required. The Google Developers Console [project ID or project number](https:\/\/support.google.com\/cloud\/answer\/6158840).",
+          "description": "Required. The Google Developers Console [project ID or project number](https:\/\/cloud.google.com\/resource-manager\/docs\/creating-managing-projects).",
           "type": "string"
         },
         "zone": {
@@ -4009,7 +4025,7 @@
                   "type": "string"
                 },
                 "projectId": {
-                  "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/support.google.com\/cloud\/answer\/6158840). This field has been deprecated and replaced by the name field.",
+                  "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/cloud.google.com\/resource-manager\/docs\/creating-managing-projects). This field has been deprecated and replaced by the name field.",
                   "location": "query",
                   "type": "string"
                 },
@@ -4049,7 +4065,7 @@
                       "type": "string"
                     },
                     "projectId": {
-                      "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/support.google.com\/cloud\/answer\/6158840). This field has been deprecated and replaced by the parent field.",
+                      "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/cloud.google.com\/resource-manager\/docs\/creating-managing-projects). This field has been deprecated and replaced by the parent field.",
                       "location": "query",
                       "type": "string"
                     },
@@ -4084,7 +4100,7 @@
                       "type": "string"
                     },
                     "projectId": {
-                      "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/support.google.com\/cloud\/answer\/6158840). This field has been deprecated and replaced by the name field.",
+                      "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/cloud.google.com\/resource-manager\/docs\/creating-managing-projects). This field has been deprecated and replaced by the name field.",
                       "location": "query",
                       "type": "string"
                     },
@@ -4348,7 +4364,7 @@
                       "type": "string"
                     },
                     "projectId": {
-                      "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/support.google.com\/cloud\/answer\/6158840). This field has been deprecated and replaced by the name field.",
+                      "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/cloud.google.com\/resource-manager\/docs\/creating-managing-projects). This field has been deprecated and replaced by the name field.",
                       "location": "query",
                       "type": "string"
                     },
@@ -4639,7 +4655,7 @@
                           "type": "string"
                         },
                         "projectId": {
-                          "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/developers.google.com\/console\/help\/new\/#projectnumber). This field has been deprecated and replaced by the parent field.",
+                          "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/cloud.google.com\/resource-manager\/docs\/creating-managing-projects). This field has been deprecated and replaced by the parent field.",
                           "location": "query",
                           "type": "string"
                         },
@@ -4679,7 +4695,7 @@
                           "type": "string"
                         },
                         "projectId": {
-                          "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/developers.google.com\/console\/help\/new\/#projectnumber). This field has been deprecated and replaced by the name field.",
+                          "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/cloud.google.com\/resource-manager\/docs\/creating-managing-projects). This field has been deprecated and replaced by the name field.",
                           "location": "query",
                           "type": "string"
                         },
@@ -4752,7 +4768,7 @@
                           "type": "string"
                         },
                         "projectId": {
-                          "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/developers.google.com\/console\/help\/new\/#projectnumber). This field has been deprecated and replaced by the name field.",
+                          "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/cloud.google.com\/resource-manager\/docs\/creating-managing-projects). This field has been deprecated and replaced by the name field.",
                           "location": "query",
                           "type": "string"
                         },
@@ -4941,7 +4957,7 @@
                       "type": "string"
                     },
                     "projectId": {
-                      "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/support.google.com\/cloud\/answer\/6158840). This field has been deprecated and replaced by the parent field.",
+                      "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/cloud.google.com\/resource-manager\/docs\/creating-managing-projects). This field has been deprecated and replaced by the parent field.",
                       "location": "query",
                       "type": "string"
                     },
@@ -4976,7 +4992,7 @@
                       "type": "string"
                     },
                     "projectId": {
-                      "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/support.google.com\/cloud\/answer\/6158840). This field has been deprecated and replaced by the name field.",
+                      "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/cloud.google.com\/resource-manager\/docs\/creating-managing-projects). This field has been deprecated and replaced by the name field.",
                       "location": "query",
                       "type": "string"
                     },
@@ -5043,7 +5059,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "projectId": {
-                  "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/support.google.com\/cloud\/answer\/6158840). This field has been deprecated and replaced by the name field.",
+                  "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/cloud.google.com\/resource-manager\/docs\/creating-managing-projects). This field has been deprecated and replaced by the name field.",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -5084,7 +5100,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "projectId": {
-                      "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/support.google.com\/cloud\/answer\/6158840). This field has been deprecated and replaced by the parent field.",
+                      "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/cloud.google.com\/resource-manager\/docs\/creating-managing-projects). This field has been deprecated and replaced by the parent field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -5120,7 +5136,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "projectId": {
-                      "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/support.google.com\/cloud\/answer\/6158840). This field has been deprecated and replaced by the name field.",
+                      "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/cloud.google.com\/resource-manager\/docs\/creating-managing-projects). This field has been deprecated and replaced by the name field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -5163,7 +5179,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "projectId": {
-                      "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/support.google.com\/cloud\/answer\/6158840). This field has been deprecated and replaced by the parent field.",
+                      "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/cloud.google.com\/resource-manager\/docs\/creating-managing-projects). This field has been deprecated and replaced by the parent field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -5197,7 +5213,7 @@
                   "httpMethod": "PUT",
                   "parameters": {
                     "projectId": {
-                      "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/support.google.com\/cloud\/answer\/6158840). This field has been deprecated and replaced by the name field.",
+                      "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/cloud.google.com\/resource-manager\/docs\/creating-managing-projects). This field has been deprecated and replaced by the name field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -5238,7 +5254,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "projectId": {
-                      "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/support.google.com\/cloud\/answer\/6158840). This field has been deprecated and replaced by the name field.",
+                      "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/cloud.google.com\/resource-manager\/docs\/creating-managing-projects). This field has been deprecated and replaced by the name field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -5279,7 +5295,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "projectId": {
-                      "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/support.google.com\/cloud\/answer\/6158840). This field has been deprecated and replaced by the name field.",
+                      "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/cloud.google.com\/resource-manager\/docs\/creating-managing-projects). This field has been deprecated and replaced by the name field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -5320,7 +5336,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "projectId": {
-                      "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/support.google.com\/cloud\/answer\/6158840). This field has been deprecated and replaced by the name field.",
+                      "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/cloud.google.com\/resource-manager\/docs\/creating-managing-projects). This field has been deprecated and replaced by the name field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -5361,7 +5377,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "projectId": {
-                      "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/support.google.com\/cloud\/answer\/6158840). This field has been deprecated and replaced by the name field.",
+                      "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/cloud.google.com\/resource-manager\/docs\/creating-managing-projects). This field has been deprecated and replaced by the name field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -5402,7 +5418,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "projectId": {
-                      "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/support.google.com\/cloud\/answer\/6158840). This field has been deprecated and replaced by the name field.",
+                      "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/cloud.google.com\/resource-manager\/docs\/creating-managing-projects). This field has been deprecated and replaced by the name field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -5443,7 +5459,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "projectId": {
-                      "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/support.google.com\/cloud\/answer\/6158840). This field has been deprecated and replaced by the name field.",
+                      "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/cloud.google.com\/resource-manager\/docs\/creating-managing-projects). This field has been deprecated and replaced by the name field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -5484,7 +5500,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "projectId": {
-                      "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/support.google.com\/cloud\/answer\/6158840). This field has been deprecated and replaced by the name field.",
+                      "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/cloud.google.com\/resource-manager\/docs\/creating-managing-projects). This field has been deprecated and replaced by the name field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -5527,7 +5543,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "projectId": {
-                      "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/developers.google.com\/console\/help\/new\/#projectnumber). This field has been deprecated and replaced by the name field.",
+                      "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/cloud.google.com\/resource-manager\/docs\/creating-managing-projects). This field has been deprecated and replaced by the name field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -5568,7 +5584,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "projectId": {
-                      "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/support.google.com\/cloud\/answer\/6158840). This field has been deprecated and replaced by the name field.",
+                      "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/cloud.google.com\/resource-manager\/docs\/creating-managing-projects). This field has been deprecated and replaced by the name field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -5609,7 +5625,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "projectId": {
-                      "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/developers.google.com\/console\/help\/new\/#projectnumber). This field has been deprecated and replaced by the name field.",
+                      "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/cloud.google.com\/resource-manager\/docs\/creating-managing-projects). This field has been deprecated and replaced by the name field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -5650,7 +5666,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "projectId": {
-                      "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/developers.google.com\/console\/help\/new\/#projectnumber). This field has been deprecated and replaced by the name field.",
+                      "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/cloud.google.com\/resource-manager\/docs\/creating-managing-projects). This field has been deprecated and replaced by the name field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -5691,7 +5707,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "projectId": {
-                      "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/developers.google.com\/console\/help\/new\/#projectnumber). This field has been deprecated and replaced by the name field.",
+                      "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/cloud.google.com\/resource-manager\/docs\/creating-managing-projects). This field has been deprecated and replaced by the name field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -5732,7 +5748,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "projectId": {
-                      "description": "Required. The Google Developers Console [project ID or project number](https:\/\/support.google.com\/cloud\/answer\/6158840).",
+                      "description": "Required. The Google Developers Console [project ID or project number](https:\/\/cloud.google.com\/resource-manager\/docs\/creating-managing-projects).",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -5778,7 +5794,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "projectId": {
-                          "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/support.google.com\/cloud\/answer\/6158840). This field has been deprecated and replaced by the name field.",
+                          "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/cloud.google.com\/resource-manager\/docs\/creating-managing-projects). This field has been deprecated and replaced by the name field.",
                           "location": "path",
                           "required": true,
                           "type": "string"
@@ -5826,7 +5842,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "projectId": {
-                          "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/support.google.com\/cloud\/answer\/6158840). This field has been deprecated and replaced by the name field.",
+                          "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/cloud.google.com\/resource-manager\/docs\/creating-managing-projects). This field has been deprecated and replaced by the name field.",
                           "location": "path",
                           "required": true,
                           "type": "string"
@@ -5874,7 +5890,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "projectId": {
-                          "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/developers.google.com\/console\/help\/new\/#projectnumber). This field has been deprecated and replaced by the parent field.",
+                          "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/cloud.google.com\/resource-manager\/docs\/creating-managing-projects). This field has been deprecated and replaced by the parent field.",
                           "location": "path",
                           "required": true,
                           "type": "string"
@@ -5917,7 +5933,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "projectId": {
-                          "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/developers.google.com\/console\/help\/new\/#projectnumber). This field has been deprecated and replaced by the name field.",
+                          "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/cloud.google.com\/resource-manager\/docs\/creating-managing-projects). This field has been deprecated and replaced by the name field.",
                           "location": "path",
                           "required": true,
                           "type": "string"
@@ -5967,7 +5983,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "projectId": {
-                          "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/developers.google.com\/console\/help\/new\/#projectnumber). This field has been deprecated and replaced by the parent field.",
+                          "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/cloud.google.com\/resource-manager\/docs\/creating-managing-projects). This field has been deprecated and replaced by the parent field.",
                           "location": "path",
                           "required": true,
                           "type": "string"
@@ -6008,7 +6024,7 @@
                       "httpMethod": "DELETE",
                       "parameters": {
                         "projectId": {
-                          "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/developers.google.com\/console\/help\/new\/#projectnumber). This field has been deprecated and replaced by the name field.",
+                          "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/cloud.google.com\/resource-manager\/docs\/creating-managing-projects). This field has been deprecated and replaced by the name field.",
                           "location": "path",
                           "required": true,
                           "type": "string"
@@ -6058,7 +6074,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "projectId": {
-                          "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/support.google.com\/cloud\/answer\/6158840). This field has been deprecated and replaced by the name field.",
+                          "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/cloud.google.com\/resource-manager\/docs\/creating-managing-projects). This field has been deprecated and replaced by the name field.",
                           "location": "path",
                           "required": true,
                           "type": "string"
@@ -6106,7 +6122,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "projectId": {
-                          "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/support.google.com\/cloud\/answer\/6158840). This field has been deprecated and replaced by the name field.",
+                          "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/cloud.google.com\/resource-manager\/docs\/creating-managing-projects). This field has been deprecated and replaced by the name field.",
                           "location": "path",
                           "required": true,
                           "type": "string"
@@ -6154,7 +6170,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "projectId": {
-                          "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/support.google.com\/cloud\/answer\/6158840). This field has been deprecated and replaced by the name field.",
+                          "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/cloud.google.com\/resource-manager\/docs\/creating-managing-projects). This field has been deprecated and replaced by the name field.",
                           "location": "path",
                           "required": true,
                           "type": "string"
@@ -6208,7 +6224,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "projectId": {
-                      "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/support.google.com\/cloud\/answer\/6158840). This field has been deprecated and replaced by the parent field.",
+                      "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/cloud.google.com\/resource-manager\/docs\/creating-managing-projects). This field has been deprecated and replaced by the parent field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -6244,7 +6260,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "projectId": {
-                      "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/support.google.com\/cloud\/answer\/6158840). This field has been deprecated and replaced by the name field.",
+                      "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/cloud.google.com\/resource-manager\/docs\/creating-managing-projects). This field has been deprecated and replaced by the name field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -6287,7 +6303,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "projectId": {
-                      "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/support.google.com\/cloud\/answer\/6158840). This field has been deprecated and replaced by the name field.",
+                      "description": "Deprecated. The Google Developers Console [project ID or project number](https:\/\/cloud.google.com\/resource-manager\/docs\/creating-managing-projects). This field has been deprecated and replaced by the name field.",
                       "location": "path",
                       "required": true,
                       "type": "string"

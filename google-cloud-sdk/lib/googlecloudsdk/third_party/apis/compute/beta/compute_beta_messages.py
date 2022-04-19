@@ -1685,9 +1685,10 @@ class AttachedDisk(_messages.Message):
 class AttachedDiskInitializeParams(_messages.Message):
   r"""[Input Only] Specifies the parameters for a new disk that will be
   created alongside the new instance. Use initialization parameters to create
-  boot disks or local SSDs attached to the new instance. This property is
-  mutually exclusive with the source property; you can only define one or the
-  other, but not both.
+  boot disks or local SSDs attached to the new instance. This field is
+  persisted and returned for instanceTemplate and not returned in the context
+  of instance. This property is mutually exclusive with the source property;
+  you can only define one or the other, but not both.
 
   Enums:
     OnUpdateActionValueValuesEnum: Specifies which action to take on instance
@@ -3403,8 +3404,8 @@ class BackendBucketCdnPolicyCacheKeyPolicy(_messages.Message):
     includeHttpHeaders: Allows HTTP request headers (by name) to be used in
       the cache key.
     queryStringWhitelist: Names of query string parameters to include in cache
-      keys. All other parameters will be excluded. '&' and '=' will be percent
-      encoded and not treated as delimiters.
+      keys. Default parameters are always included. '&' and '=' will be
+      percent encoded and not treated as delimiters.
   """
 
   includeHttpHeaders = _messages.StringField(1, repeated=True)
@@ -5340,7 +5341,7 @@ class Binding(_messages.Message):
       policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
-    members: Specifies the principals requesting access for a Cloud Platform
+    members: Specifies the principals requesting access for a Google Cloud
       resource. `members` can have the following values: * `allUsers`: A
       special identifier that represents anyone who is on the internet; with
       or without a Google account. * `allAuthenticatedUsers`: A special
@@ -42943,8 +42944,8 @@ class NetworkEndpointGroup(_messages.Message):
       INTERNET_FQDN_PORT, INTERNET_IP_PORT, SERVERLESS,
       PRIVATE_SERVICE_CONNECT.
     pscTargetService: The target service url used to set up private service
-      connection to a Google API. An example value is: "asia-
-      northeast3-cloudkms.googleapis.com"
+      connection to a Google API or a PSC Producer Service Attachment. An
+      example value is: "asia-northeast3-cloudkms.googleapis.com"
     region: [Output Only] The URL of the region where the network endpoint
       group is located.
     selfLink: [Output Only] Server-defined URL for the resource.

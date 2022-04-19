@@ -874,6 +874,8 @@ class Address(_messages.Message):
       PRIVATE_SERVICE_CONNECT: A private network IP address that can be used
         to configure Private Service Connect. This purpose can be specified
         only for GLOBAL addresses of Type INTERNAL
+      SERVERLESS: A regional internal IP address range reserved for
+        Serverless.
       SHARED_LOADBALANCER_VIP: A private network IP address that can be shared
         by multiple Internal Load Balancer forwarding rules.
       VPC_PEERING: IP range for peer networks.
@@ -883,8 +885,9 @@ class Address(_messages.Message):
     IPSEC_INTERCONNECT = 2
     NAT_AUTO = 3
     PRIVATE_SERVICE_CONNECT = 4
-    SHARED_LOADBALANCER_VIP = 5
-    VPC_PEERING = 6
+    SERVERLESS = 5
+    SHARED_LOADBALANCER_VIP = 6
+    VPC_PEERING = 7
 
   class StatusValueValuesEnum(_messages.Enum):
     r"""[Output Only] The status of the address, which can be one of
@@ -1774,9 +1777,10 @@ class AttachedDisk(_messages.Message):
 class AttachedDiskInitializeParams(_messages.Message):
   r"""[Input Only] Specifies the parameters for a new disk that will be
   created alongside the new instance. Use initialization parameters to create
-  boot disks or local SSDs attached to the new instance. This property is
-  mutually exclusive with the source property; you can only define one or the
-  other, but not both.
+  boot disks or local SSDs attached to the new instance. This field is
+  persisted and returned for instanceTemplate and not returned in the context
+  of instance. This property is mutually exclusive with the source property;
+  you can only define one or the other, but not both.
 
   Enums:
     ArchitectureValueValuesEnum: The architecture of the attached disk. Valid
@@ -3632,8 +3636,8 @@ class BackendBucketCdnPolicyCacheKeyPolicy(_messages.Message):
     includeHttpHeaders: Allows HTTP request headers (by name) to be used in
       the cache key.
     queryStringWhitelist: Names of query string parameters to include in cache
-      keys. All other parameters will be excluded. '&' and '=' will be percent
-      encoded and not treated as delimiters.
+      keys. Default parameters are always included. '&' and '=' will be
+      percent encoded and not treated as delimiters.
   """
 
   includeHttpHeaders = _messages.StringField(1, repeated=True)
@@ -5610,7 +5614,7 @@ class Binding(_messages.Message):
       policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
-    members: Specifies the principals requesting access for a Cloud Platform
+    members: Specifies the principals requesting access for a Google Cloud
       resource. `members` can have the following values: * `allUsers`: A
       special identifier that represents anyone who is on the internet; with
       or without a Google account. * `allAuthenticatedUsers`: A special
@@ -6115,6 +6119,7 @@ class Commitment(_messages.Message):
       GENERAL_PURPOSE_N2D: <no description>
       GENERAL_PURPOSE_T2D: <no description>
       MEMORY_OPTIMIZED: <no description>
+      MEMORY_OPTIMIZED_M3: <no description>
       TYPE_UNSPECIFIED: <no description>
     """
     ACCELERATOR_OPTIMIZED = 0
@@ -6126,7 +6131,8 @@ class Commitment(_messages.Message):
     GENERAL_PURPOSE_N2D = 6
     GENERAL_PURPOSE_T2D = 7
     MEMORY_OPTIMIZED = 8
-    TYPE_UNSPECIFIED = 9
+    MEMORY_OPTIMIZED_M3 = 9
+    TYPE_UNSPECIFIED = 10
 
   autoRenew = _messages.BooleanField(1)
   category = _messages.EnumField('CategoryValueValuesEnum', 2)
@@ -48584,8 +48590,8 @@ class NetworkEndpointGroup(_messages.Message):
       INTERNET_FQDN_PORT, INTERNET_IP_PORT, SERVERLESS,
       PRIVATE_SERVICE_CONNECT.
     pscTargetService: The target service url used to set up private service
-      connection to a Google API. An example value is: "asia-
-      northeast3-cloudkms.googleapis.com"
+      connection to a Google API or a PSC Producer Service Attachment. An
+      example value is: "asia-northeast3-cloudkms.googleapis.com"
     region: [Output Only] The URL of the region where the network endpoint
       group is located.
     selfLink: [Output Only] Server-defined URL for the resource.
@@ -56044,7 +56050,6 @@ class Quota(_messages.Message):
     Values:
       A2_CPUS: <no description>
       AFFINITY_GROUPS: <no description>
-      ALIASES_PER_NETWORK_GLOBAL: <no description>
       AMD_S9300_GPUS: <no description>
       AUTOSCALERS: <no description>
       BACKEND_BUCKETS: <no description>
@@ -56090,7 +56095,6 @@ class Quota(_messages.Message):
       HEALTH_CHECKS: <no description>
       IMAGES: <no description>
       INSTANCES: <no description>
-      INSTANCES_PER_NETWORK_GLOBAL: <no description>
       INSTANCE_GROUPS: <no description>
       INSTANCE_GROUP_MANAGERS: <no description>
       INSTANCE_TEMPLATES: <no description>
@@ -56099,9 +56103,6 @@ class Quota(_messages.Message):
       INTERCONNECT_ATTACHMENTS_TOTAL_MBPS: <no description>
       INTERCONNECT_TOTAL_GBPS: <no description>
       INTERNAL_ADDRESSES: <no description>
-      INTERNAL_FORWARDING_RULES_PER_NETWORK: <no description>
-      INTERNAL_FORWARDING_RULES_WITH_TARGET_INSTANCE_PER_NETWORK: <no
-        description>
       INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES: <no description>
       IN_PLACE_SNAPSHOTS: <no description>
       IN_USE_ADDRESSES: <no description>
@@ -56144,7 +56145,6 @@ class Quota(_messages.Message):
       PREEMPTIBLE_NVIDIA_T4_VWS_GPUS: <no description>
       PREEMPTIBLE_NVIDIA_V100_GPUS: <no description>
       PRIVATE_V6_ACCESS_SUBNETWORKS: <no description>
-      PSC_GOOGLE_APIS_FORWARDING_RULES_PER_NETWORK: <no description>
       PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK: <no description>
       PSC_INTERNAL_LB_FORWARDING_RULES: <no description>
       PUBLIC_ADVERTISED_PREFIXES: <no description>
@@ -56167,7 +56167,6 @@ class Quota(_messages.Message):
       STATIC_ADDRESSES: <no description>
       STATIC_BYOIP_ADDRESSES: <no description>
       SUBNETWORKS: <no description>
-      SUBNET_RANGES_PER_NETWORK: <no description>
       T2A_CPUS: <no description>
       T2D_CPUS: <no description>
       TARGET_HTTPS_PROXIES: <no description>
@@ -56184,142 +56183,136 @@ class Quota(_messages.Message):
     """
     A2_CPUS = 0
     AFFINITY_GROUPS = 1
-    ALIASES_PER_NETWORK_GLOBAL = 2
-    AMD_S9300_GPUS = 3
-    AUTOSCALERS = 4
-    BACKEND_BUCKETS = 5
-    BACKEND_SERVICES = 6
-    C2D_CPUS = 7
-    C2_CPUS = 8
-    C3_CPUS = 9
-    COMMITMENTS = 10
-    COMMITTED_A2_CPUS = 11
-    COMMITTED_C2D_CPUS = 12
-    COMMITTED_C2_CPUS = 13
-    COMMITTED_C3_CPUS = 14
-    COMMITTED_CPUS = 15
-    COMMITTED_E2_CPUS = 16
-    COMMITTED_LICENSES = 17
-    COMMITTED_LOCAL_SSD_TOTAL_GB = 18
-    COMMITTED_M3_CPUS = 19
-    COMMITTED_MEMORY_OPTIMIZED_CPUS = 20
-    COMMITTED_N2A_CPUS = 21
-    COMMITTED_N2D_CPUS = 22
-    COMMITTED_N2_CPUS = 23
-    COMMITTED_NVIDIA_A100_GPUS = 24
-    COMMITTED_NVIDIA_K80_GPUS = 25
-    COMMITTED_NVIDIA_P100_GPUS = 26
-    COMMITTED_NVIDIA_P4_GPUS = 27
-    COMMITTED_NVIDIA_T4_GPUS = 28
-    COMMITTED_NVIDIA_V100_GPUS = 29
-    COMMITTED_T2A_CPUS = 30
-    COMMITTED_T2D_CPUS = 31
-    CPUS = 32
-    CPUS_ALL_REGIONS = 33
-    DISKS_TOTAL_GB = 34
-    E2_CPUS = 35
-    EXTERNAL_MANAGED_FORWARDING_RULES = 36
-    EXTERNAL_NETWORK_LB_FORWARDING_RULES = 37
-    EXTERNAL_PROTOCOL_FORWARDING_RULES = 38
-    EXTERNAL_VPN_GATEWAYS = 39
-    FIREWALLS = 40
-    FORWARDING_RULES = 41
-    GLOBAL_EXTERNAL_MANAGED_FORWARDING_RULES = 42
-    GLOBAL_INTERNAL_ADDRESSES = 43
-    GPUS_ALL_REGIONS = 44
-    HEALTH_CHECKS = 45
-    IMAGES = 46
-    INSTANCES = 47
-    INSTANCES_PER_NETWORK_GLOBAL = 48
-    INSTANCE_GROUPS = 49
-    INSTANCE_GROUP_MANAGERS = 50
-    INSTANCE_TEMPLATES = 51
-    INTERCONNECTS = 52
-    INTERCONNECT_ATTACHMENTS_PER_REGION = 53
-    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 54
-    INTERCONNECT_TOTAL_GBPS = 55
-    INTERNAL_ADDRESSES = 56
-    INTERNAL_FORWARDING_RULES_PER_NETWORK = 57
-    INTERNAL_FORWARDING_RULES_WITH_TARGET_INSTANCE_PER_NETWORK = 58
-    INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES = 59
-    IN_PLACE_SNAPSHOTS = 60
-    IN_USE_ADDRESSES = 61
-    IN_USE_BACKUP_SCHEDULES = 62
-    IN_USE_MAINTENANCE_WINDOWS = 63
-    IN_USE_SNAPSHOT_SCHEDULES = 64
-    LOCAL_SSD_TOTAL_GB = 65
-    M1_CPUS = 66
-    M2_CPUS = 67
-    M3_CPUS = 68
-    MACHINE_IMAGES = 69
-    N2A_CPUS = 70
-    N2D_CPUS = 71
-    N2_CPUS = 72
-    NETWORKS = 73
-    NETWORK_ENDPOINT_GROUPS = 74
-    NETWORK_FIREWALL_POLICIES = 75
-    NODE_GROUPS = 76
-    NODE_TEMPLATES = 77
-    NVIDIA_A100_GPUS = 78
-    NVIDIA_K80_GPUS = 79
-    NVIDIA_P100_GPUS = 80
-    NVIDIA_P100_VWS_GPUS = 81
-    NVIDIA_P4_GPUS = 82
-    NVIDIA_P4_VWS_GPUS = 83
-    NVIDIA_T4_GPUS = 84
-    NVIDIA_T4_VWS_GPUS = 85
-    NVIDIA_V100_GPUS = 86
-    PACKET_MIRRORINGS = 87
-    PD_EXTREME_TOTAL_PROVISIONED_IOPS = 88
-    PREEMPTIBLE_CPUS = 89
-    PREEMPTIBLE_LOCAL_SSD_GB = 90
-    PREEMPTIBLE_NVIDIA_A100_GPUS = 91
-    PREEMPTIBLE_NVIDIA_K80_GPUS = 92
-    PREEMPTIBLE_NVIDIA_P100_GPUS = 93
-    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 94
-    PREEMPTIBLE_NVIDIA_P4_GPUS = 95
-    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 96
-    PREEMPTIBLE_NVIDIA_T4_GPUS = 97
-    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 98
-    PREEMPTIBLE_NVIDIA_V100_GPUS = 99
-    PRIVATE_V6_ACCESS_SUBNETWORKS = 100
-    PSC_GOOGLE_APIS_FORWARDING_RULES_PER_NETWORK = 101
-    PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK = 102
-    PSC_INTERNAL_LB_FORWARDING_RULES = 103
-    PUBLIC_ADVERTISED_PREFIXES = 104
-    PUBLIC_DELEGATED_PREFIXES = 105
-    REGIONAL_AUTOSCALERS = 106
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 107
-    RESERVATIONS = 108
-    RESOURCE_POLICIES = 109
-    ROUTERS = 110
-    ROUTES = 111
-    SECURITY_POLICIES = 112
-    SECURITY_POLICIES_PER_REGION = 113
-    SECURITY_POLICY_CEVAL_RULES = 114
-    SECURITY_POLICY_RULES = 115
-    SECURITY_POLICY_RULES_PER_REGION = 116
-    SERVICE_ATTACHMENTS = 117
-    SNAPSHOTS = 118
-    SSD_TOTAL_GB = 119
-    SSL_CERTIFICATES = 120
-    STATIC_ADDRESSES = 121
-    STATIC_BYOIP_ADDRESSES = 122
-    SUBNETWORKS = 123
-    SUBNET_RANGES_PER_NETWORK = 124
-    T2A_CPUS = 125
-    T2D_CPUS = 126
-    TARGET_HTTPS_PROXIES = 127
-    TARGET_HTTP_PROXIES = 128
-    TARGET_INSTANCES = 129
-    TARGET_POOLS = 130
-    TARGET_SSL_PROXIES = 131
-    TARGET_TCP_PROXIES = 132
-    TARGET_VPN_GATEWAYS = 133
-    URL_MAPS = 134
-    VPN_GATEWAYS = 135
-    VPN_TUNNELS = 136
-    XPN_SERVICE_PROJECTS = 137
+    AMD_S9300_GPUS = 2
+    AUTOSCALERS = 3
+    BACKEND_BUCKETS = 4
+    BACKEND_SERVICES = 5
+    C2D_CPUS = 6
+    C2_CPUS = 7
+    C3_CPUS = 8
+    COMMITMENTS = 9
+    COMMITTED_A2_CPUS = 10
+    COMMITTED_C2D_CPUS = 11
+    COMMITTED_C2_CPUS = 12
+    COMMITTED_C3_CPUS = 13
+    COMMITTED_CPUS = 14
+    COMMITTED_E2_CPUS = 15
+    COMMITTED_LICENSES = 16
+    COMMITTED_LOCAL_SSD_TOTAL_GB = 17
+    COMMITTED_M3_CPUS = 18
+    COMMITTED_MEMORY_OPTIMIZED_CPUS = 19
+    COMMITTED_N2A_CPUS = 20
+    COMMITTED_N2D_CPUS = 21
+    COMMITTED_N2_CPUS = 22
+    COMMITTED_NVIDIA_A100_GPUS = 23
+    COMMITTED_NVIDIA_K80_GPUS = 24
+    COMMITTED_NVIDIA_P100_GPUS = 25
+    COMMITTED_NVIDIA_P4_GPUS = 26
+    COMMITTED_NVIDIA_T4_GPUS = 27
+    COMMITTED_NVIDIA_V100_GPUS = 28
+    COMMITTED_T2A_CPUS = 29
+    COMMITTED_T2D_CPUS = 30
+    CPUS = 31
+    CPUS_ALL_REGIONS = 32
+    DISKS_TOTAL_GB = 33
+    E2_CPUS = 34
+    EXTERNAL_MANAGED_FORWARDING_RULES = 35
+    EXTERNAL_NETWORK_LB_FORWARDING_RULES = 36
+    EXTERNAL_PROTOCOL_FORWARDING_RULES = 37
+    EXTERNAL_VPN_GATEWAYS = 38
+    FIREWALLS = 39
+    FORWARDING_RULES = 40
+    GLOBAL_EXTERNAL_MANAGED_FORWARDING_RULES = 41
+    GLOBAL_INTERNAL_ADDRESSES = 42
+    GPUS_ALL_REGIONS = 43
+    HEALTH_CHECKS = 44
+    IMAGES = 45
+    INSTANCES = 46
+    INSTANCE_GROUPS = 47
+    INSTANCE_GROUP_MANAGERS = 48
+    INSTANCE_TEMPLATES = 49
+    INTERCONNECTS = 50
+    INTERCONNECT_ATTACHMENTS_PER_REGION = 51
+    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 52
+    INTERCONNECT_TOTAL_GBPS = 53
+    INTERNAL_ADDRESSES = 54
+    INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES = 55
+    IN_PLACE_SNAPSHOTS = 56
+    IN_USE_ADDRESSES = 57
+    IN_USE_BACKUP_SCHEDULES = 58
+    IN_USE_MAINTENANCE_WINDOWS = 59
+    IN_USE_SNAPSHOT_SCHEDULES = 60
+    LOCAL_SSD_TOTAL_GB = 61
+    M1_CPUS = 62
+    M2_CPUS = 63
+    M3_CPUS = 64
+    MACHINE_IMAGES = 65
+    N2A_CPUS = 66
+    N2D_CPUS = 67
+    N2_CPUS = 68
+    NETWORKS = 69
+    NETWORK_ENDPOINT_GROUPS = 70
+    NETWORK_FIREWALL_POLICIES = 71
+    NODE_GROUPS = 72
+    NODE_TEMPLATES = 73
+    NVIDIA_A100_GPUS = 74
+    NVIDIA_K80_GPUS = 75
+    NVIDIA_P100_GPUS = 76
+    NVIDIA_P100_VWS_GPUS = 77
+    NVIDIA_P4_GPUS = 78
+    NVIDIA_P4_VWS_GPUS = 79
+    NVIDIA_T4_GPUS = 80
+    NVIDIA_T4_VWS_GPUS = 81
+    NVIDIA_V100_GPUS = 82
+    PACKET_MIRRORINGS = 83
+    PD_EXTREME_TOTAL_PROVISIONED_IOPS = 84
+    PREEMPTIBLE_CPUS = 85
+    PREEMPTIBLE_LOCAL_SSD_GB = 86
+    PREEMPTIBLE_NVIDIA_A100_GPUS = 87
+    PREEMPTIBLE_NVIDIA_K80_GPUS = 88
+    PREEMPTIBLE_NVIDIA_P100_GPUS = 89
+    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 90
+    PREEMPTIBLE_NVIDIA_P4_GPUS = 91
+    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 92
+    PREEMPTIBLE_NVIDIA_T4_GPUS = 93
+    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 94
+    PREEMPTIBLE_NVIDIA_V100_GPUS = 95
+    PRIVATE_V6_ACCESS_SUBNETWORKS = 96
+    PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK = 97
+    PSC_INTERNAL_LB_FORWARDING_RULES = 98
+    PUBLIC_ADVERTISED_PREFIXES = 99
+    PUBLIC_DELEGATED_PREFIXES = 100
+    REGIONAL_AUTOSCALERS = 101
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 102
+    RESERVATIONS = 103
+    RESOURCE_POLICIES = 104
+    ROUTERS = 105
+    ROUTES = 106
+    SECURITY_POLICIES = 107
+    SECURITY_POLICIES_PER_REGION = 108
+    SECURITY_POLICY_CEVAL_RULES = 109
+    SECURITY_POLICY_RULES = 110
+    SECURITY_POLICY_RULES_PER_REGION = 111
+    SERVICE_ATTACHMENTS = 112
+    SNAPSHOTS = 113
+    SSD_TOTAL_GB = 114
+    SSL_CERTIFICATES = 115
+    STATIC_ADDRESSES = 116
+    STATIC_BYOIP_ADDRESSES = 117
+    SUBNETWORKS = 118
+    T2A_CPUS = 119
+    T2D_CPUS = 120
+    TARGET_HTTPS_PROXIES = 121
+    TARGET_HTTP_PROXIES = 122
+    TARGET_INSTANCES = 123
+    TARGET_POOLS = 124
+    TARGET_SSL_PROXIES = 125
+    TARGET_TCP_PROXIES = 126
+    TARGET_VPN_GATEWAYS = 127
+    URL_MAPS = 128
+    VPN_GATEWAYS = 129
+    VPN_TUNNELS = 130
+    XPN_SERVICE_PROJECTS = 131
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)

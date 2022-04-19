@@ -30,6 +30,7 @@ import random
 from googlecloudsdk.api_lib.storage import api_factory
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.api_lib.storage import gcs_api
+from googlecloudsdk.command_lib.storage import manifest_util
 from googlecloudsdk.command_lib.storage import tracker_file_util
 from googlecloudsdk.command_lib.storage.tasks import task
 from googlecloudsdk.command_lib.storage.tasks import task_util
@@ -60,7 +61,7 @@ def _get_random_prefix():
   return str(random.randint(1, 10**10))
 
 
-class FileUploadTask(task.Task, copy_util.CopyTaskExitHandlerMixin):
+class FileUploadTask(copy_util.CopyTaskWithExitHandler):
   """Represents a command operation triggering a file upload."""
 
   def __init__(self,
@@ -84,12 +85,12 @@ class FileUploadTask(task.Task, copy_util.CopyTaskExitHandlerMixin):
         URL of the copy result.
       user_request_args (UserRequestArgs|None): Values for RequestConfig.
     """
-    super(FileUploadTask, self).__init__()
-    self._source_resource = source_resource
-    self._destination_resource = destination_resource
+    super(FileUploadTask, self).__init__(
+        source_resource,
+        destination_resource,
+        user_request_args=user_request_args)
     self._delete_source = delete_source
     self._print_created_message = print_created_message
-    self._user_request_args = user_request_args
 
     self.parallel_processing_key = (
         self._destination_resource.storage_url.url_string)
@@ -105,6 +106,12 @@ class FileUploadTask(task.Task, copy_util.CopyTaskExitHandlerMixin):
       log.status.Print(
           copy_util.get_no_clobber_message(
               self._destination_resource.storage_url))
+      if self._send_manifest_messages:
+        manifest_util.send_skip_message(
+            task_status_queue, self._source_resource,
+            self._destination_resource,
+            copy_util.get_no_clobber_message(
+                self._destination_resource.storage_url))
       return
 
     source_url = self._source_resource.storage_url
@@ -129,12 +136,17 @@ class FileUploadTask(task.Task, copy_util.CopyTaskExitHandlerMixin):
           offset=0,
           length=size,
           user_request_args=self._user_request_args).execute(task_status_queue)
-      if self._print_created_message and task_output and task_output.messages:
-        for message in task_output.messages:
-          if message.topic == task.Topic.UPLOADED_COMPONENT:
-            log.status.Print('Created: {}'.format(
-                message.payload.object_resource.storage_url))
-            break
+      result_resource = task_util.get_first_matching_message_payload(
+          task_output.messages, task.Topic.CREATED_RESOURCE)
+      if result_resource:
+        if self._print_created_message:
+          log.status.Print('Created: {}'.format(result_resource.storage_url))
+        if self._send_manifest_messages:
+          manifest_util.send_success_message(
+              task_status_queue,
+              self._source_resource,
+              self._destination_resource,
+              md5_hash=result_resource.md5_hash)
       if self._delete_source:
         os.remove(self._source_resource.storage_url.object_name)
     else:
@@ -187,7 +199,8 @@ class FileUploadTask(task.Task, copy_util.CopyTaskExitHandlerMixin):
               destination_resource=self._destination_resource,
               random_prefix=random_prefix,
               delete_source=self._delete_source,
-              print_created_message=self._print_created_message))
+              print_created_message=self._print_created_message,
+              user_request_args=self._user_request_args))
 
       return task.Output(
           additional_task_iterators=[

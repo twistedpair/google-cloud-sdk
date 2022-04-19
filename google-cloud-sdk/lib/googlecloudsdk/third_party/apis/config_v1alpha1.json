@@ -343,6 +343,16 @@
         "clusterless": {
           "description": "Required. If set, the deployment will create GCP resources without deploying to a Config Controller instance.",
           "type": "boolean"
+        },
+        "deleteBuild": {
+          "description": "Output only. Cloud Build instance UUID associated with deleting this deployment.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "deleteLogs": {
+          "description": "Output only. Location of Cloud Build logs in Google Cloud Storage, populated when deleting this deployment. Format: `gs:\/\/{bucket}\/{object}`.",
+          "readOnly": true,
+          "type": "string"
         }
       }
     },
@@ -596,6 +606,16 @@
           "description": "Optional. How long apply attempt should wait for resource reconciliation on the Config Controller cluster to complete. If unset, a default value of 5m will be used. A value of 0s indicates that the Revision will be APPLIED as soon as resources are applied successfully to the cluster and final resource actuation status will need to be polled on asynchronously.",
           "type": "string",
           "format": "google-duration"
+        },
+        "build": {
+          "description": "Output only. Cloud Build instance UUID associated with this revision.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "logs": {
+          "description": "Output only. Location of Revision operation logs in `gs:\/\/{bucket}\/{object}` format.",
+          "readOnly": true,
+          "type": "string"
         }
       }
     },
@@ -706,6 +726,16 @@
             "PREVIEW_BUILD_API_FAILED",
             "PREVIEW_BUILD_RUN_FAILED"
           ]
+        },
+        "build": {
+          "description": "Output only. Cloud Build instance UUID associated with this preview.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "logs": {
+          "description": "Output only. Location of Preview operation logs in `gs:\/\/{bucket}\/{object}` format.",
+          "readOnly": true,
+          "type": "string"
         }
       }
     },
@@ -832,7 +862,7 @@
       "type": "object",
       "properties": {
         "policy": {
-          "description": "REQUIRED: The complete policy to be applied to the `resource`. The size of the policy is limited to a few 10s of KB. An empty policy is a valid policy but certain Cloud Platform services (such as Projects) might reject them.",
+          "description": "REQUIRED: The complete policy to be applied to the `resource`. The size of the policy is limited to a few 10s of KB. An empty policy is a valid policy but certain Google Cloud services (such as Projects) might reject them.",
           "$ref": "Policy"
         },
         "updateMask": {
@@ -883,7 +913,7 @@
           "type": "string"
         },
         "members": {
-          "description": "Specifies the principals requesting access for a Cloud Platform resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
+          "description": "Specifies the principals requesting access for a Google Cloud resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
           "type": "array",
           "items": {
             "type": "string"
@@ -972,7 +1002,7 @@
       "type": "object",
       "properties": {
         "permissions": {
-          "description": "The set of permissions to check for the `resource`. Permissions with wildcards (such as '*' or 'storage.*') are not allowed. For more information see [IAM Overview](https:\/\/cloud.google.com\/iam\/docs\/overview#permissions).",
+          "description": "The set of permissions to check for the `resource`. Permissions with wildcards (such as `*` or `storage.*`) are not allowed. For more information see [IAM Overview](https:\/\/cloud.google.com\/iam\/docs\/overview#permissions).",
           "type": "array",
           "items": {
             "type": "string"
@@ -1077,6 +1107,16 @@
         "applyResults": {
           "description": "Locations of outputs from config application.",
           "$ref": "ApplyResults"
+        },
+        "build": {
+          "description": "Output only. Cloud Build instance UUID associated with this operation.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "logs": {
+          "description": "Output only. Location of Deployment operations logs in `gs:\/\/{bucket}\/{object}` format.",
+          "readOnly": true,
+          "type": "string"
         }
       }
     }

@@ -783,7 +783,7 @@ version [{1}].  To clear your fixed version setting, run:
     current_version = config.INSTALLATION_CONFIG.version
     self.__Write(
         log.status,
-        '\nYour current Googgle Cloud CLI version is: ' + current_version)
+        '\nYour current Google Cloud CLI version is: ' + current_version)
     return to_print, current_version
 
   def _GetPrintListWithDiff(self):

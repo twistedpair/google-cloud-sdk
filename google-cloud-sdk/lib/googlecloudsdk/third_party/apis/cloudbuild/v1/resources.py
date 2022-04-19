@@ -88,6 +88,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_GITLABCONFIGS = (
+      'projects.locations.gitLabConfigs',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/gitLabConfigs/'
+              '{gitLabConfigsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_GITHUBENTERPRISECONFIGS = (
       'projects.locations.githubEnterpriseConfigs',
       '{+name}',

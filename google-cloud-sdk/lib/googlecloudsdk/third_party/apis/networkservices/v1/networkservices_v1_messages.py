@@ -89,7 +89,7 @@ class Binding(_messages.Message):
       policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
-    members: Specifies the principals requesting access for a Cloud Platform
+    members: Specifies the principals requesting access for a Google Cloud
       resource. `members` can have the following values: * `allUsers`: A
       special identifier that represents anyone who is on the internet; with
       or without a Google account. * `allAuthenticatedUsers`: A special
@@ -1237,6 +1237,21 @@ class ListOperationsResponse(_messages.Message):
   operations = _messages.MessageField('Operation', 2, repeated=True)
 
 
+class ListServiceBindingsResponse(_messages.Message):
+  r"""Response returned by the ListServiceBindings method.
+
+  Fields:
+    nextPageToken: If there might be more results than those appearing in this
+      response, then `next_page_token` is included. To get the next set of
+      results, call this method again using the value of `next_page_token` as
+      `page_token`.
+    serviceBindings: List of ServiceBinding resources.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  serviceBindings = _messages.MessageField('ServiceBinding', 2, repeated=True)
+
+
 class Location(_messages.Message):
   r"""A resource that represents Google Cloud Platform location.
 
@@ -2024,6 +2039,121 @@ class NetworkservicesProjectsLocationsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class NetworkservicesProjectsLocationsServiceBindingsCreateRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsServiceBindingsCreateRequest object.
+
+  Fields:
+    parent: Required. The parent resource of the ServiceBinding. Must be in
+      the format `projects/*/locations/global`.
+    serviceBinding: A ServiceBinding resource to be passed as the request
+      body.
+    serviceBindingId: Required. Short name of the ServiceBinding resource to
+      be created.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  serviceBinding = _messages.MessageField('ServiceBinding', 2)
+  serviceBindingId = _messages.StringField(3)
+
+
+class NetworkservicesProjectsLocationsServiceBindingsDeleteRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsServiceBindingsDeleteRequest object.
+
+  Fields:
+    name: Required. A name of the ServiceBinding to delete. Must be in the
+      format `projects/*/locations/global/serviceBindings/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsServiceBindingsGetIamPolicyRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsServiceBindingsGetIamPolicyRequest
+  object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class NetworkservicesProjectsLocationsServiceBindingsGetRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsServiceBindingsGetRequest object.
+
+  Fields:
+    name: Required. A name of the ServiceBinding to get. Must be in the format
+      `projects/*/locations/global/serviceBindings/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsServiceBindingsListRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsServiceBindingsListRequest object.
+
+  Fields:
+    pageSize: Maximum number of ServiceBindings to return per call.
+    pageToken: The value returned by the last `ListServiceBindingsResponse`
+      Indicates that this is a continuation of a prior `ListRouters` call, and
+      that the system should return the next page of data.
+    parent: Required. The project and location from which the ServiceBindings
+      should be listed, specified in the format `projects/*/locations/global`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NetworkservicesProjectsLocationsServiceBindingsSetIamPolicyRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsServiceBindingsSetIamPolicyRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class NetworkservicesProjectsLocationsServiceBindingsTestIamPermissionsRequest(_messages.Message):
+  r"""A
+  NetworkservicesProjectsLocationsServiceBindingsTestIamPermissionsRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
 class Operation(_messages.Message):
   r"""This resource represents a long-running operation that is the result of
   a network API call.
@@ -2379,14 +2509,68 @@ class Routing(_messages.Message):
   pathMatchers = _messages.MessageField('PathMatcher', 2, repeated=True)
 
 
+class ServiceBinding(_messages.Message):
+  r"""ServiceBinding is the resource that defines a Service Directory Service
+  to be used in a BackendService resource.
+
+  Messages:
+    LabelsValue: Optional. Set of label tags associated with the
+      ServiceBinding resource.
+
+  Fields:
+    createTime: Output only. The timestamp when the resource was created.
+    description: Optional. A free-text description of the resource. Max length
+      1024 characters.
+    labels: Optional. Set of label tags associated with the ServiceBinding
+      resource.
+    name: Required. Name of the ServiceBinding resource. It matches pattern
+      `projects/*/locations/global/serviceBindings/service_binding_name>`.
+    service: Required. The full service directory service name of the format
+      /projects/*/locations/*/namespaces/*/services/*
+    updateTime: Output only. The timestamp when the resource was updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Set of label tags associated with the ServiceBinding
+    resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  service = _messages.StringField(5)
+  updateTime = _messages.StringField(6)
+
+
 class SetIamPolicyRequest(_messages.Message):
   r"""Request message for `SetIamPolicy` method.
 
   Fields:
     policy: REQUIRED: The complete policy to be applied to the `resource`. The
       size of the policy is limited to a few 10s of KB. An empty policy is a
-      valid policy but certain Cloud Platform services (such as Projects)
-      might reject them.
+      valid policy but certain Google Cloud services (such as Projects) might
+      reject them.
     updateMask: OPTIONAL: A FieldMask specifying which fields of the policy to
       modify. Only the fields in the mask will be modified. If no mask is
       provided, the following default mask is used: `paths: "bindings, etag"`
@@ -2515,7 +2699,7 @@ class TestIamPermissionsRequest(_messages.Message):
 
   Fields:
     permissions: The set of permissions to check for the `resource`.
-      Permissions with wildcards (such as '*' or 'storage.*') are not allowed.
+      Permissions with wildcards (such as `*` or `storage.*`) are not allowed.
       For more information see [IAM
       Overview](https://cloud.google.com/iam/docs/overview#permissions).
   """

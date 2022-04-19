@@ -655,33 +655,6 @@ class FirestoreV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def RunAggregationQuery(self, request, global_params=None):
-      r"""Runs an aggregation query. Rather than producing Document results like Firestore.RunQuery, this API allows running an aggregation to produce a series of AggregationResult server-side. High-Level Example: ``` -- Return the number of documents in table given a filter. SELECT COUNT(*) FROM ( SELECT * FROM k where a = true ); ```.
-
-      Args:
-        request: (FirestoreProjectsDatabasesDocumentsRunAggregationQueryRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (RunAggregationQueryResponse) The response message.
-      """
-      config = self.GetMethodConfig('RunAggregationQuery')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    RunAggregationQuery.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/databases/{databasesId}/documents/{documentsId}/{documentsId1}:runAggregationQuery',
-        http_method='POST',
-        method_id='firestore.projects.databases.documents.runAggregationQuery',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=[],
-        relative_path='v1/{+parent}:runAggregationQuery',
-        request_field='runAggregationQueryRequest',
-        request_type_name='FirestoreProjectsDatabasesDocumentsRunAggregationQueryRequest',
-        response_type_name='RunAggregationQueryResponse',
-        supports_download=False,
-    )
-
     def RunQuery(self, request, global_params=None):
       r"""Runs a query.
 

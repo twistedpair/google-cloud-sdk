@@ -4681,7 +4681,7 @@
       "type": "object",
       "properties": {
         "tag": {
-          "description": "Always present. The tag used to identify which fulfillment is being called.",
+          "description": "Always present. The value of the Fulfillment.tag field will be populated in this field by Dialogflow when the associated webhook is called. The tag is typically used by the webhook service to identify which fulfillment is being called, but it could be used for other purposes.",
           "type": "string"
         }
       }
@@ -5581,7 +5581,7 @@
           "type": "string"
         },
         "displayName": {
-          "description": "Required. The human-readable name of the page, unique within the agent.",
+          "description": "Required. The human-readable name of the page, unique within the flow.",
           "type": "string"
         },
         "entryFulfillment": {
@@ -5636,7 +5636,7 @@
           "type": "boolean"
         },
         "tag": {
-          "description": "The tag used by the webhook to identify which fulfillment is being called. This field is required if `webhook` is specified.",
+          "description": "The value of this field will be populated in the WebhookRequest `fulfillmentInfo.tag` field by Dialogflow when the associated webhook is called. The tag is typically used by the webhook service to identify which fulfillment is being called, but it could be used for other purposes. This field is required if `webhook` is specified.",
           "type": "string"
         },
         "setParameterActions": {
@@ -6376,7 +6376,7 @@
       "type": "object",
       "properties": {
         "tag": {
-          "description": "Always present. The tag used to identify which fulfillment is being called.",
+          "description": "Always present. The value of the Fulfillment.tag field will be populated in this field by Dialogflow when the associated webhook is called. The tag is typically used by the webhook service to identify which fulfillment is being called, but it could be used for other purposes.",
           "type": "string"
         }
       }
@@ -7276,7 +7276,7 @@
           "type": "string"
         },
         "displayName": {
-          "description": "Required. The human-readable name of the page, unique within the agent.",
+          "description": "Required. The human-readable name of the page, unique within the flow.",
           "type": "string"
         },
         "entryFulfillment": {
@@ -7331,7 +7331,7 @@
           "type": "boolean"
         },
         "tag": {
-          "description": "The tag used by the webhook to identify which fulfillment is being called. This field is required if `webhook` is specified.",
+          "description": "The value of this field will be populated in the WebhookRequest `fulfillmentInfo.tag` field by Dialogflow when the associated webhook is called. The tag is typically used by the webhook service to identify which fulfillment is being called, but it could be used for other purposes. This field is required if `webhook` is specified.",
           "type": "string"
         },
         "setParameterActions": {

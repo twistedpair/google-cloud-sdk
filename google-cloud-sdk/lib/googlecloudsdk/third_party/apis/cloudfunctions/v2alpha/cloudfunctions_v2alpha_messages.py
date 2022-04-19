@@ -90,7 +90,7 @@ class Binding(_messages.Message):
       policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
-    members: Specifies the principals requesting access for a Cloud Platform
+    members: Specifies the principals requesting access for a Google Cloud
       resource. `members` can have the following values: * `allUsers`: A
       special identifier that represents anyone who is on the internet; with
       or without a Google account. * `allAuthenticatedUsers`: A special
@@ -473,6 +473,9 @@ class EventTrigger(_messages.Message):
       failures (i.e. not retrying them).
 
   Fields:
+    channel: Optional. The name of the channel associated with the trigger in
+      `projects/{project}/locations/{location}/channels/{channel}` format. You
+      must provide a channel to receive events from Eventarc SaaS partners.
     eventFilters: Criteria used to filter events.
     eventType: Required. The type of event to observe. For example:
       `google.cloud.audit.log.v1.written` or
@@ -513,13 +516,14 @@ class EventTrigger(_messages.Message):
     RETRY_POLICY_DO_NOT_RETRY = 1
     RETRY_POLICY_RETRY = 2
 
-  eventFilters = _messages.MessageField('EventFilter', 1, repeated=True)
-  eventType = _messages.StringField(2)
-  pubsubTopic = _messages.StringField(3)
-  retryPolicy = _messages.EnumField('RetryPolicyValueValuesEnum', 4)
-  serviceAccountEmail = _messages.StringField(5)
-  trigger = _messages.StringField(6)
-  triggerRegion = _messages.StringField(7)
+  channel = _messages.StringField(1)
+  eventFilters = _messages.MessageField('EventFilter', 2, repeated=True)
+  eventType = _messages.StringField(3)
+  pubsubTopic = _messages.StringField(4)
+  retryPolicy = _messages.EnumField('RetryPolicyValueValuesEnum', 5)
+  serviceAccountEmail = _messages.StringField(6)
+  trigger = _messages.StringField(7)
+  triggerRegion = _messages.StringField(8)
 
 
 class Expr(_messages.Message):
@@ -1637,8 +1641,8 @@ class SetIamPolicyRequest(_messages.Message):
   Fields:
     policy: REQUIRED: The complete policy to be applied to the `resource`. The
       size of the policy is limited to a few 10s of KB. An empty policy is a
-      valid policy but certain Cloud Platform services (such as Projects)
-      might reject them.
+      valid policy but certain Google Cloud services (such as Projects) might
+      reject them.
     updateMask: OPTIONAL: A FieldMask specifying which fields of the policy to
       modify. Only the fields in the mask will be modified. If no mask is
       provided, the following default mask is used: `paths: "bindings, etag"`
@@ -1814,7 +1818,7 @@ class TestIamPermissionsRequest(_messages.Message):
 
   Fields:
     permissions: The set of permissions to check for the `resource`.
-      Permissions with wildcards (such as '*' or 'storage.*') are not allowed.
+      Permissions with wildcards (such as `*` or `storage.*`) are not allowed.
       For more information see [IAM
       Overview](https://cloud.google.com/iam/docs/overview#permissions).
   """

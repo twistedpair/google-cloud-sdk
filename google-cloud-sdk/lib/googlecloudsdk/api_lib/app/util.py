@@ -126,6 +126,14 @@ def ConvertToPosixPath(path):
   return posixpath.join(*path.split(os.path.sep))
 
 
+def ConvertToCloudRegion(region):
+  """Converts a App Engine region to the format used elsewhere in Cloud."""
+  if region in {'europe-west', 'us-central'}:
+    return region + '1'
+  else:
+    return region
+
+
 def ShouldSkip(skip_files, path):
   """Returns whether the given path should be skipped by the skip_files field.
 

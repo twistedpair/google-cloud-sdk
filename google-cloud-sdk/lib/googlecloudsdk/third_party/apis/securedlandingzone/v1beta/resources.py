@@ -38,6 +38,17 @@ class Collections(enum.Enum):
       ['organizationsId', 'locationsId'],
       True
   )
+  ORGANIZATIONS_LOCATIONS_OPERATIONS = (
+      'organizations.locations.operations',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/locations/{locationsId}/'
+              'operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
   ORGANIZATIONS_LOCATIONS_OVERWATCHES = (
       'organizations.locations.overwatches',
       '{+name}',
@@ -45,16 +56,6 @@ class Collections(enum.Enum):
           '':
               'organizations/{organizationsId}/locations/{locationsId}/'
               'overwatches/{overwatchesId}',
-      },
-      ['name'],
-      True
-  )
-  ORGANIZATIONS_OPERATIONS = (
-      'organizations.operations',
-      '{+name}',
-      {
-          '':
-              'organizations/{organizationsId}/operations/{operationsId}',
       },
       ['name'],
       True

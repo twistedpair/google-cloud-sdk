@@ -39,6 +39,7 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.projects_locations_instanceProvisioningSettings = self.ProjectsLocationsInstanceProvisioningSettingsService(self)
     self.projects_locations_instances = self.ProjectsLocationsInstancesService(self)
     self.projects_locations_networks = self.ProjectsLocationsNetworksService(self)
     self.projects_locations_nfsShares = self.ProjectsLocationsNfsSharesService(self)
@@ -52,6 +53,43 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
 
+  class ProjectsLocationsInstanceProvisioningSettingsService(base_api.BaseApiService):
+    """Service class for the projects_locations_instanceProvisioningSettings resource."""
+
+    _NAME = 'projects_locations_instanceProvisioningSettings'
+
+    def __init__(self, client):
+      super(BaremetalsolutionV2.ProjectsLocationsInstanceProvisioningSettingsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Fetch(self, request, global_params=None):
+      r"""Get instance provisioning settings for a given project. This is hidden method used by UI only.
+
+      Args:
+        request: (BaremetalsolutionProjectsLocationsInstanceProvisioningSettingsFetchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (FetchInstanceProvisioningSettingsResponse) The response message.
+      """
+      config = self.GetMethodConfig('Fetch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Fetch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/instanceProvisioningSettings:fetch',
+        http_method='GET',
+        method_id='baremetalsolution.projects.locations.instanceProvisioningSettings.fetch',
+        ordered_params=['location'],
+        path_params=['location'],
+        query_params=[],
+        relative_path='v2/{+location}/instanceProvisioningSettings:fetch',
+        request_field='',
+        request_type_name='BaremetalsolutionProjectsLocationsInstanceProvisioningSettingsFetchRequest',
+        response_type_name='FetchInstanceProvisioningSettingsResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsInstancesService(base_api.BaseApiService):
     """Service class for the projects_locations_instances resource."""
 
@@ -61,6 +99,60 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
       super(BaremetalsolutionV2.ProjectsLocationsInstancesService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def AttachVolume(self, request, global_params=None):
+      r"""Attach volume to instance.
+
+      Args:
+        request: (BaremetalsolutionProjectsLocationsInstancesAttachVolumeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('AttachVolume')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AttachVolume.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:attachVolume',
+        http_method='POST',
+        method_id='baremetalsolution.projects.locations.instances.attachVolume',
+        ordered_params=['instance'],
+        path_params=['instance'],
+        query_params=[],
+        relative_path='v2/{+instance}:attachVolume',
+        request_field='attachVolumeRequest',
+        request_type_name='BaremetalsolutionProjectsLocationsInstancesAttachVolumeRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def DetachVolume(self, request, global_params=None):
+      r"""Detach volume from instance.
+
+      Args:
+        request: (BaremetalsolutionProjectsLocationsInstancesDetachVolumeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('DetachVolume')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DetachVolume.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:detachVolume',
+        http_method='POST',
+        method_id='baremetalsolution.projects.locations.instances.detachVolume',
+        ordered_params=['instance'],
+        path_params=['instance'],
+        query_params=[],
+        relative_path='v2/{+instance}:detachVolume',
+        request_field='detachVolumeRequest',
+        request_type_name='BaremetalsolutionProjectsLocationsInstancesDetachVolumeRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
 
     def DisableInteractiveSerialConsole(self, request, global_params=None):
       r"""Disable the interactive serial console feature on an instance.
@@ -247,6 +339,33 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
         relative_path='v2/{+name}:start',
         request_field='startInstanceRequest',
         request_type_name='BaremetalsolutionProjectsLocationsInstancesStartRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Stop(self, request, global_params=None):
+      r"""Stop a running server.
+
+      Args:
+        request: (BaremetalsolutionProjectsLocationsInstancesStopRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Stop')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Stop.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:stop',
+        http_method='POST',
+        method_id='baremetalsolution.projects.locations.instances.stop',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}:stop',
+        request_field='stopInstanceRequest',
+        request_type_name='BaremetalsolutionProjectsLocationsInstancesStopRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -861,6 +980,33 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Delete(self, request, global_params=None):
+      r"""Delete a Lun.
+
+      Args:
+        request: (BaremetalsolutionProjectsLocationsVolumesLunsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}/luns/{lunsId}',
+        http_method='DELETE',
+        method_id='baremetalsolution.projects.locations.volumes.luns.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='BaremetalsolutionProjectsLocationsVolumesLunsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Get details of a single storage logical unit number(LUN).
 
@@ -1069,6 +1215,87 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
       super(BaremetalsolutionV2.ProjectsLocationsVolumesService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def AllocateLuns(self, request, global_params=None):
+      r"""Allocate Volume's Luns.
+
+      Args:
+        request: (BaremetalsolutionProjectsLocationsVolumesAllocateLunsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('AllocateLuns')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AllocateLuns.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}:allocateLuns',
+        http_method='POST',
+        method_id='baremetalsolution.projects.locations.volumes.allocateLuns',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2/{+parent}:allocateLuns',
+        request_field='allocateLunsRequest',
+        request_type_name='BaremetalsolutionProjectsLocationsVolumesAllocateLunsRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Create(self, request, global_params=None):
+      r"""Create a volume.
+
+      Args:
+        request: (BaremetalsolutionProjectsLocationsVolumesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/volumes',
+        http_method='POST',
+        method_id='baremetalsolution.projects.locations.volumes.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2/{+parent}/volumes',
+        request_field='volume',
+        request_type_name='BaremetalsolutionProjectsLocationsVolumesCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Delete a volume. Volume shouldn't have any Luns.
+
+      Args:
+        request: (BaremetalsolutionProjectsLocationsVolumesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}',
+        http_method='DELETE',
+        method_id='baremetalsolution.projects.locations.volumes.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='BaremetalsolutionProjectsLocationsVolumesDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
 
     def Get(self, request, global_params=None):
       r"""Get details of a single storage volume.

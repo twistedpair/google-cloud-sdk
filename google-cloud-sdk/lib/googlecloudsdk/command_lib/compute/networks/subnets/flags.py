@@ -102,7 +102,6 @@ def SubnetworkResolver():
 
 def AddUpdateArgs(parser, include_alpha_logging,
                   include_l7_internal_load_balancing,
-                  include_internal_ipv6_access_type,
                   include_reserved_internal_range, api_version):
   """Add args to the parser for subnet update.
 
@@ -110,7 +109,6 @@ def AddUpdateArgs(parser, include_alpha_logging,
     parser: The argparse parser.
     include_alpha_logging: Include alpha-specific logging args.
     include_l7_internal_load_balancing: Include Internal HTTP(S) LB args.
-    include_internal_ipv6_access_type: Include internal IPv6 access type args.
     include_reserved_internal_range: Include reserved internal range args.
     api_version: The api version of the request.
   """
@@ -275,11 +273,9 @@ def AddUpdateArgs(parser, include_alpha_logging,
             'on the subnet.'))
 
   ipv6_access_type_choices = {
-      'EXTERNAL': 'VMs in this subnet can have external IPv6.'
+      'EXTERNAL': 'VMs in this subnet can have external IPv6.',
+      'INTERNAL': 'VMs in this subnet can have internal IPv6.'
   }
-  if include_internal_ipv6_access_type:
-    ipv6_access_type_choices['INTERNAL'] = (
-        'VMs in this subnet can have internal IPv6.')
   parser.add_argument(
       '--ipv6-access-type',
       choices=ipv6_access_type_choices,

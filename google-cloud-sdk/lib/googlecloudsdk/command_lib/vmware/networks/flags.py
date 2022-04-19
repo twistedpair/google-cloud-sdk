@@ -41,6 +41,22 @@ def AddNetworkToParser(parser, positional=False):
   return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
 
 
+def AddNetworkPeeringToParser(parser, positional=False):
+  """Sets up an argument for the VMware Engine VPC network peering resource."""
+  name = '--network-peering'
+  if positional:
+    name = 'network_peering'
+  peering_data = yaml_data.ResourceYAMLData.FromPath(
+      'vmware.networks.network_peering')
+  resource_spec = concepts.ResourceSpec.FromYaml(peering_data.GetData())
+  presentation_spec = presentation_specs.ResourcePresentationSpec(
+      name=name,
+      concept_spec=resource_spec,
+      required=True,
+      group_help='network_peering.')
+  return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
+
+
 def AddLocationArgToParser(parser, positional=False):
   """Parses location flag."""
   location_data = yaml_data.ResourceYAMLData.FromPath(

@@ -224,9 +224,13 @@ class ListItem:
       new instance of ListItem
     """
     condition = ''
-    if 'conditions' in resource:
+    reconcile_condition = utils.GetActuationCondition(resource)
+    conditions = resource.get('conditions', [])[:]
+    if reconcile_condition:
+      conditions.insert(0, reconcile_condition)
+    if conditions:
       delimited_msg = ', '.join(
-          ["'{}'".format(c['message']) for c in resource['conditions']])
+          ["'{}'".format(c['message']) for c in conditions])
       condition = '[{}]'.format(delimited_msg)
     return cls(
         cluster_name=cluster_name,

@@ -112,7 +112,14 @@ class AssuredworkloadsOrganizationsLocationsWorkloadsOrganizationsLocationsWorkl
   orkloadsAnalyzeWorkloadMoveRequest object.
 
   Fields:
-    source: Required. The resource name of the Workload to fetch. This is the
+    project: The Source is a project based to be moved. This is the project's
+      relative path in the API, formatted as
+      "cloudresourcemanager.googleapis.com/projects/{project_number}"
+      "projects/{project_number}"
+      "cloudresourcemanager.googleapis.com/projects/{project_id}"
+      "projects/{project_id}" For example, "organizations/123/locations/us-
+      east1/workloads/assured-workload-1".
+    source: The Source is project based Workload to be moved. This is the
       workloads's relative path in the API, formatted as "organizations/{organ
       ization_id}/locations/{location_id}/workloads/{workload_id}". For
       example, "organizations/123/locations/us-east1/workloads/assured-
@@ -124,8 +131,9 @@ class AssuredworkloadsOrganizationsLocationsWorkloadsOrganizationsLocationsWorkl
       workload-2".
   """
 
-  source = _messages.StringField(1, required=True)
-  target = _messages.StringField(2, required=True)
+  project = _messages.StringField(1)
+  source = _messages.StringField(2, required=True)
+  target = _messages.StringField(3, required=True)
 
 
 class AssuredworkloadsOrganizationsLocationsWorkloadsPatchRequest(_messages.Message):

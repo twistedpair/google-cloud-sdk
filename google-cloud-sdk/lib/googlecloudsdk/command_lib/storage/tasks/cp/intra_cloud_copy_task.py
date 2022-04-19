@@ -28,6 +28,7 @@ import threading
 
 from googlecloudsdk.api_lib.storage import api_factory
 from googlecloudsdk.api_lib.storage import request_config_factory
+from googlecloudsdk.command_lib.storage import manifest_util
 from googlecloudsdk.command_lib.storage import progress_callbacks
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage.tasks import task
@@ -37,7 +38,7 @@ from googlecloudsdk.command_lib.storage.tasks.rm import delete_object_task
 from googlecloudsdk.core import log
 
 
-class IntraCloudCopyTask(task.Task, copy_util.CopyTaskExitHandlerMixin):
+class IntraCloudCopyTask(copy_util.CopyTaskWithExitHandler):
   """Represents a command operation copying an object around the cloud."""
 
   def __init__(self,
@@ -60,7 +61,10 @@ class IntraCloudCopyTask(task.Task, copy_util.CopyTaskExitHandlerMixin):
         URL of the copy result.
       user_request_args (UserRequestArgs|None): Values for RequestConfig.
     """
-    super(IntraCloudCopyTask, self).__init__()
+    super(IntraCloudCopyTask, self).__init__(
+        source_resource,
+        destination_resource,
+        user_request_args=user_request_args)
 
     if ((source_resource.storage_url.scheme
          != destination_resource.storage_url.scheme)
@@ -69,11 +73,9 @@ class IntraCloudCopyTask(task.Task, copy_util.CopyTaskExitHandlerMixin):
       raise ValueError('IntraCloudCopyTask takes two URLs from the same cloud'
                        ' provider.')
 
-    self._source_resource = source_resource
-    self._destination_resource = destination_resource
     self._delete_source = delete_source
     self._print_created_message = print_created_message
-    self._user_request_args = user_request_args
+
     self.parallel_processing_key = (
         self._destination_resource.storage_url.url_string)
 
@@ -84,6 +86,12 @@ class IntraCloudCopyTask(task.Task, copy_util.CopyTaskExitHandlerMixin):
       log.status.Print(
           copy_util.get_no_clobber_message(
               self._destination_resource.storage_url))
+      if self._send_manifest_messages:
+        manifest_util.send_skip_message(
+            task_status_queue, self._source_resource,
+            self._destination_resource,
+            copy_util.get_no_clobber_message(
+                self._destination_resource.storage_url))
       return
 
     progress_callback = progress_callbacks.FilesAndBytesProgressCallback(
@@ -110,7 +118,12 @@ class IntraCloudCopyTask(task.Task, copy_util.CopyTaskExitHandlerMixin):
 
     if self._print_created_message:
       log.status.Print('Created: {}'.format(result_resource.storage_url))
-
+    if self._send_manifest_messages:
+      manifest_util.send_success_message(
+          task_status_queue,
+          self._source_resource,
+          self._destination_resource,
+          md5_hash=result_resource.md5_hash)
     if self._delete_source:
       return task.Output(
           additional_task_iterators=[[

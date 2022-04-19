@@ -3582,6 +3582,9 @@ class GoogleCloudDataplexV1TaskExecutionSpec(_messages.Message):
       the last argument.
     maxJobExecutionLifetime: Optional. The maximum duration after which the
       job execution is expired.
+    project: Optional. The project in which jobs are run. By default, the
+      project containing the Lake is used. If a project is provided, the
+      executionspec.service_account must belong to this same project.
     serviceAccount: Required. Service account to use to execute a task. If not
       provided, the default Compute service account for the project is used.
   """
@@ -3621,7 +3624,8 @@ class GoogleCloudDataplexV1TaskExecutionSpec(_messages.Message):
 
   args = _messages.MessageField('ArgsValue', 1)
   maxJobExecutionLifetime = _messages.StringField(2)
-  serviceAccount = _messages.StringField(3)
+  project = _messages.StringField(3)
+  serviceAccount = _messages.StringField(4)
 
 
 class GoogleCloudDataplexV1TaskExecutionStatus(_messages.Message):
@@ -4194,7 +4198,7 @@ class GoogleIamV1Binding(_messages.Message):
       learn which resources support conditions in their IAM policies, see the
       IAM documentation
       (https://cloud.google.com/iam/help/conditions/resource-policies).
-    members: Specifies the principals requesting access for a Cloud Platform
+    members: Specifies the principals requesting access for a Google Cloud
       resource. members can have the following values: allUsers: A special
       identifier that represents anyone who is on the internet; with or
       without a Google account. allAuthenticatedUsers: A special identifier
@@ -4314,8 +4318,8 @@ class GoogleIamV1SetIamPolicyRequest(_messages.Message):
   Fields:
     policy: REQUIRED: The complete policy to be applied to the resource. The
       size of the policy is limited to a few 10s of KB. An empty policy is a
-      valid policy but certain Cloud Platform services (such as Projects)
-      might reject them.
+      valid policy but certain Google Cloud services (such as Projects) might
+      reject them.
     updateMask: OPTIONAL: A FieldMask specifying which fields of the policy to
       modify. Only the fields in the mask will be modified. If no mask is
       provided, the following default mask is used:paths: "bindings, etag"
@@ -4330,7 +4334,7 @@ class GoogleIamV1TestIamPermissionsRequest(_messages.Message):
 
   Fields:
     permissions: The set of permissions to check for the resource. Permissions
-      with wildcards (such as '*' or 'storage.*') are not allowed. For more
+      with wildcards (such as * or storage.*) are not allowed. For more
       information see IAM Overview
       (https://cloud.google.com/iam/docs/overview#permissions).
   """

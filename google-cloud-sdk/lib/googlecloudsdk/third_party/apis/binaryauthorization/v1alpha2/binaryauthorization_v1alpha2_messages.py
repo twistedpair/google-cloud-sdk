@@ -134,8 +134,9 @@ class Attestor(_messages.Message):
   Fields:
     description: Optional. A descriptive comment. This field may be updated.
       The field may be displayed in chooser dialogs.
-    etag: Optional. Used to prevent updating the attestor when another request
-      has updated it since it was retrieved.
+    etag: Optional. A checksum, returned by the server, that can be sent on
+      update requests to ensure the attestor has an up-to-date value before
+      attempting to update it. See https://google.aip.dev/154.
     name: Required. The resource name, in the format:
       `projects/*/attestors/*`. This field may not be updated.
     updateTime: Output only. Time when the attestor was last updated.
@@ -529,7 +530,7 @@ class Binding(_messages.Message):
       policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
-    members: Specifies the principals requesting access for a Cloud Platform
+    members: Specifies the principals requesting access for a Google Cloud
       resource. `members` can have the following values: * `allUsers`: A
       special identifier that represents anyone who is on the internet; with
       or without a Google account. * `allAuthenticatedUsers`: A special
@@ -863,8 +864,9 @@ class Policy(_messages.Message):
       without a per-cluster, per- kubernetes-service-account, or per-istio-
       service-identity admission rule.
     description: Optional. A descriptive comment.
-    etag: Optional. Used to prevent updating the policy when another request
-      has updated it since it was retrieved.
+    etag: Optional. A checksum, returned by the server, that can be sent on
+      update requests to ensure the policy has an up-to-date value before
+      attempting to update it. See https://google.aip.dev/154.
     globalPolicyEvaluationMode: Optional. Controls the evaluation of a Google-
       maintained global admission policy for common system-level images.
       Images not covered by the global policy will be subject to the project
@@ -1035,8 +1037,8 @@ class SetIamPolicyRequest(_messages.Message):
   Fields:
     policy: REQUIRED: The complete policy to be applied to the `resource`. The
       size of the policy is limited to a few 10s of KB. An empty policy is a
-      valid policy but certain Cloud Platform services (such as Projects)
-      might reject them.
+      valid policy but certain Google Cloud services (such as Projects) might
+      reject them.
   """
 
   policy = _messages.MessageField('IamPolicy', 1)
@@ -1155,7 +1157,7 @@ class TestIamPermissionsRequest(_messages.Message):
 
   Fields:
     permissions: The set of permissions to check for the `resource`.
-      Permissions with wildcards (such as '*' or 'storage.*') are not allowed.
+      Permissions with wildcards (such as `*` or `storage.*`) are not allowed.
       For more information see [IAM
       Overview](https://cloud.google.com/iam/docs/overview#permissions).
   """

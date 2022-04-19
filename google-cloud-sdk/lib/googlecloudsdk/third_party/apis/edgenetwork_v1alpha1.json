@@ -330,6 +330,72 @@
         }
       }
     },
+    "DiagnoseNetworkResponse": {
+      "id": "DiagnoseNetworkResponse",
+      "description": "DiagnoseNetworkResponse contains the current status for a specific network.",
+      "type": "object",
+      "properties": {
+        "error": {
+          "description": "Used to show errors while retrieving and processing data.",
+          "type": "string"
+        },
+        "result": {
+          "description": "The network status of a specific network.",
+          "$ref": "NetworkStatus"
+        }
+      }
+    },
+    "NetworkStatus": {
+      "id": "NetworkStatus",
+      "description": "NetworkStatus has a list of status for the subnets under the current network.",
+      "type": "object",
+      "properties": {
+        "subnetStatus": {
+          "description": "A list of status for the subnets under the current network.",
+          "type": "array",
+          "items": {
+            "$ref": "SubnetStatus"
+          }
+        }
+      }
+    },
+    "SubnetStatus": {
+      "id": "SubnetStatus",
+      "description": "SubnetStatus contains detailed and current technical information about this subnet resource.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The name of CCFE subnet resource.",
+          "type": "string"
+        },
+        "macAddress": {
+          "description": "BVI MAC address.",
+          "type": "string"
+        },
+        "arpEntries": {
+          "description": "A list of ARPEntry, describing the ARP neighbor entries seen on this subnet.",
+          "type": "array",
+          "items": {
+            "$ref": "ARPEntry"
+          }
+        }
+      }
+    },
+    "ARPEntry": {
+      "id": "ARPEntry",
+      "description": "Describing the ARP neighbor entry.",
+      "type": "object",
+      "properties": {
+        "macAddress": {
+          "description": "The MAC address of this ARP neighbor.",
+          "type": "string"
+        },
+        "ipAddress": {
+          "description": "The IP address of this ARP neighbor.",
+          "type": "string"
+        }
+      }
+    },
     "ListSubnetsResponse": {
       "id": "ListSubnetsResponse",
       "description": "Message for response to listing Subnets",
@@ -519,6 +585,178 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "DiagnoseInterconnectResponse": {
+      "id": "DiagnoseInterconnectResponse",
+      "description": "DiagnoseInterconnectResponse contains the current diagnostics for a specific interconnect.",
+      "type": "object",
+      "properties": {
+        "error": {
+          "description": "Used to show errors while retrieving and processing data.",
+          "type": "string"
+        },
+        "result": {
+          "description": "The network status of a specific interconnect.",
+          "$ref": "InterconnectDiagnostics"
+        }
+      }
+    },
+    "InterconnectDiagnostics": {
+      "id": "InterconnectDiagnostics",
+      "description": "Diagnostics information about interconnect, contains detailed and current technical information about Google's side of the connection.",
+      "type": "object",
+      "properties": {
+        "macAddress": {
+          "description": "The MAC address of the Interconnect's bundle interface.",
+          "type": "string"
+        },
+        "arpEntries": {
+          "description": "A list of ARPEntry, describing the ARP neighbor entries seen on this interconnect.",
+          "type": "array",
+          "items": {
+            "$ref": "ARPEntry"
+          }
+        },
+        "links": {
+          "description": "A list of LinkStatus objects, used to describe the status for each link on the Interconnect.",
+          "type": "array",
+          "items": {
+            "$ref": "LinkStatus"
+          }
+        }
+      }
+    },
+    "LinkStatus": {
+      "id": "LinkStatus",
+      "description": "Describing the status for each link on the Interconnect.",
+      "type": "object",
+      "properties": {
+        "circuitId": {
+          "description": "The unique ID for this link assigned during turn up by Google.",
+          "type": "string"
+        },
+        "lacpStatus": {
+          "description": "Describing the state of a LACP link.",
+          "$ref": "LinkLACPStatus"
+        },
+        "lldpStatus": {
+          "description": "Describing the state of a LLDP link.",
+          "$ref": "LinkLLDPStatus"
+        },
+        "packetCounts": {
+          "description": "Packet counts specific statistics for this link.",
+          "$ref": "PacketCounts"
+        }
+      }
+    },
+    "LinkLACPStatus": {
+      "id": "LinkLACPStatus",
+      "description": "Describing the status of a LACP link.",
+      "type": "object",
+      "properties": {
+        "state": {
+          "description": "The state of a LACP link.",
+          "type": "string",
+          "enumDescriptions": [
+            "The default state indicating state is in unknown state.",
+            "The link is configured and active within the bundle.",
+            "The link is not configured within the bundle, this means the rest of the object should be empty."
+          ],
+          "enum": [
+            "UNKNOWN",
+            "ACTIVE",
+            "DETACHED"
+          ]
+        },
+        "googleSystemId": {
+          "description": "System ID of the port on Google's side of the LACP exchange.",
+          "type": "string"
+        },
+        "neighborSystemId": {
+          "description": "System ID of the port on the neighbor's side of the LACP exchange.",
+          "type": "string"
+        },
+        "aggregatable": {
+          "description": "A true value indicates that the participant will allow the link to be used as part of the aggregate. A false value indicates the link should be used as an individual link.",
+          "type": "boolean"
+        },
+        "collecting": {
+          "description": "If true, the participant is collecting incoming frames on the link, otherwise false",
+          "type": "boolean"
+        },
+        "distributing": {
+          "description": "When true, the participant is distributing outgoing frames; when false, distribution is disabled",
+          "type": "boolean"
+        }
+      }
+    },
+    "LinkLLDPStatus": {
+      "id": "LinkLLDPStatus",
+      "description": "Describing a LLDP link.",
+      "type": "object",
+      "properties": {
+        "peerSystemName": {
+          "description": "The peer system's administratively assigned name.",
+          "type": "string"
+        },
+        "peerSystemDescription": {
+          "description": "The textual description of the network entity of LLDP peer.",
+          "type": "string"
+        },
+        "peerChassisId": {
+          "description": "The peer chassis component of the endpoint identifier associated with the transmitting LLDP agent.",
+          "type": "string"
+        },
+        "peerChassisIdType": {
+          "description": "The format and source of the peer chassis identifier string.",
+          "type": "string"
+        },
+        "peerPortId": {
+          "description": "The port component of the endpoint identifier associated with the transmitting LLDP agent. If the specified port is an IEEE 802.3 Repeater port, then this TLV is optional.",
+          "type": "string"
+        },
+        "peerPortIdType": {
+          "description": "The format and source of the peer port identifier string.",
+          "type": "string"
+        }
+      }
+    },
+    "PacketCounts": {
+      "id": "PacketCounts",
+      "description": "Containing a collection of interface-related statistics objects.",
+      "type": "object",
+      "properties": {
+        "inboundUnicast": {
+          "description": "The number of packets that are delivered.",
+          "type": "string",
+          "format": "int64"
+        },
+        "inboundErrors": {
+          "description": "The number of inbound packets that contained errors.",
+          "type": "string",
+          "format": "int64"
+        },
+        "inboundDiscards": {
+          "description": "The number of inbound packets that were chosen to be discarded even though no errors had been detected to prevent their being deliverable.",
+          "type": "string",
+          "format": "int64"
+        },
+        "outboundUnicast": {
+          "description": "The total number of packets that are requested be transmitted.",
+          "type": "string",
+          "format": "int64"
+        },
+        "outboundErrors": {
+          "description": "The number of outbound packets that could not be transmitted because of errors.",
+          "type": "string",
+          "format": "int64"
+        },
+        "outboundDiscards": {
+          "description": "The number of outbound packets that were chosen to be discarded even though no errors had been detected to prevent their being transmitted.",
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -783,6 +1021,126 @@
           "description": "The interval in seconds between BGP keepalive messages that are sent to the peer. Default is 20 with value between 20 and 60.",
           "type": "integer",
           "format": "uint32"
+        }
+      }
+    },
+    "DiagnoseRouterResponse": {
+      "id": "DiagnoseRouterResponse",
+      "description": "DiagnoseRouterResponse contains the current status for a specific router.",
+      "type": "object",
+      "properties": {
+        "error": {
+          "description": "Used to show errors while retrieving and processing data.",
+          "type": "string"
+        },
+        "result": {
+          "description": "The network status of a specific router.",
+          "$ref": "RouterStatus"
+        }
+      }
+    },
+    "RouterStatus": {
+      "id": "RouterStatus",
+      "description": "Describing the current status of a router.",
+      "type": "object",
+      "properties": {
+        "network": {
+          "description": "The canonical name of the network to which this router belongs.",
+          "type": "string"
+        },
+        "bgpPeerStatus": {
+          "description": "A list of BgpPeerStatus objects, describing all BGP peers related to this router.",
+          "type": "array",
+          "items": {
+            "$ref": "BgpPeerStatus"
+          }
+        }
+      }
+    },
+    "BgpPeerStatus": {
+      "id": "BgpPeerStatus",
+      "description": "Status of a BGP peer.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Name of this BGP peer. Unique within the Routers resource.",
+          "type": "string"
+        },
+        "ipAddress": {
+          "description": "IP address of the local BGP interface.",
+          "type": "string"
+        },
+        "peerIpAddress": {
+          "description": "IP address of the remote BGP interface.",
+          "type": "string"
+        },
+        "status": {
+          "description": "The current status of BGP.",
+          "type": "string",
+          "enumDescriptions": [
+            "The default status indicating BGP session is in unknown state.",
+            "The UP status indicating BGP session is established.",
+            "The DOWN state indicating BGP session is not established yet."
+          ],
+          "enum": [
+            "UNKNOWN",
+            "UP",
+            "DOWN"
+          ]
+        },
+        "state": {
+          "description": "BGP state as specified in RFC1771.",
+          "type": "string"
+        },
+        "uptime": {
+          "description": "Time this session has been up. Format: 14 years, 51 weeks, 6 days, 23 hours, 59 minutes, 59 seconds",
+          "type": "string"
+        },
+        "uptimeSeconds": {
+          "description": "Time this session has been up, in seconds.",
+          "type": "string",
+          "format": "int64"
+        },
+        "prefixCounter": {
+          "description": "A collection of counts for prefixes.",
+          "$ref": "PrefixCounter"
+        }
+      }
+    },
+    "PrefixCounter": {
+      "id": "PrefixCounter",
+      "description": "PrefixCounter contains a collection of prefixes related counts.",
+      "type": "object",
+      "properties": {
+        "advertised": {
+          "description": "Number of prefixes advertised.",
+          "type": "string",
+          "format": "int64"
+        },
+        "denied": {
+          "description": "Number of prefixes denied.",
+          "type": "string",
+          "format": "int64"
+        },
+        "received": {
+          "description": "Number of prefixes received.",
+          "type": "string",
+          "format": "int64"
+        },
+        "sent": {
+          "description": "Number of prefixes sent.",
+          "type": "string",
+          "format": "int64"
+        },
+        "suppressed": {
+          "description": "Number of prefixes suppressed.",
+          "type": "string",
+          "format": "int64"
+        },
+        "withdrawn": {
+          "description": "Number of prefixes withdrawn.",
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -1297,6 +1655,31 @@
                       ],
                       "description": "Gets details of a single Network."
                     },
+                    "diagnose": {
+                      "id": "edgenetwork.projects.locations.zones.networks.diagnose",
+                      "path": "v1alpha1/{+name}:diagnose",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/zones/{zonesId}/networks/{networksId}:diagnose",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The name of the network resource.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/zones\/[^\/]+\/networks\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "DiagnoseNetworkResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Get the diagnostics of a single network resource."
+                    },
                     "create": {
                       "id": "edgenetwork.projects.locations.zones.networks.create",
                       "path": "v1alpha1/{+parent}/networks",
@@ -1622,6 +2005,31 @@
                       ],
                       "description": "Gets details of a single Interconnect."
                     },
+                    "diagnose": {
+                      "id": "edgenetwork.projects.locations.zones.interconnects.diagnose",
+                      "path": "v1alpha1/{+name}:diagnose",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/zones/{zonesId}/interconnects/{interconnectsId}:diagnose",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The name of the interconnect resource.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/zones\/[^\/]+\/interconnects\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "DiagnoseInterconnectResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Get the diagnostics of a single interconnect resource."
+                    },
                     "create": {
                       "id": "edgenetwork.projects.locations.zones.interconnects.create",
                       "path": "v1alpha1/{+parent}/interconnects",
@@ -1907,6 +2315,31 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Gets details of a single Router."
+                    },
+                    "diagnose": {
+                      "id": "edgenetwork.projects.locations.zones.routers.diagnose",
+                      "path": "v1alpha1/{+name}:diagnose",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/zones/{zonesId}/routers/{routersId}:diagnose",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The name of the router resource.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/zones\/[^\/]+\/routers\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "DiagnoseRouterResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Get the diagnostics of a single router resource."
                     },
                     "create": {
                       "id": "edgenetwork.projects.locations.zones.routers.create",

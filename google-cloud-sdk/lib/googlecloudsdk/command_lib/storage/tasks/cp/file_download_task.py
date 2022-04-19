@@ -31,6 +31,7 @@ from googlecloudsdk.api_lib.storage import api_factory
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import hash_util
+from googlecloudsdk.command_lib.storage import manifest_util
 from googlecloudsdk.command_lib.storage import tracker_file_util
 from googlecloudsdk.command_lib.storage.tasks import task
 from googlecloudsdk.command_lib.storage.tasks import task_util
@@ -119,7 +120,7 @@ def _should_perform_sliced_download(source_resource, destination_resource):
           task_util.should_use_parallelism())
 
 
-class FileDownloadTask(task.Task, copy_util.CopyTaskExitHandlerMixin):
+class FileDownloadTask(copy_util.CopyTaskWithExitHandler):
   """Represents a command operation triggering a file download."""
 
   def __init__(self,
@@ -146,13 +147,13 @@ class FileDownloadTask(task.Task, copy_util.CopyTaskExitHandlerMixin):
         URL of the copy result.
       user_request_args (UserRequestArgs|None): Values for RequestConfig.
     """
-    super(FileDownloadTask, self).__init__()
-    self._source_resource = source_resource
-    self._destination_resource = destination_resource
+    super(FileDownloadTask, self).__init__(
+        source_resource,
+        destination_resource,
+        user_request_args=user_request_args)
     self._delete_source = delete_source
     self._do_not_decompress = do_not_decompress
     self._print_created_message = print_created_message
-    self._user_request_args = user_request_args
 
     self._temporary_destination_resource = (
         self._get_temporary_destination_resource())
@@ -227,6 +228,11 @@ class FileDownloadTask(task.Task, copy_util.CopyTaskExitHandlerMixin):
     if destination_url.exists():
       if self._user_request_args and self._user_request_args.no_clobber:
         log.status.Print(copy_util.get_no_clobber_message(destination_url))
+        if self._send_manifest_messages:
+          manifest_util.send_skip_message(
+              task_status_queue, self._source_resource,
+              self._destination_resource,
+              copy_util.get_no_clobber_message(destination_url))
         return
       os.remove(destination_url.object_name)
 
@@ -268,7 +274,7 @@ class FileDownloadTask(task.Task, copy_util.CopyTaskExitHandlerMixin):
           ],
           messages=None)
 
-    file_part_download_task.FilePartDownloadTask(
+    part_download_task_output = file_part_download_task.FilePartDownloadTask(
         self._source_resource,
         self._temporary_destination_resource,
         offset=0,
@@ -292,6 +298,13 @@ class FileDownloadTask(task.Task, copy_util.CopyTaskExitHandlerMixin):
 
     if self._print_created_message:
       log.status.Print('Created: {}'.format(destination_url))
+    if self._send_manifest_messages:
+      manifest_util.send_success_message(
+          task_status_queue,
+          self._source_resource,
+          self._destination_resource,
+          md5_hash=task_util.get_first_matching_message_payload(
+              part_download_task_output.messages, task.Topic.MD5))
 
     if self._delete_source:
       return task.Output(

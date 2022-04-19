@@ -59,13 +59,15 @@ def Get(name):
   return client.projects.GetAccessApprovalSettings(req)
 
 
-def Update(name, notification_emails, enrolled_services, update_mask):
+def Update(name, notification_emails, enrolled_services, active_key_version,
+           update_mask):
   """Get the access approval settings for a resource.
 
   Args:
     name: the settings resource name (e.g. projects/123/accessApprovalSettings)
     notification_emails: list of email addresses
     enrolled_services: list of services
+    active_key_version: KMS signing key version resource name
     update_mask: which fields to update
 
   Returns: updated settings
@@ -79,11 +81,13 @@ def Update(name, notification_emails, enrolled_services, update_mask):
     settings = msgs.AccessApprovalSettings(
         name=name,
         enrolledServices=services_protos,
-        notificationEmails=notification_emails)
+        notificationEmails=notification_emails,
+        activeKeyVersion=active_key_version)
   else:
     settings = msgs.AccessApprovalSettings(
         name=name,
-        notificationEmails=notification_emails)
+        notificationEmails=notification_emails,
+        activeKeyVersion=active_key_version)
 
   if 'organizations/' in name:
     req = msgs.AccessapprovalOrganizationsUpdateAccessApprovalSettingsRequest(

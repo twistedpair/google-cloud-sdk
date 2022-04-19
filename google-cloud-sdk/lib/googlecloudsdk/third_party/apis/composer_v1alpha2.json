@@ -864,9 +864,9 @@
           "description": "Optional. The maintenance window is the period when Cloud Composer components may undergo maintenance. It is defined so that maintenance is not executed during peak hours or critical time periods. The system will not be under maintenance for every occurrence of this window, but when maintenance is planned, it will be scheduled during the window. The maintenance window period must encompass at least 12 hours per week. This may be split into multiple chunks, each with a size of at least 4 hours. If this value is omitted, Cloud Composer components may be subject to maintenance at any time.",
           "$ref": "MaintenanceWindow"
         },
-        "databaseDataRetentionConfig": {
+        "dataRetentionConfig": {
           "description": "Optional. The configuration setting for Airflow database data retention mechanism.",
-          "$ref": "DatabaseDataRetentionConfig"
+          "$ref": "DataRetentionConfig"
         },
         "workloadsConfig": {
           "description": "Optional. The workloads configuration settings for the GKE cluster associated with the Cloud Composer environment. The GKE cluster runs Airflow scheduler and workers workloads. This field is supported for Cloud Composer environments in versions composer-2.*.*-airflow-*.*.* and newer.",
@@ -1200,17 +1200,13 @@
         }
       }
     },
-    "DatabaseDataRetentionConfig": {
-      "id": "DatabaseDataRetentionConfig",
+    "DataRetentionConfig": {
+      "id": "DataRetentionConfig",
       "description": "The configuration setting for Airflow database data retention mechanism.",
       "type": "object",
       "properties": {
-        "enabled": {
-          "description": "Optional. Whether database data retention mechanism should be enabled.",
-          "type": "boolean"
-        },
-        "retentionDays": {
-          "description": "Optional. The number of days describing for how long to store event-based records. If the data retention mechanism is enabled this value must be a positive integer.",
+        "airflowDatabaseRetentionDays": {
+          "description": "Optional. The number of days describing for how long to store event-based records in airflow database. If the retention mechanism is enabled this value must be a positive integer otherwise, value should be set to 0.",
           "type": "integer",
           "format": "int32"
         }

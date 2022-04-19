@@ -185,14 +185,16 @@ class AuthProvider(_messages.Message):
       of the issuer. - can be inferred from the email domain of the issuer
       (e.g. a Google service account). Example:
       https://www.googleapis.com/oauth2/v1/certs
-    jwtLocations: Defines the locations to extract the JWT. JWT locations can
-      be either from HTTP headers or URL query parameters. The rule is that
-      the first match wins. The checking order is: checking all headers first,
-      then URL query parameters. If not specified, default to use following 3
-      locations: 1) Authorization: Bearer 2) x-goog-iap-jwt-assertion 3)
-      access_token query parameter Default locations can be specified as
-      followings: jwt_locations: - header: Authorization value_prefix: "Bearer
-      " - header: x-goog-iap-jwt-assertion - query: access_token
+    jwtLocations: Defines the locations to extract the JWT. For now it is only
+      used by the Cloud Endpoints to store the OpenAPI extension [x-google-
+      jwt-locations] (https://cloud.google.com/endpoints/docs/openapi/openapi-
+      extensions#x-google-jwt-locations) JWT locations can be one of HTTP
+      headers, URL query parameters or cookies. The rule is that the first
+      match wins. If not specified, default to use following 3 locations: 1)
+      Authorization: Bearer 2) x-goog-iap-jwt-assertion 3) access_token query
+      parameter Default locations can be specified as followings:
+      jwt_locations: - header: Authorization value_prefix: "Bearer " - header:
+      x-goog-iap-jwt-assertion - query: access_token
   """
 
   audiences = _messages.StringField(1)
@@ -423,7 +425,7 @@ class Binding(_messages.Message):
       policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
-    members: Specifies the principals requesting access for a Cloud Platform
+    members: Specifies the principals requesting access for a Google Cloud
       resource. `members` can have the following values: * `allUsers`: A
       special identifier that represents anyone who is on the internet; with
       or without a Google account. * `allAuthenticatedUsers`: A special
@@ -1641,6 +1643,7 @@ class JwtLocation(_messages.Message):
   r"""Specifies a location to extract JWT from an API request.
 
   Fields:
+    cookie: Specifies cookie name to extract JWT token.
     header: Specifies HTTP header name to extract JWT token.
     query: Specifies URL query parameter name to extract JWT token.
     valuePrefix: The value prefix. The value format is "value_prefix{token}"
@@ -1651,9 +1654,10 @@ class JwtLocation(_messages.Message):
       Bearer {JWT}", value_prefix="Bearer " with a space at the end.
   """
 
-  header = _messages.StringField(1)
-  query = _messages.StringField(2)
-  valuePrefix = _messages.StringField(3)
+  cookie = _messages.StringField(1)
+  header = _messages.StringField(2)
+  query = _messages.StringField(3)
+  valuePrefix = _messages.StringField(4)
 
 
 class LabelDescriptor(_messages.Message):
@@ -4068,8 +4072,8 @@ class SetIamPolicyRequest(_messages.Message):
   Fields:
     policy: REQUIRED: The complete policy to be applied to the `resource`. The
       size of the policy is limited to a few 10s of KB. An empty policy is a
-      valid policy but certain Cloud Platform services (such as Projects)
-      might reject them.
+      valid policy but certain Google Cloud services (such as Projects) might
+      reject them.
     updateMask: OPTIONAL: A FieldMask specifying which fields of the policy to
       modify. Only the fields in the mask will be modified. If no mask is
       provided, the following default mask is used: `paths: "bindings, etag"`
@@ -4370,7 +4374,7 @@ class TestIamPermissionsRequest(_messages.Message):
 
   Fields:
     permissions: The set of permissions to check for the `resource`.
-      Permissions with wildcards (such as '*' or 'storage.*') are not allowed.
+      Permissions with wildcards (such as `*` or `storage.*`) are not allowed.
       For more information see [IAM
       Overview](https://cloud.google.com/iam/docs/overview#permissions).
   """

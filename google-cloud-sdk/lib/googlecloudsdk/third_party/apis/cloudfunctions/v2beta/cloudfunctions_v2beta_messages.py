@@ -90,7 +90,7 @@ class Binding(_messages.Message):
       policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
-    members: Specifies the principals requesting access for a Cloud Platform
+    members: Specifies the principals requesting access for a Google Cloud
       resource. `members` can have the following values: * `allUsers`: A
       special identifier that represents anyone who is on the internet; with
       or without a Google account. * `allAuthenticatedUsers`: A special
@@ -385,7 +385,7 @@ class CloudfunctionsProjectsLocationsListRequest(_messages.Message):
 
   Fields:
     filter: A filter to narrow down results to a preferred subset. The
-      filtering language accepts strings like "displayName=tokyo", and is
+      filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
     name: The resource that owns the locations collection, if applicable.
     pageSize: The maximum number of results to return. If not set, the service
@@ -437,11 +437,14 @@ class CloudfunctionsProjectsLocationsRuntimesListRequest(_messages.Message):
   r"""A CloudfunctionsProjectsLocationsRuntimesListRequest object.
 
   Fields:
+    filter: The filter for Runtimes that match the filter expression,
+      following the syntax outlined in https://google.aip.dev/160.
     parent: Required. The project and location from which the runtimes should
       be listed, specified in the format `projects/*/locations/*`
   """
 
-  parent = _messages.StringField(1, required=True)
+  filter = _messages.StringField(1)
+  parent = _messages.StringField(2, required=True)
 
 
 class EventFilter(_messages.Message):
@@ -449,11 +452,16 @@ class EventFilter(_messages.Message):
 
   Fields:
     attribute: Required. The name of a CloudEvents attribute.
+    operator: Optional. The operator used for matching the events with the
+      value of the filter. If not specified, only events that have an exact
+      key-value pair specified in the filter are matched. The only allowed
+      value is `match-path-pattern`.
     value: Required. The value for the attribute.
   """
 
   attribute = _messages.StringField(1)
-  value = _messages.StringField(2)
+  operator = _messages.StringField(2)
+  value = _messages.StringField(3)
 
 
 class EventTrigger(_messages.Message):
@@ -465,6 +473,9 @@ class EventTrigger(_messages.Message):
       failures (i.e. not retrying them).
 
   Fields:
+    channel: Optional. The name of the channel associated with the trigger in
+      `projects/{project}/locations/{location}/channels/{channel}` format. You
+      must provide a channel to receive events from Eventarc SaaS partners.
     eventFilters: Criteria used to filter events.
     eventType: Required. The type of event to observe. For example:
       `google.cloud.audit.log.v1.written` or
@@ -505,13 +516,14 @@ class EventTrigger(_messages.Message):
     RETRY_POLICY_DO_NOT_RETRY = 1
     RETRY_POLICY_RETRY = 2
 
-  eventFilters = _messages.MessageField('EventFilter', 1, repeated=True)
-  eventType = _messages.StringField(2)
-  pubsubTopic = _messages.StringField(3)
-  retryPolicy = _messages.EnumField('RetryPolicyValueValuesEnum', 4)
-  serviceAccountEmail = _messages.StringField(5)
-  trigger = _messages.StringField(6)
-  triggerRegion = _messages.StringField(7)
+  channel = _messages.StringField(1)
+  eventFilters = _messages.MessageField('EventFilter', 2, repeated=True)
+  eventType = _messages.StringField(3)
+  pubsubTopic = _messages.StringField(4)
+  retryPolicy = _messages.EnumField('RetryPolicyValueValuesEnum', 5)
+  serviceAccountEmail = _messages.StringField(6)
+  trigger = _messages.StringField(7)
+  triggerRegion = _messages.StringField(8)
 
 
 class Expr(_messages.Message):
@@ -596,7 +608,7 @@ class Function(_messages.Message):
     Values:
       STATE_UNSPECIFIED: Not specified. Invalid state.
       ACTIVE: Function has been successfully deployed and is serving.
-      FAILED: Function deployment failed and the function isn't serving.
+      FAILED: Function deployment failed and the function is not serving.
       DEPLOYING: Function is being created or updated.
       DELETING: Function is being deleted.
       UNKNOWN: Function deployment failed and the function serving state is
@@ -1410,14 +1422,29 @@ class Runtime(_messages.Message):
   status) related to it.
 
   Enums:
+    EnvironmentValueValuesEnum: The environment for the runtime.
     StageValueValuesEnum: The stage of life this runtime is in, e.g., BETA,
       GA, etc.
 
   Fields:
+    displayName: The user facing name, eg 'Go 1.13', 'Node.js 12', etc.
+    environment: The environment for the runtime.
     name: The name of the runtime, e.g., 'go113', 'nodejs12', etc.
     stage: The stage of life this runtime is in, e.g., BETA, GA, etc.
     warnings: Warning messages, e.g., a deprecation warning.
   """
+
+  class EnvironmentValueValuesEnum(_messages.Enum):
+    r"""The environment for the runtime.
+
+    Values:
+      ENVIRONMENT_UNSPECIFIED: Unspecified
+      GEN_1: Gen 1
+      GEN_2: Gen 2
+    """
+    ENVIRONMENT_UNSPECIFIED = 0
+    GEN_1 = 1
+    GEN_2 = 2
 
   class StageValueValuesEnum(_messages.Enum):
     r"""The stage of life this runtime is in, e.g., BETA, GA, etc.
@@ -1439,9 +1466,35 @@ class Runtime(_messages.Message):
     DEPRECATED = 5
     DECOMMISSIONED = 6
 
-  name = _messages.StringField(1)
-  stage = _messages.EnumField('StageValueValuesEnum', 2)
-  warnings = _messages.StringField(3, repeated=True)
+  displayName = _messages.StringField(1)
+  environment = _messages.EnumField('EnvironmentValueValuesEnum', 2)
+  name = _messages.StringField(3)
+  stage = _messages.EnumField('StageValueValuesEnum', 4)
+  warnings = _messages.StringField(5, repeated=True)
+
+
+class SecretEnvVar(_messages.Message):
+  r"""Configuration for a secret environment variable. It has the information
+  necessary to fetch the secret value from secret manager and expose it as an
+  environment variable.
+
+  Fields:
+    key: Name of the environment variable.
+    projectId: Project identifier (preferably project number but can also be
+      the project ID) of the project that contains the secret. If not set, it
+      will be populated with the function's project assuming that the secret
+      exists in the same project as of the function.
+    secret: Name of the secret in secret manager (not the full resource name).
+    version: Version of the secret (version number or the string 'latest'). It
+      is recommended to use a numeric version for secret environment variables
+      as any updates to the secret value is not reflected until new instances
+      start.
+  """
+
+  key = _messages.StringField(1)
+  projectId = _messages.StringField(2)
+  secret = _messages.StringField(3)
+  version = _messages.StringField(4)
 
 
 class ServiceConfig(_messages.Message):
@@ -1471,7 +1524,6 @@ class ServiceConfig(_messages.Message):
       y.go a full description.
     environmentVariables: Environment variables that shall be available during
       function execution.
-    gcfUri: Output only. URIs of the Service deployed
     ingressSettings: The ingress settings for the function, controlling what
       traffic can reach it.
     maxInstanceCount: The limit on the maximum number of function instances
@@ -1491,6 +1543,8 @@ class ServiceConfig(_messages.Message):
       running in idle state always. This can help with cold start times when
       jump in incoming request count occurs after the idle instance would have
       been stopped in the default case.
+    revision: Output only. The name of service revision.
+    secretEnvironmentVariables: Secret environment variables configuration.
     service: Output only. Name of the service associated with a Function. The
       format of this field is
       `projects/{project}/locations/{region}/services/{service}`
@@ -1568,16 +1622,17 @@ class ServiceConfig(_messages.Message):
   allTrafficOnLatestRevision = _messages.BooleanField(1)
   availableMemory = _messages.StringField(2)
   environmentVariables = _messages.MessageField('EnvironmentVariablesValue', 3)
-  gcfUri = _messages.StringField(4)
-  ingressSettings = _messages.EnumField('IngressSettingsValueValuesEnum', 5)
-  maxInstanceCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  minInstanceCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  service = _messages.StringField(8)
-  serviceAccountEmail = _messages.StringField(9)
-  timeoutSeconds = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  uri = _messages.StringField(11)
-  vpcConnector = _messages.StringField(12)
-  vpcConnectorEgressSettings = _messages.EnumField('VpcConnectorEgressSettingsValueValuesEnum', 13)
+  ingressSettings = _messages.EnumField('IngressSettingsValueValuesEnum', 4)
+  maxInstanceCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  minInstanceCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  revision = _messages.StringField(7)
+  secretEnvironmentVariables = _messages.MessageField('SecretEnvVar', 8, repeated=True)
+  service = _messages.StringField(9)
+  serviceAccountEmail = _messages.StringField(10)
+  timeoutSeconds = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  uri = _messages.StringField(12)
+  vpcConnector = _messages.StringField(13)
+  vpcConnectorEgressSettings = _messages.EnumField('VpcConnectorEgressSettingsValueValuesEnum', 14)
 
 
 class SetIamPolicyRequest(_messages.Message):
@@ -1586,8 +1641,8 @@ class SetIamPolicyRequest(_messages.Message):
   Fields:
     policy: REQUIRED: The complete policy to be applied to the `resource`. The
       size of the policy is limited to a few 10s of KB. An empty policy is a
-      valid policy but certain Cloud Platform services (such as Projects)
-      might reject them.
+      valid policy but certain Google Cloud services (such as Projects) might
+      reject them.
     updateMask: OPTIONAL: A FieldMask specifying which fields of the policy to
       modify. Only the fields in the mask will be modified. If no mask is
       provided, the following default mask is used: `paths: "bindings, etag"`
@@ -1763,7 +1818,7 @@ class TestIamPermissionsRequest(_messages.Message):
 
   Fields:
     permissions: The set of permissions to check for the `resource`.
-      Permissions with wildcards (such as '*' or 'storage.*') are not allowed.
+      Permissions with wildcards (such as `*` or `storage.*`) are not allowed.
       For more information see [IAM
       Overview](https://cloud.google.com/iam/docs/overview#permissions).
   """

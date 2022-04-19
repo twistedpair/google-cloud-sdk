@@ -43,7 +43,7 @@ and that the TPU is in READY state with HEALTHY health.
 """
 
 
-def AddTPUSSHArgs(parser):
+def AddTPUSSHArgs(parser, enable_iap):
   """Arguments that are common and specific to both TPU VM SSH and SCP."""
   parser.add_argument(
       '--worker',
@@ -59,35 +59,46 @@ def AddTPUSSHArgs(parser):
           with your private key prior to executing the gcloud command. Default:
           'ssh-add ~/.ssh/google_compute_engine'.
           """)
-  routing_group = parser.add_mutually_exclusive_group()
-  routing_group.add_argument(
-      '--internal-ip',
-      action='store_true',
-      help="""\
-          Connect to TPU VMs using their internal IP addresses rather than their
-          external IP addresses. Use this to connect from a Google Compute
-          Engine VM to a TPU VM on the same VPC network, or between two peered
-          VPC networks.
-          """)
-  routing_group.add_argument(
-      '--tunnel-through-iap',
-      action='store_true',
-      help="""\
-      Tunnel the SSH connection through Cloud Identity-Aware Proxy for TCP
-      forwarding.
+  if enable_iap:
+    routing_group = parser.add_mutually_exclusive_group()
+    routing_group.add_argument(
+        '--internal-ip',
+        action='store_true',
+        help="""\
+            Connect to TPU VMs using their internal IP addresses rather than their
+            external IP addresses. Use this to connect from a Google Compute
+            Engine VM to a TPU VM on the same VPC network, or between two peered
+            VPC networks.
+            """)
+    routing_group.add_argument(
+        '--tunnel-through-iap',
+        action='store_true',
+        help="""\
+        Tunnel the SSH connection through Cloud Identity-Aware Proxy for TCP
+        forwarding.
 
-      This flag must be specified to attempt to connect via IAP tunneling. If it
-      is not set, and connection to a Cloud TPU VM without external IP address
-      is attempted from outside the network, then the command will fail.
+        This flag must be specified to attempt to connect via IAP tunneling. If it
+        is not set, and connection to a Cloud TPU VM without external IP address
+        is attempted from outside the network, then the command will fail.
 
-      To use IAP tunneling, there must be firewall access to the SSH port for
-      the IAP TCP IP address range for the network the TPU is created in. See
-      the [user guide](https://cloud.google.com/iap/docs/using-tcp-forwarding)
-      for more details.
+        To use IAP tunneling, there must be firewall access to the SSH port for
+        the IAP TCP IP address range for the network the TPU is created in. See
+        the [user guide](https://cloud.google.com/iap/docs/using-tcp-forwarding)
+        for more details.
 
-      To learn more, see the
-      [IAP for TCP forwarding documentation](https://cloud.google.com/iap/docs/tcp-forwarding-overview).
-      """)
+        To learn more, see the
+        [IAP for TCP forwarding documentation](https://cloud.google.com/iap/docs/tcp-forwarding-overview).
+        """)
+  else:
+    parser.add_argument(
+        '--internal-ip',
+        action='store_true',
+        help="""\
+            Connect to TPU VMs using their internal IP addresses rather than their
+            external IP addresses. Use this to connect from a Google Compute
+            Engine VM to a TPU VM on the same VPC network, or between two peered
+            VPC networks.
+            """)
 
 
 def ValidateTPUState(state, state_enum):

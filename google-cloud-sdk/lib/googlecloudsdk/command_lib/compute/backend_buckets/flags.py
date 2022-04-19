@@ -123,7 +123,7 @@ def AddCacheKeyExtendedCachingArgs(parser):
       metavar='QUERY_STRING',
       help="""\
       Specifies a comma-separated list of query string parameters to include
-      in cache keys. All other parameters are excluded. '&' and '=' are
+      in cache keys. Default parameters are always included. '&' and '=' are
       percent encoded and not treated as delimiters.
       """)
 

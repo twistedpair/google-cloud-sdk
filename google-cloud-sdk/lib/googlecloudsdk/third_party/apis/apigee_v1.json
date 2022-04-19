@@ -198,6 +198,7 @@
     },
     "GoogleCloudApigeeV1ListApiProxiesResponse": {
       "id": "GoogleCloudApigeeV1ListApiProxiesResponse",
+      "description": "To change this message, in the same CL add a change log in go\/changing-api-proto-breaks-ui",
       "type": "object",
       "properties": {
         "proxies": {
@@ -2159,7 +2160,7 @@
       "type": "object",
       "properties": {
         "policy": {
-          "description": "REQUIRED: The complete policy to be applied to the `resource`. The size of the policy is limited to a few 10s of KB. An empty policy is a valid policy but certain Cloud Platform services (such as Projects) might reject them.",
+          "description": "REQUIRED: The complete policy to be applied to the `resource`. The size of the policy is limited to a few 10s of KB. An empty policy is a valid policy but certain Google Cloud services (such as Projects) might reject them.",
           "$ref": "GoogleIamV1Policy"
         },
         "updateMask": {
@@ -2210,7 +2211,7 @@
           "type": "string"
         },
         "members": {
-          "description": "Specifies the principals requesting access for a Cloud Platform resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
+          "description": "Specifies the principals requesting access for a Google Cloud resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
           "type": "array",
           "items": {
             "type": "string"
@@ -2299,7 +2300,7 @@
       "type": "object",
       "properties": {
         "permissions": {
-          "description": "The set of permissions to check for the `resource`. Permissions with wildcards (such as '*' or 'storage.*') are not allowed. For more information see [IAM Overview](https:\/\/cloud.google.com\/iam\/docs\/overview#permissions).",
+          "description": "The set of permissions to check for the `resource`. Permissions with wildcards (such as `*` or `storage.*`) are not allowed. For more information see [IAM Overview](https:\/\/cloud.google.com\/iam\/docs\/overview#permissions).",
           "type": "array",
           "items": {
             "type": "string"
@@ -2532,6 +2533,11 @@
         },
         "projectId": {
           "description": "GCP project associated with the Apigee organization",
+          "type": "string"
+        },
+        "location": {
+          "description": "Output only. The Google Cloud region where control plane data is located. For more information, see https:\/\/cloud.google.com\/about\/locations\/.",
+          "readOnly": true,
           "type": "string"
         }
       }
@@ -3311,6 +3317,7 @@
     },
     "GoogleCloudApigeeV1ListSharedFlowsResponse": {
       "id": "GoogleCloudApigeeV1ListSharedFlowsResponse",
+      "description": "To change this message, in the same CL add a change log in go\/changing-api-proto-breaks-ui",
       "type": "object",
       "properties": {
         "sharedFlows": {
@@ -5479,21 +5486,21 @@
         }
       }
     },
-    "GoogleCloudApigeeV1SenseProfile": {
-      "id": "GoogleCloudApigeeV1SenseProfile",
-      "description": "Represents a SenseProfile resource.",
+    "GoogleCloudApigeeV1SecurityProfile": {
+      "id": "GoogleCloudApigeeV1SecurityProfile",
+      "description": "Represents a SecurityProfile resource.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Immutable. Name of the Sense profile resource. Format: organizations\/{org}\/senseProfiles\/{profile}",
+          "description": "Immutable. Name of the security profile resource. Format: organizations\/{org}\/securityProfiles\/{profile}",
           "type": "string"
         },
         "displayName": {
-          "description": "Display name of the Sense profile.",
+          "description": "Display name of the security profile.",
           "type": "string"
         },
         "revisionId": {
-          "description": "Output only. Revision ID of the Sense profile.",
+          "description": "Output only. Revision ID of the security profile.",
           "readOnly": true,
           "type": "string",
           "format": "int64"
@@ -5511,7 +5518,7 @@
           "format": "google-datetime"
         },
         "revisionPublishTime": {
-          "description": "Output only. The time when revision was published. Once published, the Sense revision cannot be updated further and can be attached to environments.",
+          "description": "Output only. The time when revision was published. Once published, the security profile revision cannot be updated further and can be attached to environments.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
@@ -5520,14 +5527,14 @@
           "description": "List of profile scoring configs in this revision.",
           "type": "array",
           "items": {
-            "$ref": "GoogleCloudApigeeV1SenseProfileScoringConfig"
+            "$ref": "GoogleCloudApigeeV1SecurityProfileScoringConfig"
           }
         },
         "environments": {
-          "description": "List of environments attached to Sense profile.",
+          "description": "List of environments attached to security profile.",
           "type": "array",
           "items": {
-            "$ref": "GoogleCloudApigeeV1SenseProfileEnvironment"
+            "$ref": "GoogleCloudApigeeV1SecurityProfileEnvironment"
           }
         },
         "maxScore": {
@@ -5544,8 +5551,8 @@
         }
       }
     },
-    "GoogleCloudApigeeV1SenseProfileScoringConfig": {
-      "id": "GoogleCloudApigeeV1SenseProfileScoringConfig",
+    "GoogleCloudApigeeV1SecurityProfileScoringConfig": {
+      "id": "GoogleCloudApigeeV1SecurityProfileScoringConfig",
       "description": "Security configurations to manage scoring.",
       "type": "object",
       "properties": {
@@ -5563,9 +5570,9 @@
         }
       }
     },
-    "GoogleCloudApigeeV1SenseProfileEnvironment": {
-      "id": "GoogleCloudApigeeV1SenseProfileEnvironment",
-      "description": "Environment information of attached environments. Scoring an environment is enabled only if it is attached to a Sense profile.",
+    "GoogleCloudApigeeV1SecurityProfileEnvironment": {
+      "id": "GoogleCloudApigeeV1SecurityProfileEnvironment",
+      "description": "Environment information of attached environments. Scoring an environment is enabled only if it is attached to a security profile.",
       "type": "object",
       "properties": {
         "environment": {
@@ -5574,23 +5581,23 @@
           "type": "string"
         },
         "attachTime": {
-          "description": "Output only. Time at which environment was attached to the Sense profile.",
+          "description": "Output only. Time at which environment was attached to the security profile.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         }
       }
     },
-    "GoogleCloudApigeeV1ListSenseProfilesResponse": {
-      "id": "GoogleCloudApigeeV1ListSenseProfilesResponse",
-      "description": "Response for ListSenseProfiles.",
+    "GoogleCloudApigeeV1ListSecurityProfilesResponse": {
+      "id": "GoogleCloudApigeeV1ListSecurityProfilesResponse",
+      "description": "Response for ListSecurityProfiles.",
       "type": "object",
       "properties": {
-        "senseProfiles": {
-          "description": "List of Sense profiles in the organization. The profiles may be attached or unattached to any environment. This will return latest revision of each profile.",
+        "securityProfiles": {
+          "description": "List of security profiles in the organization. The profiles may be attached or unattached to any environment. This will return latest revision of each profile.",
           "type": "array",
           "items": {
-            "$ref": "GoogleCloudApigeeV1SenseProfile"
+            "$ref": "GoogleCloudApigeeV1SecurityProfile"
           }
         },
         "nextPageToken": {
@@ -5599,16 +5606,16 @@
         }
       }
     },
-    "GoogleCloudApigeeV1ListSenseProfileRevisionsResponse": {
-      "id": "GoogleCloudApigeeV1ListSenseProfileRevisionsResponse",
-      "description": "Response for ListSenseProfileRevisions.",
+    "GoogleCloudApigeeV1ListSecurityProfileRevisionsResponse": {
+      "id": "GoogleCloudApigeeV1ListSecurityProfileRevisionsResponse",
+      "description": "Response for ListSecurityProfileRevisions.",
       "type": "object",
       "properties": {
-        "senseProfiles": {
-          "description": "List of Sense profile revisions. The revisions may be attached or unattached to any environment.",
+        "securityProfiles": {
+          "description": "List of security profile revisions. The revisions may be attached or unattached to any environment.",
           "type": "array",
           "items": {
-            "$ref": "GoogleCloudApigeeV1SenseProfile"
+            "$ref": "GoogleCloudApigeeV1SecurityProfile"
           }
         },
         "nextPageToken": {
@@ -5617,22 +5624,22 @@
         }
       }
     },
-    "GoogleCloudApigeeV1SenseProfileEnvironmentAssociation": {
-      "id": "GoogleCloudApigeeV1SenseProfileEnvironmentAssociation",
-      "description": "Represents a SenseProfileEnvironmentAssociation resource.",
+    "GoogleCloudApigeeV1SecurityProfileEnvironmentAssociation": {
+      "id": "GoogleCloudApigeeV1SecurityProfileEnvironmentAssociation",
+      "description": "Represents a SecurityProfileEnvironmentAssociation resource.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Immutable. Name of the profile-environment association resource. Format: organizations\/{org}\/senseProfiles\/{profile}\/environments\/{env}",
+          "description": "Immutable. Name of the profile-environment association resource. Format: organizations\/{org}\/securityProfiles\/{profile}\/environments\/{env}",
           "type": "string"
         },
-        "senseProfileRevisionId": {
-          "description": "Revision ID of the Sense profile.",
+        "securityProfileRevisionId": {
+          "description": "Revision ID of the security profile.",
           "type": "string",
           "format": "int64"
         },
         "attachTime": {
-          "description": "Output only. The time when environment was attached to the Sense profile.",
+          "description": "Output only. The time when environment was attached to the security profile.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
@@ -6686,6 +6693,13 @@
         "progress": {
           "description": "Progress of the operation.",
           "$ref": "GoogleCloudApigeeV1OperationMetadataProgress"
+        },
+        "warnings": {
+          "description": "Warnings encountered while executing the operation.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -7111,6 +7125,31 @@
             "https://www.googleapis.com/auth/cloud-platform"
           ],
           "description": "Configures the add-ons for the Apigee organization. The existing add-on configuration will be fully replaced."
+        },
+        "getProjectMapping": {
+          "id": "apigee.organizations.getProjectMapping",
+          "path": "v1/{+name}:getProjectMapping",
+          "flatPath": "v1/organizations/{organizationsId}:getProjectMapping",
+          "httpMethod": "GET",
+          "parameters": {
+            "name": {
+              "description": "Required. Apigee organization name in the following format: `organizations\/{org}`",
+              "pattern": "^organizations\/[^\/]+$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "GoogleCloudApigeeV1OrganizationProjectMapping"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Gets the project ID and region for an Apigee organization."
         },
         "getDeployedIngressConfig": {
           "id": "apigee.organizations.getDeployedIngressConfig",
@@ -14638,17 +14677,17 @@
             }
           }
         },
-        "senseProfiles": {
+        "securityProfiles": {
           "methods": {
             "get": {
-              "id": "apigee.organizations.senseProfiles.get",
+              "id": "apigee.organizations.securityProfiles.get",
               "path": "v1/{+name}",
-              "flatPath": "v1/organizations/{organizationsId}/senseProfiles/{senseProfilesId}",
+              "flatPath": "v1/organizations/{organizationsId}/securityProfiles/{securityProfilesId}",
               "httpMethod": "GET",
               "parameters": {
                 "name": {
-                  "description": "Required. Sense Profile in the following format: `organizations\/{org}\/senseProfiles\/{profile}'. Profile may optionally contain revision ID. If revision ID is not provided, the response will contain latest revision by default. Example: organizations\/testOrg\/senseProfiles\/testProfile@5",
-                  "pattern": "^organizations\/[^\/]+\/senseProfiles\/[^\/]+$",
+                  "description": "Required. Security profile in the following format: `organizations\/{org}\/securityProfiles\/{profile}'. Profile may optionally contain revision ID. If revision ID is not provided, the response will contain latest revision by default. Example: organizations\/testOrg\/securityProfiles\/testProfile@5",
+                  "pattern": "^organizations\/[^\/]+\/securityProfiles\/[^\/]+$",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -14658,21 +14697,21 @@
                 "name"
               ],
               "response": {
-                "$ref": "GoogleCloudApigeeV1SenseProfile"
+                "$ref": "GoogleCloudApigeeV1SecurityProfile"
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "GetSenseProfile gets the specified Sense profile. Returns NOT_FOUND if Sense profile is not present for the specified organization."
+              "description": "GetSecurityProfile gets the specified security profile. Returns NOT_FOUND if security profile is not present for the specified organization."
             },
             "list": {
-              "id": "apigee.organizations.senseProfiles.list",
-              "path": "v1/{+parent}/senseProfiles",
-              "flatPath": "v1/organizations/{organizationsId}/senseProfiles",
+              "id": "apigee.organizations.securityProfiles.list",
+              "path": "v1/{+parent}/securityProfiles",
+              "flatPath": "v1/organizations/{organizationsId}/securityProfiles",
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "Required. For a specific organization, list of all the Sense profiles. Format: `organizations\/{org}`",
+                  "description": "Required. For a specific organization, list of all the security profiles. Format: `organizations\/{org}`",
                   "pattern": "^organizations\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -14685,7 +14724,7 @@
                   "format": "int32"
                 },
                 "pageToken": {
-                  "description": "A page token, received from a previous `ListSenseProfiles` call. Provide this to retrieve the subsequent page.",
+                  "description": "A page token, received from a previous `ListSecurityProfiles` call. Provide this to retrieve the subsequent page.",
                   "location": "query",
                   "type": "string"
                 }
@@ -14694,22 +14733,22 @@
                 "parent"
               ],
               "response": {
-                "$ref": "GoogleCloudApigeeV1ListSenseProfilesResponse"
+                "$ref": "GoogleCloudApigeeV1ListSecurityProfilesResponse"
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "ListSenseProfiles lists all the Sense profiles associated with the org including attached and unattached profiles."
+              "description": "ListSecurityProfiles lists all the security profiles associated with the org including attached and unattached profiles."
             },
             "listRevisions": {
-              "id": "apigee.organizations.senseProfiles.listRevisions",
+              "id": "apigee.organizations.securityProfiles.listRevisions",
               "path": "v1/{+name}:listRevisions",
-              "flatPath": "v1/organizations/{organizationsId}/senseProfiles/{senseProfilesId}:listRevisions",
+              "flatPath": "v1/organizations/{organizationsId}/securityProfiles/{securityProfilesId}:listRevisions",
               "httpMethod": "GET",
               "parameters": {
                 "name": {
-                  "description": "Required. For a specific profile, list all the revisions. Format: `organizations\/{org}\/senseProfiles\/{profile}`",
-                  "pattern": "^organizations\/[^\/]+\/senseProfiles\/[^\/]+$",
+                  "description": "Required. For a specific profile, list all the revisions. Format: `organizations\/{org}\/securityProfiles\/{profile}`",
+                  "pattern": "^organizations\/[^\/]+\/securityProfiles\/[^\/]+$",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -14721,7 +14760,7 @@
                   "format": "int32"
                 },
                 "pageToken": {
-                  "description": "A page token, received from a previous `ListSenseProfileRevisions` call. Provide this to retrieve the subsequent page.",
+                  "description": "A page token, received from a previous `ListSecurityProfileRevisions` call. Provide this to retrieve the subsequent page.",
                   "location": "query",
                   "type": "string"
                 }
@@ -14730,12 +14769,12 @@
                 "name"
               ],
               "response": {
-                "$ref": "GoogleCloudApigeeV1ListSenseProfileRevisionsResponse"
+                "$ref": "GoogleCloudApigeeV1ListSecurityProfileRevisionsResponse"
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "ListSenseProfileRevisions lists all the revisions of the Sense profile."
+              "description": "ListSecurityProfileRevisions lists all the revisions of the security profile."
             }
           }
           ,
@@ -14743,14 +14782,14 @@
             "environments": {
               "methods": {
                 "create": {
-                  "id": "apigee.organizations.senseProfiles.environments.create",
+                  "id": "apigee.organizations.securityProfiles.environments.create",
                   "path": "v1/{+parent}/environments",
-                  "flatPath": "v1/organizations/{organizationsId}/senseProfiles/{senseProfilesId}/environments",
+                  "flatPath": "v1/organizations/{organizationsId}/securityProfiles/{securityProfilesId}/environments",
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. Name of organization and Sense profile ID. Format: organizations\/{org}\/senseProfiles\/{profile}",
-                      "pattern": "^organizations\/[^\/]+\/senseProfiles\/[^\/]+$",
+                      "description": "Required. Name of organization and security profile ID. Format: organizations\/{org}\/securityProfiles\/{profile}",
+                      "pattern": "^organizations\/[^\/]+\/securityProfiles\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -14760,25 +14799,25 @@
                     "parent"
                   ],
                   "request": {
-                    "$ref": "GoogleCloudApigeeV1SenseProfileEnvironmentAssociation"
+                    "$ref": "GoogleCloudApigeeV1SecurityProfileEnvironmentAssociation"
                   },
                   "response": {
-                    "$ref": "GoogleCloudApigeeV1SenseProfileEnvironmentAssociation"
+                    "$ref": "GoogleCloudApigeeV1SecurityProfileEnvironmentAssociation"
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "CreateSenseProfileEnvironmentAssociation creates profile environment association i.e. attaches environment to Sense profile."
+                  "description": "CreateSecurityProfileEnvironmentAssociation creates profile environment association i.e. attaches environment to security profile."
                 },
                 "delete": {
-                  "id": "apigee.organizations.senseProfiles.environments.delete",
+                  "id": "apigee.organizations.securityProfiles.environments.delete",
                   "path": "v1/{+name}",
-                  "flatPath": "v1/organizations/{organizationsId}/senseProfiles/{senseProfilesId}/environments/{environmentsId}",
+                  "flatPath": "v1/organizations/{organizationsId}/securityProfiles/{securityProfilesId}/environments/{environmentsId}",
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Required. The name of the environment attachment to delete. Format: organizations\/{org}\/senseProfiles\/{profile}\/environments\/{env}",
-                      "pattern": "^organizations\/[^\/]+\/senseProfiles\/[^\/]+\/environments\/[^\/]+$",
+                      "description": "Required. The name of the environment attachment to delete. Format: organizations\/{org}\/securityProfiles\/{profile}\/environments\/{env}",
+                      "pattern": "^organizations\/[^\/]+\/securityProfiles\/[^\/]+\/environments\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -14793,17 +14832,17 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "DeleteSenseProfileEnvironmentAssociation removes profile environment association i.e. detaches environment from Sense profile."
+                  "description": "DeleteSecurityProfileEnvironmentAssociation removes profile environment association i.e. detaches environment from security profile."
                 },
                 "computeEnvironmentScores": {
-                  "id": "apigee.organizations.senseProfiles.environments.computeEnvironmentScores",
+                  "id": "apigee.organizations.securityProfiles.environments.computeEnvironmentScores",
                   "path": "v1/{+profileEnvironment}:computeEnvironmentScores",
-                  "flatPath": "v1/organizations/{organizationsId}/senseProfiles/{senseProfilesId}/environments/{environmentsId}:computeEnvironmentScores",
+                  "flatPath": "v1/organizations/{organizationsId}/securityProfiles/{securityProfilesId}/environments/{environmentsId}:computeEnvironmentScores",
                   "httpMethod": "POST",
                   "parameters": {
                     "profileEnvironment": {
-                      "description": "Required. Name of organization and environment and profile id for which score needs to be computed. Format: organizations\/{org}\/senseProfiles\/{profile}\/environments\/{env}",
-                      "pattern": "^organizations\/[^\/]+\/senseProfiles\/[^\/]+\/environments\/[^\/]+$",
+                      "description": "Required. Name of organization and environment and profile id for which score needs to be computed. Format: organizations\/{org}\/securityProfiles\/{profile}\/environments\/{env}",
+                      "pattern": "^organizations\/[^\/]+\/securityProfiles\/[^\/]+\/environments\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -14821,7 +14860,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "ComputeEnvironmentScores calculates scores for requested time range for the specified Sense profile and environment."
+                  "description": "ComputeEnvironmentScores calculates scores for requested time range for the specified security profile and environment."
                 }
               }
             }

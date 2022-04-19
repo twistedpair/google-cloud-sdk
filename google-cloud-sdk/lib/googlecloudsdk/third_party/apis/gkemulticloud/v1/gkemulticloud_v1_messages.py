@@ -135,7 +135,8 @@ class GkemulticloudProjectsLocationsAwsClustersAwsNodePoolsPatchRequest(_message
       `config.root_volume.kms_key_arn`. * `config.root_volume.volume_type`. *
       `config.root_volume.size_gib`. * `config.proxy_config`. *
       `config.proxy_config.secret_arn`. *
-      `config.proxy_config.secret_version`.
+      `config.proxy_config.secret_version`. * `config.ssh_config`. *
+      `config.ssh_config.ec2_key_pair`.
     validateOnly: If set, only validate the request, but don't actually update
       the node pool.
   """
@@ -284,7 +285,8 @@ class GkemulticloudProjectsLocationsAwsClustersPatchRequest(_messages.Message):
       `control_plane.root_volume.iops`. *
       `control_plane.root_volume.kms_key_arn`. *
       `control_plane.root_volume.volume_type`. *
-      `control_plane.root_volume.size_gib`.
+      `control_plane.root_volume.size_gib`. * `control_plane.ssh_config`. *
+      `control_plane.ssh_config.ec2_key_pair`.
     validateOnly: If set, only validate the request, but do not actually
       update the cluster.
   """

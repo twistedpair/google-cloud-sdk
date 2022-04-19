@@ -33,6 +33,7 @@ from googlecloudsdk.api_lib.app import instances_util
 from googlecloudsdk.api_lib.app import operations_util
 from googlecloudsdk.api_lib.app import region_util
 from googlecloudsdk.api_lib.app import service_util
+from googlecloudsdk.api_lib.app import util
 from googlecloudsdk.api_lib.app import version_util
 from googlecloudsdk.api_lib.app.api import appengine_api_client_base
 from googlecloudsdk.api_lib.cloudbuild import logs as cloudbuild_logs
@@ -178,6 +179,9 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
 
     Returns:
       The Admin API Operation, unfinished.
+
+    Raises:
+      apitools_exceptions.HttpNotFoundError if build ID doesn't exist
     """
     operation = self._CreateVersion(service_name, version_id, service_config,
                                     manifest, build, extra_config_settings,
@@ -204,12 +208,22 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
             operation, operation_metadata_type)
         if build_id:
           build = app_cloud_build.BuildArtifact.MakeBuildIdArtifact(build_id)
+
     if build and build.IsBuildId():
-      build_ref = resources.REGISTRY.Parse(
-          build.identifier,
-          params={'projectId': properties.VALUES.core.project.GetOrFail},
-          collection='cloudbuild.projects.builds')
-      cloudbuild_logs.CloudBuildClient().Stream(build_ref, out=log.status)
+      try:
+        build_ref = resources.REGISTRY.Parse(
+            build.identifier,
+            params={'projectId': properties.VALUES.core.project.GetOrFail},
+            collection='cloudbuild.projects.builds')
+        cloudbuild_logs.CloudBuildClient().Stream(build_ref, out=log.status)
+      except apitools_exceptions.HttpNotFoundError:
+        region = util.ConvertToCloudRegion(self.GetApplication().locationId)
+        build_ref = resources.REGISTRY.Create(
+            collection='cloudbuild.projects.locations.builds',
+            projectsId=properties.VALUES.core.project.GetOrFail,
+            locationsId=region,
+            buildsId=build.identifier)
+        cloudbuild_logs.CloudBuildClient().Stream(build_ref, out=log.status)
 
     done_poller = operations_util.AppEngineOperationPoller(
         self.client.apps_operations, operation_metadata_type)

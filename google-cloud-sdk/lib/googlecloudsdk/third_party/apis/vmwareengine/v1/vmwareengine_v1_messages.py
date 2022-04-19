@@ -91,7 +91,7 @@ class Binding(_messages.Message):
       policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
-    members: Specifies the principals requesting access for a Cloud Platform
+    members: Specifies the principals requesting access for a Google Cloud
       resource. `members` can have the following values: * `allUsers`: A
       special identifier that represents anyone who is on the internet; with
       or without a Google account. * `allAuthenticatedUsers`: A special
@@ -969,11 +969,11 @@ class NetworkConfig(_messages.Message):
   to be done.
 
   Fields:
-    externalIpAccess: True if vCenter and NSX can be accessed via internet;
-      false otherwise. Resolution of FQDNs requires local DNS configuration
-      for the private cloud domain. NAT is set up on NSX for external IP
-      ingress traffic, and users must manually configure NSX firewall to allow
-      HTTPS traffic.
+    externalIpAccess: Deprecated: True if vCenter and NSX can be accessed via
+      internet; false otherwise. Resolution of FQDNs requires local DNS
+      configuration for the private cloud domain. NAT is set up on NSX for
+      external IP ingress traffic, and users must manually configure NSX
+      firewall to allow HTTPS traffic.
     managementCidr: Required. Management CIDR used by VMware management
       appliances.
     network: Optional. Deprecated: Optional. The relative resource name of the
@@ -1761,8 +1761,8 @@ class SetIamPolicyRequest(_messages.Message):
   Fields:
     policy: REQUIRED: The complete policy to be applied to the `resource`. The
       size of the policy is limited to a few 10s of KB. An empty policy is a
-      valid policy but certain Cloud Platform services (such as Projects)
-      might reject them.
+      valid policy but certain Google Cloud services (such as Projects) might
+      reject them.
     updateMask: OPTIONAL: A FieldMask specifying which fields of the policy to
       modify. Only the fields in the mask will be modified. If no mask is
       provided, the following default mask is used: `paths: "bindings, etag"`
@@ -1891,7 +1891,7 @@ class TestIamPermissionsRequest(_messages.Message):
 
   Fields:
     permissions: The set of permissions to check for the `resource`.
-      Permissions with wildcards (such as '*' or 'storage.*') are not allowed.
+      Permissions with wildcards (such as `*` or `storage.*`) are not allowed.
       For more information see [IAM
       Overview](https://cloud.google.com/iam/docs/overview#permissions).
   """
@@ -3641,8 +3641,11 @@ class VmwareengineProjectsLocationsVmwareEngineNetworksCreateRequest(_messages.M
       request body.
     vmwareEngineNetworkId: Required. The user-provided identifier of the new
       VMware Engine network. This identifier must be unique among VMware
-      Engine network` resources within the parent and becomes the final token
+      Engine network resources within the parent and becomes the final token
       in the name URI. The identifier must meet the following requirements: *
+      For networks of type LEGACY, adheres to the format: `{region-
+      id}-default`. Replace `{region-id}` with the region where you want to
+      create the VMware Engine network. For example, "us-west1-default". *
       Only contains 1-63 alphanumeric characters and hyphens * Begins with an
       alphabetical character * Ends with a non-hyphen character * Not
       formatted as a UUID * Complies with [RFC

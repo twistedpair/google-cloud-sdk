@@ -349,6 +349,33 @@ class EdgenetworkV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Diagnose(self, request, global_params=None):
+      r"""Get the diagnostics of a single interconnect resource.
+
+      Args:
+        request: (EdgenetworkProjectsLocationsZonesInterconnectsDiagnoseRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (DiagnoseInterconnectResponse) The response message.
+      """
+      config = self.GetMethodConfig('Diagnose')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Diagnose.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/zones/{zonesId}/interconnects/{interconnectsId}:diagnose',
+        http_method='GET',
+        method_id='edgenetwork.projects.locations.zones.interconnects.diagnose',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}:diagnose',
+        request_field='',
+        request_type_name='EdgenetworkProjectsLocationsZonesInterconnectsDiagnoseRequest',
+        response_type_name='DiagnoseInterconnectResponse',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets details of a single Interconnect.
 
@@ -467,6 +494,33 @@ class EdgenetworkV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Diagnose(self, request, global_params=None):
+      r"""Get the diagnostics of a single network resource.
+
+      Args:
+        request: (EdgenetworkProjectsLocationsZonesNetworksDiagnoseRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (DiagnoseNetworkResponse) The response message.
+      """
+      config = self.GetMethodConfig('Diagnose')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Diagnose.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/zones/{zonesId}/networks/{networksId}:diagnose',
+        http_method='GET',
+        method_id='edgenetwork.projects.locations.zones.networks.diagnose',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}:diagnose',
+        request_field='',
+        request_type_name='EdgenetworkProjectsLocationsZonesNetworksDiagnoseRequest',
+        response_type_name='DiagnoseNetworkResponse',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets details of a single Network.
 
@@ -582,6 +636,33 @@ class EdgenetworkV1alpha1(base_api.BaseApiClient):
         request_field='',
         request_type_name='EdgenetworkProjectsLocationsZonesRoutersDeleteRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Diagnose(self, request, global_params=None):
+      r"""Get the diagnostics of a single router resource.
+
+      Args:
+        request: (EdgenetworkProjectsLocationsZonesRoutersDiagnoseRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (DiagnoseRouterResponse) The response message.
+      """
+      config = self.GetMethodConfig('Diagnose')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Diagnose.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/zones/{zonesId}/routers/{routersId}:diagnose',
+        http_method='GET',
+        method_id='edgenetwork.projects.locations.zones.routers.diagnose',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}:diagnose',
+        request_field='',
+        request_type_name='EdgenetworkProjectsLocationsZonesRoutersDiagnoseRequest',
+        response_type_name='DiagnoseRouterResponse',
         supports_download=False,
     )
 

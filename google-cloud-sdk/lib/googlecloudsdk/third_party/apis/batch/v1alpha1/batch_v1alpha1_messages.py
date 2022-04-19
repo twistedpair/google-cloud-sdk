@@ -559,7 +559,7 @@ class Binding(_messages.Message):
       policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
-    members: Specifies the principals requesting access for a Cloud Platform
+    members: Specifies the principals requesting access for a Google Cloud
       resource. `members` can have the following values: * `allUsers`: A
       special identifier that represents anyone who is on the internet; with
       or without a Google account. * `allAuthenticatedUsers`: A special
@@ -779,6 +779,39 @@ class InstancePolicy(_messages.Message):
   deniedAcceleratorTypes = _messages.StringField(5, repeated=True)
   deniedCpuPlatforms = _messages.StringField(6, repeated=True)
   deniedMachineTypes = _messages.StringField(7, repeated=True)
+
+
+class InstanceStatus(_messages.Message):
+  r"""VM instance status.
+
+  Enums:
+    ProvisioningModelValueValuesEnum: The VM instance provisioning model.
+
+  Fields:
+    machineType: The Compute Engine machine type.
+    provisioningModel: The VM instance provisioning model.
+  """
+
+  class ProvisioningModelValueValuesEnum(_messages.Enum):
+    r"""The VM instance provisioning model.
+
+    Values:
+      PROVISIONING_MODEL_UNSPECIFIED: Unspecified.
+      STANDARD: Standard VM.
+      SPOT: SPOT VM.
+      PREEMPTIBLE: Preemptible VM (PVM). Above SPOT VM is the preferable model
+        for preemptible VM instances: the old preemptible VM model (indicated
+        by this field) is the older model, and has been migrated to use the
+        SPOT model as the underlying technology. This old model will still be
+        supported.
+    """
+    PROVISIONING_MODEL_UNSPECIFIED = 0
+    STANDARD = 1
+    SPOT = 2
+    PREEMPTIBLE = 3
+
+  machineType = _messages.StringField(1)
+  provisioningModel = _messages.EnumField('ProvisioningModelValueValuesEnum', 2)
 
 
 class Job(_messages.Message):
@@ -1647,8 +1680,8 @@ class SetIamPolicyRequest(_messages.Message):
   Fields:
     policy: REQUIRED: The complete policy to be applied to the `resource`. The
       size of the policy is limited to a few 10s of KB. An empty policy is a
-      valid policy but certain Cloud Platform services (such as Projects)
-      might reject them.
+      valid policy but certain Google Cloud services (such as Projects) might
+      reject them.
     updateMask: OPTIONAL: A FieldMask specifying which fields of the policy to
       modify. Only the fields in the mask will be modified. If no mask is
       provided, the following default mask is used: `paths: "bindings, etag"`
@@ -1924,6 +1957,7 @@ class TaskGroupStatus(_messages.Message):
   Fields:
     counts: Count of task in each state in the TaskGroup. The map key is task
       state name.
+    instances: Status of instances allocated for the TaskGroup.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -1952,6 +1986,7 @@ class TaskGroupStatus(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   counts = _messages.MessageField('CountsValue', 1)
+  instances = _messages.MessageField('InstanceStatus', 2, repeated=True)
 
 
 class TaskSpec(_messages.Message):
@@ -2063,7 +2098,7 @@ class TestIamPermissionsRequest(_messages.Message):
 
   Fields:
     permissions: The set of permissions to check for the `resource`.
-      Permissions with wildcards (such as '*' or 'storage.*') are not allowed.
+      Permissions with wildcards (such as `*` or `storage.*`) are not allowed.
       For more information see [IAM
       Overview](https://cloud.google.com/iam/docs/overview#permissions).
   """

@@ -12,12 +12,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Utilities Cloud GKE Multi-cloud API."""
+"""Utilities for gkemulticloud API."""
 
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import base
 
@@ -42,3 +43,40 @@ def GetMessagesModule(release_track=base.ReleaseTrack.GA):
 def GetClientInstance(release_track=base.ReleaseTrack.GA):
   api_version = _VERSION_MAP.get(release_track)
   return apis.GetClientInstance(MODULE_NAME, api_version)
+
+
+class ClientBase(object):
+  """Base class for gkemulticloud API clients."""
+
+  def __init__(self, service=None, list_result_field=None):
+    self._client = GetClientInstance()
+    self._messages = GetMessagesModule()
+    self._service = service
+    self._list_result_field = list_result_field
+
+  def List(self, parent_ref, page_size, limit):
+    """Lists gkemulticloud API resources."""
+    req = self._service.GetRequestType('List')(parent=parent_ref.RelativeName())
+    for item in list_pager.YieldFromList(
+        self._service,
+        req,
+        field=self._list_result_field,
+        limit=limit,
+        batch_size=page_size,
+        batch_size_attribute='pageSize'):
+      yield item
+
+  def Get(self, resource_ref):
+    """Gets a gkemulticloud API resource."""
+    req = self._service.GetRequestType('Get')(name=resource_ref.RelativeName())
+    return self._service.Get(req)
+
+  def Delete(self, resource_ref, validate_only=None, allow_missing=None):
+    """Deletes a gkemulticloud API resource."""
+    req = self._service.GetRequestType('Delete')(
+        name=resource_ref.RelativeName())
+    if validate_only:
+      req.validateOnly = True
+    if allow_missing:
+      req.allowMissing = True
+    return self._service.Delete(req)

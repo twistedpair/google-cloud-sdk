@@ -34,6 +34,26 @@ def LocationAttributeConfig(fallthroughs_enabled=True):
       fallthroughs=fallthroughs)
 
 
+def EnvironmentLocationAttributeConfig(fallthroughs_enabled=True):
+  fallthroughs = ([
+      deps.PropertyFallthrough(properties.VALUES.composer.location)
+  ] if fallthroughs_enabled else [])
+  return concepts.ResourceParameterAttributeConfig(
+      name='location',
+      help_text='Region where Composer environment runs or in which to create the environment.',
+      fallthroughs=fallthroughs)
+
+
+def OperationLocationAttributeConfig(fallthroughs_enabled=True):
+  fallthroughs = ([
+      deps.PropertyFallthrough(properties.VALUES.composer.location)
+  ] if fallthroughs_enabled else [])
+  return concepts.ResourceParameterAttributeConfig(
+      name='location',
+      help_text='Compute Engine region in which to create the {resource}.',
+      fallthroughs=fallthroughs)
+
+
 def EnvironmentAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='environment',
@@ -60,7 +80,7 @@ def GetEnvironmentResourceSpec():
       'composer.projects.locations.environments',
       resource_name='environment',
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
-      locationsId=LocationAttributeConfig(),
+      locationsId=EnvironmentLocationAttributeConfig(),
       environmentsId=EnvironmentAttributeConfig())
 
 
@@ -69,7 +89,7 @@ def GetOperationResourceSpec():
       'composer.projects.locations.operations',
       resource_name='operation',
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
-      locationsId=LocationAttributeConfig(),
+      locationsId=OperationLocationAttributeConfig(),
       operationsId=OperationAttributeConfig())
 
 

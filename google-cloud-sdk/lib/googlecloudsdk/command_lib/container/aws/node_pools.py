@@ -80,6 +80,12 @@ class NodePoolsClient(object):
     config.sshConfig = ssh_config
     return ssh_config
 
+  def _AddAwsProxyConfig(self, req):
+    msg = 'GoogleCloudGkemulticloud{}AwsProxyConfig'.format(self.version)
+    pc = getattr(self.messages, msg)()
+    req.proxyConfig = pc
+    return pc
+
   def _CreateAwsProxyConfig(self, secret_arn, secret_version_id):
     msg = 'GoogleCloudGkemulticloud{}AwsProxyConfig'.format(self.version)
     return getattr(self.messages, msg)(
@@ -243,6 +249,16 @@ class NodePoolsClient(object):
     if args.root_volume_kms_key_arn is not None:
       update_mask.append('config.root_volume.kms_key_arn')
 
+    if args.clear_proxy_config is not None:
+      update_mask.append('config.proxy_config')
+    else:
+      proxy_config = self._AddAwsProxyConfig(config)
+      if args.proxy_secret_arn:
+        proxy_config.secretArn = args.proxy_secret_arn
+        update_mask.append('config.proxy_config.secret_arn')
+      if args.proxy_secret_version_id:
+        proxy_config.secretVersion = args.proxy_secret_version_id
+        update_mask.append('config.proxy_config.secret_version')
     req.updateMask = ','.join(update_mask)
 
     return self.service.Patch(req)

@@ -82,6 +82,28 @@ encoding.AddCustomJsonFieldMapping(
     clouddeploy_message.ClouddeployProjectsLocationsTargetsGetIamPolicyRequest,
     'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
 
+binaryauthorization_message_v1alpha2 = core_apis.GetMessagesModule(
+    'binaryauthorization', 'v1alpha2')
+encoding.AddCustomJsonFieldMapping(
+    binaryauthorization_message_v1alpha2
+    .BinaryauthorizationProjectsAttestorsGetIamPolicyRequest,
+    'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    binaryauthorization_message_v1alpha2
+    .BinaryauthorizationProjectsPolicyGetIamPolicyRequest,
+    'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+
+binaryauthorization_message_v1beta1 = core_apis.GetMessagesModule(
+    'binaryauthorization', 'v1beta1')
+encoding.AddCustomJsonFieldMapping(
+    binaryauthorization_message_v1beta1
+    .BinaryauthorizationProjectsAttestorsGetIamPolicyRequest,
+    'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    binaryauthorization_message_v1beta1
+    .BinaryauthorizationProjectsPolicyGetIamPolicyRequest,
+    'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+
 MANAGED_BY = (
     msgs.IamProjectsServiceAccountsKeysListRequest.KeyTypesValueValuesEnum)
 CREATE_KEY_TYPES = (
