@@ -17,7 +17,7 @@
 import enum
 
 
-BASE_URL = 'https://staging-securedlandingzone.sandbox.googleapis.com/v1beta/'
+BASE_URL = 'https://securedlandingzone.googleapis.com/v1beta/'
 DOCS_URL = 'https://www.google.com'
 
 

@@ -363,6 +363,13 @@
           "items": {
             "$ref": "WorkspacePipelineTaskBinding"
           }
+        },
+        "runAfter": {
+          "description": "RunAfter is the list of PipelineTask names that should be executed before this Task executes. (Used to force a specific ordering in graph execution.)",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -1198,6 +1205,13 @@
         "timeouts": {
           "description": "Time after which the Pipeline times out. Currently three keys are accepted in the map pipeline, tasks and finally with Timeouts.pipeline >= Timeouts.tasks + Timeouts.finally",
           "$ref": "TimeoutFields"
+        },
+        "skippedTasks": {
+          "description": "List of tasks that were skipped due to when expressions evaluating to false.",
+          "type": "array",
+          "items": {
+            "$ref": "SkippedTask"
+          }
         }
       }
     },
@@ -1487,6 +1501,24 @@
           "description": "Finally sets the maximum allowed duration of this pipeline's finally",
           "type": "string",
           "format": "google-duration"
+        }
+      }
+    },
+    "SkippedTask": {
+      "id": "SkippedTask",
+      "description": "SkippedTask is used to describe the Tasks that were skipped due to their When Expressions evaluating to False.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Name is the Pipeline Task name",
+          "type": "string"
+        },
+        "whenExpressions": {
+          "description": "WhenExpressions is the list of checks guarding the execution of the PipelineTask",
+          "type": "array",
+          "items": {
+            "$ref": "WhenExpression"
+          }
         }
       }
     },

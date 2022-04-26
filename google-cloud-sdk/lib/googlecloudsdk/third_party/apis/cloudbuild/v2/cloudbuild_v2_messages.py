@@ -2061,6 +2061,8 @@ class PipelineRun(_messages.Message):
     pipelineRunStatus: Status of the PipelineRun.
     pipelineSpec: PipelineSpec defines the desired state of Pipeline.
     serviceAccount: Service account used in the Pipeline.
+    skippedTasks: List of tasks that were skipped due to when expressions
+      evaluating to false.
     startTime: Output only. Time the pipeline is actually started.
     taskRuns: Output only. List of TaskRuns and their status.
     timeout: Time after which the Pipeline times out.
@@ -2147,15 +2149,16 @@ class PipelineRun(_messages.Message):
   pipelineRunStatus = _messages.EnumField('PipelineRunStatusValueValuesEnum', 10)
   pipelineSpec = _messages.MessageField('PipelineSpec', 11)
   serviceAccount = _messages.StringField(12)
-  startTime = _messages.StringField(13)
-  taskRuns = _messages.MessageField('PipelineRunTaskRunStatus', 14, repeated=True)
-  timeout = _messages.StringField(15)
-  timeouts = _messages.MessageField('TimeoutFields', 16)
-  uid = _messages.StringField(17)
-  updateTime = _messages.StringField(18)
-  workerPool = _messages.StringField(19)
-  workflow = _messages.StringField(20)
-  workspaces = _messages.MessageField('WorkspaceBinding', 21, repeated=True)
+  skippedTasks = _messages.MessageField('SkippedTask', 13, repeated=True)
+  startTime = _messages.StringField(14)
+  taskRuns = _messages.MessageField('PipelineRunTaskRunStatus', 15, repeated=True)
+  timeout = _messages.StringField(16)
+  timeouts = _messages.MessageField('TimeoutFields', 17)
+  uid = _messages.StringField(18)
+  updateTime = _messages.StringField(19)
+  workerPool = _messages.StringField(20)
+  workflow = _messages.StringField(21)
+  workspaces = _messages.MessageField('WorkspaceBinding', 22, repeated=True)
 
 
 class PipelineRunTaskRunStatus(_messages.Message):
@@ -2196,6 +2199,9 @@ class PipelineTask(_messages.Message):
   Fields:
     name: Name of the task.
     params: Params is a list of parameter names and values.
+    runAfter: RunAfter is the list of PipelineTask names that should be
+      executed before this Task executes. (Used to force a specific ordering
+      in graph execution.)
     taskRef: Reference to a specific instance of a task.
     taskSpec: Spec to instantiate this TaskRun.
     whenExpressions: Conditions that need to be true for the task to run.
@@ -2205,10 +2211,11 @@ class PipelineTask(_messages.Message):
 
   name = _messages.StringField(1)
   params = _messages.MessageField('Param', 2, repeated=True)
-  taskRef = _messages.MessageField('TaskRef', 3)
-  taskSpec = _messages.MessageField('EmbeddedTask', 4)
-  whenExpressions = _messages.MessageField('WhenExpression', 5, repeated=True)
-  workspaces = _messages.MessageField('WorkspacePipelineTaskBinding', 6, repeated=True)
+  runAfter = _messages.StringField(3, repeated=True)
+  taskRef = _messages.MessageField('TaskRef', 4)
+  taskSpec = _messages.MessageField('EmbeddedTask', 5)
+  whenExpressions = _messages.MessageField('WhenExpression', 6, repeated=True)
+  workspaces = _messages.MessageField('WorkspacePipelineTaskBinding', 7, repeated=True)
 
 
 class PipelineWorkspaceDeclaration(_messages.Message):
@@ -2710,6 +2717,20 @@ class SidecarState(_messages.Message):
   running = _messages.MessageField('ContainerStateRunning', 4)
   terminated = _messages.MessageField('ContainerStateTerminated', 5)
   waiting = _messages.MessageField('ContainerStateWaiting', 6)
+
+
+class SkippedTask(_messages.Message):
+  r"""SkippedTask is used to describe the Tasks that were skipped due to their
+  When Expressions evaluating to False.
+
+  Fields:
+    name: Name is the Pipeline Task name
+    whenExpressions: WhenExpressions is the list of checks guarding the
+      execution of the PipelineTask
+  """
+
+  name = _messages.StringField(1)
+  whenExpressions = _messages.MessageField('WhenExpression', 2, repeated=True)
 
 
 class SlackDelivery(_messages.Message):

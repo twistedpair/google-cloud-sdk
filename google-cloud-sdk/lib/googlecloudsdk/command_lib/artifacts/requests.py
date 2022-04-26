@@ -208,6 +208,20 @@ def ListRepositories(project, page_size=None):
           field="repositories"))
 
 
+def ListFiles(client, messages, repo, page_size=None):
+  """Lists all files under a repository."""
+  list_files_req = (
+      messages.ArtifactregistryProjectsLocationsRepositoriesFilesListRequest(
+          parent=repo))
+  return list(
+      list_pager.YieldFromList(
+          client.projects_locations_repositories_files,
+          list_files_req,
+          batch_size=page_size,
+          batch_size_attribute="pageSize",
+          field="files"))
+
+
 def GetRepository(repo):
   """Gets the repository given its name."""
   client = GetClient()
@@ -356,4 +370,3 @@ def SetUpgradeRedirectionState(project_id, redirection_state):
       projectSettings=project_settings,
       updateMask=update_mask)
   return client.projects.UpdateProjectSettings(update_settings_req)
-

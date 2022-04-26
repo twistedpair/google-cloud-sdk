@@ -44,11 +44,57 @@ def SubnetAttributeConfig(name='subnet'):
       completion_id_field='id')
 
 
+def RouterAttributeConfig(name='router'):
+  return concepts.ResourceParameterAttributeConfig(
+      name=name,
+      help_text='The router of the {resource}.',
+      completion_request_params={'fieldMask': 'name'},
+      completion_id_field='id')
+
+
+def NetworkAttributeConfig(name='network'):
+  return concepts.ResourceParameterAttributeConfig(
+      name=name,
+      help_text='The network of the {resource}.',
+      completion_request_params={'fieldMask': 'name'},
+      completion_id_field='id')
+
+
+def InterconnectAttributeConfig(name='interconnect'):
+  return concepts.ResourceParameterAttributeConfig(
+      name=name,
+      help_text='The interconnect of the {resource}.',
+      completion_request_params={'fieldMask': 'name'},
+      completion_id_field='id')
+
+
 def GetRouterResourceSpec(resource_name='router'):
   return concepts.ResourceSpec(
       'edgenetwork.projects.locations.zones.routers',
       resource_name=resource_name,
-      routersId=SubnetAttributeConfig(name=resource_name),
+      routersId=RouterAttributeConfig(name=resource_name),
+      zonesId=ZoneAttributeConfig('zone'),
+      locationsId=LocationAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      disable_auto_completers=False)
+
+
+def GetNetworkResourceSpec(resource_name='network'):
+  return concepts.ResourceSpec(
+      'edgenetwork.projects.locations.zones.networks',
+      resource_name=resource_name,
+      networksId=NetworkAttributeConfig(name=resource_name),
+      zonesId=ZoneAttributeConfig('zone'),
+      locationsId=LocationAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      disable_auto_completers=False)
+
+
+def GetInterconnectResourceSpec(resource_name='interconnect'):
+  return concepts.ResourceSpec(
+      'edgenetwork.projects.locations.zones.interconnects',
+      resource_name=resource_name,
+      interconnectsId=InterconnectAttributeConfig(name=resource_name),
       zonesId=ZoneAttributeConfig('zone'),
       locationsId=LocationAttributeConfig(),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
@@ -74,6 +120,54 @@ def AddRouterResourceArg(parser, verb, positional=False):
           name,
           GetRouterResourceSpec(),
           'The router {}.'.format(verb),
+          required=True)
+  ]
+  concept_parsers.ConceptParser(resource_specs).AddToParser(parser)
+
+
+def AddNetworkResourceArg(parser, verb, positional=False):
+  """Add a resource argument for a GDCE network.
+
+  Args:
+    parser: the parser for the command.
+    verb: str, the verb to describe the resource, such as 'to create'.
+    positional: bool, if True, means that the resource is a positional rather
+      than a flag.
+  """
+  if positional:
+    name = 'network'
+  else:
+    name = '--network'
+
+  resource_specs = [
+      presentation_specs.ResourcePresentationSpec(
+          name,
+          GetNetworkResourceSpec(),
+          'The network {}.'.format(verb),
+          required=True)
+  ]
+  concept_parsers.ConceptParser(resource_specs).AddToParser(parser)
+
+
+def AddInterconnectResourceArg(parser, verb, positional=False):
+  """Add a resource argument for a GDCE interconnect.
+
+  Args:
+    parser: the parser for the command.
+    verb: str, the verb to describe the resource, such as 'to create'.
+    positional: bool, if True, means that the resource is a positional rather
+      than a flag.
+  """
+  if positional:
+    name = 'interconnect'
+  else:
+    name = '--interconnect'
+
+  resource_specs = [
+      presentation_specs.ResourcePresentationSpec(
+          name,
+          GetInterconnectResourceSpec(),
+          'The interconnect {}.'.format(verb),
           required=True)
   ]
   concept_parsers.ConceptParser(resource_specs).AddToParser(parser)

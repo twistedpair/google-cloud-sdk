@@ -28,9 +28,17 @@ def AddAwsRegion(parser):
       '--aws-region', required=True, help='AWS region to deploy the cluster.')
 
 
+def GetAwsRegion(args):
+  return getattr(args, 'aws_region', None)
+
+
 def AddVpcId(parser):
   parser.add_argument(
       '--vpc-id', required=True, help='VPC associated with the cluster.')
+
+
+def GetVpcId(args):
+  return getattr(args, 'vpc_id', None)
 
 
 def AddIamInstanceProfile(parser):
@@ -41,14 +49,26 @@ def AddIamInstanceProfile(parser):
       help='Name of the IAM instance profile associated with the cluster.')
 
 
+def GetIamInstanceProfile(args):
+  return getattr(args, 'iam_instance_profile', None)
+
+
 def AddInstanceType(parser):
   parser.add_argument('--instance-type', help='AWS EC2 instance type.')
+
+
+def GetInstanceType(args):
+  return getattr(args, 'instance_type', None)
 
 
 def AddSshEC2KeyPair(parser):
   parser.add_argument(
       '--ssh-ec2-key-pair',
       help='Name of the EC2 key pair to log in into control plane nodes.')
+
+
+def GetSshEC2KeyPair(args):
+  return getattr(args, 'ssh_ec2_key_pair', None)
 
 
 def AddRoleArn(parser, required=True):
@@ -59,9 +79,17 @@ def AddRoleArn(parser, required=True):
             'managing AWS resources.'))
 
 
+def GetRoleArn(args):
+  return getattr(args, 'role_arn', None)
+
+
 def AddRoleSessionName(parser):
   parser.add_argument(
       '--role-session-name', help='Identifier for the assumed role session.')
+
+
+def GetRoleSessionName(args):
+  return getattr(args, 'role_session_name', None)
 
 
 def AddSecurityGroupIds(parser, noun):
@@ -70,6 +98,10 @@ def AddSecurityGroupIds(parser, noun):
       type=arg_parsers.ArgList(),
       metavar='SECURITY_GROUP_ID',
       help='IDs of additional security groups to add to {}.'.format(noun))
+
+
+def GetSecurityGroupIds(args):
+  return getattr(args, 'security_group_ids', None) or []
 
 
 def AddClearSecurityGroupIds(parser, noun):
@@ -119,12 +151,12 @@ def AddMainVolumeType(parser):
 
 
 def GetRootVolumeType(args):
-  if args.root_volume_type is not None:
+  if getattr(args, 'root_volume_type', None):
     return _VolumeTypeEnumMapper('root').GetEnumForChoice(args.root_volume_type)
 
 
 def GetMainVolumeType(args):
-  if args.main_volume_type is not None:
+  if getattr(args, 'main_volume_type', None):
     return _VolumeTypeEnumMapper('main').GetEnumForChoice(args.main_volume_type)
 
 
@@ -140,8 +172,16 @@ def AddRootVolumeIops(parser):
   _AddVolumeIops(parser, 'root')
 
 
+def GetRootVolumeIops(args):
+  return getattr(args, 'root_volume_iops', None)
+
+
 def AddMainVolumeIops(parser):
   _AddVolumeIops(parser, 'main')
+
+
+def GetMainVolumeIops(args):
+  return getattr(args, 'main_volume_iops', None)
 
 
 def _AddKmsKeyArn(parser, prefix, target, required=False):
@@ -156,16 +196,32 @@ def AddRootVolumeKmsKeyArn(parser):
   _AddKmsKeyArn(parser, 'root-volume', 'root volume')
 
 
+def GetRootVolumeKmsKeyArn(args):
+  return getattr(args, 'root_volume_kms_key_arn', None)
+
+
 def AddMainVolumeKmsKeyArn(parser):
   _AddKmsKeyArn(parser, 'main-volume', 'main volume')
+
+
+def GetMainVolumeKmsKeyArn(args):
+  return getattr(args, 'main_volume_kms_key_arn', None)
 
 
 def AddDatabaseEncryptionKmsKeyArn(parser):
   _AddKmsKeyArn(parser, 'database-encryption', 'cluster secrets', required=True)
 
 
+def GetDatabaseEncryptionKmsKeyArn(args):
+  return getattr(args, 'database_encryption_kms_key_arn', None)
+
+
 def AddConfigEncryptionKmsKeyArn(parser, required=True):
   _AddKmsKeyArn(parser, 'config-encryption', 'user data', required=required)
+
+
+def GetConfigEncryptionKmsKeyArn(args):
+  return getattr(args, 'config_encryption_kms_key_arn', None)
 
 
 def _TenancyEnumMapper():
@@ -183,8 +239,8 @@ def AddInstancePlacement(parser):
 
 def GetInstancePlacement(args):
   instance_placement = getattr(args, 'instance_placement', None)
-  if instance_placement is not None:
-    return _TenancyEnumMapper().GetEnumForChoice(args.instance_placement)
+  return _TenancyEnumMapper().GetEnumForChoice(
+      instance_placement) if instance_placement else None
 
 
 def AddClearProxyConfig(parser, noun):
@@ -211,12 +267,20 @@ def AddProxySecretArn(parser, required=False):
             'configuration.'))
 
 
+def GetProxySecretArn(args):
+  return getattr(args, 'proxy_secret_arn', None)
+
+
 def AddProxySecretVersionId(parser, required=False):
   parser.add_argument(
       '--proxy-secret-version-id',
       required=required,
       help=('Version ID string of the AWS Secrets Manager secret that contains '
             'a proxy configuration.'))
+
+
+def GetProxySecretVersionId(args):
+  return getattr(args, 'proxy_secret_version_id', None)
 
 
 def AddProxyConfig(parser):
@@ -245,3 +309,7 @@ def AddProxyConfigForUpdate(parser, noun):
   AddProxySecretArn(update_proxy_group)
   AddProxySecretVersionId(update_proxy_group)
   AddClearProxyConfig(group, noun)
+
+
+def GetSubnetIds(args):
+  return getattr(args, 'subnet_ids', None) or []

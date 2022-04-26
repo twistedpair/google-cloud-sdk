@@ -233,6 +233,15 @@ MAP = {
                 mtls_endpoint_override=''),
     },
     'alloydb': {
+        'v1alpha':
+            APIDef(
+                ApitoolsClientDef(
+                    class_path='googlecloudsdk.third_party.apis.alloydb.v1alpha',
+                    client_classpath='alloydb_v1alpha_client.AlloydbV1alpha',
+                    messages_modulepath='alloydb_v1alpha_messages'),
+                default_version=False,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
         'v1alpha1':
             APIDef(
                 ApitoolsClientDef(
@@ -240,6 +249,15 @@ MAP = {
                     client_classpath='alloydb_v1alpha1_client.AlloydbV1alpha1',
                     messages_modulepath='alloydb_v1alpha1_messages'),
                 default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+        'v1beta':
+            APIDef(
+                ApitoolsClientDef(
+                    class_path='googlecloudsdk.third_party.apis.alloydb.v1beta',
+                    client_classpath='alloydb_v1beta_client.AlloydbV1beta',
+                    messages_modulepath='alloydb_v1beta_messages'),
+                default_version=False,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },

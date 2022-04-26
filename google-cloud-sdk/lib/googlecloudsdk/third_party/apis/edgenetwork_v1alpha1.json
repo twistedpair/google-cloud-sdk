@@ -14,7 +14,7 @@
     "x16": "http://www.google.com/images/icons/product/search-16.gif",
     "x32": "http://www.google.com/images/icons/product/search-32.gif"
    },
-  "documentationLink": "go/gmec-nas",
+  "documentationLink": "https://cloud.google.com/distributed-cloud-edge/docs",
   "protocol": "rest",
   "rootUrl": "https://edgenetwork.googleapis.com/",
   "mtlsRootUrl": "https://edgenetwork.mtls.googleapis.com/",
@@ -335,10 +335,6 @@
       "description": "DiagnoseNetworkResponse contains the current status for a specific network.",
       "type": "object",
       "properties": {
-        "error": {
-          "description": "Used to show errors while retrieving and processing data.",
-          "type": "string"
-        },
         "result": {
           "description": "The network status of a specific network.",
           "$ref": "NetworkStatus"
@@ -593,10 +589,6 @@
       "description": "DiagnoseInterconnectResponse contains the current diagnostics for a specific interconnect.",
       "type": "object",
       "properties": {
-        "error": {
-          "description": "Used to show errors while retrieving and processing data.",
-          "type": "string"
-        },
         "result": {
           "description": "The network status of a specific interconnect.",
           "$ref": "InterconnectDiagnostics"
@@ -1029,10 +1021,6 @@
       "description": "DiagnoseRouterResponse contains the current status for a specific router.",
       "type": "object",
       "properties": {
-        "error": {
-          "description": "Used to show errors while retrieving and processing data.",
-          "type": "string"
-        },
         "result": {
           "description": "The network status of a specific router.",
           "$ref": "RouterStatus"

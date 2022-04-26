@@ -23,11 +23,12 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.core import resources
 
 # API version constants
-API_VERSION_DEFAULT = 'v1alpha1'
+DEFAULT_RELEASE_TRACK = base.ReleaseTrack.ALPHA
 VERSION_MAP = {
-    base.ReleaseTrack.ALPHA: 'v1alpha1',
+    base.ReleaseTrack.ALPHA: 'v1alpha',
     base.ReleaseTrack.BETA: 'v1beta'
 }
+API_VERSION_DEFAULT = VERSION_MAP[DEFAULT_RELEASE_TRACK]
 
 
 class AlloyDBClient(object):
@@ -40,3 +41,9 @@ class AlloyDBClient(object):
     self.alloydb_messages = self.alloydb_client.MESSAGES_MODULE
     self.resource_parser = resources.Registry()
     self.resource_parser.RegisterApiByName('alloydb', api_version)
+
+
+def GetMessagesModule(release_track):
+  """Returns the message module for release track."""
+  api_version = VERSION_MAP[release_track]
+  return apis.GetMessagesModule('alloydb', api_version)

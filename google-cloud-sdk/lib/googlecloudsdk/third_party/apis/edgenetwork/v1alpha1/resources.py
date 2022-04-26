@@ -18,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://edgenetwork.googleapis.com/v1alpha1/'
-DOCS_URL = 'go/gmec-nas'
+DOCS_URL = 'https://cloud.google.com/distributed-cloud-edge/docs'
 
 
 class Collections(enum.Enum):

@@ -88,11 +88,13 @@ SUPPORTED_OP_REGIONS = (
     'europe-west6',
     'northamerica-northeast1',
     'northamerica-northeast2',
+    'southamerica-east1',
     'us-central1',
     'us-east1',
     'us-east4',
     'us-west1',
     'us-west2',
+    'us-west4',
 )
 
 OPERATION_CREATION_DISPLAY_MESSAGE = """\

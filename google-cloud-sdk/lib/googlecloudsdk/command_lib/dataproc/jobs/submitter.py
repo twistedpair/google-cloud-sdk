@@ -44,6 +44,16 @@ class JobSubmitter(base.Command):
         help=('Specifies the maximum total number of times a job can be '
               'restarted after the job fails. '
               'Default is 0 (no retries after job failure).'))
+    parser.add_argument(
+        '--driver-required-memory-mb',
+        type=int,
+        hidden=True,
+        help=('The amount of memory in MB job driver is requesting.'))
+    parser.add_argument(
+        '--driver-required-vcores',
+        type=int,
+        hidden=True,
+        help=('The number of vCPUs job driver is requesting.'))
     cluster_placement = parser.add_mutually_exclusive_group(required=True)
     cluster_placement.add_argument(
         '--cluster', help='The Dataproc cluster to submit the job to.')
@@ -77,11 +87,15 @@ class JobSubmitter(base.Command):
 
     job = dataproc.messages.Job(
         reference=dataproc.messages.JobReference(
-            projectId=job_ref.projectId,
-            jobId=job_ref.jobId),
-        placement=dataproc.messages.JobPlacement(
-            clusterName=args.cluster))
+            projectId=job_ref.projectId, jobId=job_ref.jobId),
+        placement=dataproc.messages.JobPlacement(clusterName=args.cluster))
     self.ConfigureJob(dataproc.messages, job, args)
+
+    if args.driver_required_memory_mb and args.driver_required_vcores:
+      driver_scheduling_config = dataproc.messages.DriverSchedulingConfig(
+          memoryMb=args.driver_required_memory_mb,
+          vcores=args.driver_required_vcores)
+      job.driverSchedulingConfig = driver_scheduling_config
 
     if args.max_failures_per_hour or args.max_failures_total:
       scheduling = dataproc.messages.JobScheduling(

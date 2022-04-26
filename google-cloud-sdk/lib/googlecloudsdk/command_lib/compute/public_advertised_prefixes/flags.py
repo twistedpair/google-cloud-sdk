@@ -28,7 +28,7 @@ def MakePublicAdvertisedPrefixesArg():
       global_collection='compute.publicAdvertisedPrefixes')
 
 
-def AddCreatePapArgsToParser(parser):
+def AddCreatePapArgsToParser(parser, support_pdp_scope_input):
   """Adds public advertised prefixes create related flags to parser."""
 
   parser.add_argument(
@@ -42,9 +42,13 @@ def AddCreatePapArgsToParser(parser):
       help='IPv4 address to use for verification. It must be within the IPv4 range specified in --range.'
   )
   parser.add_argument(
-      '--description',
-      help='Description of this public advertised prefix.'
-  )
+      '--description', help='Description of this public advertised prefix.')
+  if support_pdp_scope_input:
+    choices = ['GLOBAL', 'REGIONAL']
+    parser.add_argument(
+        '--pdp-scope',
+        choices=choices,
+        help='Specifies how child public delegated prefix will be scoped.')
 
 
 def AddUpdatePapArgsToParser(parser):
@@ -52,5 +56,4 @@ def AddUpdatePapArgsToParser(parser):
       '--status',
       required=True,
       choices=['ptr-configured'],
-      help_str='The status of public advertised prefix.'
-  ).AddToParser(parser)
+      help_str='The status of public advertised prefix.').AddToParser(parser)

@@ -330,58 +330,6 @@ class FullWebFlow(InstalledAppFlow):
     return self.credentials
 
 
-# TODO(b/206804357): Remove OOB flow from gcloud.
-class OobFlow(InstalledAppFlow):
-  """Out-of-band flow.
-
-  This class supports user account login using "gcloud auth login" without
-  browser.
-  """
-
-  def __init__(self,
-               oauth2session,
-               client_type,
-               client_config,
-               redirect_uri=None,
-               code_verifier=None,
-               autogenerate_code_verifier=False):
-    super(OobFlow, self).__init__(
-        oauth2session,
-        client_type,
-        client_config,
-        redirect_uri=redirect_uri,
-        code_verifier=code_verifier,
-        autogenerate_code_verifier=autogenerate_code_verifier,
-        require_local_server=False)
-
-  def _Run(self, **kwargs):
-    """Run the flow using the console strategy.
-
-    The console strategy instructs the user to open the authorization URL
-    in their browser. Once the authorization is complete the authorization
-    server will give the user a code. The user then must copy & paste this
-    code into the application. The code is then exchanged for a token.
-
-    Args:
-        **kwargs: Additional keyword arguments passed through to
-          "authorization_url".
-
-    Returns:
-        google.oauth2.credentials.Credentials: The OAuth 2.0 credentials
-          for the user.
-    """
-    kwargs.setdefault('prompt', 'consent')
-    auth_url, _ = self.authorization_url(**kwargs)
-
-    authorization_prompt_message = (
-        'Go to the following link in your browser:\n\n    {url}\n')
-    code = PromptForAuthCode(authorization_prompt_message, auth_url)
-    # TODO (b/204953716): Remove verify=None
-    self.fetch_token(code=code, include_client_id=True, verify=None)
-
-    return self.credentials
-
-
 class UrlManager(object):
   """A helper for url manipulation."""
 

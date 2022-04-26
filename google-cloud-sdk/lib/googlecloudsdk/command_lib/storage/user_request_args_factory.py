@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 import enum
 import os
 
+from googlecloudsdk.command_lib.storage import posix_util
 from googlecloudsdk.core.util import debug_output
 
 
@@ -158,7 +159,8 @@ class _UserRequestArgs:
                precondition_metageneration_match=None,
                predefined_acl_string=None,
                predefined_default_acl_string=None,
-               resource_args=None):
+               resource_args=None,
+               system_posix_data=None):
     """Sets properties."""
     self.gzip_in_flight = gzip_in_flight
     self.manifest_path = (
@@ -170,6 +172,7 @@ class _UserRequestArgs:
     self.predefined_acl_string = predefined_acl_string
     self.predefined_default_acl_string = predefined_default_acl_string
     self.resource_args = resource_args
+    self.system_posix_data = system_posix_data
 
   def __eq__(self, other):
     if not isinstance(other, type(self)):
@@ -185,7 +188,8 @@ class _UserRequestArgs:
             self.predefined_acl_string == other.predefined_acl_string and
             self.predefined_default_acl_string
             == other.predefined_default_acl_string and
-            self.resource_args == other.resource_args)
+            self.resource_args == other.resource_args and
+            self.system_posix_data == other.system_posix_data)
 
   def __repr__(self):
     return debug_output.generic_repr(self)
@@ -284,6 +288,11 @@ def get_user_request_args_from_command_args(args, metadata_type=None):
   else:
     gzip_in_flight = getattr(args, 'gzip_in_flight_extensions', None)
 
+  if getattr(args, 'preserve_posix', None):
+    system_posix_data = posix_util.get_system_posix_data()
+  else:
+    system_posix_data = None
+
   return _UserRequestArgs(
       gzip_in_flight=gzip_in_flight,
       manifest_path=getattr(args, 'manifest_path', None),
@@ -292,4 +301,5 @@ def get_user_request_args_from_command_args(args, metadata_type=None):
       precondition_metageneration_match=getattr(args, 'if_metageneration_match',
                                                 None),
       resource_args=resource_args,
+      system_posix_data=system_posix_data,
   )

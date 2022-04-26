@@ -202,3 +202,9 @@ class RoutersClient(object):
         router=new_router_object,
         updateMask=self.FIELD_PATH_BGP_PEER)
     return self._service.Patch(update_router_req)
+
+  def GetStatus(self, router_ref):
+    """Get the status of a specified router."""
+    get_router_status_req = self._messages.EdgenetworkProjectsLocationsZonesRoutersDiagnoseRequest(
+        name=router_ref.RelativeName())
+    return self._service.Diagnose(get_router_status_req)

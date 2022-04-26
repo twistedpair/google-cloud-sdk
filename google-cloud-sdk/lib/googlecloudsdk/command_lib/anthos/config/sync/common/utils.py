@@ -228,8 +228,8 @@ def KubeconfigForCluster(project, region, cluster):
 def ListConfigControllerClusters(project):
   """Runs a gcloud command to list the clusters that host Config Controller.
 
-  Currently the Config Controller only works in the region
-  us-central1 according to Config Controller doc
+  Currently the Config Controller only works in select regions.
+  Refer to the Config Controller doc:
   https://cloud.google.com/anthos-config-management/docs/how-to/config-controller-setup
 
   Args:

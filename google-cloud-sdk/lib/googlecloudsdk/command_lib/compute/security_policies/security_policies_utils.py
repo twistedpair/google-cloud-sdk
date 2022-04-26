@@ -139,13 +139,15 @@ def SecurityPolicyFromFile(input_file, messages, file_format):
       security_policy_rule.redirectOptions = redirect_options
     if 'headerAction' in rule:
       header_action = messages.SecurityPolicyRuleHttpHeaderAction()
+      headers_in_rule = rule['headerAction'].get('requestHeadersToAdds', [])
       headers_to_add = []
-      for header_to_add in rule['headerAction']['requestHeadersToAdds']:
+      for header_to_add in headers_in_rule:
         headers_to_add.append(
             messages.SecurityPolicyRuleHttpHeaderActionHttpHeaderOption(
                 headerName=header_to_add['headerName'],
                 headerValue=header_to_add['headerValue']))
-      header_action.requestHeadersToAdds = headers_to_add
+      if headers_to_add:
+        header_action.requestHeadersToAdds = headers_to_add
       security_policy_rule.headerAction = header_action
     if 'rateLimitOptions' in rule:
       rate_limit_options = rule['rateLimitOptions']

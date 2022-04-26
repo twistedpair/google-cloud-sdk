@@ -192,6 +192,11 @@ def _AddNetwork(parser, support_global_scope, support_hybrid_neg,
     help_text += """\
 
       This is only supported for NEGs with endpoint type {0}.
+
+      For Private Service Connect NEGs, you can optionally specify --network and
+      --subnet if --psc-target-service points to a published service. If
+      --psc-target-service points to the regional service endpoint of a Google
+      API, do not specify --network or --subnet.
     """.format(_JoinWithOr(network_applicable_ne_types))
   parser.add_argument('--network', help=help_text)
 
@@ -212,9 +217,15 @@ def _AddSubnet(parser, support_global_scope, support_hybrid_neg,
       subnet_applicable_types.append('`gce-vm-primary-ip`')
     if support_vm_ip_neg:
       subnet_applicable_types.append('`gce-vm-ip`')
+    if support_l7psc_neg:
+      subnet_applicable_types.append('`private-service-connect`')
     help_text += """\
 
       This is only supported for NEGs with endpoint type {0}.
+      For Private Service Connect NEGs, you can optionally specify --network and
+      --subnet if --psc-target-service points to a published service. If
+      --psc-target-service points to the regional service endpoint of a Google
+      API, do not specify --network or --subnet.
     """.format(_JoinWithOr(subnet_applicable_types))
   parser.add_argument('--subnet', help=help_text)
 

@@ -18,109 +18,74 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import base64
 import contextlib
-import json
-import re
 
 from googlecloudsdk.api_lib.util import apis
-from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files
 from six import text_type
 from six.moves.urllib import parse
 
-INVALID_OVERWATCH_PATH_MSG = ('The Overwatch Path should be of the form '
-                              'organizations/<org_id>/locations/<location_id>'
-                              '/overwatches/<overwatch_id> found {}.')
-INVALID_JSON_MESSAGE = 'Invalid JSON at {}.'
 INVALID_LOCATION_MESSAGE = ('The location in overwatch path "{}" does not '
                             'match the default location parameter "{}" '
                             'specified at scc/slz-overwatch-location.')
 
 
-def base_64_encoding(file_path=None, open_=None):
-  """Encodes content of a blueprint plan JSON to Base64.
+def base_64_encoding(file_path=None, blueprint_plan_=None):
+  """Encodes content of a blueprint plan to base64 bytes.
 
   Args:
     file_path: The path of the blueprint plan file to be encoded.
-    open_: The filestream of the blueprint json file.
+    blueprint_plan_: The string of the blueprint json file.
 
   Returns:
-    Base64 encoded message.
+    bytes of the message.
   """
-  if not open_:
-    open_ = files.ReadFileContents(file_path)
-  try:
-    blueprint_plan = json.load(open_)
-  except ValueError:
-    raise exceptions.BadFileException(INVALID_JSON_MESSAGE.format(file_path))
-  encoded_string = base64.standard_b64encode(
-      json.dumps(blueprint_plan).encode('utf-8'))
-  return encoded_string.decode('utf-8')
-
-
-def parse_overwatch_path(path):
-  """Verifies and Parses overwatch path.
-
-  Args:
-    path: The overwatch path.
-
-  Returns:
-    org_id: The organization ID.
-    region: The location ID.
-    overwatch_id: The overwatch ID.
-
-  Raises:
-    InvalidArgumentException if overwatch path is not correct.
-  """
-  overwatch_pattern = ('^organizations/[0-9]+/locations/[-_a-zA-Z0-9]+'
-                       '/overwatches/[-_a-zA-Z0-9]+$')
-  if path and re.match(overwatch_pattern, path):
-    _, org_id, _, region, _, overwatch_id = path.strip().split('/')
-    return org_id, region, overwatch_id
-  else:
-    raise exceptions.InvalidArgumentException(
-        'OVERWATCH', INVALID_OVERWATCH_PATH_MSG.format(path))
+  if blueprint_plan_ is None:
+    blueprint_plan_ = files.ReadFileContents(file_path)
+  return blueprint_plan_.encode()
 
 
 def derive_regional_endpoint(endpoint, region):
+  """Parse the endpoint and add region to it.
+
+  Args:
+    endpoint: The url endpoint of the API.
+    region: The region for which the endpoint is required.
+
+  Returns:
+    regional endpoint for the provided region.
+  """
   scheme, netloc, path, params, query, fragment = [
       text_type(el) for el in parse.urlparse(endpoint)
   ]
-  netloc = '{}-{}'.format(region, netloc)
+  # Value of netloc obtained by unparsing url could be,
+  # 1. securedlandingzone.googleapis.com
+  # 2. {env}-securedlandingzone.googleapis.com
+  # For regional endpoint the respective values should be,
+  # 1. {region}-securedlandingzone.googleapis.com
+  # 2. {env}-{region}-securedlandingzone.googleapis.com
+  elem = netloc.split('-')
+  elem.insert(len(elem) - 1, region)
+  netloc = '-'.join(elem)
   return parse.urlunparse((scheme, netloc, path, params, query, fragment))
 
 
 @contextlib.contextmanager
-def override_endpoint(path=None):
-  """Check for region and set api_endpoint_overrides property.
+def override_endpoint(location):
+  """Set api_endpoint_overrides property to use the regional endpoint.
 
   Args:
-    path: The overwatch path. (optional)
+    location: The location used for the regional endpoint. (optional)
 
   Yields:
     None
-
-  Raises:
-    InvalidArgumentException: Location in overwatch path does not match the
-    default location.
   """
-  # Check default value of location from scc/slz-overwatch-location
-  default_location = properties.VALUES.scc.slz_overwatch_location.Get()
-  if path and default_location != 'global':
-    _, overwatch_location, _ = parse_overwatch_path(path)
-    if overwatch_location != default_location:
-      raise exceptions.InvalidArgumentException(
-          'OVERWATCH',
-          INVALID_LOCATION_MESSAGE.format(overwatch_location, default_location))
-
   old_endpoint = apis.GetEffectiveApiEndpoint('securedlandingzone', 'v1beta')
   try:
-    if default_location != 'global':
+    if location != 'global':
       # Use regional Endpoint
-      regional_endpoint = derive_regional_endpoint(old_endpoint,
-                                                   default_location)
+      regional_endpoint = derive_regional_endpoint(old_endpoint, location)
       properties.VALUES.api_endpoint_overrides.securedlandingzone.Set(
           regional_endpoint)
     yield

@@ -26,8 +26,10 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
+from googlecloudsdk.command_lib.eventarc import flags as eventarc_flags
 from googlecloudsdk.command_lib.util import completers
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
+from googlecloudsdk.command_lib.util.concepts import presentation_specs
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
@@ -392,9 +394,11 @@ def AddRuntimeFlag(parser):
           - `nodejs14`: Node.js 14
           - `nodejs16`: Node.js 16
           - `php74`: PHP 7.4
+          - `php81`: PHP 8.1 (preview)
           - `python37`: Python 3.7
           - `python38`: Python 3.8
           - `python39`: Python 3.9
+          - `python310`: Python 3.10 (preview)
           - `go111`: Go 1.11
           - `go113`: Go 1.13
           - `go116`: Go 1.16
@@ -545,7 +549,24 @@ def AddTriggerFlagGroup(parser, track=None):
       endpoint will trigger function execution. Supported HTTP request
       types are: POST, PUT, GET, DELETE, and OPTIONS.""")
   if track in gen2_tracks:
-    trigger_group.add_argument(
+    eventarc_trigger_group = trigger_group.add_argument_group()
+    concept_parsers.ConceptParser(
+        [
+            presentation_specs.ResourcePresentationSpec(
+                '--trigger-channel',
+                eventarc_flags.ChannelResourceSpec(),
+                """\
+                The channel to use in the trigger for third-party event sources.
+                This is only relevant when `--gen2` is provided.""",
+                flag_name_overrides={'location': ''},
+                group=eventarc_trigger_group,
+                hidden=True
+            )
+        ],
+        command_level_fallthroughs={
+            '--trigger-channel.location': ['--trigger-location'],
+        }).AddToParser(parser)
+    eventarc_trigger_group.add_argument(
         '--trigger-event-filters',
         type=arg_parsers.ArgDict(),
         action=arg_parsers.UpdateAction,

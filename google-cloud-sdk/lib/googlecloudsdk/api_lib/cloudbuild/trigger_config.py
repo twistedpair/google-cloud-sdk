@@ -312,7 +312,8 @@ def ParseBuildConfigArgs(trigger,
   if args.inline_config:
     trigger.build = cloudbuild_util.LoadMessageFromPath(args.inline_config,
                                                         messages.Build,
-                                                        'inline build config')
+                                                        'inline build config',
+                                                        ['substitutions'])
     trigger.substitutions = cloudbuild_util.EncodeTriggerSubstitutions(
         args.substitutions, messages)
 

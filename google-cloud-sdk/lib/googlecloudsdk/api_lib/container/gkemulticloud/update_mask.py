@@ -18,6 +18,55 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+AWS_CLUSTER_ARGS_TO_UPDATE_MASKS = {
+    'cluster_version':
+        'control_plane.version',
+    'instance_type':
+        'control_plane.instance_type',
+    'config_encryption_kms_key_arn':
+        'control_plane.config_encryption.kms_key_arn',
+    'clear_security_group_ids':
+        'control_plane.security_group_ids',
+    'security_group_ids':
+        'control_plane.security_group_ids',
+    'root_volume_size':
+        'control_plane.root_volume.size_gib',
+    'root_volume_type':
+        'control_plane.root_volume.volume_type',
+    'root_volume_iops':
+        'control_plane.root_volume.iops',
+    'root_volume_kms_key_arn':
+        'control_plane.root_volume.kms_key_arn',
+    'role_arn':
+        'control_plane.aws_services_authentication.role_arn',
+    'role_session_name':
+        'control_plane.aws_services_authentication.role_session_name',
+    'admin_users':
+        'authorization.admin_users',
+    'clear_proxy_config':
+        'control_plane.proxy_config',
+    'proxy_secret_arn':
+        'control_plane.proxy_config.secret_arn',
+    'proxy_secret_version_id':
+        'control_plane.proxy_config.secret_version'
+}
+
+AWS_NODEPOOL_ARGS_TO_UPDATE_MASKS = {
+    'node_version': 'version',
+    'min_nodes': 'autoscaling.minNodeCount',
+    'max_nodes': 'autoscaling.maxNodeCount',
+    'clear_security_group_ids': 'config.security_group_ids',
+    'security_group_ids': 'config.security_group_ids',
+    'config_encryption_kms_key_arn': 'config.config_encryption.kms_key_arn',
+    'root_volume_size': 'config.root_volume.size_gib',
+    'root_volume_type': 'config.root_volume.volume_type',
+    'root_volume_iops': 'config.root_volume.iops',
+    'root_volume_kms_key_arn': 'config.root_volume.kms_key_arn',
+    'clear_proxy_config': 'config.proxy_config',
+    'proxy_secret_arn': 'config.proxy_config.secret_arn',
+    'proxy_secret_version_id': 'config.proxy_config.secret_version'
+}
+
 AZURE_CLUSTER_ARGS_TO_UPDATE_MASKS = {
     'client': 'azure_client',
     'cluster_version': 'control_plane.version',

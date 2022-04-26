@@ -134,6 +134,16 @@ def ArgsForClusterRef(parser,
       '--worker-machine-type',
       help='The type of machine to use for workers. Defaults to '
       'server-specified.')
+  parser.add_argument(
+      '--driver-pool-size',
+      type=int,
+      hidden=True,
+      help='The size of the driver pool in the cluster.')
+  parser.add_argument(
+      '--driver-pool-machine-type',
+      hidden=True,
+      help='The type of machine to use for the driver pools nodes. Defaults to '
+      'server-specified.')
   image_parser = parser.add_mutually_exclusive_group()
   # TODO(b/73291743): Add external doc link to --image
   image_parser.add_argument(
@@ -204,6 +214,14 @@ def ArgsForClusterRef(parser,
       a cluster.
       """)
   parser.add_argument(
+      '--num-driver-pool-local-ssds',
+      type=int,
+      hidden=True,
+      help="""\
+      The number of local SSDs to attach to each driver pool node in
+      a cluster.
+      """)
+  parser.add_argument(
       '--master-local-ssd-interface',
       help="""\
       Interface to use to attach local SSDs to master node(s) in a cluster.
@@ -218,6 +236,12 @@ def ArgsForClusterRef(parser,
       help="""\
       Interface to use to attach local SSDs to each secondary worker
       in a cluster.
+      """)
+  parser.add_argument(
+      '--driver-pool-local-ssd-interface',
+      hidden=True,
+      help="""\
+      Interface to use to attach local SSDs to driver pool node(s) in a cluster.
       """)
   parser.add_argument(
       '--initialization-actions',
@@ -362,6 +386,10 @@ If you want to enable all scopes use the 'cloud-platform' scope.
                 'Use the `--secondary-worker-boot-disk-type` flag instead.')))
   secondary_worker_boot_disk_type.add_argument(
       '--secondary-worker-boot-disk-type', help=boot_disk_type_detailed_help)
+  parser.add_argument(
+      '--driver-pool-boot-disk-type',
+      hidden=True,
+      help=boot_disk_type_detailed_help)
   parser.add_argument(
       '--enable-component-gateway',
       action='store_true',
@@ -593,6 +621,16 @@ def _AddAcceleratorArgs(parser):
           warn=('The `--preemptible-worker-accelerator` flag is deprecated. '
                 'Use the `--secondary-worker-accelerator` flag instead.')))
 
+  parser.add_argument(
+      '--driver-pool-accelerator',
+      type=arg_parsers.ArgDict(spec={
+          'type': str,
+          'count': int,
+      }),
+      hidden=True,
+      metavar='type=TYPE,[count=COUNT]',
+      help=accelerator_help_fmt.format(instance_type='driver-pool'))
+
 
 def _AddDiskArgs(parser):
   """Adds disk related args to the parser."""
@@ -609,6 +647,11 @@ def _AddDiskArgs(parser):
       help=boot_disk_size_detailed_help)
   parser.add_argument(
       '--worker-boot-disk-size',
+      type=arg_parsers.BinarySize(lower_bound='10GB'),
+      help=boot_disk_size_detailed_help)
+  parser.add_argument(
+      '--driver-pool-boot-disk-size',
+      hidden=True,
       type=arg_parsers.BinarySize(lower_bound='10GB'),
       help=boot_disk_size_detailed_help)
   secondary_worker_boot_disk_size = parser.add_argument_group(mutex=True)
@@ -681,6 +724,11 @@ def _AddDiskArgsDeprecated(parser):
       '--secondary-worker-boot-disk-size',
       type=arg_parsers.BinarySize(lower_bound='10GB'),
       help=boot_disk_size_detailed_help)
+  parser.add_argument(
+      '--driver-pool-boot-disk-size',
+      hidden=True,
+      type=arg_parsers.BinarySize(lower_bound='10GB'),
+      help=boot_disk_size_detailed_help)
 
 
 # DEPRECATED Beta release track should no longer be used, Google Cloud
@@ -716,21 +764,39 @@ def GetClusterConfig(args,
   master_accelerator_type = None
   worker_accelerator_type = None
   secondary_worker_accelerator_type = None
+  driver_pool_accelerator_type = None
 
   if args.master_accelerator:
-    master_accelerator_type = args.master_accelerator['type']
+    if 'type' in args.master_accelerator.keys():
+      master_accelerator_type = args.master_accelerator['type']
+    else:
+      raise exceptions.ArgumentError('master-accelerator missing type!')
     master_accelerator_count = args.master_accelerator.get('count', 1)
 
   if args.worker_accelerator:
-    worker_accelerator_type = args.worker_accelerator['type']
+    if 'type' in args.worker_accelerator.keys():
+      worker_accelerator_type = args.worker_accelerator['type']
+    else:
+      raise exceptions.ArgumentError('worker-accelerator missing type!')
     worker_accelerator_count = args.worker_accelerator.get('count', 1)
 
   secondary_worker_accelerator = _FirstNonNone(
       args.secondary_worker_accelerator, args.preemptible_worker_accelerator)
   if secondary_worker_accelerator:
-    secondary_worker_accelerator_type = secondary_worker_accelerator['type']
+    if 'type' in secondary_worker_accelerator.keys():
+      secondary_worker_accelerator_type = secondary_worker_accelerator['type']
+    else:
+      raise exceptions.ArgumentError(
+          'secondary-worker-accelerator missing type!')
     secondary_worker_accelerator_count = secondary_worker_accelerator.get(
         'count', 1)
+
+  if args.driver_pool_accelerator:
+    if 'type' in args.driver_pool_accelerator.keys():
+      driver_pool_accelerator_type = args.driver_pool_accelerator['type']
+    else:
+      raise exceptions.ArgumentError('driver-pool-accelerator missing type!')
+    driver_pool_accelerator_count = args.driver_pool_accelerator.get('count', 1)
 
   # Resolve non-zonal GCE resources
   # We will let the server resolve short names of zonal resources because
@@ -781,6 +847,11 @@ def GetClusterConfig(args,
       api_utils.BytesToGb(
           _FirstNonNone(args.secondary_worker_boot_disk_size,
                         args.preemptible_worker_boot_disk_size)))
+
+  driver_pool_boot_disk_size_gb = None
+  if args.driver_pool_boot_disk_size:
+    driver_pool_boot_disk_size_gb = (
+        api_utils.BytesToGb(args.driver_pool_boot_disk_size))
 
   if args.single_node or args.num_workers == 0:
     # Explicitly specifying --num-workers=0 gives you a single node cluster,
@@ -843,6 +914,12 @@ def GetClusterConfig(args,
         dataproc.messages.AcceleratorConfig(
             acceleratorTypeUri=secondary_worker_accelerator_type,
             acceleratorCount=secondary_worker_accelerator_count))
+  driver_pool_accelerators = []
+  if driver_pool_accelerator_type:
+    driver_pool_accelerators.append(
+        dataproc.messages.AcceleratorConfig(
+            acceleratorTypeUri=driver_pool_accelerator_type,
+            acceleratorCount=driver_pool_accelerator_count))
 
   cluster_config = dataproc.messages.ClusterConfig(
       configBucket=args.bucket,
@@ -998,6 +1075,33 @@ def GetClusterConfig(args,
             minCpuPlatform=args.worker_min_cpu_platform,
             preemptibility=_GetInstanceGroupPreemptibility(
                 dataproc, args.secondary_worker_type)))
+
+  if (args.driver_pool_size is not None or
+      args.driver_pool_machine_type is not None or
+      args.driver_pool_boot_disk_type is not None or
+      driver_pool_boot_disk_size_gb is not None or
+      args.num_driver_pool_local_ssds is not None or
+      args.driver_pool_local_ssd_interface is not None or
+      args.driver_pool_min_cpu_platform is not None):
+    cluster_config.auxiliaryNodePoolConfigs = []
+    cluster_config.auxiliaryNodePoolConfigs.append(
+        dataproc.messages.NodePoolConfig(
+            roles=[
+                dataproc.messages.NodePoolConfig.RolesValueListEntryValuesEnum
+                .DRIVER
+            ],
+            nodePoolId='driver-pool',
+            nodePoolConfig=dataproc.messages.InstanceGroupConfig(
+                numInstances=args.driver_pool_size,
+                imageUri=image_ref and image_ref.SelfLink(),
+                machineTypeUri=args.driver_pool_machine_type,
+                accelerators=driver_pool_accelerators,
+                diskConfig=GetDiskConfig(dataproc,
+                                         args.driver_pool_boot_disk_type,
+                                         driver_pool_boot_disk_size_gb,
+                                         args.num_driver_pool_local_ssds,
+                                         args.driver_pool_local_ssd_interface),
+                minCpuPlatform=args.driver_pool_min_cpu_platform)))
 
   if args.enable_component_gateway:
     cluster_config.endpointConfig = dataproc.messages.EndpointConfig(

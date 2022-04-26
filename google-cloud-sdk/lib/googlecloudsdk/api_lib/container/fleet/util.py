@@ -98,8 +98,7 @@ def FleetResourceName(project,
           'fleetsId': fleet,
       },
       collection='gkehub.projects.locations.fleets',
-      api_version=VERSION_MAP[release_track]
-  ).RelativeName()
+      api_version=VERSION_MAP[release_track]).RelativeName()
 
 
 def FleetParentName(project,
@@ -113,9 +112,38 @@ def FleetParentName(project,
           'locationsId': location,
       },
       collection='gkehub.projects.locations',
-      api_version=VERSION_MAP[release_track]
-  ).RelativeName()
+      api_version=VERSION_MAP[release_track]).RelativeName()
 
 
 def FleetOrgParentName(organization, location='global'):
   return 'organizations/{0}/locations/{1}'.format(organization, location)
+
+
+def NamespaceParentName(project,
+                        location='global',
+                        release_track=base.ReleaseTrack.ALPHA):
+  # See command_lib/container/fleet/resources.yaml
+  return resources.REGISTRY.Parse(
+      line=None,
+      params={
+          'projectsId': project,
+          'locationsId': location,
+      },
+      collection='gkehub.projects.locations',
+      api_version=VERSION_MAP[release_track]).RelativeName()
+
+
+def NamespaceResourceName(project,
+                          name,
+                          location='global',
+                          release_track=base.ReleaseTrack.ALPHA):
+  # See command_lib/container/fleet/resources.yaml
+  return resources.REGISTRY.Parse(
+      line=None,
+      params={
+          'projectsId': project,
+          'locationsId': location,
+          'namespacesId': name,
+      },
+      collection='gkehub.projects.locations.namespaces',
+      api_version=VERSION_MAP[release_track]).RelativeName()

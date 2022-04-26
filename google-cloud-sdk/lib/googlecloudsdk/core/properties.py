@@ -2823,12 +2823,6 @@ class _SectionScc(_Section):
     self.parent = self._Add(
         'parent',
         help_text='Default parent `gcloud` should use for scc surface.')
-    self.slz_overwatch_location = self._Add(
-        'location',
-        default='global',
-        help_text=(
-            'Default location `gcloud` should use for scc slz-overwatch surface.'
-        ))
 
 
 class _SectionSecrets(_Section):

@@ -1528,6 +1528,8 @@ def GetJobConfigurationChanges(args):
   if FlagIsExplicitlySet(args, 'tasks'):
     changes.append(
         config_changes.ExecutionTemplateSpecChange('taskCount', args.tasks))
+  if FlagIsExplicitlySet(args, 'image'):
+    changes.append(config_changes.JobNonceChange())
   if FlagIsExplicitlySet(args, 'max_retries'):
     changes.append(config_changes.JobMaxRetriesChange(args.max_retries))
   if FlagIsExplicitlySet(args, 'task_timeout'):

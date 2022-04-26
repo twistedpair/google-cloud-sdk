@@ -105,7 +105,7 @@ metadata:
 rules:
 - apiGroups:
   - '*'
-  resources: ["clusterrolebindings","clusterroles","clusters","configmaps","customresourcedefinitions","cronjobs","daemonsets","deployments","endpoints","jobs","machinedeployments","machinesets","machines","mutatingwebhookconfigurations","namespaces","nodes","onpremnodepools","onpremuserclusters","pods","pods/log","persistentvolumeclaims","persistentvolumes","replicasets","services","statefulsets","validatingwebhookconfigurations"]
+  resources: ["apiservices", "clusterrolebindings","clusterroles","clusters","configmaps","customresourcedefinitions","cronjobs","daemonsets","deployments","endpoints", "events", "jobs","machinedeployments","machinesets","machines","mutatingwebhookconfigurations","namespaces","nodes","onpremnodepools","onpremuserclusters","pods","pods/log","persistentvolumeclaims","persistentvolumes","replicasets","services","statefulsets","validatingwebhookconfigurations"]
   verbs: ["get", "list", "watch"]
 - nonResourceURLs:
   - '*'

@@ -19,32 +19,80 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import base
+from googlecloudsdk.calliope.concepts import concepts
+from googlecloudsdk.command_lib.util.concepts import concept_parsers
 
 
-def get_organization_id_flag():
-  return base.Argument(
-      'ORGANIZATION',
-      help='The organization ID in the format organizations/<ORG_ID>')
+def organization_attribute_config():
+  return concepts.ResourceParameterAttributeConfig(
+      name='organization', help_text='Organization ID of the {resource}.')
+
+
+def location_attribute_config():
+  return concepts.ResourceParameterAttributeConfig(
+      name='location', help_text='Location of the {resource}.')
+
+
+def overwatch_attribute_config():
+  return concepts.ResourceParameterAttributeConfig(
+      name='overwatch', help_text='Overwatch ID of the {resource}.')
+
+
+def operation_attribute_config():
+  return concepts.ResourceParameterAttributeConfig(
+      name='operation', help_text='Operation ID of the {resource}.')
+
+
+def get_parent_resource_specs():
+  return concepts.ResourceSpec(
+      'securedlandingzone.organizations.locations',
+      resource_name='parent',
+      organizationsId=organization_attribute_config(),
+      locationsId=location_attribute_config())
+
+
+def get_overwatch_resource_specs():
+  return concepts.ResourceSpec(
+      'securedlandingzone.organizations.locations.overwatches',
+      resource_name='overwatch',
+      organizationsId=organization_attribute_config(),
+      locationsId=location_attribute_config(),
+      overwatchesId=overwatch_attribute_config())
+
+
+def get_operation_resource_specs():
+  return concepts.ResourceSpec(
+      'securedlandingzone.organizations.locations.operations',
+      resource_name='operation',
+      organizationsId=organization_attribute_config(),
+      locationsId=location_attribute_config(),
+      operationsId=operation_attribute_config())
+
+
+def add_parent_flag(parser):
+  concept_parsers.ConceptParser.ForResource(
+      'PARENT',
+      get_parent_resource_specs(),
+      'Parent of the overwatch instances.',
+      required=True).AddToParser(parser)
 
 
 def get_size_flag():
   return base.Argument(
-      '--size', required=False, help='The page size of overwatch list.')
+      '--size', required=False, help='Page size of overwatch list.')
 
 
 def get_page_token_flag():
   return base.Argument(
-      '--page-token',
-      required=False,
-      help='The page token to retrieve next page.')
+      '--page-token', required=False, help='Page token to retrieve next page.')
 
 
-def get_overwatch_path_flag():
-  return base.Argument(
+def add_overwatch_path_flag(parser):
+  concept_parsers.ConceptParser.ForResource(
       'OVERWATCH',
-      help="""The overwatch path specified in the resource format
-           organizations/<ORG_ID>/locations/<REGION>/overwatches/<OVERWATCH_ID>.
-            """)
+      get_overwatch_resource_specs(),
+      'Name of the overwatch instance.',
+      required=True).AddToParser(parser)
 
 
 def get_blueprint_plan_flag():
@@ -60,8 +108,9 @@ def get_update_mask_flag():
       help='Update mask providing the fields that are required to be updated.')
 
 
-def get_operation_flag():
-  return base.Argument(
+def add_operation_flag(parser):
+  concept_parsers.ConceptParser.ForResource(
       'OPERATION',
-      help="""Operation ID of the long running operation to get status. Format
-       operations/<OPERATION_ID>""")
+      get_operation_resource_specs(),
+      'Name of the longrunning operation.',
+      required=True).AddToParser(parser)

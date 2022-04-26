@@ -11,8 +11,8 @@ class SecuredlandingzoneV1beta(base_api.BaseApiClient):
   """Generated client library for service securedlandingzone version v1beta."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = 'https://staging-securedlandingzone.sandbox.googleapis.com/'
-  MTLS_BASE_URL = 'https://staging-securedlandingzone.mtls.sandbox.googleapis.com/'
+  BASE_URL = 'https://securedlandingzone.googleapis.com/'
+  MTLS_BASE_URL = 'https://securedlandingzone.mtls.googleapis.com/'
 
   _PACKAGE = 'securedlandingzone'
   _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']

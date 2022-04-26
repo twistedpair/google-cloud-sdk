@@ -23,6 +23,8 @@ from googlecloudsdk.api_lib.run import k8s_object
 
 AUTHOR_ANNOTATION = k8s_object.RUN_GROUP + '/creator'
 
+NONCE_LABEL = k8s_object.CLIENT_GROUP + '/nonce'
+
 
 class Job(k8s_object.KubernetesObject):
   """Wraps a Cloud Run job message, making fields more convenient."""

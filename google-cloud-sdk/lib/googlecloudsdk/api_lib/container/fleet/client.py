@@ -230,8 +230,7 @@ class FleetClient(object):
       apitools.base.py.HttpError: if the request returns an HTTP error
     """
     fleet = self.messages.Fleet(
-        displayName=displayname,
-        name=util.FleetResourceName(project))
+        displayName=displayname, name=util.FleetResourceName(project))
     req = self.messages.GkehubProjectsLocationsFleetsCreateRequest(
         fleet=fleet, parent=util.FleetParentName(project))
     return self.client.projects_locations_fleets.Create(req)
@@ -270,9 +269,7 @@ class FleetClient(object):
     # Fields to be updated (currently only display_name)
     mask = 'display_name'
     req = self.messages.GkehubProjectsLocationsFleetsPatchRequest(
-        fleet=fleet,
-        name=util.FleetResourceName(project),
-        updateMask=mask)
+        fleet=fleet, name=util.FleetResourceName(project), updateMask=mask)
     return self.client.projects_locations_fleets.Patch(req)
 
   def ListFleets(self, project, organization):
@@ -294,10 +291,47 @@ class FleetClient(object):
       parent = util.FleetParentName(project)
     # Misleading name, parent is usually org, not project
     req = self.messages.GkehubProjectsLocationsFleetsListRequest(
-        pageToken='',
-        parent=parent)
+        pageToken='', parent=parent)
     return list_pager.YieldFromList(
-        self.client.projects_locations_fleets, req, field='fleets',
+        self.client.projects_locations_fleets,
+        req,
+        field='fleets',
         batch_size_attribute=None)
 
+  def GetNamespace(self, project, name):
+    """Gets a namespace resource from the GKEHub API.
 
+    Args:
+      project: the project containing the namespace.
+      name: the namespace name.
+
+    Returns:
+      A namespace resource
+
+    Raises:
+      apitools.base.py.HttpError: if the request returns an HTTP error
+    """
+    req = self.messages.GkehubProjectsLocationsNamespacesGetRequest(
+        name=util.NamespaceResourceName(project, name))
+    return self.client.projects_locations_namespaces.Get(req)
+
+  def CreateNamespace(self, name, project):
+    """Creates a namespace resource from the GKEHub API.
+
+    Args:
+      name: the namespace name.
+      project: the project containing the namespace.
+
+    Returns:
+      A namespace resource
+
+    Raises:
+      apitools.base.py.HttpError: if the request returns an HTTP error
+    """
+    namespace = self.messages.Namespace(
+        name=util.NamespaceResourceName(project, name))
+    req = self.messages.GkehubProjectsLocationsNamespacesCreateRequest(
+        namespace=namespace,
+        namespaceId=name,
+        parent=util.NamespaceParentName(project))
+    return self.client.projects_locations_namespaces.Create(req)

@@ -32,6 +32,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import re
+
 from googlecloudsdk.calliope import arg_parsers
 
 
@@ -272,3 +274,109 @@ def AddPassword(parser):
       type=str,
       help=('Initial postgres user password to set up during cluster creation.')
       )
+
+
+def _GetDayOfWeekArgList(alloydb_messages):
+  """Returns an ArgList accepting days of the week."""
+  day_of_week_enum = (
+      alloydb_messages.WeeklySchedule.DaysOfWeekValueListEntryValuesEnum)
+  visible_choices = list(day_of_week_enum.names())
+  visible_choices.remove('DAY_OF_WEEK_UNSPECIFIED')
+  choices = [day_of_week_enum.lookup_by_name(c) for c in visible_choices]
+  visible_choices_set = set(visible_choices)
+  def _ParseDayOfWeek(value):
+    value_upper = value.upper()
+    if value_upper not in visible_choices_set:
+      raise arg_parsers.ArgumentTypeError(
+          '{value} must be one of [{choices}]'.format(
+              value=value, choices=', '.join(visible_choices)))
+    return day_of_week_enum.lookup_by_name(value_upper)
+  return arg_parsers.ArgList(
+      element_type=_ParseDayOfWeek,
+      choices=choices,
+      visible_choices=visible_choices)
+
+
+def _GetTimeOfDayArgList(alloydb_messages):
+  """Returns an ArgList accepting start times of the form `HH:00`."""
+  def _ParseTimeOfDay(value):
+    m = re.match(r'^(\d?\d):00$', value)
+    if m:
+      hour = int(m.group(1))
+      if hour <= 23 and hour >= 0:
+        return alloydb_messages.GoogleTypeTimeOfDay(hours=hour)
+    raise arg_parsers.ArgumentTypeError(
+        'Failed to parse time of day: {0}, expected format: HH:00.'.format(
+            value))
+  return arg_parsers.ArgList(element_type=_ParseTimeOfDay)
+
+
+def AddAutomatedBackupFlags(parser, alloydb_messages, update=False):
+  """Adds automated backup flags.
+
+  Args:
+    parser: argparse.ArgumentParser: Parser object for command line inputs.
+    alloydb_messages: Message module.
+    update: If True, adds update specific flags.
+  """
+  group = parser.add_group(mutex=True, help='Automated backup policy.')
+
+  policy_group = group.add_group(help='Enable automated backup policy.')
+  policy_group.add_argument(
+      '--automated-backup-days-of-week',
+      metavar='DAYS_OF_WEEK',
+      required=True,
+      type=_GetDayOfWeekArgList(alloydb_messages),
+      help=('Comma-separated list of days of the week to perform a backup. '
+            'At least one day of the week must be provided. '
+            '(e.g., --automated-backup-days-of-week=MONDAY,WEDNESDAY,SUNDAY)'))
+
+  policy_group.add_argument(
+      '--automated-backup-start-times',
+      metavar='START_TIMES',
+      required=True,
+      type=_GetTimeOfDayArgList(alloydb_messages),
+      help=('Comma-separated list of times during the day to start a backup. '
+            'At least one start time must be provided. '
+            'The start times are assumed to be in UTC and required to be '
+            'an exact hour in the format HH:00. (e.g., '
+            '`--automated-backup-start-times=01:00,13:00`)'))
+
+  retention_group = policy_group.add_group(
+      mutex=True,
+      help=('Retention policy. If no retention policy is provided, '
+            'all automated backups will be retained.'))
+  retention_group.add_argument(
+      '--automated-backup-retention-period',
+      metavar='RETENTION_PERIOD',
+      type=arg_parsers.Duration(parsed_unit='s'),
+      help=('Retention period of the backup relative to creation time.  See '
+            '`$ gcloud topic datetimes` for information on duration formats.'))
+  retention_group.add_argument(
+      '--automated-backup-retention-count',
+      metavar='RETENTION_COUNT',
+      type=int,
+      help=('Number of most recent successful backups retained.'))
+
+  policy_group.add_argument(
+      '--automated-backup-window',
+      metavar='TIMEOUT_PERIOD',
+      type=arg_parsers.Duration(lower_bound='5m', parsed_unit='s'),
+      help=('The length of the time window beginning at start time during '
+            'which a backup can be taken. If a backup does not succeed within '
+            'this time window, it will be canceled and considered failed. '
+            'The backup window must be at least 5 minutes long. '
+            'There is no upper bound on the window. If not set, '
+            'it will default to 1 hour.'))
+
+  if update:
+    group.add_argument(
+        '--clear-automated-backup',
+        action='store_true',
+        help=('Clears the automated backup policy on the cluster. '
+              'The default automated backup policy will be used.'))
+
+  group.add_argument(
+      '--disable-automated-backup',
+      action='store_true',
+      help='Disables automated backups on the cluster.')

@@ -26,6 +26,10 @@ MAX_LRO_POLL_INTERVAL_MS = 10000
 # control flow in which we poll indefinitely.
 MAX_LRO_WAIT_MS = 43200000  # 12 hours
 
+AWS = 'AWS'
+
+AZURE = 'Azure'
+
 LRO_KIND = 'Operation'
 
 AZURE_CLIENT_KIND = 'Azure Client'
@@ -41,3 +45,46 @@ AWS_NODEPOOL_KIND = 'AWS Node Pool'
 SYSTEM = 'SYSTEM'
 
 WORKLOAD = 'WORKLOAD'
+
+AWS_CLUSTERS_FORMAT = """\
+  table(
+    name.basename(),
+    awsRegion,
+    controlPlane.version:label=CONTROL_PLANE_VERSION,
+    controlPlane.instanceType,
+    state)"""
+
+AWS_NODEPOOLS_FORMAT = """\
+  table(
+    name.basename(),
+    version:label=NODE_VERSION,
+    config.instanceType,
+    autoscaling.minNodeCount.yesno(no='0'):label=MIN_NODES,
+    autoscaling.maxNodeCount:label=MAX_NODES,
+    state)"""
+
+AZURE_CLUSTERS_FORMAT = """
+  table(
+    name.segment(-1):label=NAME,
+    azureRegion,
+    controlPlane.version:label=CONTROL_PLANE_VERSION,
+    endpoint:label=CONTROL_PLANE_IP,
+    controlPlane.vmSize,
+    state)
+"""
+
+AZURE_CLIENT_FORMAT = """
+  table(
+    name.segment(-1),
+    tenantId,
+    applicationId)
+"""
+
+AZURE_NODE_POOL_FORMAT = """
+  table(name.segment(-1),
+    version:label=NODE_VERSION,
+    config.vmSize,
+    autoscaling.minNodeCount.yesno(no='0'):label=MIN_NODES,
+    autoscaling.maxNodeCount:label=MAX_NODES,
+    state)
+"""

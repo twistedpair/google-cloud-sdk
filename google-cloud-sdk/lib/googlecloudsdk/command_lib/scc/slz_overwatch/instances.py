@@ -45,4 +45,4 @@ def get_organization_service():
 # Get the operations service object fropm the client.
 def get_operations_service():
   client = get_overwatch_client()
-  return client.organizations_operations
+  return client.organizations_locations_operations

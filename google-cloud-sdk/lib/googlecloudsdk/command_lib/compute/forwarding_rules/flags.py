@@ -544,6 +544,21 @@ def AddAllowPscGlobalAccess(parser):
       """)
 
 
+def AddDisableAutomateDnsZone(parser):
+  """Adds disable automate dns zone flag to the argparse."""
+  parser.add_argument(
+      '--disable-automate-dns-zone',
+      action='store_true',
+      default=None,
+      help="""\
+      If specified, then a DNS zone will not be auto-generated for this Private
+      Service Connect forwarding rule. This can only be specified if the
+      forwarding rule's target is a service attachment
+      (`--target-service-attachment=SERVICE_ATTACHMENT`) or Google APIs bundle
+      (`--target-google-apis-bundle=API_BUNDLE`)
+      """)
+
+
 def AddIPProtocols(parser, support_all_protocol, support_l3_default):
   """Adds IP protocols flag, with values available in the given version.
 

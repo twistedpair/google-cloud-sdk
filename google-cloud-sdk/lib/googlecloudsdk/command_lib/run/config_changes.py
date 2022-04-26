@@ -23,6 +23,7 @@ import abc
 import copy
 
 from googlecloudsdk.api_lib.run import container_resource
+from googlecloudsdk.api_lib.run import job
 from googlecloudsdk.api_lib.run import k8s_object
 from googlecloudsdk.api_lib.run import revision
 from googlecloudsdk.api_lib.run import service
@@ -33,7 +34,6 @@ from googlecloudsdk.command_lib.run import platforms
 from googlecloudsdk.command_lib.run import secrets_mapping
 from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.command_lib.util.args import repeated
-
 import six
 
 
@@ -113,6 +113,20 @@ class LabelChanges(ConfigChanger):
             del resource.template.labels[label_to_remove]
         if nonce:
           resource.template.labels[revision.NONCE_LABEL] = nonce
+    return resource
+
+
+class JobNonceChange(ConfigChanger):
+  """Adds a new nonce to the job template, for forcing an image pull."""
+
+  def __init__(self):
+    super(JobNonceChange, self).__init__(adjusts_template=True)
+
+  def Adjust(self, resource):
+    resource.execution_template.labels[
+        job.NONCE_LABEL] = name_generator.GenerateName(
+            3, separator='_')
+
     return resource
 
 

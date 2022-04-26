@@ -256,6 +256,7 @@ class CloudListTask(task.Task):
     iterator = wildcard_iterator.CloudWildcardIterator(
         new_cloud_url,
         all_versions=self._all_versions,
+        error_on_missing_key=False,
         fields_scope=fields_scope)
     return self._recursion_helper(iterator, recursion_level)
 
@@ -351,6 +352,7 @@ class CloudListTask(task.Task):
         wildcard_iterator.CloudWildcardIterator(
             self._cloud_url,
             all_versions=self._all_versions,
+            error_on_missing_key=False,
             fields_scope=fields_scope,
             get_bucket_metadata=self._buckets_flag))
 

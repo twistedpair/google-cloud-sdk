@@ -550,6 +550,7 @@ def _GetEventTriggerForOther(args, messages):
   event_type = None
   pubsub_topic = None
   service_account_email = args.trigger_service_account or args.service_account
+  trigger_location = args.trigger_location
 
   if args.trigger_topic:
     event_type = api_util.EA_PUBSUB_MESSAGE_PUBLISHED
@@ -566,12 +567,17 @@ def _GetEventTriggerForOther(args, messages):
         if attr != 'type'
     ]
 
+  trigger_channel = None
+  if args.trigger_channel:
+    trigger_channel = args.CONCEPTS.trigger_channel.Parse().RelativeName()
+
   return messages.EventTrigger(
       eventFilters=event_filters,
       eventType=event_type,
       pubsubTopic=pubsub_topic,
       serviceAccountEmail=service_account_email,
-      triggerRegion=args.trigger_location)
+      channel=trigger_channel,
+      triggerRegion=trigger_location)
 
 
 def _GetRetry(args, messages, event_trigger):

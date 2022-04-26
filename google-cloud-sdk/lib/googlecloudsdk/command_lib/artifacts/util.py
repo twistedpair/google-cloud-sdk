@@ -311,6 +311,14 @@ def AppendParentInfoToListVersionsAndTagsResponse(response, args):
   return response
 
 
+def AppendParentInfoToListFilesResponse(response, args):
+  """Adds log to clarify parent resources for ListFilesRequest."""
+  log.status.Print(
+      "Listing items under project {}, location {}, repository {}.\n".format(
+          GetProject(args), GetLocation(args), GetRepo(args)))
+  return response
+
+
 def GetGCRRepos(buckets, project):
   """Gets a list of GCR repositories given a list of GCR bucket names."""
   messages = ar_requests.GetMessages()

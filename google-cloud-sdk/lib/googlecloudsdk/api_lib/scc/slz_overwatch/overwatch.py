@@ -19,7 +19,6 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.command_lib.scc.slz_overwatch import instances
-from googlecloudsdk.command_lib.scc.slz_overwatch import util
 
 
 class SLZOverwatchClient(object):
@@ -44,6 +43,8 @@ class SLZOverwatchClient(object):
     Returns:
       response: The response from the List method of API client.
     """
+    if page_size is not None:
+      page_size = int(page_size)
     request = self._messages.SecuredlandingzoneOrganizationsLocationsOverwatchesListRequest(
         parent=parent, pageSize=page_size, pageToken=page_token)
     response = self._overwatch_service.List(request)
@@ -59,8 +60,6 @@ class SLZOverwatchClient(object):
     Returns:
       response: The json response from the Get method of API client.
     """
-    # Using ParseOverwatchPath to validate the overwatch path.
-    _ = util.parse_overwatch_path(overwatch_path)
     request = self._messages.SecuredlandingzoneOrganizationsLocationsOverwatchesGetRequest(
         name=overwatch_path)
     response = self._overwatch_service.Get(request)
@@ -76,37 +75,31 @@ class SLZOverwatchClient(object):
     Returns:
       response: The json response from the Delete method of API client.
     """
-    # Using ParseOverwatchPath to validate the overwatch path.
-    _ = util.parse_overwatch_path(overwatch_path)
     request = self._messages.SecuredlandingzoneOrganizationsLocationsOverwatchesDeleteRequest(
         name=overwatch_path)
     response = self._overwatch_service.Delete(request)
     return response
 
-  def Create(self, overwatch_path, blueprint_plan):
+  def Create(self, overwatch, blueprint_plan):
     """Implements method for the overwatch command `create`.
 
     Args:
-      overwatch_path: The complete overwatch path. Format:
-        organizations/<ORG_ID>/locations/<LOCATION_ID>/overwatches/<OVERWATCH_ID>.
+      overwatch: The overwatch resource.
       blueprint_plan: Base64 encoded blueprint plan message.
 
     Returns:
       response: The json response from the Create method of API client.
     """
-    overwatch = self._messages.GoogleCloudSecuredlandingzoneV1betaOverwatch(
-        name=overwatch_path,
+    req_overwatch = self._messages.GoogleCloudSecuredlandingzoneV1betaOverwatch(
+        name=overwatch.RelativeName(),
         # Any overwatch created by default is set to ACTIVE
         state=self._messages.GoogleCloudSecuredlandingzoneV1betaOverwatch
-        .StateValuesEnum.ACTIVE,
-        blueprint_plan=blueprint_plan)
-    # ParseOverwatchPath also checks if the overwatch path is valid.
-    org_id, loc_id, overwatch_id = util.parse_overwatch_path(overwatch_path)
-    parent = 'organizations/{}/locations/{}'.format(org_id, loc_id)
+        .StateValueValuesEnum.ACTIVE,
+        planData=blueprint_plan)
     request = self._messages.SecuredlandingzoneOrganizationsLocationsOverwatchesCreateRequest(
-        parent=parent,
-        googleCloudSecuredlandingzoneV1betaOverwatch=overwatch,
-        overwatchId=overwatch_id)
+        parent=overwatch.Parent().RelativeName(),
+        googleCloudSecuredlandingzoneV1betaOverwatch=req_overwatch,
+        overwatchId=overwatch.Name())
     response = self._overwatch_service.Create(request)
     return response
 
@@ -120,8 +113,6 @@ class SLZOverwatchClient(object):
     Returns:
       response: The json response from the Suspend method of API client.
     """
-    # Using ParseOverwatchPath to validate the overwatch path.
-    _ = util.parse_overwatch_path(overwatch_path)
     request = self._messages.SecuredlandingzoneOrganizationsLocationsOverwatchesSuspendRequest(
         name=overwatch_path)
     response = self._overwatch_service.Suspend(request)
@@ -137,8 +128,6 @@ class SLZOverwatchClient(object):
     Returns:
       response: The json response from the Activate method of API client.
     """
-    # Using ParseOverwatchPath to validate the overwatch path.
-    _ = util.parse_overwatch_path(overwatch_path)
     request = self._messages.SecuredlandingzoneOrganizationsLocationsOverwatchesActivateRequest(
         name=overwatch_path)
     response = self._overwatch_service.Activate(request)
@@ -158,8 +147,6 @@ class SLZOverwatchClient(object):
     """
     overwatch = self._messages.GoogleCloudSecuredlandingzoneV1betaOverwatch(
         name=overwatch_path, blueprint_plan=blueprint_plan)
-    # ParseOverwatchPath also checks if the overwatch path is valid.
-    _ = util.parse_overwatch_path(overwatch_path)
     request = self._messages.SecuredlandingzoneOrganizationsLocationsOverwatchesPatchRequest(
         name=overwatch_path,
         googleCloudSecuredlandingzoneV1betaOverwatch=overwatch,
@@ -167,18 +154,18 @@ class SLZOverwatchClient(object):
     response = self._overwatch_service.Patch(request)
     return response
 
-  def Enable(self, organization_id, location_id):
+  def Enable(self, parent):
     """Implements method for the overwatch command `enable`.
 
     Args:
-      organization_id: The organization ID. Format: organizations/<ORG_ID>.
-      location_id: The location where overwatch needs to be enabled.
+      parent: The parent where overwatch service needs to be enabled. Format:
+        organizations/<ORG_ID>/locations/<LOCATION_ID>
 
     Returns:
       response: The json response from the Enable method of API client.
     """
     request = self._messages.SecuredlandingzoneOrganizationsLocationsEnableOverwatchRequest(
-        organization=organization_id, locationsId=location_id)
+        organization=parent)
     response = self._organization_service.EnableOverwatch(request)
     return response
 
@@ -187,12 +174,12 @@ class SLZOverwatchClient(object):
 
     Args:
       operation_id: The operation ID of google.lonrunning.operation. Format:
-        operations/<OPERATION_ID>.
+        organizations/<ORG_ID>/locations/<LOCATION_ID>/operations/<OPERATION_ID>.
 
     Returns:
       response: The json response from the Operation method of API client.
     """
-    request = self._messages.SecuredlandingzoneOrganizationsOperationsGetRequest(
+    request = self._messages.SecuredlandingzoneOrganizationsLocationsOperationsGetRequest(
         name=operation_id)
     response = self._operation_service.Get(request)
     return response

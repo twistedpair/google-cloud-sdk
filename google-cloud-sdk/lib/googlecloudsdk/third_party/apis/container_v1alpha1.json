@@ -668,6 +668,10 @@
         "confidentialNodes": {
           "description": "Confidential nodes config. All the nodes in the node pool will be Confidential VM once enabled.",
           "$ref": "ConfidentialNodes"
+        },
+        "fastSocket": {
+          "description": "Enable or disable NCCL fast socket for the node pool.",
+          "$ref": "FastSocket"
         }
       }
     },
@@ -1027,6 +1031,17 @@
       "properties": {
         "enabled": {
           "description": "Whether Confidential Nodes feature is enabled.",
+          "type": "boolean"
+        }
+      }
+    },
+    "FastSocket": {
+      "id": "FastSocket",
+      "description": "Configuration of FastSocket feature.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Whether FastSocket features are enabled in the node pool.",
           "type": "boolean"
         }
       }
@@ -2172,6 +2187,20 @@
         "enabled": {
           "description": "Enable Binary Authorization for this cluster. If enabled, all container images will be validated by Binary Authorization.",
           "type": "boolean"
+        },
+        "evaluationMode": {
+          "description": "Mode of operation for binauthz policy evaluation. Currently the only options are equivalent to enable\/disable. If unspecified, defaults to DISABLED.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value, equivalent to DISABLED.",
+            "Disable BinaryAuthorization",
+            "If enabled, enforce Kubernetes admission requests with BinAuthz using the project's singleton policy. Equivalent to bool enabled=true."
+          ],
+          "enum": [
+            "EVALUATION_MODE_UNSPECIFIED",
+            "DISABLED",
+            "PROJECT_SINGLETON_POLICY_ENFORCE"
+          ]
         }
       }
     },
@@ -3205,6 +3234,20 @@
         "workloadConfig": {
           "description": "WorkloadConfig defines which actions are enabled for a cluster's workload configurations.",
           "$ref": "WorkloadConfig"
+        },
+        "workloadVulnerabilityMode": {
+          "description": "Sets which mode to use for Protect workload vulnerability scanning feature.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value not specified.",
+            "Disables Workload Vulnerability Scanning feature on the cluster.",
+            "Applies basic vulnerability scanning settings for cluster workloads."
+          ],
+          "enum": [
+            "WORKLOAD_VULNERABILITY_MODE_UNSPECIFIED",
+            "DISABLED",
+            "BASIC"
+          ]
         }
       }
     },
@@ -3936,6 +3979,10 @@
         "etag": {
           "description": "The current etag of the node pool. If an etag is provided and does not match the current etag of the node pool, update will be blocked and an ABORTED error will be returned.",
           "type": "string"
+        },
+        "fastSocket": {
+          "description": "Enable or disable NCCL fast socket for the node pool.",
+          "$ref": "FastSocket"
         }
       }
     },

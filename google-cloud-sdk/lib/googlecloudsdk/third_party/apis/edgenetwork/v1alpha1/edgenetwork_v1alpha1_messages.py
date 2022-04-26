@@ -107,12 +107,10 @@ class DiagnoseInterconnectResponse(_messages.Message):
   specific interconnect.
 
   Fields:
-    error: Used to show errors while retrieving and processing data.
     result: The network status of a specific interconnect.
   """
 
-  error = _messages.StringField(1)
-  result = _messages.MessageField('InterconnectDiagnostics', 2)
+  result = _messages.MessageField('InterconnectDiagnostics', 1)
 
 
 class DiagnoseNetworkResponse(_messages.Message):
@@ -120,12 +118,10 @@ class DiagnoseNetworkResponse(_messages.Message):
   network.
 
   Fields:
-    error: Used to show errors while retrieving and processing data.
     result: The network status of a specific network.
   """
 
-  error = _messages.StringField(1)
-  result = _messages.MessageField('NetworkStatus', 2)
+  result = _messages.MessageField('NetworkStatus', 1)
 
 
 class DiagnoseRouterResponse(_messages.Message):
@@ -133,12 +129,10 @@ class DiagnoseRouterResponse(_messages.Message):
   router.
 
   Fields:
-    error: Used to show errors while retrieving and processing data.
     result: The network status of a specific router.
   """
 
-  error = _messages.StringField(1)
-  result = _messages.MessageField('RouterStatus', 2)
+  result = _messages.MessageField('RouterStatus', 1)
 
 
 class EdgenetworkProjectsLocationsGetRequest(_messages.Message):

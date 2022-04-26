@@ -22,7 +22,6 @@ import abc
 import enum
 import json
 
-from googlecloudsdk.calliope import base as calliope_base
 from googlecloudsdk.core import log
 from googlecloudsdk.core.util import files
 import six
@@ -221,8 +220,7 @@ class AwsCredConfigGenerator(CredConfigGenerator):
             'https://sts.{region}.amazonaws.com?Action=GetCallerIdentity&Version=2011-06-15'
     }
 
-    if args.calliope_command.ReleaseTrack(
-    ) == calliope_base.ReleaseTrack.ALPHA and args.enable_imdsv2:
+    if args.enable_imdsv2:
       credential_source[
           'imdsv2_session_token_url'] = 'http://169.254.169.254/latest/api/token'
 

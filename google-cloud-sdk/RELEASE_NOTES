@@ -5,6 +5,92 @@ Copyright 2014-2022 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 383.0.0 (2022-04-26)
+
+### Breaking Changes
+
+*   **(Google Cloud CLI)** Removed `--[no-]launch-browser` in `gcloud auth login` and `gcloud auth
+  application-default login`. Use `--no-browser` as the replacement.
+*   **(Google Cloud CLI)** Removed `--console-only` and `--no-launch-browser` in `gcloud init`.
+  Use `--no-browser` as the replacement.
+*   **(Compute Engine)** Removed `--local-ssd=size=SIZE` from `gcloud beta compute instances create-with-container` due to the parameter being nonfunctional.
+
+
+### AI
+
+* Modified `--region` flag of `gcloud ai endpoints` to include new online
+  prediction regions.
+* Modified `--region` flag of `gcloud ai models` to include new online
+  prediction regions.
+
+### Access Approval
+
+* Added `gcloud access-approval service-account get` which retrieves the
+  service account that is used by Access Approval to access KMS keys for signing
+  approved approval requests.
+
+### App Engine
+
+* Enables build environment variables to be set in app.yaml.
+
+### Artifact Registry
+
+* Added new command `gcloud artifacts files list` to list files from a specified project and repository.
+
+### Cloud DNS
+
+*   Modified `gcloud dns managed-zones update` to allow detaching all networks
+    from a private zone by setting `--networks` to an empty string.
+*   Modified `gcloud beta dns managed-zones update` to allow detaching all GKE
+    clusters from a private zone by setting `--gkeclusters` to an empty string.
+*   Modified `gcloud beta dns managed-zones update` to allow updating the GKE
+    clusters or networks bound to a private zone independently by setting only
+    `--gkeclusters` or `--networks`.
+
+### Cloud Datastore Emulator
+
+* Release Cloud Datastore Emulator version 2.2.0
+  * Adds a flag to support `Cloud Firestore in Datastore mode` product mode in the emulator.
+
+### Cloud Firestore Emulator
+
+* Released Cloud Firestore emulator v1.14.3.
+  * Fixed exports throwing BufferOverflowException.
+
+### Cloud IAM
+
+* Service Accounts SignJwt promoted to GA command.
+
+### Compute Engine
+
+* Changed the default value of `--image-family` flag to debian-11 for `gcloud compute instances create` and `gcloud compute instance-templates create` commands.
+
+### Config Connector
+
+* Updated Google Cloud Config Connector to version 1.82.0.
+  See Config Connector Overview for more details [https://cloud.google.com/config-connector/docs/overview](https://cloud.google.com/config-connector/docs/overview).
+
+### Config Controller
+
+*   Let `gcloud anthos config controller create` print the default Config
+    Connector identity, to allow easier subsequent permission grant.
+*   Added `gcloud anthos config controller get-config-connector-identity` which
+    prints the default Config Connector identity, to allow easier subsequent
+    permission grant.
+
+### Identity and Access Management
+
+* Added `--enable-imdsv2` flag to `gcloud iam workload-identity-pools create-cred-config` command to include AWS token Url to the credential source while generating AWS credentials config file.
+
+### Kubernetes Engine
+
+*   Added `--node-labels`, `--node-taints` and `--tags` flags to
+    `gcloud container node-pools update`.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 382.0.0 (2022-04-19)
 
 ### Access Approval
@@ -172,7 +258,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
     `remove-iam-policy-binding` commands to GA. This allows setting conditional
     IAM policies on Cloud Spanner resources (instances, databases, and backups)
     via `gcloud`.
-* Promoted `gcloud spanner backsup copy` to beta and GA.
+* Promoted `gcloud spanner backups copy` to beta and GA.
 
 ### Compute Engine
 

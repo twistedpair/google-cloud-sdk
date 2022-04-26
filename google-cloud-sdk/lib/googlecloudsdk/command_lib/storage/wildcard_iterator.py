@@ -79,8 +79,8 @@ def get_wildcard_iterator(url_str,
   if isinstance(url, storage_url.CloudUrl):
     return CloudWildcardIterator(
         url,
-        all_versions,
-        fields_scope,
+        all_versions=all_versions,
+        fields_scope=fields_scope,
         get_bucket_metadata=get_bucket_metadata)
   elif isinstance(url, storage_url.FileUrl):
     return FileWildcardIterator(url, ignore_symlinks=ignore_symlinks)
@@ -169,6 +169,7 @@ class CloudWildcardIterator(WildcardIterator):
   def __init__(self,
                url,
                all_versions=False,
+               error_on_missing_key=True,
                fields_scope=cloud_api.FieldsScope.NO_ACL,
                get_bucket_metadata=False):
     """Instantiates an iterator that matches the wildcard URL.
@@ -177,6 +178,9 @@ class CloudWildcardIterator(WildcardIterator):
       url (CloudUrl): CloudUrl that may contain wildcard that needs expansion.
       all_versions (bool): If true, the iterator yields all versions of objects
           matching the wildcard.  If false, yields just the live object version.
+      error_on_missing_key (bool): If true, and the encryption key needed to
+          decrypt an object is missing, the iterator raises an error for that
+          object.
       fields_scope (cloud_api.FieldsScope): Determines amount of metadata
           returned by API.
       get_bucket_metadata (bool): If true, perform a bucket GET request when
@@ -186,6 +190,7 @@ class CloudWildcardIterator(WildcardIterator):
     url = _compress_url_wildcards(url)
     self._url = url
     self._all_versions = all_versions
+    self._error_on_missing_key = error_on_missing_key
     self._fields_scope = fields_scope
     self._get_bucket_metadata = get_bucket_metadata
     self._client = api_factory.get_api(url.scheme)
@@ -221,7 +226,8 @@ class CloudWildcardIterator(WildcardIterator):
 
     request_config = request_config_factory.get_request_config(
         resource.storage_url,
-        decryption_key_hash=resource.decryption_key_hash)
+        decryption_key_hash=resource.decryption_key_hash,
+        error_on_missing_key=self._error_on_missing_key)
     return self._client.get_object_metadata(
         resource.bucket, resource.name, request_config)
 

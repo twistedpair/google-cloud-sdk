@@ -1,0 +1,156 @@
+# -*- coding: utf-8 -*- #
+# Copyright 2022 Google LLC. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+"""Utilities for all CRUD commands."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
+from googlecloudsdk.api_lib.container import util as gke_util
+from googlecloudsdk.api_lib.container.gkemulticloud import operations as op_api_util
+from googlecloudsdk.command_lib.container.gkemulticloud import constants
+from googlecloudsdk.core import log
+from googlecloudsdk.core import resources
+from googlecloudsdk.core.console import console_io
+
+
+def _GetOperationResource(op):
+  return resources.REGISTRY.ParseRelativeName(
+      op.name, collection='gkemulticloud.projects.locations.operations')
+
+
+def _LogAndWaitForOperation(op, async_, message):
+  op_ref = _GetOperationResource(op)
+  log.CreatedResource(op_ref, kind=constants.LRO_KIND)
+  if not async_:
+    op_client = op_api_util.OperationsClient()
+    op_client.Wait(op_ref, message)
+
+
+def ClusterMessage(name, action=None, kind=None, region=None):
+  msg = 'cluster [{name}]'.format(name=name)
+  if action:
+    msg = '{action} '.format(action=action) + msg
+  if kind and region:
+    msg += ' in {kind} region [{region}]'.format(kind=kind, region=region)
+  return msg
+
+
+def NodePoolMessage(name, action=None, cluster=None, kind=None, region=None):
+  msg = 'node pool [{name}]'.format(name=name)
+  if action:
+    msg = '{action} '.format(action=action) + msg
+  if cluster:
+    msg += ' in cluster [{cluster}]'.format(cluster=cluster)
+  if kind and region:
+    msg += ' in {kind} region [{region}]'.format(kind=kind, region=region)
+  return msg
+
+
+def Create(resource_ref=None,
+           resource_client=None,
+           args=None,
+           kind=None,
+           message=None):
+  """Runs a create command for gkemulticloud.
+
+  Args:
+    resource_ref: obj, resource reference.
+    resource_client: obj, client for the resource.
+    args: obj, arguments parsed from the command.
+    kind: str, the kind of resource e.g. AWS Cluster, Azure Node Pool.
+    message: str, message to display while waiting for LRO to complete.
+
+  Returns:
+    The details of the created resource.
+  """
+  op = resource_client.Create(resource_ref, args)
+  validate_only = getattr(args, 'validate_only', False)
+  if validate_only:
+    args.format = 'disable'
+    return
+  async_ = getattr(args, 'async_', False)
+  _LogAndWaitForOperation(op, async_, message)
+  log.CreatedResource(resource_ref, kind=kind, is_async=async_)
+  return resource_client.Get(resource_ref)
+
+
+def Update(resource_ref=None,
+           resource_client=None,
+           args=None,
+           kind=None,
+           message=None):
+  """Runs an update command for gkemulticloud.
+
+  Args:
+    resource_ref: obj, resource reference.
+    resource_client: obj, client for the resource.
+    args: obj, arguments parsed from the command.
+    kind: str, the kind of resource e.g. AWS Cluster, Azure Node Pool.
+    message: str, message to display while waiting for LRO to complete.
+
+  Returns:
+    The details of the updated resource.
+  """
+  op = resource_client.Update(resource_ref, args)
+  validate_only = getattr(args, 'validate_only', False)
+  if validate_only:
+    args.format = 'disable'
+    return
+  async_ = getattr(args, 'async_', False)
+  _LogAndWaitForOperation(op, async_, message)
+  log.UpdatedResource(resource_ref, kind=kind, is_async=async_)
+  return resource_client.Get(resource_ref)
+
+
+def _DeletePrompt(kind, items):
+  title = 'The following {} will be deleted.'
+  if kind == constants.AWS_CLUSTER_KIND or kind == constants.AZURE_CLUSTER_KIND:
+    title = title.format('clusters')
+  elif kind == constants.AWS_NODEPOOL_KIND or kind == constants.AZURE_NODEPOOL_KIND:
+    title = title.format('node pool')
+  console_io.PromptContinue(
+      message=gke_util.ConstructList(title, items),
+      throw_if_unattended=True,
+      cancel_on_no=True)
+
+
+def Delete(resource_ref=None,
+           resource_client=None,
+           args=None,
+           kind=None,
+           message=None):
+  """Runs a delete command for gkemulticloud.
+
+  Args:
+    resource_ref: obj, resource reference.
+    resource_client: obj, client for the resource.
+    args: obj, arguments parsed from the command.
+    kind: str, the kind of resource e.g. AWS Cluster, Azure Node Pool.
+    message: str, message to display while waiting for LRO to complete.
+
+  Returns:
+    The details of the updated resource.
+  """
+  validate_only = getattr(args, 'validate_only', False)
+  if not validate_only:
+    _DeletePrompt(kind, [message])
+  async_ = getattr(args, 'async_', False)
+  op = resource_client.Delete(resource_ref, validate_only=validate_only)
+  if validate_only:
+    args.format = 'disable'
+    return
+  _LogAndWaitForOperation(op, async_, 'Deleting ' + message)
+  log.DeletedResource(resource_ref, kind=kind, is_async=async_)

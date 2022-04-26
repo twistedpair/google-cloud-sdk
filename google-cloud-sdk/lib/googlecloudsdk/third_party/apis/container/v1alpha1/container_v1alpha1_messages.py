@@ -245,12 +245,37 @@ class BigQueryDestination(_messages.Message):
 class BinaryAuthorization(_messages.Message):
   r"""Configuration for Binary Authorization.
 
+  Enums:
+    EvaluationModeValueValuesEnum: Mode of operation for binauthz policy
+      evaluation. Currently the only options are equivalent to enable/disable.
+      If unspecified, defaults to DISABLED.
+
   Fields:
     enabled: Enable Binary Authorization for this cluster. If enabled, all
       container images will be validated by Binary Authorization.
+    evaluationMode: Mode of operation for binauthz policy evaluation.
+      Currently the only options are equivalent to enable/disable. If
+      unspecified, defaults to DISABLED.
   """
 
+  class EvaluationModeValueValuesEnum(_messages.Enum):
+    r"""Mode of operation for binauthz policy evaluation. Currently the only
+    options are equivalent to enable/disable. If unspecified, defaults to
+    DISABLED.
+
+    Values:
+      EVALUATION_MODE_UNSPECIFIED: Default value, equivalent to DISABLED.
+      DISABLED: Disable BinaryAuthorization
+      PROJECT_SINGLETON_POLICY_ENFORCE: If enabled, enforce Kubernetes
+        admission requests with BinAuthz using the project's singleton policy.
+        Equivalent to bool enabled=true.
+    """
+    EVALUATION_MODE_UNSPECIFIED = 0
+    DISABLED = 1
+    PROJECT_SINGLETON_POLICY_ENFORCE = 2
+
   enabled = _messages.BooleanField(1)
+  evaluationMode = _messages.EnumField('EvaluationModeValueValuesEnum', 2)
 
 
 class BlueGreenInfo(_messages.Message):
@@ -1967,6 +1992,16 @@ class EphemeralStorageConfig(_messages.Message):
   localSsdCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
+class FastSocket(_messages.Message):
+  r"""Configuration of FastSocket feature.
+
+  Fields:
+    enabled: Whether FastSocket features are enabled in the node pool.
+  """
+
+  enabled = _messages.BooleanField(1)
+
+
 class Filter(_messages.Message):
   r"""Allows filtering to one or more specific event types. If event types are
   present, those and only those event types will be transmitted to the
@@ -3309,6 +3344,7 @@ class NodeConfig(_messages.Message):
       standard'
     ephemeralStorageConfig: Parameters for the ephemeral storage filesystem.
       If unspecified, ephemeral storage is backed by the boot disk.
+    fastSocket: Enable or disable NCCL fast socket for the node pool.
     gcfsConfig: GCFS (Google Container File System) configs.
     gvnic: Enable or disable gvnic on the node pool.
     imageType: The image type to use for this node. Note that for a given
@@ -3473,30 +3509,31 @@ class NodeConfig(_messages.Message):
   diskSizeGb = _messages.IntegerField(5, variant=_messages.Variant.INT32)
   diskType = _messages.StringField(6)
   ephemeralStorageConfig = _messages.MessageField('EphemeralStorageConfig', 7)
-  gcfsConfig = _messages.MessageField('GcfsConfig', 8)
-  gvnic = _messages.MessageField('VirtualNIC', 9)
-  imageType = _messages.StringField(10)
-  kubeletConfig = _messages.MessageField('NodeKubeletConfig', 11)
-  labels = _messages.MessageField('LabelsValue', 12)
-  linuxNodeConfig = _messages.MessageField('LinuxNodeConfig', 13)
-  localSsdCount = _messages.IntegerField(14, variant=_messages.Variant.INT32)
-  localSsdVolumeConfigs = _messages.MessageField('LocalSsdVolumeConfig', 15, repeated=True)
-  machineType = _messages.StringField(16)
-  metadata = _messages.MessageField('MetadataValue', 17)
-  minCpuPlatform = _messages.StringField(18)
-  nodeGroup = _messages.StringField(19)
-  nodeImageConfig = _messages.MessageField('CustomImageConfig', 20)
-  oauthScopes = _messages.StringField(21, repeated=True)
-  preemptible = _messages.BooleanField(22)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 23)
-  sandboxConfig = _messages.MessageField('SandboxConfig', 24)
-  serviceAccount = _messages.StringField(25)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 26)
-  spot = _messages.BooleanField(27)
-  stableFleetConfig = _messages.MessageField('StableFleetConfig', 28)
-  tags = _messages.StringField(29, repeated=True)
-  taints = _messages.MessageField('NodeTaint', 30, repeated=True)
-  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 31)
+  fastSocket = _messages.MessageField('FastSocket', 8)
+  gcfsConfig = _messages.MessageField('GcfsConfig', 9)
+  gvnic = _messages.MessageField('VirtualNIC', 10)
+  imageType = _messages.StringField(11)
+  kubeletConfig = _messages.MessageField('NodeKubeletConfig', 12)
+  labels = _messages.MessageField('LabelsValue', 13)
+  linuxNodeConfig = _messages.MessageField('LinuxNodeConfig', 14)
+  localSsdCount = _messages.IntegerField(15, variant=_messages.Variant.INT32)
+  localSsdVolumeConfigs = _messages.MessageField('LocalSsdVolumeConfig', 16, repeated=True)
+  machineType = _messages.StringField(17)
+  metadata = _messages.MessageField('MetadataValue', 18)
+  minCpuPlatform = _messages.StringField(19)
+  nodeGroup = _messages.StringField(20)
+  nodeImageConfig = _messages.MessageField('CustomImageConfig', 21)
+  oauthScopes = _messages.StringField(22, repeated=True)
+  preemptible = _messages.BooleanField(23)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 24)
+  sandboxConfig = _messages.MessageField('SandboxConfig', 25)
+  serviceAccount = _messages.StringField(26)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 27)
+  spot = _messages.BooleanField(28)
+  stableFleetConfig = _messages.MessageField('StableFleetConfig', 29)
+  tags = _messages.StringField(30, repeated=True)
+  taints = _messages.MessageField('NodeTaint', 31, repeated=True)
+  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 32)
 
 
 class NodeConfigDefaults(_messages.Message):
@@ -4204,12 +4241,34 @@ class ProtectConfig(_messages.Message):
   r"""ProtectConfig defines the flags needed to enable/disable features for
   the Protect API.
 
+  Enums:
+    WorkloadVulnerabilityModeValueValuesEnum: Sets which mode to use for
+      Protect workload vulnerability scanning feature.
+
   Fields:
     workloadConfig: WorkloadConfig defines which actions are enabled for a
       cluster's workload configurations.
+    workloadVulnerabilityMode: Sets which mode to use for Protect workload
+      vulnerability scanning feature.
   """
 
+  class WorkloadVulnerabilityModeValueValuesEnum(_messages.Enum):
+    r"""Sets which mode to use for Protect workload vulnerability scanning
+    feature.
+
+    Values:
+      WORKLOAD_VULNERABILITY_MODE_UNSPECIFIED: Default value not specified.
+      DISABLED: Disables Workload Vulnerability Scanning feature on the
+        cluster.
+      BASIC: Applies basic vulnerability scanning settings for cluster
+        workloads.
+    """
+    WORKLOAD_VULNERABILITY_MODE_UNSPECIFIED = 0
+    DISABLED = 1
+    BASIC = 2
+
   workloadConfig = _messages.MessageField('WorkloadConfig', 1)
+  workloadVulnerabilityMode = _messages.EnumField('WorkloadVulnerabilityModeValueValuesEnum', 2)
 
 
 class PubSub(_messages.Message):
@@ -5438,6 +5497,7 @@ class UpdateNodePoolRequest(_messages.Message):
     etag: The current etag of the node pool. If an etag is provided and does
       not match the current etag of the node pool, update will be blocked and
       an ABORTED error will be returned.
+    fastSocket: Enable or disable NCCL fast socket for the node pool.
     gcfsConfig: GCFS config.
     gvnic: Enable or disable gvnic on the node pool.
     image: The desired name of the image name to use for this node. This is
@@ -5497,26 +5557,27 @@ class UpdateNodePoolRequest(_messages.Message):
   clusterId = _messages.StringField(1)
   confidentialNodes = _messages.MessageField('ConfidentialNodes', 2)
   etag = _messages.StringField(3)
-  gcfsConfig = _messages.MessageField('GcfsConfig', 4)
-  gvnic = _messages.MessageField('VirtualNIC', 5)
-  image = _messages.StringField(6)
-  imageProject = _messages.StringField(7)
-  imageType = _messages.StringField(8)
-  kubeletConfig = _messages.MessageField('NodeKubeletConfig', 9)
-  labels = _messages.MessageField('NodeLabels', 10)
-  linuxNodeConfig = _messages.MessageField('LinuxNodeConfig', 11)
-  locations = _messages.StringField(12, repeated=True)
-  name = _messages.StringField(13)
-  nodeNetworkConfig = _messages.MessageField('NodeNetworkConfig', 14)
-  nodePoolId = _messages.StringField(15)
-  nodeVersion = _messages.StringField(16)
-  projectId = _messages.StringField(17)
-  tags = _messages.MessageField('NetworkTags', 18)
-  taints = _messages.MessageField('NodeTaints', 19)
-  updatedNodePool = _messages.MessageField('NodePool', 20)
-  upgradeSettings = _messages.MessageField('UpgradeSettings', 21)
-  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 22)
-  zone = _messages.StringField(23)
+  fastSocket = _messages.MessageField('FastSocket', 4)
+  gcfsConfig = _messages.MessageField('GcfsConfig', 5)
+  gvnic = _messages.MessageField('VirtualNIC', 6)
+  image = _messages.StringField(7)
+  imageProject = _messages.StringField(8)
+  imageType = _messages.StringField(9)
+  kubeletConfig = _messages.MessageField('NodeKubeletConfig', 10)
+  labels = _messages.MessageField('NodeLabels', 11)
+  linuxNodeConfig = _messages.MessageField('LinuxNodeConfig', 12)
+  locations = _messages.StringField(13, repeated=True)
+  name = _messages.StringField(14)
+  nodeNetworkConfig = _messages.MessageField('NodeNetworkConfig', 15)
+  nodePoolId = _messages.StringField(16)
+  nodeVersion = _messages.StringField(17)
+  projectId = _messages.StringField(18)
+  tags = _messages.MessageField('NetworkTags', 19)
+  taints = _messages.MessageField('NodeTaints', 20)
+  updatedNodePool = _messages.MessageField('NodePool', 21)
+  upgradeSettings = _messages.MessageField('UpgradeSettings', 22)
+  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 23)
+  zone = _messages.StringField(24)
 
 
 class UpgradeSettings(_messages.Message):

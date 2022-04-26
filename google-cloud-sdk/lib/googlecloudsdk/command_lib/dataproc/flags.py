@@ -527,6 +527,12 @@ def AddMinCpuPlatformArgs(parser):
       metavar='PLATFORM',
       required=False,
       help=help_text)
+  parser.add_argument(
+      '--driver-pool-min-cpu-platform',
+      metavar='PLATFORM',
+      hidden=True,
+      required=False,
+      help=help_text)
 
 
 def AddComponentFlag(parser):

@@ -32,14 +32,23 @@ class PublicAdvertisedPrefixesClient(object):
     self.resources = resources
     self._service = self.client.apitools_client.publicAdvertisedPrefixes
 
-  def Create(self, pap_ref, ip_cidr_range, dns_verification_ip, description):
+  def Create(self, pap_ref, ip_cidr_range, dns_verification_ip, description,
+             pdp_scope):
     """Creates a public advertised prefix."""
 
-    public_advertised_prefix = self.messages.PublicAdvertisedPrefix(
-        name=pap_ref.Name(),
-        ipCidrRange=ip_cidr_range,
-        dnsVerificationIp=dns_verification_ip,
-        description=description)
+    if pdp_scope:
+      public_advertised_prefix = self.messages.PublicAdvertisedPrefix(
+          name=pap_ref.Name(),
+          ipCidrRange=ip_cidr_range,
+          dnsVerificationIp=dns_verification_ip,
+          description=description,
+          pdpScope=pdp_scope)
+    else:
+      public_advertised_prefix = self.messages.PublicAdvertisedPrefix(
+          name=pap_ref.Name(),
+          ipCidrRange=ip_cidr_range,
+          dnsVerificationIp=dns_verification_ip,
+          description=description)
     request = self.messages.ComputePublicAdvertisedPrefixesInsertRequest(
         publicAdvertisedPrefix=public_advertised_prefix,
         project=pap_ref.project)
@@ -67,8 +76,7 @@ class PublicAdvertisedPrefixesClient(object):
         project=pap_ref.project,
         publicAdvertisedPrefix=pap_ref.Name(),
         publicAdvertisedPrefixResource=self.messages.PublicAdvertisedPrefix(
-            status=status,
-            fingerprint=original_pap.fingerprint))
+            status=status, fingerprint=original_pap.fingerprint))
 
     operation = self._service.Patch(request)
     operation_ref = self.resources.Parse(

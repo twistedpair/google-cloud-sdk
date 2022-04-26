@@ -27,11 +27,13 @@ class AcceleratorConfig(_messages.Message):
       are described in the NVIDIA [mig user
       guide](https://docs.nvidia.com/datacenter/tesla/mig-user-
       guide/#partitioning).
+    gpuSharingConfig: The configuration for GPU sharing options.
   """
 
   acceleratorCount = _messages.IntegerField(1)
   acceleratorType = _messages.StringField(2)
   gpuPartitionSize = _messages.StringField(3)
+  gpuSharingConfig = _messages.MessageField('GPUSharingConfig', 4)
 
 
 class AddonsConfig(_messages.Message):
@@ -194,12 +196,37 @@ class BigQueryDestination(_messages.Message):
 class BinaryAuthorization(_messages.Message):
   r"""Configuration for Binary Authorization.
 
+  Enums:
+    EvaluationModeValueValuesEnum: Mode of operation for binauthz policy
+      evaluation. Currently the only options are equivalent to enable/disable.
+      If unspecified, defaults to DISABLED.
+
   Fields:
     enabled: Enable Binary Authorization for this cluster. If enabled, all
       container images will be validated by Binary Authorization.
+    evaluationMode: Mode of operation for binauthz policy evaluation.
+      Currently the only options are equivalent to enable/disable. If
+      unspecified, defaults to DISABLED.
   """
 
+  class EvaluationModeValueValuesEnum(_messages.Enum):
+    r"""Mode of operation for binauthz policy evaluation. Currently the only
+    options are equivalent to enable/disable. If unspecified, defaults to
+    DISABLED.
+
+    Values:
+      EVALUATION_MODE_UNSPECIFIED: Default value, equivalent to DISABLED.
+      DISABLED: Disable BinaryAuthorization
+      PROJECT_SINGLETON_POLICY_ENFORCE: If enabled, enforce Kubernetes
+        admission requests with BinAuthz using the project's singleton policy.
+        Equivalent to bool enabled=true.
+    """
+    EVALUATION_MODE_UNSPECIFIED = 0
+    DISABLED = 1
+    PROJECT_SINGLETON_POLICY_ENFORCE = 2
+
   enabled = _messages.BooleanField(1)
+  evaluationMode = _messages.EnumField('EvaluationModeValueValuesEnum', 2)
 
 
 class BlueGreenInfo(_messages.Message):
@@ -1644,6 +1671,16 @@ class Empty(_messages.Message):
 
 
 
+class FastSocket(_messages.Message):
+  r"""Configuration of Fast Socket feature.
+
+  Fields:
+    enabled: Whether Fast Socket features are enabled in the node pool.
+  """
+
+  enabled = _messages.BooleanField(1)
+
+
 class Filter(_messages.Message):
   r"""Allows filtering to one or more specific event types. If event types are
   present, those and only those event types will be transmitted to the
@@ -1672,6 +1709,37 @@ class Filter(_messages.Message):
     SECURITY_BULLETIN_EVENT = 3
 
   eventType = _messages.EnumField('EventTypeValueListEntryValuesEnum', 1, repeated=True)
+
+
+class GPUSharingConfig(_messages.Message):
+  r"""GPUSharingConfig represents the GPU sharing configuration for Hardware
+  Accelerators.
+
+  Enums:
+    GpuSharingStrategyValueValuesEnum: The type of GPU sharing strategy to
+      enable on the GPU node.
+
+  Fields:
+    gpuSharingStrategy: The type of GPU sharing strategy to enable on the GPU
+      node.
+    maxSharedClientsPerGpu: The max number of containers that can share a
+      physical GPU.
+  """
+
+  class GpuSharingStrategyValueValuesEnum(_messages.Enum):
+    r"""The type of GPU sharing strategy to enable on the GPU node.
+
+    Values:
+      GPU_SHARING_STRATEGY_UNSPECIFIED: Default value.
+      TIME_SHARING: GPUs are time-shared between containers.
+      MPS: GPUs are shared between containers with NVIDIA MPS.
+    """
+    GPU_SHARING_STRATEGY_UNSPECIFIED = 0
+    TIME_SHARING = 1
+    MPS = 2
+
+  gpuSharingStrategy = _messages.EnumField('GpuSharingStrategyValueValuesEnum', 1)
+  maxSharedClientsPerGpu = _messages.IntegerField(2)
 
 
 class GcePersistentDiskCsiDriverConfig(_messages.Message):
@@ -2580,6 +2648,7 @@ class NodeConfig(_messages.Message):
     diskType: Type of the disk attached to each node (e.g. 'pd-standard', 'pd-
       ssd' or 'pd-balanced') If unspecified, the default disk type is 'pd-
       standard'
+    fastSocket: Enable or disable NCCL fast socket for the node pool.
     gcfsConfig: Google Container File System (image streaming) configs.
     gvnic: Enable or disable gvnic in the node pool.
     imageType: The image type to use for this node. Note that for a given
@@ -2741,28 +2810,29 @@ class NodeConfig(_messages.Message):
   confidentialNodes = _messages.MessageField('ConfidentialNodes', 4)
   diskSizeGb = _messages.IntegerField(5, variant=_messages.Variant.INT32)
   diskType = _messages.StringField(6)
-  gcfsConfig = _messages.MessageField('GcfsConfig', 7)
-  gvnic = _messages.MessageField('VirtualNIC', 8)
-  imageType = _messages.StringField(9)
-  kubeletConfig = _messages.MessageField('NodeKubeletConfig', 10)
-  labels = _messages.MessageField('LabelsValue', 11)
-  linuxNodeConfig = _messages.MessageField('LinuxNodeConfig', 12)
-  localSsdCount = _messages.IntegerField(13, variant=_messages.Variant.INT32)
-  machineType = _messages.StringField(14)
-  metadata = _messages.MessageField('MetadataValue', 15)
-  minCpuPlatform = _messages.StringField(16)
-  nodeGroup = _messages.StringField(17)
-  nodeImageConfig = _messages.MessageField('CustomImageConfig', 18)
-  oauthScopes = _messages.StringField(19, repeated=True)
-  preemptible = _messages.BooleanField(20)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 21)
-  sandboxConfig = _messages.MessageField('SandboxConfig', 22)
-  serviceAccount = _messages.StringField(23)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 24)
-  spot = _messages.BooleanField(25)
-  tags = _messages.StringField(26, repeated=True)
-  taints = _messages.MessageField('NodeTaint', 27, repeated=True)
-  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 28)
+  fastSocket = _messages.MessageField('FastSocket', 7)
+  gcfsConfig = _messages.MessageField('GcfsConfig', 8)
+  gvnic = _messages.MessageField('VirtualNIC', 9)
+  imageType = _messages.StringField(10)
+  kubeletConfig = _messages.MessageField('NodeKubeletConfig', 11)
+  labels = _messages.MessageField('LabelsValue', 12)
+  linuxNodeConfig = _messages.MessageField('LinuxNodeConfig', 13)
+  localSsdCount = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  machineType = _messages.StringField(15)
+  metadata = _messages.MessageField('MetadataValue', 16)
+  minCpuPlatform = _messages.StringField(17)
+  nodeGroup = _messages.StringField(18)
+  nodeImageConfig = _messages.MessageField('CustomImageConfig', 19)
+  oauthScopes = _messages.StringField(20, repeated=True)
+  preemptible = _messages.BooleanField(21)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 22)
+  sandboxConfig = _messages.MessageField('SandboxConfig', 23)
+  serviceAccount = _messages.StringField(24)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 25)
+  spot = _messages.BooleanField(26)
+  tags = _messages.StringField(27, repeated=True)
+  taints = _messages.MessageField('NodeTaint', 28, repeated=True)
+  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 29)
 
 
 class NodeConfigDefaults(_messages.Message):
@@ -4521,6 +4591,7 @@ class UpdateNodePoolRequest(_messages.Message):
     etag: The current etag of the node pool. If an etag is provided and does
       not match the current etag of the node pool, update will be blocked and
       an ABORTED error will be returned.
+    fastSocket: Enable or disable NCCL fast socket for the node pool.
     gcfsConfig: GCFS config.
     gvnic: Enable or disable gvnic on the node pool.
     image: The desired name of the image name to use for this node. This is
@@ -4578,25 +4649,26 @@ class UpdateNodePoolRequest(_messages.Message):
   clusterId = _messages.StringField(1)
   confidentialNodes = _messages.MessageField('ConfidentialNodes', 2)
   etag = _messages.StringField(3)
-  gcfsConfig = _messages.MessageField('GcfsConfig', 4)
-  gvnic = _messages.MessageField('VirtualNIC', 5)
-  image = _messages.StringField(6)
-  imageProject = _messages.StringField(7)
-  imageType = _messages.StringField(8)
-  kubeletConfig = _messages.MessageField('NodeKubeletConfig', 9)
-  labels = _messages.MessageField('NodeLabels', 10)
-  linuxNodeConfig = _messages.MessageField('LinuxNodeConfig', 11)
-  locations = _messages.StringField(12, repeated=True)
-  name = _messages.StringField(13)
-  nodeNetworkConfig = _messages.MessageField('NodeNetworkConfig', 14)
-  nodePoolId = _messages.StringField(15)
-  nodeVersion = _messages.StringField(16)
-  projectId = _messages.StringField(17)
-  tags = _messages.MessageField('NetworkTags', 18)
-  taints = _messages.MessageField('NodeTaints', 19)
-  upgradeSettings = _messages.MessageField('UpgradeSettings', 20)
-  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 21)
-  zone = _messages.StringField(22)
+  fastSocket = _messages.MessageField('FastSocket', 4)
+  gcfsConfig = _messages.MessageField('GcfsConfig', 5)
+  gvnic = _messages.MessageField('VirtualNIC', 6)
+  image = _messages.StringField(7)
+  imageProject = _messages.StringField(8)
+  imageType = _messages.StringField(9)
+  kubeletConfig = _messages.MessageField('NodeKubeletConfig', 10)
+  labels = _messages.MessageField('NodeLabels', 11)
+  linuxNodeConfig = _messages.MessageField('LinuxNodeConfig', 12)
+  locations = _messages.StringField(13, repeated=True)
+  name = _messages.StringField(14)
+  nodeNetworkConfig = _messages.MessageField('NodeNetworkConfig', 15)
+  nodePoolId = _messages.StringField(16)
+  nodeVersion = _messages.StringField(17)
+  projectId = _messages.StringField(18)
+  tags = _messages.MessageField('NetworkTags', 19)
+  taints = _messages.MessageField('NodeTaints', 20)
+  upgradeSettings = _messages.MessageField('UpgradeSettings', 21)
+  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 22)
+  zone = _messages.StringField(23)
 
 
 class UpgradeAvailableEvent(_messages.Message):

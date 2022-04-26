@@ -670,7 +670,7 @@ service account is used.
       metavar='SCOPE',
       hidden=hidden,
       help="""\
-The scopes be used by node instances in autoprovisioned node pools.
+The scopes to be used by node instances in autoprovisioned node pools.
 Multiple scopes can be specified, separated by commas. For information
 on defaults, look at:
 https://cloud.google.com/sdk/gcloud/reference/container/clusters/create#--scopes

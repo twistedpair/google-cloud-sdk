@@ -68,3 +68,14 @@ fleet:
     fallthroughs:
     - hook: googlecloudsdk.command_lib.container.fleet.util:DefaultFleetID
       hint: "default is the only supported fleet ID"
+
+namespace:
+  name: namespace
+  collection: gkehub.projects.locations.namespaces
+  attributes:
+  - *project
+  - *location
+  - &namespace
+    parameter_name: namespacesId
+    attribute_name: namespace
+    help: The namespace name.

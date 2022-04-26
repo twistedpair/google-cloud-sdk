@@ -46,7 +46,7 @@ _AGENT_RULE_TEMPLATES = {
     'logging':
         _AgentRuleTemplates(
             install_with_version=(
-                'curl -sSO https://dl.google.com/cloudagents/add-logging-agent-repo.sh; '
+                'curl -sSO https://dl.google.com/cloudagents/add-logging-agent-repo.sh && '
                 'sudo bash add-logging-agent-repo.sh --also-install --version=%s'
                 ),
             yum_package=_PackageTemplates(
@@ -77,7 +77,8 @@ _AGENT_RULE_TEMPLATES = {
                     #!/bin/bash -e
                     %(clear_prev_repo)s
                     for i in {1..5}; do
-                      if (%(install)s; sudo service google-fluentd start); then
+                      if (%(install)s); then
+                        sudo service google-fluentd start
                         break
                       fi
                       sleep 1m
@@ -89,7 +90,7 @@ _AGENT_RULE_TEMPLATES = {
     'metrics':
         _AgentRuleTemplates(
             install_with_version=(
-                'curl -sSO https://dl.google.com/cloudagents/add-monitoring-agent-repo.sh; '
+                'curl -sSO https://dl.google.com/cloudagents/add-monitoring-agent-repo.sh && '
                 'sudo bash add-monitoring-agent-repo.sh --also-install --version=%s'
                 ),
             yum_package=_PackageTemplates(
@@ -121,7 +122,8 @@ _AGENT_RULE_TEMPLATES = {
                     #!/bin/bash -e
                     %(clear_prev_repo)s
                     for i in {1..5}; do
-                      if (%(install)s; sudo service stackdriver-agent start); then
+                      if (%(install)s); then
+                        sudo service stackdriver-agent start
                         break
                       fi
                       sleep 1m
@@ -133,7 +135,7 @@ _AGENT_RULE_TEMPLATES = {
     'ops-agent':
         _AgentRuleTemplates(
             install_with_version=(
-                'curl -sSO https://dl.google.com/cloudagents/add-google-cloud-ops-agent-repo.sh; '
+                'curl -sSO https://dl.google.com/cloudagents/add-google-cloud-ops-agent-repo.sh && '
                 'sudo bash add-google-cloud-ops-agent-repo.sh --also-install --version=%s'
                 ),
             yum_package=_PackageTemplates(
@@ -168,7 +170,8 @@ _AGENT_RULE_TEMPLATES = {
                     #!/bin/bash -e
                     %(clear_prev_repo)s
                     for i in {1..5}; do
-                      if (%(install)s; sudo systemctl start google-cloud-ops-agent.target || sudo service google-cloud-ops-agent restart || true); then
+                      if (%(install)s); then
+                        sudo systemctl start google-cloud-ops-agent.target || sudo service google-cloud-ops-agent restart
                         break
                       fi
                       sleep 1m

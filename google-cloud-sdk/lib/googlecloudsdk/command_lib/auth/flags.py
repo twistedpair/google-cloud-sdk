@@ -109,8 +109,25 @@ def AddNoBrowserFlag(parser, auth_target):
       '--no-browser',
       default=False,
       action='store_true',
-      help='Use this flag to authenticate {} on a machine without a '
-      'web browser.'.format(auth_target))
+      help="""\
+      Use this flag to authenticate the {} on a machine without a web browser.
+
+      Run `gcloud auth login --no-browser` and follow these steps:
+
+      1. Copy the long command that begins with
+         "gcloud auth login --remote-bootstrap=".
+
+      2. Paste and run this command on the command line of a different, trusted
+         machine that has local installations of both a web browser and
+         the gcloud CLI tool version 372.0 or later.
+
+      3. Copy the long URL output from the machine with the web browser.
+
+      4. Paste the long URL back to the first machine under the prompt,
+         "Enter the output of the above command", and press Enter
+         to complete the authorization.
+      """.format(auth_target)
+  )
 
 
 def AddRemoteBootstrapFlag(parser):
@@ -143,8 +160,7 @@ def AddNoLaunchBrowserFlag(parser):
       'to be copied.',
       action=actions.DeprecationAction(
           '--launch-browser',
-          warn='The --[no-]launch-browser flags are deprecated and will be '
-          'removed in version 383.0.0 (04/26/2022). '
-          'Use --no-browser to replace --no-launch-browser.\n',
-          removed=False,
+          error='--[no-]launch-browser flags are removed. Use --no-browser to '
+          'replace --no-launch-browser.',
+          removed=True,
           action='store_true'))

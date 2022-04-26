@@ -12,71 +12,167 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Utilities for gkemulticloud API specific to Azure."""
+"""Base class for gkemulticloud API clients for Azure resources."""
 
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.api_lib.container.gkemulticloud import client
 from googlecloudsdk.api_lib.container.gkemulticloud import update_mask
-from googlecloudsdk.api_lib.container.gkemulticloud import util
 from googlecloudsdk.command_lib.container.azure import resource_args
+from googlecloudsdk.command_lib.container.gkemulticloud import flags
 
 
-class _AzureClientBase(util.ClientBase):
+class _AzureClientBase(client.ClientBase):
   """Base class for Azure gkemulticloud API clients."""
 
-  def _DiskTemplate(self, **kwargs):
+  def _Cluster(self, cluster_ref, args):
+    azure_client = resource_args.ParseAzureClientResourceArg(args).RelativeName(
+    ) if hasattr(args, 'client') and args.IsSpecified('client') else None
+    kwargs = {
+        'authorization': self._Authorization(args),
+        'azureClient': azure_client,
+        'azureRegion': flags.GetAzureRegion(args),
+        'controlPlane': self._ControlPlane(args),
+        'fleet': self._Fleet(args),
+        'loggingConfig': flags.GetLogging(args),
+        'name': cluster_ref.azureClustersId,
+        'networking': self._ClusterNetworking(args),
+        'resourceGroupId': flags.GetResourceGroupId(args),
+    }
+    return self._messages.GoogleCloudGkemulticloudV1AzureCluster(
+        **kwargs) if any(kwargs.values()) else None
+
+  def _Client(self, client_ref, args):
+    kwargs = {
+        'applicationId': getattr(args, 'app_id', None),
+        'name': client_ref.azureClientsId,
+        'tenantId': getattr(args, 'tenant_id', None),
+    }
+    return self._messages.GoogleCloudGkemulticloudV1AzureClient(
+        **kwargs) if any(kwargs.values()) else None
+
+  def _NodePool(self, node_pool_ref, args):
+    kwargs = {
+        'autoscaling': self._Autoscaling(args),
+        'azureAvailabilityZone': flags.GetAzureAvailabilityZone(args),
+        'config': self._NodeConfig(args),
+        'maxPodsConstraint': self._MaxPodsConstraint(args),
+        'name': node_pool_ref.azureNodePoolsId,
+        'subnetId': flags.GetSubnetID(args),
+        'version': flags.GetNodeVersion(args)
+    }
+    return self._messages.GoogleCloudGkemulticloudV1AzureNodePool(
+        **kwargs) if any(kwargs.values()) else None
+
+  def _DiskTemplate(self, args, kind):
+    kwargs = {}
+    if kind == 'root':
+      kwargs['sizeGib'] = flags.GetRootVolumeSize(args)
+    elif kind == 'main':
+      kwargs['sizeGib'] = flags.GetMainVolumeSize(args)
     return self._messages.GoogleCloudGkemulticloudV1AzureDiskTemplate(
         **kwargs) if any(kwargs.values()) else None
 
-  def _ProxyConfig(self, **kwargs):
+  def _ProxyConfig(self, args):
+    kwargs = {
+        'resourceGroupId': flags.GetProxyResourceGroupId(args),
+        'secretId': flags.GetProxySecretId(args),
+    }
     return self._messages.GoogleCloudGkemulticloudV1AzureProxyConfig(
         **kwargs) if any(kwargs.values()) else None
 
-  def _ConfigEncryption(self, **kwargs):
+  def _ConfigEncryption(self, args):
+    kwargs = {
+        'keyId': flags.GetConfigEncryptionKeyId(args),
+        'publicKey': flags.GetConfigEncryptionPublicKey(args),
+    }
     return self._messages.GoogleCloudGkemulticloudV1AzureConfigEncryption(
         **kwargs) if any(kwargs.values()) else None
 
-  def _Cluster(self, **kwargs):
-    return self._messages.GoogleCloudGkemulticloudV1AzureCluster(**kwargs)
-
-  def _Client(self, **kwargs):
-    return self._messages.GoogleCloudGkemulticloudV1AzureClient(**kwargs)
-
-  def _NodePool(self, **kwargs):
-    return self._messages.GoogleCloudGkemulticloudV1AzureNodePool(**kwargs)
-
-  def _Authorization(self, admin_users):
-    if admin_users is None:
+  def _Authorization(self, args):
+    admin_users = flags.GetAdminUsers(args)
+    if not admin_users:
       return None
-    return self._messages.GoogleCloudGkemulticloudV1AzureAuthorization(
-        adminUsers=[
+    kwargs = {
+        'adminUsers': [
             self._messages.GoogleCloudGkemulticloudV1AzureClusterUser(
                 username=u) for u in admin_users
-        ])
+        ]
+    }
+    return self._messages.GoogleCloudGkemulticloudV1AzureAuthorization(
+        **kwargs) if any(kwargs.values()) else None
 
-  def _Networking(self, **kwargs):
+  def _ClusterNetworking(self, args):
+    kwargs = {
+        'podAddressCidrBlocks':
+            flags.GetPodAddressCidrBlocks(args),
+        'serviceAddressCidrBlocks':
+            flags.GetServiceAddressCidrBlocks(args),
+        'serviceLoadBalancerSubnetId':
+            flags.GetServiceLoadBalancerSubnetId(args),
+        'virtualNetworkId':
+            flags.GetVnetId(args),
+    }
     return self._messages.GoogleCloudGkemulticloudV1AzureClusterNetworking(
         **kwargs) if any(kwargs.values()) else None
 
-  def _ControlPlane(self, **kwargs):
-    return self._messages.GoogleCloudGkemulticloudV1AzureControlPlane(**kwargs)
+  def _ControlPlane(self, args):
+    control_plane_type = self._messages.GoogleCloudGkemulticloudV1AzureControlPlane
+    kwargs = {
+        'configEncryption': self._ConfigEncryption(args),
+        'databaseEncryption': self._DatabaseEncryption(args),
+        'endpointSubnetId': flags.GetEndpointSubnetId(args),
+        'mainVolume': self._DiskTemplate(args, 'main'),
+        'proxyConfig': self._ProxyConfig(args),
+        'replicaPlacements': flags.GetReplicaPlacements(args),
+        'rootVolume': self._DiskTemplate(args, 'root'),
+        'sshConfig': self._SshConfig(args),
+        'subnetId': flags.GetSubnetID(args),
+        'tags': self._Tags(args, control_plane_type),
+        'version': flags.GetClusterVersion(args),
+        'vmSize': flags.GetVMSize(args),
+    }
+    return self._messages.GoogleCloudGkemulticloudV1AzureControlPlane(
+        **kwargs) if any(kwargs.values()) else None
 
-  def _SshConfig(self, **kwargs):
+  def _SshConfig(self, args):
+    kwargs = {
+        'authorizedKey': flags.GetSSHPublicKey(args),
+    }
     return self._messages.GoogleCloudGkemulticloudV1AzureSshConfig(
         **kwargs) if any(kwargs.values()) else None
 
-  def _DatabaseEncryption(self, **kwargs):
+  def _DatabaseEncryption(self, args):
+    kwargs = {
+        'keyId': flags.GetDatabaseEncryptionKeyId(args),
+    }
     return self._messages.GoogleCloudGkemulticloudV1AzureDatabaseEncryption(
         **kwargs) if any(kwargs.values()) else None
 
-  def _Fleet(self, **kwargs):
-    return self._messages.GoogleCloudGkemulticloudV1Fleet(
+  def _Autoscaling(self, args):
+    kwargs = {
+        'minNodeCount': flags.GetMinNodes(args),
+        'maxNodeCount': flags.GetMaxNodes(args),
+    }
+    return self._messages.GoogleCloudGkemulticloudV1AzureNodePoolAutoscaling(
         **kwargs) if any(kwargs.values()) else None
 
-  def _Autoscaling(self, **kwargs):
-    return self._messages.GoogleCloudGkemulticloudV1AzureNodePoolAutoscaling(
+  def _NodeConfig(self, args):
+    node_config_type = self._messages.GoogleCloudGkemulticloudV1AzureNodeConfig
+    kwargs = {
+        'configEncryption': self._ConfigEncryption(args),
+        'imageType': flags.GetImageType(args),
+        'labels': self._Labels(args, node_config_type),
+        'proxyConfig': self._ProxyConfig(args),
+        'rootVolume': self._DiskTemplate(args, 'root'),
+        'sshConfig': self._SshConfig(args),
+        'tags': self._Tags(args, node_config_type),
+        'taints': flags.GetNodeTaints(args),
+        'vmSize': flags.GetVMSize(args),
+    }
+    return self._messages.GoogleCloudGkemulticloudV1AzureNodeConfig(
         **kwargs) if any(kwargs.values()) else None
 
 
@@ -88,76 +184,13 @@ class ClustersClient(_AzureClientBase):
     self._service = self._client.projects_locations_azureClusters
     self._list_result_field = 'azureClusters'
 
-  def Create(self,
-             cluster_ref,
-             client_ref=None,
-             azure_region=None,
-             resource_group_id=None,
-             vnet_id=None,
-             pod_address_cidr_blocks=None,
-             service_address_cidr_blocks=None,
-             cluster_version=None,
-             subnet_id=None,
-             vm_size=None,
-             ssh_public_key=None,
-             proxy_resource_group_id=None,
-             proxy_secret_id=None,
-             main_volume_size=None,
-             root_volume_size=None,
-             validate_only=False,
-             tags=None,
-             admin_users=None,
-             replica_placements=None,
-             fleet_project=None,
-             service_load_balancer_subnet_id=None,
-             endpoint_subnet_id=None,
-             database_encryption_key_id=None,
-             config_encryption_key_id=None,
-             config_encryption_public_key=None,
-             logging=None):
+  def Create(self, cluster_ref, args):
     """Creates a new Anthos cluster on Azure."""
-    cp = self._ControlPlane(
-        mainVolume=self._DiskTemplate(sizeGib=main_volume_size),
-        rootVolume=self._DiskTemplate(sizeGib=root_volume_size),
-        sshConfig=self._SshConfig(authorizedKey=ssh_public_key),
-        subnetId=subnet_id,
-        version=cluster_version,
-        vmSize=vm_size,
-        proxyConfig=self._ProxyConfig(
-            resourceGroupId=proxy_resource_group_id, secretId=proxy_secret_id),
-        replicaPlacements=replica_placements if replica_placements else [],
-        endpointSubnetId=endpoint_subnet_id,
-        databaseEncryption=self._DatabaseEncryption(
-            keyId=database_encryption_key_id),
-        configEncryption=self._ConfigEncryption(
-            keyId=config_encryption_key_id,
-            publicKey=config_encryption_public_key))
-    if tags:
-      tag_type = type(cp).TagsValue.AdditionalProperty
-      cp.tags = type(cp).TagsValue(additionalProperties=[
-          tag_type(key=k, value=v) for k, v in tags.items()
-      ])
-    net = self._Networking(
-        podAddressCidrBlocks=[pod_address_cidr_blocks],
-        serviceAddressCidrBlocks=[service_address_cidr_blocks],
-        virtualNetworkId=vnet_id,
-        serviceLoadBalancerSubnetId=service_load_balancer_subnet_id)
-    c = self._Cluster(
-        name=cluster_ref.azureClustersId,
-        azureClient=client_ref.RelativeName(),
-        azureRegion=azure_region,
-        resourceGroupId=resource_group_id,
-        authorization=self._Authorization(admin_users),
-        networking=net,
-        controlPlane=cp,
-        fleet=self._Fleet(project=fleet_project),
-        loggingConfig=logging)
     req = self._messages.GkemulticloudProjectsLocationsAzureClustersCreateRequest(
         azureClusterId=cluster_ref.azureClustersId,
-        googleCloudGkemulticloudV1AzureCluster=c,
-        parent=cluster_ref.Parent().RelativeName())
-    if validate_only:
-      req.validateOnly = True
+        googleCloudGkemulticloudV1AzureCluster=self._Cluster(cluster_ref, args),
+        parent=cluster_ref.Parent().RelativeName(),
+        validateOnly=flags.GetValidateOnly(args))
     return self._service.Create(req)
 
   def GenerateAccessToken(self, cluster_ref):
@@ -168,20 +201,12 @@ class ClustersClient(_AzureClientBase):
 
   def Update(self, cluster_ref, args):
     """Updates an Anthos cluster on Azure."""
-    c = self._Cluster(
-        authorization=self._Authorization(args.admin_users),
-        azureClient=resource_args.ParseAzureClientResourceArg(
-            args).RelativeName() if args.client else None,
-        controlPlane=self._ControlPlane(
-            version=args.cluster_version, vmSize=args.vm_size))
-
     req = self._messages.GkemulticloudProjectsLocationsAzureClustersPatchRequest(
-        googleCloudGkemulticloudV1AzureCluster=c,
+        googleCloudGkemulticloudV1AzureCluster=self._Cluster(cluster_ref, args),
         name=cluster_ref.RelativeName(),
         updateMask=update_mask.GetUpdateMask(
-            args, update_mask.AZURE_CLUSTER_ARGS_TO_UPDATE_MASKS))
-    if args.validate_only:
-      req.validateOnly = True
+            args, update_mask.AZURE_CLUSTER_ARGS_TO_UPDATE_MASKS),
+        validateOnly=flags.GetValidateOnly(args))
     return self._service.Patch(req)
 
 
@@ -193,99 +218,26 @@ class NodePoolsClient(_AzureClientBase):
     self._service = self._client.projects_locations_azureClusters_azureNodePools
     self._list_result_field = 'azureNodePools'
 
-  def Create(self,
-             nodepool_ref,
-             node_version=None,
-             subnet_id=None,
-             vm_size=None,
-             ssh_public_key=None,
-             proxy_resource_group_id=None,
-             proxy_secret_id=None,
-             root_volume_size=None,
-             tags=None,
-             validate_only=None,
-             min_nodes=None,
-             max_nodes=None,
-             max_pods_per_node=None,
-             taints=None,
-             labels=None,
-             azure_availability_zone=None,
-             config_encryption_key_id=None,
-             config_encryption_public_key=None,
-             image_type=None):
+  def Create(self, nodepool_ref, args):
     """Creates a node pool in an Anthos cluster on Azure."""
-    nodepool = self._NodePool(subnetId=subnet_id, version=node_version)
-    nodepool.name = nodepool_ref.azureNodePoolsId
-    nodepool.azureAvailabilityZone = azure_availability_zone
-    nodepool.autoscaling = type(nodepool).autoscaling.type(
-        maxNodeCount=max_nodes, minNodeCount=min_nodes)
-    nodepool.maxPodsConstraint = type(nodepool).maxPodsConstraint.type(
-        maxPodsPerNode=max_pods_per_node)
-    nodepool.config = type(nodepool).config.type(vmSize=vm_size)
-    nodeconfig = nodepool.config
-    nodeconfig.sshConfig = type(nodeconfig).sshConfig.type(
-        authorizedKey=ssh_public_key)
-    nodeconfig.taints.extend(taints)
-    if config_encryption_key_id is not None:
-      nodeconfig.configEncryption = self._ConfigEncryption(
-          keyId=config_encryption_key_id,
-          publicKey=config_encryption_public_key)
-    if proxy_resource_group_id is not None and proxy_secret_id is not None:
-      nodeconfig.proxyConfig = self._ProxyConfig(
-          resourceGroupId=proxy_resource_group_id, secretId=proxy_secret_id)
-    if root_volume_size:
-      nodeconfig.rootVolume = self._DiskTemplate(sizeGib=root_volume_size)
-    if tags:
-      tag_type = type(nodeconfig).TagsValue.AdditionalProperty
-      nodeconfig.tags = type(nodeconfig).TagsValue(additionalProperties=[
-          tag_type(key=k, value=v) for k, v in tags.items()
-      ])
-    if labels:
-      label_type = type(nodeconfig).LabelsValue.AdditionalProperty
-      nodeconfig.labels = type(nodeconfig).LabelsValue(additionalProperties=[
-          label_type(key=k, value=v) for k, v in labels.items()
-      ])
-    if image_type:
-      nodeconfig.imageType = image_type
-
     req = self._messages.GkemulticloudProjectsLocationsAzureClustersAzureNodePoolsCreateRequest(
         azureNodePoolId=nodepool_ref.azureNodePoolsId,
-        googleCloudGkemulticloudV1AzureNodePool=nodepool,
+        googleCloudGkemulticloudV1AzureNodePool=self._NodePool(
+            nodepool_ref, args),
         parent=nodepool_ref.Parent().RelativeName(),
-        validateOnly=validate_only)
+        validateOnly=flags.GetValidateOnly(args))
     return self._service.Create(req)
 
   def Update(self, nodepool_ref, args):
     """Updates a node pool in an Anthos cluster on Azure."""
-    nodepool = self._NodePool(
-        name=nodepool_ref.azureNodePoolsId,
-        version=args.node_version,
-        autoscaling=self._Autoscaling(
-            minNodeCount=args.min_nodes, maxNodeCount=args.max_nodes))
-
     req = self._messages.GkemulticloudProjectsLocationsAzureClustersAzureNodePoolsPatchRequest(
-        googleCloudGkemulticloudV1AzureNodePool=nodepool,
+        googleCloudGkemulticloudV1AzureNodePool=self._NodePool(
+            nodepool_ref, args),
         name=nodepool_ref.RelativeName(),
         updateMask=update_mask.GetUpdateMask(
             args, update_mask.AZURE_NODEPOOL_ARGS_TO_UPDATE_MASKS),
-        validateOnly=args.validate_only)
+        validateOnly=flags.GetValidateOnly(args))
     return self._service.Patch(req)
-
-  def HasNodePools(self, cluster_ref):
-    """Checks if the cluster has a node pool.
-
-    Args:
-      cluster_ref: gkemulticloud.GoogleCloudGkemulticloudV1AzureCluster object.
-
-    Returns:
-      True if the cluster has a node pool. Otherwise, False.
-    """
-    req = self._messages.GkemulticloudProjectsLocationsAzureClustersAzureNodePoolsListRequest(
-        parent=cluster_ref.RelativeName(), pageSize=1)
-    res = self._service.List(req)
-    if res.azureNodePools:
-      return True
-    return False
 
 
 class ClientsClient(_AzureClientBase):
@@ -296,15 +248,11 @@ class ClientsClient(_AzureClientBase):
     self._service = self._client.projects_locations_azureClients
     self._list_result_field = 'azureClients'
 
-  def Create(self, client_ref, tenant_id, application_id, validate_only=False):
+  def Create(self, client_ref, args):
     """Creates a new Azure client."""
     req = self._messages.GkemulticloudProjectsLocationsAzureClientsCreateRequest(
-        googleCloudGkemulticloudV1AzureClient=self._Client(
-            applicationId=application_id,
-            name=client_ref.azureClientsId,
-            tenantId=tenant_id),
+        googleCloudGkemulticloudV1AzureClient=self._Client(client_ref, args),
         azureClientId=client_ref.azureClientsId,
-        parent=client_ref.Parent().RelativeName())
-    if validate_only:
-      req.validateOnly = True
+        parent=client_ref.Parent().RelativeName(),
+        validateOnly=flags.GetValidateOnly(args))
     return self._service.Create(req)

@@ -558,6 +558,10 @@
         "confidentialNodes": {
           "description": "Confidential nodes config. All the nodes in the node pool will be Confidential VM once enabled.",
           "$ref": "ConfidentialNodes"
+        },
+        "fastSocket": {
+          "description": "Enable or disable NCCL fast socket for the node pool.",
+          "$ref": "FastSocket"
         }
       }
     },
@@ -597,6 +601,36 @@
         "gpuPartitionSize": {
           "description": "Size of partitions to create on the GPU. Valid values are described in the NVIDIA [mig user guide](https:\/\/docs.nvidia.com\/datacenter\/tesla\/mig-user-guide\/#partitioning).",
           "type": "string"
+        },
+        "gpuSharingConfig": {
+          "description": "The configuration for GPU sharing options.",
+          "$ref": "GPUSharingConfig"
+        }
+      }
+    },
+    "GPUSharingConfig": {
+      "id": "GPUSharingConfig",
+      "description": "GPUSharingConfig represents the GPU sharing configuration for Hardware Accelerators.",
+      "type": "object",
+      "properties": {
+        "maxSharedClientsPerGpu": {
+          "description": "The max number of containers that can share a physical GPU.",
+          "type": "string",
+          "format": "int64"
+        },
+        "gpuSharingStrategy": {
+          "description": "The type of GPU sharing strategy to enable on the GPU node.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value.",
+            "GPUs are time-shared between containers.",
+            "GPUs are shared between containers with NVIDIA MPS."
+          ],
+          "enum": [
+            "GPU_SHARING_STRATEGY_UNSPECIFIED",
+            "TIME_SHARING",
+            "MPS"
+          ]
         }
       }
     },
@@ -799,6 +833,17 @@
       "properties": {
         "enabled": {
           "description": "Whether Confidential Nodes feature is enabled.",
+          "type": "boolean"
+        }
+      }
+    },
+    "FastSocket": {
+      "id": "FastSocket",
+      "description": "Configuration of Fast Socket feature.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Whether Fast Socket features are enabled in the node pool.",
           "type": "boolean"
         }
       }
@@ -1731,6 +1776,20 @@
         "enabled": {
           "description": "Enable Binary Authorization for this cluster. If enabled, all container images will be validated by Binary Authorization.",
           "type": "boolean"
+        },
+        "evaluationMode": {
+          "description": "Mode of operation for binauthz policy evaluation. Currently the only options are equivalent to enable\/disable. If unspecified, defaults to DISABLED.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value, equivalent to DISABLED.",
+            "Disable BinaryAuthorization",
+            "If enabled, enforce Kubernetes admission requests with BinAuthz using the project's singleton policy. Equivalent to bool enabled=true."
+          ],
+          "enum": [
+            "EVALUATION_MODE_UNSPECIFIED",
+            "DISABLED",
+            "PROJECT_SINGLETON_POLICY_ENFORCE"
+          ]
         }
       }
     },
@@ -2980,6 +3039,10 @@
         "etag": {
           "description": "The current etag of the node pool. If an etag is provided and does not match the current etag of the node pool, update will be blocked and an ABORTED error will be returned.",
           "type": "string"
+        },
+        "fastSocket": {
+          "description": "Enable or disable NCCL fast socket for the node pool.",
+          "$ref": "FastSocket"
         }
       }
     },

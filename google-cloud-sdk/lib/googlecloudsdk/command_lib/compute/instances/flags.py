@@ -466,19 +466,27 @@ def AddLocalNvdimmArgs(parser):
 def AddLocalSsdArgsWithSize(parser):
   """Adds local SSD argument for instances and instance-templates."""
 
+  # The size argument has been repurposed for Large Local SSD (go/galactus),
+  # and is available for select customers only, which is why any help_text
+  # is removed.
+
   parser.add_argument(
       '--local-ssd',
       type=arg_parsers.ArgDict(
           spec={
-              'device-name': str,
+              'device-name':
+                  str,
               'interface': (lambda x: x.upper()),
-              'size': arg_parsers.BinarySize(lower_bound='375GB'),
+              'size':
+                  arg_parsers.BinarySize(
+                      lower_bound='375GB', upper_bound='3000GB'),
           }),
       action='append',
       help="""\
       Attaches a local SSD to the instances.
 
-      This flag is currently in BETA and might change without notice.
+      This flag is currently in alpha and beta versions only and might change
+      without notice.
 
       *device-name*::: Optional. A name that indicates the disk name
       the guest operating system will see. Can only be specified if `interface`
@@ -490,11 +498,10 @@ def AddLocalSsdArgsWithSize(parser):
       the default and is supported by more guest operating systems.  NVME
       might provide higher performance.
 
-      *size*::: Optional. Size of the SSD disk. The value must be a whole number
-      followed by a size unit of ``KB'' for kilobyte, ``MB'' for megabyte,
-      ``GB'' for gigabyte, or ``TB'' for terabyte. For example, ``750GB'' will
-      produce a 750 gigabyte disk. The size must be a multiple of 375 GB and
-      the default is 375 GB. For Alpha API only.
+      *size*::: Optional. The only valid value is ``375GB''. Specify the
+      ``--local-ssd'' flag multiple times if you need multiple ``375GB'' local
+      SSD partitions. You can specify a maximum of 24 local SSDs for a maximum
+      of ``9TB'' attached to an instance.
       """)
 
 
@@ -1063,7 +1070,7 @@ def ValidateBulkDiskFlags(args,
       enable_image_csek=enable_image_csek)
 
 
-def ValidateDiskCommonFlags(args, include_name=True):
+def ValidateDiskCommonFlags(args):
   """Validates the values of common disk-related flags."""
 
   for disk in args.disk or []:
@@ -2399,10 +2406,21 @@ def ValidateLocalSsdFlags(args):
           'Legal values are [{ok}].'.format(
               given=interface, ok=', '.join(LOCAL_SSD_INTERFACES)))
     size = local_ssd.get('size')
-    if size is not None and size % (375 * constants.BYTES_IN_ONE_GB) != 0:
-      raise exceptions.InvalidArgumentException(
-          '--local-ssd:size', 'Unexpected local SSD size: [{given}]. '
-          'Legal values are positive multiples of 375GB.'.format(given=size))
+    # TODO(b/206253303): 3000GB partitions will only be available for private
+    # preview for now. Any help_text or error messages will reflect what is
+    # currently publicly available, 375GB partitions only, despite 3000GB
+    # still accepted as a value for select customers. Updates to any public
+    # documentation will occur once Large Local SSD is more widely available.
+    if size is not None:
+      if size != (constants.SSD_SMALL_PARTITION_GB * constants.BYTES_IN_ONE_GB
+                 ) and size != (constants.SSD_LARGE_PARTITION_GB *
+                                constants.BYTES_IN_ONE_GB):
+        raise exceptions.InvalidArgumentException(
+            '--local-ssd:size', 'Unexpected local SSD size: [{given}] bytes. '
+            'Legal values are {small}GB and {large}GB only.'.format(
+                given=size,
+                small=constants.SSD_SMALL_PARTITION_GB,
+                large=constants.SSD_LARGE_PARTITION_GB))
 
 
 def ValidateNicFlags(args):

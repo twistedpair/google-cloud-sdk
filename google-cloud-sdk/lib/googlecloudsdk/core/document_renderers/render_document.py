@@ -88,6 +88,11 @@ def _IsValidTarget(target):
   return not any(c in target for c in ' ,()[]')
 
 
+def _IsFlagValueLink(buf, i):
+  """Return True if the link is set as the flag value."""
+  return re.search('--.*=https?$', buf[:i])
+
+
 class DocumentStyleError(exceptions.Error):
   """An exception for unknown document styles."""
 
@@ -286,7 +291,8 @@ class MarkdownRenderer(object):
         c = buf[i]
         if c == ':':
           index_after_anchor, back, target, text = self._AnchorStyle1(buf, i)
-          if index_after_anchor and _IsValidTarget(target):
+          if (index_after_anchor and _IsValidTarget(target) and
+              not _IsFlagValueLink(buf, i)):
             ret = ret[:-back]
             i = index_after_anchor - 1
             c = self._renderer.Link(target, text)

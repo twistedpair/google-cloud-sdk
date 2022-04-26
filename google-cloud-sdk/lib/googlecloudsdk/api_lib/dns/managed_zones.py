@@ -59,8 +59,28 @@ class Client(object):
             forwarding_config=None,
             peering_config=None,
             service_directory_config=None,
-            cloud_logging_config=None):
-    """Managed Zones Update Request."""
+            cloud_logging_config=None,
+            cleared_fields=None):
+    """Managed Zones Update Request.
+
+    Args:
+      zone_ref: the managed zones being patched.
+      is_async: if the PATCH operation is asynchronous.
+      dnssec_config: zone DNSSEC config.
+      description: zone description.
+      labels: zone labels.
+      private_visibility_config: zone visibility config.
+      forwarding_config: zone forwarding config.
+      peering_config: zone peering config.
+      service_directory_config: zone service directory config.
+      cloud_logging_config: Stackdriver logging config.
+      cleared_fields: the fields that should be included in the request JSON as
+        their default value (fields that are their default value will be omitted
+        otherwise).
+
+    Returns:
+      The PATCH response, if operation is not asynchronous.
+    """
     zone = self.messages.ManagedZone(
         name=zone_ref.Name(),
         dnssecConfig=dnssec_config,
@@ -84,7 +104,10 @@ class Client(object):
     if self.location:
       request.location = self.location
 
-    operation = self._service.Patch(request)
+    # Tell the client that the cleared fields should be included in the JSON as
+    # their default value, otherwise they will be omitted.
+    with self.client.IncludeFields(cleared_fields):
+      operation = self.client.managedZones.Patch(request)
 
     operation_param = {
         'project': zone_ref.project,

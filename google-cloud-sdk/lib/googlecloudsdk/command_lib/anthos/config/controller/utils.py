@@ -42,7 +42,9 @@ def LocationAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='location',
       help_text=("The name of the Config Controller instance location. "
-                 "Currently, only ``us-central1'' is supported."))
+                 "Currently, only ``us-central1'', ``us-east1'', "
+                 "``northamerica-northeast1'', and ``asia-northeast1'' "
+                 "are supported."))
 
 
 def GetInstanceResourceSpec():

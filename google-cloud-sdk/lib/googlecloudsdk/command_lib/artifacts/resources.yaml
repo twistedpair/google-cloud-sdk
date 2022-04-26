@@ -104,3 +104,16 @@ operation:
     attribute_name: operation
     help: |
       An Artifact Registry operation.
+
+file:
+  name: file
+  collection: artifactregistry.projects.locations.repositories.files
+  attributes:
+  - *project
+  - *location
+  - *repository
+  - &file
+    parameter_name: fileId
+    attribute_name: file
+    help: |
+      The file associated with the {resource}.

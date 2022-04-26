@@ -26,11 +26,26 @@ from googlecloudsdk.api_lib.util import api_enablement
 from googlecloudsdk.api_lib.util import apis_internal
 from googlecloudsdk.api_lib.util import apis_util
 from googlecloudsdk.api_lib.util import exceptions as api_exceptions
+from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import gapic_util
 from googlecloudsdk.core import properties
 from googlecloudsdk.third_party.apis import apis_map
 
 import six
+
+
+class Error(exceptions.Error):
+  """A base class for apis helper errors."""
+  pass
+
+
+class GapicRestUnsupportedError(Error):
+  """An error for the unsupported REST transport on GAPIC Clients."""
+
+  def __init__(self):
+    super(
+        GapicRestUnsupportedError,
+        self).__init__('REST transport is not yet supported for GAPIC Clients')
 
 
 def AddUnreleasedAPIs(unreleased_apis_map):
@@ -255,9 +270,14 @@ def GetGapicClientClass(api_name,
     api_version: str, The version of the API.
     transport: apis_util.GapicTransport, The transport class to obtain.
 
+  Raises:
+    GapicRestUnsupportedError: If transport is REST.
+
   Returns:
     The specified GAPIC API Client class.
   """
+  if transport == apis_util.GapicTransport.REST:
+    raise GapicRestUnsupportedError()
   # pylint:disable=protected-access
   return apis_internal._GetGapicClientClass(
       api_name, api_version, transport_choice=transport)
@@ -276,9 +296,14 @@ def GetGapicClientInstance(api_name,
       host. It takes a single argument which is the original host.
     transport: apis_util.GapicTransport, The transport to be used by the client.
 
+  Raises:
+    GapicRestUnsupportedError: If transport is REST.
+
   Returns:
     An instance of the specified GAPIC API client.
   """
+  if transport == apis_util.GapicTransport.REST:
+    raise GapicRestUnsupportedError()
   credentials = gapic_util.GetGapicCredentials()
   # pylint:disable=protected-access
   return apis_internal._GetGapicClientInstance(

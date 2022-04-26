@@ -23,6 +23,7 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.container.gkemulticloud import constants
 from googlecloudsdk.command_lib.projects import util as project_util
 from googlecloudsdk.command_lib.util.apis import arg_utils
+from googlecloudsdk.core import properties
 
 
 def _ToCamelCase(name):
@@ -60,12 +61,18 @@ def AddRegion(parser):
 
 
 def AddPodAddressCidrBlocks(parser):
-  """Add the --pod-address-cidr-blocks flag."""
+  """Adds the --pod-address-cidr-blocks flag."""
   parser.add_argument(
       '--pod-address-cidr-blocks',
       required=True,
       help=('IP address range for the pods in this cluster in CIDR '
-            'notation (e.g. 10.0.0.0/8). Can be any RFC 1918 IP range.'))
+            'notation (e.g. 10.0.0.0/8).'))
+
+
+def GetPodAddressCidrBlocks(args):
+  """Gets the value of --pod-address-cidr-blocks flag."""
+  cidr_blocks = getattr(args, 'pod_address_cidr_blocks', None)
+  return [cidr_blocks] if cidr_blocks else []
 
 
 def AddServiceAddressCidrBlocks(parser):
@@ -74,7 +81,13 @@ def AddServiceAddressCidrBlocks(parser):
       '--service-address-cidr-blocks',
       required=True,
       help=('IP address range for the services IPs in CIDR notation '
-            '(e.g. 10.0.0.0/8). Can be any RFC 1918 IP range.'))
+            '(e.g. 10.0.0.0/8).'))
+
+
+def GetServiceAddressCidrBlocks(args):
+  """Gets the value of --service-address-cidr-blocks flag."""
+  cidr_blocks = getattr(args, 'service_address_cidr_blocks', None)
+  return [cidr_blocks] if cidr_blocks else []
 
 
 def AddSubnetID(parser, help_text, required=True):
@@ -86,7 +99,7 @@ def AddSubnetID(parser, help_text, required=True):
 
 
 def GetSubnetID(args):
-  return args.subnet_id
+  return getattr(args, 'subnet_id', None)
 
 
 def AddOutputFile(parser, help_action):
@@ -115,7 +128,7 @@ def AddValidateOnly(parser, help_action):
 
 
 def GetValidateOnly(args):
-  return args.validate_only
+  return getattr(args, 'validate_only', None)
 
 
 def AddClusterVersion(parser, required=True):
@@ -126,7 +139,7 @@ def AddClusterVersion(parser, required=True):
 
 
 def GetClusterVersion(args):
-  return args.cluster_version
+  return getattr(args, 'cluster_version', None)
 
 
 def AddNodeVersion(parser, required=True):
@@ -137,7 +150,7 @@ def AddNodeVersion(parser, required=True):
 
 
 def GetNodeVersion(args):
-  return args.node_version
+  return getattr(args, 'node_version', None)
 
 
 def AddAutoscaling(parser, required=True):
@@ -170,9 +183,21 @@ def GetAutoscalingParams(args):
   return (min_nodes, max_nodes)
 
 
+def GetMinNodes(args):
+  return getattr(args, 'min_nodes', None)
+
+
+def GetMaxNodes(args):
+  return getattr(args, 'max_nodes', None)
+
+
 def AddMaxPodsPerNode(parser):
   parser.add_argument(
       '--max-pods-per-node', type=int, help='Maximum number of pods per node.')
+
+
+def GetMaxPodsPerNode(args):
+  return getattr(args, 'max_pods_per_node', None)
 
 
 def AddAzureAvailabilityZone(parser):
@@ -181,12 +206,8 @@ def AddAzureAvailabilityZone(parser):
       help='Azure availability zone where the node pool will be created.')
 
 
-def GetMaxPodsPerNode(args):
-  return args.max_pods_per_node
-
-
 def GetAzureAvailabilityZone(args):
-  return args.azure_availability_zone
+  return getattr(args, 'azure_availability_zone', None)
 
 
 def AddVMSize(parser):
@@ -195,7 +216,7 @@ def AddVMSize(parser):
 
 
 def GetVMSize(args):
-  return args.vm_size
+  return getattr(args, 'vm_size', None)
 
 
 def AddSSHPublicKey(parser):
@@ -206,7 +227,7 @@ def AddSSHPublicKey(parser):
 
 
 def GetSSHPublicKey(args):
-  return args.ssh_public_key
+  return getattr(args, 'ssh_public_key', None)
 
 
 def AddRootVolumeSize(parser):
@@ -272,17 +293,6 @@ def GetTags(args):
   return getattr(args, 'tags', None) or {}
 
 
-def AddEnableEncryptionAtHost(parser, noun):
-  parser.add_argument(
-      '--enable-encryption-at-host',
-      action='store_true',
-      help='Enables encryption at the host in the {}'.format(noun))
-
-
-def GetEnableEncryptionAtHost(args):
-  return args.enable_encryption_at_host
-
-
 def AddCluster(parser, help_action):
   parser.add_argument(
       '--cluster',
@@ -302,6 +312,10 @@ def AddDatabaseEncryption(parser):
             'to use to encrypt / decrypt cluster secrets.'))
 
 
+def GetDatabaseEncryptionKeyId(args):
+  return getattr(args, 'database_encryption_key_id', None)
+
+
 def AddConfigEncryption(parser):
   """Adds config encryption flags.
 
@@ -316,6 +330,14 @@ def AddConfigEncryption(parser):
       '--config-encryption-public-key',
       help=('RSA key of the Azure Key Vault public key to use for encrypting '
             'config data.'))
+
+
+def GetConfigEncryptionKeyId(args):
+  return getattr(args, 'config_encryption_key_id', None)
+
+
+def GetConfigEncryptionPublicKey(args):
+  return getattr(args, 'config_encryption_public_key', None)
 
 
 def AddNodeLabels(parser):
@@ -398,8 +420,9 @@ def GetNodeTaints(args):
   taint_effect_map = {
       _ToCamelCase(e): e for e in _TAINT_EFFECT_ENUM_MAPPER.choices
   }
-  if args.node_taints is not None:
-    for k, v in args.node_taints.items():
+  node_taints = getattr(args, 'node_taints', None)
+  if node_taints:
+    for k, v in node_taints.items():
       value, effect = _ValidateNodeTaintFormat(v)
       effect = taint_effect_map[effect]
       effect = _TAINT_EFFECT_ENUM_MAPPER.GetEnumForChoice(effect)
@@ -442,6 +465,11 @@ def AddReplicaPlacements(parser):
             '{}'.format(_REPLICAPLACEMENT_FORMAT_HELP)))
 
 
+def GetReplicaPlacements(args):
+  replica_placements = getattr(args, 'replica_placements', None)
+  return replica_placements if replica_placements else []
+
+
 def AddAuthProviderCmdPath(parser):
   parser.add_argument(
       '--auth-provider-cmd-path',
@@ -465,6 +493,14 @@ def AddProxyConfig(parser):
       '--proxy-secret-id',
       required=True,
       help=('The URL the of the proxy setting secret with its version.'))
+
+
+def GetProxyResourceGroupId(args):
+  return getattr(args, 'proxy_resource_group_id', None)
+
+
+def GetProxySecretId(args):
+  return getattr(args, 'proxy_secret_id', None)
 
 
 def AddFleetProject(parser):
@@ -491,9 +527,9 @@ def GetFleetProject(args):
     The fleet project in format projects/<project-number>
     or None if the fleet projectnot is not specified.
   """
-  if not args.fleet_project:
+  p = getattr(args, 'fleet_project', None)
+  if not p:
     return None
-  p = args.fleet_project
   if not p.isdigit():
     return 'projects/{}'.format(project_util.GetProjectNumber(p))
   return 'projects/{}'.format(p)
@@ -524,6 +560,15 @@ def AddAdminUsers(parser, create=True):
       type=arg_parsers.ArgList(min_length=1),
       metavar='USER',
       help=help_txt)
+
+
+def GetAdminUsers(args):
+  if not hasattr(args, 'admin_users'):
+    return None
+  if args.admin_users:
+    return args.admin_users
+  # Default to core/account property if not specified.
+  return [properties.VALUES.core.account.GetOrFail()]
 
 
 def AddLogging(parser):
@@ -585,10 +630,68 @@ Examples:
   $ {command} --image-type=windows
   $ {command} --image-type=ubuntu
 """
-  parser.add_argument(
-      '--image-type',
-      help=help_text)
+  parser.add_argument('--image-type', help=help_text)
 
 
 def GetImageType(args):
   return getattr(args, 'image_type', None)
+
+
+def AddAzureRegion(parser):
+  parser.add_argument(
+      '--azure-region',
+      required=True,
+      help=('Azure location to deploy the cluster. '
+            'Refer to your Azure subscription for available locations.'))
+
+
+def GetAzureRegion(args):
+  return getattr(args, 'azure_region', None)
+
+
+def AddResourceGroupId(parser):
+  parser.add_argument(
+      '--resource-group-id',
+      required=True,
+      help=('ID of the Azure Resource Group '
+            'to associate the cluster with.'))
+
+
+def GetResourceGroupId(args):
+  return getattr(args, 'resource_group_id', None)
+
+
+def AddVnetId(parser):
+  parser.add_argument(
+      '--vnet-id',
+      required=True,
+      help=('ID of the Azure Virtual Network '
+            'to associate with the cluster.'))
+
+
+def GetVnetId(args):
+  return getattr(args, 'vnet_id', None)
+
+
+def AddServiceLoadBalancerSubnetId(parser):
+  parser.add_argument(
+      '--service-load-balancer-subnet-id',
+      help=('ARM ID of the subnet where Kubernetes private service type '
+            'load balancers are deployed, when the Service lacks a subnet '
+            'annotation.'))
+
+
+def GetServiceLoadBalancerSubnetId(args):
+  return getattr(args, 'service_load_balancer_subnet_id', None)
+
+
+def AddEndpointSubnetId(parser):
+  parser.add_argument(
+      '--endpoint-subnet-id',
+      help=('ARM ID of the subnet where the control plane load balancer '
+            'is deployed. When unspecified, it defaults to the control '
+            'plane subnet ID.'))
+
+
+def GetEndpointSubnetId(args):
+  return getattr(args, 'endpoint_subnet_id', None)

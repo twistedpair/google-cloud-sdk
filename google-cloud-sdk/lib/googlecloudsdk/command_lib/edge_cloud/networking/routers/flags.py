@@ -43,11 +43,15 @@ def AddInterfaceArgs(parser, for_update=False):
       required=True)
   interface_group = parser.add_argument_group(
       mutex=True, help=help_text, required=True)
-  interface_group.add_argument(
+  southbound_interface_group = interface_group.add_argument_group(
+      help='The argument group for adding southbound interfaces to edge router.'
+  )
+  southbound_interface_group.add_argument(
       '--subnetwork',
       help='The subnetwork of the interface being {0}.'.format(operation))
   northbound_interface_group = interface_group.add_argument_group(
-      help='The argument group for adding northbound interface to edge router')
+      help='The argument group for adding northbound interfaces to edge router.'
+  )
   northbound_interface_group.add_argument(
       '--interconnect-attachment',
       help='The interconnect attachment of the interface being {0}.'.format(

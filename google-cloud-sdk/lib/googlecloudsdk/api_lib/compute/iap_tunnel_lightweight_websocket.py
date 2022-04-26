@@ -214,7 +214,7 @@ class IapLightWeightWebsocket(object):
       # in two different errors depending on which stage of the connection we
       # are.
       except (websocket_exceptions.WebSocketConnectionClosedException, OSError,
-              socket.error) as e:
+              socket.error, ssl.SSLError) as e:
         # We don't throw the error if it's a socket closed exception, as we were
         # trying to close it anyways.
         if not self._is_closed_connection_exception(e):
@@ -234,14 +234,16 @@ class IapLightWeightWebsocket(object):
           self.on_close(*close_args)
         else:
           self.on_data(frame.data, frame.opcode)
-    except (Exception, KeyboardInterrupt) as e:  # pylint: disable=broad-except
-      self.on_error(e)
+    except KeyboardInterrupt as e:
       self.close()
+      self.on_close(close_code=None, close_message=None)
+      raise e
+    except Exception as e:  # pylint: disable=broad-except
+      self.close()
+      self.on_error(e)
       error_code = websocket_utils.extract_error_code(e)
       message = websocket_utils.extract_err_message(e)
       self.on_close(error_code, message)
-      if e is KeyboardInterrupt:
-        raise e
 
   def _recv_bytes(self, buffersize):
     """Internal implementation of recv called by recv_frame."""
@@ -298,11 +300,8 @@ class IapLightWeightWebsocket(object):
           "Connection closed while waiting for retry.")
     if e is ssl.SSLError:
       # SSL_ERROR_WANT_WRITE can happen if the socket gives EAGAIN or
-      # EWOULDBLOCK during the SSL handshake.
-      # SSL_ERROR_EOF can happen if the socket gives EBADF during the SSL
-      # handshake.
-      if (e.args[0] != ssl.SSL_ERROR_WANT_WRITE and
-          e.args[0] != ssl.SSL_ERROR_EOF):
+      # EWOULDBLOCK during the SSL handshake, which is a transient error.
+      if e.args[0] != ssl.SSL_ERROR_WANT_WRITE:
         raise e
     elif e is socket.error:
       error_code = websocket_utils.extract_error_code(e)
@@ -356,6 +355,11 @@ class IapLightWeightWebsocket(object):
       # Errno.EBADF means the file descriptor was already closed (common error
       # when interacting with already closed websockets).
       return True
+    elif exception is ssl.SSLError:
+      # SSL_ERROR_EOF can happen if the socket gives EBADF during the SSL
+      # handshake, which means the socket is closed.
+      if exception.args[0] == ssl.SSL_ERROR_EOF:
+        return True
     else:
       error_code = websocket_utils.extract_error_code(exception)
       # ENOTCONN == transport endpoint not connected.
