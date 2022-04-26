@@ -160,7 +160,8 @@ def AddNoLaunchBrowserFlag(parser):
       'to be copied.',
       action=actions.DeprecationAction(
           '--launch-browser',
-          error='--[no-]launch-browser flags are removed. Use --no-browser to '
-          'replace --no-launch-browser.',
-          removed=True,
+          warn='The --[no-]launch-browser flags are deprecated and will be '
+          'removed on June 7th 2022 (Release 389.0.0). '
+          'Use --no-browser to replace --no-launch-browser.\n',
+          removed=False,
           action='store_true'))

@@ -141,6 +141,17 @@ class FlowRunner(six.with_metaclass(abc.ABCMeta, object)):
       raise
 
 
+class OobFlowRunner(FlowRunner):
+  """A flow runner to run OobFlow."""
+
+  def _CreateFlow(self):
+    return c_flow.OobFlow.from_client_config(
+        self._client_config,
+        self._scopes,
+        autogenerate_code_verifier=not properties.VALUES.auth
+        .disable_code_verifier.GetBool())
+
+
 class NoBrowserFlowRunner(FlowRunner):
   """A flow runner to run NoBrowserFlow."""
 
@@ -167,6 +178,29 @@ class NoBrowserHelperRunner(FlowRunner):
                 'redirection. Please run this command on a machine where '
                 'gcloud can start a local server.')
       raise
+
+
+class BrowserFlowWithOobFallbackRunner(FlowRunner):
+  """A flow runner to try normal web flow and fall back to oob flow."""
+
+  _FLOW_ERROR_HELP_MSG = ('There was a problem with web authentication. '
+                          'Try running again with --no-launch-browser.')
+
+  def _CreateFlow(self):
+    try:
+      return c_flow.FullWebFlow.from_client_config(
+          self._client_config,
+          self._scopes,
+          autogenerate_code_verifier=not properties.VALUES.auth
+          .disable_code_verifier.GetBool())
+    except c_flow.LocalServerCreationError as e:
+      log.warning(e)
+      log.warning('Defaulting to URL copy/paste mode.')
+      return c_flow.OobFlow.from_client_config(
+          self._client_config,
+          self._scopes,
+          autogenerate_code_verifier=not properties.VALUES.auth
+          .disable_code_verifier.GetBool())
 
 
 class BrowserFlowWithNoBrowserFallbackRunner(FlowRunner):
@@ -228,6 +262,7 @@ def _IsGoogleOwnedClientID(client_config):
 
 def DoInstalledAppBrowserFlowGoogleAuth(scopes,
                                         client_id_file=None,
+                                        no_launch_browser=False,
                                         no_browser=False,
                                         remote_bootstrap=None):
   """Launches a 3LO oauth2 flow to get google-auth credentials.
@@ -237,6 +272,8 @@ def DoInstalledAppBrowserFlowGoogleAuth(scopes,
     client_id_file: str, The path to a file containing the client id and secret
       to use for the flow.  If None, the default client id for the Cloud SDK is
       used.
+    no_launch_browser: bool, True if users specify --no-launch-browser flag to
+      use the oob auth flow.
     no_browser: bool, True if users specify --no-browser flag to ask another
       gcloud instance to help with authorization.
     remote_bootstrap: str, The auth parameters specified by --remote-bootstrap
@@ -260,6 +297,8 @@ def DoInstalledAppBrowserFlowGoogleAuth(scopes,
           'where gcloud can launch a web browser.')
     user_creds = NoBrowserHelperRunner(
         scopes, client_config).Run(partial_auth_url=remote_bootstrap)
+  elif no_launch_browser:
+    user_creds = OobFlowRunner(scopes, client_config).Run()
   elif not can_launch_browser:
     user_creds = NoBrowserFlowRunner(scopes, client_config).Run()
   else:
