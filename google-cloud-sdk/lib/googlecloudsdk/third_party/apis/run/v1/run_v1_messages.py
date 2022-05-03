@@ -119,7 +119,7 @@ class Binding(_messages.Message):
       policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
-    members: Specifies the principals requesting access for a Cloud Platform
+    members: Specifies the principals requesting access for a Google Cloud
       resource. `members` can have the following values: * `allUsers`: A
       special identifier that represents anyone who is on the internet; with
       or without a Google account. * `allAuthenticatedUsers`: A special
@@ -631,13 +631,12 @@ class ExecutionSpec(_messages.Message):
 
   Fields:
     parallelism: Optional. Specifies the maximum desired number of tasks the
-      execution should run at any given time. Must be <= task_count. If not
-      specified, defaults to -1. When the job is run, this field is passed to
-      the execution, and if -1 it will be set to the maximum possible value.
-      The actual number of tasks running in steady state will be less than
-      this number when there are fewer tasks waiting to be completed
-      remaining, i.e. when the work left to do is less than max parallelism.
-      +optional
+      execution should run at given time. Must be <= task_count. When the job
+      is run, if this field is 0 or unset, the maximum possible value will be
+      used for that execution. The actual number of tasks running in steady
+      state will be less than this number when there are fewer tasks waiting
+      to be completed remaining, i.e. when the work left to do is less than
+      max parallelism. +optional
     taskCount: Optional. Specifies the desired number of tasks the execution
       should run. Setting to 1 means that parallelism is limited to 1 and the
       success of that task signals the success of the execution. More info:
@@ -1617,12 +1616,15 @@ class Probe(_messages.Message):
     httpGet: (Optional) HTTPGet specifies the http request to perform. A field
       inlined from the Handler message.
     initialDelaySeconds: (Optional) Number of seconds after the container has
-      started before liveness probes are initiated. More info:
+      started before liveness probes are initiated. Defaults to 0 seconds.
+      Minimum value is 0. Max value for liveness probe is 3600. Max value for
+      startup probe is 240. More info:
       https://kubernetes.io/docs/concepts/workloads/pods/pod-
       lifecycle#container-probes
     periodSeconds: (Optional) How often (in seconds) to perform the probe.
-      Default to 10 seconds. Minimum value is 1. Maximum value is 3600. Must
-      be greater or equal than timeout_seconds.
+      Default to 10 seconds. Minimum value is 1. Max value for liveness probe
+      is 3600. Max value for startup probe is 240. Must be greater or equal
+      than timeout_seconds.
     successThreshold: (Optional) Minimum consecutive successes for the probe
       to be considered successful after having failed. Defaults to 1. Must be
       1 for liveness and startup Probes.
@@ -2027,7 +2029,8 @@ class RunApiV1NamespacesSecretsGetRequest(_messages.Message):
 
   Fields:
     name: Required. The name of the secret being retrieved. If needed, replace
-      {namespace_id} with the project ID.
+      {namespace} with the project ID or number. It takes the form
+      namespaces/{namespace}. For example: namespaces/PROJECT_ID
   """
 
   name = _messages.StringField(1, required=True)
@@ -2038,7 +2041,8 @@ class RunApiV1NamespacesSecretsReplaceSecretRequest(_messages.Message):
 
   Fields:
     name: Required. The name of the secret being retrieved. If needed, replace
-      {namespace_id} with the project ID.
+      {namespace} with the project ID or number. It takes the form
+      namespaces/{namespace}. For example: namespaces/PROJECT_ID
     secret: A Secret resource to be passed as the request body.
   """
 
@@ -2115,8 +2119,9 @@ class RunNamespacesDomainmappingsCreateRequest(_messages.Message):
     dryRun: Indicates that the server should validate the request and populate
       default values without persisting the request. Supported values: `all`
     parent: The namespace in which the domain mapping should be created. For
-      Cloud Run (fully managed), replace {namespace_id} with the project ID or
-      number.
+      Cloud Run (fully managed), replace {namespace} with the project ID or
+      number. It takes the form namespaces/{namespace}. For example:
+      namespaces/PROJECT_ID
   """
 
   domainMapping = _messages.MessageField('DomainMapping', 1)
@@ -2133,7 +2138,8 @@ class RunNamespacesDomainmappingsDeleteRequest(_messages.Message):
       default values without persisting the request. Supported values: `all`
     kind: Cloud Run currently ignores this parameter.
     name: The name of the domain mapping to delete. For Cloud Run (fully
-      managed), replace {namespace_id} with the project ID or number.
+      managed), replace {namespace} with the project ID or number. It takes
+      the form namespaces/{namespace}. For example: namespaces/PROJECT_ID
     propagationPolicy: Specifies the propagation policy of delete. Cloud Run
       currently ignores this setting, and deletes in the background. Please
       see kubernetes.io/docs/concepts/workloads/controllers/garbage-
@@ -2152,7 +2158,8 @@ class RunNamespacesDomainmappingsGetRequest(_messages.Message):
 
   Fields:
     name: The name of the domain mapping to retrieve. For Cloud Run (fully
-      managed), replace {namespace_id} with the project ID or number.
+      managed), replace {namespace} with the project ID or number. It takes
+      the form namespaces/{namespace}. For example: namespaces/PROJECT_ID
   """
 
   name = _messages.StringField(1, required=True)
@@ -2171,8 +2178,9 @@ class RunNamespacesDomainmappingsListRequest(_messages.Message):
       operations are =, !=, exists, in, and notIn.
     limit: Optional. The maximum number of records that should be returned.
     parent: The namespace from which the domain mappings should be listed. For
-      Cloud Run (fully managed), replace {namespace_id} with the project ID or
-      number.
+      Cloud Run (fully managed), replace {namespace} with the project ID or
+      number. It takes the form namespaces/{namespace}. For example:
+      namespaces/PROJECT_ID
     resourceVersion: The baseline resource version from which the list or
       watch operation should start. Not currently used by Cloud Run.
     watch: Flag that indicates that the client expects to watch this resource
@@ -2195,8 +2203,9 @@ class RunNamespacesExecutionsDeleteRequest(_messages.Message):
   Fields:
     apiVersion: Optional. Cloud Run currently ignores this parameter.
     kind: Optional. Cloud Run currently ignores this parameter.
-    name: Required. The name of the execution to delete. Replace
-      {namespace_id} with the project ID or number.
+    name: Required. The name of the execution to delete. Replace {namespace}
+      with the project ID or number. It takes the form namespaces/{namespace}.
+      For example: namespaces/PROJECT_ID
     propagationPolicy: Optional. Specifies the propagation policy of delete.
       Cloud Run currently ignores this setting, and deletes in the background.
       Please see kubernetes.io/docs/concepts/workloads/controllers/garbage-
@@ -2213,8 +2222,9 @@ class RunNamespacesExecutionsGetRequest(_messages.Message):
   r"""A RunNamespacesExecutionsGetRequest object.
 
   Fields:
-    name: Required. The name of the execution to retrieve. Replace
-      {namespace_id} with the project ID or number.
+    name: Required. The name of the execution to retrieve. Replace {namespace}
+      with the project ID or number. It takes the form namespaces/{namespace}.
+      For example: namespaces/PROJECT_ID
   """
 
   name = _messages.StringField(1, required=True)
@@ -2233,7 +2243,8 @@ class RunNamespacesExecutionsListRequest(_messages.Message):
       Supported operations are =, !=, exists, in, and notIn.
     limit: Optional. The maximum number of records that should be returned.
     parent: Required. The namespace from which the executions should be
-      listed. Replace {namespace_id} with the project ID or number.
+      listed. Replace {namespace} with the project ID or number. It takes the
+      form namespaces/{namespace}. For example: namespaces/PROJECT_ID
     resourceVersion: Optional. The baseline resource version from which the
       list or watch operation should start. Not currently used by Cloud Run.
     watch: Optional. Flag that indicates that the client expects to watch this
@@ -2256,7 +2267,8 @@ class RunNamespacesJobsCreateRequest(_messages.Message):
   Fields:
     job: A Job resource to be passed as the request body.
     parent: Required. The namespace in which the job should be created.
-      Replace {namespace_id} with the project ID or number.
+      Replace {namespace} with the project ID or number. It takes the form
+      namespaces/{namespace}. For example: namespaces/PROJECT_ID
   """
 
   job = _messages.MessageField('Job', 1)
@@ -2269,8 +2281,9 @@ class RunNamespacesJobsDeleteRequest(_messages.Message):
   Fields:
     apiVersion: Optional. Cloud Run currently ignores this parameter.
     kind: Optional. Cloud Run currently ignores this parameter.
-    name: Required. The name of the job to delete. Replace {namespace_id} with
-      the project ID or number.
+    name: Required. The name of the job to delete. Replace {namespace} with
+      the project ID or number. It takes the form namespaces/{namespace}. For
+      example: namespaces/PROJECT_ID
     propagationPolicy: Optional. Specifies the propagation policy of delete.
       Cloud Run currently ignores this setting, and deletes in the background.
       Please see kubernetes.io/docs/concepts/workloads/controllers/garbage-
@@ -2287,8 +2300,9 @@ class RunNamespacesJobsGetRequest(_messages.Message):
   r"""A RunNamespacesJobsGetRequest object.
 
   Fields:
-    name: Required. The name of the job to retrieve. Replace {namespace_id}
-      with the project ID or number.
+    name: Required. The name of the job to retrieve. Replace {namespace} with
+      the project ID or number. It takes the form namespaces/{namespace}. For
+      example: namespaces/PROJECT_ID
   """
 
   name = _messages.StringField(1, required=True)
@@ -2307,7 +2321,8 @@ class RunNamespacesJobsListRequest(_messages.Message):
       Supported operations are =, !=, exists, in, and notIn.
     limit: Optional. The maximum number of records that should be returned.
     parent: Required. The namespace from which the jobs should be listed.
-      Replace {namespace_id} with the project ID or number.
+      Replace {namespace} with the project ID or number. It takes the form
+      namespaces/{namespace}. For example: namespaces/PROJECT_ID
     resourceVersion: Optional. The baseline resource version from which the
       list or watch operation should start. Not currently used by Cloud Run.
     watch: Optional. Flag that indicates that the client expects to watch this
@@ -2330,7 +2345,8 @@ class RunNamespacesJobsReplaceJobRequest(_messages.Message):
   Fields:
     job: A Job resource to be passed as the request body.
     name: Required. The name of the service being replaced. Replace
-      {namespace_id} with the project ID or number.
+      {namespace} with the project ID or number. It takes the form
+      namespaces/{namespace}. For example: namespaces/PROJECT_ID
   """
 
   job = _messages.MessageField('Job', 1)
@@ -2341,8 +2357,9 @@ class RunNamespacesJobsRunRequest(_messages.Message):
   r"""A RunNamespacesJobsRunRequest object.
 
   Fields:
-    name: Required. The name of the job to run. Replace {namespace_id} with
-      the project ID or number.
+    name: Required. The name of the job to run. Replace {namespace} with the
+      project ID or number. It takes the form namespaces/{namespace}. For
+      example: namespaces/PROJECT_ID
     runJobRequest: A RunJobRequest resource to be passed as the request body.
   """
 
@@ -2359,7 +2376,8 @@ class RunNamespacesRevisionsDeleteRequest(_messages.Message):
       default values without persisting the request. Supported values: `all`
     kind: Cloud Run currently ignores this parameter.
     name: The name of the revision to delete. For Cloud Run (fully managed),
-      replace {namespace_id} with the project ID or number.
+      replace {namespace} with the project ID or number. It takes the form
+      namespaces/{namespace}. For example: namespaces/PROJECT_ID
     propagationPolicy: Specifies the propagation policy of delete. Cloud Run
       currently ignores this setting, and deletes in the background. Please
       see kubernetes.io/docs/concepts/workloads/controllers/garbage-
@@ -2378,7 +2396,8 @@ class RunNamespacesRevisionsGetRequest(_messages.Message):
 
   Fields:
     name: The name of the revision to retrieve. For Cloud Run (fully managed),
-      replace {namespace_id} with the project ID or number.
+      replace {namespace} with the project ID or number. It takes the form
+      namespaces/{namespace}. For example: namespaces/PROJECT_ID
   """
 
   name = _messages.StringField(1, required=True)
@@ -2397,8 +2416,9 @@ class RunNamespacesRevisionsListRequest(_messages.Message):
       operations are =, !=, exists, in, and notIn.
     limit: Optional. The maximum number of records that should be returned.
     parent: The namespace from which the revisions should be listed. For Cloud
-      Run (fully managed), replace {namespace_id} with the project ID or
-      number.
+      Run (fully managed), replace {namespace} with the project ID or number.
+      It takes the form namespaces/{namespace}. For example:
+      namespaces/PROJECT_ID
     resourceVersion: The baseline resource version from which the list or
       watch operation should start. Not currently used by Cloud Run.
     watch: Flag that indicates that the client expects to watch this resource
@@ -2420,7 +2440,8 @@ class RunNamespacesRoutesGetRequest(_messages.Message):
 
   Fields:
     name: The name of the route to retrieve. For Cloud Run (fully managed),
-      replace {namespace_id} with the project ID or number.
+      replace {namespace} with the project ID or number. It takes the form
+      namespaces/{namespace}. For example: namespaces/PROJECT_ID
   """
 
   name = _messages.StringField(1, required=True)
@@ -2439,8 +2460,9 @@ class RunNamespacesRoutesListRequest(_messages.Message):
       operations are =, !=, exists, in, and notIn.
     limit: Optional. The maximum number of records that should be returned.
     parent: The namespace from which the routes should be listed. For Cloud
-      Run (fully managed), replace {namespace_id} with the project ID or
-      number.
+      Run (fully managed), replace {namespace} with the project ID or number.
+      It takes the form namespaces/{namespace}. For example:
+      namespaces/PROJECT_ID
     resourceVersion: The baseline resource version from which the list or
       watch operation should start. Not currently used by Cloud Run.
     watch: Flag that indicates that the client expects to watch this resource
@@ -2464,8 +2486,9 @@ class RunNamespacesServicesCreateRequest(_messages.Message):
     dryRun: Indicates that the server should validate the request and populate
       default values without persisting the request. Supported values: `all`
     parent: The namespace in which the service should be created. For Cloud
-      Run (fully managed), replace {namespace_id} with the project ID or
-      number.
+      Run (fully managed), replace {namespace} with the project ID or number.
+      It takes the form namespaces/{namespace}. For example:
+      namespaces/PROJECT_ID
     service: A Service resource to be passed as the request body.
   """
 
@@ -2483,7 +2506,8 @@ class RunNamespacesServicesDeleteRequest(_messages.Message):
       default values without persisting the request. Supported values: `all`
     kind: Cloud Run currently ignores this parameter.
     name: The name of the service to delete. For Cloud Run (fully managed),
-      replace {namespace_id} with the project ID or number.
+      replace {namespace} with the project ID or number. It takes the form
+      namespaces/{namespace}. For example: namespaces/PROJECT_ID
     propagationPolicy: Specifies the propagation policy of delete. Cloud Run
       currently ignores this setting, and deletes in the background. Please
       see kubernetes.io/docs/concepts/workloads/controllers/garbage-
@@ -2502,7 +2526,8 @@ class RunNamespacesServicesGetRequest(_messages.Message):
 
   Fields:
     name: The name of the service to retrieve. For Cloud Run (fully managed),
-      replace {namespace_id} with the project ID or number.
+      replace {namespace} with the project ID or number. It takes the form
+      namespaces/{namespace}. For example: namespaces/PROJECT_ID
   """
 
   name = _messages.StringField(1, required=True)
@@ -2521,8 +2546,9 @@ class RunNamespacesServicesListRequest(_messages.Message):
       operations are =, !=, exists, in, and notIn.
     limit: Optional. The maximum number of records that should be returned.
     parent: The namespace from which the services should be listed. For Cloud
-      Run (fully managed), replace {namespace_id} with the project ID or
-      number.
+      Run (fully managed), replace {namespace} with the project ID or number.
+      It takes the form namespaces/{namespace}. For example:
+      namespaces/PROJECT_ID
     resourceVersion: The baseline resource version from which the list or
       watch operation should start. Not currently used by Cloud Run.
     watch: Flag that indicates that the client expects to watch this resource
@@ -2546,7 +2572,8 @@ class RunNamespacesServicesReplaceServiceRequest(_messages.Message):
     dryRun: Indicates that the server should validate the request and populate
       default values without persisting the request. Supported values: `all`
     name: The name of the service being replaced. For Cloud Run (fully
-      managed), replace {namespace_id} with the project ID or number.
+      managed), replace {namespace} with the project ID or number. It takes
+      the form namespaces/{namespace}. For example: namespaces/PROJECT_ID
     service: A Service resource to be passed as the request body.
   """
 
@@ -2559,8 +2586,9 @@ class RunNamespacesTasksGetRequest(_messages.Message):
   r"""A RunNamespacesTasksGetRequest object.
 
   Fields:
-    name: Required. The name of the task to retrieve. Replace {namespace_id}
-      with the project ID or number.
+    name: Required. The name of the task to retrieve. Replace {namespace} with
+      the project ID or number. It takes the form namespaces/{namespace}. For
+      example: namespaces/PROJECT_ID
   """
 
   name = _messages.StringField(1, required=True)
@@ -2579,7 +2607,8 @@ class RunNamespacesTasksListRequest(_messages.Message):
       Supported operations are =, !=, exists, in, and notIn.
     limit: Optional. The maximum number of records that should be returned.
     parent: Required. The namespace from which the tasks should be listed.
-      Replace {namespace_id} with the project ID or number.
+      Replace {namespace} with the project ID or number. It takes the form
+      namespaces/{namespace}. For example: namespaces/PROJECT_ID
     resourceVersion: Optional. The baseline resource version from which the
       list or watch operation should start. Not currently used by Cloud Run.
     watch: Optional. Flag that indicates that the client expects to watch this
@@ -2676,8 +2705,9 @@ class RunProjectsLocationsDomainmappingsCreateRequest(_messages.Message):
     dryRun: Indicates that the server should validate the request and populate
       default values without persisting the request. Supported values: `all`
     parent: The namespace in which the domain mapping should be created. For
-      Cloud Run (fully managed), replace {namespace_id} with the project ID or
-      number.
+      Cloud Run (fully managed), replace {namespace} with the project ID or
+      number. It takes the form namespaces/{namespace}. For example:
+      namespaces/PROJECT_ID
   """
 
   domainMapping = _messages.MessageField('DomainMapping', 1)
@@ -2694,7 +2724,8 @@ class RunProjectsLocationsDomainmappingsDeleteRequest(_messages.Message):
       default values without persisting the request. Supported values: `all`
     kind: Cloud Run currently ignores this parameter.
     name: The name of the domain mapping to delete. For Cloud Run (fully
-      managed), replace {namespace_id} with the project ID or number.
+      managed), replace {namespace} with the project ID or number. It takes
+      the form namespaces/{namespace}. For example: namespaces/PROJECT_ID
     propagationPolicy: Specifies the propagation policy of delete. Cloud Run
       currently ignores this setting, and deletes in the background. Please
       see kubernetes.io/docs/concepts/workloads/controllers/garbage-
@@ -2713,7 +2744,8 @@ class RunProjectsLocationsDomainmappingsGetRequest(_messages.Message):
 
   Fields:
     name: The name of the domain mapping to retrieve. For Cloud Run (fully
-      managed), replace {namespace_id} with the project ID or number.
+      managed), replace {namespace} with the project ID or number. It takes
+      the form namespaces/{namespace}. For example: namespaces/PROJECT_ID
   """
 
   name = _messages.StringField(1, required=True)
@@ -2732,8 +2764,9 @@ class RunProjectsLocationsDomainmappingsListRequest(_messages.Message):
       operations are =, !=, exists, in, and notIn.
     limit: Optional. The maximum number of records that should be returned.
     parent: The namespace from which the domain mappings should be listed. For
-      Cloud Run (fully managed), replace {namespace_id} with the project ID or
-      number.
+      Cloud Run (fully managed), replace {namespace} with the project ID or
+      number. It takes the form namespaces/{namespace}. For example:
+      namespaces/PROJECT_ID
     resourceVersion: The baseline resource version from which the list or
       watch operation should start. Not currently used by Cloud Run.
     watch: Flag that indicates that the client expects to watch this resource
@@ -2810,7 +2843,7 @@ class RunProjectsLocationsListRequest(_messages.Message):
 
   Fields:
     filter: A filter to narrow down results to a preferred subset. The
-      filtering language accepts strings like "displayName=tokyo", and is
+      filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
     name: The resource that owns the locations collection, if applicable.
     pageSize: The maximum number of results to return. If not set, the service
@@ -2861,7 +2894,8 @@ class RunProjectsLocationsRevisionsDeleteRequest(_messages.Message):
       default values without persisting the request. Supported values: `all`
     kind: Cloud Run currently ignores this parameter.
     name: The name of the revision to delete. For Cloud Run (fully managed),
-      replace {namespace_id} with the project ID or number.
+      replace {namespace} with the project ID or number. It takes the form
+      namespaces/{namespace}. For example: namespaces/PROJECT_ID
     propagationPolicy: Specifies the propagation policy of delete. Cloud Run
       currently ignores this setting, and deletes in the background. Please
       see kubernetes.io/docs/concepts/workloads/controllers/garbage-
@@ -2880,7 +2914,8 @@ class RunProjectsLocationsRevisionsGetRequest(_messages.Message):
 
   Fields:
     name: The name of the revision to retrieve. For Cloud Run (fully managed),
-      replace {namespace_id} with the project ID or number.
+      replace {namespace} with the project ID or number. It takes the form
+      namespaces/{namespace}. For example: namespaces/PROJECT_ID
   """
 
   name = _messages.StringField(1, required=True)
@@ -2899,8 +2934,9 @@ class RunProjectsLocationsRevisionsListRequest(_messages.Message):
       operations are =, !=, exists, in, and notIn.
     limit: Optional. The maximum number of records that should be returned.
     parent: The namespace from which the revisions should be listed. For Cloud
-      Run (fully managed), replace {namespace_id} with the project ID or
-      number.
+      Run (fully managed), replace {namespace} with the project ID or number.
+      It takes the form namespaces/{namespace}. For example:
+      namespaces/PROJECT_ID
     resourceVersion: The baseline resource version from which the list or
       watch operation should start. Not currently used by Cloud Run.
     watch: Flag that indicates that the client expects to watch this resource
@@ -2922,7 +2958,8 @@ class RunProjectsLocationsRoutesGetRequest(_messages.Message):
 
   Fields:
     name: The name of the route to retrieve. For Cloud Run (fully managed),
-      replace {namespace_id} with the project ID or number.
+      replace {namespace} with the project ID or number. It takes the form
+      namespaces/{namespace}. For example: namespaces/PROJECT_ID
   """
 
   name = _messages.StringField(1, required=True)
@@ -2941,8 +2978,9 @@ class RunProjectsLocationsRoutesListRequest(_messages.Message):
       operations are =, !=, exists, in, and notIn.
     limit: Optional. The maximum number of records that should be returned.
     parent: The namespace from which the routes should be listed. For Cloud
-      Run (fully managed), replace {namespace_id} with the project ID or
-      number.
+      Run (fully managed), replace {namespace} with the project ID or number.
+      It takes the form namespaces/{namespace}. For example:
+      namespaces/PROJECT_ID
     resourceVersion: The baseline resource version from which the list or
       watch operation should start. Not currently used by Cloud Run.
     watch: Flag that indicates that the client expects to watch this resource
@@ -2977,7 +3015,8 @@ class RunProjectsLocationsSecretsGetRequest(_messages.Message):
 
   Fields:
     name: Required. The name of the secret being retrieved. If needed, replace
-      {namespace_id} with the project ID.
+      {namespace} with the project ID or number. It takes the form
+      namespaces/{namespace}. For example: namespaces/PROJECT_ID
   """
 
   name = _messages.StringField(1, required=True)
@@ -2988,7 +3027,8 @@ class RunProjectsLocationsSecretsReplaceSecretRequest(_messages.Message):
 
   Fields:
     name: Required. The name of the secret being retrieved. If needed, replace
-      {namespace_id} with the project ID.
+      {namespace} with the project ID or number. It takes the form
+      namespaces/{namespace}. For example: namespaces/PROJECT_ID
     secret: A Secret resource to be passed as the request body.
   """
 
@@ -3003,8 +3043,9 @@ class RunProjectsLocationsServicesCreateRequest(_messages.Message):
     dryRun: Indicates that the server should validate the request and populate
       default values without persisting the request. Supported values: `all`
     parent: The namespace in which the service should be created. For Cloud
-      Run (fully managed), replace {namespace_id} with the project ID or
-      number.
+      Run (fully managed), replace {namespace} with the project ID or number.
+      It takes the form namespaces/{namespace}. For example:
+      namespaces/PROJECT_ID
     service: A Service resource to be passed as the request body.
   """
 
@@ -3022,7 +3063,8 @@ class RunProjectsLocationsServicesDeleteRequest(_messages.Message):
       default values without persisting the request. Supported values: `all`
     kind: Cloud Run currently ignores this parameter.
     name: The name of the service to delete. For Cloud Run (fully managed),
-      replace {namespace_id} with the project ID or number.
+      replace {namespace} with the project ID or number. It takes the form
+      namespaces/{namespace}. For example: namespaces/PROJECT_ID
     propagationPolicy: Specifies the propagation policy of delete. Cloud Run
       currently ignores this setting, and deletes in the background. Please
       see kubernetes.io/docs/concepts/workloads/controllers/garbage-
@@ -3066,7 +3108,8 @@ class RunProjectsLocationsServicesGetRequest(_messages.Message):
 
   Fields:
     name: The name of the service to retrieve. For Cloud Run (fully managed),
-      replace {namespace_id} with the project ID or number.
+      replace {namespace} with the project ID or number. It takes the form
+      namespaces/{namespace}. For example: namespaces/PROJECT_ID
   """
 
   name = _messages.StringField(1, required=True)
@@ -3085,8 +3128,9 @@ class RunProjectsLocationsServicesListRequest(_messages.Message):
       operations are =, !=, exists, in, and notIn.
     limit: Optional. The maximum number of records that should be returned.
     parent: The namespace from which the services should be listed. For Cloud
-      Run (fully managed), replace {namespace_id} with the project ID or
-      number.
+      Run (fully managed), replace {namespace} with the project ID or number.
+      It takes the form namespaces/{namespace}. For example:
+      namespaces/PROJECT_ID
     resourceVersion: The baseline resource version from which the list or
       watch operation should start. Not currently used by Cloud Run.
     watch: Flag that indicates that the client expects to watch this resource
@@ -3110,7 +3154,8 @@ class RunProjectsLocationsServicesReplaceServiceRequest(_messages.Message):
     dryRun: Indicates that the server should validate the request and populate
       default values without persisting the request. Supported values: `all`
     name: The name of the service being replaced. For Cloud Run (fully
-      managed), replace {namespace_id} with the project ID or number.
+      managed), replace {namespace} with the project ID or number. It takes
+      the form namespaces/{namespace}. For example: namespaces/PROJECT_ID
     service: A Service resource to be passed as the request body.
   """
 
@@ -3455,8 +3500,8 @@ class SetIamPolicyRequest(_messages.Message):
   Fields:
     policy: REQUIRED: The complete policy to be applied to the `resource`. The
       size of the policy is limited to a few 10s of KB. An empty policy is a
-      valid policy but certain Cloud Platform services (such as Projects)
-      might reject them.
+      valid policy but certain Google Cloud services (such as Projects) might
+      reject them.
     updateMask: OPTIONAL: A FieldMask specifying which fields of the policy to
       modify. Only the fields in the mask will be modified. If no mask is
       provided, the following default mask is used: `paths: "bindings, etag"`
@@ -3768,7 +3813,7 @@ class TestIamPermissionsRequest(_messages.Message):
 
   Fields:
     permissions: The set of permissions to check for the `resource`.
-      Permissions with wildcards (such as '*' or 'storage.*') are not allowed.
+      Permissions with wildcards (such as `*` or `storage.*`) are not allowed.
       For more information see [IAM
       Overview](https://cloud.google.com/iam/docs/overview#permissions).
   """

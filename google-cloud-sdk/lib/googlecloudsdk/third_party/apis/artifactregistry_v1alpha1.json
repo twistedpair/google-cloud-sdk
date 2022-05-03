@@ -708,6 +708,20 @@
           }
         }
       }
+    },
+    "GoogleDevtoolsArtifactregistryV1alpha1UploadAptArtifactMetadata": {
+      "id": "GoogleDevtoolsArtifactregistryV1alpha1UploadAptArtifactMetadata",
+      "description": "The operation metadata for uploading artifacts.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleDevtoolsArtifactregistryV1alpha1UploadYumArtifactMetadata": {
+      "id": "GoogleDevtoolsArtifactregistryV1alpha1UploadYumArtifactMetadata",
+      "description": "The operation metadata for uploading artifacts.",
+      "type": "object",
+      "properties": {
+      }
     }
   },
   "resources": {

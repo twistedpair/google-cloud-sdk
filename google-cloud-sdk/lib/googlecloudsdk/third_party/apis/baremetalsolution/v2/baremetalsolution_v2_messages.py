@@ -1300,6 +1300,9 @@ class Network(_messages.Message):
       schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. Format:
       `projects/{project}/locations/{location}/networks/{network}`
+    reservations: List of IP address reservations in this network. When
+      updating this field, an error will be generated if a reservation
+      conflicts with an IP address already allocated to a physical server.
     servicesCidr: IP range for reserved for services (e.g. NFS).
     state: The Network state.
     type: The type of this network.
@@ -1362,11 +1365,12 @@ class Network(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 4)
   macAddress = _messages.StringField(5, repeated=True)
   name = _messages.StringField(6)
-  servicesCidr = _messages.StringField(7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
-  type = _messages.EnumField('TypeValueValuesEnum', 9)
-  vlanId = _messages.StringField(10)
-  vrf = _messages.MessageField('VRF', 11)
+  reservations = _messages.MessageField('NetworkAddressReservation', 7, repeated=True)
+  servicesCidr = _messages.StringField(8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  type = _messages.EnumField('TypeValueValuesEnum', 10)
+  vlanId = _messages.StringField(11)
+  vrf = _messages.MessageField('VRF', 12)
 
 
 class NetworkAddress(_messages.Message):
@@ -1382,6 +1386,24 @@ class NetworkAddress(_messages.Message):
   address = _messages.StringField(1)
   existingNetworkId = _messages.StringField(2)
   networkId = _messages.StringField(3)
+
+
+class NetworkAddressReservation(_messages.Message):
+  r"""A reservation of one or more addresses in a network.
+
+  Fields:
+    endAddress: The last address of this reservation block, inclusive. I.e.,
+      for cases when reservations are only single addresses, end_address and
+      start_address will be the same. Must be specified as a single IPv4
+      address, e.g. 10.1.2.2.
+    note: A note about this reservation, intended for human consumption.
+    startAddress: The first address of this reservation block. Must be
+      specified as a single IPv4 address, e.g. 10.1.2.2.
+  """
+
+  endAddress = _messages.StringField(1)
+  note = _messages.StringField(2)
+  startAddress = _messages.StringField(3)
 
 
 class NetworkConfig(_messages.Message):

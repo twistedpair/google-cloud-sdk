@@ -1891,7 +1891,7 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/pubsub"
               ],
-              "description": "Gets the configuration details of a snapshot. Snapshots are used in Seek operations, which allow you to manage message acknowledgments in bulk. That is, you can set the acknowledgment state of messages in an existing subscription to the state captured by a snapshot."
+              "description": "Gets the configuration details of a snapshot. Snapshots are used in [Seek](https:\/\/cloud.google.com\/pubsub\/docs\/replay-overview) operations, which allow you to manage message acknowledgments in bulk. That is, you can set the acknowledgment state of messages in an existing subscription to the state captured by a snapshot."
             },
             "list": {
               "id": "pubsub.projects.snapshots.list",
@@ -1986,7 +1986,7 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/pubsub"
               ],
-              "description": "Updates an existing snapshot. Snapshots are used in Seek operations, which allow you to manage message acknowledgments in bulk. That is, you can set the acknowledgment state of messages in an existing subscription to the state captured by a snapshot."
+              "description": "Updates an existing snapshot. Snapshots are used in [Seek](https:\/\/cloud.google.com\/pubsub\/docs\/replay-overview) operations, which allow you to manage message acknowledgments in bulk. That is, you can set the acknowledgment state of messages in an existing subscription to the state captured by a snapshot."
             },
             "delete": {
               "id": "pubsub.projects.snapshots.delete",

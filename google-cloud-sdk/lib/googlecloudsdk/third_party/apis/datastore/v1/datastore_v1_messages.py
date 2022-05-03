@@ -1975,7 +1975,8 @@ class RunQueryRequest(_messages.Message):
   r"""The request for Datastore.RunQuery.
 
   Fields:
-    gqlQuery: The GQL query to run.
+    gqlQuery: The GQL query to run. This query must be a non-aggregation
+      query.
     partitionId: Entities are partitioned into subsets, identified by a
       partition ID. Queries are scoped to a single partition. This partition
       ID is normalized with the standard default context partition ID.

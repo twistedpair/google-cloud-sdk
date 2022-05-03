@@ -170,7 +170,7 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
       provider = self._source_resource.storage_url.scheme
       # TODO(b/162264437): Support all of download_object's parameters.
       if self._source_resource.size != 0:
-        api_factory.get_api(provider).download_object(
+        api_download_result = api_factory.get_api(provider).download_object(
             self._source_resource,
             download_stream,
             request_config,
@@ -181,6 +181,7 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
             start_byte=start_byte,
             end_byte=end_byte)
       else:
+        api_download_result = None
         # Trying to download a zero-sized file. Call progress_callback to
         # ensure that the file count gets updated.
         progress_callback(0)
@@ -201,16 +202,19 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
           self._destination_resource.storage_url.object_name,
           self._source_resource.crc32c_hash, calculated_digest)
 
+    return api_download_result
+
   def _perform_one_shot_download(self, request_config, progress_callback,
                                  digesters):
     """Sets up a basic download based on task attributes."""
     start_byte = self._offset
     end_byte = self._offset + self._length - 1
 
-    self._perform_download(request_config, progress_callback,
-                           cloud_api.DownloadStrategy.ONE_SHOT, start_byte,
-                           end_byte, files.BinaryFileWriterMode.TRUNCATE,
-                           digesters)
+    return self._perform_download(request_config, progress_callback,
+                                  cloud_api.DownloadStrategy.ONE_SHOT,
+                                  start_byte, end_byte,
+                                  files.BinaryFileWriterMode.TRUNCATE,
+                                  digesters)
 
   def _catch_up_digesters(self, digesters, start_byte, end_byte):
     with files.BinaryFileReader(
@@ -244,11 +248,22 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
       # TRUNCATE can create new file unlike MODIFY.
       write_mode = files.BinaryFileWriterMode.TRUNCATE
 
-    self._perform_download(request_config, progress_callback,
-                           cloud_api.DownloadStrategy.RESUMABLE, start_byte,
-                           end_byte, write_mode, digesters)
+    return self._perform_download(request_config, progress_callback,
+                                  cloud_api.DownloadStrategy.RESUMABLE,
+                                  start_byte, end_byte, write_mode, digesters)
 
-  def _get_output(self, digesters):
+  def _get_output(self, digesters, api_download_result):
+    """Generates task.Output from download execution results.
+
+    Args:
+      digesters (dict): Contains hash objects for download checksums.
+      api_download_result (cloud_api.DownloadApiClientReturnValue|None): Generic
+        information from API client about the download results.
+
+    Returns:
+      task.Output: Data the parent download or finalize download class would
+        like to have.
+    """
     messages = []
     if hash_util.HashAlgorithm.MD5 in digesters:
       md5_digest = hash_util.get_base64_hash_digest_string(
@@ -266,6 +281,13 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
                   'crc32c_checksum': crc32c_checksum,
                   'length': self._length,
               }))
+
+    if (api_download_result and self._user_request_args and
+        self._user_request_args.system_posix_data):
+      messages.append(
+          task.Message(
+              topic=task.Topic.API_DOWNLOAD_RESULT,
+              payload=api_download_result))
 
     return task.Output(additional_task_iterators=None, messages=messages)
 
@@ -293,7 +315,7 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
             digesters,
             start_byte=self._offset,
             end_byte=self._source_resource.size)
-        return self._get_output(digesters)
+        return
       if found_tracker_file and start_byte != self._offset:
         self._catch_up_digesters(
             digesters, start_byte=self._offset, end_byte=start_byte)
@@ -303,11 +325,9 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
       # For non-resumable sliced downloads.
       start_byte = self._offset
 
-    self._perform_download(request_config, progress_callback, self._strategy,
-                           start_byte, end_byte,
-                           files.BinaryFileWriterMode.MODIFY, digesters)
-
-    return self._get_output(digesters)
+    return self._perform_download(request_config, progress_callback,
+                                  self._strategy, start_byte, end_byte,
+                                  files.BinaryFileWriterMode.MODIFY, digesters)
 
   def execute(self, task_status_queue=None):
     """Performs download."""
@@ -334,8 +354,8 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
 
     if self._source_resource.size and self._component_number is not None:
       try:
-        return self._perform_component_download(request_config,
-                                                progress_callback, digesters)
+        api_download_result = self._perform_component_download(
+            request_config, progress_callback, digesters)
       # pylint:disable=broad-except
       except Exception as e:
         # pylint:enable=broad-except
@@ -343,10 +363,10 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
             additional_task_iterators=None,
             messages=[task.Message(topic=task.Topic.ERROR, payload=e)])
 
-    if self._strategy is cloud_api.DownloadStrategy.RESUMABLE:
-      self._perform_resumable_download(request_config, progress_callback,
-                                       digesters)
+    elif self._strategy is cloud_api.DownloadStrategy.RESUMABLE:
+      api_download_result = self._perform_resumable_download(
+          request_config, progress_callback, digesters)
     else:
-      self._perform_one_shot_download(request_config, progress_callback,
-                                      digesters)
-    return self._get_output(digesters)
+      api_download_result = self._perform_one_shot_download(
+          request_config, progress_callback, digesters)
+    return self._get_output(digesters, api_download_result)

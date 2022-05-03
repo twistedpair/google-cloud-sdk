@@ -553,6 +553,10 @@ class GoogleDevtoolsArtifactregistryV1alpha1UploadAptArtifactMediaResponse(_mess
   operation = _messages.MessageField('Operation', 1)
 
 
+class GoogleDevtoolsArtifactregistryV1alpha1UploadAptArtifactMetadata(_messages.Message):
+  r"""The operation metadata for uploading artifacts."""
+
+
 class GoogleDevtoolsArtifactregistryV1alpha1UploadAptArtifactRequest(_messages.Message):
   r"""The request to upload an artifact."""
 
@@ -601,6 +605,10 @@ class GoogleDevtoolsArtifactregistryV1alpha1UploadYumArtifactMediaResponse(_mess
   """
 
   operation = _messages.MessageField('Operation', 1)
+
+
+class GoogleDevtoolsArtifactregistryV1alpha1UploadYumArtifactMetadata(_messages.Message):
+  r"""The operation metadata for uploading artifacts."""
 
 
 class GoogleDevtoolsArtifactregistryV1alpha1UploadYumArtifactRequest(_messages.Message):

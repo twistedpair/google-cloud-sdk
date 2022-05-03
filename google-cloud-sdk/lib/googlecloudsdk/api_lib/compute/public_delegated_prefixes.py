@@ -226,3 +226,25 @@ class PublicDelegatedPrefixesClient(object):
     resource.publicDelegatedSubPrefixs.pop(index_to_remove)
 
     return self._Patch(pdp_ref, resource)
+
+  def Announce(self, pdp_ref):
+    """Announce a public delegated prefix."""
+
+    request = self.messages.ComputePublicDelegatedPrefixesAnnounceRequest(
+        publicDelegatedPrefix=pdp_ref.Name(),
+        project=pdp_ref.project,
+        region=pdp_ref.region)
+
+    return self.client.MakeRequests([(self._regional_service, 'Announce',
+                                      request)])
+
+  def Withdraw(self, pdp_ref):
+    """Withdraw a public delegated prefix."""
+
+    request = self.messages.ComputePublicDelegatedPrefixesWithdrawRequest(
+        publicDelegatedPrefix=pdp_ref.Name(),
+        project=pdp_ref.project,
+        region=pdp_ref.region)
+
+    return self.client.MakeRequests([(self._regional_service, 'Withdraw',
+                                      request)])

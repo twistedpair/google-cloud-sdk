@@ -701,7 +701,7 @@
       "type": "object",
       "properties": {
         "complexType": {
-          "description": "Required. Reference to the complex type name, in the following form: `projects\/{project}\/locations\/{location}\/complexTypes\/{name}`. Complex type of the annotation set config has the following requirements: 1. Must have two required fields named start and end. 2. Allowed types for start and end are number, duration, and datetime. 3. Start and end should have the same type.",
+          "description": "Required. Reference to the complex type name, in the following form: `projects\/{project}\/locations\/{location}\/complexTypes\/{name}`. Complex type of the annotation set config has the following requirements: 1. Must have two required fields named start and end. 2. Allowed types for start and end: Video asset type: timecode. 3. Start and end should have the same type.",
           "type": "string"
         },
         "indexedFieldConfigs": {

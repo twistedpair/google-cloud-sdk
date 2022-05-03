@@ -5,6 +5,57 @@ Copyright 2014-2022 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 384.0.0 (2022-05-03)
+
+### Cloud Datastore Emulator
+
+* Adds `--use-firestore-in-datastore-mode` flag to `gcloud [alpha|beta] emulators datastore start` command.
+
+### Cloud Resource Manager
+
+*   Promoted  `--condition` flag to GA for  the following commands:
+    *   `gcloud resources-manager tags keys <add_iam_policy_binding|create|delete|describe|get_iam_policy|list|remove_iam_policy_binding|set_iam_policy|update>`
+    *   `gcloud resources-manager tags values <add_iam_policy_binding|create|delete|describe|get_iam_policy|list|remove_iam_policy_binding|set_iam_policy|update>`
+    *   `gcloud resources-manager tags bindings <create|delete|list>`
+    *   `gcloud resources-manager tags holds <create|delete|list>`
+
+### Cloud Run
+
+* Promoted `gcloud beta run jobs` command group and all sub-commands to beta.
+
+### Cloud Storage
+
+* Updated gsutil component to 5.10.
+
+### Compute Engine
+
+* Started showing error messages on use of `gcloud compute ssl-certificates create` with `--domains` and `--region` flags together. Previously `--region` flag was being ignored.
+* Promoted `--md5-authentication-key` flag of `gcloud compute routers add-bgp-peer` to beta.
+* Promoted `--md5-authentication-key` and `--clear-md5-authentication-key` flags of `gcloud compute routers update-bgp-peer` to beta.
+* Updated import and export schemas for `gcloud compute backend-services`.
+* Promoted `--key-reservation-action-type` flag to beta for `gcloud compute instances create`.
+
+### Config Connector
+
+* Updated Google Cloud Config Connector to version 1.83.0.
+  See Config Connector Overview for more details [https://cloud.google.com/config-connector/docs/overview](https://cloud.google.com/config-connector/docs/overview).
+
+### GKE Hub
+
+* Fix a bug that RBAC policy produced by `generate-gateway-rbac` command could be removed unexpectedly.
+* Promoted the following commands to GA:
+  * `gcloud container hub mesh update`.
+  * `gcloud container fleet mesh update`.
+
+### Kubernetes Engine
+
+*   Promoted fields `gpu-sharing-strategy` and `max-shared-clients-per-gpu`
+    within `--accelerator` flag to enable GPU sharing support.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 383.0.1 (2022-04-26)
 
 ### Google Cloud CLI

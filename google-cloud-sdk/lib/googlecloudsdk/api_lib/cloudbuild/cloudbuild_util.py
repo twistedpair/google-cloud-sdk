@@ -560,6 +560,50 @@ def BitbucketServerConfigFromArgs(args, update=False):
   return bbs
 
 
+def GitLabConfigFromArgs(args):
+  """Construct the GitLabConfig resource from the command line args.
+
+  Args:
+    args: an argparse namespace. All the arguments that were provided to this
+      command invocation.
+
+  Returns:
+    A populated GitLabConfig message.
+  """
+  messages = GetMessagesModule()
+
+  config = messages.GitLabConfig()
+  config.username = args.user_name
+
+  secrets = messages.GitLabSecrets()
+  secrets.apiAccessTokenVersion = args.api_access_token_secret_version
+  secrets.readAccessTokenVersion = args.read_access_token_secret_version
+  secrets.webhookSecretVersion = args.webhook_secret_secret_version
+  secrets.apiKeyVersion = args.api_key_secret_version
+  if not _IsEmptyMessage(secrets):
+    config.secrets = secrets
+
+  enterprise_config = messages.GitLabEnterpriseConfig()
+  enterprise_config.hostUri = args.host_uri
+  service_directory_config = messages.ServiceDirectoryConfig()
+  service_directory_config.service = args.service_directory_service
+  enterprise_config.serviceDirectoryConfig = service_directory_config
+  if args.IsSpecified('ssl_ca_file'):
+    enterprise_config.sslCa = args.ssl_ca_file
+  if not _IsEmptyMessage(enterprise_config):
+    config.enterpriseConfig = enterprise_config
+
+  return config
+
+
+def _IsEmptyMessage(message):
+  if message is None:
+    return True
+
+  message_dict = apitools_encoding.MessageToDict(message)
+  return not any(message_dict.values())
+
+
 def WorkerPoolIsSpecified(build_config):
   return build_config is not None and build_config.options is not None and build_config.options.pool is not None and build_config.options.pool.name is not None
 

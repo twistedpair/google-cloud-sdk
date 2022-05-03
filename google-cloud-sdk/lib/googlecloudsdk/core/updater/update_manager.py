@@ -303,7 +303,7 @@ class UpdateManager(object):
     # pylint: disable=protected-access
     manager._PerformUpdateCheck(command_path, force=force)
 
-  def __init__(self, sdk_root=None, url=None, platform_filter=None, warn=True,
+  def __init__(self, sdk_root=None, url=None, platform_filter=None, warn=None,
                skip_compile_python=False):
     """Creates a new UpdateManager.
 
@@ -336,6 +336,12 @@ class UpdateManager(object):
     if not self.__sdk_root:
       raise local_state.InvalidSDKRootError()
     self.__sdk_root = encoding.Decode(self.__sdk_root)
+
+    # If warn value is not set specifically by the caller,
+    # then override the value set in disable_warning property
+    # True by default if disable_warning property is not defined.
+    if warn is None:
+      warn = not properties.VALUES.component_manager.disable_warning.GetBool()
 
     if not url:
       url = properties.VALUES.component_manager.snapshot_url.Get()

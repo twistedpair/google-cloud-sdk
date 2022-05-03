@@ -1138,7 +1138,6 @@ class GoogleApiServicecontrolV1Operation(_messages.Message):
     ImportanceValueValuesEnum: DO NOT USE. This is an experimental field.
 
   Messages:
-    ExtensionsValueListEntry: A ExtensionsValueListEntry object.
     LabelsValue: Labels describing the operation. Only the following labels
       are allowed: - Labels describing monitored resources as defined in the
       service configuration. - Default labels of metric values. When
@@ -1167,7 +1166,6 @@ class GoogleApiServicecontrolV1Operation(_messages.Message):
     endTime: End time of the operation. Required when the operation is used in
       ServiceController.Report, but optional when the operation is used in
       ServiceController.Check.
-    extensions: Unimplemented.
     importance: DO NOT USE. This is an experimental field.
     labels: Labels describing the operation. Only the following labels are
       allowed: - Labels describing monitored resources as defined in the
@@ -1234,32 +1232,6 @@ class GoogleApiServicecontrolV1Operation(_messages.Message):
     DEBUG = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
-  class ExtensionsValueListEntry(_messages.Message):
-    r"""A ExtensionsValueListEntry object.
-
-    Messages:
-      AdditionalProperty: An additional property for a
-        ExtensionsValueListEntry object.
-
-    Fields:
-      additionalProperties: Properties of the object. Contains field @type
-        with type URL.
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a ExtensionsValueListEntry object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A extra_types.JsonValue attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('extra_types.JsonValue', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     r"""Labels describing the operation. Only the following labels are
     allowed: - Labels describing monitored resources as defined in the service
@@ -1321,18 +1293,17 @@ class GoogleApiServicecontrolV1Operation(_messages.Message):
 
   consumerId = _messages.StringField(1)
   endTime = _messages.StringField(2)
-  extensions = _messages.MessageField('ExtensionsValueListEntry', 3, repeated=True)
-  importance = _messages.EnumField('ImportanceValueValuesEnum', 4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  logEntries = _messages.MessageField('GoogleApiServicecontrolV1LogEntry', 6, repeated=True)
-  metricValueSets = _messages.MessageField('GoogleApiServicecontrolV1MetricValueSet', 7, repeated=True)
-  operationId = _messages.StringField(8)
-  operationName = _messages.StringField(9)
-  quotaProperties = _messages.MessageField('GoogleApiServicecontrolV1QuotaProperties', 10)
-  resources = _messages.MessageField('GoogleApiServicecontrolV1ResourceInfo', 11, repeated=True)
-  startTime = _messages.StringField(12)
-  traceSpans = _messages.MessageField('GoogleApiServicecontrolV1TraceSpan', 13, repeated=True)
-  userLabels = _messages.MessageField('UserLabelsValue', 14)
+  importance = _messages.EnumField('ImportanceValueValuesEnum', 3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  logEntries = _messages.MessageField('GoogleApiServicecontrolV1LogEntry', 5, repeated=True)
+  metricValueSets = _messages.MessageField('GoogleApiServicecontrolV1MetricValueSet', 6, repeated=True)
+  operationId = _messages.StringField(7)
+  operationName = _messages.StringField(8)
+  quotaProperties = _messages.MessageField('GoogleApiServicecontrolV1QuotaProperties', 9)
+  resources = _messages.MessageField('GoogleApiServicecontrolV1ResourceInfo', 10, repeated=True)
+  startTime = _messages.StringField(11)
+  traceSpans = _messages.MessageField('GoogleApiServicecontrolV1TraceSpan', 12, repeated=True)
+  userLabels = _messages.MessageField('UserLabelsValue', 13)
 
 
 class GoogleApiServicecontrolV1QuotaProperties(_messages.Message):

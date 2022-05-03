@@ -721,11 +721,13 @@
           "type": "string",
           "enumDescriptions": [
             "Default value.",
-            "The policy based route is not active."
+            "The policy based route is not active.",
+            "The policy based route is being modified (e.g. created\/deleted) at this time."
           ],
           "enum": [
             "WARNING_UNSPECIFIED",
-            "RESOURCE_NOT_ACTIVE"
+            "RESOURCE_NOT_ACTIVE",
+            "RESOURCE_BEING_MODIFIED"
           ]
         },
         "data": {

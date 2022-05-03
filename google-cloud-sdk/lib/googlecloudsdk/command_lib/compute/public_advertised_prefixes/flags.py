@@ -51,9 +51,26 @@ def AddCreatePapArgsToParser(parser, support_pdp_scope_input):
         help='Specifies how child public delegated prefix will be scoped.')
 
 
-def AddUpdatePapArgsToParser(parser):
-  base.ChoiceArgument(
-      '--status',
-      required=True,
-      choices=['ptr-configured'],
-      help_str='The status of public advertised prefix.').AddToParser(parser)
+def AddUpdatePapArgsToParser(parser, support_pap_announce_withdraw):
+  """Adds public advertised prefixes update related flags to parser."""
+  if support_pap_announce_withdraw:
+    base.ChoiceArgument(
+        '--status',
+        choices=['ptr-configured'],
+        help_str='The status of public advertised prefix.').AddToParser(parser)
+    parser.add_argument(
+        '--announce-prefix',
+        action='store_true',
+        default=False,
+        help='Specify if the prefix will be announced. Default is false.')
+    parser.add_argument(
+        '--withdraw-prefix',
+        action='store_true',
+        default=False,
+        help='Specify if the prefix will be withdrawn. Default is false.')
+  else:
+    base.ChoiceArgument(
+        '--status',
+        required=True,
+        choices=['ptr-configured'],
+        help_str='The status of public advertised prefix.').AddToParser(parser)

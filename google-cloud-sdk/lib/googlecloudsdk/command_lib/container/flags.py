@@ -415,7 +415,8 @@ https://cloud.google.com/compute/docs/disks/customer-managed-encryption"""
 
 def AddAcceleratorArgs(parser,
                        enable_gpu_partition=False,
-                       enable_gpu_sharing=False):
+                       enable_gpu_sharing=False,
+                       enable_gpu_deprecated_fields=False):
   """Adds Accelerator-related args."""
 
   spec = {
@@ -426,10 +427,12 @@ def AddAcceleratorArgs(parser,
   if enable_gpu_partition:
     spec['gpu-partition-size'] = str
 
+  if enable_gpu_deprecated_fields:
+    spec['max-time-shared-clients-per-gpu'] = int
+
   if enable_gpu_sharing:
     spec['max-shared-clients-per-gpu'] = int
     spec['gpu-sharing-strategy'] = str
-    spec['max-time-shared-clients-per-gpu'] = int
 
   parser.add_argument(
       '--accelerator',

@@ -344,3 +344,12 @@ def GetExperimentalPackageTypesFlag():
       help=(
           'A comma-separated list of experimental package types to scan in addition to OS packages and officially supported third party packages.'
       ))
+
+
+def GetVerboseErrorsFlag():
+  return base.Argument(
+      '--verbose-errors',
+      action='store_true',
+      default=False,
+      hidden=True,
+      help=('Log internal errors.'))

@@ -388,8 +388,19 @@
           "description": "Access details associated to the Finding, such as more information on the caller, which method was accessed, from where, etc.",
           "$ref": "Access"
         },
+        "connections": {
+          "description": "Contains information about the IP connection associated with the finding.",
+          "type": "array",
+          "items": {
+            "$ref": "Connection"
+          }
+        },
         "muteInitiator": {
           "description": "First known as mute_annotation. Records additional information about the mute operation e.g. mute config that muted the finding, user who muted the finding, etc. Unlike other attributes of a finding, a finding provider shouldn't set the value of mute.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Contains more detail about the finding.",
           "type": "string"
         },
         "iamBindings": {
@@ -942,6 +953,51 @@
         "regionCode": {
           "description": "A CLDR.",
           "type": "string"
+        }
+      }
+    },
+    "Connection": {
+      "id": "Connection",
+      "description": "Contains information about the IP connection associated with the finding.",
+      "type": "object",
+      "properties": {
+        "destinationIp": {
+          "description": "Destination IP address. Not present for sockets that are listening and not connected.",
+          "type": "string"
+        },
+        "destinationPort": {
+          "description": "Destination port. Not present for sockets that are listening and not connected.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "sourceIp": {
+          "description": "Source IP address.",
+          "type": "string"
+        },
+        "sourcePort": {
+          "description": "Source port.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "protocol": {
+          "description": "IANA Internet Protocol Number such as TCP(6) and UDP(17).",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified protocol (not HOPOPT).",
+            "Internet Control Message Protocol.",
+            "Transmission Control Protocol.",
+            "User Datagram Protocol.",
+            "Generic Routing Encapsulation.",
+            "Encap Security Payload."
+          ],
+          "enum": [
+            "PROTOCOL_UNSPECIFIED",
+            "ICMP",
+            "TCP",
+            "UDP",
+            "GRE",
+            "ESP"
+          ]
         }
       }
     },

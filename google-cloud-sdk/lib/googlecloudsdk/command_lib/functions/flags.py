@@ -407,7 +407,7 @@ def AddRuntimeFlag(parser):
           - `dotnet3`: .NET Framework 3
           - `ruby26`: Ruby 2.6
           - `ruby27`: Ruby 2.7
-          - `ruby30`: Ruby 3.0 (preview)
+          - `ruby30`: Ruby 3.0
           - `nodejs6`: Node.js 6 (deprecated)
           - `nodejs8`: Node.js 8 (deprecated)
           """)

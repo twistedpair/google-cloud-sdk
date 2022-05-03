@@ -1,4 +1,4 @@
-# Lint as: python3 # -*- coding: utf-8 -*- #
+# -*- coding: utf-8 -*- #
 # Copyright 2020 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

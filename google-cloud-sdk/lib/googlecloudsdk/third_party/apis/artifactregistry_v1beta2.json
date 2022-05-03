@@ -997,6 +997,20 @@
       "type": "object",
       "properties": {
       }
+    },
+    "UploadAptArtifactMetadata": {
+      "id": "UploadAptArtifactMetadata",
+      "description": "The operation metadata for uploading artifacts.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "UploadYumArtifactMetadata": {
+      "id": "UploadYumArtifactMetadata",
+      "description": "The operation metadata for uploading artifacts.",
+      "type": "object",
+      "properties": {
+      }
     }
   },
   "resources": {

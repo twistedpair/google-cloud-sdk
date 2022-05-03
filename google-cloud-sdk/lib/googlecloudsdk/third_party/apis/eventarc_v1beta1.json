@@ -7,7 +7,7 @@
   "version": "v1beta1",
   "revision": "0",
   "title": "Eventarc API",
-  "description": "",
+  "description": "Build event-driven applications on Google Cloud Platform.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {

@@ -78,6 +78,40 @@ class AuditLogConfig(_messages.Message):
   logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
 
 
+class BackendMetastore(_messages.Message):
+  r"""Represents a backend metastore for the federation.
+
+  Enums:
+    MetastoreTypeValueValuesEnum: The type of the backend metastore.
+
+  Fields:
+    metastoreType: The type of the backend metastore.
+    name: The relative resource name of the metastore that is being federated.
+      The formats of the relative resource names for the currently supported
+      metastores are listed below: Dataplex:
+      projects/{project_id}/locations/{location}/lakes/{lake_id} BigQuery:
+      projects/{project_id} Dataproc Metastore:
+      projects/{project_id}/locations/{location}/services/{service_id}
+  """
+
+  class MetastoreTypeValueValuesEnum(_messages.Enum):
+    r"""The type of the backend metastore.
+
+    Values:
+      METASTORE_TYPE_UNSPECIFIED: The metastore type is not set.
+      DATAPLEX: The backend metastore is Dataplex.
+      BIGQUERY: The backend metastore is BigQuery.
+      DATAPROC_METASTORE: The backend metastore is Dataproc Metastore.
+    """
+    METASTORE_TYPE_UNSPECIFIED = 0
+    DATAPLEX = 1
+    BIGQUERY = 2
+    DATAPROC_METASTORE = 3
+
+  metastoreType = _messages.EnumField('MetastoreTypeValueValuesEnum', 1)
+  name = _messages.StringField(2)
+
+
 class Backup(_messages.Message):
   r"""The details of a backup resource.
 
@@ -325,6 +359,136 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
+class Federation(_messages.Message):
+  r"""Represents a federation of multiple backend metastores.
+
+  Enums:
+    StateValueValuesEnum: Output only. The current state of the federation.
+
+  Messages:
+    BackendMetastoresValue: A map from BackendMetastore rank to
+      BackendMetastores from which the federation service serves metadata at
+      query time. The map key is an integer that represents the order in which
+      BackendMetastores should be evaluated to resolve database names at query
+      time. A BackendMetastore with a lower number will be evaluated before a
+      BackendMetastore with a higher number.
+    LabelsValue: User-defined labels for the metastore federation.
+
+  Fields:
+    backendMetastores: A map from BackendMetastore rank to BackendMetastores
+      from which the federation service serves metadata at query time. The map
+      key is an integer that represents the order in which BackendMetastores
+      should be evaluated to resolve database names at query time. A
+      BackendMetastore with a lower number will be evaluated before a
+      BackendMetastore with a higher number.
+    createTime: Output only. The time when the metastore federation was
+      created.
+    endpointUri: Output only. The federation endpoint.
+    labels: User-defined labels for the metastore federation.
+    name: Immutable. The relative resource name of the federation, of the
+      form: projects/{project_number}/locations/{location_id}/federations/{fed
+      eration_id}`.
+    state: Output only. The current state of the federation.
+    stateMessage: Output only. Additional information about the current state
+      of the metastore federation, if available.
+    uid: Output only. The globally unique resource identifier of the metastore
+      federation.
+    updateTime: Output only. The time when the metastore federation was last
+      updated.
+    version: Immutable. The Apache Hive metastore version of the federation.
+      All backend metastore versions must be compatible with the federation
+      version.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of the federation.
+
+    Values:
+      STATE_UNSPECIFIED: The state of the metastore federation is unknown.
+      CREATING: The metastore federation is in the process of being created.
+      ACTIVE: The metastore federation is running and ready to serve queries.
+      UPDATING: The metastore federation is being updated. It remains usable
+        but cannot accept additional update requests or be deleted at this
+        time.
+      DELETING: The metastore federation is undergoing deletion. It cannot be
+        used.
+      ERROR: The metastore federation has encountered an error and cannot be
+        used. The metastore federation should be deleted.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    ACTIVE = 2
+    UPDATING = 3
+    DELETING = 4
+    ERROR = 5
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class BackendMetastoresValue(_messages.Message):
+    r"""A map from BackendMetastore rank to BackendMetastores from which the
+    federation service serves metadata at query time. The map key is an
+    integer that represents the order in which BackendMetastores should be
+    evaluated to resolve database names at query time. A BackendMetastore with
+    a lower number will be evaluated before a BackendMetastore with a higher
+    number.
+
+    Messages:
+      AdditionalProperty: An additional property for a BackendMetastoresValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        BackendMetastoresValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a BackendMetastoresValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A BackendMetastore attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('BackendMetastore', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""User-defined labels for the metastore federation.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  backendMetastores = _messages.MessageField('BackendMetastoresValue', 1)
+  createTime = _messages.StringField(2)
+  endpointUri = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  stateMessage = _messages.StringField(7)
+  uid = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
+  version = _messages.StringField(10)
+
+
 class HiveMetastoreConfig(_messages.Message):
   r"""Specifies configuration information specific to running Hive metastore
   software as the metastore service.
@@ -427,6 +591,21 @@ class ListBackupsResponse(_messages.Message):
   """
 
   backups = _messages.MessageField('Backup', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListFederationsResponse(_messages.Message):
+  r"""Response message for ListFederations
+
+  Fields:
+    federations: The services in the specified location.
+    nextPageToken: A token that can be sent as page_token to retrieve the next
+      page. If this field is omitted, there are no subsequent pages.
+    unreachable: Locations that could not be reached.
+  """
+
+  federations = _messages.MessageField('Federation', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
   unreachable = _messages.StringField(3, repeated=True)
 
@@ -742,6 +921,183 @@ class MetastoreOperationsCancelRequest(_messages.Message):
 
   cancelOperationRequest = _messages.MessageField('CancelOperationRequest', 1)
   name = _messages.StringField(2, required=True)
+
+
+class MetastoreProjectsLocationsFederationsCreateRequest(_messages.Message):
+  r"""A MetastoreProjectsLocationsFederationsCreateRequest object.
+
+  Fields:
+    federation: A Federation resource to be passed as the request body.
+    federationId: Required. The ID of the metastore federation, which is used
+      as the final component of the metastore federation's name.This value
+      must be between 2 and 63 characters long inclusive, begin with a letter,
+      end with a letter or number, and consist of alpha-numeric ASCII
+      characters or hyphens.
+    parent: Required. The relative resource name of the location in which to
+      create a federation service, in the following
+      form:projects/{project_number}/locations/{location_id}.
+    requestId: Optional. A request ID. Specify a unique request ID to allow
+      the server to ignore the request if it has completed. The server will
+      ignore subsequent requests that provide a duplicate request ID for at
+      least 60 minutes after the first request.For example, if an initial
+      request times out, followed by another request with the same request ID,
+      the server ignores the second request to prevent the creation of
+      duplicate commitments.The request ID must be a valid UUID
+      (https://en.wikipedia.org/wiki/Universally_unique_identifier#Format) A
+      zero UUID (00000000-0000-0000-0000-000000000000) is not supported.
+  """
+
+  federation = _messages.MessageField('Federation', 1)
+  federationId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class MetastoreProjectsLocationsFederationsDeleteRequest(_messages.Message):
+  r"""A MetastoreProjectsLocationsFederationsDeleteRequest object.
+
+  Fields:
+    name: Required. The relative resource name of the metastore federation to
+      delete, in the following form:projects/{project_number}/locations/{locat
+      ion_id}/federations/{federation_id}.
+    requestId: Optional. A request ID. Specify a unique request ID to allow
+      the server to ignore the request if it has completed. The server will
+      ignore subsequent requests that provide a duplicate request ID for at
+      least 60 minutes after the first request.For example, if an initial
+      request times out, followed by another request with the same request ID,
+      the server ignores the second request to prevent the creation of
+      duplicate commitments.The request ID must be a valid UUID
+      (https://en.wikipedia.org/wiki/Universally_unique_identifier#Format) A
+      zero UUID (00000000-0000-0000-0000-000000000000) is not supported.
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class MetastoreProjectsLocationsFederationsGetIamPolicyRequest(_messages.Message):
+  r"""A MetastoreProjectsLocationsFederationsGetIamPolicyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy.Valid values are 0, 1, and 3. Requests
+      specifying an invalid value will be rejected.Requests for policies with
+      any conditional role bindings must specify version 3. Policies with no
+      conditional role bindings may specify any valid value or leave the field
+      unset.The policy in the response might use the policy version that you
+      specified, or it might use a lower policy version. For example, if you
+      specify version 3, but the policy has no conditional role bindings, the
+      response uses version 1.To learn which resources support conditions in
+      their IAM policies, see the IAM documentation
+      (https://cloud.google.com/iam/help/conditions/resource-policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class MetastoreProjectsLocationsFederationsGetRequest(_messages.Message):
+  r"""A MetastoreProjectsLocationsFederationsGetRequest object.
+
+  Fields:
+    name: Required. The relative resource name of the metastore federation to
+      retrieve, in the following form:projects/{project_number}/locations/{loc
+      ation_id}/federations/{federation_id}.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class MetastoreProjectsLocationsFederationsListRequest(_messages.Message):
+  r"""A MetastoreProjectsLocationsFederationsListRequest object.
+
+  Fields:
+    filter: Optional. The filter to apply to list results.
+    orderBy: Optional. Specify the ordering of results as described in Sorting
+      Order
+      (https://cloud.google.com/apis/design/design_patterns#sorting_order). If
+      not specified, the results will be sorted in the default order.
+    pageSize: Optional. The maximum number of federations to return. The
+      response may contain less than the maximum number. If unspecified, no
+      more than 500 services are returned. The maximum value is 1000; values
+      above 1000 are changed to 1000.
+    pageToken: Optional. A page token, received from a previous
+      ListFederationServices call. Provide this token to retrieve the
+      subsequent page.To retrieve the first page, supply an empty page
+      token.When paginating, other parameters provided to
+      ListFederationServices must match the call that provided the page token.
+    parent: Required. The relative resource name of the location of metastore
+      federations to list, in the following form:
+      projects/{project_number}/locations/{location_id}.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class MetastoreProjectsLocationsFederationsPatchRequest(_messages.Message):
+  r"""A MetastoreProjectsLocationsFederationsPatchRequest object.
+
+  Fields:
+    federation: A Federation resource to be passed as the request body.
+    name: Immutable. The relative resource name of the federation, of the
+      form: projects/{project_number}/locations/{location_id}/federations/{fed
+      eration_id}`.
+    requestId: Optional. A request ID. Specify a unique request ID to allow
+      the server to ignore the request if it has completed. The server will
+      ignore subsequent requests that provide a duplicate request ID for at
+      least 60 minutes after the first request.For example, if an initial
+      request times out, followed by another request with the same request ID,
+      the server ignores the second request to prevent the creation of
+      duplicate commitments.The request ID must be a valid UUID
+      (https://en.wikipedia.org/wiki/Universally_unique_identifier#Format) A
+      zero UUID (00000000-0000-0000-0000-000000000000) is not supported.
+    updateMask: Required. A field mask used to specify the fields to be
+      overwritten in the metastore federation resource by the update. Fields
+      specified in the update_mask are relative to the resource (not to the
+      full request). A field is overwritten if it is in the mask.
+  """
+
+  federation = _messages.MessageField('Federation', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
+class MetastoreProjectsLocationsFederationsSetIamPolicyRequest(_messages.Message):
+  r"""A MetastoreProjectsLocationsFederationsSetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class MetastoreProjectsLocationsFederationsTestIamPermissionsRequest(_messages.Message):
+  r"""A MetastoreProjectsLocationsFederationsTestIamPermissionsRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class MetastoreProjectsLocationsGetRequest(_messages.Message):

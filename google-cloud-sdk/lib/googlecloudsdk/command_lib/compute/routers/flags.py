@@ -323,8 +323,9 @@ def AddBgpPeerArgs(parser,
     if is_update:
       parser.add_argument(
           '--clear-md5-authentication-key',
-          action=arg_parsers.StoreTrueFalseAction,
-          help='Remove MD5 authentication from the BGP peer')
+          action='store_true',
+          default=None,
+          help='If specified, remove MD5 authentication from the BGP peer.')
 
 
 def AddUpdateCustomAdvertisementArgs(parser, resource_str):

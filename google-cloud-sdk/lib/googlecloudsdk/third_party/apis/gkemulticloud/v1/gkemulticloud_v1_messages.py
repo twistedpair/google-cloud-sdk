@@ -901,11 +901,11 @@ class GoogleCloudGkemulticloudV1AwsClusterNetworking(_messages.Message):
 
   Fields:
     podAddressCidrBlocks: Required. All pods in the cluster are assigned an
-      RFC1918 IPv4 address from these ranges. Only a single range is
-      supported. This field cannot be changed after creation.
+      IPv4 address from these ranges. Only a single range is supported. This
+      field cannot be changed after creation.
     serviceAddressCidrBlocks: Required. All services in the cluster are
-      assigned an RFC1918 IPv4 address from these ranges. Only a single range
-      is supported. This field cannot be changed after creation.
+      assigned an IPv4 address from these ranges. Only a single range is
+      supported. This field cannot be changed after creation.
     vpcId: Required. The VPC associated with the cluster. All component
       clusters (i.e. control plane and node pools) run on a single VPC. This
       field cannot be changed after creation.
@@ -1696,13 +1696,13 @@ class GoogleCloudGkemulticloudV1AzureClusterNetworking(_messages.Message):
   Fields:
     podAddressCidrBlocks: Required. The IP address range of the pods in this
       cluster, in CIDR notation (e.g. `10.96.0.0/14`). All pods in the cluster
-      get assigned a unique RFC1918 IPv4 address from these ranges. Only a
-      single range is supported. This field cannot be changed after creation.
+      get assigned a unique IPv4 address from these ranges. Only a single
+      range is supported. This field cannot be changed after creation.
     serviceAddressCidrBlocks: Required. The IP address range for services in
       this cluster, in CIDR notation (e.g. `10.96.0.0/14`). All services in
-      the cluster get assigned a unique RFC1918 IPv4 address from these
-      ranges. Only a single range is supported. This field cannot be changed
-      after creating a cluster.
+      the cluster get assigned a unique IPv4 address from these ranges. Only a
+      single range is supported. This field cannot be changed after creating a
+      cluster.
     serviceLoadBalancerSubnetId: Optional. The ARM ID of the subnet where
       Kubernetes private service type load balancers are deployed. When
       unspecified, it defaults to AzureControlPlane.subnet_id. Example: "/subs

@@ -160,12 +160,16 @@
       "type": "object",
       "properties": {
         "destination": {
-          "description": "The destination for writing trace data. Currently only BigQuery is supported. E.g.: \"bigquery.googleapis.com\/projects\/[PROJECT_ID]\/datasets\/[DATASET]\"",
+          "description": "The destination for writing trace data. Supported formats include: \"bigquery.googleapis.com\/projects\/[PROJECT_ID]\/datasets\/[DATASET]\"",
           "type": "string"
         },
         "bigqueryConfig": {
           "description": "Optional. Additional options governing the export behavior when the selected destination is a BigQuery dataset.",
           "$ref": "BigQueryOutputConfig"
+        },
+        "pubsubConfig": {
+          "description": "Optional. Additional options governing the export behavior when the selected destination is a Pub\/Sub queue.",
+          "$ref": "PubsubOutputConfig"
         }
       }
     },
@@ -187,6 +191,28 @@
             "FIELDS_EXPANDED_AS_COLUMNS",
             "CONDENSED_STATIC_JSON"
           ]
+        }
+      }
+    },
+    "PubsubOutputConfig": {
+      "id": "PubsubOutputConfig",
+      "description": "Configuration for the output that is specific to Pub\/Sub when choosing a Pub\/Sub queue as the output destination.",
+      "type": "object",
+      "properties": {
+        "openTelemetryFormat": {
+          "description": "open_telemetry_format contains additional information needed to convert Cloud Trace data.",
+          "$ref": "OpenTelemetryFormat"
+        }
+      }
+    },
+    "OpenTelemetryFormat": {
+      "id": "OpenTelemetryFormat",
+      "description": "OpenTelemetryFormat contains metadata to help convert Cloud Trace trace format to OpenTelemetry trace format.",
+      "type": "object",
+      "properties": {
+        "version": {
+          "description": "OpenTelemetry format defined by https:\/\/github.com\/open-telemetry\/opentelemetry-proto\/blob\/main\/opentelemetry\/proto\/collector\/trace\/v1\/trace_service.proto Version of the OpenTelemetry schema as it appears in the defining proto package. Currently, only \"v1\" is supported, but support for more version may added in the future.",
+          "type": "string"
         }
       }
     },

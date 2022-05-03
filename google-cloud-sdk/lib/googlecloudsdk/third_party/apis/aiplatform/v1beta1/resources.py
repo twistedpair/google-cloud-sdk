@@ -331,17 +331,6 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  PROJECTS_LOCATIONS_FEDERATEDLEARNINGJOBS = (
-      'projects.locations.federatedLearningJobs',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/'
-              'federatedLearningJobs/{federatedLearningJobsId}',
-      },
-      ['name'],
-      True
-  )
   PROJECTS_LOCATIONS_HYPERPARAMETERTUNINGJOBS = (
       'projects.locations.hyperparameterTuningJobs',
       '{+name}',

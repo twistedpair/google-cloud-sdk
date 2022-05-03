@@ -54,8 +54,8 @@ class AuditConfig(_messages.Message):
   "audit_log_configs": [ { "log_type": "DATA_READ" }, { "log_type":
   "DATA_WRITE", "exempted_members": [ "user:aliya@example.com" ] } ] } ] } For
   sampleservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ
-  logging. It also exempts jose@example.com from DATA_READ logging, and
-  aliya@example.com from DATA_WRITE logging.
+  logging. It also exempts `jose@example.com` from DATA_READ logging, and
+  `aliya@example.com` from DATA_WRITE logging.
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
@@ -1055,6 +1055,9 @@ class ExecutionConfig(_messages.Message):
       path within a bucket ("gs://my-bucket/my-dir"). If unspecified, a
       default bucket located in the same region will be used.
     defaultPool: Optional. Use default Cloud Build pool.
+    executionTimeout: Optional. Execution timeout for a Cloud Build Execution.
+      This must be between 10m and 24h in seconds format. If unspecified, a
+      default timeout of 1h is used.
     privatePool: Optional. Use private Cloud Build pool.
     serviceAccount: Optional. Google service account to use for execution. If
       unspecified, the project execution service account
@@ -1082,10 +1085,11 @@ class ExecutionConfig(_messages.Message):
 
   artifactStorage = _messages.StringField(1)
   defaultPool = _messages.MessageField('DefaultPool', 2)
-  privatePool = _messages.MessageField('PrivatePool', 3)
-  serviceAccount = _messages.StringField(4)
-  usages = _messages.EnumField('UsagesValueListEntryValuesEnum', 5, repeated=True)
-  workerPool = _messages.StringField(6)
+  executionTimeout = _messages.StringField(3)
+  privatePool = _messages.MessageField('PrivatePool', 4)
+  serviceAccount = _messages.StringField(5)
+  usages = _messages.EnumField('UsagesValueListEntryValuesEnum', 6, repeated=True)
+  workerPool = _messages.StringField(7)
 
 
 class Expr(_messages.Message):

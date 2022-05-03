@@ -1454,6 +1454,10 @@ class Revision(_messages.Message):
         be generated.
       APPLY_BUILD_RUN_FAILED: The apply Cloud Build failed after logs could be
         generated.
+      PREVIEW_BUILD_API_FAILED: The preview Cloud Build failed before logs
+        could be generated.
+      PREVIEW_BUILD_RUN_FAILED: The preview Cloud Build failed after logs
+        could be generated.
     """
     ERROR_CODE_UNSPECIFIED = 0
     BUCKET_CREATION_PERMISSION_DENIED = 1
@@ -1463,6 +1467,8 @@ class Revision(_messages.Message):
     PIPELINE_BUILD_RUN_FAILED = 5
     APPLY_BUILD_API_FAILED = 6
     APPLY_BUILD_RUN_FAILED = 7
+    PREVIEW_BUILD_API_FAILED = 8
+    PREVIEW_BUILD_RUN_FAILED = 9
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. Current state of the revision.

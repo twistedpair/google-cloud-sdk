@@ -1283,6 +1283,8 @@ class NodeType(_messages.Message):
       `projects/my-proj/locations/us-west1-a/nodeTypes/standard-72`
     nodeTypeId: Output only. The canonical identifier of the node type
       (corresponds to the `NodeType`). For example: standard-72.
+    totalCoreCount: Output only. The total number of CPU cores in a single
+      node.
     virtualCpuCount: Output only. The total number of virtual CPUs in a single
       node.
   """
@@ -1293,7 +1295,8 @@ class NodeType(_messages.Message):
   memoryGb = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   name = _messages.StringField(5)
   nodeTypeId = _messages.StringField(6)
-  virtualCpuCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  totalCoreCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  virtualCpuCount = _messages.IntegerField(8, variant=_messages.Variant.INT32)
 
 
 class Nsx(_messages.Message):
@@ -1611,9 +1614,11 @@ class PrivateCloud(_messages.Message):
 
   Fields:
     createTime: Output only. Creation time of this resource.
-    deleteTime: Output only. Time the resource was marked as deleted.
+    deleteTime: Output only. Time when the resource was scheduled for
+      deletion.
     description: User-provided description for this private cloud.
-    expireTime: Output only. Planned deletion time of this resource.
+    expireTime: Output only. Time when the resource will be irreversibly
+      deleted.
     hcx: Output only. HCX appliance.
     labels: Deprecated: Labels are a way to attach lightweight metadata to
       resources for filtering and querying resource data. No more than 64 user
@@ -1654,7 +1659,10 @@ class PrivateCloud(_messages.Message):
       CREATING: The private cloud is being created.
       UPDATING: The private cloud is being updated.
       FAILED: The private cloud is in failed state.
-      DELETED: The private cloud is deleted.
+      DELETED: The private cloud is scheduled for deletion. The deletion
+        process can be cancelled by using the corresponding undelete method.
+      PURGING: The private cloud is irreversibly deleted and is being removed
+        from the system.
     """
     STATE_UNSPECIFIED = 0
     ACTIVE = 1
@@ -1662,6 +1670,7 @@ class PrivateCloud(_messages.Message):
     UPDATING = 3
     FAILED = 4
     DELETED = 5
+    PURGING = 6
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -3065,12 +3074,13 @@ class VmwareengineProjectsLocationsPrivateCloudsDeleteRequest(_messages.Message)
 
   Fields:
     delayHours: Optional. Time delay of the deletion specified in hours. The
-      default value is `3`. Specifying a non-zero value for this field marks
-      the resource as `DELETED` and sets `expire_time` to the planned deletion
-      time. Deletion can be stopped before `expire_time` elapses using
-      VmwareEngine.UndeletePrivateCloud. Specifying a value of `0` for this
-      field instead begins the deletion process and ceases billing
-      immediately.
+      default value is `3`. Specifying a non-zero value for this field changes
+      the value of `PrivateCloud.state` to `DELETED` and sets `expire_time` to
+      the planned deletion time. Deletion can be cancelled before
+      `expire_time` elapses using VmwareEngine.UndeletePrivateCloud.
+      Specifying a value of `0` for this field instead begins the deletion
+      process and ceases billing immediately. During the final deletion
+      process, the value of `PrivateCloud.state` becomes `PURGING`.
     force: Optional. If set to true, cascade delete is enabled and all
       children of this private cloud resource are also deleted. When this flag
       is set to false, the private cloud will not be deleted if there are any
@@ -3603,7 +3613,7 @@ class VmwareengineProjectsLocationsPrivateCloudsUndeleteRequest(_messages.Messag
   r"""A VmwareengineProjectsLocationsPrivateCloudsUndeleteRequest object.
 
   Fields:
-    name: Required. The resource name of the private cloud marked for
+    name: Required. The resource name of the private cloud scheduled for
       deletion. Resource names are schemeless URIs that follow the conventions
       in https://cloud.google.com/apis/design/resource_names. For example:
       `projects/my-project/locations/us-west1-a/privateClouds/my-cloud`

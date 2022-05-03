@@ -689,6 +689,17 @@ class FileHashes(_messages.Message):
   fileHash = _messages.MessageField('Hash', 1, repeated=True)
 
 
+class FileLocation(_messages.Message):
+  r"""Indicates the location at which a package was found.
+
+  Fields:
+    filePath: For jars that are contained inside .war files, this filepath can
+      indicate the path to war file combined with the path to jar file.
+  """
+
+  filePath = _messages.StringField(1)
+
+
 class Fingerprint(_messages.Message):
   r"""A set of properties that uniquely identify a given Docker image.
 
@@ -1275,6 +1286,10 @@ class PackageData(_messages.Message):
     cpeUri: The cpe_uri in [cpe format] (https://cpe.mitre.org/specification/)
       in which the vulnerability may manifest. Examples include distro or
       storage location for vulnerable jar.
+    fileLocation: The path to the jar file / go binary file.
+    hashDigest: HashDigest stores the SHA512 hash digest of the jar file if
+      the package is of type Maven. This field will be unset for non Maven
+      packages.
     os: The OS affected by a vulnerability This field is deprecated and the
       information is in cpe_uri
     osVersion: The version of the OS This field is deprecated and the
@@ -1302,12 +1317,14 @@ class PackageData(_messages.Message):
     GO_STDLIB = 4
 
   cpeUri = _messages.StringField(1)
-  os = _messages.StringField(2)
-  osVersion = _messages.StringField(3)
-  package = _messages.StringField(4)
-  packageType = _messages.EnumField('PackageTypeValueValuesEnum', 5)
-  unused = _messages.StringField(6)
-  version = _messages.StringField(7)
+  fileLocation = _messages.MessageField('FileLocation', 2, repeated=True)
+  hashDigest = _messages.StringField(3)
+  os = _messages.StringField(4)
+  osVersion = _messages.StringField(5)
+  package = _messages.StringField(6)
+  packageType = _messages.EnumField('PackageTypeValueValuesEnum', 7)
+  unused = _messages.StringField(8)
+  version = _messages.StringField(9)
 
 
 class PackageIssue(_messages.Message):

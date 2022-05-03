@@ -1646,6 +1646,10 @@
             "STANDARD",
             "PREMIUM"
           ]
+        },
+        "deletionProtectionEnabled": {
+          "description": "Configuration to protect against accidental instance deletion.",
+          "type": "boolean"
         }
       }
     },
@@ -2990,6 +2994,22 @@
         "passwordPolicy": {
           "description": "User level password validation policy.",
           "$ref": "UserPasswordValidationPolicy"
+        },
+        "dualPasswordType": {
+          "description": "Dual password status for the user.",
+          "type": "string",
+          "enumDescriptions": [
+            "The default value.",
+            "Do not update the user's dual password status.",
+            "No dual password usable for connecting using this user.",
+            "Dual password usable for connecting using this user."
+          ],
+          "enum": [
+            "DUAL_PASSWORD_TYPE_UNSPECIFIED",
+            "NO_MODIFY_DUAL_PASSWORD",
+            "NO_DUAL_PASSWORD",
+            "DUAL_PASSWORD"
+          ]
         }
       }
     },

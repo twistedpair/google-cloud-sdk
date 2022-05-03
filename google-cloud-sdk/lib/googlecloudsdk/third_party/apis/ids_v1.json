@@ -987,17 +987,6 @@
           "items": {
             "$ref": "GoogleApiServicecontrolV1TraceSpan"
           }
-        },
-        "extensions": {
-          "description": "Unimplemented.",
-          "type": "array",
-          "items": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "any",
-              "description": "Properties of the object. Contains field @type with type URL."
-            }
-          }
         }
       }
     },

@@ -7,6 +7,7 @@ from __future__ import absolute_import
 
 from apitools.base.protorpclite import messages as _messages
 from apitools.base.py import encoding
+from apitools.base.py import extra_types
 
 
 package = 'policytroubleshooter'
@@ -391,6 +392,7 @@ class GoogleCloudPolicytroubleshooterV1TroubleshootIamPolicyResponse(_messages.M
     access: Indicates whether the principal has the specified permission for
       the specified resource, based on evaluating all of the applicable IAM
       policies.
+    errors: The general errors contained in the troubleshooting response.
     explainedPolicies: List of IAM policies that were evaluated to check the
       principal's permissions, with annotations to indicate how each policy
       contributed to the final result. The list of policies can include the
@@ -422,7 +424,8 @@ class GoogleCloudPolicytroubleshooterV1TroubleshootIamPolicyResponse(_messages.M
     UNKNOWN_INFO_DENIED = 4
 
   access = _messages.EnumField('AccessValueValuesEnum', 1)
-  explainedPolicies = _messages.MessageField('GoogleCloudPolicytroubleshooterV1ExplainedPolicy', 2, repeated=True)
+  errors = _messages.MessageField('GoogleRpcStatus', 2, repeated=True)
+  explainedPolicies = _messages.MessageField('GoogleCloudPolicytroubleshooterV1ExplainedPolicy', 3, repeated=True)
 
 
 class GoogleIamV1AuditConfig(_messages.Message):
@@ -616,6 +619,57 @@ class GoogleIamV1Policy(_messages.Message):
   bindings = _messages.MessageField('GoogleIamV1Binding', 2, repeated=True)
   etag = _messages.BytesField(3)
   version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
+class GoogleRpcStatus(_messages.Message):
+  r"""The `Status` type defines a logical error model that is suitable for
+  different programming environments, including REST APIs and RPC APIs. It is
+  used by [gRPC](https://github.com/grpc). Each `Status` message contains
+  three pieces of data: error code, error message, and error details. You can
+  find out more about this error model and how to work with it in the [API
+  Design Guide](https://cloud.google.com/apis/design/errors).
+
+  Messages:
+    DetailsValueListEntry: A DetailsValueListEntry object.
+
+  Fields:
+    code: The status code, which should be an enum value of google.rpc.Code.
+    details: A list of messages that carry the error details. There is a
+      common set of message types for APIs to use.
+    message: A developer-facing error message, which should be in English. Any
+      user-facing error message should be localized and sent in the
+      google.rpc.Status.details field, or localized by the client.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DetailsValueListEntry(_messages.Message):
+    r"""A DetailsValueListEntry object.
+
+    Messages:
+      AdditionalProperty: An additional property for a DetailsValueListEntry
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DetailsValueListEntry object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
+  message = _messages.StringField(3)
 
 
 class GoogleTypeExpr(_messages.Message):

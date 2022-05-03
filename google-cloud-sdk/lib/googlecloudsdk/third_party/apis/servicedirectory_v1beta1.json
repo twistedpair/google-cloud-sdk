@@ -239,6 +239,10 @@
           "description": "Output only. A globally unique identifier (in UUID4 format) for this service.",
           "readOnly": true,
           "type": "string"
+        },
+        "attributes": {
+          "description": "Optional. Attributes associated with this Service.",
+          "$ref": "Attributes"
         }
       }
     },
@@ -299,8 +303,17 @@
       "description": "Attributes associated with endpoints.",
       "type": "object",
       "properties": {
+        "managedRegistration": {
+          "description": "Output only. Indicates whether a GCP product or service manages this resource. When a resource is fully managed by another GCP product or system the information in Service Directory is read-only. The source of truth is the relevant GCP product or system which is managing the resource. The Service Directory resource will be updated or deleted as appropriate to reflect the state of the underlying `origin_resource`.",
+          "readOnly": true,
+          "type": "boolean"
+        },
         "originResource": {
           "description": "Optional. Reference to the underlying resource that this endpoint represents. This should be the full name of the resource that this endpoint was created from.",
+          "type": "string"
+        },
+        "region": {
+          "description": "Optional. Region of the underlying resource, or \"global\" for global resources.",
           "type": "string"
         },
         "zone": {
@@ -310,6 +323,24 @@
         "gcpFleetMembership": {
           "description": "Optional. Membership URI (scheme-less URI) for resources registered to Google Cloud Fleet. Currently populated only for kubernetes resources. Sample URI: `\/\/gkehub.googleapis.com\/projects\/my-project\/locations\/global\/memberships\/my-membership`",
           "type": "string"
+        },
+        "kubernetesResourceType": {
+          "description": "Kubernetes resource-type associated with this endpoint",
+          "type": "string",
+          "enumDescriptions": [
+            "Not a Kubernetes workload.",
+            "Cluster IP service related resource",
+            "Node port service related resource",
+            "Load balancer service related resource",
+            "Headless service related resource"
+          ],
+          "enum": [
+            "KUBERNETES_RESOURCE_TYPE_UNSPECIFIED",
+            "KUBERNETES_RESOURCE_TYPE_CLUSTER_IP",
+            "KUBERNETES_RESOURCE_TYPE_NODE_PORT",
+            "KUBERNETES_RESOURCE_TYPE_LOAD_BALANCER",
+            "KUBERNETES_RESOURCE_TYPE_HEADLESS"
+          ]
         }
       }
     },
@@ -325,6 +356,27 @@
         "spiffeId": {
           "description": "spiffe_id as works with x509 certs with Subject Alternative Name (SAN) specified as uniformResourceIdentifier:*spiffe_id* Example: `spiffe:\/\/example.org\/my-service` Limits: 2048 ASCII Characters https:\/\/github.com\/spiffe\/spiffe\/blob\/master\/standards\/SPIFFE-ID.md#23-maximum-spiffe-id-length",
           "type": "string"
+        }
+      }
+    },
+    "Attributes": {
+      "id": "Attributes",
+      "description": "Attributes are structured data attached to a given resource.",
+      "type": "object",
+      "properties": {
+        "managedRegistration": {
+          "description": "Output only. Indicates whether a GCP product or service manages this resource. When a resource is fully managed by another GCP product or system the information in Service Directory is read-only. The source of truth is the relevant GCP product or system which is managing the resource. The Service Directory resource will be updated or deleted as appropriate to reflect the state of the underlying `origin_resource`. Note: The `origin_resource` can be found in the endpoint(s) associated with this service.",
+          "readOnly": true,
+          "type": "boolean"
+        },
+        "pscTarget": {
+          "description": "Optional. The target resource for the Private Service Connect service. This field should be unset if the service is not a Private Service Connect service. For a Private Service Connect service accessing managed services, this is the URI of the service producer's service attachment. For a Private Service Connect service accessing Google APIs, this will be the name of the Google API bundle. See the [Private Service Connect documentation](https:\/\/cloud.google.com\/vpc\/docs\/private-service-connect) for more information.",
+          "type": "string"
+        },
+        "pscConnectionId": {
+          "description": "Optional. The Private Service Connect connection id of the Private Service Connect Forwarding Rule. This field should be unset if the service is not a Private Service Connect service.",
+          "type": "string",
+          "format": "uint64"
         }
       }
     },
@@ -372,6 +424,11 @@
       "description": "Attributes associated with Namespace.",
       "type": "object",
       "properties": {
+        "managedRegistration": {
+          "description": "Output only. Indicates whether a GCP product or service manages this resource. When a resource is fully managed by another GCP product or system the information in Service Directory is read-only. The source of truth is the relevant GCP product or system which is managing the resource. The Service Directory resource will be updated or deleted as appropriate to reflect the state of the underlying `origin_resource`. Note: The `origin_resource` can be found in the endpoint(s) associated with service(s) associated with this namespace.",
+          "readOnly": true,
+          "type": "boolean"
+        },
         "cloudDnsManagedZones": {
           "description": "Output only. List of Cloud DNS ManagedZones that this namespace is associated with.",
           "readOnly": true,
@@ -618,11 +675,13 @@
           "type": "string",
           "enumDescriptions": [
             "Default. Should not be used.",
-            "Resource managed by GKE Hub."
+            "Resource managed by GKE Hub.",
+            "Resource managed by Arcus, Backend Service"
           ],
           "enum": [
             "TYPE_UNSPECIFIED",
-            "GKE_HUB"
+            "GKE_HUB",
+            "BACKEND_SERVICE"
           ]
         }
       }

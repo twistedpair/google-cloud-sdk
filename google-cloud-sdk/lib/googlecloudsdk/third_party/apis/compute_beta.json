@@ -4,7 +4,7 @@
   "id": "compute:beta",
   "name": "compute",
   "version": "beta",
-  "revision": "20220412",
+  "revision": "20220422",
   "title": "Compute Engine API",
   "description": "Creates and runs virtual machines on Google Cloud Platform. ",
   "ownerDomain": "google.com",
@@ -1297,6 +1297,13 @@
             "type": "string"
           }
         },
+        "destAddressGroups": {
+          "description": "Address groups which should be matched against the traffic destination. Maximum number of destination address groups is 10.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "layer4Configs": {
           "description": "Pairs of IP protocols and ports that the rule should match.",
           "type": "array",
@@ -1309,6 +1316,13 @@
           "type": "array",
           "items": {
             "$ref": "FirewallPolicyRuleSecureTag"
+          }
+        },
+        "srcAddressGroups": {
+          "description": "Address groups which should be matched against the traffic source. Maximum number of source address groups is 10.",
+          "type": "array",
+          "items": {
+            "type": "string"
           }
         },
         "srcRegionCodes": {
@@ -15006,6 +15020,10 @@
             "REJECTED",
             "STATUS_UNSPECIFIED"
           ]
+        },
+        "noAutomateDnsZone": {
+          "description": "This is used in PSC consumer ForwardingRule to control whether it should try to auto-generate a DNS zone or not. Non-PSC forwarding rules do not use this field.",
+          "type": "boolean"
         }
       }
     },
@@ -20821,6 +20839,18 @@
           "description": "Maximum Transmission Unit in bytes.",
           "type": "integer",
           "format": "int32"
+        },
+        "stackType": {
+          "description": "Which IP version(s) of traffic and routes are allowed to be imported or exported between peer networks. The default value is IPV4_ONLY.",
+          "type": "string",
+          "enumDescriptions": [
+            "This Peering will allow IPv4 traffic and routes to be exchanged. Additionally if the matching peering is IPV4_IPV6, IPv6 traffic and routes will be exchanged as well.",
+            "This Peering will only allow IPv4 traffic and routes to be exchanged, even if the matching peering is IPV4_IPV6."
+          ],
+          "enum": [
+            "IPV4_IPV6",
+            "IPV4_ONLY"
+          ]
         }
       }
     },

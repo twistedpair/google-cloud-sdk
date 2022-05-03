@@ -1827,8 +1827,8 @@ class ManagedService(_messages.Message):
     serviceConfig: The service's generated configuration. DEPRECATED, should
       call GetServiceConfig instead.
     serviceName: The name of the service. See the
-      [overview](https://cloud.google.com/service-management/overview) for
-      naming requirements.
+      [overview](https://cloud.google.com/service-
+      infrastructure/docs/overview) for naming requirements.
   """
 
   generation = _messages.IntegerField(1)
@@ -4006,10 +4006,9 @@ class ServicemanagementServicesRolloutsListRequest(_messages.Message):
 
   Fields:
     filter: Required. Use `filter` to return subset of rollouts. The following
-      filters are supported: -- To limit the results to only those in status
-      'SUCCESS', use filter='status=SUCCESS' -- To limit the results to those
-      in status 'CANCELLED' or 'FAILED', use filter='status=CANCELLED OR
-      status=FAILED'
+      filters are supported: -- By status. For example,
+      `filter='status=SUCCESS'` -- By strategy. For example,
+      `filter='strategy=TrafficPercentStrategy'`
     pageSize: The max number of items to include in the response list. Page
       size is 50 if not specified. Maximum value is 100.
     pageToken: The token of the page to retrieve.

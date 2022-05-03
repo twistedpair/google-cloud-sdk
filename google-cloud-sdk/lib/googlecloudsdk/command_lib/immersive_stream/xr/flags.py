@@ -22,7 +22,7 @@ from googlecloudsdk.api_lib.immersive_stream.xr import api_util
 from googlecloudsdk.calliope import arg_parsers
 
 _REALM_CONFIG_ARG_HELP_TEXT = """\
-  Repeatable flag used to specify realm and capacity required for the service instance's availability.
+  Flag used to specify realm and capacity required for the service instance's availability.
 
   'realm' is the realm in which the instance is deployed, and must be one of the following:
       REALM_UNSPECIFIED
@@ -58,17 +58,18 @@ def RealmValidator(realm):
   return realm
 
 
-def AddRealmConfigArg(name, parser):
+def AddRealmConfigArg(name, parser, repeatable=True, required=True):
   capacity_validator = arg_parsers.RegexpValidator(r'[0-9]+',
                                                    'capacity must be a number')
+  repeatable_help = '\nThis is a repeatable flag.' if repeatable else ''
   parser.add_argument(
       name,
-      help=_REALM_CONFIG_ARG_HELP_TEXT,
+      help=_REALM_CONFIG_ARG_HELP_TEXT + repeatable_help,
       type=arg_parsers.ArgDict(
           spec={
               'realm': RealmValidator,
               'capacity': capacity_validator
           },
           required_keys=['realm', 'capacity']),
-      required=True,
+      required=required,
       action='append')

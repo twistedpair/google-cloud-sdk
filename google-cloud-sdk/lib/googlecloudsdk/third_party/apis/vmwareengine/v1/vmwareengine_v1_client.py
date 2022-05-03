@@ -1461,7 +1461,7 @@ class VmwareengineV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Marks a `PrivateCloud` resource for deletion. A `PrivateCloud` resource marked for deletion has `PrivateCloud.state` set to `DELETED` and `expireTime` set to the time when deletion is final and can no longer be reversed. When deletion is final, all private cloud resources are irreversibly removed and billing stops.
+      r"""Schedules a `PrivateCloud` resource for deletion. A `PrivateCloud` resource scheduled for deletion has `PrivateCloud.state` set to `DELETED` and `expireTime` set to the time when deletion is final and can no longer be reversed. When deletion is final, all private cloud resources are irreversibly removed and billing stops. During the final removal process, `PrivateCloud.state` is set to `PURGING`.
 
       Args:
         request: (VmwareengineProjectsLocationsPrivateCloudsDeleteRequest) input message
@@ -1758,7 +1758,7 @@ class VmwareengineV1(base_api.BaseApiClient):
     )
 
     def Undelete(self, request, global_params=None):
-      r"""Unmarks a private cloud that was previously marked for deletion by `DeletePrivateCloud`. A `PrivateCloud` resource marked for deletion has `PrivateCloud.state` set to `DELETED` and `PrivateCloud.expireTime` set to the time when deletion can no longer be reversed.
+      r"""Restores a private cloud that was previously scheduled for deletion by `DeletePrivateCloud`. A `PrivateCloud` resource scheduled for deletion has `PrivateCloud.state` set to `DELETED` and `PrivateCloud.expireTime` set to the time when deletion can no longer be reversed.
 
       Args:
         request: (VmwareengineProjectsLocationsPrivateCloudsUndeleteRequest) input message

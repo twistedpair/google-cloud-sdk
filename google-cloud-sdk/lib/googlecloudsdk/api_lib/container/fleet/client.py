@@ -335,3 +335,64 @@ class FleetClient(object):
         namespaceId=name,
         parent=util.NamespaceParentName(project))
     return self.client.projects_locations_namespaces.Create(req)
+
+  def DeleteNamespace(self, project, name):
+    """Deletes a namespace resource from the fleet.
+
+    Args:
+      project: the project containing the namespace.
+      name: the name of the namespace.
+
+    Returns:
+      An operation
+
+    Raises:
+      apitools.base.py.HttpError: if the request returns an HTTP error
+    """
+    req = self.messages.GkehubProjectsLocationsNamespacesDeleteRequest(
+        name=util.NamespaceResourceName(project, name))
+    return self.client.projects_locations_namespaces.Delete(req)
+
+  def UpdateNamespace(self, name, project):
+    """Updates a namespace resource in the fleet.
+
+    Args:
+      name: the namespace name.
+      project: the project containing the namespace.
+
+    Returns:
+      An operation
+
+    Raises:
+      apitools.base.py.HttpError: if the request returns an HTTP error
+    """
+    # Namespace containing fields with updated value(s)
+    namespace = self.messages.Namespace(
+        name=util.NamespaceResourceName(project, name))
+    # Fields to be updated (currently no fields, only update_time is changed)
+    mask = ''
+    req = self.messages.GkehubProjectsLocationsNamespacesPatchRequest(
+        namespace=namespace,
+        name=util.NamespaceResourceName(project, name),
+        updateMask=mask)
+    return self.client.projects_locations_namespaces.Patch(req)
+
+  def ListNamespaces(self, project):
+    """Lists namespaces in a project.
+
+    Args:
+      project: the project to list namespaces from.
+
+    Returns:
+      A ListNamespaceResponse (list of namespaces and next page token)
+
+    Raises:
+      apitools.base.py.HttpError: if the request returns an HTTP error
+    """
+    req = self.messages.GkehubProjectsLocationsNamespacesListRequest(
+        pageToken='', parent=util.NamespaceParentName(project))
+    return list_pager.YieldFromList(
+        self.client.projects_locations_namespaces,
+        req,
+        field='namespaces',
+        batch_size_attribute=None)

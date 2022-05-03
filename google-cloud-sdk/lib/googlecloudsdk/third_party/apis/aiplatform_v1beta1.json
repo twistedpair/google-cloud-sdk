@@ -686,7 +686,7 @@
           "type": "string"
         },
         "enablePrivateServiceConnect": {
-          "description": "If true, expose the Endpoint via private service connect. Only one of the fields, network or enable_private_service_connect, can be set.",
+          "description": "Deprecated: If true, expose the Endpoint via private service connect. Only one of the fields, network or enable_private_service_connect, can be set.",
           "type": "boolean"
         },
         "modelDeploymentMonitoringJob": {
@@ -718,7 +718,7 @@
           "type": "string"
         },
         "model": {
-          "description": "Required. The name of the Model that this is the deployment of. Note that the Model may be in a different location than the DeployedModel's Endpoint.",
+          "description": "Required. The resource name of the Model that this is the deployment of. Note that the Model may be in a different location than the DeployedModel's Endpoint. The resource name may contain version id or version alias to specify the version, if no version is specified, the default version will be deployed.",
           "type": "string"
         },
         "modelVersionId": {
@@ -774,7 +774,7 @@
           "format": "int32"
         },
         "maxReplicaCount": {
-          "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If the requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, will use min_replica_count as the default value. The value of this field impacts the charge against Vertex CPU and GPU quotas. Specifically, you will be charged for max_replica_count * number of cores in the selected machine type) and (max_replica_count * number of GPUs per replica in the selected machine type).",
+          "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If the requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, will use min_replica_count as the default value. The value of this field impacts the charge against Vertex CPU and GPU quotas. Specifically, you will be charged for (max_replica_count * number of cores in the selected machine type) and (max_replica_count * number of GPUs per replica in the selected machine type).",
           "type": "integer",
           "format": "int32"
         },
@@ -894,9 +894,9 @@
           "description": "An attribution method that redistributes Integrated Gradients attribution to segmented regions, taking advantage of the model's fully differentiable structure. Refer to this paper for more details: https:\/\/arxiv.org\/abs\/1906.02825 XRAI currently performs better on natural images, like a picture of a house or an animal. If the images are taken in artificial environments, like a lab or manufacturing line, or from diagnostic equipment, like x-rays or quality-control cameras, use Integrated Gradients instead.",
           "$ref": "GoogleCloudAiplatformV1beta1XraiAttribution"
         },
-        "similarity": {
-          "description": "Similarity explainability that returns the nearest neighbors from the provided dataset.",
-          "$ref": "GoogleCloudAiplatformV1beta1Similarity"
+        "examples": {
+          "description": "Example-based explanations that returns the nearest neighbors from the provided dataset.",
+          "$ref": "GoogleCloudAiplatformV1beta1Examples"
         },
         "topK": {
           "description": "If populated, returns attributions for top K indices of outputs (defaults to 1). Only applies to Models that predicts more than one outputs (e,g, multi-class Models). When set to -1, returns explanations for all outputs.",
@@ -1027,9 +1027,9 @@
         }
       }
     },
-    "GoogleCloudAiplatformV1beta1Similarity": {
-      "id": "GoogleCloudAiplatformV1beta1Similarity",
-      "description": "Similarity explainability that returns the nearest neighbors from the provided dataset.",
+    "GoogleCloudAiplatformV1beta1Examples": {
+      "id": "GoogleCloudAiplatformV1beta1Examples",
+      "description": "Example-based explainability that returns the nearest neighbors from the provided dataset.",
       "type": "object",
       "properties": {
         "gcsSource": {
@@ -1039,6 +1039,11 @@
         "nearestNeighborSearchConfig": {
           "description": "The configuration for the generated index, the semantics are the same as metadata and should match NearestNeighborSearchConfig.",
           "type": "any"
+        },
+        "neighborCount": {
+          "description": "The number of neighbors to return.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -1063,6 +1068,10 @@
         },
         "featureAttributionsSchemaUri": {
           "description": "Points to a YAML file stored on Google Cloud Storage describing the format of the feature attributions. The schema is defined as an OpenAPI 3.0.2 [Schema Object](https:\/\/github.com\/OAI\/OpenAPI-Specification\/blob\/main\/versions\/3.0.2.md#schemaObject). AutoML tabular Models always have this field populated by Vertex AI. Note: The URI given on output may be different, including the URI scheme, than the one given on input. The output URI will point to a location where the user only has a read access.",
+          "type": "string"
+        },
+        "latentSpaceSource": {
+          "description": "Name of the source to generate embeddings for example based explanations.",
           "type": "string"
         }
       }
@@ -1324,7 +1333,7 @@
           "format": "double"
         },
         "bigqueryDestination": {
-          "description": "BigQuery table for logging. If only given project, a new dataset will be created with name `logging__` where will be made BigQuery-dataset-name compatible (e.g. most special characters will become underscores). If no table name is given, a new table will be created with name `request_response_logging`",
+          "description": "BigQuery table for logging. If only given a project, a new dataset will be created with name `logging__` where will be made BigQuery-dataset-name compatible (e.g. most special characters will become underscores). If no table name is given, a new table will be created with name `request_response_logging`",
           "$ref": "GoogleCloudAiplatformV1beta1BigQueryDestination"
         }
       }
@@ -1999,7 +2008,7 @@
           "type": "string"
         },
         "monitoringConfig": {
-          "description": "Optional. The custom monitoring configuration for this Feature, if not set, use the monitoring_config defined for the EntityType this Feature belongs to. Only Features with type (Feature.ValueType) BOOL, STRING, DOUBLE or INT64 can enable monitoring. If this is populated with FeaturestoreMonitoringConfig.disabled = true, snapshot analysis monitoring is disabled; if FeaturestoreMonitoringConfig.monitoring_interval specified, snapshot analysis monitoring is enabled. Otherwise, snapshot analysis monitoring config is same as the EntityType's this Feature belongs to.",
+          "description": "Optional. Deprecated: The custom monitoring configuration for this Feature, if not set, use the monitoring_config defined for the EntityType this Feature belongs to. Only Features with type (Feature.ValueType) BOOL, STRING, DOUBLE or INT64 can enable monitoring. If this is populated with FeaturestoreMonitoringConfig.disabled = true, snapshot analysis monitoring is disabled; if FeaturestoreMonitoringConfig.monitoring_interval specified, snapshot analysis monitoring is enabled. Otherwise, snapshot analysis monitoring config is same as the EntityType's this Feature belongs to.",
           "$ref": "GoogleCloudAiplatformV1beta1FeaturestoreMonitoringConfig"
         },
         "disableMonitoring": {
@@ -2588,7 +2597,7 @@
           "type": "string"
         },
         "enablePrivateServiceConnect": {
-          "description": "Optional. If true, expose the IndexEndpoint via private service connect. Only one of the fields, network or enable_private_service_connect, can be set.",
+          "description": "Optional. Deprecated: If true, expose the IndexEndpoint via private service connect. Only one of the fields, network or enable_private_service_connect, can be set.",
           "type": "boolean"
         }
       }
@@ -3179,6 +3188,11 @@
         "activeLearningConfig": {
           "description": "Parameters that configure the active learning pipeline. Active learning will label the data incrementally via several iterations. For every iteration, it will select a batch of data based on the sampling strategy.",
           "$ref": "GoogleCloudAiplatformV1beta1ActiveLearningConfig"
+        },
+        "labelingTimeLimit": {
+          "description": "Maximum duration for operators to answer a question.",
+          "type": "string",
+          "format": "google-duration"
         }
       }
     },
@@ -3290,117 +3304,6 @@
     "GoogleCloudAiplatformV1beta1CancelDataLabelingJobRequest": {
       "id": "GoogleCloudAiplatformV1beta1CancelDataLabelingJobRequest",
       "description": "Request message for JobService.CancelDataLabelingJob.",
-      "type": "object",
-      "properties": {
-      }
-    },
-    "GoogleCloudAiplatformV1beta1FederatedLearningJob": {
-      "id": "GoogleCloudAiplatformV1beta1FederatedLearningJob",
-      "description": "FederatedLearningJob is used to train a federated learning model through Federated Learning Service.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "Output only. Resource name of the FederatedLearningJob.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "displayName": {
-          "description": "Required. The user-defined name of the FederatedLearningJob. The name can be up to 128 characters long and can be consist of any UTF-8 characters. Display name of a FederatedLearningJob.",
-          "type": "string"
-        },
-        "consortium": {
-          "description": "The name of the Consortium resoure that this job should run with, must share the same ancestor Location.",
-          "type": "string"
-        },
-        "jobSpec": {
-          "description": "Required. Job spec.",
-          "$ref": "GoogleCloudAiplatformV1beta1FederatedLearningJobSpec"
-        },
-        "state": {
-          "description": "Output only. The detailed state of the job.",
-          "readOnly": true,
-          "type": "string",
-          "enumDescriptions": [
-            "The job state is unspecified.",
-            "The job has been just created or resumed and processing has not yet begun.",
-            "The service is preparing to run the job.",
-            "The job is in progress.",
-            "The job completed successfully.",
-            "The job failed.",
-            "The job is being cancelled. From this state the job may only go to either `JOB_STATE_SUCCEEDED`, `JOB_STATE_FAILED` or `JOB_STATE_CANCELLED`.",
-            "The job has been cancelled.",
-            "The job has been stopped, and can be resumed.",
-            "The job has expired.",
-            "The job is being updated. The job is only able to be updated at RUNNING state; if the update operation succeeds, job goes back to RUNNING state; if the update operation fails, the job goes back to RUNNING state with error messages written to ModelDeploymentMonitoringJob.partial_errors field if it is a ModelDeploymentMonitoringJob."
-          ],
-          "enum": [
-            "JOB_STATE_UNSPECIFIED",
-            "JOB_STATE_QUEUED",
-            "JOB_STATE_PENDING",
-            "JOB_STATE_RUNNING",
-            "JOB_STATE_SUCCEEDED",
-            "JOB_STATE_FAILED",
-            "JOB_STATE_CANCELLING",
-            "JOB_STATE_CANCELLED",
-            "JOB_STATE_PAUSED",
-            "JOB_STATE_EXPIRED",
-            "JOB_STATE_UPDATING"
-          ]
-        },
-        "createTime": {
-          "description": "Output only. Timestamp when this FederatedLearningJob was created.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "updateTime": {
-          "description": "Output only. Timestamp when this FederatedLearningJob was updated most recently.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "error": {
-          "description": "Output only. FederatedLearningJob errors. It is only populated when job's state is `JOB_STATE_FAILED` or `JOB_STATE_CANCELLED`.",
-          "readOnly": true,
-          "$ref": "GoogleRpcStatus"
-        },
-        "labels": {
-          "description": "The labels with user-defined metadata to organize your FederatedLearningJobs. Label keys and values can be no longer than 64 characters (Unicode codepoints), can only contain lowercase letters, numeric characters, underscores and dashes. International characters are allowed. See https:\/\/goo.gl\/xmQnxf for more information and examples of labels. System reserved label keys are prefixed with \"aiplatform.googleapis.com\/\" and are immutable. Following system labels exist for each FederatedLearningJob: * \"aiplatform.googleapis.com\/schema\": output only, its value is the inputs_schema's title.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "GoogleCloudAiplatformV1beta1FederatedLearningJobSpec": {
-      "id": "GoogleCloudAiplatformV1beta1FederatedLearningJobSpec",
-      "description": "Represents the spec of a FederatedLearningJob.",
-      "type": "object",
-      "properties": {
-      }
-    },
-    "GoogleCloudAiplatformV1beta1ListFederatedLearningJobsResponse": {
-      "id": "GoogleCloudAiplatformV1beta1ListFederatedLearningJobsResponse",
-      "description": "Response message for JobService.ListFederatedLearningJobs.",
-      "type": "object",
-      "properties": {
-        "federatedLearningJobs": {
-          "description": "A list of FederatedLearningJobs that matches the specified filter in the request.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudAiplatformV1beta1FederatedLearningJob"
-          }
-        },
-        "nextPageToken": {
-          "description": "The standard List next-page token.",
-          "type": "string"
-        }
-      }
-    },
-    "GoogleCloudAiplatformV1beta1CancelFederatedLearningJobRequest": {
-      "id": "GoogleCloudAiplatformV1beta1CancelFederatedLearningJobRequest",
-      "description": "Request message for JobService.CancelFederatedLearningJob.",
       "type": "object",
       "properties": {
       }
@@ -4104,7 +4007,7 @@
           "type": "string"
         },
         "model": {
-          "description": "The name of the Model resoure that produces the predictions via this job, must share the same ancestor Location. Starting this job has no impact on any existing deployments of the Model and their resources. Exactly one of model and unmanaged_container_model must be set.",
+          "description": "The name of the Model resoure that produces the predictions via this job, must share the same ancestor Location. Starting this job has no impact on any existing deployments of the Model and their resources. Exactly one of model and unmanaged_container_model must be set. The model resource name may contain version id or version alias to specify the version, if no version is specified, the default version will be used.",
           "type": "string"
         },
         "modelVersionId": {
@@ -4421,7 +4324,7 @@
       "type": "object",
       "properties": {
         "batchSize": {
-          "description": "Immutable. The number of the records (e.g. instances) of the operation given in each batch to a machine replica. Machine type, and size of a single record should be considered when setting this parameter, higher value speeds up the batch operation's execution, but too high value will result in a whole batch not fitting in a machine's memory, and the whole operation will fail. The default value is 4.",
+          "description": "Immutable. The number of the records (e.g. instances) of the operation given in each batch to a machine replica. Machine type, and size of a single record should be considered when setting this parameter, higher value speeds up the batch operation's execution, but too high value will result in a whole batch not fitting in a machine's memory, and the whole operation will fail. The default value is 64.",
           "type": "integer",
           "format": "int32"
         }
@@ -4579,7 +4482,8 @@
           ]
         },
         "latestMonitoringPipelineMetadata": {
-          "description": "Latest triggered monitoring pipeline metadata.",
+          "description": "Output only. Latest triggered monitoring pipeline metadata.",
+          "readOnly": true,
           "$ref": "GoogleCloudAiplatformV1beta1ModelDeploymentMonitoringJobLatestMonitoringPipelineMetadata"
         },
         "modelDeploymentMonitoringObjectiveConfigs": {
@@ -4742,7 +4646,7 @@
           "$ref": "GoogleCloudAiplatformV1beta1BigQuerySource"
         },
         "dataFormat": {
-          "description": "Data format of the dataset, only applicable if the input is from Google Cloud Storage. The possible formats are: \"tf-record\" The source file is a TFRecord file. \"csv\" The source file is a CSV file.",
+          "description": "\"jsonl\" The source file is a JSONL file.",
           "type": "string"
         },
         "targetField": {
@@ -8523,7 +8427,7 @@
           "type": "string"
         },
         "monitoringConfig": {
-          "description": "Optional. The custom monitoring configuration for this Feature, if not set, use the monitoring_config defined for the EntityType this Feature belongs to. Only Features with type (Feature.ValueType) BOOL, STRING, DOUBLE or INT64 can enable monitoring. If this is populated with FeaturestoreMonitoringConfig.disabled = true, snapshot analysis monitoring is disabled; if FeaturestoreMonitoringConfig.monitoring_interval specified, snapshot analysis monitoring is enabled. Otherwise, snapshot analysis monitoring config is same as the EntityType's this Feature belongs to.",
+          "description": "Optional. Deprecated: The custom monitoring configuration for this Feature, if not set, use the monitoring_config defined for the EntityType this Feature belongs to. Only Features with type (Feature.ValueType) BOOL, STRING, DOUBLE or INT64 can enable monitoring. If this is populated with FeaturestoreMonitoringConfig.disabled = true, snapshot analysis monitoring is disabled; if FeaturestoreMonitoringConfig.monitoring_interval specified, snapshot analysis monitoring is enabled. Otherwise, snapshot analysis monitoring config is same as the EntityType's this Feature belongs to.",
           "$ref": "GoogleCloudAiplatformInternalFeaturestoreMonitoringConfig"
         },
         "disableMonitoring": {
@@ -9027,7 +8931,7 @@
           "type": "string"
         },
         "model": {
-          "description": "Required. The name of the Model that this is the deployment of. Note that the Model may be in a different location than the DeployedModel's Endpoint.",
+          "description": "Required. The resource name of the Model that this is the deployment of. Note that the Model may be in a different location than the DeployedModel's Endpoint. The resource name may contain version id or version alias to specify the version, if no version is specified, the default version will be deployed.",
           "type": "string"
         },
         "modelVersionId": {
@@ -9074,7 +8978,7 @@
           "format": "int32"
         },
         "maxReplicaCount": {
-          "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If the requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, will use min_replica_count as the default value. The value of this field impacts the charge against Vertex CPU and GPU quotas. Specifically, you will be charged for max_replica_count * number of cores in the selected machine type) and (max_replica_count * number of GPUs per replica in the selected machine type).",
+          "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If the requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, will use min_replica_count as the default value. The value of this field impacts the charge against Vertex CPU and GPU quotas. Specifically, you will be charged for (max_replica_count * number of cores in the selected machine type) and (max_replica_count * number of GPUs per replica in the selected machine type).",
           "type": "integer",
           "format": "int32"
         },
@@ -9194,9 +9098,9 @@
           "description": "An attribution method that redistributes Integrated Gradients attribution to segmented regions, taking advantage of the model's fully differentiable structure. Refer to this paper for more details: https:\/\/arxiv.org\/abs\/1906.02825 XRAI currently performs better on natural images, like a picture of a house or an animal. If the images are taken in artificial environments, like a lab or manufacturing line, or from diagnostic equipment, like x-rays or quality-control cameras, use Integrated Gradients instead.",
           "$ref": "GoogleCloudAiplatformInternalXraiAttribution"
         },
-        "similarity": {
-          "description": "Similarity explainability that returns the nearest neighbors from the provided dataset.",
-          "$ref": "GoogleCloudAiplatformInternalSimilarity"
+        "examples": {
+          "description": "Example-based explanations that returns the nearest neighbors from the provided dataset.",
+          "$ref": "GoogleCloudAiplatformInternalExamples"
         },
         "topK": {
           "description": "If populated, returns attributions for top K indices of outputs (defaults to 1). Only applies to Models that predicts more than one outputs (e,g, multi-class Models). When set to -1, returns explanations for all outputs.",
@@ -9327,9 +9231,9 @@
         }
       }
     },
-    "GoogleCloudAiplatformInternalSimilarity": {
-      "id": "GoogleCloudAiplatformInternalSimilarity",
-      "description": "Similarity explainability that returns the nearest neighbors from the provided dataset.",
+    "GoogleCloudAiplatformInternalExamples": {
+      "id": "GoogleCloudAiplatformInternalExamples",
+      "description": "Example-based explainability that returns the nearest neighbors from the provided dataset.",
       "type": "object",
       "properties": {
         "gcsSource": {
@@ -9339,6 +9243,11 @@
         "nearestNeighborSearchConfig": {
           "description": "The configuration for the generated index, the semantics are the same as metadata and should match NearestNeighborSearchConfig.",
           "type": "any"
+        },
+        "neighborCount": {
+          "description": "The number of neighbors to return.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -9385,6 +9294,10 @@
           "additionalProperties": {
             "$ref": "GoogleCloudAiplatformInternalExplanationMetadataEmbeddingMetadata"
           }
+        },
+        "latentSpaceSource": {
+          "description": "Name of the source to generate embeddings for example based explanations.",
+          "type": "string"
         }
       }
     },
@@ -9721,7 +9634,7 @@
     },
     "GoogleCloudAiplatformInternalHumanInTheLoop": {
       "id": "GoogleCloudAiplatformInternalHumanInTheLoop",
-      "description": "A human in the loop configuration describing how to trigger a human labeling job in a prediction process and properties of the human labeling job. Next id: 27",
+      "description": "A human in the loop configuration describing how to trigger a human labeling job in a prediction process and properties of the human labeling job. Next id: 28",
       "type": "object",
       "properties": {
         "documentCriteria": {
@@ -9861,12 +9774,17 @@
         "marketplaceEntitlement": {
           "description": "GCP Marketplace entitlement information to be attached to this HITL.",
           "$ref": "GoogleCloudAiplatformInternalHumanInTheLoopMarketplaceEntitlement"
+        },
+        "labelingTimeLimit": {
+          "description": "Maximum duration for operators to answer a question. This duration is applied to all questions in the HITL. Should be [10 minutes, 8 hours]. Default is 45 minutes.",
+          "type": "string",
+          "format": "google-duration"
         }
       }
     },
     "GoogleCloudAiplatformInternalDocumentCriteria": {
       "id": "GoogleCloudAiplatformInternalDocumentCriteria",
-      "description": "LINT.IfChange Describes the triggering criteria of the human in the loop configuration for document AI.",
+      "description": "Describes the triggering criteria of the human in the loop configuration for document AI.",
       "type": "object",
       "properties": {
         "randomSampling": {
@@ -9906,7 +9824,7 @@
     },
     "GoogleCloudAiplatformInternalHumanInTheLoopRandomSampling": {
       "id": "GoogleCloudAiplatformInternalHumanInTheLoopRandomSampling",
-      "description": "LINT.IfChange Describe the random sampling parameters for triggering human in the loop.",
+      "description": "Describe the random sampling parameters for triggering human in the loop.",
       "type": "object",
       "properties": {
         "rate": {
@@ -10261,6 +10179,13 @@
           "type": "string",
           "format": "int64"
         }
+      }
+    },
+    "GoogleCloudAiplatformInternalDeleteFeatureValuesResponse": {
+      "id": "GoogleCloudAiplatformInternalDeleteFeatureValuesResponse",
+      "description": "Response message for FeaturestoreService.DeleteFeatureValues.",
+      "type": "object",
+      "properties": {
       }
     },
     "GoogleCloudAiplatformInternalPurgeArtifactsMetadata": {
@@ -11493,7 +11418,7 @@
           "type": "string"
         },
         "monitoringConfig": {
-          "description": "Optional. The custom monitoring configuration for this Feature, if not set, use the monitoring_config defined for the EntityType this Feature belongs to. Only Features with type (Feature.ValueType) BOOL, STRING, DOUBLE or INT64 can enable monitoring. If this is populated with FeaturestoreMonitoringConfig.disabled = true, snapshot analysis monitoring is disabled; if FeaturestoreMonitoringConfig.monitoring_interval specified, snapshot analysis monitoring is enabled. Otherwise, snapshot analysis monitoring config is same as the EntityType's this Feature belongs to.",
+          "description": "Optional. Deprecated: The custom monitoring configuration for this Feature, if not set, use the monitoring_config defined for the EntityType this Feature belongs to. Only Features with type (Feature.ValueType) BOOL, STRING, DOUBLE or INT64 can enable monitoring. If this is populated with FeaturestoreMonitoringConfig.disabled = true, snapshot analysis monitoring is disabled; if FeaturestoreMonitoringConfig.monitoring_interval specified, snapshot analysis monitoring is enabled. Otherwise, snapshot analysis monitoring config is same as the EntityType's this Feature belongs to.",
           "$ref": "GoogleCloudAiplatformUiFeaturestoreMonitoringConfig"
         },
         "disableMonitoring": {
@@ -12024,7 +11949,7 @@
           "type": "string"
         },
         "model": {
-          "description": "Required. The name of the Model that this is the deployment of. Note that the Model may be in a different location than the DeployedModel's Endpoint.",
+          "description": "Required. The resource name of the Model that this is the deployment of. Note that the Model may be in a different location than the DeployedModel's Endpoint. The resource name may contain version id or version alias to specify the version, if no version is specified, the default version will be deployed.",
           "type": "string"
         },
         "modelVersionId": {
@@ -12117,7 +12042,7 @@
           "format": "int32"
         },
         "maxReplicaCount": {
-          "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If the requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, will use min_replica_count as the default value. The value of this field impacts the charge against Vertex CPU and GPU quotas. Specifically, you will be charged for max_replica_count * number of cores in the selected machine type) and (max_replica_count * number of GPUs per replica in the selected machine type).",
+          "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If the requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, will use min_replica_count as the default value. The value of this field impacts the charge against Vertex CPU and GPU quotas. Specifically, you will be charged for (max_replica_count * number of cores in the selected machine type) and (max_replica_count * number of GPUs per replica in the selected machine type).",
           "type": "integer",
           "format": "int32"
         },
@@ -12237,9 +12162,9 @@
           "description": "An attribution method that redistributes Integrated Gradients attribution to segmented regions, taking advantage of the model's fully differentiable structure. Refer to this paper for more details: https:\/\/arxiv.org\/abs\/1906.02825 XRAI currently performs better on natural images, like a picture of a house or an animal. If the images are taken in artificial environments, like a lab or manufacturing line, or from diagnostic equipment, like x-rays or quality-control cameras, use Integrated Gradients instead.",
           "$ref": "GoogleCloudAiplatformUiXraiAttribution"
         },
-        "similarity": {
-          "description": "Similarity explainability that returns the nearest neighbors from the provided dataset.",
-          "$ref": "GoogleCloudAiplatformUiSimilarity"
+        "examples": {
+          "description": "Example-based explanations that returns the nearest neighbors from the provided dataset.",
+          "$ref": "GoogleCloudAiplatformUiExamples"
         },
         "topK": {
           "description": "If populated, returns attributions for top K indices of outputs (defaults to 1). Only applies to Models that predicts more than one outputs (e,g, multi-class Models). When set to -1, returns explanations for all outputs.",
@@ -12370,9 +12295,9 @@
         }
       }
     },
-    "GoogleCloudAiplatformUiSimilarity": {
-      "id": "GoogleCloudAiplatformUiSimilarity",
-      "description": "Similarity explainability that returns the nearest neighbors from the provided dataset.",
+    "GoogleCloudAiplatformUiExamples": {
+      "id": "GoogleCloudAiplatformUiExamples",
+      "description": "Example-based explainability that returns the nearest neighbors from the provided dataset.",
       "type": "object",
       "properties": {
         "gcsSource": {
@@ -12382,6 +12307,11 @@
         "nearestNeighborSearchConfig": {
           "description": "The configuration for the generated index, the semantics are the same as metadata and should match NearestNeighborSearchConfig.",
           "type": "any"
+        },
+        "neighborCount": {
+          "description": "The number of neighbors to return.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -12428,6 +12358,10 @@
           "additionalProperties": {
             "$ref": "GoogleCloudAiplatformUiExplanationMetadataEmbeddingMetadata"
           }
+        },
+        "latentSpaceSource": {
+          "description": "Name of the source to generate embeddings for example based explanations.",
+          "type": "string"
         }
       }
     },
@@ -12725,7 +12659,7 @@
           "$ref": "GoogleCloudAiplatformUiBigQuerySource"
         },
         "dataFormat": {
-          "description": "Data format of the dataset, only applicable if the input is from Google Cloud Storage. The possible formats are: \"tf-record\" The source file is a TFRecord file. \"csv\" The source file is a CSV file.",
+          "description": "\"jsonl\" The source file is a JSONL file.",
           "type": "string"
         },
         "targetField": {
@@ -13181,6 +13115,7 @@
             "",
             "",
             "",
+            "",
             ""
           ],
           "enum": [
@@ -13188,7 +13123,8 @@
             "CUSTOMJOB",
             "DATAFLOWJOB",
             "BIGQUERYJOB",
-            "BATCHPREDICTIONJOB"
+            "BATCHPREDICTIONJOB",
+            "HYPERPARAMETERTUNINGJOB"
           ]
         },
         "resourceUri": {
@@ -13305,6 +13241,13 @@
           "type": "string",
           "format": "int64"
         }
+      }
+    },
+    "GoogleCloudAiplatformUiDeleteFeatureValuesResponse": {
+      "id": "GoogleCloudAiplatformUiDeleteFeatureValuesResponse",
+      "description": "Response message for FeaturestoreService.DeleteFeatureValues.",
+      "type": "object",
+      "properties": {
       }
     },
     "GoogleCloudAiplatformUiMutateDeployedIndexOperationMetadata": {
@@ -15161,12 +15104,7 @@
           "type": "string"
         },
         "model": {
-          "description": "Required. The name of the Model that this is the deployment of. Note that the Model may be in a different location than the DeployedModel's Endpoint.",
-          "type": "string"
-        },
-        "modelVersionId": {
-          "description": "Output only. The version ID of the model that is deployed.",
-          "readOnly": true,
+          "description": "Required. The resource name of the Model that this is the deployment of. Note that the Model may be in a different location than the DeployedModel's Endpoint. The resource name may contain version id or version alias to specify the version, if no version is specified, the default version will be deployed.",
           "type": "string"
         },
         "displayName": {
@@ -15284,9 +15222,9 @@
           "description": "An attribution method that approximates Shapley values for features that contribute to the label being predicted. A sampling strategy is used to approximate the value rather than considering all subsets of features. Refer to this paper for model details: https:\/\/arxiv.org\/abs\/1306.4265.",
           "$ref": "GoogleCloudAiplatformV1alpha1SampledShapleyAttribution"
         },
-        "similarity": {
-          "description": "Similarity explainability that returns the nearest neighbors from the provided dataset.",
-          "$ref": "GoogleCloudAiplatformV1alpha1Similarity"
+        "examples": {
+          "description": "Example-based explanations that returns the nearest neighbors from the provided dataset.",
+          "$ref": "GoogleCloudAiplatformV1alpha1Examples"
         }
       }
     },
@@ -15302,9 +15240,9 @@
         }
       }
     },
-    "GoogleCloudAiplatformV1alpha1Similarity": {
-      "id": "GoogleCloudAiplatformV1alpha1Similarity",
-      "description": "Similarity explainability that returns the nearest neighbors from the provided dataset.",
+    "GoogleCloudAiplatformV1alpha1Examples": {
+      "id": "GoogleCloudAiplatformV1alpha1Examples",
+      "description": "Example-based explainability that returns the nearest neighbors from the provided dataset.",
       "type": "object",
       "properties": {
         "gcsSource": {
@@ -15314,6 +15252,11 @@
         "nearestNeighborSearchConfig": {
           "description": "The configuration for the generated index, the semantics are the same as metadata and should match NearestNeighborSearchConfig.",
           "type": "any"
+        },
+        "neighborCount": {
+          "description": "The number of neighbors to return.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -15985,11 +15928,6 @@
       "properties": {
         "model": {
           "description": "The name of the uploaded Model resource. Format: `projects\/{project}\/locations\/{location}\/models\/{model}`",
-          "type": "string"
-        },
-        "modelVersionId": {
-          "description": "Output only. The version ID of the model that is uploaded.",
-          "readOnly": true,
           "type": "string"
         }
       }
@@ -17172,6 +17110,13 @@
         }
       }
     },
+    "GoogleCloudAiplatformV1beta1DeleteFeatureValuesResponse": {
+      "id": "GoogleCloudAiplatformV1beta1DeleteFeatureValuesResponse",
+      "description": "Response message for FeaturestoreService.DeleteFeatureValues.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "GoogleCloudAiplatformV1beta1MutateDeployedIndexOperationMetadata": {
       "id": "GoogleCloudAiplatformV1beta1MutateDeployedIndexOperationMetadata",
       "description": "Runtime operation information for IndexEndpointService.MutateDeployedIndex.",
@@ -18204,6 +18149,10 @@
             "format": "double"
           }
         },
+        "hierarchyConfig": {
+          "description": "Configuration that defines the hierarchical relationship of time series and parameters for hierarchical forecasting strategies.",
+          "$ref": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionHierarchyConfig"
+        },
         "validationOptions": {
           "description": "Validation options for the data validation component. The available options are: * \"fail-pipeline\" - default, will validate against the validation and fail the pipeline if it fails. * \"ignore-validation\" - ignore the results of the validation and continue",
           "type": "string"
@@ -18320,6 +18269,35 @@
         "overrideExistingTable": {
           "description": "If true and an export destination is specified, then the contents of the destination are overwritten. Otherwise, if the export destination already exists, then the export operation fails.",
           "type": "boolean"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionHierarchyConfig": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionHierarchyConfig",
+      "description": "Configuration that defines the hierarchical relationship of time series and parameters for hierarchical forecasting strategies.",
+      "type": "object",
+      "properties": {
+        "groupColumns": {
+          "description": "A list of time series attribute column names that define the time series hierarchy. Only one level of hierarchy is supported, ex. \u2018region\u2019 for a hierarchy of stores or \u2018department\u2019 for a hierarchy of products. If multiple columns are specified, time series will be grouped by their combined values, ex. (\u2018blue\u2019, \u2018large\u2019) for \u2018color\u2019 and \u2018size\u2019, up to 5 columns are accepted.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "groupLossWeight": {
+          "description": "The weight of the loss for predictions aggregated over time series in the same hierarchy group, or all time series if no group columns are defined.",
+          "type": "number",
+          "format": "double"
+        },
+        "timeLossWeight": {
+          "description": "The weight of the loss for predictions aggregated over the horizon for a single time series.",
+          "type": "number",
+          "format": "double"
+        },
+        "totalLossWeight": {
+          "description": "The weight of the loss for predictions aggregated over both the horizon and time series in the same hierarchy group, or all time series if no group columns are defined.",
+          "type": "number",
+          "format": "double"
         }
       }
     },
@@ -20481,12 +20459,7 @@
           "type": "string"
         },
         "model": {
-          "description": "Required. The name of the Model that this is the deployment of. Note that the Model may be in a different location than the DeployedModel's Endpoint.",
-          "type": "string"
-        },
-        "modelVersionId": {
-          "description": "Output only. The version ID of the model that is deployed.",
-          "readOnly": true,
+          "description": "Required. The resource name of the Model that this is the deployment of. Note that the Model may be in a different location than the DeployedModel's Endpoint. The resource name may contain version id or version alias to specify the version, if no version is specified, the default version will be deployed.",
           "type": "string"
         },
         "displayName": {
@@ -20537,7 +20510,7 @@
           "format": "int32"
         },
         "maxReplicaCount": {
-          "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If the requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, will use min_replica_count as the default value. The value of this field impacts the charge against Vertex CPU and GPU quotas. Specifically, you will be charged for max_replica_count * number of cores in the selected machine type) and (max_replica_count * number of GPUs per replica in the selected machine type).",
+          "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If the requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, will use min_replica_count as the default value. The value of this field impacts the charge against Vertex CPU and GPU quotas. Specifically, you will be charged for (max_replica_count * number of cores in the selected machine type) and (max_replica_count * number of GPUs per replica in the selected machine type).",
           "type": "integer",
           "format": "int32"
         },
@@ -20807,6 +20780,10 @@
         },
         "featureAttributionsSchemaUri": {
           "description": "Points to a YAML file stored on Google Cloud Storage describing the format of the feature attributions. The schema is defined as an OpenAPI 3.0.2 [Schema Object](https:\/\/github.com\/OAI\/OpenAPI-Specification\/blob\/main\/versions\/3.0.2.md#schemaObject). AutoML tabular Models always have this field populated by Vertex AI. Note: The URI given on output may be different, including the URI scheme, than the one given on input. The output URI will point to a location where the user only has a read access.",
+          "type": "string"
+        },
+        "latentSpaceSource": {
+          "description": "Name of the source to generate embeddings for example based explanations.",
           "type": "string"
         }
       }
@@ -21833,11 +21810,6 @@
         "model": {
           "description": "The name of the uploaded Model resource. Format: `projects\/{project}\/locations\/{location}\/models\/{model}`",
           "type": "string"
-        },
-        "modelVersionId": {
-          "description": "Output only. The version ID of the model that is uploaded.",
-          "readOnly": true,
-          "type": "string"
         }
       }
     },
@@ -22564,6 +22536,10 @@
             "format": "double"
           }
         },
+        "hierarchyConfig": {
+          "description": "Configuration that defines the hierarchical relationship of time series and parameters for hierarchical forecasting strategies.",
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionHierarchyConfig"
+        },
         "validationOptions": {
           "description": "Validation options for the data validation component. The available options are: * \"fail-pipeline\" - default, will validate against the validation and fail the pipeline if it fails. * \"ignore-validation\" - ignore the results of the validation and continue",
           "type": "string"
@@ -22680,6 +22656,35 @@
         "overrideExistingTable": {
           "description": "If true and an export destination is specified, then the contents of the destination are overwritten. Otherwise, if the export destination already exists, then the export operation fails.",
           "type": "boolean"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionHierarchyConfig": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionHierarchyConfig",
+      "description": "Configuration that defines the hierarchical relationship of time series and parameters for hierarchical forecasting strategies.",
+      "type": "object",
+      "properties": {
+        "groupColumns": {
+          "description": "A list of time series attribute column names that define the time series hierarchy. Only one level of hierarchy is supported, ex. \u2018region\u2019 for a hierarchy of stores or \u2018department\u2019 for a hierarchy of products. If multiple columns are specified, time series will be grouped by their combined values, ex. (\u2018blue\u2019, \u2018large\u2019) for \u2018color\u2019 and \u2018size\u2019, up to 5 columns are accepted.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "groupLossWeight": {
+          "description": "The weight of the loss for predictions aggregated over time series in the same hierarchy group, or all time series if no group columns are defined.",
+          "type": "number",
+          "format": "double"
+        },
+        "timeLossWeight": {
+          "description": "The weight of the loss for predictions aggregated over the horizon for a single time series.",
+          "type": "number",
+          "format": "double"
+        },
+        "totalLossWeight": {
+          "description": "The weight of the loss for predictions aggregated over both the horizon and time series in the same hierarchy group, or all time series if no group columns are defined.",
+          "type": "number",
+          "format": "double"
         }
       }
     },
@@ -24651,7 +24656,7 @@
                   "type": "string"
                 },
                 "filter": {
-                  "description": "A filter to narrow down results to a preferred subset. The filtering language accepts strings like \"displayName=tokyo\", and is documented in more detail in [AIP-160](https:\/\/google.aip.dev\/160).",
+                  "description": "A filter to narrow down results to a preferred subset. The filtering language accepts strings like `\"displayName=tokyo\"`, and is documented in more detail in [AIP-160](https:\/\/google.aip.dev\/160).",
                   "location": "query",
                   "type": "string"
                 },
@@ -29328,168 +29333,6 @@
                 }
               }
             },
-            "federatedLearningJobs": {
-              "methods": {
-                "create": {
-                  "id": "aiplatform.projects.locations.federatedLearningJobs.create",
-                  "path": "v1beta1/{+parent}/federatedLearningJobs",
-                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/federatedLearningJobs",
-                  "httpMethod": "POST",
-                  "parameters": {
-                    "parent": {
-                      "description": "Required. The parent of the FederatedLearningJob. Format: `projects\/{project}\/locations\/{location}`",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "parent"
-                  ],
-                  "request": {
-                    "$ref": "GoogleCloudAiplatformV1beta1FederatedLearningJob"
-                  },
-                  "response": {
-                    "$ref": "GoogleCloudAiplatformV1beta1FederatedLearningJob"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Creates a FederatedLearningJob."
-                },
-                "get": {
-                  "id": "aiplatform.projects.locations.federatedLearningJobs.get",
-                  "path": "v1beta1/{+name}",
-                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/federatedLearningJobs/{federatedLearningJobsId}",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "name": {
-                      "description": "Required. The name of the FederatedLearningJob. Format: `projects\/{project}\/locations\/{location}\/federatedLearningJobs\/{federated_learning_job}`",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/federatedLearningJobs\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "response": {
-                    "$ref": "GoogleCloudAiplatformV1beta1FederatedLearningJob"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Gets a FederatedLearningJob."
-                },
-                "list": {
-                  "id": "aiplatform.projects.locations.federatedLearningJobs.list",
-                  "path": "v1beta1/{+parent}/federatedLearningJobs",
-                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/federatedLearningJobs",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "parent": {
-                      "description": "Required. The parent of the FederatedLearningJob. Format: `projects\/{project}\/locations\/{location}`",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "filter": {
-                      "description": "The standard list filter. Supported fields: * `display_name` supports = and !=. * `state` supports = and !=. Some examples of using the filter are: * `state=\"JOB_STATE_SUCCEEDED\" AND display_name=\"my_job\"` * `state=\"JOB_STATE_RUNNING\" OR display_name=\"my_job\"` * `NOT display_name=\"my_job\"` * `state=\"JOB_STATE_FAILED\"`",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "pageSize": {
-                      "description": "The standard list page size. If unspecified, at most 50 FederatedLearningJobs will be returned.",
-                      "location": "query",
-                      "type": "integer",
-                      "format": "int32"
-                    },
-                    "pageToken": {
-                      "description": "The standard list page token.",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "readMask": {
-                      "description": "Mask specifying which fields to read. FieldMask represents a set of symbolic field paths. For example, the mask can be `paths: \"name\"`. The \"name\" here is a field in FederatedLearningJob. If this field is not set, all fields of the FederatedLearningJob are returned.",
-                      "location": "query",
-                      "type": "string",
-                      "format": "google-fieldmask"
-                    },
-                    "orderBy": {
-                      "description": "A comma-separated list of fields to order by, sorted in ascending order by default. Use `desc` after a field name for descending.",
-                      "location": "query",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "parent"
-                  ],
-                  "response": {
-                    "$ref": "GoogleCloudAiplatformV1beta1ListFederatedLearningJobsResponse"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Lists FederatedLearningJobs in a Location."
-                },
-                "delete": {
-                  "id": "aiplatform.projects.locations.federatedLearningJobs.delete",
-                  "path": "v1beta1/{+name}",
-                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/federatedLearningJobs/{federatedLearningJobsId}",
-                  "httpMethod": "DELETE",
-                  "parameters": {
-                    "name": {
-                      "description": "Required. The name of the FederatedLearningJob to be deleted. Format: `projects\/{project}\/locations\/{location}\/federatedLearningJobs\/{federated_learning_job}`",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/federatedLearningJobs\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "response": {
-                    "$ref": "GoogleLongrunningOperation"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Deletes a FederatedLearningJob."
-                },
-                "cancel": {
-                  "id": "aiplatform.projects.locations.federatedLearningJobs.cancel",
-                  "path": "v1beta1/{+name}:cancel",
-                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/federatedLearningJobs/{federatedLearningJobsId}:cancel",
-                  "httpMethod": "POST",
-                  "parameters": {
-                    "name": {
-                      "description": "Required. The name of the FederatedLearningJob. Format: `projects\/{project}\/locations\/{location}\/federatedLearningJobs\/{federated_learning_job}`",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/federatedLearningJobs\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "request": {
-                    "$ref": "GoogleCloudAiplatformV1beta1CancelFederatedLearningJobRequest"
-                  },
-                  "response": {
-                    "$ref": "GoogleProtobufEmpty"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Cancels a FederatedLearningJob. Success of cancellation is not guaranteed."
-                }
-              }
-            },
             "hyperparameterTuningJobs": {
               "methods": {
                 "create": {
@@ -31619,7 +31462,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. The name of the Model resource. Format: `projects\/{project}\/locations\/{location}\/models\/{model}`",
+                      "description": "Required. The name of the Model resource. Format: `projects\/{project}\/locations\/{location}\/models\/{model}` In order to retrieve a specific version of the model, also provide the version ID or version alias. Example: projects\/{project}\/locations\/{location}\/models\/{model}@2 or projects\/{project}\/locations\/{location}\/models\/{model}@golden If no version ID or alias is specified, the \"default\" version will be returned. The \"default\" version alias is created for the first version of the model, and can be moved to other versions later on. There will be exactly one default version.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/models\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -31709,7 +31552,7 @@
                       "type": "string"
                     },
                     "filter": {
-                      "description": "An expression for filtering the results of the request. For field names both snake_case and camelCase are supported. * `display_name` supports = and != * `labels` supports general map functions that is: * `labels.key=value` - key:value equality * `labels.key:* or labels:key - key existence * A key including a space must be quoted. `labels.\"a key\"`. Some examples: * `displayName=\"myDisplayName\"` * `labels.myKey=\"myValue\"`",
+                      "description": "An expression for filtering the results of the request. For field names both snake_case and camelCase are supported. * `labels` supports general map functions that is: * `labels.key=value` - key:value equality * `labels.key:* or labels:key - key existence * A key including a space must be quoted. `labels.\"a key\"`. Some examples: * `labels.myKey=\"myValue\"`",
                       "location": "query",
                       "type": "string"
                     },
@@ -31850,7 +31693,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
-                      "description": "Required. The resource name of the Model to export.",
+                      "description": "Required. The resource name of the Model to export. The resource name may contain version id or version alias to specify the version, if no version is specified, the default version will be exported.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/models\/[^\/]+$",
                       "location": "path",
                       "required": true,

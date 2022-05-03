@@ -49,20 +49,56 @@ def AddTriggerArgs(parser):
 
   trigger_config = parser.add_mutually_exclusive_group(required=True)
 
-  # Allow trigger config to be specified on the command line or STDIN.
-  trigger_config.add_argument(
-      '--trigger-config',
-      help=(
-          'Path to Build Trigger config file (JSON or YAML format). For more '
-          'details, see https://cloud.google.com/cloud-build/docs/api/reference/rest/v1/projects.triggers#BuildTrigger'
-      ),
-      metavar='PATH',
-  )
+  AddTriggerConfigFilePathArg(trigger_config)
 
   # Trigger configuration
   flag_config = trigger_config.add_argument_group(
       help='Flag based trigger configuration')
-  build_flags.AddRegionFlag(flag_config, hidden=True)
+  build_flags.AddRegionFlag(flag_config, hidden=True, required=False)
+  AddFlagConfigArgs(flag_config)
+
+  return flag_config
+
+
+def AddGitLabEnterpriseTriggerArgs(parser):
+  """Set up the generic argparse flags for creating or updating a build trigger for GitLab Enterprise.
+
+  Args:
+    parser: An argparse.ArgumentParser-like object.
+
+  Returns:
+    An empty parser group to be populated with flags specific to a trigger-type.
+  """
+
+  parser.display_info.AddFormat("""
+          table(
+            name,
+            createTime.date('%Y-%m-%dT%H:%M:%S%Oz', undefined='-'),
+            status
+          )
+        """)
+
+  trigger_config = parser.add_mutually_exclusive_group(required=True)
+
+  AddTriggerConfigFilePathArg(trigger_config)
+
+  # Trigger configuration
+  flag_config = trigger_config.add_argument_group(
+      help='Flag based trigger configuration')
+  build_flags.AddRegionFlag(flag_config, hidden=False, required=True)
+  AddFlagConfigArgs(flag_config)
+
+  return flag_config
+
+
+def AddFlagConfigArgs(flag_config):
+  """Adds additional argparse flags related to flag config.
+
+  Args:
+    flag_config: argparse argument group. Additional flags will be added to this
+      group to cover common flag configuration settings.
+  """
+
   flag_config.add_argument('--name', help='Build trigger name.')
   flag_config.add_argument('--description', help='Build trigger description.')
   flag_config.add_argument(
@@ -73,14 +109,29 @@ def AddTriggerArgs(parser):
           'CancelBuild. If no service account is set, then the standard Cloud '
           'Build service account ([PROJECT_NUM]@system.gserviceaccount.com) is '
           'used instead. Format: '
-          '`projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT_ID_OR_EMAIL}`.'
-      ),
+          '`projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT_ID_OR_EMAIL}`.'),
       required=False)
-  flag_config.add_argument('--require-approval',
-                           help='Require manual approval for triggered builds.',
-                           action='store_true')
+  flag_config.add_argument(
+      '--require-approval',
+      help='Require manual approval for triggered builds.',
+      action='store_true')
 
-  return flag_config
+
+def AddTriggerConfigFilePathArg(trigger_config):
+  """Allow trigger config to be specified on the command line or STDIN.
+
+  Args:
+    trigger_config: the config of which the file path can be specified.
+  """
+
+  trigger_config.add_argument(
+      '--trigger-config',
+      help=(
+          'Path to Build Trigger config file (JSON or YAML format). For more '
+          'details, see https://cloud.google.com/cloud-build/docs/api/reference/rest/v1/projects.triggers#BuildTrigger'
+      ),
+      metavar='PATH',
+  )
 
 
 def ParseTriggerArgs(args, messages):
@@ -202,7 +253,49 @@ def AddBuildConfigArgs(flag_config):
       Local path to a YAML or JSON file containing a build configuration.
     """)
 
-  docker = build_config.add_argument_group(
+  AddBuildDockerArgs(build_config)
+
+
+def AddGitLabEnterpriseBuildConfigArgs(flag_config):
+  """Adds additional argparse flags to a group for build configuration options for GitLab Enterprise.
+
+  Args:
+    flag_config: argparse argument group. Additional flags will be added to this
+      group to cover common build configuration settings.
+  """
+
+  # Build config and inline config support substitutions whereas dockerfile
+  # does not. We can't have a flag with the same name in two separate
+  # groups so we have to have one flag outside of the config argument group.
+  AddSubstitutions(flag_config)
+
+  build_config = flag_config.add_mutually_exclusive_group(required=True)
+  build_config.add_argument(
+      '--build-config',
+      metavar='PATH',
+      help="""\
+Path to a YAML or JSON file containing the build configuration in the repository.
+
+For more details, see: https://cloud.google.com/cloud-build/docs/build-config
+""")
+  build_config.add_argument(
+      '--inline-config',
+      metavar='PATH',
+      help="""\
+      Local path to a YAML or JSON file containing a build configuration.
+    """)
+
+  AddBuildDockerArgs(build_config)
+
+
+def AddBuildDockerArgs(argument_group):
+  """Adds additional argparse flags to a group for build docker options.
+
+  Args:
+    argument_group: argparse argument group to which build docker flag will
+      be added.
+  """
+  docker = argument_group.add_argument_group(
       help='Dockerfile build configuration flags')
   docker.add_argument(
       '--dockerfile',

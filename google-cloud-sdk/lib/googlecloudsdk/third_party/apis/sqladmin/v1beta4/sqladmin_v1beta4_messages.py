@@ -2179,6 +2179,8 @@ class Settings(_messages.Message):
     databaseReplicationEnabled: Configuration specific to read replica
       instances. Indicates whether replication is enabled or not. WARNING:
       Changing this restarts the instance.
+    deletionProtectionEnabled: Configuration to protect against accidental
+      instance deletion.
     denyMaintenancePeriods: Deny maintenance periods
     insightsConfig: Insights configuration, for now relevant only for
       Postgres.
@@ -2353,24 +2355,25 @@ class Settings(_messages.Message):
   dataDiskType = _messages.EnumField('DataDiskTypeValueValuesEnum', 9)
   databaseFlags = _messages.MessageField('DatabaseFlags', 10, repeated=True)
   databaseReplicationEnabled = _messages.BooleanField(11)
-  denyMaintenancePeriods = _messages.MessageField('DenyMaintenancePeriod', 12, repeated=True)
-  insightsConfig = _messages.MessageField('InsightsConfig', 13)
-  instanceVersion = _messages.StringField(14)
-  ipConfiguration = _messages.MessageField('IpConfiguration', 15)
-  kind = _messages.StringField(16)
-  locationPreference = _messages.MessageField('LocationPreference', 17)
-  maintenanceVersion = _messages.StringField(18)
-  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 19)
-  passwordValidationPolicy = _messages.MessageField('PasswordValidationPolicy', 20)
-  pricingPlan = _messages.EnumField('PricingPlanValueValuesEnum', 21)
-  replicationType = _messages.EnumField('ReplicationTypeValueValuesEnum', 22)
-  settingsVersion = _messages.IntegerField(23)
-  sqlServerAuditConfig = _messages.MessageField('SqlServerAuditConfig', 24)
-  storageAutoResize = _messages.BooleanField(25)
-  storageAutoResizeLimit = _messages.IntegerField(26)
-  tier = _messages.StringField(27)
-  userLabels = _messages.MessageField('UserLabelsValue', 28)
-  workloadTier = _messages.EnumField('WorkloadTierValueValuesEnum', 29)
+  deletionProtectionEnabled = _messages.BooleanField(12)
+  denyMaintenancePeriods = _messages.MessageField('DenyMaintenancePeriod', 13, repeated=True)
+  insightsConfig = _messages.MessageField('InsightsConfig', 14)
+  instanceVersion = _messages.StringField(15)
+  ipConfiguration = _messages.MessageField('IpConfiguration', 16)
+  kind = _messages.StringField(17)
+  locationPreference = _messages.MessageField('LocationPreference', 18)
+  maintenanceVersion = _messages.StringField(19)
+  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 20)
+  passwordValidationPolicy = _messages.MessageField('PasswordValidationPolicy', 21)
+  pricingPlan = _messages.EnumField('PricingPlanValueValuesEnum', 22)
+  replicationType = _messages.EnumField('ReplicationTypeValueValuesEnum', 23)
+  settingsVersion = _messages.IntegerField(24)
+  sqlServerAuditConfig = _messages.MessageField('SqlServerAuditConfig', 25)
+  storageAutoResize = _messages.BooleanField(26)
+  storageAutoResizeLimit = _messages.IntegerField(27)
+  tier = _messages.StringField(28)
+  userLabels = _messages.MessageField('UserLabelsValue', 29)
+  workloadTier = _messages.EnumField('WorkloadTierValueValuesEnum', 30)
 
 
 class SqlActiveDirectoryConfig(_messages.Message):
@@ -3573,11 +3576,13 @@ class User(_messages.Message):
   r"""A Cloud SQL user resource.
 
   Enums:
+    DualPasswordTypeValueValuesEnum: Dual password status for the user.
     TypeValueValuesEnum: The user type. It determines the method to
       authenticate the user during login. The default is the database's built-
       in user type.
 
   Fields:
+    dualPasswordType: Dual password status for the user.
     etag: This field is deprecated and will be removed from a future version
       of the API.
     host: Optional. The host from which the user can connect. For `insert`
@@ -3603,6 +3608,21 @@ class User(_messages.Message):
       during login. The default is the database's built-in user type.
   """
 
+  class DualPasswordTypeValueValuesEnum(_messages.Enum):
+    r"""Dual password status for the user.
+
+    Values:
+      DUAL_PASSWORD_TYPE_UNSPECIFIED: The default value.
+      NO_MODIFY_DUAL_PASSWORD: Do not update the user's dual password status.
+      NO_DUAL_PASSWORD: No dual password usable for connecting using this
+        user.
+      DUAL_PASSWORD: Dual password usable for connecting using this user.
+    """
+    DUAL_PASSWORD_TYPE_UNSPECIFIED = 0
+    NO_MODIFY_DUAL_PASSWORD = 1
+    NO_DUAL_PASSWORD = 2
+    DUAL_PASSWORD = 3
+
   class TypeValueValuesEnum(_messages.Enum):
     r"""The user type. It determines the method to authenticate the user
     during login. The default is the database's built-in user type.
@@ -3616,17 +3636,18 @@ class User(_messages.Message):
     CLOUD_IAM_USER = 1
     CLOUD_IAM_SERVICE_ACCOUNT = 2
 
-  etag = _messages.StringField(1)
-  host = _messages.StringField(2)
-  iamEmail = _messages.StringField(3)
-  instance = _messages.StringField(4)
-  kind = _messages.StringField(5)
-  name = _messages.StringField(6)
-  password = _messages.StringField(7)
-  passwordPolicy = _messages.MessageField('UserPasswordValidationPolicy', 8)
-  project = _messages.StringField(9)
-  sqlserverUserDetails = _messages.MessageField('SqlServerUserDetails', 10)
-  type = _messages.EnumField('TypeValueValuesEnum', 11)
+  dualPasswordType = _messages.EnumField('DualPasswordTypeValueValuesEnum', 1)
+  etag = _messages.StringField(2)
+  host = _messages.StringField(3)
+  iamEmail = _messages.StringField(4)
+  instance = _messages.StringField(5)
+  kind = _messages.StringField(6)
+  name = _messages.StringField(7)
+  password = _messages.StringField(8)
+  passwordPolicy = _messages.MessageField('UserPasswordValidationPolicy', 9)
+  project = _messages.StringField(10)
+  sqlserverUserDetails = _messages.MessageField('SqlServerUserDetails', 11)
+  type = _messages.EnumField('TypeValueValuesEnum', 12)
 
 
 class UserPasswordValidationPolicy(_messages.Message):

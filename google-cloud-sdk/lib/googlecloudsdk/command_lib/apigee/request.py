@@ -35,6 +35,8 @@ from six.moves import urllib
 
 
 APIGEE_HOST = "apigee.googleapis.com"
+ERROR_FIELD = "error"
+MESSAGE_FIELD = "message"
 
 
 def _ResourceIdentifier(identifiers, entity_path):
@@ -67,6 +69,44 @@ def _Communicate(url, method, body, headers):
   reason = response.reason
   data = response.content
   return status, reason, data
+
+
+def _DecodeResponse(response):
+  """Returns decoded string.
+
+  Args:
+    response: the raw string or bytes of JSON data
+
+  Raises:
+    ValueError: failure to load/decode JSON data
+  """
+  # In older versions of Python 3, the built-in JSON library will only
+  # accept strings, not bytes.
+  if not isinstance(response, str) and hasattr(response, "decode"):
+    response = response.decode()
+  return response
+
+
+def _GetResourceType(entity_collection, entity_path):
+  """Gets resource type from the inputed data."""
+  return entity_collection or entity_path[-1]
+
+
+def _BuildErrorIdentifier(resource_identifier):
+  """Builds error identifier from inputed data."""
+  return collections.OrderedDict([
+      (key.singular, value) for key, value in resource_identifier.items()
+  ])
+
+
+def _ExtractErrorMessage(response):
+  """Extracts error message from response, returns None if message not found."""
+  json_response = json.loads(response)
+  if ERROR_FIELD in json_response and isinstance(
+      json_response[ERROR_FIELD],
+      dict) and MESSAGE_FIELD in json_response[ERROR_FIELD]:
+    return json_response[ERROR_FIELD][MESSAGE_FIELD]
+  return None
 
 
 def ResponseToApiRequest(identifiers,
@@ -137,32 +177,30 @@ def ResponseToApiRequest(identifiers,
   status, reason, response = _Communicate(url, method, body, headers)
 
   if status >= 400:
-    resource_type = entity_collection or entity_path[-1]
+    resource_type = _GetResourceType(entity_collection, entity_path)
     if status == 404:
       exception_class = errors.EntityNotFoundError
     elif status in (401, 403):
       exception_class = errors.UnauthorizedRequestError
     else:
       exception_class = errors.RequestError
-    error_identifier = collections.OrderedDict([
-        (key.singular, value) for key, value in resource_identifier.items()
-    ])
+    error_identifier = _BuildErrorIdentifier(resource_identifier)
+
+    try:
+      user_help = _ExtractErrorMessage(_DecodeResponse(response))
+    except ValueError:
+      user_help = None
+
     raise exception_class(resource_type, error_identifier, method,
-                          reason, response)
+                          reason, response, user_help=user_help)
 
   if accept_mimetype is None:
     try:
-      # In older versions of Python 3, the built-in JSON library will only
-      # accept strings, not bytes.
-      if not isinstance(response, str) and hasattr(response, "decode"):
-        response = response.decode()
+      response = _DecodeResponse(response)
       response = json.loads(response)
     except ValueError as error:
-      resource_type = (
-          entity_collection if entity_collection else entity_path[-1])
-      error_identifier = collections.OrderedDict([
-          (key.singular, value) for key, value in resource_identifier.items()
-      ])
+      resource_type = _GetResourceType(entity_collection, entity_path)
+      error_identifier = _BuildErrorIdentifier(resource_identifier)
       raise errors.ResponseNotJSONError(error, resource_type, error_identifier,
                                         response)
 

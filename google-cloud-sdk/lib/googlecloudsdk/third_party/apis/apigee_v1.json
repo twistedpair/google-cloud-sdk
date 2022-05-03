@@ -225,7 +225,7 @@
           "type": "string"
         },
         "revision": {
-          "description": "Output only. List of revisons defined for the API proxy.",
+          "description": "Output only. List of revisions defined for the API proxy.",
           "readOnly": true,
           "type": "array",
           "items": {

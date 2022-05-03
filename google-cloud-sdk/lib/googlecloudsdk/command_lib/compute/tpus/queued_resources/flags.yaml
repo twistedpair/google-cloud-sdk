@@ -14,21 +14,21 @@
 
 node_id:
   arg_name: node-id
-  required: false
+  required: true
   help_text: |
     The unqualified Node identifier, used to identify the TPU in the Nodes
     collection once provisioned.
 
 accelerator_type:
   arg_name: accelerator-type
-  required: false
+  required: true
   type: googlecloudsdk.command_lib.util.hooks.types:LowerCaseType
   help_text: |
     Accelerator type for the TPU.
 
 runtime_version:
   arg_name: runtime-version
-  required: false
+  required: true
   help_text: |
     Runtime version for the TPU, such as `2.3`.
 

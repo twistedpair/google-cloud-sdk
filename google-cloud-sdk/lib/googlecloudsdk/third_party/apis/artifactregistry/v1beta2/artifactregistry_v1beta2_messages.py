@@ -1510,6 +1510,10 @@ class UploadAptArtifactMediaResponse(_messages.Message):
   operation = _messages.MessageField('Operation', 1)
 
 
+class UploadAptArtifactMetadata(_messages.Message):
+  r"""The operation metadata for uploading artifacts."""
+
+
 class UploadAptArtifactRequest(_messages.Message):
   r"""The request to upload an artifact."""
 
@@ -1533,6 +1537,10 @@ class UploadYumArtifactMediaResponse(_messages.Message):
   """
 
   operation = _messages.MessageField('Operation', 1)
+
+
+class UploadYumArtifactMetadata(_messages.Message):
+  r"""The operation metadata for uploading artifacts."""
 
 
 class UploadYumArtifactRequest(_messages.Message):

@@ -20,8 +20,8 @@ class EventarcpublishingProjectsLocationsChannelConnectionsPublishEventsRequest(
 
   Fields:
     channelConnection: The channel_connection that the events are published
-      from. For example: "projects/{partner_project_id}/locations/{location}/c
-      hannelConnections/{channel_connection_id}".
+      from. For example: `projects/{partner_project_id}/locations/{location}/c
+      hannelConnections/{channel_connection_id}`.
     googleCloudEventarcPublishingV1PublishChannelConnectionEventsRequest: A
       GoogleCloudEventarcPublishingV1PublishChannelConnectionEventsRequest
       resource to be passed as the request body.
@@ -37,7 +37,7 @@ class EventarcpublishingProjectsLocationsChannelsPublishEventsRequest(_messages.
 
   Fields:
     channel: The full name of the channel to publish to. For example:
-      "projects/{project}/locations/{location}/channels/{channel-id}".
+      `projects/{project}/locations/{location}/channels/{channel-id}`.
     googleCloudEventarcPublishingV1PublishEventsRequest: A
       GoogleCloudEventarcPublishingV1PublishEventsRequest resource to be
       passed as the request body.

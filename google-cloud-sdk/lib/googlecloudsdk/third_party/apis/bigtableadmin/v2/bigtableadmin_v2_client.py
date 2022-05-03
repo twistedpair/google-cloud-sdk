@@ -344,6 +344,33 @@ class BigtableadminV2(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Copy(self, request, global_params=None):
+      r"""Copy a Cloud Bigtable backup to a new backup in the destination cluster located in the destination instance and project.
+
+      Args:
+        request: (BigtableadminProjectsInstancesClustersBackupsCopyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Copy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Copy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}/clusters/{clustersId}/backups:copy',
+        http_method='POST',
+        method_id='bigtableadmin.projects.instances.clusters.backups.copy',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2/{+parent}/backups:copy',
+        request_field='copyBackupRequest',
+        request_type_name='BigtableadminProjectsInstancesClustersBackupsCopyRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Create(self, request, global_params=None):
       r"""Starts creating a new Cloud Bigtable Backup. The returned backup long-running operation can be used to track creation of the backup. The metadata field type is CreateBackupMetadata. The response field type is Backup, if successful. Cancelling the returned operation will stop the creation and delete the backup.
 

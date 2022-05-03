@@ -403,13 +403,13 @@ class IapProjectsIapTunnelLocationsDestGroupsCreateRequest(_messages.Message):
   r"""A IapProjectsIapTunnelLocationsDestGroupsCreateRequest object.
 
   Fields:
-    parent: Required. GCP Project number/id and location. In the following
-      format: projects/{project_number/id}/iap_tunnel/locations/{location}.
+    parent: Required. Google Cloud Project ID and location. In the following
+      format: `projects/{project_number/id}/iap_tunnel/locations/{location}`.
     tunnelDestGroup: A TunnelDestGroup resource to be passed as the request
       body.
     tunnelDestGroupId: Required. The ID to use for the TunnelDestGroup, which
-      will become the final component of the resource name. This value should
-      be 4-63 characters, and valid characters are /a-z-/.
+      becomes the final component of the resource name. This value must be
+      4-63 characters, and valid characters are `a-z-`.
   """
 
   parent = _messages.StringField(1, required=True)
@@ -421,9 +421,9 @@ class IapProjectsIapTunnelLocationsDestGroupsDeleteRequest(_messages.Message):
   r"""A IapProjectsIapTunnelLocationsDestGroupsDeleteRequest object.
 
   Fields:
-    name: Required. Name of the TunnelDestGroup to be deleted. In the
-      following format: projects/{project_number/id}/iap_tunnel/locations/{loc
-      ation}/destGroups/{dest_group}.
+    name: Required. Name of the TunnelDestGroup to delete. In the following
+      format: `projects/{project_number/id}/iap_tunnel/locations/{location}/de
+      stGroups/{dest_group}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -434,8 +434,8 @@ class IapProjectsIapTunnelLocationsDestGroupsGetRequest(_messages.Message):
 
   Fields:
     name: Required. Name of the TunnelDestGroup to be fetched. In the
-      following format: projects/{project_number/id}/iap_tunnel/locations/{loc
-      ation}/destGroups/{dest_group}.
+      following format: `projects/{project_number/id}/iap_tunnel/locations/{lo
+      cation}/destGroups/{dest_group}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -445,17 +445,16 @@ class IapProjectsIapTunnelLocationsDestGroupsListRequest(_messages.Message):
   r"""A IapProjectsIapTunnelLocationsDestGroupsListRequest object.
 
   Fields:
-    pageSize: The maximum number of groups to return. The service may return
-      fewer than this value. If unspecified, at most 100 groups will be
-      returned. The maximum value is 1000; values above 1000 will be coerced
-      to 1000.
+    pageSize: The maximum number of groups to return. The service might return
+      fewer than this value. If unspecified, at most 100 groups are returned.
+      The maximum value is 1000; values above 1000 are coerced to 1000.
     pageToken: A page token, received from a previous `ListTunnelDestGroups`
       call. Provide this to retrieve the subsequent page. When paginating, all
       other parameters provided to `ListTunnelDestGroups` must match the call
       that provided the page token.
-    parent: Required. GCP Project number/id and location. In the following
-      format: projects/{project_number/id}/iap_tunnel/locations/{location}. A
-      `-` can be used for the location to group across all locations.
+    parent: Required. Google Cloud Project ID and location. In the following
+      format: `projects/{project_number/id}/iap_tunnel/locations/{location}`.
+      A `-` can be used for the location to group across all locations.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -471,8 +470,8 @@ class IapProjectsIapTunnelLocationsDestGroupsPatchRequest(_messages.Message):
       unique within the project.
     tunnelDestGroup: A TunnelDestGroup resource to be passed as the request
       body.
-    updateMask: The field mask specifying which IAP settings should be
-      updated. If omitted, then all of the settings are updated. See
+    updateMask: A field mask that specifies which IAP settings to update. If
+      omitted, then all of the settings are updated. See
       https://developers.google.com/protocol-
       buffers/docs/reference/google.protobuf#fieldmask
   """
@@ -585,7 +584,7 @@ class ListTunnelDestGroupsResponse(_messages.Message):
   r"""The response from ListTunnelDestGroups.
 
   Fields:
-    nextPageToken: A token, which can be send as `page_token` to retrieve the
+    nextPageToken: A token that you can send as `page_token` to retrieve the
       next page. If this field is omitted, there are no subsequent pages.
     tunnelDestGroups: TunnelDestGroup existing in the project.
   """
@@ -756,12 +755,12 @@ class ReauthSettings(_messages.Message):
 
     Values:
       METHOD_UNSPECIFIED: Reauthentication disabled.
-      LOGIN: Mimicks the behavior as if the user had logged out and tried to
-        log in again. Users with 2SV (step verification) enabled will see
-        their 2SV challenges if they did not opt to have their second factor
+      LOGIN: Mimics the behavior as if the user had logged out and tried to
+        log in again. Users with 2SV (2-step verification) enabled see their
+        2SV challenges if they did not opt to have their second factor
         responses saved. Apps Core (GSuites) admins can configure settings to
-        disable 2SV cookies and require 2-step verification for all Apps Core
-        users in their domains.
+        disable 2SV cookies and require 2SV for all Apps Core users in their
+        domains.
       PASSWORD: User must type their password.
       SECURE_KEY: User must use their secure key 2nd factor device.
     """
@@ -776,7 +775,7 @@ class ReauthSettings(_messages.Message):
     hierarchy.
 
     Values:
-      POLICY_TYPE_UNSPECIFIED: Default value. This value is unused/invalid.
+      POLICY_TYPE_UNSPECIFIED: Default value. This value is unused.
       MINIMUM: This policy acts as a minimum to other policies, lower in the
         hierarchy. Effective policy may only be the same or stricter.
       DEFAULT: This policy acts as a default if no other reauth policy is set.

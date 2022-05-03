@@ -1604,6 +1604,11 @@ class _SectionComponentManager(_Section):
         'disable_update_check',
         help_text='If True, Google Cloud CLI will not automatically check for '
         'updates.')
+    self.disable_warning = self._AddBool(
+        'disable_warning',
+        hidden=True,
+        help_text='If True, Google Cloud CLI will not display warning messages '
+        'about overridden configurations.')
     self.fixed_sdk_version = self._Add('fixed_sdk_version', hidden=True)
     self.snapshot_url = self._Add('snapshot_url', hidden=True)
     # We need the original snapshot_url because snapshot_url may be

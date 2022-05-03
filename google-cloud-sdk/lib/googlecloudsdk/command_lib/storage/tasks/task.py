@@ -41,11 +41,12 @@ import six
 
 
 class Topic(enum.Enum):
+  API_DOWNLOAD_RESULT = 'api_download_result'
   CRC32C = 'crc32c'
   CREATED_RESOURCE = 'created_resource'
   ERROR = 'error'
-  MD5 = 'md5'
   FATAL_ERROR = 'fatal_error'  # Error that should be reported to the user.
+  MD5 = 'md5'
   UPLOADED_COMPONENT = 'uploaded_component'
 
 

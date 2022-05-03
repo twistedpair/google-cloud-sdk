@@ -1,0 +1,44 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: compute v1 BackendServiceLocalityLoadBalancingPolicyConfigPolicy export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+additionalProperties: false
+properties:
+  COMMENT:
+    type: object
+    description: User specified info ignored by gcloud import.
+    additionalProperties: false
+    properties:
+      template-id:
+        type: string
+      region:
+        type: string
+      description:
+        type: string
+      date:
+        type: string
+      version:
+        type: string
+  UNKNOWN:
+    type: array
+    description: Unknown API fields that cannot be imported.
+    items:
+      type: string
+  name:
+    description: |-
+      The name of a locality load balancer policy to be used. The value should
+      be one of the predefined ones as supported by localityLbPolicy, although
+      at the moment only ROUND_ROBIN is supported. This field should only be
+      populated when the customPolicy field is not used. Note that specifying
+      the same policy more than once for a backend is not a valid configuration
+      and will be rejected.
+    type: string
+    enum:
+    - INVALID_LB_POLICY
+    - LEAST_REQUEST
+    - MAGLEV
+    - ORIGINAL_DESTINATION
+    - RANDOM
+    - RING_HASH
+    - ROUND_ROBIN

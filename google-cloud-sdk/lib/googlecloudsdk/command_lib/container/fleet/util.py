@@ -24,13 +24,19 @@ import textwrap
 from googlecloudsdk.api_lib.cloudresourcemanager import projects_api
 from googlecloudsdk.core.util import files
 
-
 # Table format for fleet list
 LIST_FORMAT = """
     table(
       displayName:sort=1,
       name.segment(1):label=PROJECT,
       uid
+    )
+"""
+
+NS_LIST_FORMAT = """
+    table(
+      name.segment(5):sort=1:label=NAME,
+      name.segment(1):label=PROJECT
     )
 """
 
@@ -165,20 +171,22 @@ def GenerateWIUpdateMsgString(membership, issuer_url, resource_name,
   if membership.authority and not issuer_url:
     # Since the issuer is being set to an empty value from a non-empty value
     # the user is trying to disable WI on the associated membership resource.
-    return ('A membership [{}] for the cluster [{}] already exists. The cluster'
-            ' was previously registered with Workload Identity'
-            ' enabled. Continuing will disable Workload Identity on your'
-            ' membership, and will reinstall the Connect agent deployment.'
-            .format(resource_name, cluster_name))
+    return (
+        'A membership [{}] for the cluster [{}] already exists. The cluster'
+        ' was previously registered with Workload Identity'
+        ' enabled. Continuing will disable Workload Identity on your'
+        ' membership, and will reinstall the Connect agent deployment.'.format(
+            resource_name, cluster_name))
 
   if not membership.authority and issuer_url:
     # Since the issuer is being set to a non-empty value from an empty value
     # the user is trying to enable WI on the associated membership resource.
-    return ('A membership [{}] for the cluster [{}] already exists. The cluster'
-            ' was previously registered without Workload Identity.'
-            ' Continuing will enable Workload Identity on your'
-            ' membership, and will reinstall the Connect agent deployment.'
-            .format(resource_name, cluster_name))
+    return (
+        'A membership [{}] for the cluster [{}] already exists. The cluster'
+        ' was previously registered without Workload Identity.'
+        ' Continuing will enable Workload Identity on your'
+        ' membership, and will reinstall the Connect agent deployment.'.format(
+            resource_name, cluster_name))
 
   return ''
 

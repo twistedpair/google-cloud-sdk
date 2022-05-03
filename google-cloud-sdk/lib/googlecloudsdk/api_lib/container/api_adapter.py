@@ -243,7 +243,7 @@ TPU_SERVING_MODE_ERROR = """\
 Cannot specify --tpu-ipv4-cidr with --enable-tpu-service-networking."""
 
 GPU_SHARING_STRATEGY_ERROR_MSG = """\
-Invalid gpu sharing strategy [{gpu-sharing-strategy}] for argument --accelerator. Valid values are time-sharing, mps'
+Invalid gpu sharing strategy [{gpu-sharing-strategy}] for argument --accelerator. Valid value is time-sharing'
 """
 
 MAINTENANCE_INTERVAL_TYPE_NOT_SUPPORTED = """\

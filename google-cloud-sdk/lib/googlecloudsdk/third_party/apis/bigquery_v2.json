@@ -4,7 +4,7 @@
  "id": "bigquery:v2",
  "name": "bigquery",
  "version": "v2",
- "revision": "20220412",
+ "revision": "20220422",
  "title": "BigQuery API",
  "description": "A data platform for customers to create, manage, share and query data.",
  "ownerDomain": "google.com",
@@ -525,7 +525,7 @@
      "description": "[Optional] Number of hours for the max time travel for all tables in the dataset.",
      "format": "int64"
     },
-    "satisfiesPZS": {
+    "satisfiesPzs": {
      "type": "boolean",
      "description": "[Output-only] Reserved for future use."
     },
@@ -2058,6 +2058,11 @@
      "description": "[Output-only] [TrustedTester] The time when this materialized view was last modified, in milliseconds since the epoch.",
      "format": "int64"
     },
+    "maxStaleness": {
+     "type": "string",
+     "description": "[Optional] Max staleness of data that could be returned when materizlized view is queried (formatted as Google SQL Interval type).",
+     "format": "byte"
+    },
     "query": {
      "type": "string",
      "description": "[Required] A query whose result is persisted."
@@ -2974,9 +2979,13 @@
       }
      }
     },
-    "collationSpec": {
+    "collation": {
      "type": "string",
      "description": "Optional. Collation specification of the field. It only can be set on string type field."
+    },
+    "defaultValueExpression": {
+     "type": "string",
+     "description": "Optional. A SQL expression to specify the default value for this field. It can only be set for top level fields (columns). You can use struct or array expression to specify default value for the entire struct or array. The valid SQL expressions are: - Literals for all data types, including STRUCT and ARRAY. - Following functions: - CURRENT_TIMESTAMP - CURRENT_TIME - CURRENT_DATE - CURRENT_DATETIME - GENERATE_UUID - RAND - SESSION_USER - ST_GEOGPOINT - Struct or array composed with the above allowed functions, for example, [CURRENT_DATE(), DATE '2020-01-01']"
     },
     "description": {
      "type": "string",

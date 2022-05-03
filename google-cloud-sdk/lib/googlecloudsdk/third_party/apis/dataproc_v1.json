@@ -824,7 +824,7 @@
           "$ref": "ClusterConfig"
         },
         "virtualClusterConfig": {
-          "description": "Optional. The virtual cluster config, used when creating a Dataproc cluster that does not directly control the underlying compute resources, for example, when creating a Dataproc-on-GKE cluster (https:\/\/cloud.google.com\/dataproc\/docs\/concepts\/jobs\/dataproc-gke#create-a-dataproc-on-gke-cluster). Note that Dataproc may set default values, and values may change when clusters are updated. Exactly one of config or virtualClusterConfig must be specified.",
+          "description": "Optional. The virtual cluster config is used when creating a Dataproc cluster that does not directly control the underlying compute resources, for example, when creating a Dataproc-on-GKE cluster (https:\/\/cloud.google.com\/dataproc\/docs\/guides\/dpgke\/dataproc-gke). Dataproc may set default values, and values may change when clusters are updated. Exactly one of config or virtual_cluster_config must be specified.",
           "$ref": "VirtualClusterConfig"
         },
         "labels": {
@@ -924,18 +924,18 @@
           "$ref": "MetastoreConfig"
         },
         "gkeClusterConfig": {
-          "description": "Optional. Deprecated. Use VirtualClusterConfig based clusters instead. BETA. The Kubernetes Engine config for Dataproc clusters deployed to Kubernetes. Setting this is considered mutually exclusive with Compute Engine-based options such as gce_cluster_config, master_config, worker_config, secondary_worker_config, and autoscaling_config.",
+          "description": "Optional. BETA. The Kubernetes Engine config for Dataproc clusters deployed to The Kubernetes Engine config for Dataproc clusters deployed to Kubernetes. These config settings are mutually exclusive with Compute Engine-based options, such as gce_cluster_config, master_config, worker_config, secondary_worker_config, and autoscaling_config.",
           "$ref": "GkeClusterConfig"
         },
         "auxiliaryNodePoolConfigs": {
-          "description": "Optional. The configuration(s) for a cluster's auxiliary node pool(s).",
+          "description": "Optional. The config for a cluster auxiliary node pool.",
           "type": "array",
           "items": {
             "$ref": "NodePoolConfig"
           }
         },
         "dataprocMetricConfig": {
-          "description": "Optional. The configuration(s) for a dataproc metric(s).",
+          "description": "Optional. The config for Dataproc metrics.",
           "$ref": "DataprocMetricConfig"
         }
       }
@@ -1519,7 +1519,7 @@
           "type": "string"
         },
         "nodePoolTarget": {
-          "description": "Optional. GKE NodePools where workloads will be scheduled. At least one node pool must be assigned the 'default' role. Each role can be given to only a single NodePoolTarget. All NodePools must have the same location settings. If a nodePoolTarget is not specified, Dataproc constructs a default nodePoolTarget.",
+          "description": "Optional. GKE node pools where workloads will be scheduled. At least one node pool must be assigned the DEFAULT GkeNodePoolTarget.Role. If a GkeNodePoolTarget is not specified, Dataproc constructs a DEFAULT GkeNodePoolTarget. Each role can be given to only one GkeNodePoolTarget. All node pools must have the same location settings.",
           "type": "array",
           "items": {
             "$ref": "GkeNodePoolTarget"
@@ -1544,24 +1544,24 @@
     },
     "GkeNodePoolTarget": {
       "id": "GkeNodePoolTarget",
-      "description": "GKE NodePools that Dataproc workloads run on.",
+      "description": "GKE node pools that Dataproc workloads run on.",
       "type": "object",
       "properties": {
         "nodePool": {
-          "description": "Required. The target GKE NodePool. Format: 'projects\/{project}\/locations\/{location}\/clusters\/{cluster}\/nodePools\/{node_pool}'",
+          "description": "Required. The target GKE node pool. Format: 'projects\/{project}\/locations\/{location}\/clusters\/{cluster}\/nodePools\/{node_pool}'",
           "type": "string"
         },
         "roles": {
-          "description": "Required. The types of role for a GKE NodePool",
+          "description": "Required. The roles associated with the GKE node pool.",
           "type": "array",
           "items": {
             "type": "string",
             "enumDescriptions": [
               "Role is unspecified.",
-              "Any roles that are not directly assigned to a NodePool run on the default role's NodePool.",
-              "Run controllers and webhooks.",
-              "Run spark driver.",
-              "Run spark executors."
+              "At least one node pool must have the DEFAULT role. Work assigned to a role that is not associated with a node pool is assigned to the node pool with the DEFAULT role. For example, work assigned to the CONTROLLER role will be assigned to the node pool with the DEFAULT role if no node pool has the CONTROLLER role.",
+              "Run work associated with the Dataproc control plane (for example, controllers and webhooks). Very low resource requirements.",
+              "Run work associated with a Spark driver of a job.",
+              "Run work associated with a Spark executor of a job."
             ],
             "enum": [
               "ROLE_UNSPECIFIED",
@@ -1573,14 +1573,14 @@
           }
         },
         "nodePoolConfig": {
-          "description": "Input only. The configuration for the GKE NodePool.If specified, Dataproc attempts to create a NodePool with the specified shape. If one with the same name already exists, it is verified against all specified fields. If a field differs, the virtual cluster creation will fail.If omitted, any NodePool with the specified name is used. If a NodePool with the specified name does not exist, Dataproc create a NodePool with default values.This is an input only field. It will not be returned by the API.",
+          "description": "Input only. The configuration for the GKE node pool.If specified, Dataproc attempts to create a node pool with the specified shape. If one with the same name already exists, it is verified against all specified fields. If a field differs, the virtual cluster creation will fail.If omitted, any node pool with the specified name is used. If a node pool with the specified name does not exist, Dataproc create a node pool with default values.This is an input only field. It will not be returned by the API.",
           "$ref": "GkeNodePoolConfig"
         }
       }
     },
     "GkeNodePoolConfig": {
       "id": "GkeNodePoolConfig",
-      "description": "The configuration of a GKE NodePool used by a Dataproc-on-GKE cluster (https:\/\/cloud.google.com\/dataproc\/docs\/concepts\/jobs\/dataproc-gke#create-a-dataproc-on-gke-cluster).",
+      "description": "The configuration of a GKE node pool used by a Dataproc-on-GKE cluster (https:\/\/cloud.google.com\/dataproc\/docs\/concepts\/jobs\/dataproc-gke#create-a-dataproc-on-gke-cluster).",
       "type": "object",
       "properties": {
         "config": {
@@ -1588,14 +1588,14 @@
           "$ref": "GkeNodeConfig"
         },
         "locations": {
-          "description": "Optional. The list of Compute Engine zones (https:\/\/cloud.google.com\/compute\/docs\/zones#available) where NodePool's nodes will be located.Note: Currently, only one zone may be specified.If a location is not specified during NodePool creation, Dataproc will choose a location.",
+          "description": "Optional. The list of Compute Engine zones (https:\/\/cloud.google.com\/compute\/docs\/zones#available) where node pool nodes associated with a Dataproc on GKE virtual cluster will be located.Note: All node pools associated with a virtual cluster must be located in the same region as the virtual cluster, and they must be located in the same zone within that region.If a location is not specified during node pool creation, Dataproc on GKE will choose the zone.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "autoscaling": {
-          "description": "Optional. The autoscaler configuration for this NodePool. The autoscaler is enabled only when a valid configuration is present.",
+          "description": "Optional. The autoscaler configuration for this node pool. The autoscaler is enabled only when a valid configuration is present.",
           "$ref": "GkeNodePoolAutoscalingConfig"
         }
       }
@@ -1615,7 +1615,7 @@
           "format": "int32"
         },
         "preemptible": {
-          "description": "Optional. Whether the nodes are created as preemptible VM instances (https:\/\/cloud.google.com\/compute\/docs\/instances\/preemptible).",
+          "description": "Optional. Whether the nodes are created as preemptible VM instances (https:\/\/cloud.google.com\/compute\/docs\/instances\/preemptible). Preemptible nodes cannot be used in a node pool with the CONTROLLER role or in the DEFAULT node pool if the CONTROLLER role is not assigned (the DEFAULT node pool will assume the CONTROLLER role).",
           "type": "boolean"
         },
         "accelerators": {
@@ -1637,7 +1637,7 @@
     },
     "GkeNodePoolAcceleratorConfig": {
       "id": "GkeNodePoolAcceleratorConfig",
-      "description": "A GkeNodeConfigAcceleratorConfig represents a Hardware Accelerator request for a NodePool.",
+      "description": "A GkeNodeConfigAcceleratorConfig represents a Hardware Accelerator request for a node pool.",
       "type": "object",
       "properties": {
         "acceleratorCount": {
@@ -1661,12 +1661,12 @@
       "type": "object",
       "properties": {
         "minNodeCount": {
-          "description": "The minimum number of nodes in the NodePool. Must be >= 0 and <= max_node_count.",
+          "description": "The minimum number of nodes in the node pool. Must be >= 0 and <= max_node_count.",
           "type": "integer",
           "format": "int32"
         },
         "maxNodeCount": {
-          "description": "The maximum number of nodes in the NodePool. Must be >= min_node_count. Note: Quota must be sufficient to scale up the cluster.",
+          "description": "The maximum number of nodes in the node pool. Must be >= min_node_count, and must be > 0. Note: Quota must be sufficient to scale up the cluster.",
           "type": "integer",
           "format": "int32"
         }
@@ -1674,15 +1674,15 @@
     },
     "NodePoolConfig": {
       "id": "NodePoolConfig",
-      "description": "Configuration of the node pool.",
+      "description": "Node pool config.",
       "type": "object",
       "properties": {
         "nodePoolId": {
-          "description": "Optional. Identifier of node pool. If one is not provided by user, a default will be provided.",
+          "description": "Optional. Node pool identifier. If not specified, a default is assigned.",
           "type": "string"
         },
         "roles": {
-          "description": "Required. Role(s) that the node pool takes in the cluster.",
+          "description": "Required. Node pool roles.",
           "type": "array",
           "items": {
             "type": "string",
@@ -1697,18 +1697,18 @@
           }
         },
         "nodePoolConfig": {
-          "description": "Optional. The Compute Engine config settings of the instances of the node pool.",
+          "description": "Optional. The Compute Engine config settings for node pool instances.",
           "$ref": "InstanceGroupConfig"
         }
       }
     },
     "DataprocMetricConfig": {
       "id": "DataprocMetricConfig",
-      "description": "Contains dataproc metric config.",
+      "description": "Dataproc metric config.",
       "type": "object",
       "properties": {
         "metrics": {
-          "description": "Required. Metrics to be enabled.",
+          "description": "Required. Metrics to enable.",
           "type": "array",
           "items": {
             "$ref": "Metric"
@@ -1718,20 +1718,20 @@
     },
     "Metric": {
       "id": "Metric",
-      "description": "Metric source to enable along with any optional metrics for this source that override the dataproc defaults",
+      "description": "The metric source to enable, with any optional metrics, to override Dataproc default metrics.",
       "type": "object",
       "properties": {
         "metricSource": {
-          "description": "Required. MetricSource that should be enabled",
+          "description": "Required. MetricSource to enable.",
           "type": "string",
           "enumDescriptions": [
-            "Required unspecified metric source",
-            "all default monitoring agent metrics that are published with prefix \"agent.googleapis.com\" when we enable a monitoring agent in Compute Engine",
-            "Hdfs metric source",
-            "Spark metric source",
-            "Yarn metric source",
-            "Spark history server metric source",
-            "hiveserver2 metric source"
+            "Required unspecified metric source.",
+            "Default monitoring agent metrics, which are published with an agent.googleapis.com prefix when Dataproc enables the monitoring agent in Compute Engine.",
+            "HDFS metric source.",
+            "Spark metric source.",
+            "YARN metric source.",
+            "Spark History Server metric source.",
+            "Hiveserver2 metric source."
           ],
           "enum": [
             "METRIC_SOURCE_UNSPECIFIED",
@@ -1744,7 +1744,7 @@
           ]
         },
         "metricOverrides": {
-          "description": "Optional. Optional Metrics to override the dataproc default metrics configured for the metric source",
+          "description": "Optional. Optional Metrics to override the Dataproc default metrics configured for the metric source.",
           "type": "array",
           "items": {
             "type": "string"
@@ -1754,11 +1754,11 @@
     },
     "VirtualClusterConfig": {
       "id": "VirtualClusterConfig",
-      "description": "Dataproc cluster config for a cluster that does not directly control the underlying compute resources, such as a Dataproc-on-GKE cluster (https:\/\/cloud.google.com\/dataproc\/docs\/concepts\/jobs\/dataproc-gke#create-a-dataproc-on-gke-cluster).",
+      "description": "The Dataproc cluster config for a cluster that does not directly control the underlying compute resources, such as a Dataproc-on-GKE cluster (https:\/\/cloud.google.com\/dataproc\/docs\/guides\/dpgke\/dataproc-gke).",
       "type": "object",
       "properties": {
         "stagingBucket": {
-          "description": "Optional. A Storage bucket used to stage job dependencies, config files, and job driver console output. If you do not specify a staging bucket, Cloud Dataproc will determine a Cloud Storage location (US, ASIA, or EU) for your cluster's staging bucket according to the Compute Engine zone where your cluster is deployed, and then create and manage this project-level, per-location bucket (see Dataproc staging and temp buckets (https:\/\/cloud.google.com\/dataproc\/docs\/concepts\/configuring-clusters\/staging-bucket)). This field requires a Cloud Storage bucket name, not a gs:\/\/... URI to a Cloud Storage bucket.",
+          "description": "Optional. A Cloud Storage bucket used to stage job dependencies, config files, and job driver console output. If you do not specify a staging bucket, Cloud Dataproc will determine a Cloud Storage location (US, ASIA, or EU) for your cluster's staging bucket according to the Compute Engine zone where your cluster is deployed, and then create and manage this project-level, per-location bucket (see Dataproc staging and temp buckets (https:\/\/cloud.google.com\/dataproc\/docs\/concepts\/configuring-clusters\/staging-bucket)). This field requires a Cloud Storage bucket name, not a gs:\/\/... URI to a Cloud Storage bucket.",
           "type": "string"
         },
         "kubernetesClusterConfig": {
@@ -1902,7 +1902,7 @@
           }
         },
         "sparkMetrics": {
-          "description": "The Spark metrics.",
+          "description": "Spark metrics.",
           "type": "object",
           "additionalProperties": {
             "type": "string",
@@ -1910,7 +1910,7 @@
           }
         },
         "yarnMetrics": {
-          "description": "The YARN metrics.",
+          "description": "YARN metrics.",
           "type": "object",
           "additionalProperties": {
             "type": "string",

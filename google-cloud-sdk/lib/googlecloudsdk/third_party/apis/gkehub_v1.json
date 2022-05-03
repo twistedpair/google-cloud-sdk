@@ -820,6 +820,10 @@
           "description": "Config Management-specific spec.",
           "$ref": "ConfigManagementMembershipSpec"
         },
+        "identityservice": {
+          "description": "Identity Service-specific spec.",
+          "$ref": "IdentityServiceMembershipSpec"
+        },
         "mesh": {
           "description": "Anthos Service Mesh-specific spec",
           "$ref": "ServiceMeshMembershipSpec"
@@ -981,6 +985,100 @@
         }
       }
     },
+    "IdentityServiceMembershipSpec": {
+      "id": "IdentityServiceMembershipSpec",
+      "description": "**Anthos Identity Service**: Configuration for a single Membership.",
+      "type": "object",
+      "properties": {
+        "authMethods": {
+          "description": "A member may support multiple auth methods.",
+          "type": "array",
+          "items": {
+            "$ref": "IdentityServiceAuthMethod"
+          }
+        }
+      }
+    },
+    "IdentityServiceAuthMethod": {
+      "id": "IdentityServiceAuthMethod",
+      "description": "Configuration of an auth method for a member\/cluster. Only one authentication method (e.g., OIDC and LDAP) can be set per AuthMethod.",
+      "type": "object",
+      "properties": {
+        "oidcConfig": {
+          "description": "OIDC specific configuration.",
+          "$ref": "IdentityServiceOidcConfig"
+        },
+        "name": {
+          "description": "Identifier for auth config.",
+          "type": "string"
+        },
+        "proxy": {
+          "description": "Proxy server address to use for auth method.",
+          "type": "string"
+        }
+      }
+    },
+    "IdentityServiceOidcConfig": {
+      "id": "IdentityServiceOidcConfig",
+      "description": "Configuration for OIDC Auth flow.",
+      "type": "object",
+      "properties": {
+        "clientId": {
+          "description": "ID for OIDC client application.",
+          "type": "string"
+        },
+        "certificateAuthorityData": {
+          "description": "PEM-encoded CA for OIDC provider.",
+          "type": "string"
+        },
+        "issuerUri": {
+          "description": "URI for the OIDC provider. This should point to the level below .well-known\/openid-configuration.",
+          "type": "string"
+        },
+        "kubectlRedirectUri": {
+          "description": "Registered redirect uri to redirect users going through OAuth flow using kubectl plugin.",
+          "type": "string"
+        },
+        "scopes": {
+          "description": "Comma-separated list of identifiers.",
+          "type": "string"
+        },
+        "extraParams": {
+          "description": "Comma-separated list of key-value pairs.",
+          "type": "string"
+        },
+        "userClaim": {
+          "description": "Claim in OIDC ID token that holds username.",
+          "type": "string"
+        },
+        "userPrefix": {
+          "description": "Prefix to prepend to user name.",
+          "type": "string"
+        },
+        "groupsClaim": {
+          "description": "Claim in OIDC ID token that holds group information.",
+          "type": "string"
+        },
+        "groupPrefix": {
+          "description": "Prefix to prepend to group name.",
+          "type": "string"
+        },
+        "deployCloudConsoleProxy": {
+          "description": "Flag to denote if reverse proxy is used to connect to auth provider. This flag should be set to true when provider is not reachable by Google Cloud Console.",
+          "type": "boolean"
+        },
+        "clientSecret": {
+          "description": "Input only. Unencrypted OIDC client secret will be passed to the GKE Hub CLH.",
+          "type": "string"
+        },
+        "encryptedClientSecret": {
+          "description": "Output only. Encrypted OIDC Client secret",
+          "readOnly": true,
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
     "ServiceMeshMembershipSpec": {
       "id": "ServiceMeshMembershipSpec",
       "description": "**Service Mesh**: Spec for a single Membership for the servicemesh feature",
@@ -1115,6 +1213,10 @@
         "configmanagement": {
           "description": "Config Management-specific state.",
           "$ref": "ConfigManagementMembershipState"
+        },
+        "identityservice": {
+          "description": "Identity Service-specific state.",
+          "$ref": "IdentityServiceMembershipState"
         },
         "appdevexperience": {
           "description": "Appdevexperience specific state.",
@@ -1701,6 +1803,39 @@
             "INSTALLED",
             "ERROR"
           ]
+        }
+      }
+    },
+    "IdentityServiceMembershipState": {
+      "id": "IdentityServiceMembershipState",
+      "description": "**Anthos Identity Service**: State for a single Membership.",
+      "type": "object",
+      "properties": {
+        "installedVersion": {
+          "description": "Installed AIS version. This is the AIS version installed on this member. The values makes sense iff state is OK.",
+          "type": "string"
+        },
+        "state": {
+          "description": "Deployment state on this member",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified state",
+            "deployment succeeds",
+            "Failure with error."
+          ],
+          "enum": [
+            "DEPLOYMENT_STATE_UNSPECIFIED",
+            "OK",
+            "ERROR"
+          ]
+        },
+        "failureReason": {
+          "description": "The reason of the failure.",
+          "type": "string"
+        },
+        "memberConfig": {
+          "description": "Last reconciled membership configuration",
+          "$ref": "IdentityServiceMembershipSpec"
         }
       }
     },

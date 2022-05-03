@@ -101,6 +101,49 @@ class Config(_messages.Message):
   value = _messages.MessageField('ValueValue', 2)
 
 
+class Connection(_messages.Message):
+  r"""Contains information about the IP connection associated with the
+  finding.
+
+  Enums:
+    ProtocolValueValuesEnum: IANA Internet Protocol Number such as TCP(6) and
+      UDP(17).
+
+  Fields:
+    destinationIp: Destination IP address. Not present for sockets that are
+      listening and not connected.
+    destinationPort: Destination port. Not present for sockets that are
+      listening and not connected.
+    protocol: IANA Internet Protocol Number such as TCP(6) and UDP(17).
+    sourceIp: Source IP address.
+    sourcePort: Source port.
+  """
+
+  class ProtocolValueValuesEnum(_messages.Enum):
+    r"""IANA Internet Protocol Number such as TCP(6) and UDP(17).
+
+    Values:
+      PROTOCOL_UNSPECIFIED: Unspecified protocol (not HOPOPT).
+      ICMP: Internet Control Message Protocol.
+      TCP: Transmission Control Protocol.
+      UDP: User Datagram Protocol.
+      GRE: Generic Routing Encapsulation.
+      ESP: Encap Security Payload.
+    """
+    PROTOCOL_UNSPECIFIED = 0
+    ICMP = 1
+    TCP = 2
+    UDP = 3
+    GRE = 4
+    ESP = 5
+
+  destinationIp = _messages.StringField(1)
+  destinationPort = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 3)
+  sourceIp = _messages.StringField(4)
+  sourcePort = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+
+
 class ContainerThreatDetectionSettings(_messages.Message):
   r"""Resource capturing the settings for the Container Threat Detection
   service.
@@ -560,8 +603,11 @@ class Finding(_messages.Message):
     category: The additional taxonomy group within findings from a given
       source. This field is immutable after creation time. Example:
       "XSS_FLASH_INJECTION"
+    connections: Contains information about the IP connection associated with
+      the finding.
     createTime: The time at which the finding was created in Security Command
       Center.
+    description: Contains more detail about the finding.
     eventTime: The time the finding was first detected. If an existing finding
       is updated, then this is the time the update occurred. For example, if
       the finding represents an open firewall, this property captures the time
@@ -781,26 +827,28 @@ class Finding(_messages.Message):
   access = _messages.MessageField('Access', 1)
   canonicalName = _messages.StringField(2)
   category = _messages.StringField(3)
-  createTime = _messages.StringField(4)
-  eventTime = _messages.StringField(5)
-  externalSystems = _messages.MessageField('ExternalSystemsValue', 6)
-  externalUri = _messages.StringField(7)
-  findingClass = _messages.EnumField('FindingClassValueValuesEnum', 8)
-  iamBindings = _messages.MessageField('IamBinding', 9, repeated=True)
-  indicator = _messages.MessageField('Indicator', 10)
-  mitreAttack = _messages.MessageField('MitreAttack', 11)
-  mute = _messages.EnumField('MuteValueValuesEnum', 12)
-  muteInitiator = _messages.StringField(13)
-  muteUpdateTime = _messages.StringField(14)
-  name = _messages.StringField(15)
-  nextSteps = _messages.StringField(16)
-  parent = _messages.StringField(17)
-  resourceName = _messages.StringField(18)
-  securityMarks = _messages.MessageField('SecurityMarks', 19)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 20)
-  sourceProperties = _messages.MessageField('SourcePropertiesValue', 21)
-  state = _messages.EnumField('StateValueValuesEnum', 22)
-  vulnerability = _messages.MessageField('Vulnerability', 23)
+  connections = _messages.MessageField('Connection', 4, repeated=True)
+  createTime = _messages.StringField(5)
+  description = _messages.StringField(6)
+  eventTime = _messages.StringField(7)
+  externalSystems = _messages.MessageField('ExternalSystemsValue', 8)
+  externalUri = _messages.StringField(9)
+  findingClass = _messages.EnumField('FindingClassValueValuesEnum', 10)
+  iamBindings = _messages.MessageField('IamBinding', 11, repeated=True)
+  indicator = _messages.MessageField('Indicator', 12)
+  mitreAttack = _messages.MessageField('MitreAttack', 13)
+  mute = _messages.EnumField('MuteValueValuesEnum', 14)
+  muteInitiator = _messages.StringField(15)
+  muteUpdateTime = _messages.StringField(16)
+  name = _messages.StringField(17)
+  nextSteps = _messages.StringField(18)
+  parent = _messages.StringField(19)
+  resourceName = _messages.StringField(20)
+  securityMarks = _messages.MessageField('SecurityMarks', 21)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 22)
+  sourceProperties = _messages.MessageField('SourcePropertiesValue', 23)
+  state = _messages.EnumField('StateValueValuesEnum', 24)
+  vulnerability = _messages.MessageField('Vulnerability', 25)
 
 
 class Folder(_messages.Message):

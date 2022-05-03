@@ -152,6 +152,9 @@ class Backup(_messages.Message):
       the prefix of the backup name of the form
       `projects/{project}/instances/{instance}/clusters/{cluster}`.
     sizeBytes: Output only. Size of the backup in bytes.
+    sourceBackup: Output only. Name of the backup from which this backup was
+      copied. If a backup is not created by copying a backup, this field will
+      be empty. Values are of the form: projects//instances//backups/.
     sourceTable: Required. Immutable. Name of the table from which this backup
       was created. This needs to be in the same instance as the backup. Values
       are of the form
@@ -181,9 +184,10 @@ class Backup(_messages.Message):
   expireTime = _messages.StringField(3)
   name = _messages.StringField(4)
   sizeBytes = _messages.IntegerField(5)
-  sourceTable = _messages.StringField(6)
-  startTime = _messages.StringField(7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
+  sourceBackup = _messages.StringField(6)
+  sourceTable = _messages.StringField(7)
+  startTime = _messages.StringField(8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
 
 
 class BackupInfo(_messages.Message):
@@ -193,6 +197,9 @@ class BackupInfo(_messages.Message):
     backup: Output only. Name of the backup.
     endTime: Output only. This time that the backup was finished. Row data in
       the backup will be no newer than this timestamp.
+    sourceBackup: Output only. Name of the backup from which this backup was
+      copied. If a backup is not created by copying a backup, this field will
+      be empty. Values are of the form: projects//instances//backups/.
     sourceTable: Output only. Name of the table the backup was created from.
     startTime: Output only. The time that the backup was started. Row data in
       the backup will be no older than this timestamp.
@@ -200,8 +207,9 @@ class BackupInfo(_messages.Message):
 
   backup = _messages.StringField(1)
   endTime = _messages.StringField(2)
-  sourceTable = _messages.StringField(3)
-  startTime = _messages.StringField(4)
+  sourceBackup = _messages.StringField(3)
+  sourceTable = _messages.StringField(4)
+  startTime = _messages.StringField(5)
 
 
 class BigtableadminOperationsCancelRequest(_messages.Message):
@@ -339,6 +347,21 @@ class BigtableadminProjectsInstancesAppProfilesPatchRequest(_messages.Message):
   ignoreWarnings = _messages.BooleanField(2)
   name = _messages.StringField(3, required=True)
   updateMask = _messages.StringField(4)
+
+
+class BigtableadminProjectsInstancesClustersBackupsCopyRequest(_messages.Message):
+  r"""A BigtableadminProjectsInstancesClustersBackupsCopyRequest object.
+
+  Fields:
+    copyBackupRequest: A CopyBackupRequest resource to be passed as the
+      request body.
+    parent: Required. The name of the destination cluster that will contain
+      the backup copy. The cluster must already exists. Values are of the
+      form: `projects/{project}/instances/{instance}/clusters/{cluster}`.
+  """
+
+  copyBackupRequest = _messages.MessageField('CopyBackupRequest', 1)
+  parent = _messages.StringField(2, required=True)
 
 
 class BigtableadminProjectsInstancesClustersBackupsCreateRequest(_messages.Message):
@@ -1233,6 +1256,50 @@ class ColumnFamily(_messages.Message):
   """
 
   gcRule = _messages.MessageField('GcRule', 1)
+
+
+class CopyBackupMetadata(_messages.Message):
+  r"""Metadata type for the google.longrunning.Operation returned by
+  CopyBackup.
+
+  Fields:
+    name: The name of the backup being created through the copy operation.
+      Values are of the form `projects//instances//clusters//backups/`.
+    progress: The progress of the CopyBackup operation.
+    sourceBackup: The name of the source backup that is being copied from.
+      Values are of the form `projects//instances//backups/`.
+  """
+
+  name = _messages.StringField(1)
+  progress = _messages.MessageField('OperationProgress', 2)
+  sourceBackup = _messages.StringField(3)
+
+
+class CopyBackupRequest(_messages.Message):
+  r"""The request for CopyBackup.
+
+  Fields:
+    backupId: Required. The id of the new backup. The `backup_id` along with
+      `parent` are combined as {parent}/backups/{backup_id} to create the full
+      backup name, of the form: `projects/{project}/instances/{instance}/clust
+      ers/{cluster}/backups/{backup_id}`. This string must be between 1 and 50
+      characters in length and match the regex _a-zA-Z0-9*.
+    expireTime: Required. Required. The expiration time of the copied backup
+      with microsecond granularity that must be at least 6 hours and at most
+      30 days from the time the request is received. Once the `expire_time`
+      has passed, Cloud Bigtable will delete the backup and free the resources
+      used by the backup.
+    sourceBackup: Required. The source backup to be copied from. The source
+      backup needs to be in READY state for it to be copied. Copying a copied
+      backup is not allowed. Once CopyBackup is in progress, the source backup
+      cannot be deleted or cleaned up on expiration until CopyBackup is
+      finished. Values are of the form:
+      `projects//instances//clusters//backups/`.
+  """
+
+  backupId = _messages.StringField(1)
+  expireTime = _messages.StringField(2)
+  sourceBackup = _messages.StringField(3)
 
 
 class CreateBackupMetadata(_messages.Message):

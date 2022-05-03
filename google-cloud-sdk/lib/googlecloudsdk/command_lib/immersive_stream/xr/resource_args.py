@@ -31,6 +31,12 @@ def ContentAttributeConfig():
   )
 
 
+def InstanceAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='name',
+      help_text='Immersive Stream for XR service instance for the {resource}')
+
+
 def LocationAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='location',
@@ -50,6 +56,16 @@ def GetContentResourceSpec():
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
 
 
+def GetInstanceResourceSpec():
+  return concepts.ResourceSpec(
+      resource_collection='stream.projects.locations.streamInstances',
+      api_version='v1alpha1',
+      resource_name='instance',
+      streamInstancesId=InstanceAttributeConfig(),
+      locationsId=LocationAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
+
+
 def AddContentResourceArg(parser, verb, positional=True):
   """Adds a resource argument for an Immersive Stream for XR content resource.
 
@@ -63,4 +79,20 @@ def AddContentResourceArg(parser, verb, positional=True):
       name,
       GetContentResourceSpec(),
       'Immersive Stream for XR content resource {}.'.format(verb),
+      required=True).AddToParser(parser)
+
+
+def AddInstanceResourceArg(parser, verb, positional=True):
+  """Adds a resource argument for an Immersive Stream for XR service instance resource.
+
+  Args:
+    parser: The argparse parser to add the resource arg to.
+    verb: str, the verb to describe the resource, such as 'to update'.
+    positional: bool, whether the argument is positional or not.
+  """
+  name = 'instance' if positional else '--instance'
+  concept_parsers.ConceptParser.ForResource(
+      name,
+      GetInstanceResourceSpec(),
+      'Immersive Stream for XR service instance {}.'.format(verb),
       required=True).AddToParser(parser)

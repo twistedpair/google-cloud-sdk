@@ -179,7 +179,10 @@ def AddGroupPlacementArgs(parser, messages, track):
   parser.add_argument(
       '--vm-count',
       type=arg_parsers.BoundedInt(lower_bound=1),
-      help='Number of instances targeted by the group placement policy.')
+      help='Number of instances targeted by the group placement policy. '
+           'Google does not recommend that you use this flag unless you use a '
+           'compact policy and you want your policy to work only if it '
+           'contains this exact number of VMs.')
   parser.add_argument(
       '--availability-domain-count',
       type=arg_parsers.BoundedInt(lower_bound=1),

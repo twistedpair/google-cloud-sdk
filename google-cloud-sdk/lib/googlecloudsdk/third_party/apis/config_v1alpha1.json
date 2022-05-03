@@ -589,7 +589,9 @@
             "The pipeline Cloud Build failed before logs could be generated.",
             "The pipeline Cloud Build failed after logs could be generated.",
             "The apply Cloud Build failed before logs could be generated.",
-            "The apply Cloud Build failed after logs could be generated."
+            "The apply Cloud Build failed after logs could be generated.",
+            "The preview Cloud Build failed before logs could be generated.",
+            "The preview Cloud Build failed after logs could be generated."
           ],
           "enum": [
             "ERROR_CODE_UNSPECIFIED",
@@ -599,7 +601,9 @@
             "PIPELINE_BUILD_API_FAILED",
             "PIPELINE_BUILD_RUN_FAILED",
             "APPLY_BUILD_API_FAILED",
-            "APPLY_BUILD_RUN_FAILED"
+            "APPLY_BUILD_RUN_FAILED",
+            "PREVIEW_BUILD_API_FAILED",
+            "PREVIEW_BUILD_RUN_FAILED"
           ]
         },
         "reconcileTimeout": {

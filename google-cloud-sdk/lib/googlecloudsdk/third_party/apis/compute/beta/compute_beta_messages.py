@@ -30612,6 +30612,8 @@ class FirewallPolicyRuleMatcher(_messages.Message):
   Exactly one field must be specified.
 
   Fields:
+    destAddressGroups: Address groups which should be matched against the
+      traffic destination. Maximum number of destination address groups is 10.
     destIpRanges: CIDR IP address range. Maximum number of destination CIDR IP
       ranges allowed is 5000.
     destRegionCodes: Region codes whose IP addresses will be used to match for
@@ -30621,6 +30623,8 @@ class FirewallPolicyRuleMatcher(_messages.Message):
     destThreatIntelligences: Names of Network Threat Intelligence lists. The
       IPs in these lists will be matched against traffic destination.
     layer4Configs: Pairs of IP protocols and ports that the rule should match.
+    srcAddressGroups: Address groups which should be matched against the
+      traffic source. Maximum number of source address groups is 10.
     srcIpRanges: CIDR IP address range. Maximum number of source CIDR IP
       ranges allowed is 5000.
     srcRegionCodes: Region codes whose IP addresses will be used to match for
@@ -30635,14 +30639,16 @@ class FirewallPolicyRuleMatcher(_messages.Message):
       IPs in these lists will be matched against traffic source.
   """
 
-  destIpRanges = _messages.StringField(1, repeated=True)
-  destRegionCodes = _messages.StringField(2, repeated=True)
-  destThreatIntelligences = _messages.StringField(3, repeated=True)
-  layer4Configs = _messages.MessageField('FirewallPolicyRuleMatcherLayer4Config', 4, repeated=True)
-  srcIpRanges = _messages.StringField(5, repeated=True)
-  srcRegionCodes = _messages.StringField(6, repeated=True)
-  srcSecureTags = _messages.MessageField('FirewallPolicyRuleSecureTag', 7, repeated=True)
-  srcThreatIntelligences = _messages.StringField(8, repeated=True)
+  destAddressGroups = _messages.StringField(1, repeated=True)
+  destIpRanges = _messages.StringField(2, repeated=True)
+  destRegionCodes = _messages.StringField(3, repeated=True)
+  destThreatIntelligences = _messages.StringField(4, repeated=True)
+  layer4Configs = _messages.MessageField('FirewallPolicyRuleMatcherLayer4Config', 5, repeated=True)
+  srcAddressGroups = _messages.StringField(6, repeated=True)
+  srcIpRanges = _messages.StringField(7, repeated=True)
+  srcRegionCodes = _messages.StringField(8, repeated=True)
+  srcSecureTags = _messages.MessageField('FirewallPolicyRuleSecureTag', 9, repeated=True)
+  srcThreatIntelligences = _messages.StringField(10, repeated=True)
 
 
 class FirewallPolicyRuleMatcherLayer4Config(_messages.Message):
@@ -30870,6 +30876,9 @@ class ForwardingRule(_messages.Message):
       For GlobalForwardingRule, the valid value is PREMIUM. If this field is
       not specified, it is assumed to be PREMIUM. If IPAddress is specified,
       this value must be equal to the networkTier of the Address.
+    noAutomateDnsZone: This is used in PSC consumer ForwardingRule to control
+      whether it should try to auto-generate a DNS zone or not. Non-PSC
+      forwarding rules do not use this field.
     portRange: This field can be used only if: - Load balancing scheme is one
       of EXTERNAL, INTERNAL_SELF_MANAGED or INTERNAL_MANAGED - IPProtocol is
       one of TCP, UDP, or SCTP. Packets addressed to ports in the specified
@@ -31069,18 +31078,19 @@ class ForwardingRule(_messages.Message):
   name = _messages.StringField(17)
   network = _messages.StringField(18)
   networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 19)
-  portRange = _messages.StringField(20)
-  ports = _messages.StringField(21, repeated=True)
-  pscConnectionId = _messages.IntegerField(22, variant=_messages.Variant.UINT64)
-  pscConnectionStatus = _messages.EnumField('PscConnectionStatusValueValuesEnum', 23)
-  region = _messages.StringField(24)
-  selfLink = _messages.StringField(25)
-  serviceDirectoryRegistrations = _messages.MessageField('ForwardingRuleServiceDirectoryRegistration', 26, repeated=True)
-  serviceLabel = _messages.StringField(27)
-  serviceName = _messages.StringField(28)
-  sourceIpRanges = _messages.StringField(29, repeated=True)
-  subnetwork = _messages.StringField(30)
-  target = _messages.StringField(31)
+  noAutomateDnsZone = _messages.BooleanField(20)
+  portRange = _messages.StringField(21)
+  ports = _messages.StringField(22, repeated=True)
+  pscConnectionId = _messages.IntegerField(23, variant=_messages.Variant.UINT64)
+  pscConnectionStatus = _messages.EnumField('PscConnectionStatusValueValuesEnum', 24)
+  region = _messages.StringField(25)
+  selfLink = _messages.StringField(26)
+  serviceDirectoryRegistrations = _messages.MessageField('ForwardingRuleServiceDirectoryRegistration', 27, repeated=True)
+  serviceLabel = _messages.StringField(28)
+  serviceName = _messages.StringField(29)
+  sourceIpRanges = _messages.StringField(30, repeated=True)
+  subnetwork = _messages.StringField(31)
+  target = _messages.StringField(32)
 
 
 class ForwardingRuleAggregatedList(_messages.Message):
@@ -44158,6 +44168,9 @@ class NetworkPeering(_messages.Message):
   Google Compute Engine should automatically create routes for the peering.
 
   Enums:
+    StackTypeValueValuesEnum: Which IP version(s) of traffic and routes are
+      allowed to be imported or exported between peer networks. The default
+      value is IPV4_ONLY.
     StateValueValuesEnum: [Output Only] State for the peering, either `ACTIVE`
       or `INACTIVE`. The peering is `ACTIVE` when there's a matching
       configuration in the peer network.
@@ -44196,12 +44209,29 @@ class NetworkPeering(_messages.Message):
       URL does not contain project, it is assumed that the peer network is in
       the same project as the current network.
     peerMtu: Maximum Transmission Unit in bytes.
+    stackType: Which IP version(s) of traffic and routes are allowed to be
+      imported or exported between peer networks. The default value is
+      IPV4_ONLY.
     state: [Output Only] State for the peering, either `ACTIVE` or `INACTIVE`.
       The peering is `ACTIVE` when there's a matching configuration in the
       peer network.
     stateDetails: [Output Only] Details about the current state of the
       peering.
   """
+
+  class StackTypeValueValuesEnum(_messages.Enum):
+    r"""Which IP version(s) of traffic and routes are allowed to be imported
+    or exported between peer networks. The default value is IPV4_ONLY.
+
+    Values:
+      IPV4_IPV6: This Peering will allow IPv4 traffic and routes to be
+        exchanged. Additionally if the matching peering is IPV4_IPV6, IPv6
+        traffic and routes will be exchanged as well.
+      IPV4_ONLY: This Peering will only allow IPv4 traffic and routes to be
+        exchanged, even if the matching peering is IPV4_IPV6.
+    """
+    IPV4_IPV6 = 0
+    IPV4_ONLY = 1
 
   class StateValueValuesEnum(_messages.Enum):
     r"""[Output Only] State for the peering, either `ACTIVE` or `INACTIVE`.
@@ -44225,8 +44255,9 @@ class NetworkPeering(_messages.Message):
   name = _messages.StringField(7)
   network = _messages.StringField(8)
   peerMtu = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  stateDetails = _messages.StringField(11)
+  stackType = _messages.EnumField('StackTypeValueValuesEnum', 10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  stateDetails = _messages.StringField(12)
 
 
 class NetworkPerformanceConfig(_messages.Message):

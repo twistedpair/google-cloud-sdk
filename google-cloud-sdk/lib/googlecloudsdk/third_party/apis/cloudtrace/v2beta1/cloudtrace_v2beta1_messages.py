@@ -169,19 +169,49 @@ class ListTraceSinksResponse(_messages.Message):
   sinks = _messages.MessageField('TraceSink', 2, repeated=True)
 
 
+class OpenTelemetryFormat(_messages.Message):
+  r"""OpenTelemetryFormat contains metadata to help convert Cloud Trace trace
+  format to OpenTelemetry trace format.
+
+  Fields:
+    version: OpenTelemetry format defined by https://github.com/open-
+      telemetry/opentelemetry-proto/blob/main/opentelemetry/proto/collector/tr
+      ace/v1/trace_service.proto Version of the OpenTelemetry schema as it
+      appears in the defining proto package. Currently, only "v1" is
+      supported, but support for more version may added in the future.
+  """
+
+  version = _messages.StringField(1)
+
+
 class OutputConfig(_messages.Message):
   r"""OutputConfig contains a destination for writing trace data.
 
   Fields:
     bigqueryConfig: Optional. Additional options governing the export behavior
       when the selected destination is a BigQuery dataset.
-    destination: The destination for writing trace data. Currently only
-      BigQuery is supported. E.g.:
+    destination: The destination for writing trace data. Supported formats
+      include:
       "bigquery.googleapis.com/projects/[PROJECT_ID]/datasets/[DATASET]"
+    pubsubConfig: Optional. Additional options governing the export behavior
+      when the selected destination is a Pub/Sub queue.
   """
 
   bigqueryConfig = _messages.MessageField('BigQueryOutputConfig', 1)
   destination = _messages.StringField(2)
+  pubsubConfig = _messages.MessageField('PubsubOutputConfig', 3)
+
+
+class PubsubOutputConfig(_messages.Message):
+  r"""Configuration for the output that is specific to Pub/Sub when choosing a
+  Pub/Sub queue as the output destination.
+
+  Fields:
+    openTelemetryFormat: open_telemetry_format contains additional information
+      needed to convert Cloud Trace data.
+  """
+
+  openTelemetryFormat = _messages.MessageField('OpenTelemetryFormat', 1)
 
 
 class StandardQueryParameters(_messages.Message):

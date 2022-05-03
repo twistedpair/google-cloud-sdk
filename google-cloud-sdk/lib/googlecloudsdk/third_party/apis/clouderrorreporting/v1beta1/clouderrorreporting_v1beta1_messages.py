@@ -127,9 +127,9 @@ class ClouderrorreportingProjectsGroupStatsListRequest(_messages.Message):
       is `COUNT_DESC`.
     pageSize: Optional. The maximum number of results to return per response.
       Default is 20.
-    pageToken: Optional. A `next_page_token` provided by a previous response.
-      To view additional results, pass this token along with the identical
-      query parameters as the first request.
+    pageToken: Optional. A next_page_token provided by a previous response. To
+      view additional results, pass this token along with the identical query
+      parameters as the first request.
     projectName: Required. The resource name of the Google Cloud Platform
       project. Written as `projects/{projectID}` or
       `projects/{projectNumber}`, where `{projectID}` and `{projectNumber}`
@@ -147,7 +147,7 @@ class ClouderrorreportingProjectsGroupStatsListRequest(_messages.Message):
       reporting/reference/rest/v1beta1/ServiceContext#FIELDS.version).
     timeRange_period: Restricts the query to the specified time range.
     timedCountDuration: Optional. The preferred duration for a single returned
-      `TimedCount`. If not set, no timed counts are returned.
+      TimedCount. If not set, no timed counts are returned.
   """
 
   class AlignmentValueValuesEnum(_messages.Enum):
@@ -158,8 +158,8 @@ class ClouderrorreportingProjectsGroupStatsListRequest(_messages.Message):
       ERROR_COUNT_ALIGNMENT_UNSPECIFIED: No alignment specified.
       ALIGNMENT_EQUAL_ROUNDED: The time periods shall be consecutive, have
         width equal to the requested duration, and be aligned at the
-        `alignment_time` provided in the request. The `alignment_time` does
-        not have to be inside the query period but even if it is outside, only
+        alignment_time provided in the request. The alignment_time does not
+        have to be inside the query period but even if it is outside, only
         time periods are returned which overlap with the query period. A
         rounded alignment will typically result in a different size of the
         first or the last time period.
@@ -234,11 +234,9 @@ class ClouderrorreportingProjectsGroupsGetRequest(_messages.Message):
 
   Fields:
     groupName: Required. The group resource name. Written as
-      `projects/{projectID}/groups/{group_name}`. Call
-      [`groupStats.list`](https://cloud.google.com/error-
-      reporting/reference/rest/v1beta1/projects.groupStats/list) to return a
-      list of groups belonging to this project. Example: `projects/my-
-      project-123/groups/my-group`
+      `projects/{projectID}/groups/{group_name}`. Call groupStats.list to
+      return a list of groups belonging to this project. Example:
+      `projects/my-project-123/groups/my-group`
   """
 
   groupName = _messages.StringField(1, required=True)
@@ -351,7 +349,7 @@ class ErrorGroupStats(_messages.Message):
       are affected. Refer to `num_affected_services` for the total count.
     affectedUsersCount: Approximate number of affected users in the given
       group that match the filter criteria. Users are distinguished by data in
-      the `ErrorContext` of the individual error events, such as their login
+      the ErrorContext of the individual error events, such as their login
       name or their remote IP address in case of HTTP requests. The number of
       affected users can be zero even if the number of errors is non-zero if
       no data was provided from which the affected user could be deduced.
@@ -486,10 +484,10 @@ class ReportedErrorEvent(_messages.Message):
       doc.org/core-2.2.0/Exception.html#method-i-backtrace). * **C#**: Must be
       the return value of
       [`Exception.ToString()`](https://msdn.microsoft.com/en-
-      us/library/system.exception.tostring.aspx). * **PHP**: Must start with
-      `PHP (Notice|Parse error|Fatal error|Warning)` and contain the result of
-      [`(string)$exception`](http://php.net/manual/en/exception.tostring.php).
-      * **Go**: Must be the return value of
+      us/library/system.exception.tostring.aspx). * **PHP**: Must be prefixed
+      with `"PHP (Notice|Parse error|Fatal error|Warning): "` and contain the
+      result of [`(string)$exception`](https://php.net/manual/en/exception.tos
+      tring.php). * **Go**: Must be the return value of
       [`runtime.Stack()`](https://golang.org/pkg/runtime/debug/#Stack).
     serviceContext: Required. The service context in which this error has
       occurred.

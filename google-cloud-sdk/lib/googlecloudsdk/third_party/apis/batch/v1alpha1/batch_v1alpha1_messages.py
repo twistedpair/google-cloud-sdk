@@ -14,6 +14,19 @@ from apitools.base.py import extra_types
 package = 'batch'
 
 
+class Accelerator(_messages.Message):
+  r"""Accelerator describes Compute Engine accelerators to be attached to VMs.
+
+  Fields:
+    count: The number of accelerators of this type.
+    type: The accelerator type. For example, "nvidia-tesla-t4". See `gcloud
+      compute accelerator-types list`.
+  """
+
+  count = _messages.IntegerField(1)
+  type = _messages.StringField(2)
+
+
 class ActionCondition(_messages.Message):
   r"""Conditions for actions to deal with task failures.
 
@@ -43,9 +56,10 @@ class AllocationPolicy(_messages.Message):
 
   Fields:
     instance: Create only instances allowed by this policy.
-    instanceTemplates: Create instances from the first instance template - MVP
-      Use 'gcloud compute instance-templates list` to see available templates
-      in the project If specified, it overrides the 'instance' field.
+    instanceTemplates: Instance templates that are used to VMs. If specified,
+      only instance_templates[0] is used.
+    instances: Describe instances that can be created by this
+      AllocationPolicy. Only instances[0] is supported now.
     labels: Labels applied to all VM instances and other resources created by
       AllocationPolicy. Labels could be user provided or system generated. You
       can assign up to 64 labels. [Google Compute Engine label
@@ -111,11 +125,12 @@ class AllocationPolicy(_messages.Message):
 
   instance = _messages.MessageField('InstancePolicy', 1)
   instanceTemplates = _messages.StringField(2, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 3)
-  location = _messages.MessageField('LocationPolicy', 4)
-  network = _messages.MessageField('NetworkPolicy', 5)
-  provisioningModels = _messages.EnumField('ProvisioningModelsValueListEntryValuesEnum', 6, repeated=True)
-  serviceAccount = _messages.StringField(7)
+  instances = _messages.MessageField('InstancePolicyOrTemplate', 3, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 4)
+  location = _messages.MessageField('LocationPolicy', 5)
+  network = _messages.MessageField('NetworkPolicy', 6)
+  provisioningModels = _messages.EnumField('ProvisioningModelsValueListEntryValuesEnum', 7, repeated=True)
+  serviceAccount = _messages.StringField(8)
 
 
 class AuditConfig(_messages.Message):
@@ -742,43 +757,59 @@ class GCS(_messages.Message):
 
 
 class InstancePolicy(_messages.Message):
-  r"""InstancePolicy describes what instances should be created for the Job.
+  r"""InstancePolicy describes an instance type and resources attached to each
+  VM created by this InstancePolicy.
+
+  Enums:
+    ProvisioningModelValueValuesEnum: The provisioning model.
 
   Fields:
-    acceleratorCount: The number of accelerators per VM instance.
-      [NotImplemented]
-    allowedAcceleratorTypes: A list of allowed accelerator types (GPU models),
-      for example, "nvidia-tesla-t4". Default is empty which means allowing
-      all. [NotImplemented]
-    allowedCpuPlatforms: A list of allowed CPU platforms, for example, "Intel
-      Cascade Lake", "AMD Rome". Default is empty which means allowing all.
-      [NotImplemented]
-    allowedMachineTypes: A list of allowed Compute Engine machine types, for
-      example, e2-standard-4. Default is empty which means allowing all.
-    deniedAcceleratorTypes: A list of denied accelerator types (GPU models).
-      Default is empty which means denying none. A accelerator type is allowed
-      if it matches 'allowed_accelerator_types' AND does not match
-      'denied__accelerator_types'. [NotImplemented]
-    deniedCpuPlatforms: A list of denied CPU platforms. Default is empty which
-      means denying none. A CPU platform is allowed if it matches
-      'allowed_cpu_platforms' AND does not match 'denied_cpu_platforms'. If a
-      CPU platform belongs to both lists, it will be denied. [NotImplemented]
-    deniedMachineTypes: A list of denied Compute Engine machine types. Default
-      is empty which means denying none. A machine type is allowed if it
-      matches 'allowed_machine_types' AND does not match
-      'denied_machine_types'. For example, allowed_machine_types =
-      "e2-standard" denied_machine_types = "e2-standard-2, e2-standard-4"
-      means using all E2 standard machine types except for 'e2-standard-2' and
-      'e2-standard-4. [NotImplemented]
+    accelerators: The accelerators attached to each VM instance.
+    allowedMachineTypes: A string attribute.
+    machineType: The Compute Engine machine type.
+    minCpuPlatform: The minimum CPU platform. See
+      `https://cloud.google.com/compute/docs/instances/specify-min-cpu-
+      platform`.
+    provisioningModel: The provisioning model.
   """
 
-  acceleratorCount = _messages.IntegerField(1)
-  allowedAcceleratorTypes = _messages.StringField(2, repeated=True)
-  allowedCpuPlatforms = _messages.StringField(3, repeated=True)
-  allowedMachineTypes = _messages.StringField(4, repeated=True)
-  deniedAcceleratorTypes = _messages.StringField(5, repeated=True)
-  deniedCpuPlatforms = _messages.StringField(6, repeated=True)
-  deniedMachineTypes = _messages.StringField(7, repeated=True)
+  class ProvisioningModelValueValuesEnum(_messages.Enum):
+    r"""The provisioning model.
+
+    Values:
+      PROVISIONING_MODEL_UNSPECIFIED: Unspecified.
+      STANDARD: Standard VM.
+      SPOT: SPOT VM.
+      PREEMPTIBLE: Preemptible VM (PVM). Above SPOT VM is the preferable model
+        for preemptible VM instances: the old preemptible VM model (indicated
+        by this field) is the older model, and has been migrated to use the
+        SPOT model as the underlying technology. This old model will still be
+        supported.
+    """
+    PROVISIONING_MODEL_UNSPECIFIED = 0
+    STANDARD = 1
+    SPOT = 2
+    PREEMPTIBLE = 3
+
+  accelerators = _messages.MessageField('Accelerator', 1, repeated=True)
+  allowedMachineTypes = _messages.StringField(2, repeated=True)
+  machineType = _messages.StringField(3)
+  minCpuPlatform = _messages.StringField(4)
+  provisioningModel = _messages.EnumField('ProvisioningModelValueValuesEnum', 5)
+
+
+class InstancePolicyOrTemplate(_messages.Message):
+  r"""Either an InstancePolicy or an instance template.
+
+  Fields:
+    instanceTemplate: Name of an instance template used to create VMs. Named
+      the field as 'instance_template' instead of 'template' to avoid c++
+      keyword conflict.
+    policy: InstancePolicy.
+  """
+
+  instanceTemplate = _messages.StringField(1)
+  policy = _messages.MessageField('InstancePolicy', 2)
 
 
 class InstanceStatus(_messages.Message):
@@ -1242,13 +1273,13 @@ class Location(_messages.Message):
 
 class LocationPolicy(_messages.Message):
   r"""Be consistent with LocationPolicy in
-  //cloud/cluster/api/mixter_instances.proto.
+  //cloud/cluster/api/mixer_instances.proto.
 
   Fields:
     allowedLocations: A list of allowed location names represented by internal
       URLs, for example, zones/us-central1-a, regions/us-west1. First location
       in the list should be a region.
-    deniedLocations: A list of denied location names.
+    deniedLocations: A list of denied location names. [NotImplemented]
   """
 
   allowedLocations = _messages.StringField(1, repeated=True)
@@ -1394,8 +1425,7 @@ class NetworkInterface(_messages.Message):
 
 
 class NetworkPolicy(_messages.Message):
-  r"""NetworkPolicy describes network configurations for instances created for
-  the job.
+  r"""NetworkPolicy describes VM instance network configurations.
 
   Fields:
     networkInterfaces: Network configurations.

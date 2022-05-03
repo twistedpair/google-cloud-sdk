@@ -54,6 +54,16 @@ def AddSourceDiskCsekKey(parser):
       """)
 
 
+def AddSnapshotType(parser):
+  snapshot_type_choices = sorted(['STANDARD', 'ARCHIVE'])
+  parser.add_argument(
+      '--snapshot-type',
+      choices=snapshot_type_choices,
+      help="""
+              Type of snapshot. If a snapshot type is not specified, a STANDARD snapshot will be created.
+           """)
+
+
 SOURCE_DISK_ARG = compute_flags.ResourceArgument(
     resource_name='source disk',
     name='--source-disk',

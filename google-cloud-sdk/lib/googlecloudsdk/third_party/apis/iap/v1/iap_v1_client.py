@@ -375,7 +375,7 @@ class IapV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists the existing TunnelDestGroups. To group across all locations, use a `-` as the location ID. For example: /v1/projects/123/iap_tunnel/locations/-/destGroups.
+      r"""Lists the existing TunnelDestGroups. To group across all locations, use a `-` as the location ID. For example: `/v1/projects/123/iap_tunnel/locations/-/destGroups`.
 
       Args:
         request: (IapProjectsIapTunnelLocationsDestGroupsListRequest) input message

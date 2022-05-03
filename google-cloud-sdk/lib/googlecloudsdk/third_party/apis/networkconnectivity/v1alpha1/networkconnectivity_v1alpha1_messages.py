@@ -129,6 +129,53 @@ class Binding(_messages.Message):
   role = _messages.StringField(3)
 
 
+class ConnectionPolicy(_messages.Message):
+  r"""The ConnectionPolicy resource. Next id: 6
+
+  Messages:
+    LabelsValue: User-defined labels.
+
+  Fields:
+    createTime: Output only. Time when the ServiceInstance was created.
+    description: A description of this resource.
+    labels: User-defined labels.
+    name: Immutable. The name of a ConnectionPolicy. Format: projects/{project
+      }/locations/{location}/connectionPolicies/{connection_policy} See:
+      https://google.aip.dev/122#fields-representing-resource-names
+    updateTime: Output only. Time when the ServiceInstance was updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""User-defined labels.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  updateTime = _messages.StringField(5)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -563,6 +610,22 @@ class InternalRange(_messages.Message):
   users = _messages.StringField(12, repeated=True)
 
 
+class ListConnectionPoliciesResponse(_messages.Message):
+  r"""Response for ListConnectionPolicies.
+
+  Fields:
+    connectionPolicies: ConnectionPolicies to be returned.
+    nextPageToken: The next pagination token in the List response. It should
+      be used as page_token for the following request. An empty value means no
+      more result.
+    unreachable: Locations that could not be reached.
+  """
+
+  connectionPolicies = _messages.MessageField('ConnectionPolicy', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
 class ListHubsResponse(_messages.Message):
   r"""Response for HubService.ListHubs method.
 
@@ -606,22 +669,6 @@ class ListLocationsResponse(_messages.Message):
 
   locations = _messages.MessageField('Location', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
-
-
-class ListServiceConnectPoliciesResponse(_messages.Message):
-  r"""Response for ListServiceConnectPolicies.
-
-  Fields:
-    nextPageToken: The next pagination token in the List response. It should
-      be used as page_token for the following request. An empty value means no
-      more result.
-    serviceConnectPolicies: ServiceConnectPolicies to be returned.
-    unreachable: Locations that could not be reached.
-  """
-
-  nextPageToken = _messages.StringField(1)
-  serviceConnectPolicies = _messages.MessageField('ServiceConnectPolicy', 2, repeated=True)
-  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListServiceInstancesResponse(_messages.Message):
@@ -734,6 +781,184 @@ class Location(_messages.Message):
   locationId = _messages.StringField(3)
   metadata = _messages.MessageField('MetadataValue', 4)
   name = _messages.StringField(5)
+
+
+class NetworkconnectivityProjectsLocationsConnectionPoliciesCreateRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsConnectionPoliciesCreateRequest
+  object.
+
+  Fields:
+    connectionPolicy: A ConnectionPolicy resource to be passed as the request
+      body.
+    connectionPolicyId: Optional. Resource ID (i.e. 'foo' in
+      '[...]/projects/p/locations/l/connectionPolicies/foo') See
+      https://google.aip.dev/122#resource-id-segments Unique per location.
+    parent: Required. The parent resource's name of the ConnectionPolicy.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and t he request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  connectionPolicy = _messages.MessageField('ConnectionPolicy', 1)
+  connectionPolicyId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class NetworkconnectivityProjectsLocationsConnectionPoliciesDeleteRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsConnectionPoliciesDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The name of the ConnectionPolicy to delete.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and t he request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworkconnectivityProjectsLocationsConnectionPoliciesGetIamPolicyRequest(_messages.Message):
+  r"""A
+  NetworkconnectivityProjectsLocationsConnectionPoliciesGetIamPolicyRequest
+  object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class NetworkconnectivityProjectsLocationsConnectionPoliciesGetRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsConnectionPoliciesGetRequest
+  object.
+
+  Fields:
+    name: Required. Name of the ConnectionPolicy to get.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkconnectivityProjectsLocationsConnectionPoliciesListRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsConnectionPoliciesListRequest
+  object.
+
+  Fields:
+    filter: A filter expression that filters the results listed in the
+      response.
+    orderBy: Sort the results by a certain order.
+    pageSize: The maximum number of results per page that should be returned.
+    pageToken: The page token.
+    parent: Required. The parent resource's name.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworkconnectivityProjectsLocationsConnectionPoliciesPatchRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsConnectionPoliciesPatchRequest
+  object.
+
+  Fields:
+    connectionPolicy: A ConnectionPolicy resource to be passed as the request
+      body.
+    name: Immutable. The name of a ConnectionPolicy. Format: projects/{project
+      }/locations/{location}/connectionPolicies/{connection_policy} See:
+      https://google.aip.dev/122#fields-representing-resource-names
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and t he request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the ConnectionPolicy resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then all fields will be overwritten.
+  """
+
+  connectionPolicy = _messages.MessageField('ConnectionPolicy', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
+class NetworkconnectivityProjectsLocationsConnectionPoliciesSetIamPolicyRequest(_messages.Message):
+  r"""A
+  NetworkconnectivityProjectsLocationsConnectionPoliciesSetIamPolicyRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class NetworkconnectivityProjectsLocationsConnectionPoliciesTestIamPermissionsRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsConnectionPoliciesTestIamPermissio
+  nsRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class NetworkconnectivityProjectsLocationsGetRequest(_messages.Message):
@@ -1152,184 +1377,6 @@ class NetworkconnectivityProjectsLocationsOperationsListRequest(_messages.Messag
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
-
-
-class NetworkconnectivityProjectsLocationsServiceConnectPoliciesCreateRequest(_messages.Message):
-  r"""A
-  NetworkconnectivityProjectsLocationsServiceConnectPoliciesCreateRequest
-  object.
-
-  Fields:
-    parent: Required. The parent resource's name of the ServiceConnectPolicy.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    serviceConnectPolicy: A ServiceConnectPolicy resource to be passed as the
-      request body.
-    serviceConnectPolicyId: Optional. Resource ID (i.e. 'foo' in
-      '[...]/projects/p/locations/l/serviceConnectPolicies/foo') See
-      https://google.aip.dev/122#resource-id-segments Unique per location.
-  """
-
-  parent = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
-  serviceConnectPolicy = _messages.MessageField('ServiceConnectPolicy', 3)
-  serviceConnectPolicyId = _messages.StringField(4)
-
-
-class NetworkconnectivityProjectsLocationsServiceConnectPoliciesDeleteRequest(_messages.Message):
-  r"""A
-  NetworkconnectivityProjectsLocationsServiceConnectPoliciesDeleteRequest
-  object.
-
-  Fields:
-    name: Required. The name of the ServiceConnectPolicy to delete.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes after the first
-      request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-  """
-
-  name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
-
-
-class NetworkconnectivityProjectsLocationsServiceConnectPoliciesGetIamPolicyRequest(_messages.Message):
-  r"""A NetworkconnectivityProjectsLocationsServiceConnectPoliciesGetIamPolicy
-  Request object.
-
-  Fields:
-    options_requestedPolicyVersion: Optional. The maximum policy version that
-      will be used to format the policy. Valid values are 0, 1, and 3.
-      Requests specifying an invalid value will be rejected. Requests for
-      policies with any conditional role bindings must specify version 3.
-      Policies with no conditional role bindings may specify any valid value
-      or leave the field unset. The policy in the response might use the
-      policy version that you specified, or it might use a lower policy
-      version. For example, if you specify version 3, but the policy has no
-      conditional role bindings, the response uses version 1. To learn which
-      resources support conditions in their IAM policies, see the [IAM
-      documentation](https://cloud.google.com/iam/help/conditions/resource-
-      policies).
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
-  """
-
-  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  resource = _messages.StringField(2, required=True)
-
-
-class NetworkconnectivityProjectsLocationsServiceConnectPoliciesGetRequest(_messages.Message):
-  r"""A NetworkconnectivityProjectsLocationsServiceConnectPoliciesGetRequest
-  object.
-
-  Fields:
-    name: Required. Name of the ServiceConnectPolicy to get.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class NetworkconnectivityProjectsLocationsServiceConnectPoliciesListRequest(_messages.Message):
-  r"""A NetworkconnectivityProjectsLocationsServiceConnectPoliciesListRequest
-  object.
-
-  Fields:
-    filter: A filter expression that filters the results listed in the
-      response.
-    orderBy: Sort the results by a certain order.
-    pageSize: The maximum number of results per page that should be returned.
-    pageToken: The page token.
-    parent: Required. The parent resource's name.
-  """
-
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
-
-
-class NetworkconnectivityProjectsLocationsServiceConnectPoliciesPatchRequest(_messages.Message):
-  r"""A NetworkconnectivityProjectsLocationsServiceConnectPoliciesPatchRequest
-  object.
-
-  Fields:
-    name: Immutable. The name of a ServiceConnectPolicy. Format: projects/{pro
-      ject}/locations/{location}/serviceConnectPolicies/{service_connect_polic
-      y} See: https://google.aip.dev/122#fields-representing-resource-names
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    serviceConnectPolicy: A ServiceConnectPolicy resource to be passed as the
-      request body.
-    updateMask: Optional. Field mask is used to specify the fields to be
-      overwritten in the ServiceConnectPolicy resource by the update. The
-      fields specified in the update_mask are relative to the resource, not
-      the full request. A field will be overwritten if it is in the mask. If
-      the user does not provide a mask then all fields will be overwritten.
-  """
-
-  name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
-  serviceConnectPolicy = _messages.MessageField('ServiceConnectPolicy', 3)
-  updateMask = _messages.StringField(4)
-
-
-class NetworkconnectivityProjectsLocationsServiceConnectPoliciesSetIamPolicyRequest(_messages.Message):
-  r"""A NetworkconnectivityProjectsLocationsServiceConnectPoliciesSetIamPolicy
-  Request object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
-    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
-      request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
-
-
-class NetworkconnectivityProjectsLocationsServiceConnectPoliciesTestIamPermissionsRequest(_messages.Message):
-  r"""A NetworkconnectivityProjectsLocationsServiceConnectPoliciesTestIamPermi
-  ssionsRequest object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
-    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
-      passed as the request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class NetworkconnectivityProjectsLocationsServiceInstancesCreateRequest(_messages.Message):
@@ -1791,53 +1838,6 @@ class RouterApplianceInstance(_messages.Message):
   ipAddress = _messages.StringField(1)
   networkInterface = _messages.StringField(2)
   virtualMachine = _messages.StringField(3)
-
-
-class ServiceConnectPolicy(_messages.Message):
-  r"""The ServiceConnectPolicy resource. Next id: 6
-
-  Messages:
-    LabelsValue: User-defined labels.
-
-  Fields:
-    createTime: Output only. Time when the ServiceInstance was created.
-    description: A description of this resource.
-    labels: User-defined labels.
-    name: Immutable. The name of a ServiceConnectPolicy. Format: projects/{pro
-      ject}/locations/{location}/serviceConnectPolicies/{service_connect_polic
-      y} See: https://google.aip.dev/122#fields-representing-resource-names
-    updateTime: Output only. Time when the ServiceInstance was updated.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    r"""User-defined labels.
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  createTime = _messages.StringField(1)
-  description = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  name = _messages.StringField(4)
-  updateTime = _messages.StringField(5)
 
 
 class ServiceInstance(_messages.Message):

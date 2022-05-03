@@ -1987,8 +1987,23 @@
           "description": "Immutable. The URI of the GitlabEnterprise host.",
           "type": "string"
         },
+        "serviceDirectoryConfig": {
+          "description": "The Service Directory configuration to be used when reaching out to the GitLab Enterprise instance.",
+          "$ref": "ServiceDirectoryConfig"
+        },
         "sslCa": {
           "description": "The SSL certificate to use in requests to GitLab Enterprise instances.",
+          "type": "string"
+        }
+      }
+    },
+    "ServiceDirectoryConfig": {
+      "id": "ServiceDirectoryConfig",
+      "description": "ServiceDirectoryConfig represents Service Directory configuration for a SCM host connection.",
+      "type": "object",
+      "properties": {
+        "service": {
+          "description": "The Service Directory service name. Format: projects\/{project}\/locations\/{location}\/namespaces\/{namespace}\/services\/{service}.",
           "type": "string"
         }
       }

@@ -1378,16 +1378,21 @@ class GkehubOrganizationsLocationsFleetsListRequest(_messages.Message):
   r"""A GkehubOrganizationsLocationsFleetsListRequest object.
 
   Fields:
-    pageToken: A page token, received from a previous `ListFleets` call.
-      Provide this to retrieve the subsequent page. When paginating, all other
-      parameters provided to `ListFleets` must match the call that provided
-      the page token.
+    pageSize: Optional. The maximum number of fleets to return. The service
+      may return fewer than this value. If unspecified, at most 200 fleets
+      will be returned. The maximum value is 1000; values above 1000 will be
+      coerced to 1000.
+    pageToken: Optional. A page token, received from a previous `ListFleets`
+      call. Provide this to retrieve the subsequent page. When paginating, all
+      other parameters provided to `ListFleets` must match the call that
+      provided the page token.
     parent: Required. The organization or project to list for Fleets under, in
       the format `organizations/*/locations/*` or `projects/*/locations/*`.
   """
 
-  pageToken = _messages.StringField(1)
-  parent = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class GkehubProjectsLocationsFeaturesCreateRequest(_messages.Message):
@@ -1605,16 +1610,21 @@ class GkehubProjectsLocationsFleetsListRequest(_messages.Message):
   r"""A GkehubProjectsLocationsFleetsListRequest object.
 
   Fields:
-    pageToken: A page token, received from a previous `ListFleets` call.
-      Provide this to retrieve the subsequent page. When paginating, all other
-      parameters provided to `ListFleets` must match the call that provided
-      the page token.
+    pageSize: Optional. The maximum number of fleets to return. The service
+      may return fewer than this value. If unspecified, at most 200 fleets
+      will be returned. The maximum value is 1000; values above 1000 will be
+      coerced to 1000.
+    pageToken: Optional. A page token, received from a previous `ListFleets`
+      call. Provide this to retrieve the subsequent page. When paginating, all
+      other parameters provided to `ListFleets` must match the call that
+      provided the page token.
     parent: Required. The organization or project to list for Fleets under, in
       the format `organizations/*/locations/*` or `projects/*/locations/*`.
   """
 
-  pageToken = _messages.StringField(1)
-  parent = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class GkehubProjectsLocationsFleetsPatchRequest(_messages.Message):
@@ -2428,7 +2438,8 @@ class ListFleetsResponse(_messages.Message):
   Fields:
     fleets: The list of matching fleets.
     nextPageToken: A token, which can be sent as `page_token` to retrieve the
-      next page. If this field is omitted, there are no subsequent pages.
+      next page. If this field is omitted, there are no subsequent pages. The
+      token is only valid for 1h.
   """
 
   fleets = _messages.MessageField('Fleet', 1, repeated=True)

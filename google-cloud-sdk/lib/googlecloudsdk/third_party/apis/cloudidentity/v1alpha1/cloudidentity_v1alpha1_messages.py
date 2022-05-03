@@ -2304,6 +2304,16 @@ class Operation(_messages.Message):
   response = _messages.MessageField('ResponseValue', 5)
 
 
+class PasswordEncryptionKey(_messages.Message):
+  r"""Message for public encryption key
+
+  Fields:
+    key: Public encryption key in Tink format.
+  """
+
+  key = _messages.BytesField(1)
+
+
 class PosixGroup(_messages.Message):
   r"""POSIX Group definition to represent a group in linux.
 

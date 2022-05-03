@@ -654,8 +654,15 @@
           "description": "Create only instances allowed by this policy.",
           "$ref": "InstancePolicy"
         },
+        "instances": {
+          "description": "Describe instances that can be created by this AllocationPolicy. Only instances[0] is supported now.",
+          "type": "array",
+          "items": {
+            "$ref": "InstancePolicyOrTemplate"
+          }
+        },
         "instanceTemplates": {
-          "description": "Create instances from the first instance template - MVP Use 'gcloud compute instance-templates list` to see available templates in the project If specified, it overrides the 'instance' field.",
+          "description": "Instance templates that are used to VMs. If specified, only instance_templates[0] is used.",
           "type": "array",
           "items": {
             "type": "string"
@@ -699,7 +706,7 @@
     },
     "LocationPolicy": {
       "id": "LocationPolicy",
-      "description": "Be consistent with LocationPolicy in \/\/cloud\/cluster\/api\/mixter_instances.proto.",
+      "description": "Be consistent with LocationPolicy in \/\/cloud\/cluster\/api\/mixer_instances.proto.",
       "type": "object",
       "properties": {
         "allowedLocations": {
@@ -710,7 +717,7 @@
           }
         },
         "deniedLocations": {
-          "description": "A list of denied location names.",
+          "description": "A list of denied location names. [NotImplemented]",
           "type": "array",
           "items": {
             "type": "string"
@@ -720,61 +727,82 @@
     },
     "InstancePolicy": {
       "id": "InstancePolicy",
-      "description": "InstancePolicy describes what instances should be created for the Job.",
+      "description": "InstancePolicy describes an instance type and resources attached to each VM created by this InstancePolicy.",
       "type": "object",
       "properties": {
         "allowedMachineTypes": {
-          "description": "A list of allowed Compute Engine machine types, for example, e2-standard-4. Default is empty which means allowing all.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "deniedMachineTypes": {
-          "description": "A list of denied Compute Engine machine types. Default is empty which means denying none. A machine type is allowed if it matches 'allowed_machine_types' AND does not match 'denied_machine_types'. For example, allowed_machine_types = \"e2-standard\" denied_machine_types = \"e2-standard-2, e2-standard-4\" means using all E2 standard machine types except for 'e2-standard-2' and 'e2-standard-4. [NotImplemented]",
+        "machineType": {
+          "description": "The Compute Engine machine type.",
+          "type": "string"
+        },
+        "minCpuPlatform": {
+          "description": "The minimum CPU platform. See `https:\/\/cloud.google.com\/compute\/docs\/instances\/specify-min-cpu-platform`.",
+          "type": "string"
+        },
+        "provisioningModel": {
+          "description": "The provisioning model.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified.",
+            "Standard VM.",
+            "SPOT VM.",
+            "Preemptible VM (PVM). Above SPOT VM is the preferable model for preemptible VM instances: the old preemptible VM model (indicated by this field) is the older model, and has been migrated to use the SPOT model as the underlying technology. This old model will still be supported."
+          ],
+          "enum": [
+            "PROVISIONING_MODEL_UNSPECIFIED",
+            "STANDARD",
+            "SPOT",
+            "PREEMPTIBLE"
+          ]
+        },
+        "accelerators": {
+          "description": "The accelerators attached to each VM instance.",
           "type": "array",
           "items": {
-            "type": "string"
+            "$ref": "Accelerator"
           }
+        }
+      }
+    },
+    "Accelerator": {
+      "id": "Accelerator",
+      "description": "Accelerator describes Compute Engine accelerators to be attached to VMs.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "The accelerator type. For example, \"nvidia-tesla-t4\". See `gcloud compute accelerator-types list`.",
+          "type": "string"
         },
-        "allowedCpuPlatforms": {
-          "description": "A list of allowed CPU platforms, for example, \"Intel Cascade Lake\", \"AMD Rome\". Default is empty which means allowing all. [NotImplemented]",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "deniedCpuPlatforms": {
-          "description": "A list of denied CPU platforms. Default is empty which means denying none. A CPU platform is allowed if it matches 'allowed_cpu_platforms' AND does not match 'denied_cpu_platforms'. If a CPU platform belongs to both lists, it will be denied. [NotImplemented]",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "allowedAcceleratorTypes": {
-          "description": "A list of allowed accelerator types (GPU models), for example, \"nvidia-tesla-t4\". Default is empty which means allowing all. [NotImplemented]",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "deniedAcceleratorTypes": {
-          "description": "A list of denied accelerator types (GPU models). Default is empty which means denying none. A accelerator type is allowed if it matches 'allowed_accelerator_types' AND does not match 'denied__accelerator_types'. [NotImplemented]",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "acceleratorCount": {
-          "description": "The number of accelerators per VM instance. [NotImplemented]",
+        "count": {
+          "description": "The number of accelerators of this type.",
           "type": "string",
           "format": "int64"
         }
       }
     },
+    "InstancePolicyOrTemplate": {
+      "id": "InstancePolicyOrTemplate",
+      "description": "Either an InstancePolicy or an instance template.",
+      "type": "object",
+      "properties": {
+        "policy": {
+          "description": "InstancePolicy.",
+          "$ref": "InstancePolicy"
+        },
+        "instanceTemplate": {
+          "description": "Name of an instance template used to create VMs. Named the field as 'instance_template' instead of 'template' to avoid c++ keyword conflict.",
+          "type": "string"
+        }
+      }
+    },
     "NetworkPolicy": {
       "id": "NetworkPolicy",
-      "description": "NetworkPolicy describes network configurations for instances created for the job.",
+      "description": "NetworkPolicy describes VM instance network configurations.",
       "type": "object",
       "properties": {
         "networkInterfaces": {

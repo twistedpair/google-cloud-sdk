@@ -431,7 +431,8 @@ def _AppendReposAndResourceGroups(membership, repos_cross_clusters,
 class DetailedStatus:
   """DetailedStatus represent a detailed status for a repo."""
 
-  def __init__(self, source, commit, status, errors, clusters):
+  def __init__(self, source='', commit='', status='', errors=None,
+               clusters=None):
     self.source = source
     self.commit = commit
     self.status = status
@@ -445,9 +446,8 @@ class DetailedStatus:
 class ManagedResource:
   """ManagedResource represent a managed resource across multiple clusters."""
 
-  # TODO(b/213382604): use keyword arguments instead of positional arguments.
-  def __init__(self, group, kind, namespace, name, source_hash, status,
-               conditions, clusters):
+  def __init__(self, group='', kind='', namespace='', name='', source_hash='',
+               status='', conditions=None, clusters=None):
     if not conditions:
       self.conditions = None
     else:
@@ -502,9 +502,16 @@ class DescribeResult:
       conditions = [] if conditions is None else conditions
       conditions.insert(0, reconcile_condition)
     source_hash = resource.get('sourceHash', '')
-    mr = ManagedResource(resource['group'], resource['kind'],
-                         resource['namespace'], resource['name'], source_hash,
-                         resource.get('status', ''), conditions, [membership])
+    mr = ManagedResource(
+        group=resource['group'],
+        kind=resource['kind'],
+        namespace=resource['namespace'],
+        name=resource['name'],
+        source_hash=source_hash,
+        status=resource.get('status', ''),
+        conditions=conditions,
+        clusters=[membership],
+    )
     self.managed_resources.append(mr)
 
 
@@ -598,8 +605,9 @@ def _Describe(status_filter, repos_cross_clusters):
       resources = pair.rg.get('status', {}).get('resourceStatuses', {})
       for resource in resources:
         describe_result.AppendManagedResources(resource, cluster, status_filter)
-      status_result = DetailedStatus(source_key, commit, status, errors,
-                                     [cluster])
+      status_result = DetailedStatus(
+          source=source_key, commit=commit, status=status, errors=errors,
+          clusters=[cluster])
       describe_result.AppendDetailedStatus(status_result)
   return describe_result
 

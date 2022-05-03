@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import collections
 import enum
 
 from googlecloudsdk.command_lib.storage import storage_url
@@ -41,6 +42,22 @@ class Capability(enum.Enum):
   # This value is used by daisy chain operation to determine if the upload
   # stream can be treated as seekable.
   DAISY_CHAIN_SEEKABLE_UPLOAD_STREAM = 'DAISY_CHAIN_SEEKABLE_UPLOAD_STREAM'
+
+
+# API-specific data made generic to pass back up to the task-level.
+#
+# Attributes:
+#   posix_attributes (posix_util.PosixAttributes|None): POSIX metadata that
+#     only API clients can extract from cloud resources. Needed so download
+#     tasks can set POSIX metadata on result files.
+#   server_reported_encoding (str|None): Useful for determining if an object's
+#     content-encoding changed in-flight (see if this value is different from
+#     the cloud resource's content-encoding). Currently relevant for only
+#     GCS gzip in-flight situations.
+DownloadApiClientReturnValue = collections.namedtuple(
+    'DownloadApiClientReturnValue',
+    ['posix_attributes', 'server_reported_encoding'],
+)
 
 
 class DownloadStrategy(enum.Enum):
@@ -341,8 +358,8 @@ class CloudApi(object):
         requests). If None, download the rest of the object.
 
     Returns:
-      Content-encoding string if it was detected that the server sent an encoded
-      object during transfer. Otherwise, None.
+      DownloadApiClientReturnValue: Contains API-agnostic data useful at higher
+        levels like the task-level.
 
     Raises:
       CloudApiError: API returned an error.

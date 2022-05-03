@@ -286,8 +286,8 @@ class AnnotationSetConfig(_messages.Message):
       `projects/{project}/locations/{location}/complexTypes/{name}`. Complex
       type of the annotation set config has the following requirements: 1.
       Must have two required fields named start and end. 2. Allowed types for
-      start and end are number, duration, and datetime. 3. Start and end
-      should have the same type.
+      start and end: Video asset type: timecode. 3. Start and end should have
+      the same type.
     indexedFieldConfigs: List of indexed fields (e.g. "data.start") to make
       available in searches with their corresponding properties.
   """

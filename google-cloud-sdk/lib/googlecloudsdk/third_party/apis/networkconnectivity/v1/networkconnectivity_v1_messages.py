@@ -1797,9 +1797,12 @@ class Warnings(_messages.Message):
     Values:
       WARNING_UNSPECIFIED: Default value.
       RESOURCE_NOT_ACTIVE: The policy based route is not active.
+      RESOURCE_BEING_MODIFIED: The policy based route is being modified (e.g.
+        created/deleted) at this time.
     """
     WARNING_UNSPECIFIED = 0
     RESOURCE_NOT_ACTIVE = 1
+    RESOURCE_BEING_MODIFIED = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DataValue(_messages.Message):

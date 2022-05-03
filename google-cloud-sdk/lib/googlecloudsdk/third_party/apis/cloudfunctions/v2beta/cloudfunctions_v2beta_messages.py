@@ -695,6 +695,155 @@ class GenerateUploadUrlResponse(_messages.Message):
   uploadUrl = _messages.StringField(2)
 
 
+class GoogleCloudFunctionsV2OperationMetadata(_messages.Message):
+  r"""Represents the metadata of the long-running operation.
+
+  Messages:
+    RequestResourceValue: The original request that started the operation.
+
+  Fields:
+    apiVersion: API version used to start the operation.
+    cancelRequested: Identifies whether the user has requested cancellation of
+      the operation. Operations that have successfully been cancelled have
+      Operation.error value with a google.rpc.Status.code of 1, corresponding
+      to `Code.CANCELLED`.
+    createTime: The time the operation was created.
+    endTime: The time the operation finished running.
+    requestResource: The original request that started the operation.
+    stages: Mechanism for reporting in-progress stages
+    statusDetail: Human-readable status of the operation, if any.
+    target: Server-defined resource path for the target of the operation.
+    verb: Name of the verb executed by the operation.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class RequestResourceValue(_messages.Message):
+    r"""The original request that started the operation.
+
+    Messages:
+      AdditionalProperty: An additional property for a RequestResourceValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a RequestResourceValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  apiVersion = _messages.StringField(1)
+  cancelRequested = _messages.BooleanField(2)
+  createTime = _messages.StringField(3)
+  endTime = _messages.StringField(4)
+  requestResource = _messages.MessageField('RequestResourceValue', 5)
+  stages = _messages.MessageField('GoogleCloudFunctionsV2Stage', 6, repeated=True)
+  statusDetail = _messages.StringField(7)
+  target = _messages.StringField(8)
+  verb = _messages.StringField(9)
+
+
+class GoogleCloudFunctionsV2Stage(_messages.Message):
+  r"""Each Stage of the deployment process
+
+  Enums:
+    NameValueValuesEnum: Name of the Stage. This will be unique for each
+      Stage.
+    StateValueValuesEnum: Current state of the Stage
+
+  Fields:
+    message: Message describing the Stage
+    name: Name of the Stage. This will be unique for each Stage.
+    resource: Resource of the Stage
+    resourceUri: Link to the current Stage resource
+    state: Current state of the Stage
+    stateMessages: State messages from the current Stage.
+  """
+
+  class NameValueValuesEnum(_messages.Enum):
+    r"""Name of the Stage. This will be unique for each Stage.
+
+    Values:
+      NAME_UNSPECIFIED: Not specified. Invalid name.
+      ARTIFACT_REGISTRY: Artifact Regsitry Stage
+      BUILD: Build Stage
+      SERVICE: Service Stage
+      TRIGGER: Trigger Stage
+      SERVICE_ROLLBACK: Service Rollback Stage
+      TRIGGER_ROLLBACK: Trigger Rollback Stage
+    """
+    NAME_UNSPECIFIED = 0
+    ARTIFACT_REGISTRY = 1
+    BUILD = 2
+    SERVICE = 3
+    TRIGGER = 4
+    SERVICE_ROLLBACK = 5
+    TRIGGER_ROLLBACK = 6
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Current state of the Stage
+
+    Values:
+      STATE_UNSPECIFIED: Not specified. Invalid state.
+      NOT_STARTED: Stage has not started.
+      IN_PROGRESS: Stage is in progress.
+      COMPLETE: Stage has completed.
+    """
+    STATE_UNSPECIFIED = 0
+    NOT_STARTED = 1
+    IN_PROGRESS = 2
+    COMPLETE = 3
+
+  message = _messages.StringField(1)
+  name = _messages.EnumField('NameValueValuesEnum', 2)
+  resource = _messages.StringField(3)
+  resourceUri = _messages.StringField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+  stateMessages = _messages.MessageField('GoogleCloudFunctionsV2StateMessage', 6, repeated=True)
+
+
+class GoogleCloudFunctionsV2StateMessage(_messages.Message):
+  r"""Informational messages about the state of the Cloud Function or
+  Operation.
+
+  Enums:
+    SeverityValueValuesEnum: Severity of the state message.
+
+  Fields:
+    message: The message.
+    severity: Severity of the state message.
+    type: One-word CamelCase type of the state message.
+  """
+
+  class SeverityValueValuesEnum(_messages.Enum):
+    r"""Severity of the state message.
+
+    Values:
+      SEVERITY_UNSPECIFIED: Not specified. Invalid severity.
+      ERROR: ERROR-level severity.
+      WARNING: WARNING-level severity.
+      INFO: INFO-level severity.
+    """
+    SEVERITY_UNSPECIFIED = 0
+    ERROR = 1
+    WARNING = 2
+    INFO = 3
+
+  message = _messages.StringField(1)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 2)
+  type = _messages.StringField(3)
+
+
 class GoogleCloudFunctionsV2alphaOperationMetadata(_messages.Message):
   r"""Represents the metadata of the long-running operation.
 

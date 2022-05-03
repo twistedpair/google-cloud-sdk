@@ -206,8 +206,7 @@ class AndroidModel(_messages.Message):
     supportedVersionIds: The set of Android versions this device supports.
     tags: Tags for this dimension. Examples: "default", "preview",
       "deprecated".
-    thumbnailUrl: URL of a thumbnail image (photo) of the device. e.g.
-      https://lh3.googleusercontent.com/90WcauuJiCYABEl8U0lcZeuS5STUbf2yW...
+    thumbnailUrl: URL of a thumbnail image (photo) of the device.
   """
 
   class FormFactorValueValuesEnum(_messages.Enum):
@@ -1162,7 +1161,8 @@ class Shard(_messages.Message):
   Fields:
     numShards: Output only. The total number of shards.
     shardIndex: Output only. The index of the shard among all the shards.
-    testTargetsForShard: Output only. Test targets for each shard.
+    testTargetsForShard: Output only. Test targets for each shard. Only set
+      for manual sharding.
   """
 
   numShards = _messages.IntegerField(1, variant=_messages.Variant.INT32)

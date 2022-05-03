@@ -89,4 +89,5 @@ def GetMessageFromResponse(response, message_type):
   # '@type' is not needed and not present in messages.
   if '@type' in message_dict:
     del message_dict['@type']
-  return messages_util.DictToMessageWithErrorCheck(message_dict, message_type)
+  return messages_util.DictToMessageWithErrorCheck(
+      message_dict, message_type, throw_on_unexpected_fields=False)

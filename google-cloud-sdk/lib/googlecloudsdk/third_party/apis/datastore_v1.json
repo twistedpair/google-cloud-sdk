@@ -666,7 +666,7 @@
           "$ref": "Query"
         },
         "gqlQuery": {
-          "description": "The GQL query to run.",
+          "description": "The GQL query to run. This query must be a non-aggregation query.",
           "$ref": "GqlQuery"
         }
       }

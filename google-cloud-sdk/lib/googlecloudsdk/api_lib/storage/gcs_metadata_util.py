@@ -20,9 +20,12 @@ from __future__ import unicode_literals
 
 import copy
 
+from apitools.base.py import encoding_helper
+
 from googlecloudsdk.api_lib.storage import gcs_metadata_field_converters
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.command_lib.storage import encryption_util
+from googlecloudsdk.command_lib.storage import posix_util
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage import user_request_args_factory
 from googlecloudsdk.command_lib.storage.resources import gcs_resource_reference
@@ -270,9 +273,45 @@ def _process_value_or_clear_flag(metadata, key, value):
     setattr(metadata, key, value)
 
 
-def update_object_metadata_from_request_config(object_metadata, request_config):
-  """Sets Apitools Object fields based on values in request_config."""
+def update_object_metadata_from_request_config(object_metadata,
+                                               request_config,
+                                               file_path=None):
+  """Sets Apitools Object fields based on values in request_config.
+
+  Args:
+    object_metadata (storage_v1_messages.Object): Existing object metadata.
+    request_config (request_config): May contain data to add to object_metadata.
+    file_path (str|None): If present, used for parsing POSIX data from a file on
+      the system for the --preserve-posix flag. This flag's presence is
+      indicated by the system_posix_data field on request_config.
+  """
   resource_args = request_config.resource_args
+  if (resource_args and
+      resource_args.custom_metadata is user_request_args_factory.CLEAR):
+    object_metadata.metadata = None
+  else:
+    should_parse_file_posix = request_config.system_posix_data and file_path
+    should_add_custom_metadata = (
+        resource_args and resource_args.custom_metadata is not None)
+    if should_parse_file_posix or should_add_custom_metadata:
+      messages = apis.GetMessagesModule('storage', 'v1')
+      if not object_metadata.metadata:
+        object_metadata.metadata = messages.Object.MetadataValue()
+
+      custom_metadata_dict = encoding_helper.MessageToDict(
+          object_metadata.metadata)
+
+      if should_parse_file_posix:
+        posix_attributes = posix_util.get_posix_attributes_from_file(file_path)
+        posix_util.update_custom_metadata_dict_with_posix_attributes(
+            custom_metadata_dict, posix_attributes)
+
+      if should_add_custom_metadata:
+        custom_metadata_dict.update(resource_args.custom_metadata)
+
+      object_metadata.metadata = encoding_helper.DictToMessage(
+          custom_metadata_dict, messages.Object.MetadataValue)
+
   if not resource_args:
     return
   _process_value_or_clear_flag(object_metadata, 'cacheControl',
@@ -295,15 +334,3 @@ def update_object_metadata_from_request_config(object_metadata, request_config):
   if (resource_args.encryption_key and
       resource_args.encryption_key.type == encryption_util.KeyType.CMEK):
     object_metadata.kmsKeyName = resource_args.encryption_key.key
-
-  if resource_args.custom_metadata == user_request_args_factory.CLEAR:
-    object_metadata.metadata = None
-  elif resource_args.custom_metadata:
-    messages = apis.GetMessagesModule('storage', 'v1')
-
-    if not object_metadata.metadata:
-      object_metadata.metadata = messages.Object.MetadataValue()
-    for key, value in resource_args.custom_metadata.items():
-      object_metadata.metadata.additionalProperties.append(
-          messages.Object.MetadataValue.AdditionalProperty(
-              key=key, value=value))

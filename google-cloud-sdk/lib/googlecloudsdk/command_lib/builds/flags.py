@@ -40,16 +40,18 @@ class BuildsCompleter(completers.ListCommandCompleter):
         **kwargs)
 
 
-def AddRegionFlag(parser, hidden=False):
+def AddRegionFlag(parser, hidden=False, required=False):
   """Adds a flag to select a region of the Cloud Build Service.
 
   Args:
     parser: The argparse parser to add the arg to.
     hidden: If true, retain help but do not display it.
+    required: If true, the field must be set or will raise an exception.
   """
   parser.add_argument(
       '--region',
       hidden=hidden,
+      required=required,
       help='The region of the Cloud Build Service to use.\n'
       'Must be set to a supported region name (e.g. us-central1).\n'
       'If unset, the global service region is used. This field is restricted.')

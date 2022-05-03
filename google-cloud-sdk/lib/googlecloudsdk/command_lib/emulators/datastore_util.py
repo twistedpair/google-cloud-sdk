@@ -103,8 +103,11 @@ def StartGCDEmulator(args, log_file=None):
   gcd_start_args.append('--host={0}'.format(args.host_port.host))
   gcd_start_args.append('--port={0}'.format(args.host_port.port))
   gcd_start_args.append('--store_on_disk={0}'.format(args.store_on_disk))
-  gcd_start_args.append('--consistency={0}'.format(args.consistency))
   gcd_start_args.append('--allow_remote_shutdown')
+  if args.use_firestore_in_datastore_mode:
+    gcd_start_args.append('--firestore_in_datastore_mode')
+  else:
+    gcd_start_args.append('--consistency={0}'.format(args.consistency))
   gcd_start_args.append(args.data_dir)
   exec_args = ArgsForGCDEmulator(gcd_start_args)
 

@@ -4,7 +4,7 @@
   "id": "compute:v1",
   "name": "compute",
   "version": "v1",
-  "revision": "20220412",
+  "revision": "20220422",
   "title": "Compute Engine API",
   "description": "Creates and runs virtual machines on Google Cloud Platform. ",
   "ownerDomain": "google.com",
@@ -10900,6 +10900,13 @@
           "description": "Specifies the default maximum duration (timeout) for streams to this service. Duration is computed from the beginning of the stream until the response has been completely processed, including all retries. A stream that does not complete in this duration is closed. If not specified, there will be no timeout limit, i.e. the maximum duration is infinite. This value can be overridden in the PathMatcher configuration of the UrlMap that references this backend service. This field is only allowed when the loadBalancingScheme of the backend service is INTERNAL_SELF_MANAGED.",
           "$ref": "Duration"
         },
+        "serviceBindings": {
+          "description": "URLs of networkservices.ServiceBinding resources. Can only be set if load balancing scheme is INTERNAL_SELF_MANAGED. If set, lists of backends and health checks must be both empty.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "localityLbPolicies": {
           "description": "A list of locality load balancing policies to be used in order of preference. Either the policy or the customPolicy field should be set. Overrides any value set in the localityLbPolicy field. localityLbPolicies is only supported when the BackendService is referenced by a URL Map that is referenced by a target gRPC proxy that has the validateForProxyless field set to true.",
           "type": "array",
@@ -14096,6 +14103,10 @@
             "REJECTED",
             "STATUS_UNSPECIFIED"
           ]
+        },
+        "noAutomateDnsZone": {
+          "description": "This is used in PSC consumer ForwardingRule to control whether it should try to auto-generate a DNS zone or not. Non-PSC forwarding rules do not use this field.",
+          "type": "boolean"
         }
       }
     },
@@ -19795,6 +19806,18 @@
           "description": "Maximum Transmission Unit in bytes.",
           "type": "integer",
           "format": "int32"
+        },
+        "stackType": {
+          "description": "Which IP version(s) of traffic and routes are allowed to be imported or exported between peer networks. The default value is IPV4_ONLY.",
+          "type": "string",
+          "enumDescriptions": [
+            "This Peering will allow IPv4 traffic and routes to be exchanged. Additionally if the matching peering is IPV4_IPV6, IPv6 traffic and routes will be exchanged as well.",
+            "This Peering will only allow IPv4 traffic and routes to be exchanged, even if the matching peering is IPV4_IPV6."
+          ],
+          "enum": [
+            "IPV4_IPV6",
+            "IPV4_ONLY"
+          ]
         }
       }
     },

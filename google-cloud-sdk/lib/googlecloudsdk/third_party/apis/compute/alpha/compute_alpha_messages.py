@@ -39552,8 +39552,8 @@ class InstanceGroupManager(_messages.Message):
     id: [Output Only] A unique identifier for this resource type. The server
       generates this identifier.
     instanceGroup: [Output Only] The URL of the Instance Group resource.
-    instanceLifecyclePolicy: Instance lifecycle policy for this Instance Group
-      Manager.
+    instanceLifecyclePolicy: The repair policy for this managed instance
+      group.
     instanceTemplate: The URL of the instance template that is specified for
       this managed instance group. The group uses this template to create all
       new instances in the managed instance group. The templates for existing
@@ -39930,9 +39930,6 @@ class InstanceGroupManagerAllInstancesConfig(_messages.Message):
 class InstanceGroupManagerAutoHealingPolicy(_messages.Message):
   r"""A InstanceGroupManagerAutoHealingPolicy object.
 
-  Enums:
-    UpdateInstancesValueValuesEnum:
-
   Fields:
     autoHealingTriggers: Restricts what triggers autohealing.
     healthCheck: The URL for the health check that signals autohealing.
@@ -39955,28 +39952,12 @@ class InstanceGroupManagerAutoHealingPolicy(_messages.Message):
       has only one instance, or a regional managed instance group has only one
       instance per zone, autohealing will recreate these instances when they
       become unhealthy.
-    updateInstances: A UpdateInstancesValueValuesEnum attribute.
   """
-
-  class UpdateInstancesValueValuesEnum(_messages.Enum):
-    r"""UpdateInstancesValueValuesEnum enum type.
-
-    Values:
-      ALWAYS: Autohealer always updates instances with a new version for both
-        PROACTIVE and OPPORTUNISTIC updates.
-      FOLLOW_UPDATE_POLICY: (Default) Autohealer updates instance with new
-        version according to update policy constraints: - OPPORTUNISTIC:
-        autohealing does not perform updates. - PROACTIVE: autohealing
-        performs updates according to maxSurge and maxUnavailable constraints.
-    """
-    ALWAYS = 0
-    FOLLOW_UPDATE_POLICY = 1
 
   autoHealingTriggers = _messages.MessageField('InstanceGroupManagerAutoHealingPolicyAutoHealingTriggers', 1)
   healthCheck = _messages.StringField(2)
   initialDelaySec = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   maxUnavailable = _messages.MessageField('FixedOrPercent', 4)
-  updateInstances = _messages.EnumField('UpdateInstancesValueValuesEnum', 5)
 
 
 class InstanceGroupManagerAutoHealingPolicyAutoHealingTriggers(_messages.Message):
@@ -40029,7 +40010,23 @@ class InstanceGroupManagerAutoHealingPolicyAutoHealingTriggers(_messages.Message
 class InstanceGroupManagerInstanceLifecyclePolicy(_messages.Message):
   r"""A InstanceGroupManagerInstanceLifecyclePolicy object.
 
+  Enums:
+    ForceUpdateOnRepairValueValuesEnum: A bit indicating whether to forcefully
+      apply the group's latest configuration when repairing a VM. Valid
+      options are: - NO (default): If configuration updates are available,
+      they are not forcefully applied during repair. However, if you've set up
+      a proactive type of update policy, then configuration updates are
+      applied as usual. - YES: If configuration updates are available, they
+      are applied during repair.
+
   Fields:
+    forceUpdateOnRepair: A bit indicating whether to forcefully apply the
+      group's latest configuration when repairing a VM. Valid options are: -
+      NO (default): If configuration updates are available, they are not
+      forcefully applied during repair. However, if you've set up a proactive
+      type of update policy, then configuration updates are applied as usual.
+      - YES: If configuration updates are available, they are applied during
+      repair.
     metadataBasedReadinessSignal: The configuration for metadata based
       readiness signal sent by the instance during initialization when
       stopping / suspending an instance. The Instance Group Manager will wait
@@ -40043,7 +40040,23 @@ class InstanceGroupManagerInstanceLifecyclePolicy(_messages.Message):
       initialization on them.
   """
 
-  metadataBasedReadinessSignal = _messages.MessageField('InstanceGroupManagerInstanceLifecyclePolicyMetadataBasedReadinessSignal', 1)
+  class ForceUpdateOnRepairValueValuesEnum(_messages.Enum):
+    r"""A bit indicating whether to forcefully apply the group's latest
+    configuration when repairing a VM. Valid options are: - NO (default): If
+    configuration updates are available, they are not forcefully applied
+    during repair. However, if you've set up a proactive type of update
+    policy, then configuration updates are applied as usual. - YES: If
+    configuration updates are available, they are applied during repair.
+
+    Values:
+      NO: <no description>
+      YES: <no description>
+    """
+    NO = 0
+    YES = 1
+
+  forceUpdateOnRepair = _messages.EnumField('ForceUpdateOnRepairValueValuesEnum', 1)
+  metadataBasedReadinessSignal = _messages.MessageField('InstanceGroupManagerInstanceLifecyclePolicyMetadataBasedReadinessSignal', 2)
 
 
 class InstanceGroupManagerInstanceLifecyclePolicyMetadataBasedReadinessSignal(_messages.Message):
@@ -44893,19 +44906,59 @@ class InterconnectDiagnostics(_messages.Message):
   r"""Diagnostics information about interconnect, contains detailed and
   current technical information about Google's side of the connection.
 
+  Enums:
+    BundleAggregationTypeValueValuesEnum: The aggregation type of the bundle
+      interface.
+    BundleOperationalStatusValueValuesEnum: The operational status of the
+      bundle interface.
+
   Fields:
     arpCaches: A list of InterconnectDiagnostics.ARPEntry objects, describing
       individual neighbors currently seen by the Google router in the ARP
       cache for the Interconnect. This will be empty when the Interconnect is
       not bundled.
+    bundleAggregationType: The aggregation type of the bundle interface.
+    bundleOperationalStatus: The operational status of the bundle interface.
     links: A list of InterconnectDiagnostics.LinkStatus objects, describing
       the status for each link on the Interconnect.
     macAddress: The MAC address of the Interconnect's bundle interface.
   """
 
+  class BundleAggregationTypeValueValuesEnum(_messages.Enum):
+    r"""The aggregation type of the bundle interface.
+
+    Values:
+      BUNDLE_AGGREGATION_TYPE_LACP: LACP is enabled.
+      BUNDLE_AGGREGATION_TYPE_STATIC: LACP is disabled.
+      BUNDLE_AGGREGATION_TYPE_UNSPECIFIED: <no description>
+    """
+    BUNDLE_AGGREGATION_TYPE_LACP = 0
+    BUNDLE_AGGREGATION_TYPE_STATIC = 1
+    BUNDLE_AGGREGATION_TYPE_UNSPECIFIED = 2
+
+  class BundleOperationalStatusValueValuesEnum(_messages.Enum):
+    r"""The operational status of the bundle interface.
+
+    Values:
+      BUNDLE_OPERATIONAL_STATUS_DOWN: If bundleAggregationType is LACP: LACP
+        is not established and/or all links in the bundle have DOWN
+        operational status. If bundleAggregationType is STATIC: one or more
+        links in the bundle has DOWN operational status.
+      BUNDLE_OPERATIONAL_STATUS_UNSPECIFIED: <no description>
+      BUNDLE_OPERATIONAL_STATUS_UP: If bundleAggregationType is LACP: LACP is
+        established and at least one link in the bundle has UP operational
+        status. If bundleAggregationType is STATIC: all links in the bundle
+        (typically just one) have UP operational status.
+    """
+    BUNDLE_OPERATIONAL_STATUS_DOWN = 0
+    BUNDLE_OPERATIONAL_STATUS_UNSPECIFIED = 1
+    BUNDLE_OPERATIONAL_STATUS_UP = 2
+
   arpCaches = _messages.MessageField('InterconnectDiagnosticsARPEntry', 1, repeated=True)
-  links = _messages.MessageField('InterconnectDiagnosticsLinkStatus', 2, repeated=True)
-  macAddress = _messages.StringField(3)
+  bundleAggregationType = _messages.EnumField('BundleAggregationTypeValueValuesEnum', 2)
+  bundleOperationalStatus = _messages.EnumField('BundleOperationalStatusValueValuesEnum', 3)
+  links = _messages.MessageField('InterconnectDiagnosticsLinkStatus', 4, repeated=True)
+  macAddress = _messages.StringField(5)
 
 
 class InterconnectDiagnosticsARPEntry(_messages.Message):
@@ -45019,6 +45072,9 @@ class InterconnectDiagnosticsLinkOpticalPower(_messages.Message):
 class InterconnectDiagnosticsLinkStatus(_messages.Message):
   r"""A InterconnectDiagnosticsLinkStatus object.
 
+  Enums:
+    OperationalStatusValueValuesEnum: The operational status of the link.
+
   Fields:
     arpCaches: A list of InterconnectDiagnostics.ARPEntry objects, describing
       the ARP neighbor entries seen on this link. This will be empty if the
@@ -45028,6 +45084,7 @@ class InterconnectDiagnosticsLinkStatus(_messages.Message):
       LoA.
     lacpStatus: A InterconnectDiagnosticsLinkLACPStatus attribute.
     macsec: Describes the status of MACsec encryption on this link.
+    operationalStatus: The operational status of the link.
     receivingOpticalPower: An InterconnectDiagnostics.LinkOpticalPower object,
       describing the current value and status of the received light level.
     transmittingOpticalPower: An InterconnectDiagnostics.LinkOpticalPower
@@ -45035,13 +45092,28 @@ class InterconnectDiagnosticsLinkStatus(_messages.Message):
       level.
   """
 
+  class OperationalStatusValueValuesEnum(_messages.Enum):
+    r"""The operational status of the link.
+
+    Values:
+      LINK_OPERATIONAL_STATUS_DOWN: The interface is unable to communicate
+        with the remote end.
+      LINK_OPERATIONAL_STATUS_UNSPECIFIED: <no description>
+      LINK_OPERATIONAL_STATUS_UP: The interface has low level communication
+        with the remote end.
+    """
+    LINK_OPERATIONAL_STATUS_DOWN = 0
+    LINK_OPERATIONAL_STATUS_UNSPECIFIED = 1
+    LINK_OPERATIONAL_STATUS_UP = 2
+
   arpCaches = _messages.MessageField('InterconnectDiagnosticsARPEntry', 1, repeated=True)
   circuitId = _messages.StringField(2)
   googleDemarc = _messages.StringField(3)
   lacpStatus = _messages.MessageField('InterconnectDiagnosticsLinkLACPStatus', 4)
   macsec = _messages.MessageField('InterconnectDiagnosticsMacsecStatus', 5)
-  receivingOpticalPower = _messages.MessageField('InterconnectDiagnosticsLinkOpticalPower', 6)
-  transmittingOpticalPower = _messages.MessageField('InterconnectDiagnosticsLinkOpticalPower', 7)
+  operationalStatus = _messages.EnumField('OperationalStatusValueValuesEnum', 6)
+  receivingOpticalPower = _messages.MessageField('InterconnectDiagnosticsLinkOpticalPower', 7)
+  transmittingOpticalPower = _messages.MessageField('InterconnectDiagnosticsLinkOpticalPower', 8)
 
 
 class InterconnectDiagnosticsMacsecStatus(_messages.Message):
@@ -58115,6 +58187,11 @@ class Reservation(_messages.Message):
   Enums:
     StatusValueValuesEnum: [Output Only] The status of the reservation.
 
+  Messages:
+    ResourcePoliciesValue: Resource policies to be added to this reservation.
+      The key is defined by user, and the value is resource policy url. This
+      is to define placement policy with reservation.
+
   Fields:
     commitment: [Output Only] Full or partial URL to a parent commitment. This
       field displays for reservations that are tied to a commitment.
@@ -58133,6 +58210,9 @@ class Reservation(_messages.Message):
       means the first character must be a lowercase letter, and all following
       characters must be a dash, lowercase letter, or digit, except the last
       character, which cannot be a dash.
+    resourcePolicies: Resource policies to be added to this reservation. The
+      key is defined by user, and the value is resource policy url. This is to
+      define placement policy with reservation.
     satisfiesPzs: [Output Only] Reserved for future use.
     selfLink: [Output Only] Server-defined fully-qualified URL for this
       resource.
@@ -58166,20 +58246,49 @@ class Reservation(_messages.Message):
     READY = 3
     UPDATING = 4
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ResourcePoliciesValue(_messages.Message):
+    r"""Resource policies to be added to this reservation. The key is defined
+    by user, and the value is resource policy url. This is to define placement
+    policy with reservation.
+
+    Messages:
+      AdditionalProperty: An additional property for a ResourcePoliciesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        ResourcePoliciesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ResourcePoliciesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   commitment = _messages.StringField(1)
   creationTimestamp = _messages.StringField(2)
   description = _messages.StringField(3)
   id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
   kind = _messages.StringField(5, default='compute#reservation')
   name = _messages.StringField(6)
-  satisfiesPzs = _messages.BooleanField(7)
-  selfLink = _messages.StringField(8)
-  selfLinkWithId = _messages.StringField(9)
-  shareSettings = _messages.MessageField('ShareSettings', 10)
-  specificReservation = _messages.MessageField('AllocationSpecificSKUReservation', 11)
-  specificReservationRequired = _messages.BooleanField(12)
-  status = _messages.EnumField('StatusValueValuesEnum', 13)
-  zone = _messages.StringField(14)
+  resourcePolicies = _messages.MessageField('ResourcePoliciesValue', 7)
+  satisfiesPzs = _messages.BooleanField(8)
+  selfLink = _messages.StringField(9)
+  selfLinkWithId = _messages.StringField(10)
+  shareSettings = _messages.MessageField('ShareSettings', 11)
+  specificReservation = _messages.MessageField('AllocationSpecificSKUReservation', 12)
+  specificReservationRequired = _messages.BooleanField(13)
+  status = _messages.EnumField('StatusValueValuesEnum', 14)
+  zone = _messages.StringField(15)
 
 
 class ReservationAffinity(_messages.Message):

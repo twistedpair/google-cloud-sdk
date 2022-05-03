@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 import enum
 
+from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage.tasks import task_util
 from googlecloudsdk.core import metrics
 from googlecloudsdk.core import properties
@@ -28,10 +29,21 @@ from googlecloudsdk.core.util import platforms
 
 
 class ParallelismStrategy(enum.Enum):
-  PARALLEL = 'Parallel'
-  SEQUENTIAL = 'Sequential'
+  SEQUENTIAL = 1
+  PARALLEL = 2
 
-UNSET = '_UNSET'
+
+PROVIDER_PREFIX_TO_METRICS_KEY = {
+    storage_url.ProviderPrefix.FILE: 1,
+    storage_url.ProviderPrefix.GCS: 2,
+    storage_url.ProviderPrefix.HTTP: 3,
+    storage_url.ProviderPrefix.HTTPS: 4,
+    storage_url.ProviderPrefix.POSIX: 5,
+    storage_url.ProviderPrefix.S3: 6,
+}
+
+# Used when either Parallelism Strategy or Provider Prefix is unset.
+UNSET = 0
 
 
 def _record_storage_event(metric, value=0):
@@ -51,17 +63,17 @@ def _get_parallelism_strategy():
   return ParallelismStrategy.SEQUENTIAL.value
 
 
-def report(source_scheme=UNSET, destination_scheme=UNSET, num_files=UNSET,
-           size=UNSET, avg_speed=UNSET, disk_io_time=UNSET):
+def report(source_scheme=UNSET, destination_scheme=UNSET, num_files=0,
+           size=0, avg_speed=0, disk_io_time=0):
   """Reports metrics for a transfer.
 
   Args:
-    source_scheme (str|UNSET): The source scheme, i.e. 'gs' or 's3'.
-    destination_scheme (str|UNSET): The destination scheme i.e. 'gs' or 's3'.
-    num_files (int|UNSET): The number of files transferred.
-    size (int|UNSET): The size of the files transferred, in bytes.
-    avg_speed (int|UNSET): The average throughput of a transfer in bytes/sec.
-    disk_io_time (int|UNSET): The time spent on disk of a transfer in ms.
+    source_scheme (int): The source scheme, i.e. 'gs' or 's3'.
+    destination_scheme (int): The destination scheme i.e. 'gs' or 's3'.
+    num_files (int): The number of files transferred.
+    size (int): The size of the files transferred, in bytes.
+    avg_speed (int): The average throughput of a transfer in bytes/sec.
+    disk_io_time (int): The time spent on disk of a transfer in ms.
   """
   _record_storage_event('ParallelismStrategy', _get_parallelism_strategy())
   _record_storage_event('SourceScheme', source_scheme)
@@ -143,16 +155,16 @@ class MetricsReporter():
 
   def __init__(self):
     # For source/destination types
-    self._source_scheme = None
-    self._destination_scheme = None
+    self._source_scheme = UNSET
+    self._destination_scheme = UNSET
     # For calculating disk I/O.
     self._disk_counters_start = get_disk_counters()
 
   def _get_scheme_value(self, url):
-    """Extracts the scheme as a string from a storage_url."""
+    """Extracts the scheme as an integer value from a storage_url."""
     if url:
-      return url.scheme.value
-    return None
+      return PROVIDER_PREFIX_TO_METRICS_KEY[url.scheme]
+    return UNSET
 
   def _set_source_and_destination_schemes(self, status_message):
     """Sets source and destination schemes, if available.
@@ -160,9 +172,9 @@ class MetricsReporter():
     Args:
       status_message (thread_messages.*): Message to process.
     """
-    if self._source_scheme is None:
+    if self._source_scheme == UNSET:
       self._source_scheme = self._get_scheme_value(status_message.source_url)
-    if self._destination_scheme is None:
+    if self._destination_scheme == UNSET:
       self._destination_scheme = self._get_scheme_value(
           status_message.destination_url)
 
@@ -186,7 +198,7 @@ class MetricsReporter():
       num_files (int): Number of files processed
     """
     # This recreates the gsutil throughput calculation so that metrics are 1:1.
-    avg_speed = float(total_bytes) / float(time_delta)
+    avg_speed = round(float(total_bytes) / float(time_delta))
     report(
         source_scheme=self._source_scheme,
         destination_scheme=self._destination_scheme,

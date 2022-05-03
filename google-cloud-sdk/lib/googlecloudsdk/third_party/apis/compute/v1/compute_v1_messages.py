@@ -3657,6 +3657,9 @@ class BackendService(_messages.Message):
       this backend service. This field is applicable to a global backend
       service with the load_balancing_scheme set to INTERNAL_SELF_MANAGED.
     selfLink: [Output Only] Server-defined URL for the resource.
+    serviceBindings: URLs of networkservices.ServiceBinding resources. Can
+      only be set if load balancing scheme is INTERNAL_SELF_MANAGED. If set,
+      lists of backends and health checks must be both empty.
     sessionAffinity: Type of session affinity to use. The default is NONE.
       Only NONE and HEADER_FIELD are supported when the backend service is
       referenced by a URL map that is bound to target gRPC proxy that has
@@ -3861,9 +3864,10 @@ class BackendService(_messages.Message):
   securityPolicy = _messages.StringField(32)
   securitySettings = _messages.MessageField('SecuritySettings', 33)
   selfLink = _messages.StringField(34)
-  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 35)
-  subsetting = _messages.MessageField('Subsetting', 36)
-  timeoutSec = _messages.IntegerField(37, variant=_messages.Variant.INT32)
+  serviceBindings = _messages.StringField(35, repeated=True)
+  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 36)
+  subsetting = _messages.MessageField('Subsetting', 37)
+  timeoutSec = _messages.IntegerField(38, variant=_messages.Variant.INT32)
 
 
 class BackendServiceAggregatedList(_messages.Message):
@@ -28707,6 +28711,9 @@ class ForwardingRule(_messages.Message):
       For GlobalForwardingRule, the valid value is PREMIUM. If this field is
       not specified, it is assumed to be PREMIUM. If IPAddress is specified,
       this value must be equal to the networkTier of the Address.
+    noAutomateDnsZone: This is used in PSC consumer ForwardingRule to control
+      whether it should try to auto-generate a DNS zone or not. Non-PSC
+      forwarding rules do not use this field.
     portRange: This field can be used only if: - Load balancing scheme is one
       of EXTERNAL, INTERNAL_SELF_MANAGED or INTERNAL_MANAGED - IPProtocol is
       one of TCP, UDP, or SCTP. Packets addressed to ports in the specified
@@ -28899,17 +28906,18 @@ class ForwardingRule(_messages.Message):
   name = _messages.StringField(17)
   network = _messages.StringField(18)
   networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 19)
-  portRange = _messages.StringField(20)
-  ports = _messages.StringField(21, repeated=True)
-  pscConnectionId = _messages.IntegerField(22, variant=_messages.Variant.UINT64)
-  pscConnectionStatus = _messages.EnumField('PscConnectionStatusValueValuesEnum', 23)
-  region = _messages.StringField(24)
-  selfLink = _messages.StringField(25)
-  serviceDirectoryRegistrations = _messages.MessageField('ForwardingRuleServiceDirectoryRegistration', 26, repeated=True)
-  serviceLabel = _messages.StringField(27)
-  serviceName = _messages.StringField(28)
-  subnetwork = _messages.StringField(29)
-  target = _messages.StringField(30)
+  noAutomateDnsZone = _messages.BooleanField(20)
+  portRange = _messages.StringField(21)
+  ports = _messages.StringField(22, repeated=True)
+  pscConnectionId = _messages.IntegerField(23, variant=_messages.Variant.UINT64)
+  pscConnectionStatus = _messages.EnumField('PscConnectionStatusValueValuesEnum', 24)
+  region = _messages.StringField(25)
+  selfLink = _messages.StringField(26)
+  serviceDirectoryRegistrations = _messages.MessageField('ForwardingRuleServiceDirectoryRegistration', 27, repeated=True)
+  serviceLabel = _messages.StringField(28)
+  serviceName = _messages.StringField(29)
+  subnetwork = _messages.StringField(30)
+  target = _messages.StringField(31)
 
 
 class ForwardingRuleAggregatedList(_messages.Message):
@@ -41325,6 +41333,9 @@ class NetworkPeering(_messages.Message):
   Google Compute Engine should automatically create routes for the peering.
 
   Enums:
+    StackTypeValueValuesEnum: Which IP version(s) of traffic and routes are
+      allowed to be imported or exported between peer networks. The default
+      value is IPV4_ONLY.
     StateValueValuesEnum: [Output Only] State for the peering, either `ACTIVE`
       or `INACTIVE`. The peering is `ACTIVE` when there's a matching
       configuration in the peer network.
@@ -41363,12 +41374,29 @@ class NetworkPeering(_messages.Message):
       URL does not contain project, it is assumed that the peer network is in
       the same project as the current network.
     peerMtu: Maximum Transmission Unit in bytes.
+    stackType: Which IP version(s) of traffic and routes are allowed to be
+      imported or exported between peer networks. The default value is
+      IPV4_ONLY.
     state: [Output Only] State for the peering, either `ACTIVE` or `INACTIVE`.
       The peering is `ACTIVE` when there's a matching configuration in the
       peer network.
     stateDetails: [Output Only] Details about the current state of the
       peering.
   """
+
+  class StackTypeValueValuesEnum(_messages.Enum):
+    r"""Which IP version(s) of traffic and routes are allowed to be imported
+    or exported between peer networks. The default value is IPV4_ONLY.
+
+    Values:
+      IPV4_IPV6: This Peering will allow IPv4 traffic and routes to be
+        exchanged. Additionally if the matching peering is IPV4_IPV6, IPv6
+        traffic and routes will be exchanged as well.
+      IPV4_ONLY: This Peering will only allow IPv4 traffic and routes to be
+        exchanged, even if the matching peering is IPV4_IPV6.
+    """
+    IPV4_IPV6 = 0
+    IPV4_ONLY = 1
 
   class StateValueValuesEnum(_messages.Enum):
     r"""[Output Only] State for the peering, either `ACTIVE` or `INACTIVE`.
@@ -41392,8 +41420,9 @@ class NetworkPeering(_messages.Message):
   name = _messages.StringField(7)
   network = _messages.StringField(8)
   peerMtu = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  stateDetails = _messages.StringField(11)
+  stackType = _messages.EnumField('StackTypeValueValuesEnum', 10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  stateDetails = _messages.StringField(12)
 
 
 class NetworkPerformanceConfig(_messages.Message):

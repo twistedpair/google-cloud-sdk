@@ -838,7 +838,7 @@ class Dataset(_messages.Message):
       https://cloud.google.com/bigquery/docs/locations.
     maxTimeTravelHours: [Optional] Number of hours for the max time travel for
       all tables in the dataset.
-    satisfiesPZS: [Output-only] Reserved for future use.
+    satisfiesPzs: [Output-only] Reserved for future use.
     selfLink: [Output-only] A URL that can be used to access the resource
       again. You can use this URL in Get or Update requests to the resource.
     tags: [Optional]The tags associated with this dataset. Tag keys are
@@ -956,7 +956,7 @@ class Dataset(_messages.Message):
   lastModifiedTime = _messages.IntegerField(15)
   location = _messages.StringField(16)
   maxTimeTravelHours = _messages.IntegerField(17)
-  satisfiesPZS = _messages.BooleanField(18)
+  satisfiesPzs = _messages.BooleanField(18)
   selfLink = _messages.StringField(19)
   tags = _messages.MessageField('TagsValueListEntry', 20, repeated=True)
 
@@ -2434,6 +2434,8 @@ class MaterializedViewDefinition(_messages.Message):
       "true".
     lastRefreshTime: [Output-only] [TrustedTester] The time when this
       materialized view was last modified, in milliseconds since the epoch.
+    maxStaleness: [Optional] Max staleness of data that could be returned when
+      materizlized view is queried (formatted as Google SQL Interval type).
     query: [Required] A query whose result is persisted.
     refreshIntervalMs: [Optional] [TrustedTester] The maximum frequency at
       which this materialized view will be refreshed. The default value is
@@ -2442,8 +2444,9 @@ class MaterializedViewDefinition(_messages.Message):
 
   enableRefresh = _messages.BooleanField(1)
   lastRefreshTime = _messages.IntegerField(2)
-  query = _messages.StringField(3)
-  refreshIntervalMs = _messages.IntegerField(4)
+  maxStaleness = _messages.BytesField(3)
+  query = _messages.StringField(4)
+  refreshIntervalMs = _messages.IntegerField(5)
 
 
 class MlStatistics(_messages.Message):
@@ -3375,8 +3378,17 @@ class TableFieldSchema(_messages.Message):
   Fields:
     categories: [Optional] The categories attached to this field, used for
       field-level access control.
-    collationSpec: Optional. Collation specification of the field. It only can
-      be set on string type field.
+    collation: Optional. Collation specification of the field. It only can be
+      set on string type field.
+    defaultValueExpression: Optional. A SQL expression to specify the default
+      value for this field. It can only be set for top level fields (columns).
+      You can use struct or array expression to specify default value for the
+      entire struct or array. The valid SQL expressions are: - Literals for
+      all data types, including STRUCT and ARRAY. - Following functions: -
+      CURRENT_TIMESTAMP - CURRENT_TIME - CURRENT_DATE - CURRENT_DATETIME -
+      GENERATE_UUID - RAND - SESSION_USER - ST_GEOGPOINT - Struct or array
+      composed with the above allowed functions, for example, [CURRENT_DATE(),
+      DATE '2020-01-01']
     description: [Optional] The field description. The maximum length is 1,024
       characters.
     fields: [Optional] Describes the nested schema fields if the type property
@@ -3443,16 +3455,17 @@ class TableFieldSchema(_messages.Message):
     names = _messages.StringField(1, repeated=True)
 
   categories = _messages.MessageField('CategoriesValue', 1)
-  collationSpec = _messages.StringField(2)
-  description = _messages.StringField(3)
-  fields = _messages.MessageField('TableFieldSchema', 4, repeated=True)
-  maxLength = _messages.IntegerField(5)
-  mode = _messages.StringField(6)
-  name = _messages.StringField(7)
-  policyTags = _messages.MessageField('PolicyTagsValue', 8)
-  precision = _messages.IntegerField(9)
-  scale = _messages.IntegerField(10)
-  type = _messages.StringField(11)
+  collation = _messages.StringField(2)
+  defaultValueExpression = _messages.StringField(3)
+  description = _messages.StringField(4)
+  fields = _messages.MessageField('TableFieldSchema', 5, repeated=True)
+  maxLength = _messages.IntegerField(6)
+  mode = _messages.StringField(7)
+  name = _messages.StringField(8)
+  policyTags = _messages.MessageField('PolicyTagsValue', 9)
+  precision = _messages.IntegerField(10)
+  scale = _messages.IntegerField(11)
+  type = _messages.StringField(12)
 
 
 class TableList(_messages.Message):

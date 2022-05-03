@@ -23,8 +23,12 @@ import datetime
 import os
 import stat
 
+from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.core import log
 from googlecloudsdk.core.util import platforms
+
+SETTING_INVALID_POSIX_ERROR = ValueError(
+    'Setting preserved POSIX data will result in invalid file metadata.')
 
 # Set instead of applying invalid UID or GID.
 _INVALID_ID = -1
@@ -128,23 +132,23 @@ def get_system_posix_data():
 
 def are_file_permissions_valid(url_string,
                                system_posix_data,
-                               uid=None,
-                               gid=None,
-                               mode=None):
+                               posix_attributes=None):
   """Checks if setting permissions on a file results in a valid accessible file.
 
   Logs explanatory error if copy will result in invalid file.
 
   Args:
-    url_string (str): Path to a file to validate.
+    url_string (str): URL of source object being considered for copy.
     system_posix_data (SystemPosixData): Relevant default system settings.
-    uid (int|None): A POSIX user ID to consider setting on the file.
-    gid (int|None): A POSIX group ID to consider setting on the file.
-    mode (PosixMode|None): File permissions user wants to set.
+    posix_attributes (PosixAttributes|None): POSIX metadata being considered to
+      set on file.
 
   Returns:
     bool: True if copy will result in a valid file.
   """
+  uid = getattr(posix_attributes, 'uid', None)
+  gid = getattr(posix_attributes, 'gid', None)
+  mode = getattr(posix_attributes, 'mode', None)
   if (uid is gid is mode is None) or platforms.OperatingSystem.IsWindows():
     # If the user isn't setting anything, the system's new file defaults
     # are used, which we assume are valid.
@@ -165,15 +169,17 @@ def are_file_permissions_valid(url_string,
     try:
       pwd.getpwuid(uid)
     except KeyError:
-      log.error("UID for {} doesn't exist on current system. UID: {}".format(
-          url_string, uid))
+      log.error(
+          "UID in {} metadata doesn't exist on current system. UID: {}".format(
+              url_string, uid))
       return False
   if gid is not None:
     try:
       grp.getgrgid(gid)
     except (KeyError, OverflowError):
-      log.error("GID for {} doesn't exist on current system. GID: {}".format(
-          url_string, gid))
+      log.error(
+          "GID in {} metadata doesn't exist on current system. GID: {}".format(
+              url_string, gid))
       return False
 
   if mode is None:
@@ -188,9 +194,9 @@ def are_file_permissions_valid(url_string,
     if mode_to_set.base_ten_int & stat.S_IRUSR:
       return True
     log.error(
-        ('Insufficient access to {}. User {} owns file, but owner does not have'
-         ' read permission in mode {}.').format(url_string, uid_to_set,
-                                                mode_to_set.base_eight_str))
+        ('Insufficient access to local destination to copy {}. User {} owns'
+         ' file, but owner does not have read permission in mode {}.').format(
+             url_string, uid_to_set, mode_to_set.base_eight_str))
     return False
 
   if gid is None or gid in system_posix_data.user_groups:
@@ -200,20 +206,20 @@ def are_file_permissions_valid(url_string,
       return True
 
     log.error(
-        ('Insufficient access to {}. Group {} owns file, but group does not'
-         ' have read permission in mode {}.').format(
-             url_string, '[user primary group]' if gid is None else gid,
-             mode_to_set.base_eight_str))
+        ('Insufficient access to local destination to copy {}. Group {}'
+         ' would own file, but group does not have read permission in mode {}.'
+        ).format(url_string, '[user primary group]' if gid is None else gid,
+                 mode_to_set.base_eight_str))
     return False
 
   if mode_to_set.base_ten_int & stat.S_IROTH:
     # User is not owner and not in relevant group. User is "other".
     return True
   log.error(
-      ('Insufficient access to {}. UID {} is not owner of file, and user'
-       ' is not in a group that owns the file. Users in "other" category do not'
-       ' have read permission in mode {}.').format(url_string, uid_to_set,
-                                                   mode_to_set.base_eight_str))
+      ('Insufficient access to local destination to copy {}. UID {} is not'
+       ' owner of file, and user is not in a group that owns the file. Users in'
+       ' "other" category do not have read permission in mode {}.').format(
+           url_string, uid_to_set, mode_to_set.base_eight_str))
   return False
 
 
@@ -272,24 +278,23 @@ def set_posix_attributes_on_file(file_path, custom_posix_attributes):
 
   if custom_posix_attributes.uid is None or custom_posix_attributes.uid < 0:
     # Allow only valid UIDs.
-    uid = _INVALID_ID
+    uid = existing_posix_attributes.uid
   else:
     uid = custom_posix_attributes.uid
+
+    if uid != existing_posix_attributes.uid and os.geteuid() != 0:
+      # Custom may equal existing if user is uploading and downloading on the
+      # same machine and account.
+      raise PermissionError(
+          'Root permissions required to set UID {}.'.format(uid))
+
   if custom_posix_attributes.gid is None or custom_posix_attributes.gid < 0:
-    gid = _INVALID_ID
+    gid = existing_posix_attributes.gid
   else:
     gid = custom_posix_attributes.gid
 
-  if not uid == gid == _INVALID_ID:
-    # If UID and GID are both missing or invalid, don't try setting anything.
-    if os.geteuid() != 0:
-      raise PermissionError(
-          ('Root permissions required to set UID {} and GID {}.'
-           '{} indicates missing or invalid custom value.').format(
-               uid, gid, _INVALID_ID))
-    # This can result in one of UID or GID being _INVALID_ID. However, chown
-    # doesn't do anything with negative numbers like _INVALID_ID.
-    os.chown(file_path, uid, gid)
+  # Note: chown doesn't do anything for negative numbers like _INVALID_ID.
+  os.chown(file_path, uid, gid)
 
   mode = custom_posix_attributes.mode or existing_posix_attributes.mode
   os.chmod(file_path, mode.base_ten_int)
@@ -377,7 +382,7 @@ def get_posix_attributes_from_custom_metadata_dict(url_string, metadata_dict):
 
 def update_custom_metadata_dict_with_posix_attributes(metadata_dict,
                                                       posix_attributes):
-  """Updates metadata_dict with PosixAttributes data."""
+  """Updates custom metadata_dict with PosixAttributes data."""
   if posix_attributes.atime is not None:
     metadata_dict[_ATIME_METADATA_KEY] = str(posix_attributes.atime)
   if posix_attributes.mtime is not None:
@@ -388,3 +393,15 @@ def update_custom_metadata_dict_with_posix_attributes(metadata_dict,
     metadata_dict[_GID_METADATA_KEY] = str(posix_attributes.gid)
   if posix_attributes.mode is not None:
     metadata_dict[_MODE_METADATA_KEY] = posix_attributes.mode.base_eight_str
+
+
+def raise_if_source_and_destination_not_valid_for_preserve_posix(
+    user_request_args, source_url, destination_url):
+  """Logs errors and returns bool indicating if transfer is valid for POSIX."""
+  if not user_request_args.system_posix_data:
+    return
+  if isinstance(source_url, storage_url.FileUrl) and source_url.is_pipe:
+    raise ValueError('Cannot preserve POSIX data from pipe source.')
+  if isinstance(source_url, storage_url.CloudUrl) and isinstance(
+      destination_url, storage_url.CloudUrl):
+    raise ValueError('Cannot preserve POSIX data for cloud-to-cloud copies')

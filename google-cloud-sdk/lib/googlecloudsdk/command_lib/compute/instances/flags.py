@@ -2394,6 +2394,10 @@ def ValidateKonletArgs(args):
   if not args.IsSpecified('container_image'):
     raise exceptions.RequiredArgumentException(
         '--container-image', 'You must provide container image')
+  if args.IsSpecified('machine_type') and args.machine_type.startswith('t2a'):
+    raise exceptions.InvalidArgumentException(
+        '--machine_type',
+        'T2A machine types are not compatible with Konlet or containers.')
 
 
 def ValidateLocalSsdFlags(args):

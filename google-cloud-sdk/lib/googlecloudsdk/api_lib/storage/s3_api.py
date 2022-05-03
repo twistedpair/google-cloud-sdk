@@ -28,6 +28,7 @@ from googlecloudsdk.api_lib.storage import request_config_factory
 from googlecloudsdk.api_lib.storage import s3_metadata_field_converters
 from googlecloudsdk.api_lib.storage import s3_metadata_util
 from googlecloudsdk.command_lib.storage import errors as command_errors
+from googlecloudsdk.command_lib.storage import posix_util
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage.resources import s3_resource_reference
 from googlecloudsdk.core import exceptions as core_exceptions
@@ -409,7 +410,22 @@ class S3Api(cloud_api.CloudApi):
                       start_byte=0,
                       end_byte=None):
     """See super class."""
-    del request_config
+    if request_config.system_posix_data:
+      if cloud_resource.metadata:
+        custom_metadata_dict = cloud_resource.metadata.get('Metadata', {})
+      else:
+        custom_metadata_dict = {}
+
+      posix_attributes_to_set = (
+          posix_util.get_posix_attributes_from_custom_metadata_dict(
+              cloud_resource.storage_url.url_string, custom_metadata_dict))
+      if not posix_util.are_file_permissions_valid(
+          cloud_resource.storage_url.url_string,
+          request_config.system_posix_data, posix_attributes_to_set):
+        raise posix_util.SETTING_INVALID_POSIX_ERROR
+    else:
+      posix_attributes_to_set = None
+
     if digesters is not None:
       digesters_dict = digesters
     else:
@@ -424,7 +440,9 @@ class S3Api(cloud_api.CloudApi):
           cloud_resource, download_stream, digesters_dict, progress_callback,
           start_byte)
 
-    return content_encoding
+    return cloud_api.DownloadApiClientReturnValue(
+        posix_attributes=posix_attributes_to_set,
+        server_reported_encoding=content_encoding)
 
   @_catch_client_error_raise_s3_api_error()
   def delete_object(self, object_url, request_config):

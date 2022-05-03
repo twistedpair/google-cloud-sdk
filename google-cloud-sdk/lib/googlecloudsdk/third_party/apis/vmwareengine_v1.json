@@ -245,13 +245,13 @@
           "format": "google-datetime"
         },
         "deleteTime": {
-          "description": "Output only. Time the resource was marked as deleted.",
+          "description": "Output only. Time when the resource was scheduled for deletion.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "expireTime": {
-          "description": "Output only. Planned deletion time of this resource.",
+          "description": "Output only. Time when the resource will be irreversibly deleted.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
@@ -273,7 +273,8 @@
             "The private cloud is being created.",
             "The private cloud is being updated.",
             "The private cloud is in failed state.",
-            "The private cloud is deleted."
+            "The private cloud is scheduled for deletion. The deletion process can be cancelled by using the corresponding undelete method.",
+            "The private cloud is irreversibly deleted and is being removed from the system."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
@@ -281,7 +282,8 @@
             "CREATING",
             "UPDATING",
             "FAILED",
-            "DELETED"
+            "DELETED",
+            "PURGING"
           ]
         },
         "networkConfig": {
@@ -913,6 +915,12 @@
         },
         "virtualCpuCount": {
           "description": "Output only. The total number of virtual CPUs in a single node.",
+          "readOnly": true,
+          "type": "integer",
+          "format": "int32"
+        },
+        "totalCoreCount": {
+          "description": "Output only. The total number of CPU cores in a single node.",
           "readOnly": true,
           "type": "integer",
           "format": "int32"
@@ -2108,7 +2116,7 @@
                       "type": "boolean"
                     },
                     "delayHours": {
-                      "description": "Optional. Time delay of the deletion specified in hours. The default value is `3`. Specifying a non-zero value for this field marks the resource as `DELETED` and sets `expire_time` to the planned deletion time. Deletion can be stopped before `expire_time` elapses using VmwareEngine.UndeletePrivateCloud. Specifying a value of `0` for this field instead begins the deletion process and ceases billing immediately.",
+                      "description": "Optional. Time delay of the deletion specified in hours. The default value is `3`. Specifying a non-zero value for this field changes the value of `PrivateCloud.state` to `DELETED` and sets `expire_time` to the planned deletion time. Deletion can be cancelled before `expire_time` elapses using VmwareEngine.UndeletePrivateCloud. Specifying a value of `0` for this field instead begins the deletion process and ceases billing immediately. During the final deletion process, the value of `PrivateCloud.state` becomes `PURGING`.",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"
@@ -2123,7 +2131,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Marks a `PrivateCloud` resource for deletion. A `PrivateCloud` resource marked for deletion has `PrivateCloud.state` set to `DELETED` and `expireTime` set to the time when deletion is final and can no longer be reversed. When deletion is final, all private cloud resources are irreversibly removed and billing stops."
+                  "description": "Schedules a `PrivateCloud` resource for deletion. A `PrivateCloud` resource scheduled for deletion has `PrivateCloud.state` set to `DELETED` and `expireTime` set to the time when deletion is final and can no longer be reversed. When deletion is final, all private cloud resources are irreversibly removed and billing stops. During the final removal process, `PrivateCloud.state` is set to `PURGING`."
                 },
                 "undelete": {
                   "id": "vmwareengine.projects.locations.privateClouds.undelete",
@@ -2132,7 +2140,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
-                      "description": "Required. The resource name of the private cloud marked for deletion. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a\/privateClouds\/my-cloud`",
+                      "description": "Required. The resource name of the private cloud scheduled for deletion. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a\/privateClouds\/my-cloud`",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -2151,7 +2159,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Unmarks a private cloud that was previously marked for deletion by `DeletePrivateCloud`. A `PrivateCloud` resource marked for deletion has `PrivateCloud.state` set to `DELETED` and `PrivateCloud.expireTime` set to the time when deletion can no longer be reversed."
+                  "description": "Restores a private cloud that was previously scheduled for deletion by `DeletePrivateCloud`. A `PrivateCloud` resource scheduled for deletion has `PrivateCloud.state` set to `DELETED` and `PrivateCloud.expireTime` set to the time when deletion can no longer be reversed."
                 },
                 "showNsxCredentials": {
                   "id": "vmwareengine.projects.locations.privateClouds.showNsxCredentials",

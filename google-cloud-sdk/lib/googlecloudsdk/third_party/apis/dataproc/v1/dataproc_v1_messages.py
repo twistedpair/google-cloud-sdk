@@ -471,14 +471,14 @@ class Cluster(_messages.Message):
       belongs to.
     status: Output only. Cluster status.
     statusHistory: Output only. The previous cluster status.
-    virtualClusterConfig: Optional. The virtual cluster config, used when
+    virtualClusterConfig: Optional. The virtual cluster config is used when
       creating a Dataproc cluster that does not directly control the
       underlying compute resources, for example, when creating a Dataproc-on-
       GKE cluster
-      (https://cloud.google.com/dataproc/docs/concepts/jobs/dataproc-
-      gke#create-a-dataproc-on-gke-cluster). Note that Dataproc may set
-      default values, and values may change when clusters are updated. Exactly
-      one of config or virtualClusterConfig must be specified.
+      (https://cloud.google.com/dataproc/docs/guides/dpgke/dataproc-gke).
+      Dataproc may set default values, and values may change when clusters are
+      updated. Exactly one of config or virtual_cluster_config must be
+      specified.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -527,8 +527,8 @@ class ClusterConfig(_messages.Message):
   Fields:
     autoscalingConfig: Optional. Autoscaling config for the policy associated
       with the cluster. Cluster does not autoscale if this field is unset.
-    auxiliaryNodePoolConfigs: Optional. The configuration(s) for a cluster's
-      auxiliary node pool(s).
+    auxiliaryNodePoolConfigs: Optional. The config for a cluster auxiliary
+      node pool.
     configBucket: Optional. A Cloud Storage bucket used to stage job
       dependencies, config files, and job driver console output. If you do not
       specify a staging bucket, Cloud Dataproc will determine a Cloud Storage
@@ -539,16 +539,15 @@ class ClusterConfig(_messages.Message):
       (https://cloud.google.com/dataproc/docs/concepts/configuring-
       clusters/staging-bucket)). This field requires a Cloud Storage bucket
       name, not a gs://... URI to a Cloud Storage bucket.
-    dataprocMetricConfig: Optional. The configuration(s) for a dataproc
-      metric(s).
+    dataprocMetricConfig: Optional. The config for Dataproc metrics.
     encryptionConfig: Optional. Encryption settings for the cluster.
     endpointConfig: Optional. Port/endpoint configuration for this cluster
     gceClusterConfig: Optional. The shared Compute Engine config settings for
       all instances in a cluster.
-    gkeClusterConfig: Optional. Deprecated. Use VirtualClusterConfig based
-      clusters instead. BETA. The Kubernetes Engine config for Dataproc
-      clusters deployed to Kubernetes. Setting this is considered mutually
-      exclusive with Compute Engine-based options such as gce_cluster_config,
+    gkeClusterConfig: Optional. BETA. The Kubernetes Engine config for
+      Dataproc clusters deployed to The Kubernetes Engine config for Dataproc
+      clusters deployed to Kubernetes. These config settings are mutually
+      exclusive with Compute Engine-based options, such as gce_cluster_config,
       master_config, worker_config, secondary_worker_config, and
       autoscaling_config.
     initializationActions: Optional. Commands to execute on each node after
@@ -608,13 +607,13 @@ class ClusterMetrics(_messages.Message):
 
   Messages:
     HdfsMetricsValue: The HDFS metrics.
-    SparkMetricsValue: The Spark metrics.
-    YarnMetricsValue: The YARN metrics.
+    SparkMetricsValue: Spark metrics.
+    YarnMetricsValue: YARN metrics.
 
   Fields:
     hdfsMetrics: The HDFS metrics.
-    sparkMetrics: The Spark metrics.
-    yarnMetrics: The YARN metrics.
+    sparkMetrics: Spark metrics.
+    yarnMetrics: YARN metrics.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -644,7 +643,7 @@ class ClusterMetrics(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class SparkMetricsValue(_messages.Message):
-    r"""The Spark metrics.
+    r"""Spark metrics.
 
     Messages:
       AdditionalProperty: An additional property for a SparkMetricsValue
@@ -669,7 +668,7 @@ class ClusterMetrics(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class YarnMetricsValue(_messages.Message):
-    r"""The YARN metrics.
+    r"""YARN metrics.
 
     Messages:
       AdditionalProperty: An additional property for a YarnMetricsValue
@@ -927,10 +926,10 @@ class ConfidentialInstanceConfig(_messages.Message):
 
 
 class DataprocMetricConfig(_messages.Message):
-  r"""Contains dataproc metric config.
+  r"""Dataproc metric config.
 
   Fields:
-    metrics: Required. Metrics to be enabled.
+    metrics: Required. Metrics to enable.
   """
 
   metrics = _messages.MessageField('Metric', 1, repeated=True)
@@ -2773,11 +2772,12 @@ class GkeClusterConfig(_messages.Message):
       'projects/{project}/locations/{location}/clusters/{cluster_id}'
     namespacedGkeDeploymentTarget: Optional. Deprecated. Use gkeClusterTarget.
       Used only for the deprecated beta. A target for the deployment.
-    nodePoolTarget: Optional. GKE NodePools where workloads will be scheduled.
-      At least one node pool must be assigned the 'default' role. Each role
-      can be given to only a single NodePoolTarget. All NodePools must have
-      the same location settings. If a nodePoolTarget is not specified,
-      Dataproc constructs a default nodePoolTarget.
+    nodePoolTarget: Optional. GKE node pools where workloads will be
+      scheduled. At least one node pool must be assigned the DEFAULT
+      GkeNodePoolTarget.Role. If a GkeNodePoolTarget is not specified,
+      Dataproc constructs a DEFAULT GkeNodePoolTarget. Each role can be given
+      to only one GkeNodePoolTarget. All node pools must have the same
+      location settings.
   """
 
   gkeClusterTarget = _messages.StringField(1)
@@ -2804,6 +2804,9 @@ class GkeNodeConfig(_messages.Message):
       platforms, such as "Intel Haswell"` or Intel Sandy Bridge".
     preemptible: Optional. Whether the nodes are created as preemptible VM
       instances (https://cloud.google.com/compute/docs/instances/preemptible).
+      Preemptible nodes cannot be used in a node pool with the CONTROLLER role
+      or in the DEFAULT node pool if the CONTROLLER role is not assigned (the
+      DEFAULT node pool will assume the CONTROLLER role).
     spot: Optional. Spot flag for enabling Spot VM, which is a rebrand of the
       existing preemptible flag.
   """
@@ -2818,7 +2821,7 @@ class GkeNodeConfig(_messages.Message):
 
 class GkeNodePoolAcceleratorConfig(_messages.Message):
   r"""A GkeNodeConfigAcceleratorConfig represents a Hardware Accelerator
-  request for a NodePool.
+  request for a node pool.
 
   Fields:
     acceleratorCount: The number of accelerator cards exposed to an instance.
@@ -2839,9 +2842,10 @@ class GkeNodePoolAutoscalingConfig(_messages.Message):
   to adjust the size of the node pool to the current cluster usage.
 
   Fields:
-    maxNodeCount: The maximum number of nodes in the NodePool. Must be >=
-      min_node_count. Note: Quota must be sufficient to scale up the cluster.
-    minNodeCount: The minimum number of nodes in the NodePool. Must be >= 0
+    maxNodeCount: The maximum number of nodes in the node pool. Must be >=
+      min_node_count, and must be > 0. Note: Quota must be sufficient to scale
+      up the cluster.
+    minNodeCount: The minimum number of nodes in the node pool. Must be >= 0
       and <= max_node_count.
   """
 
@@ -2850,19 +2854,22 @@ class GkeNodePoolAutoscalingConfig(_messages.Message):
 
 
 class GkeNodePoolConfig(_messages.Message):
-  r"""The configuration of a GKE NodePool used by a Dataproc-on-GKE cluster
+  r"""The configuration of a GKE node pool used by a Dataproc-on-GKE cluster
   (https://cloud.google.com/dataproc/docs/concepts/jobs/dataproc-gke#create-a-
   dataproc-on-gke-cluster).
 
   Fields:
-    autoscaling: Optional. The autoscaler configuration for this NodePool. The
-      autoscaler is enabled only when a valid configuration is present.
+    autoscaling: Optional. The autoscaler configuration for this node pool.
+      The autoscaler is enabled only when a valid configuration is present.
     config: Optional. The node pool configuration.
     locations: Optional. The list of Compute Engine zones
-      (https://cloud.google.com/compute/docs/zones#available) where NodePool's
-      nodes will be located.Note: Currently, only one zone may be specified.If
-      a location is not specified during NodePool creation, Dataproc will
-      choose a location.
+      (https://cloud.google.com/compute/docs/zones#available) where node pool
+      nodes associated with a Dataproc on GKE virtual cluster will be
+      located.Note: All node pools associated with a virtual cluster must be
+      located in the same region as the virtual cluster, and they must be
+      located in the same zone within that region.If a location is not
+      specified during node pool creation, Dataproc on GKE will choose the
+      zone.
   """
 
   autoscaling = _messages.MessageField('GkeNodePoolAutoscalingConfig', 1)
@@ -2871,23 +2878,23 @@ class GkeNodePoolConfig(_messages.Message):
 
 
 class GkeNodePoolTarget(_messages.Message):
-  r"""GKE NodePools that Dataproc workloads run on.
+  r"""GKE node pools that Dataproc workloads run on.
 
   Enums:
     RolesValueListEntryValuesEnum:
 
   Fields:
-    nodePool: Required. The target GKE NodePool. Format: 'projects/{project}/l
-      ocations/{location}/clusters/{cluster}/nodePools/{node_pool}'
-    nodePoolConfig: Input only. The configuration for the GKE NodePool.If
-      specified, Dataproc attempts to create a NodePool with the specified
+    nodePool: Required. The target GKE node pool. Format: 'projects/{project}/
+      locations/{location}/clusters/{cluster}/nodePools/{node_pool}'
+    nodePoolConfig: Input only. The configuration for the GKE node pool.If
+      specified, Dataproc attempts to create a node pool with the specified
       shape. If one with the same name already exists, it is verified against
       all specified fields. If a field differs, the virtual cluster creation
-      will fail.If omitted, any NodePool with the specified name is used. If a
-      NodePool with the specified name does not exist, Dataproc create a
-      NodePool with default values.This is an input only field. It will not be
-      returned by the API.
-    roles: Required. The types of role for a GKE NodePool
+      will fail.If omitted, any node pool with the specified name is used. If
+      a node pool with the specified name does not exist, Dataproc create a
+      node pool with default values.This is an input only field. It will not
+      be returned by the API.
+    roles: Required. The roles associated with the GKE node pool.
   """
 
   class RolesValueListEntryValuesEnum(_messages.Enum):
@@ -2895,11 +2902,15 @@ class GkeNodePoolTarget(_messages.Message):
 
     Values:
       ROLE_UNSPECIFIED: Role is unspecified.
-      DEFAULT: Any roles that are not directly assigned to a NodePool run on
-        the default role's NodePool.
-      CONTROLLER: Run controllers and webhooks.
-      SPARK_DRIVER: Run spark driver.
-      SPARK_EXECUTOR: Run spark executors.
+      DEFAULT: At least one node pool must have the DEFAULT role. Work
+        assigned to a role that is not associated with a node pool is assigned
+        to the node pool with the DEFAULT role. For example, work assigned to
+        the CONTROLLER role will be assigned to the node pool with the DEFAULT
+        role if no node pool has the CONTROLLER role.
+      CONTROLLER: Run work associated with the Dataproc control plane (for
+        example, controllers and webhooks). Very low resource requirements.
+      SPARK_DRIVER: Run work associated with a Spark driver of a job.
+      SPARK_EXECUTOR: Run work associated with a Spark executor of a job.
     """
     ROLE_UNSPECIFIED = 0
     DEFAULT = 1
@@ -4106,31 +4117,31 @@ class MetastoreConfig(_messages.Message):
 
 
 class Metric(_messages.Message):
-  r"""Metric source to enable along with any optional metrics for this source
-  that override the dataproc defaults
+  r"""The metric source to enable, with any optional metrics, to override
+  Dataproc default metrics.
 
   Enums:
-    MetricSourceValueValuesEnum: Required. MetricSource that should be enabled
+    MetricSourceValueValuesEnum: Required. MetricSource to enable.
 
   Fields:
-    metricOverrides: Optional. Optional Metrics to override the dataproc
-      default metrics configured for the metric source
-    metricSource: Required. MetricSource that should be enabled
+    metricOverrides: Optional. Optional Metrics to override the Dataproc
+      default metrics configured for the metric source.
+    metricSource: Required. MetricSource to enable.
   """
 
   class MetricSourceValueValuesEnum(_messages.Enum):
-    r"""Required. MetricSource that should be enabled
+    r"""Required. MetricSource to enable.
 
     Values:
-      METRIC_SOURCE_UNSPECIFIED: Required unspecified metric source
-      MONITORING_AGENT_DEFAULTS: all default monitoring agent metrics that are
-        published with prefix "agent.googleapis.com" when we enable a
-        monitoring agent in Compute Engine
-      HDFS: Hdfs metric source
-      SPARK: Spark metric source
-      YARN: Yarn metric source
-      SPARK_HISTORY_SERVER: Spark history server metric source
-      HIVESERVER2: hiveserver2 metric source
+      METRIC_SOURCE_UNSPECIFIED: Required unspecified metric source.
+      MONITORING_AGENT_DEFAULTS: Default monitoring agent metrics, which are
+        published with an agent.googleapis.com prefix when Dataproc enables
+        the monitoring agent in Compute Engine.
+      HDFS: HDFS metric source.
+      SPARK: Spark metric source.
+      YARN: YARN metric source.
+      SPARK_HISTORY_SERVER: Spark History Server metric source.
+      HIVESERVER2: Hiveserver2 metric source.
     """
     METRIC_SOURCE_UNSPECIFIED = 0
     MONITORING_AGENT_DEFAULTS = 1
@@ -4195,17 +4206,17 @@ class NodeInitializationAction(_messages.Message):
 
 
 class NodePoolConfig(_messages.Message):
-  r"""Configuration of the node pool.
+  r"""Node pool config.
 
   Enums:
     RolesValueListEntryValuesEnum:
 
   Fields:
-    nodePoolConfig: Optional. The Compute Engine config settings of the
-      instances of the node pool.
-    nodePoolId: Optional. Identifier of node pool. If one is not provided by
-      user, a default will be provided.
-    roles: Required. Role(s) that the node pool takes in the cluster.
+    nodePoolConfig: Optional. The Compute Engine config settings for node pool
+      instances.
+    nodePoolId: Optional. Node pool identifier. If not specified, a default is
+      assigned.
+    roles: Required. Node pool roles.
   """
 
   class RolesValueListEntryValuesEnum(_messages.Enum):
@@ -5973,23 +5984,22 @@ class ValueValidation(_messages.Message):
 
 
 class VirtualClusterConfig(_messages.Message):
-  r"""Dataproc cluster config for a cluster that does not directly control the
-  underlying compute resources, such as a Dataproc-on-GKE cluster
-  (https://cloud.google.com/dataproc/docs/concepts/jobs/dataproc-gke#create-a-
-  dataproc-on-gke-cluster).
+  r"""The Dataproc cluster config for a cluster that does not directly control
+  the underlying compute resources, such as a Dataproc-on-GKE cluster
+  (https://cloud.google.com/dataproc/docs/guides/dpgke/dataproc-gke).
 
   Fields:
     auxiliaryServicesConfig: Optional. Configuration of auxiliary services
       used by this cluster.
     kubernetesClusterConfig: Required. The configuration for running the
       Dataproc cluster on Kubernetes.
-    stagingBucket: Optional. A Storage bucket used to stage job dependencies,
-      config files, and job driver console output. If you do not specify a
-      staging bucket, Cloud Dataproc will determine a Cloud Storage location
-      (US, ASIA, or EU) for your cluster's staging bucket according to the
-      Compute Engine zone where your cluster is deployed, and then create and
-      manage this project-level, per-location bucket (see Dataproc staging and
-      temp buckets
+    stagingBucket: Optional. A Cloud Storage bucket used to stage job
+      dependencies, config files, and job driver console output. If you do not
+      specify a staging bucket, Cloud Dataproc will determine a Cloud Storage
+      location (US, ASIA, or EU) for your cluster's staging bucket according
+      to the Compute Engine zone where your cluster is deployed, and then
+      create and manage this project-level, per-location bucket (see Dataproc
+      staging and temp buckets
       (https://cloud.google.com/dataproc/docs/concepts/configuring-
       clusters/staging-bucket)). This field requires a Cloud Storage bucket
       name, not a gs://... URI to a Cloud Storage bucket.

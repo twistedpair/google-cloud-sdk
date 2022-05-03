@@ -2910,12 +2910,15 @@ class GitLabEnterpriseConfig(_messages.Message):
 
   Fields:
     hostUri: Immutable. The URI of the GitlabEnterprise host.
+    serviceDirectoryConfig: The Service Directory configuration to be used
+      when reaching out to the GitLab Enterprise instance.
     sslCa: The SSL certificate to use in requests to GitLab Enterprise
       instances.
   """
 
   hostUri = _messages.StringField(1)
-  sslCa = _messages.StringField(2)
+  serviceDirectoryConfig = _messages.MessageField('ServiceDirectoryConfig', 2)
+  sslCa = _messages.StringField(3)
 
 
 class GitLabEventsConfig(_messages.Message):
@@ -4167,6 +4170,18 @@ class Secrets(_messages.Message):
 
   inline = _messages.MessageField('InlineSecret', 1, repeated=True)
   secretManager = _messages.MessageField('SecretManagerSecret', 2, repeated=True)
+
+
+class ServiceDirectoryConfig(_messages.Message):
+  r"""ServiceDirectoryConfig represents Service Directory configuration for a
+  SCM host connection.
+
+  Fields:
+    service: The Service Directory service name. Format: projects/{project}/lo
+      cations/{location}/namespaces/{namespace}/services/{service}.
+  """
+
+  service = _messages.StringField(1)
 
 
 class SlackDelivery(_messages.Message):

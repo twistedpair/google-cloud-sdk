@@ -28,20 +28,21 @@ from __future__ import unicode_literals
 import contextlib
 import json
 
+from apitools.base.py import encoding_helper
 from apitools.base.py import exceptions as apitools_exceptions
-from apitools.base.py import http_wrapper as apitools_http_wrapper
 from apitools.base.py import list_pager
 from apitools.base.py import transfer as apitools_transfer
+
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.api_lib.storage import errors as cloud_errors
+from googlecloudsdk.api_lib.storage import gcs_download
 from googlecloudsdk.api_lib.storage import gcs_metadata_util
 from googlecloudsdk.api_lib.storage import gcs_upload
 from googlecloudsdk.api_lib.storage import patch_gcs_messages
-from googlecloudsdk.api_lib.storage import retry_util
 from googlecloudsdk.api_lib.util import apis as core_apis
-from googlecloudsdk.calliope import exceptions as calliope_errors
 from googlecloudsdk.command_lib.storage import encryption_util
 from googlecloudsdk.command_lib.storage import errors as command_errors
+from googlecloudsdk.command_lib.storage import posix_util
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage import tracker_file_util
 from googlecloudsdk.command_lib.storage import user_request_args_factory
@@ -53,9 +54,7 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core import requests
 from googlecloudsdk.core.credentials import transports
 from googlecloudsdk.core.util import files
-from googlecloudsdk.core.util import retry
 from googlecloudsdk.core.util import scaled_integer
-import oauth2client
 
 
 # TODO(b/171296237): Remove this when fixes are submitted in apitools.
@@ -107,11 +106,6 @@ def _should_gzip_in_flight(request_config, source_resource):
       if source_path.endswith(dot_separated_extension):
         return True
   return False
-
-
-def _no_op_callback(unused_response, unused_object):
-  """Disables Apitools' default print callbacks."""
-  pass
 
 
 def get_download_serialization_data(object_resource, progress):
@@ -693,131 +687,6 @@ class GcsApi(cloud_api.CloudApi):
     return gcs_metadata_util.get_object_resource_from_metadata(
         rewrite_response.resource)
 
-  def _download_object(self,
-                       cloud_resource,
-                       download_stream,
-                       apitools_download,
-                       apitools_request,
-                       request_config,
-                       do_not_decompress=False,
-                       generation=None,
-                       serialization_data=None,
-                       start_byte=0,
-                       end_byte=None):
-    """GCS-specific download implementation.
-
-    Args:
-      cloud_resource (resource_reference.ObjectResource): Contains
-        metadata and information about object being downloaded.
-      download_stream (stream): Stream to send the object data to.
-      apitools_download (apitools.transfer.Download): Apitools object for
-        managing downloads.
-      apitools_request (apitools.messages.StorageObjectsGetReqest):
-        Holds call to GCS API.
-      request_config (request_config_factory._RequestConfig): Additional
-        request metadata.
-      do_not_decompress (bool): If true, gzipped objects will not be
-        decompressed on-the-fly if supported by the API.
-      generation (int): Generation of the object to retrieve.
-      serialization_data (str): Implementation-specific JSON string of a dict
-        containing serialization information for the download.
-      start_byte (int): Starting point for download (for resumable downloads and
-        range requests). Can be set to negative to request a range of bytes
-        (python equivalent of [:-3]).
-      end_byte (int): Ending byte number, inclusive, for download (for range
-        requests). If None, download the rest of the object.
-
-    Returns:
-      Encoding string for object if requested. Otherwise, None.
-    """
-    # TODO(b/161453101): Optimize handling of gzip-encoded downloads.
-    additional_headers = {}
-    if do_not_decompress:
-      additional_headers['accept-encoding'] = 'gzip'
-
-    decryption_key = getattr(request_config.resource_args, 'decryption_key',
-                             None)
-    additional_headers.update(_get_encryption_headers(decryption_key))
-
-    if start_byte or end_byte is not None:
-      apitools_download.GetRange(
-          additional_headers=additional_headers,
-          start=start_byte,
-          end=end_byte,
-          use_chunks=False)
-    else:
-      apitools_download.StreamMedia(
-          additional_headers=additional_headers,
-          callback=_no_op_callback,
-          finish_callback=_no_op_callback,
-          use_chunks=False)
-    return apitools_download.encoding
-
-  def _download_object_resumable(self,
-                                 cloud_resource,
-                                 download_stream,
-                                 apitools_download,
-                                 apitools_request,
-                                 request_config,
-                                 decryption_wrapper=None,
-                                 do_not_decompress=False,
-                                 generation=None,
-                                 serialization_data=None,
-                                 start_byte=0,
-                                 end_byte=None):
-    """Wraps _download_object to make it retriable."""
-    # Hack because nonlocal keyword causes Python 2 syntax error.
-    progress_state = {'start_byte': start_byte}
-    retry_util.set_retry_func(apitools_download)
-
-    def _should_retry_resumable_download(exc_type, exc_value, exc_traceback,
-                                         state):
-      converted_error, _ = calliope_errors.ConvertKnownError(exc_value)
-      if isinstance(exc_value, oauth2client.client.HttpAccessTokenRefreshError):
-        if exc_value.status < 500 and exc_value.status != 429:
-          # Not server error or too many requests error.
-          return False
-      elif not (isinstance(converted_error, core_exceptions.NetworkIssueError)
-                or isinstance(converted_error, cloud_errors.RetryableApiError)):
-        # Not known transient network error.
-        return False
-
-      start_byte = download_stream.tell()
-      if start_byte > progress_state['start_byte']:
-        # We've made progress, so allow a fresh set of retries.
-        progress_state['start_byte'] = start_byte
-        state.retrial = 0
-      log.debug('Retrying download from byte {} after exception: {}.'
-                ' Trace: {}'.format(start_byte, exc_type, exc_traceback))
-
-      apitools_http_wrapper.RebuildHttpConnections(apitools_download.bytes_http)
-      return True
-
-    def _call_download_object():
-      return self._download_object(
-          cloud_resource,
-          download_stream,
-          apitools_download,
-          apitools_request,
-          request_config,
-          do_not_decompress=do_not_decompress,
-          generation=generation,
-          serialization_data=serialization_data,
-          start_byte=progress_state['start_byte'],
-          end_byte=end_byte)
-
-    # Convert seconds to miliseconds by multiplying by 1000.
-    return retry.Retryer(
-        max_retrials=properties.VALUES.storage.max_retries.GetInt(),
-        wait_ceiling_ms=properties.VALUES.storage.max_retry_delay.GetInt() *
-        1000,
-        exponential_sleep_multiplier=(
-            properties.VALUES.storage.exponential_sleep_multiplier.GetInt()
-        )).RetryOnException(
-            _call_download_object,
-            sleep_ms=properties.VALUES.storage.base_retry_delay.GetInt() * 1000,
-            should_retry_if=_should_retry_resumable_download)
-
   @_catch_http_error_raise_gcs_api_error()
   def download_object(self,
                       cloud_resource,
@@ -830,9 +699,22 @@ class GcsApi(cloud_api.CloudApi):
                       start_byte=0,
                       end_byte=None):
     """See super class."""
-    # S3 requires a string, but GCS uses an int for generation.
-    generation = (
-        int(cloud_resource.generation) if cloud_resource.generation else None)
+    if request_config.system_posix_data:
+      if cloud_resource.metadata and cloud_resource.metadata.metadata:
+        custom_metadata_dict = encoding_helper.MessageToDict(
+            cloud_resource.metadata.metadata)
+      else:
+        custom_metadata_dict = {}
+
+      posix_attributes_to_set = (
+          posix_util.get_posix_attributes_from_custom_metadata_dict(
+              cloud_resource.storage_url.url_string, custom_metadata_dict))
+      if not posix_util.are_file_permissions_valid(
+          cloud_resource.storage_url.url_string,
+          request_config.system_posix_data, posix_attributes_to_set):
+        raise posix_util.SETTING_INVALID_POSIX_ERROR
+    else:
+      posix_attributes_to_set = None
 
     serialization_data = get_download_serialization_data(
         cloud_resource, start_byte)
@@ -854,36 +736,32 @@ class GcsApi(cloud_api.CloudApi):
           response_handler=self._stream_response_handler)
     apitools_download.bytes_http = self._download_http_client
 
-    # TODO(b/161460749) Handle download retries.
-    request = self.messages.StorageObjectsGetRequest(
-        bucket=cloud_resource.bucket,
-        object=cloud_resource.name,
-        generation=generation)
+    additional_headers = {}
+    if do_not_decompress:
+      # TODO(b/161453101): Optimize handling of gzip-encoded downloads.
+      additional_headers['accept-encoding'] = 'gzip'
+
+    decryption_key = getattr(request_config.resource_args, 'decryption_key',
+                             None)
+    additional_headers.update(_get_encryption_headers(decryption_key))
 
     if download_strategy == cloud_api.DownloadStrategy.ONE_SHOT:
-      return self._download_object(
-          cloud_resource,
-          download_stream,
+      server_reported_encoding = gcs_download.launch(
           apitools_download,
-          request,
-          request_config,
-          do_not_decompress=do_not_decompress,
-          generation=generation,
-          serialization_data=serialization_data,
           start_byte=start_byte,
-          end_byte=end_byte)
+          end_byte=end_byte,
+          additional_headers=additional_headers)
     else:
-      return self._download_object_resumable(
-          cloud_resource,
+      server_reported_encoding = gcs_download.launch_retriable(
           download_stream,
           apitools_download,
-          request,
-          request_config,
-          do_not_decompress=do_not_decompress,
-          generation=generation,
-          serialization_data=serialization_data,
           start_byte=start_byte,
-          end_byte=end_byte)
+          end_byte=end_byte,
+          additional_headers=additional_headers)
+
+    return cloud_api.DownloadApiClientReturnValue(
+        posix_attributes=posix_attributes_to_set,
+        server_reported_encoding=server_reported_encoding)
 
   @_catch_http_error_raise_gcs_api_error()
   def upload_object(self,

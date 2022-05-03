@@ -400,7 +400,7 @@
           "$ref": "TimeSeriesFilterRatio"
         },
         "timeSeriesQueryLanguage": {
-          "description": "A query used to fetch time series.",
+          "description": "A query used to fetch time series with MQL.",
           "type": "string"
         },
         "unitOverride": {

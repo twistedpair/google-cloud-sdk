@@ -61,3 +61,18 @@ def GetWorkflowResourceSpec():
 def WorkflowAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='workflow', help_text='Workflow ID')
+
+
+def GetGitLabConfigResourceSpec():
+  return concepts.ResourceSpec(
+      'cloudbuild.projects.locations.gitLabConfigs',
+      api_version='v1',
+      resource_name='gitLabConfig',
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=RegionAttributeConfig(),
+      gitLabConfigsId=GitLabConfigAttributeConfig())
+
+
+def GitLabConfigAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='config', help_text='Config Name')

@@ -1802,6 +1802,102 @@ class HelloWorldMembershipState(_messages.Message):
 
 
 
+class IdentityServiceAuthMethod(_messages.Message):
+  r"""Configuration of an auth method for a member/cluster. Only one
+  authentication method (e.g., OIDC and LDAP) can be set per AuthMethod.
+
+  Fields:
+    name: Identifier for auth config.
+    oidcConfig: OIDC specific configuration.
+    proxy: Proxy server address to use for auth method.
+  """
+
+  name = _messages.StringField(1)
+  oidcConfig = _messages.MessageField('IdentityServiceOidcConfig', 2)
+  proxy = _messages.StringField(3)
+
+
+class IdentityServiceMembershipSpec(_messages.Message):
+  r"""**Anthos Identity Service**: Configuration for a single Membership.
+
+  Fields:
+    authMethods: A member may support multiple auth methods.
+  """
+
+  authMethods = _messages.MessageField('IdentityServiceAuthMethod', 1, repeated=True)
+
+
+class IdentityServiceMembershipState(_messages.Message):
+  r"""**Anthos Identity Service**: State for a single Membership.
+
+  Enums:
+    StateValueValuesEnum: Deployment state on this member
+
+  Fields:
+    failureReason: The reason of the failure.
+    installedVersion: Installed AIS version. This is the AIS version installed
+      on this member. The values makes sense iff state is OK.
+    memberConfig: Last reconciled membership configuration
+    state: Deployment state on this member
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Deployment state on this member
+
+    Values:
+      DEPLOYMENT_STATE_UNSPECIFIED: Unspecified state
+      OK: deployment succeeds
+      ERROR: Failure with error.
+    """
+    DEPLOYMENT_STATE_UNSPECIFIED = 0
+    OK = 1
+    ERROR = 2
+
+  failureReason = _messages.StringField(1)
+  installedVersion = _messages.StringField(2)
+  memberConfig = _messages.MessageField('IdentityServiceMembershipSpec', 3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
+
+
+class IdentityServiceOidcConfig(_messages.Message):
+  r"""Configuration for OIDC Auth flow.
+
+  Fields:
+    certificateAuthorityData: PEM-encoded CA for OIDC provider.
+    clientId: ID for OIDC client application.
+    clientSecret: Input only. Unencrypted OIDC client secret will be passed to
+      the GKE Hub CLH.
+    deployCloudConsoleProxy: Flag to denote if reverse proxy is used to
+      connect to auth provider. This flag should be set to true when provider
+      is not reachable by Google Cloud Console.
+    encryptedClientSecret: Output only. Encrypted OIDC Client secret
+    extraParams: Comma-separated list of key-value pairs.
+    groupPrefix: Prefix to prepend to group name.
+    groupsClaim: Claim in OIDC ID token that holds group information.
+    issuerUri: URI for the OIDC provider. This should point to the level below
+      .well-known/openid-configuration.
+    kubectlRedirectUri: Registered redirect uri to redirect users going
+      through OAuth flow using kubectl plugin.
+    scopes: Comma-separated list of identifiers.
+    userClaim: Claim in OIDC ID token that holds username.
+    userPrefix: Prefix to prepend to user name.
+  """
+
+  certificateAuthorityData = _messages.StringField(1)
+  clientId = _messages.StringField(2)
+  clientSecret = _messages.StringField(3)
+  deployCloudConsoleProxy = _messages.BooleanField(4)
+  encryptedClientSecret = _messages.BytesField(5)
+  extraParams = _messages.StringField(6)
+  groupPrefix = _messages.StringField(7)
+  groupsClaim = _messages.StringField(8)
+  issuerUri = _messages.StringField(9)
+  kubectlRedirectUri = _messages.StringField(10)
+  scopes = _messages.StringField(11)
+  userClaim = _messages.StringField(12)
+  userPrefix = _messages.StringField(13)
+
+
 class KubernetesMetadata(_messages.Message):
   r"""KubernetesMetadata provides informational metadata for Memberships
   representing Kubernetes clusters.
@@ -2145,12 +2241,14 @@ class MembershipFeatureSpec(_messages.Message):
   Fields:
     configmanagement: Config Management-specific spec.
     helloworld: Hello World-specific spec.
+    identityservice: Identity Service-specific spec.
     mesh: Anthos Service Mesh-specific spec
   """
 
   configmanagement = _messages.MessageField('ConfigManagementMembershipSpec', 1)
   helloworld = _messages.MessageField('HelloWorldMembershipSpec', 2)
-  mesh = _messages.MessageField('ServiceMeshMembershipSpec', 3)
+  identityservice = _messages.MessageField('IdentityServiceMembershipSpec', 3)
+  mesh = _messages.MessageField('ServiceMeshMembershipSpec', 4)
 
 
 class MembershipFeatureState(_messages.Message):
@@ -2161,6 +2259,7 @@ class MembershipFeatureState(_messages.Message):
     appdevexperience: Appdevexperience specific state.
     configmanagement: Config Management-specific state.
     helloworld: Hello World-specific state.
+    identityservice: Identity Service-specific state.
     servicemesh: Service Mesh-specific state.
     state: The high-level state of this Feature for a single membership.
   """
@@ -2168,8 +2267,9 @@ class MembershipFeatureState(_messages.Message):
   appdevexperience = _messages.MessageField('AppDevExperienceFeatureState', 1)
   configmanagement = _messages.MessageField('ConfigManagementMembershipState', 2)
   helloworld = _messages.MessageField('HelloWorldMembershipState', 3)
-  servicemesh = _messages.MessageField('ServiceMeshMembershipState', 4)
-  state = _messages.MessageField('FeatureState', 5)
+  identityservice = _messages.MessageField('IdentityServiceMembershipState', 4)
+  servicemesh = _messages.MessageField('ServiceMeshMembershipState', 5)
+  state = _messages.MessageField('FeatureState', 6)
 
 
 class MembershipState(_messages.Message):

@@ -308,6 +308,21 @@ class DataplexProjectsLocationsLakesContentitemsPatchRequest(_messages.Message):
   validateOnly = _messages.BooleanField(4)
 
 
+class DataplexProjectsLocationsLakesContentitemsSetIamPolicyRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsLakesContentitemsSetIamPolicyRequest object.
+
+  Fields:
+    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
+      to be passed as the request body.
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
 class DataplexProjectsLocationsLakesCreateRequest(_messages.Message):
   r"""A DataplexProjectsLocationsLakesCreateRequest object.
 

@@ -15,6 +15,36 @@ from apitools.base.py import extra_types
 package = 'servicedirectory'
 
 
+class Attributes(_messages.Message):
+  r"""Attributes are structured data attached to a given resource.
+
+  Fields:
+    managedRegistration: Output only. Indicates whether a GCP product or
+      service manages this resource. When a resource is fully managed by
+      another GCP product or system the information in Service Directory is
+      read-only. The source of truth is the relevant GCP product or system
+      which is managing the resource. The Service Directory resource will be
+      updated or deleted as appropriate to reflect the state of the underlying
+      `origin_resource`. Note: The `origin_resource` can be found in the
+      endpoint(s) associated with this service.
+    pscConnectionId: Optional. The Private Service Connect connection id of
+      the Private Service Connect Forwarding Rule. This field should be unset
+      if the service is not a Private Service Connect service.
+    pscTarget: Optional. The target resource for the Private Service Connect
+      service. This field should be unset if the service is not a Private
+      Service Connect service. For a Private Service Connect service accessing
+      managed services, this is the URI of the service producer's service
+      attachment. For a Private Service Connect service accessing Google APIs,
+      this will be the name of the Google API bundle. See the [Private Service
+      Connect documentation](https://cloud.google.com/vpc/docs/private-
+      service-connect) for more information.
+  """
+
+  managedRegistration = _messages.BooleanField(1)
+  pscConnectionId = _messages.IntegerField(2, variant=_messages.Variant.UINT64)
+  pscTarget = _messages.StringField(3)
+
+
 class AuditConfig(_messages.Message):
   r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
@@ -504,21 +534,56 @@ class Endpoint(_messages.Message):
 class EndpointAttributes(_messages.Message):
   r"""Attributes associated with endpoints.
 
+  Enums:
+    KubernetesResourceTypeValueValuesEnum: Kubernetes resource-type associated
+      with this endpoint
+
   Fields:
     gcpFleetMembership: Optional. Membership URI (scheme-less URI) for
       resources registered to Google Cloud Fleet. Currently populated only for
       kubernetes resources. Sample URI: `//gkehub.googleapis.com/projects/my-
       project/locations/global/memberships/my-membership`
+    kubernetesResourceType: Kubernetes resource-type associated with this
+      endpoint
+    managedRegistration: Output only. Indicates whether a GCP product or
+      service manages this resource. When a resource is fully managed by
+      another GCP product or system the information in Service Directory is
+      read-only. The source of truth is the relevant GCP product or system
+      which is managing the resource. The Service Directory resource will be
+      updated or deleted as appropriate to reflect the state of the underlying
+      `origin_resource`.
     originResource: Optional. Reference to the underlying resource that this
       endpoint represents. This should be the full name of the resource that
       this endpoint was created from.
+    region: Optional. Region of the underlying resource, or "global" for
+      global resources.
     zone: Optional. GCP zone of the underlying resource. Meant to be populated
       only for zonal resources, left unset for others.
   """
 
+  class KubernetesResourceTypeValueValuesEnum(_messages.Enum):
+    r"""Kubernetes resource-type associated with this endpoint
+
+    Values:
+      KUBERNETES_RESOURCE_TYPE_UNSPECIFIED: Not a Kubernetes workload.
+      KUBERNETES_RESOURCE_TYPE_CLUSTER_IP: Cluster IP service related resource
+      KUBERNETES_RESOURCE_TYPE_NODE_PORT: Node port service related resource
+      KUBERNETES_RESOURCE_TYPE_LOAD_BALANCER: Load balancer service related
+        resource
+      KUBERNETES_RESOURCE_TYPE_HEADLESS: Headless service related resource
+    """
+    KUBERNETES_RESOURCE_TYPE_UNSPECIFIED = 0
+    KUBERNETES_RESOURCE_TYPE_CLUSTER_IP = 1
+    KUBERNETES_RESOURCE_TYPE_NODE_PORT = 2
+    KUBERNETES_RESOURCE_TYPE_LOAD_BALANCER = 3
+    KUBERNETES_RESOURCE_TYPE_HEADLESS = 4
+
   gcpFleetMembership = _messages.StringField(1)
-  originResource = _messages.StringField(2)
-  zone = _messages.StringField(3)
+  kubernetesResourceType = _messages.EnumField('KubernetesResourceTypeValueValuesEnum', 2)
+  managedRegistration = _messages.BooleanField(3)
+  originResource = _messages.StringField(4)
+  region = _messages.StringField(5)
+  zone = _messages.StringField(6)
 
 
 class Expr(_messages.Message):
@@ -824,9 +889,18 @@ class NamespaceAttributes(_messages.Message):
   Fields:
     cloudDnsManagedZones: Output only. List of Cloud DNS ManagedZones that
       this namespace is associated with.
+    managedRegistration: Output only. Indicates whether a GCP product or
+      service manages this resource. When a resource is fully managed by
+      another GCP product or system the information in Service Directory is
+      read-only. The source of truth is the relevant GCP product or system
+      which is managing the resource. The Service Directory resource will be
+      updated or deleted as appropriate to reflect the state of the underlying
+      `origin_resource`. Note: The `origin_resource` can be found in the
+      endpoint(s) associated with service(s) associated with this namespace.
   """
 
   cloudDnsManagedZones = _messages.StringField(1, repeated=True)
+  managedRegistration = _messages.BooleanField(2)
 
 
 class Policy(_messages.Message):
@@ -1035,6 +1109,7 @@ class Service(_messages.Message):
       Directory.
 
   Fields:
+    attributes: Optional. Attributes associated with this Service.
     createTime: Output only. The timestamp when the service was created.
     endpoints: Output only. Endpoints associated with this service. Returned
       on LookupService.ResolveService. Control plane clients should use
@@ -1110,14 +1185,15 @@ class Service(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  endpoints = _messages.MessageField('Endpoint', 2, repeated=True)
-  hostname = _messages.StringField(3)
-  metadata = _messages.MessageField('MetadataValue', 4)
-  name = _messages.StringField(5)
-  serviceIdentities = _messages.MessageField('ServiceIdentity', 6, repeated=True)
-  uid = _messages.StringField(7)
-  updateTime = _messages.StringField(8)
+  attributes = _messages.MessageField('Attributes', 1)
+  createTime = _messages.StringField(2)
+  endpoints = _messages.MessageField('Endpoint', 3, repeated=True)
+  hostname = _messages.StringField(4)
+  metadata = _messages.MessageField('MetadataValue', 5)
+  name = _messages.StringField(6)
+  serviceIdentities = _messages.MessageField('ServiceIdentity', 7, repeated=True)
+  uid = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
 
 
 class ServiceIdentity(_messages.Message):
@@ -2097,9 +2173,11 @@ class WorkloadGroupAttributes(_messages.Message):
     Values:
       TYPE_UNSPECIFIED: Default. Should not be used.
       GKE_HUB: Resource managed by GKE Hub.
+      BACKEND_SERVICE: Resource managed by Arcus, Backend Service
     """
     TYPE_UNSPECIFIED = 0
     GKE_HUB = 1
+    BACKEND_SERVICE = 2
 
   managerType = _messages.EnumField('ManagerTypeValueValuesEnum', 1)
 

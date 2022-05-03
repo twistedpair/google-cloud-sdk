@@ -32,7 +32,11 @@ class PublicAdvertisedPrefixesClient(object):
     self.resources = resources
     self._service = self.client.apitools_client.publicAdvertisedPrefixes
 
-  def Create(self, pap_ref, ip_cidr_range, dns_verification_ip, description,
+  def Create(self,
+             pap_ref,
+             ip_cidr_range,
+             dns_verification_ip,
+             description,
              pdp_scope):
     """Creates a public advertised prefix."""
 
@@ -62,6 +66,22 @@ class PublicAdvertisedPrefixesClient(object):
         publicAdvertisedPrefix=pap_ref.Name(), project=pap_ref.project)
 
     return self.client.MakeRequests([(self._service, 'Delete', request)])
+
+  def Announce(self, pap_ref):
+    """Announce a public advertised prefix."""
+
+    request = self.messages.ComputePublicAdvertisedPrefixesAnnounceRequest(
+        publicAdvertisedPrefix=pap_ref.Name(), project=pap_ref.project)
+
+    return self.client.MakeRequests([(self._service, 'Announce', request)])
+
+  def Withdraw(self, pap_ref):
+    """Withdraw a public advertised prefix."""
+
+    request = self.messages.ComputePublicAdvertisedPrefixesWithdrawRequest(
+        publicAdvertisedPrefix=pap_ref.Name(), project=pap_ref.project)
+
+    return self.client.MakeRequests([(self._service, 'Withdraw', request)])
 
   def Patch(self, pap_ref, status):
     """Updates public advertised prefix."""

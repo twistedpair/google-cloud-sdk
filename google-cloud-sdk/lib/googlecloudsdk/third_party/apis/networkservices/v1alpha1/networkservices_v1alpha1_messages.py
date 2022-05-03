@@ -5293,10 +5293,6 @@ class TcpRoute(_messages.Message):
     createTime: Output only. The timestamp when the resource was created.
     description: Optional. A free-text description of the resource. Max length
       1024 characters.
-    gateways: Optional. Gateways defines a list of gateways this TcpRoute is
-      attached to, as one of the routing rules to route the requests served by
-      the gateway. Each gateway reference should match the pattern:
-      `projects/*/locations/global/gateways/`
     labels: Optional. Set of label tags associated with the TcpRoute resource.
     meshes: Optional. Meshes defines a list of meshes this TcpRoute is
       attached to, as one of the routing rules to route the requests served by
@@ -5338,13 +5334,12 @@ class TcpRoute(_messages.Message):
 
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
-  gateways = _messages.StringField(3, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 4)
-  meshes = _messages.StringField(5, repeated=True)
-  name = _messages.StringField(6)
-  rules = _messages.MessageField('TcpRouteRouteRule', 7, repeated=True)
-  selfLink = _messages.StringField(8)
-  updateTime = _messages.StringField(9)
+  labels = _messages.MessageField('LabelsValue', 3)
+  meshes = _messages.StringField(4, repeated=True)
+  name = _messages.StringField(5)
+  rules = _messages.MessageField('TcpRouteRouteRule', 6, repeated=True)
+  selfLink = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
 
 
 class TcpRouteRouteAction(_messages.Message):

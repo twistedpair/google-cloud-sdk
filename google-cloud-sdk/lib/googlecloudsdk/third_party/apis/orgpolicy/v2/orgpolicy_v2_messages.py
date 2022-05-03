@@ -99,6 +99,10 @@ class GoogleCloudOrgpolicyV2ConstraintListConstraint(_messages.Message):
   are configured by an Organization's policy administrator with a `Policy`.
 
   Fields:
+    supportsExpr: Indicates whether CEL expression values can be used in
+      `Policy.allowed_values` and `Policy.denied_values`. For example,
+      "expr:value.matches('a.b')" would match an input value that matches the
+      regular expression 'a.b'.
     supportsIn: Indicates whether values grouped into categories can be used
       in `Policy.allowed_values` and `Policy.denied_values`. For example,
       `"in:Python"` would match any value in the 'Python' group.
@@ -108,8 +112,9 @@ class GoogleCloudOrgpolicyV2ConstraintListConstraint(_messages.Message):
       any resource under the 'folders/123' folder.
   """
 
-  supportsIn = _messages.BooleanField(1)
-  supportsUnder = _messages.BooleanField(2)
+  supportsExpr = _messages.BooleanField(1)
+  supportsIn = _messages.BooleanField(2)
+  supportsUnder = _messages.BooleanField(3)
 
 
 class GoogleCloudOrgpolicyV2CustomConstraint(_messages.Message):

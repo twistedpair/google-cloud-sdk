@@ -2051,7 +2051,7 @@ class TimeSeriesQuery(_messages.Message):
     timeSeriesFilter: Filter parameters to fetch time series.
     timeSeriesFilterRatio: Parameters to fetch a ratio between two time series
       filters.
-    timeSeriesQueryLanguage: A query used to fetch time series.
+    timeSeriesQueryLanguage: A query used to fetch time series with MQL.
     unitOverride: The unit of data contained in fetched time series. If non-
       empty, this unit will override any unit that accompanies fetched data.
       The format is the same as the unit (https://cloud.google.com/monitoring/

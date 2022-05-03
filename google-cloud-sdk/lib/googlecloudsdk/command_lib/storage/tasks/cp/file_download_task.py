@@ -32,6 +32,7 @@ from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import hash_util
 from googlecloudsdk.command_lib.storage import manifest_util
+from googlecloudsdk.command_lib.storage import posix_util
 from googlecloudsdk.command_lib.storage import tracker_file_util
 from googlecloudsdk.command_lib.storage.tasks import task
 from googlecloudsdk.command_lib.storage.tasks import task_util
@@ -218,7 +219,6 @@ class FileDownloadTask(copy_util.CopyTaskWithExitHandler):
   def execute(self, task_status_queue=None):
     """Creates appropriate download tasks."""
     destination_url = self._destination_resource.storage_url
-
     # We need to call os.remove here for two reasons:
     # 1. It saves on disk space during a transfer.
     # 2. Os.rename fails if a file exists at the destination. Avoiding this by
@@ -290,6 +290,13 @@ class FileDownloadTask(copy_util.CopyTaskWithExitHandler):
         temporary_file_url.object_name,
         destination_url.object_name,
         do_not_decompress_flag=self._do_not_decompress)
+
+    if self._user_request_args and self._user_request_args.system_posix_data:
+      posix_util.set_posix_attributes_on_file(
+          destination_url.object_name,
+          task_util.get_first_matching_message_payload(
+              part_download_task_output.messages,
+              task.Topic.API_DOWNLOAD_RESULT).posix_attributes)
 
     # For sliced download, cleanup is done in the finalized sliced download task
     # We perform cleanup here for all other types in case some corrupt files

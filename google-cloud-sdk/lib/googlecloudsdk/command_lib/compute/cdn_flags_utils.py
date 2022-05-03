@@ -66,7 +66,7 @@ def AddCdnPolicyArgs(parser, resource_name, update_command=False):
   the client TTL value if necessary; an Expires header will be replaced with a
   suitable max-age directive.
 
-  The maximum allowed value is 86400s (1 day).
+  The maximum allowed value is 31,622,400s (1 year).
 
   When creating a new backend with CACHE_ALL_STATIC and the field is unset, or
   when switching to that mode and the field is unset, a default value of 3600
@@ -77,7 +77,7 @@ def AddCdnPolicyArgs(parser, resource_name, update_command=False):
   client_ttl_group = parser.add_mutually_exclusive_group()
   client_ttl_group.add_argument(
       '--client-ttl',
-      type=arg_parsers.Duration(upper_bound=86400),
+      type=arg_parsers.Duration(upper_bound=31622400),
       default=None,
       help=client_ttl_help,
   )
