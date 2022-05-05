@@ -4,6 +4,12 @@ Copyright 2014-2022 Google Inc. All rights reserved.
 
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
+## 384.0.1 (2022-05-05)
+
+### Cloud Storage
+
+* Updated gsutil component to 5.10. Google Cloud CLI version 384.0.0 included an older gsutil component (version 5.6) in deb, rpm,
+and snap packages. Version 384.0.1 includes gsutil component version 5.10 in the deb, rpm, and snap packages.
 
 ## 384.0.0 (2022-05-03)
 
