@@ -26,3 +26,11 @@ def DefaultToGlobal():
 def ParseContentVersionTag(content_version_tag):
   """Returns the content_version_tag as a dictionary."""
   return {'content_version_tag': content_version_tag}
+
+
+def SetContentUpdateMask(unused_ref, args, request):
+  if args.bucket:
+    request.updateMask = 'bucketName'
+  elif args.uiconfig:
+    request.updateMask = 'uiconfig'
+  return request

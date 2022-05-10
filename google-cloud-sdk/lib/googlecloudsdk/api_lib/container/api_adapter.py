@@ -1753,6 +1753,11 @@ class APIAdapter(object):
           directMetricsOptIn=options.pod_autoscaling_direct_metrics_opt_in)
       cluster.podAutoscaling = pod_autoscaling_config
 
+    if options.private_endpoint_subnetwork is not None:
+      if cluster.privateClusterConfig is None:
+        cluster.privateClusterConfig = self.messages.PrivateClusterConfig()
+      cluster.privateClusterConfig.privateEndpointSubnetwork = options.private_endpoint_subnetwork
+
     return cluster
 
   def ParseNodeConfig(self, options):
@@ -2190,10 +2195,15 @@ class APIAdapter(object):
     Returns:
       Cluster's autoscaling configuration.
     """
-    del cluster_ref  # Unused in GA.
 
+    # Patch cluster autoscaling if cluster_ref is provided.
     autoscaling = self.messages.ClusterAutoscaling()
-    autoscaling.enableNodeAutoprovisioning = options.enable_autoprovisioning
+    if for_update:
+      cluster = self.GetCluster(cluster_ref) if cluster_ref else None
+      if cluster and cluster.autoscaling:
+        autoscaling.enableNodeAutoprovisioning = cluster.autoscaling.enableNodeAutoprovisioning
+    else:
+      autoscaling.enableNodeAutoprovisioning = options.enable_autoprovisioning
 
     resource_limits = []
     if options.autoprovisioning_config_file is not None:
@@ -5453,8 +5463,6 @@ def _GetKubernetesObjectsExportConfigForClusterUpdate(options, messages):
 def _AddPSCPrivateClustersOptionsToClusterForCreateCluster(
     cluster, options, messages):
   """Adds all PSC private cluster options to cluster during create cluster."""
-  if options.private_endpoint_subnetwork is not None:
-    cluster.privateClusterConfig.privateEndpointSubnetwork = options.private_endpoint_subnetwork
   if options.cross_connect_subnetworks is not None:
     items = []
     for subnetwork in sorted(options.cross_connect_subnetworks):

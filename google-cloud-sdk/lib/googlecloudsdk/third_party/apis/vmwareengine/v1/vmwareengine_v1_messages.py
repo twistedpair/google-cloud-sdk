@@ -30,8 +30,8 @@ class AuditConfig(_messages.Message):
   "audit_log_configs": [ { "log_type": "DATA_READ" }, { "log_type":
   "DATA_WRITE", "exempted_members": [ "user:aliya@example.com" ] } ] } ] } For
   sampleservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ
-  logging. It also exempts jose@example.com from DATA_READ logging, and
-  aliya@example.com from DATA_WRITE logging.
+  logging. It also exempts `jose@example.com` from DATA_READ logging, and
+  `aliya@example.com` from DATA_WRITE logging.
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
@@ -136,32 +136,8 @@ class Cluster(_messages.Message):
   Enums:
     StateValueValuesEnum: Output only. State of the resource.
 
-  Messages:
-    LabelsValue: Deprecated: Labels are a way to attach lightweight metadata
-      to resources for filtering and querying resource data. No more than 64
-      user labels can be associated with each resource. Label keys and values
-      can be no longer than 63 characters, can only contain lowercase letters,
-      numeric characters, underscores and dashes, where label keys must start
-      with a letter and international characters are allowed. The empty string
-      is a valid value. Labels are set on creation and updated like any other
-      field. Specifically, to add a new label, you would need to provide all
-      of the existing labels along with the new label. If you only provide a
-      map with the new label, all of the old labels will be removed (probably
-      not what is desired).
-
   Fields:
     createTime: Output only. Creation time of this resource.
-    labels: Deprecated: Labels are a way to attach lightweight metadata to
-      resources for filtering and querying resource data. No more than 64 user
-      labels can be associated with each resource. Label keys and values can
-      be no longer than 63 characters, can only contain lowercase letters,
-      numeric characters, underscores and dashes, where label keys must start
-      with a letter and international characters are allowed. The empty string
-      is a valid value. Labels are set on creation and updated like any other
-      field. Specifically, to add a new label, you would need to provide all
-      of the existing labels along with the new label. If you only provide a
-      map with the new label, all of the old labels will be removed (probably
-      not what is desired).
     management: Output only. True if the cluster is a management cluster;
       false otherwise. There can only be one management cluster in a private
       cloud and it has to be the first one.
@@ -202,50 +178,15 @@ class Cluster(_messages.Message):
     DELETING = 4
     REPAIRING = 5
 
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    r"""Deprecated: Labels are a way to attach lightweight metadata to
-    resources for filtering and querying resource data. No more than 64 user
-    labels can be associated with each resource. Label keys and values can be
-    no longer than 63 characters, can only contain lowercase letters, numeric
-    characters, underscores and dashes, where label keys must start with a
-    letter and international characters are allowed. The empty string is a
-    valid value. Labels are set on creation and updated like any other field.
-    Specifically, to add a new label, you would need to provide all of the
-    existing labels along with the new label. If you only provide a map with
-    the new label, all of the old labels will be removed (probably not what is
-    desired).
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
   createTime = _messages.StringField(1)
-  labels = _messages.MessageField('LabelsValue', 2)
-  management = _messages.BooleanField(3)
-  name = _messages.StringField(4)
-  nodeCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  nodeCustomCoreCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  nodeTypeId = _messages.StringField(7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
-  uid = _messages.StringField(9)
-  updateTime = _messages.StringField(10)
+  management = _messages.BooleanField(2)
+  name = _messages.StringField(3)
+  nodeCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  nodeCustomCoreCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  nodeTypeId = _messages.StringField(6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  uid = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
 
 
 class Credentials(_messages.Message):
@@ -313,19 +254,6 @@ class ExternalAccessRule(_messages.Message):
     ActionValueValuesEnum: The action that the external access rule performs.
     StateValueValuesEnum: Output only. The state of the resource.
 
-  Messages:
-    LabelsValue: Deprecated: Labels are a way to attach lightweight metadata
-      to resources for filtering and querying resource data. No more than 64
-      user labels can be associated with each resource. Label keys and values
-      can be no longer than 63 characters, can only contain lowercase letters,
-      numeric characters, underscores and dashes, where label keys must start
-      with a letter and international characters are allowed. The empty string
-      is a valid value. Labels are set on creation and updated like any other
-      field. Specifically, to add a new label, you would need to provide all
-      of the existing labels along with the new label. If you only provide a
-      map with the new label, all of the old labels will be removed (probably
-      not what is desired).
-
   Fields:
     action: The action that the external access rule performs.
     createTime: Output only. Creation time of this resource.
@@ -344,17 +272,6 @@ class ExternalAccessRule(_messages.Message):
     ipProtocol: The IP protocol to which the external access rule applies.
       This value can be one of the following three protocol strings: `tcp`,
       `udp`, or `icmp`.
-    labels: Deprecated: Labels are a way to attach lightweight metadata to
-      resources for filtering and querying resource data. No more than 64 user
-      labels can be associated with each resource. Label keys and values can
-      be no longer than 63 characters, can only contain lowercase letters,
-      numeric characters, underscores and dashes, where label keys must start
-      with a letter and international characters are allowed. The empty string
-      is a valid value. Labels are set on creation and updated like any other
-      field. Specifically, to add a new label, you would need to provide all
-      of the existing labels along with the new label. If you only provide a
-      map with the new label, all of the old labels will be removed (probably
-      not what is desired).
     name: Output only. The resource name of this external access rule.
       Resource names are schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
@@ -411,54 +328,19 @@ class ExternalAccessRule(_messages.Message):
     UPDATING = 3
     DELETING = 4
 
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    r"""Deprecated: Labels are a way to attach lightweight metadata to
-    resources for filtering and querying resource data. No more than 64 user
-    labels can be associated with each resource. Label keys and values can be
-    no longer than 63 characters, can only contain lowercase letters, numeric
-    characters, underscores and dashes, where label keys must start with a
-    letter and international characters are allowed. The empty string is a
-    valid value. Labels are set on creation and updated like any other field.
-    Specifically, to add a new label, you would need to provide all of the
-    existing labels along with the new label. If you only provide a map with
-    the new label, all of the old labels will be removed (probably not what is
-    desired).
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
   action = _messages.EnumField('ActionValueValuesEnum', 1)
   createTime = _messages.StringField(2)
   description = _messages.StringField(3)
   destinationIpRanges = _messages.MessageField('IpRange', 4, repeated=True)
   destinationPorts = _messages.StringField(5, repeated=True)
   ipProtocol = _messages.StringField(6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  name = _messages.StringField(8)
-  priority = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  sourceIpRanges = _messages.MessageField('IpRange', 10, repeated=True)
-  sourcePorts = _messages.StringField(11, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
-  uid = _messages.StringField(13)
-  updateTime = _messages.StringField(14)
+  name = _messages.StringField(7)
+  priority = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  sourceIpRanges = _messages.MessageField('IpRange', 9, repeated=True)
+  sourcePorts = _messages.StringField(10, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  uid = _messages.StringField(12)
+  updateTime = _messages.StringField(13)
 
 
 class ExternalAddress(_messages.Message):
@@ -468,36 +350,12 @@ class ExternalAddress(_messages.Message):
   Enums:
     StateValueValuesEnum: Output only. The state of the resource.
 
-  Messages:
-    LabelsValue: Deprecated: Labels are a way to attach lightweight metadata
-      to resources for filtering and querying resource data. No more than 64
-      user labels can be associated with each resource. Label keys and values
-      can be no longer than 63 characters, can only contain lowercase letters,
-      numeric characters, underscores and dashes, where label keys must start
-      with a letter and international characters are allowed. The empty string
-      is a valid value. Labels are set on creation and updated like any other
-      field. Specifically, to add a new label, you would need to provide all
-      of the existing labels along with the new label. If you only provide a
-      map with the new label, all of the old labels will be removed (probably
-      not what is desired).
-
   Fields:
     createTime: Output only. Creation time of this resource.
     description: User-provided description for this resource.
     displayName: User-provided name for this resource.
     externalIp: Output only. The external IP address of a workload VM.
     internalIp: The internal IP address of a workload VM.
-    labels: Deprecated: Labels are a way to attach lightweight metadata to
-      resources for filtering and querying resource data. No more than 64 user
-      labels can be associated with each resource. Label keys and values can
-      be no longer than 63 characters, can only contain lowercase letters,
-      numeric characters, underscores and dashes, where label keys must start
-      with a letter and international characters are allowed. The empty string
-      is a valid value. Labels are set on creation and updated like any other
-      field. Specifically, to add a new label, you would need to provide all
-      of the existing labels along with the new label. If you only provide a
-      map with the new label, all of the old labels will be removed (probably
-      not what is desired).
     name: Output only. The resource name of this external IP address. Resource
       names are schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
@@ -524,50 +382,15 @@ class ExternalAddress(_messages.Message):
     UPDATING = 3
     DELETING = 4
 
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    r"""Deprecated: Labels are a way to attach lightweight metadata to
-    resources for filtering and querying resource data. No more than 64 user
-    labels can be associated with each resource. Label keys and values can be
-    no longer than 63 characters, can only contain lowercase letters, numeric
-    characters, underscores and dashes, where label keys must start with a
-    letter and international characters are allowed. The empty string is a
-    valid value. Labels are set on creation and updated like any other field.
-    Specifically, to add a new label, you would need to provide all of the
-    existing labels along with the new label. If you only provide a map with
-    the new label, all of the old labels will be removed (probably not what is
-    desired).
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
   displayName = _messages.StringField(3)
   externalIp = _messages.StringField(4)
   internalIp = _messages.StringField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  name = _messages.StringField(7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
-  uid = _messages.StringField(9)
-  updateTime = _messages.StringField(10)
+  name = _messages.StringField(6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  uid = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
 
 
 class FetchNetworkPolicyExternalAddressesResponse(_messages.Message):
@@ -1125,19 +948,6 @@ class NetworkPolicy(_messages.Message):
   which span across regions. For a given region, a network policy applies to
   all private clouds in the VPC network associated with the policy.
 
-  Messages:
-    LabelsValue: Deprecated: Labels are a way to attach lightweight metadata
-      to resources for filtering and querying resource data. No more than 64
-      user labels can be associated with each resource. Label keys and values
-      can be no longer than 63 characters, can only contain lowercase letters,
-      numeric characters, underscores and dashes, where label keys must start
-      with a letter and international characters are allowed. The empty string
-      is a valid value. Labels are set on creation and updated like any other
-      field. Specifically, to add a new label, you would need to provide all
-      of the existing labels along with the new label. If you only provide a
-      map with the new label, all of the old labels will be removed (probably
-      not what is desired).
-
   Fields:
     createTime: Output only. Creation time of this resource.
     description: Optional. User-provided description for this network policy.
@@ -1151,17 +961,6 @@ class NetworkPolicy(_messages.Message):
       `internet_access` is also enabled.
     internetAccess: Network service that allows VMware workloads to access the
       internet.
-    labels: Deprecated: Labels are a way to attach lightweight metadata to
-      resources for filtering and querying resource data. No more than 64 user
-      labels can be associated with each resource. Label keys and values can
-      be no longer than 63 characters, can only contain lowercase letters,
-      numeric characters, underscores and dashes, where label keys must start
-      with a letter and international characters are allowed. The empty string
-      is a valid value. Labels are set on creation and updated like any other
-      field. Specifically, to add a new label, you would need to provide all
-      of the existing labels along with the new label. If you only provide a
-      map with the new label, all of the old labels will be removed (probably
-      not what is desired).
     name: Output only. The resource name of this network policy. Resource
       names are schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
@@ -1182,51 +981,16 @@ class NetworkPolicy(_messages.Message):
       ` where `{project}` can either be a project number or a project ID.
   """
 
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    r"""Deprecated: Labels are a way to attach lightweight metadata to
-    resources for filtering and querying resource data. No more than 64 user
-    labels can be associated with each resource. Label keys and values can be
-    no longer than 63 characters, can only contain lowercase letters, numeric
-    characters, underscores and dashes, where label keys must start with a
-    letter and international characters are allowed. The empty string is a
-    valid value. Labels are set on creation and updated like any other field.
-    Specifically, to add a new label, you would need to provide all of the
-    existing labels along with the new label. If you only provide a map with
-    the new label, all of the old labels will be removed (probably not what is
-    desired).
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
   edgeServicesCidr = _messages.StringField(3)
   externalIp = _messages.MessageField('NetworkService', 4)
   internetAccess = _messages.MessageField('NetworkService', 5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  name = _messages.StringField(7)
-  network = _messages.StringField(8)
-  uid = _messages.StringField(9)
-  updateTime = _messages.StringField(10)
-  vmwareEngineNetwork = _messages.StringField(11)
+  name = _messages.StringField(6)
+  network = _messages.StringField(7)
+  uid = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
+  vmwareEngineNetwork = _messages.StringField(10)
 
 
 class NetworkService(_messages.Message):
@@ -1599,19 +1363,6 @@ class PrivateCloud(_messages.Message):
     StateValueValuesEnum: Output only. State of the resource. New values may
       be added to this enum when appropriate.
 
-  Messages:
-    LabelsValue: Deprecated: Labels are a way to attach lightweight metadata
-      to resources for filtering and querying resource data. No more than 64
-      user labels can be associated with each resource. Label keys and values
-      can be no longer than 63 characters, can only contain lowercase letters,
-      numeric characters, underscores and dashes, where label keys must start
-      with a letter and international characters are allowed. The empty string
-      is a valid value. Labels are set on creation and updated like any other
-      field. Specifically, to add a new label, you would need to provide all
-      of the existing labels along with the new label. If you only provide a
-      map with the new label, all of the old labels will be removed (probably
-      not what is desired).
-
   Fields:
     createTime: Output only. Creation time of this resource.
     deleteTime: Output only. Time when the resource was scheduled for
@@ -1620,17 +1371,6 @@ class PrivateCloud(_messages.Message):
     expireTime: Output only. Time when the resource will be irreversibly
       deleted.
     hcx: Output only. HCX appliance.
-    labels: Deprecated: Labels are a way to attach lightweight metadata to
-      resources for filtering and querying resource data. No more than 64 user
-      labels can be associated with each resource. Label keys and values can
-      be no longer than 63 characters, can only contain lowercase letters,
-      numeric characters, underscores and dashes, where label keys must start
-      with a letter and international characters are allowed. The empty string
-      is a valid value. Labels are set on creation and updated like any other
-      field. Specifically, to add a new label, you would need to provide all
-      of the existing labels along with the new label. If you only provide a
-      map with the new label, all of the old labels will be removed (probably
-      not what is desired).
     managementCluster: Input only. The management cluster for this private
       cloud. This field is required during creation of the private cloud to
       provide details for the default cluster. The following fields can't be
@@ -1672,54 +1412,19 @@ class PrivateCloud(_messages.Message):
     DELETED = 5
     PURGING = 6
 
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    r"""Deprecated: Labels are a way to attach lightweight metadata to
-    resources for filtering and querying resource data. No more than 64 user
-    labels can be associated with each resource. Label keys and values can be
-    no longer than 63 characters, can only contain lowercase letters, numeric
-    characters, underscores and dashes, where label keys must start with a
-    letter and international characters are allowed. The empty string is a
-    valid value. Labels are set on creation and updated like any other field.
-    Specifically, to add a new label, you would need to provide all of the
-    existing labels along with the new label. If you only provide a map with
-    the new label, all of the old labels will be removed (probably not what is
-    desired).
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
   createTime = _messages.StringField(1)
   deleteTime = _messages.StringField(2)
   description = _messages.StringField(3)
   expireTime = _messages.StringField(4)
   hcx = _messages.MessageField('Hcx', 5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  managementCluster = _messages.MessageField('ManagementCluster', 7)
-  name = _messages.StringField(8)
-  networkConfig = _messages.MessageField('NetworkConfig', 9)
-  nsx = _messages.MessageField('Nsx', 10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  uid = _messages.StringField(12)
-  updateTime = _messages.StringField(13)
-  vcenter = _messages.MessageField('Vcenter', 14)
+  managementCluster = _messages.MessageField('ManagementCluster', 6)
+  name = _messages.StringField(7)
+  networkConfig = _messages.MessageField('NetworkConfig', 8)
+  nsx = _messages.MessageField('Nsx', 9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  uid = _messages.StringField(11)
+  updateTime = _messages.StringField(12)
+  vcenter = _messages.MessageField('Vcenter', 13)
 
 
 class ResetNsxCredentialsRequest(_messages.Message):
@@ -1973,19 +1678,6 @@ class VmwareEngineNetwork(_messages.Message):
     StateValueValuesEnum: Output only. State of the VMware Engine network.
     TypeValueValuesEnum: Required. VMware Engine network type.
 
-  Messages:
-    LabelsValue: Deprecated: Labels are a way to attach lightweight metadata
-      to resources for filtering and querying resource data. No more than 64
-      user labels can be associated with each resource. Label keys and values
-      can be no longer than 63 characters, can only contain lowercase letters,
-      numeric characters, underscores and dashes, where label keys must start
-      with a letter and international characters are allowed. The empty string
-      is a valid value. Labels are set on creation and updated like any other
-      field. Specifically, to add a new label, you would need to provide all
-      of the existing labels along with the new label. If you only provide a
-      map with the new label, all of the old labels will be removed (probably
-      not what is desired).
-
   Fields:
     createTime: Output only. Creation time of this resource.
     description: User-provided description for this VMware Engine network.
@@ -1993,17 +1685,6 @@ class VmwareEngineNetwork(_messages.Message):
       that the user-provided value is up to date before the server processes a
       request. The server computes checksums based on the value of other
       fields in the request.
-    labels: Deprecated: Labels are a way to attach lightweight metadata to
-      resources for filtering and querying resource data. No more than 64 user
-      labels can be associated with each resource. Label keys and values can
-      be no longer than 63 characters, can only contain lowercase letters,
-      numeric characters, underscores and dashes, where label keys must start
-      with a letter and international characters are allowed. The empty string
-      is a valid value. Labels are set on creation and updated like any other
-      field. Specifically, to add a new label, you would need to provide all
-      of the existing labels along with the new label. If you only provide a
-      map with the new label, all of the old labels will be removed (probably
-      not what is desired).
     name: Output only. The resource name of the VMware Engine network.
       Resource names are schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
@@ -2048,50 +1729,15 @@ class VmwareEngineNetwork(_messages.Message):
     LEGACY = 1
     STANDARD = 2
 
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    r"""Deprecated: Labels are a way to attach lightweight metadata to
-    resources for filtering and querying resource data. No more than 64 user
-    labels can be associated with each resource. Label keys and values can be
-    no longer than 63 characters, can only contain lowercase letters, numeric
-    characters, underscores and dashes, where label keys must start with a
-    letter and international characters are allowed. The empty string is a
-    valid value. Labels are set on creation and updated like any other field.
-    Specifically, to add a new label, you would need to provide all of the
-    existing labels along with the new label. If you only provide a map with
-    the new label, all of the old labels will be removed (probably not what is
-    desired).
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
   etag = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
-  type = _messages.EnumField('TypeValueValuesEnum', 7)
-  uid = _messages.StringField(8)
-  updateTime = _messages.StringField(9)
-  vpcNetworks = _messages.MessageField('VpcNetwork', 10, repeated=True)
+  name = _messages.StringField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+  type = _messages.EnumField('TypeValueValuesEnum', 6)
+  uid = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
+  vpcNetworks = _messages.MessageField('VpcNetwork', 9, repeated=True)
 
 
 class VmwareengineProjectsLocationsGetRequest(_messages.Message):

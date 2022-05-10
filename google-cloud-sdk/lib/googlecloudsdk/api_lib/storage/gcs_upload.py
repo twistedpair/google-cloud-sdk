@@ -33,8 +33,14 @@ from googlecloudsdk.core.util import scaled_integer
 class _Upload:
   """Base class shared by different upload strategies."""
 
-  def __init__(self, gcs_api, http_client, source_stream, destination_resource,
-               should_gzip_in_flight, request_config):
+  def __init__(self,
+               gcs_api,
+               http_client,
+               source_stream,
+               destination_resource,
+               should_gzip_in_flight,
+               request_config,
+               source_resource=None):
     """Initializes an _Upload instance.
 
     Args:
@@ -46,6 +52,8 @@ class _Upload:
       should_gzip_in_flight (bool): Should gzip encode upload in flight.
       request_config (gcs_api.GcsRequestConfig): Tracks additional request
         preferences.
+      source_resource (resource_reference.FileObjectResource|None): Contains the
+        source StorageUrl. Can be None if source is pure stream.
     """
     self._gcs_api = gcs_api
     self._http_client = http_client
@@ -53,6 +61,7 @@ class _Upload:
     self._destination_resource = destination_resource
     self._should_gzip_in_flight = should_gzip_in_flight
     self._request_config = request_config
+    self._source_resource = source_resource
 
   def _get_validated_insert_request(self):
     """Get an insert request that includes validated object metadata."""
@@ -67,8 +76,13 @@ class _Upload:
     object_metadata = self._gcs_api.messages.Object(
         name=self._destination_resource.storage_url.object_name,
         bucket=self._destination_resource.storage_url.bucket_name)
+
+    if self._source_resource:
+      source_file_path = self._source_resource.storage_url.object_name
+    else:
+      source_file_path = None
     gcs_metadata_util.update_object_metadata_from_request_config(
-        object_metadata, self._request_config)
+        object_metadata, self._request_config, source_file_path)
 
     return self._gcs_api.messages.StorageObjectsInsertRequest(
         bucket=object_metadata.bucket,
@@ -117,6 +131,7 @@ class ResumableUpload(_Upload):
                destination_resource,
                should_gzip_in_flight,
                request_config,
+               source_resource=None,
                serialization_data=None,
                tracker_callback=None):
     """Initializes a ResumableUpload instance.
@@ -127,9 +142,10 @@ class ResumableUpload(_Upload):
       serialization_data (dict): JSON used by apitools to resume an upload.
     """
     # pylint: enable=g-doc-args
-    super(ResumableUpload, self).__init__(gcs_api, http_client, source_stream,
-                                          destination_resource,
-                                          should_gzip_in_flight, request_config)
+    super(ResumableUpload,
+          self).__init__(gcs_api, http_client, source_stream,
+                         destination_resource, should_gzip_in_flight,
+                         request_config, source_resource)
     self._serialization_data = serialization_data
     self._tracker_callback = tracker_callback
 

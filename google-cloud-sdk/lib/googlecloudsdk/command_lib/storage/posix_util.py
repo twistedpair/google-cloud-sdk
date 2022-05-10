@@ -30,8 +30,6 @@ from googlecloudsdk.core.util import platforms
 SETTING_INVALID_POSIX_ERROR = ValueError(
     'Setting preserved POSIX data will result in invalid file metadata.')
 
-# Set instead of applying invalid UID or GID.
-_INVALID_ID = -1
 # For transporting POSIX info through an object's custom metadata.
 _ATIME_METADATA_KEY = 'goog-reserved-file-atime'
 _GID_METADATA_KEY = 'goog-reserved-posix-gid'
@@ -83,6 +81,10 @@ class PosixMode:
     return (self.base_ten_int == other.base_ten_int and
             self.base_eight_str == other.base_eight_str)
 
+  def __repr__(self):
+    return '(base-ten int: {}, base-eight str: {})'.format(
+        self.base_ten_int, self.base_eight_str)
+
 
 # Holds system-wide POSIX information.
 #
@@ -94,16 +96,8 @@ SystemPosixData = collections.namedtuple('SystemPosixData',
                                          ['default_mode', 'user_groups'])
 
 
-def get_system_posix_data():
-  """Gets POSIX info that should only be fetched once."""
-  if platforms.OperatingSystem.IsWindows():
-    return None
-  # POSIX modules and os.getuid not available on Windows.
-  # pylint:disable=g-import-not-at-top
-  import grp
-  import pwd
-  # pylint:enable=g-import-not-at-top
-
+def _get_default_mode():
+  """Gets default permissions files are created with as PosixMode object."""
   # umask returns the permissions that should not be granted, so they must be
   # subtracted from the maximum set of permissions.
   max_permissions = 0o777
@@ -114,19 +108,35 @@ def get_system_posix_data():
   # Reset to the default umask.
   os.umask(current_umask)
   mode = max_permissions - current_umask
-  # TODO(b/229091605): Use PosixMode object.
   # Files are not given execute privileges by default. Therefore we need to
   # subtract one from every odd permissions value. This is done via a bitmask.
-  default_mode = oct(mode & 0o666)[-3:]
+  mode_without_execution = mode & 0o666
+  return PosixMode.from_base_ten_int(mode_without_execution)
 
+
+def _get_user_groups():
+  """Gets set of POSIX groups the user is part of."""
+  # POSIX modules and os.getuid not available on Windows.
+  # pylint:disable=g-import-not-at-top
+  import grp
+  import pwd
+  # pylint:enable=g-import-not-at-top
   user_id = os.getuid()
   user_name = pwd.getpwuid(user_id).pw_name
-  user_groups = set(
+  return set(
       # Primary group.
       [pwd.getpwuid(user_id).pw_gid] +
       # Secondary groups.
       [g.gr_gid for g in grp.getgrall() if user_name in g.gr_mem])
 
+
+def get_system_posix_data():
+  """Gets POSIX info that should only be fetched once."""
+  if platforms.OperatingSystem.IsWindows():
+    return SystemPosixData(None, None)
+
+  default_mode = _get_default_mode()
+  user_groups = _get_user_groups()
   return SystemPosixData(default_mode, user_groups)
 
 
@@ -396,12 +406,18 @@ def update_custom_metadata_dict_with_posix_attributes(metadata_dict,
 
 
 def raise_if_source_and_destination_not_valid_for_preserve_posix(
-    user_request_args, source_url, destination_url):
+    source_url, destination_url, user_request_args=None):
   """Logs errors and returns bool indicating if transfer is valid for POSIX."""
-  if not user_request_args.system_posix_data:
+  if not (user_request_args and user_request_args.system_posix_data):
     return
+
   if isinstance(source_url, storage_url.FileUrl) and source_url.is_pipe:
-    raise ValueError('Cannot preserve POSIX data from pipe source.')
+    raise ValueError(
+        'Cannot preserve POSIX data from pipe: {}'.format(source_url))
+  if isinstance(destination_url,
+                storage_url.FileUrl) and destination_url.is_pipe:
+    raise ValueError(
+        'Cannot write POSIX data to pipe: {}'.format(destination_url))
   if isinstance(source_url, storage_url.CloudUrl) and isinstance(
       destination_url, storage_url.CloudUrl):
     raise ValueError('Cannot preserve POSIX data for cloud-to-cloud copies')

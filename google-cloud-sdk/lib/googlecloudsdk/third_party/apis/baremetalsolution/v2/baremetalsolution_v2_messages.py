@@ -125,6 +125,19 @@ class BaremetalsolutionProjectsLocationsInstancesAttachVolumeRequest(_messages.M
   instance = _messages.StringField(2, required=True)
 
 
+class BaremetalsolutionProjectsLocationsInstancesDetachLunRequest(_messages.Message):
+  r"""A BaremetalsolutionProjectsLocationsInstancesDetachLunRequest object.
+
+  Fields:
+    detachLunRequest: A DetachLunRequest resource to be passed as the request
+      body.
+    instance: Required. Name of the instance.
+  """
+
+  detachLunRequest = _messages.MessageField('DetachLunRequest', 1)
+  instance = _messages.StringField(2, required=True)
+
+
 class BaremetalsolutionProjectsLocationsInstancesDetachVolumeRequest(_messages.Message):
   r"""A BaremetalsolutionProjectsLocationsInstancesDetachVolumeRequest object.
 
@@ -751,12 +764,22 @@ class BaremetalsolutionProjectsLocationsVolumesSnapshotsRestoreVolumeSnapshotReq
   volumeSnapshot = _messages.StringField(2, required=True)
 
 
-class DetachVolumeRequest(_messages.Message):
-  r"""Message for detaching Volume to an instance. All Luns of the Volume will
-  be attached.
+class DetachLunRequest(_messages.Message):
+  r"""Message for detach specific LUN from an Instance.
 
   Fields:
-    volume: Required. Name of the Volume to detach from.
+    lun: Required. Name of the Lun to detach.
+  """
+
+  lun = _messages.StringField(1)
+
+
+class DetachVolumeRequest(_messages.Message):
+  r"""Message for detaching Volume from an instance. All Luns of the Volume
+  will be detached.
+
+  Fields:
+    volume: Required. Name of the Volume to detach.
   """
 
   volume = _messages.StringField(1)

@@ -5372,34 +5372,6 @@
                       ],
                       "description": "Get a content resource."
                     },
-                    "setIamPolicy": {
-                      "id": "dataplex.projects.locations.lakes.contentitems.setIamPolicy",
-                      "path": "v1/{+resource}:setIamPolicy",
-                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/contentitems/{contentitemsId}:setIamPolicy",
-                      "httpMethod": "POST",
-                      "parameters": {
-                        "resource": {
-                          "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/lakes\/[^\/]+\/contentitems\/.*$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "resource"
-                      ],
-                      "request": {
-                        "$ref": "GoogleIamV1SetIamPolicyRequest"
-                      },
-                      "response": {
-                        "$ref": "GoogleIamV1Policy"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Sets the access control policy on the specified contentitem resource. Replaces any existing policy.Caller must have Google IAM dataplex.content.setIamPolicy permission on the resource."
-                    },
                     "list": {
                       "id": "dataplex.projects.locations.lakes.contentitems.list",
                       "path": "v1/{+parent}/contentitems",

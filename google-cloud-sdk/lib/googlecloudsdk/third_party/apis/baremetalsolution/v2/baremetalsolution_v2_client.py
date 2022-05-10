@@ -127,6 +127,33 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def DetachLun(self, request, global_params=None):
+      r"""Detach LUN from Instance.
+
+      Args:
+        request: (BaremetalsolutionProjectsLocationsInstancesDetachLunRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('DetachLun')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DetachLun.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:detachLun',
+        http_method='POST',
+        method_id='baremetalsolution.projects.locations.instances.detachLun',
+        ordered_params=['instance'],
+        path_params=['instance'],
+        query_params=[],
+        relative_path='v2/{+instance}:detachLun',
+        request_field='detachLunRequest',
+        request_type_name='BaremetalsolutionProjectsLocationsInstancesDetachLunRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def DetachVolume(self, request, global_params=None):
       r"""Detach volume from instance.
 
@@ -981,7 +1008,7 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
           }
 
     def Delete(self, request, global_params=None):
-      r"""Delete a Lun.
+      r"""Delete a Lun. Lun shouldn't be attached to any Instances.
 
       Args:
         request: (BaremetalsolutionProjectsLocationsVolumesLunsDeleteRequest) input message

@@ -587,6 +587,7 @@ def PasswordPolicy(sql_messages,
                    password_policy_reuse_interval=None,
                    password_policy_disallow_username_substring=None,
                    password_policy_password_change_interval=None,
+                   enable_password_policy=None,
                    clear_password_policy=None):
   """Generates or clears password policy for the instance.
 
@@ -600,6 +601,8 @@ def PasswordPolicy(sql_messages,
       username as a part of the password.
     password_policy_password_change_interval: duration, Minimum interval at
       which password can be changed.
+    enable_password_policy: boolean, True if password validation
+      policy is enabled.
     clear_password_policy: boolean, True if clear existing password policy.
 
   Returns:
@@ -612,6 +615,7 @@ def PasswordPolicy(sql_messages,
       password_policy_reuse_interval is not None,
       password_policy_disallow_username_substring is not None,
       password_policy_password_change_interval is not None,
+      enable_password_policy is not None,
   ])
   if not should_generate_policy or clear_password_policy:
     return None
@@ -631,5 +635,7 @@ def PasswordPolicy(sql_messages,
   if password_policy_password_change_interval is not None:
     password_policy.passwordChangeInterval = str(
         password_policy_password_change_interval) + 's'
+  if enable_password_policy is not None:
+    password_policy.enablePasswordPolicy = enable_password_policy
 
   return password_policy

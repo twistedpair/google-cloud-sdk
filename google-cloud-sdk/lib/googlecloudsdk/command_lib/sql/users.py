@@ -19,6 +19,26 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import base
+from googlecloudsdk.calliope import exceptions
+
+
+def ParseDualPasswordType(sql_messages, args):
+  """Parses the correct retained password type for the arguments given.
+
+  Args:
+    sql_messages: the proto definition for the API being called
+    args: argparse.Namespace, The arguments that this command was invoked with.
+
+  Returns:
+    DualPasswordType enum or None
+  """
+  if args.discard_dual_password:
+    return sql_messages.User.DualPasswordTypeValueValuesEnum.NO_DUAL_PASSWORD
+
+  if args.retain_password:
+    return sql_messages.User.DualPasswordTypeValueValuesEnum.DUAL_PASSWORD
+
+  return None
 
 
 def ParseUserType(sql_messages, args):
@@ -26,6 +46,30 @@ def ParseUserType(sql_messages, args):
     return sql_messages.User.TypeValueValuesEnum.lookup_by_name(
         args.type.upper())
   return None
+
+
+def ValidateSetPasswordRequest(args):
+  """Validates that the arguments for setting a password are correct.
+
+  Args:
+    args: argparse.Namespace, The arguments that this command was invoked with.
+
+  Returns:
+    throws exception or None
+  """
+  # Cannot retain an empty password
+  if hasattr(args,
+             'retain_password') and args.retain_password and not args.password:
+    raise exceptions.InvalidArgumentException(
+        '--retain-password', 'Must set --password to non-empty'
+        ' value.')
+
+  if hasattr(
+      args,
+      'discard_dual_password') and args.discard_dual_password and args.password:
+    raise exceptions.InvalidArgumentException(
+        '--discard-dual-password', 'Cannot set --password to non-empty value ' +
+        'while discarding the old password.')
 
 
 def CreatePasswordPolicyFromArgs(sql_messages, release_track, args):

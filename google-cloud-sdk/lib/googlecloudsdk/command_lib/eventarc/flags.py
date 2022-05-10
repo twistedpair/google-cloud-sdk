@@ -172,9 +172,8 @@ def AddCreateTrigerResourceArgs(parser, release_track):
             presentation_specs.ResourcePresentationSpec(
                 '--channel',
                 ChannelResourceSpec(),
-                'The channel to use in the trigger.',
-                flag_name_overrides={'location': ''},
-                hidden=True)
+                'The channel to use in the trigger. The channel is needed only if trigger is created for a third-party provider.',
+                flag_name_overrides={'location': ''})
         ],
         # This configures the fallthrough from the channel 's location to
         # the primary flag for the trigger's location.
@@ -583,7 +582,7 @@ def AddCreateChannelArg(parser):
           presentation_specs.ResourcePresentationSpec(
               'channel',
               ChannelResourceSpec(),
-              'Channel to create',
+              'Channel to create.',
               required=True),
           presentation_specs.ResourcePresentationSpec(
               '--provider',

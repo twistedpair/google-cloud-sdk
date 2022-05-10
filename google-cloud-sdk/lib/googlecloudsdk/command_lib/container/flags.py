@@ -4299,7 +4299,10 @@ Converts a cluster from Autopilot mode to Standard mode."""
 
 def AddPrivateEndpointSubnetworkFlag(parser, hidden=True):
   """Adds the argument to handle private endpoint subnetwork."""
-  help_text = ' '
+  help_text = """\
+  Sets the subnetwork GKE uses to provision the control plane's
+  private endpoint.
+  """
   parser.add_argument(
       '--private-endpoint-subnetwork',
       help=help_text,
@@ -4463,10 +4466,15 @@ Pod cidr overprovisioning is enabled by default.
       hidden=False)
 
 
-def AddNodePoolEnablePrivateNodes(parser, for_update=False, hidden=True):  # pylint: disable=unused-argument
+def AddNodePoolEnablePrivateNodes(parser, hidden=True):
   """Adds a --enable-private-nodes to the given node-pool parser."""
-  help_text = ' '
-  # TODO(b/179052417) - make different help text for update & create operations.
+  help_text = """\
+  Enables provisioning nodes with private IP addresses only.
+
+  The control plane still communicates with all nodes through
+  private IP addresses only, regardless of whether private
+  nodes are enabled or disabled.
+"""
   parser.add_argument(
       '--enable-private-nodes',
       hidden=hidden,

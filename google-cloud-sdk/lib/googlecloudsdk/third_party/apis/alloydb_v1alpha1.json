@@ -439,7 +439,7 @@
     },
     "AutomatedBackupPolicy": {
       "id": "AutomatedBackupPolicy",
-      "description": "Message describing the user-specified automated backup policy. NEXT_ID: 8",
+      "description": "Message describing the user-specified automated backup policy. NEXT_ID: 9",
       "type": "object",
       "properties": {
         "enabled": {

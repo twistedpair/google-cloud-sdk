@@ -5,7 +5,7 @@
   "name": "firestore",
   "canonicalName": "Firestore",
   "version": "v1",
-  "revision": "20220421",
+  "revision": "20220429",
   "title": "Cloud Firestore API",
   "description": "Accesses the NoSQL document database built for automatic scaling, high performance, and ease of application development. ",
   "ownerDomain": "google.com",
@@ -1300,6 +1300,10 @@
           "description": "The number of results that have been skipped due to an offset between the last response and the current response.",
           "type": "integer",
           "format": "int32"
+        },
+        "done": {
+          "description": "If present, Firestore has completely finished the request and no more documents will be returned.",
+          "type": "boolean"
         }
       }
     },

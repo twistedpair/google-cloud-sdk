@@ -767,6 +767,7 @@ class Device(_messages.Message):
     encryptionState: Output only. Device encryption state.
     endpointVerificationSpecificAttributes: Output only. Attributes specific
       to Endpoint Verification (SecureConnect) devices.
+    hostname: Host name of the device.
     imei: Output only. IMEI number of device if GSM device; empty otherwise.
     kernelVersion: Output only. Kernel version of the device.
     lastSyncTime: Most recent time when device synced with this service.
@@ -893,22 +894,23 @@ class Device(_messages.Message):
   enabledUsbDebugging = _messages.BooleanField(12)
   encryptionState = _messages.EnumField('EncryptionStateValueValuesEnum', 13)
   endpointVerificationSpecificAttributes = _messages.MessageField('EndpointVerificationSpecificAttributes', 14)
-  imei = _messages.StringField(15)
-  kernelVersion = _messages.StringField(16)
-  lastSyncTime = _messages.StringField(17)
-  managementState = _messages.EnumField('ManagementStateValueValuesEnum', 18)
-  manufacturer = _messages.StringField(19)
-  meid = _messages.StringField(20)
-  model = _messages.StringField(21)
-  name = _messages.StringField(22)
-  networkOperator = _messages.StringField(23)
-  osVersion = _messages.StringField(24)
-  otherAccounts = _messages.StringField(25, repeated=True)
-  ownerType = _messages.EnumField('OwnerTypeValueValuesEnum', 26)
-  releaseVersion = _messages.StringField(27)
-  securityPatchTime = _messages.StringField(28)
-  serialNumber = _messages.StringField(29)
-  wifiMacAddresses = _messages.StringField(30, repeated=True)
+  hostname = _messages.StringField(15)
+  imei = _messages.StringField(16)
+  kernelVersion = _messages.StringField(17)
+  lastSyncTime = _messages.StringField(18)
+  managementState = _messages.EnumField('ManagementStateValueValuesEnum', 19)
+  manufacturer = _messages.StringField(20)
+  meid = _messages.StringField(21)
+  model = _messages.StringField(22)
+  name = _messages.StringField(23)
+  networkOperator = _messages.StringField(24)
+  osVersion = _messages.StringField(25)
+  otherAccounts = _messages.StringField(26, repeated=True)
+  ownerType = _messages.EnumField('OwnerTypeValueValuesEnum', 27)
+  releaseVersion = _messages.StringField(28)
+  securityPatchTime = _messages.StringField(29)
+  serialNumber = _messages.StringField(30)
+  wifiMacAddresses = _messages.StringField(31, repeated=True)
 
 
 class DeviceUser(_messages.Message):

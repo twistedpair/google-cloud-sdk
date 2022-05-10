@@ -97,12 +97,15 @@ class CustomDomainFormatter(base_formatter.BaseFormatter):
     ssl_status = self._GetSSLStatus(resource_components)
     ip = resource_status.get('routerDetails', {}).get('ipAddress')
     if domain and ip and ssl_status != states.ACTIVE:
+      domain_padding = len(domain) - len('NAME')
+      padding_string = ' ' * domain_padding
       con = console_attr.GetConsoleAttr()
-      return ('{} To complete the process, please ensure the following '
-              'DNS records are configured on the domain "{}":\n'
-              '    A: {}\n'
-              'It can take up to an hour for the certificate to provisioned.'
-              .format(con.Colorize('!', 'yellow'), domain, ip))
+      return ('{0} To complete the process, please ensure the following '
+              'DNS records are configured for the domain "{1}":\n'
+              '    NAME{2}  TTL   TYPE  DATA\n'
+              '    {1}  3600  A     {3}\n'
+              'It can take up to an hour for the certificate to be provisioned.'
+              .format(con.Colorize('!', 'yellow'), domain, padding_string, ip))
     return None
 
   def _GetServiceName(self, ref):

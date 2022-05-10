@@ -616,7 +616,7 @@ class AlloydbProjectsLocationsSupportedDatabaseFlagsListRequest(_messages.Messag
 
 class AutomatedBackupPolicy(_messages.Message):
   r"""Message describing the user-specified automated backup policy. NEXT_ID:
-  8
+  9
 
   Messages:
     LabelsValue: Labels to apply to backups created using this configuration.
@@ -694,11 +694,6 @@ class Backup(_messages.Message):
     deleteTime: Output only. Delete time stamp
     description: User-provided description of the backup.
     displayName: User-settable and human-readable display name for the Backup.
-    encryptionConfig: The encryption config can be specified to encrypt the
-      backup with a customer-managed encryption key (CMEK). When this field is
-      not specified, the backup will then use default encryption scheme to
-      protect the user data.
-    encryptionInfo: Output only. The encryption information for the backup.
     etag: For Resource freshness validation (https://google.aip.dev/154)
     labels: Labels as key value pairs
     name: Output only. The name of the backup resource with the format: *
@@ -807,16 +802,14 @@ class Backup(_messages.Message):
   deleteTime = _messages.StringField(4)
   description = _messages.StringField(5)
   displayName = _messages.StringField(6)
-  encryptionConfig = _messages.MessageField('EncryptionConfig', 7)
-  encryptionInfo = _messages.MessageField('EncryptionInfo', 8)
-  etag = _messages.StringField(9)
-  labels = _messages.MessageField('LabelsValue', 10)
-  name = _messages.StringField(11)
-  reconciling = _messages.BooleanField(12)
-  state = _messages.EnumField('StateValueValuesEnum', 13)
-  type = _messages.EnumField('TypeValueValuesEnum', 14)
-  uid = _messages.StringField(15)
-  updateTime = _messages.StringField(16)
+  etag = _messages.StringField(7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  name = _messages.StringField(9)
+  reconciling = _messages.BooleanField(10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  type = _messages.EnumField('TypeValueValuesEnum', 12)
+  uid = _messages.StringField(13)
+  updateTime = _messages.StringField(14)
 
 
 class BackupSource(_messages.Message):
@@ -867,12 +860,6 @@ class Cluster(_messages.Message):
     deleteTime: Output only. Delete time stamp
     displayName: User-settable and human-readable display name for the
       Cluster.
-    encryptionConfig: The encryption config can be specified to encrypt the
-      data disks and other persistent data resources of a cluster with a
-      customer-managed encryption key (CMEK). When this field is not
-      specified, the cluster will then use default encryption scheme to
-      protect the user data.
-    encryptionInfo: Output only. The encryption information for the cluster.
     etag: For Resource freshness validation (https://google.aip.dev/154)
     initialUser: Input only. Initial user to setup during cluster creation.
       Required. If used in `RestoreCluster` this is ignored. We intend to
@@ -1007,19 +994,17 @@ class Cluster(_messages.Message):
   databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 5)
   deleteTime = _messages.StringField(6)
   displayName = _messages.StringField(7)
-  encryptionConfig = _messages.MessageField('EncryptionConfig', 8)
-  encryptionInfo = _messages.MessageField('EncryptionInfo', 9)
-  etag = _messages.StringField(10)
-  initialUser = _messages.MessageField('UserPassword', 11)
-  labels = _messages.MessageField('LabelsValue', 12)
-  migrationSource = _messages.MessageField('MigrationSource', 13)
-  name = _messages.StringField(14)
-  network = _messages.StringField(15)
-  reconciling = _messages.BooleanField(16)
-  sslConfig = _messages.MessageField('SslConfig', 17)
-  state = _messages.EnumField('StateValueValuesEnum', 18)
-  uid = _messages.StringField(19)
-  updateTime = _messages.StringField(20)
+  etag = _messages.StringField(8)
+  initialUser = _messages.MessageField('UserPassword', 9)
+  labels = _messages.MessageField('LabelsValue', 10)
+  migrationSource = _messages.MessageField('MigrationSource', 11)
+  name = _messages.StringField(12)
+  network = _messages.StringField(13)
+  reconciling = _messages.BooleanField(14)
+  sslConfig = _messages.MessageField('SslConfig', 15)
+  state = _messages.EnumField('StateValueValuesEnum', 16)
+  uid = _messages.StringField(17)
+  updateTime = _messages.StringField(18)
 
 
 class ConnectionInfo(_messages.Message):
@@ -1050,52 +1035,6 @@ class Empty(_messages.Message):
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
 
-
-
-class EncryptionConfig(_messages.Message):
-  r"""EncryptionConfig describes the encryption config of a cluster or a
-  backup that is encrypted with a CMEK (customer-managed encryption key).
-
-  Fields:
-    kmsKeyName: The fully-qualified resource name of the KMS key. Each Cloud
-      KMS key is regionalized and has the following format: projects/[PROJECT]
-      /locations/[REGION]/keyRings/[RING]/cryptoKeys/[KEY_NAME]
-  """
-
-  kmsKeyName = _messages.StringField(1)
-
-
-class EncryptionInfo(_messages.Message):
-  r"""EncryptionInfo describes the encryption information of a cluster or a
-  backup. NEXT_ID: 3
-
-  Enums:
-    EncryptionTypeValueValuesEnum: Output only. Type of encryption.
-
-  Fields:
-    encryptionType: Output only. Type of encryption.
-    kmsKeyVersions: Output only. Cloud KMS key versions that are being used to
-      protect the database or the backup.
-  """
-
-  class EncryptionTypeValueValuesEnum(_messages.Enum):
-    r"""Output only. Type of encryption.
-
-    Values:
-      TYPE_UNSPECIFIED: Encryption type not specified. Defaults to
-        GOOGLE_DEFAULT_ENCRYPTION.
-      GOOGLE_DEFAULT_ENCRYPTION: The data is encrypted at rest with a key that
-        is fully managed by Google. No key version will be populated. This is
-        the default state.
-      CUSTOMER_MANAGED_ENCRYPTION: The data is encrypted at rest with a key
-        that is managed by the customer. KMS key versions will be populated.
-    """
-    TYPE_UNSPECIFIED = 0
-    GOOGLE_DEFAULT_ENCRYPTION = 1
-    CUSTOMER_MANAGED_ENCRYPTION = 2
-
-  encryptionType = _messages.EnumField('EncryptionTypeValueValuesEnum', 1)
-  kmsKeyVersions = _messages.StringField(2, repeated=True)
 
 
 class FailoverInstanceRequest(_messages.Message):
@@ -1810,10 +1749,11 @@ class RestartInstanceRequest(_messages.Message):
 
 
 class RestoreClusterRequest(_messages.Message):
-  r"""Message for restoring a Cluster from a backup
+  r"""Message for restoring a Cluster from a backup or another cluster at a
+  given point in time.
 
   Fields:
-    backupSource: Required. Backup source.
+    backupSource: Backup source.
     cluster: Required. The resource being created
     clusterId: Required. Id of the requesting object If auto-generating Id
       server-side, remove this field and cluster_id from the method_signature

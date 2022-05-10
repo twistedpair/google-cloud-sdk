@@ -843,6 +843,94 @@
         }
       }
     },
+    "GoogleCloudAssuredworkloadsVersioningV1beta1ListViolationsResponse": {
+      "id": "GoogleCloudAssuredworkloadsVersioningV1beta1ListViolationsResponse",
+      "description": "Response of ListViolations endpoint.",
+      "type": "object",
+      "properties": {
+        "violations": {
+          "description": "List of Violations under a Workload.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAssuredworkloadsVersioningV1beta1Violation"
+          }
+        },
+        "nextPageToken": {
+          "description": "The next page token. Returns empty if reached the last page.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAssuredworkloadsVersioningV1beta1Violation": {
+      "id": "GoogleCloudAssuredworkloadsVersioningV1beta1Violation",
+      "description": "Workload monitoring Violation.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. Immutable. Name of the Violation. Format: organizations\/{organization}\/locations\/{location}\/workloads\/{workload_id}\/violations\/{violations_id}",
+          "readOnly": true,
+          "type": "string"
+        },
+        "description": {
+          "description": "Output only. Description for the Violation. e.g. OrgPolicy gcp.resourceLocations has non compliant value.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "beginTime": {
+          "description": "Output only. Time of the event which triggered the Violation.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The last time when the Violation record was updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "resolveTime": {
+          "description": "Output only. Time of the event which fixed the Violation. If the violation is ACTIVE this will be empty.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "category": {
+          "description": "Output only. Category under which this violation is mapped. e.g. Location, Service Usage, Access, Encryption, etc.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "state": {
+          "description": "Output only. State of the violation",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified state.",
+            "Violation currently active.",
+            "Violation is resolved."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "ACTIVE",
+            "RESOLVED"
+          ]
+        },
+        "orgPolicyConstraint": {
+          "description": "Output only. Immutable. The org-policy-constraint that was incorrectly changed, which resulted in this violation.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "auditLogLink": {
+          "description": "Output only. Immutable. Audit Log Link for violated resource Format: https:\/\/console.cloud.google.com\/logs\/query;query={logName}{protoPayload.resourceName}{timeRange}{folder}",
+          "readOnly": true,
+          "type": "string"
+        },
+        "nonCompliantOrgPolicy": {
+          "description": "Output only. Immutable. Name of the OrgPolicy which was modified with non-compliant change and resulted this violation. Format: projects\/{project_number}\/policies\/{constraint_name} folders\/{folder_id}\/policies\/{constraint_name} organizations\/{organization_id}\/policies\/{constraint_name}",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
     "GoogleCloudAssuredworkloadsV1CreateWorkloadOperationMetadata": {
       "id": "GoogleCloudAssuredworkloadsV1CreateWorkloadOperationMetadata",
       "description": "Operation metadata to give request details of CreateWorkload.",
@@ -1846,6 +1934,88 @@
                           }
                         }
                       }
+                    }
+                  }
+                },
+                "violations": {
+                  "methods": {
+                    "list": {
+                      "id": "assuredworkloads.organizations.locations.workloads.violations.list",
+                      "path": "v1beta1/{+parent}/violations",
+                      "flatPath": "v1beta1/organizations/{organizationsId}/locations/{locationsId}/workloads/{workloadsId}/violations",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The Workload name. Format `organizations\/{org_id}\/locations\/{location}\/workloads\/{workload}`.",
+                          "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/workloads\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "interval.startTime": {
+                          "description": "The start of the time window. Default is the value of end_time.",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-datetime"
+                        },
+                        "interval.endTime": {
+                          "description": "The end of the time window. Default is NOW.",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-datetime"
+                        },
+                        "pageSize": {
+                          "description": "Optional. Page size.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "Optional. Page token returned from previous request.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "filter": {
+                          "description": "Optional. A custom filter for filtering by the Violations properties.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "GoogleCloudAssuredworkloadsVersioningV1beta1ListViolationsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Lists the Violations in the AssuredWorkload Environment. Callers may also choose to read across multiple Workloads as per [AIP-159](https:\/\/google.aip.dev\/159) by using '-' (the hyphen or dash character) as a wildcard character instead of workload-id in the parent. Format `organizations\/{org_id}\/locations\/{location}\/workloads\/-`"
+                    },
+                    "get": {
+                      "id": "assuredworkloads.organizations.locations.workloads.violations.get",
+                      "path": "v1beta1/{+name}",
+                      "flatPath": "v1beta1/organizations/{organizationsId}/locations/{locationsId}/workloads/{workloadsId}/violations/{violationsId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The resource name of the Violation to fetch (ie. Violation.name). Format: organizations\/{organization}\/locations\/{location}\/workloads\/{workload}\/violations\/{violation}",
+                          "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/workloads\/[^\/]+\/violations\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleCloudAssuredworkloadsVersioningV1beta1Violation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Retrieves Assured Workload Violation based on ID."
                     }
                   }
                 }

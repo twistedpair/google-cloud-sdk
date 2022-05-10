@@ -1438,6 +1438,10 @@
         "etag": {
           "description": "This checksum is computed by the server based on the value of node pool fields, and may be sent on update requests to ensure the client has an up-to-date value before proceeding.",
           "type": "string"
+        },
+        "loggingConfig": {
+          "description": "Logging configuration.",
+          "$ref": "NodePoolLoggingConfig"
         }
       }
     },
@@ -1875,6 +1879,38 @@
         "greenPoolVersion": {
           "description": "Version of green pool.",
           "type": "string"
+        }
+      }
+    },
+    "NodePoolLoggingConfig": {
+      "id": "NodePoolLoggingConfig",
+      "description": "NodePoolLoggingConfig specifies logging configuration for nodepools.",
+      "type": "object",
+      "properties": {
+        "variantConfig": {
+          "description": "Logging variant configuration.",
+          "$ref": "LoggingVariantConfig"
+        }
+      }
+    },
+    "LoggingVariantConfig": {
+      "id": "LoggingVariantConfig",
+      "description": "LoggingVariantConfig specifies the behaviour of the logging component.",
+      "type": "object",
+      "properties": {
+        "variant": {
+          "description": "Logging variant deployed on nodes.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value. This shouldn't be used.",
+            "default logging variant.",
+            "maximum logging throughput variant."
+          ],
+          "enum": [
+            "VARIANT_UNSPECIFIED",
+            "DEFAULT",
+            "MAX_THROUGHPUT"
+          ]
         }
       }
     },
@@ -3039,6 +3075,10 @@
         "nodeConfigDefaults": {
           "description": "Subset of NodeConfig message that has defaults.",
           "$ref": "NodeConfigDefaults"
+        },
+        "loggingConfig": {
+          "description": "Logging configuration for node pools.",
+          "$ref": "NodePoolLoggingConfig"
         }
       }
     },
@@ -3822,6 +3862,10 @@
         "etag": {
           "description": "The current etag of the cluster. If an etag is provided and does not match the current etag of the cluster, update will be blocked and an ABORTED error will be returned.",
           "type": "string"
+        },
+        "desiredNodePoolLoggingConfig": {
+          "description": "The desired node pool logging configuration defaults for the cluster.",
+          "$ref": "NodePoolLoggingConfig"
         }
       }
     },
@@ -3983,6 +4027,10 @@
         "fastSocket": {
           "description": "Enable or disable NCCL fast socket for the node pool.",
           "$ref": "FastSocket"
+        },
+        "loggingConfig": {
+          "description": "Logging configuration.",
+          "$ref": "NodePoolLoggingConfig"
         }
       }
     },

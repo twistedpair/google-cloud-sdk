@@ -17,11 +17,10 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import json
-
 from googlecloudsdk.api_lib.util import apis
 
 API_NAME = 'networkconnectivity'
+
 
 def GetMessages(version):
   return apis.GetMessagesModule(API_NAME, version)

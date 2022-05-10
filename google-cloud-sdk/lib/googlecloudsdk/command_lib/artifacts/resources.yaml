@@ -113,7 +113,7 @@ file:
   - *location
   - *repository
   - &file
-    parameter_name: fileId
+    parameter_name: filesId
     attribute_name: file
     help: |
       The file associated with the {resource}.

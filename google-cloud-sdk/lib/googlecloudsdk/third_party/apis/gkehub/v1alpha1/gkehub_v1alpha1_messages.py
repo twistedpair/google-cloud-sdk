@@ -159,8 +159,8 @@ class AuditConfig(_messages.Message):
   "audit_log_configs": [ { "log_type": "DATA_READ" }, { "log_type":
   "DATA_WRITE", "exempted_members": [ "user:aliya@example.com" ] } ] } ] } For
   sampleservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ
-  logging. It also exempts jose@example.com from DATA_READ logging, and
-  aliya@example.com from DATA_WRITE logging.
+  logging. It also exempts `jose@example.com` from DATA_READ logging, and
+  `aliya@example.com` from DATA_WRITE logging.
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
@@ -2115,6 +2115,7 @@ class OidcConfig(_messages.Message):
     deployCloudConsoleProxy: Flag to denote if reverse proxy is used to
       connect to auth provider. This flag should be set to true when provider
       is not reachable by Google Cloud Console.
+    enableAccessToken: Enable access token.
     encryptedClientSecret: Output only. Encrypted OIDC Client secret
     extraParams: Comma-separated list of key-value pairs.
     groupPrefix: Prefix to prepend to group name.
@@ -2132,15 +2133,16 @@ class OidcConfig(_messages.Message):
   clientId = _messages.StringField(2)
   clientSecret = _messages.StringField(3)
   deployCloudConsoleProxy = _messages.BooleanField(4)
-  encryptedClientSecret = _messages.BytesField(5)
-  extraParams = _messages.StringField(6)
-  groupPrefix = _messages.StringField(7)
-  groupsClaim = _messages.StringField(8)
-  issuerUri = _messages.StringField(9)
-  kubectlRedirectUri = _messages.StringField(10)
-  scopes = _messages.StringField(11)
-  userClaim = _messages.StringField(12)
-  userPrefix = _messages.StringField(13)
+  enableAccessToken = _messages.BooleanField(5)
+  encryptedClientSecret = _messages.BytesField(6)
+  extraParams = _messages.StringField(7)
+  groupPrefix = _messages.StringField(8)
+  groupsClaim = _messages.StringField(9)
+  issuerUri = _messages.StringField(10)
+  kubectlRedirectUri = _messages.StringField(11)
+  scopes = _messages.StringField(12)
+  userClaim = _messages.StringField(13)
+  userPrefix = _messages.StringField(14)
 
 
 class Operation(_messages.Message):

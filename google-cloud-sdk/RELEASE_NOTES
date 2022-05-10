@@ -4,6 +4,59 @@ Copyright 2014-2022 Google Inc. All rights reserved.
 
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
+
+## 385.0.0 (2022-05-10)
+
+### Google Cloud CLI
+
+* Updated bundled Python executable for Windows to Python 3.9.12.
+
+### AI
+
+* Added `--anomaly-cloud-logging` flag to `gcloud ai model-monitoring-jobs create|update` to allow logging anomaly to Cloud Logging.
+
+### Anthos Multi-Cloud
+
+*   Added `--ssh-ec2-key-pair` flag to `gcloud container aws clusters update`
+    and `gcloud container aws node-pools update` to update the name of the EC2
+    key pair to login into control plane or node pool nodes.
+*   Added `--clear-ssh-ec2-key-pair` flag to `gcloud container aws clusters
+    update` and `gcloud container aws node-pools update` to clear the EC2 key
+    pair to login into control plane or node pool nodes.
+
+### Cloud Run
+
+* Fixed issue where some commands were missing from `gcloud beta run jobs`.
+
+### Cloud SQL
+
+* Added `--enable-password-policy` flag to `gcloud sql instances create` and
+  `gcloud sql instances patch` for GA.
+
+### Compute Engine
+
+* Promoted `--key-revocation-action-type` flag to beta for `gcloud compute instance-templates create`.
+* Promoted `keyRevocationActionType` flag of `gcloud compute instances update-from-file` to beta.
+* Added `FIXED_STANDARD` to allowed list of values for `--default-network-tier` flag.
+
+### Config Controller
+
+*   Updated output of `gcloud anthos config controller create` to not include
+    the default Config Connector identity upon creation.
+
+### Eventarc
+
+* Added `gcloud eventarc channels` group to interact with third-party sources.
+* Added `gcloud eventarc channel-connections` for event providers to create association with the user channel.
+* Added `--channel` argument to `gcloud eventarc triggers create` to specify associated channel.
+
+### Network Services
+
+* Promoted `gcloud network-services service-bindings` to GA.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
 ## 384.0.1 (2022-05-05)
 
 ### Cloud Storage

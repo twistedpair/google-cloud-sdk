@@ -37,6 +37,7 @@ REGIONAL_AR_REGISTRIES = [
     'europe-docker.pkg.dev',
     'europe-central2-docker.pkg.dev',
     'europe-north1-docker.pkg.dev',
+    'europe-southwest1-docker.pkg.dev',
     'europe-west1-docker.pkg.dev',
     'europe-west2-docker.pkg.dev',
     'europe-west3-docker.pkg.dev',

@@ -74,6 +74,19 @@ class AppDevExperienceFeatureState(_messages.Message):
   networkingInstallSucceeded = _messages.MessageField('Status', 1)
 
 
+class ApplianceCluster(_messages.Message):
+  r"""ApplianceCluster contains information specific to GDC Edge Appliance
+  Clusters.
+
+  Fields:
+    resourceLink: Immutable. Self-link of the GCP resource for the Appliance
+      Cluster. For example: //transferappliance.googleapis.com/projects/my-
+      project/locations/us-west1-a/appliances/my-appliance
+  """
+
+  resourceLink = _messages.StringField(1)
+
+
 class AuditConfig(_messages.Message):
   r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
@@ -89,8 +102,8 @@ class AuditConfig(_messages.Message):
   "audit_log_configs": [ { "log_type": "DATA_READ" }, { "log_type":
   "DATA_WRITE", "exempted_members": [ "user:aliya@example.com" ] } ] } ] } For
   sampleservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ
-  logging. It also exempts jose@example.com from DATA_READ logging, and
-  aliya@example.com from DATA_WRITE logging.
+  logging. It also exempts `jose@example.com` from DATA_READ logging, and
+  `aliya@example.com` from DATA_WRITE logging.
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
@@ -2305,6 +2318,7 @@ class IdentityServiceOidcConfig(_messages.Message):
     deployCloudConsoleProxy: Flag to denote if reverse proxy is used to
       connect to auth provider. This flag should be set to true when provider
       is not reachable by Google Cloud Console.
+    enableAccessToken: Enable access token.
     encryptedClientSecret: Output only. Encrypted OIDC Client secret
     extraParams: Comma-separated list of key-value pairs.
     groupPrefix: Prefix to prepend to group name.
@@ -2322,15 +2336,16 @@ class IdentityServiceOidcConfig(_messages.Message):
   clientId = _messages.StringField(2)
   clientSecret = _messages.StringField(3)
   deployCloudConsoleProxy = _messages.BooleanField(4)
-  encryptedClientSecret = _messages.BytesField(5)
-  extraParams = _messages.StringField(6)
-  groupPrefix = _messages.StringField(7)
-  groupsClaim = _messages.StringField(8)
-  issuerUri = _messages.StringField(9)
-  kubectlRedirectUri = _messages.StringField(10)
-  scopes = _messages.StringField(11)
-  userClaim = _messages.StringField(12)
-  userPrefix = _messages.StringField(13)
+  enableAccessToken = _messages.BooleanField(5)
+  encryptedClientSecret = _messages.BytesField(6)
+  extraParams = _messages.StringField(7)
+  groupPrefix = _messages.StringField(8)
+  groupsClaim = _messages.StringField(9)
+  issuerUri = _messages.StringField(10)
+  kubectlRedirectUri = _messages.StringField(11)
+  scopes = _messages.StringField(12)
+  userClaim = _messages.StringField(13)
+  userPrefix = _messages.StringField(14)
 
 
 class KubernetesMetadata(_messages.Message):
@@ -2691,6 +2706,8 @@ class MembershipEndpoint(_messages.Message):
   API, endpoint and any additional Kubernetes metadata.
 
   Fields:
+    applianceCluster: Optional. Specific information for a GDC Edge Appliance
+      cluster.
     edgeCluster: Optional. Specific information for a Google Edge cluster.
     gkeCluster: Optional. Specific information for a GKE-on-GCP cluster.
     kubernetesMetadata: Output only. Useful Kubernetes-specific metadata.
@@ -2707,12 +2724,13 @@ class MembershipEndpoint(_messages.Message):
       this field, it should have a nil "type" instead.
   """
 
-  edgeCluster = _messages.MessageField('EdgeCluster', 1)
-  gkeCluster = _messages.MessageField('GkeCluster', 2)
-  kubernetesMetadata = _messages.MessageField('KubernetesMetadata', 3)
-  kubernetesResource = _messages.MessageField('KubernetesResource', 4)
-  multiCloudCluster = _messages.MessageField('MultiCloudCluster', 5)
-  onPremCluster = _messages.MessageField('OnPremCluster', 6)
+  applianceCluster = _messages.MessageField('ApplianceCluster', 1)
+  edgeCluster = _messages.MessageField('EdgeCluster', 2)
+  gkeCluster = _messages.MessageField('GkeCluster', 3)
+  kubernetesMetadata = _messages.MessageField('KubernetesMetadata', 4)
+  kubernetesResource = _messages.MessageField('KubernetesResource', 5)
+  multiCloudCluster = _messages.MessageField('MultiCloudCluster', 6)
+  onPremCluster = _messages.MessageField('OnPremCluster', 7)
 
 
 class MembershipFeatureSpec(_messages.Message):

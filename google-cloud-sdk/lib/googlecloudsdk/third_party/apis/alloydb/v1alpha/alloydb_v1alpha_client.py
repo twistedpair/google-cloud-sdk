@@ -591,7 +591,7 @@ class AlloydbV1alpha(base_api.BaseApiClient):
     )
 
     def Restore(self, request, global_params=None):
-      r"""Creates a new Cluster in a given project and location, with a volume restored from the provided backup ID.
+      r"""Creates a new Cluster in a given project and location, with a volume restored from the provided source, either a backup ID or a point-in-time and a source cluster.
 
       Args:
         request: (AlloydbProjectsLocationsClustersRestoreRequest) input message

@@ -439,6 +439,19 @@ class ComposerProjectsLocationsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class DataRetentionConfig(_messages.Message):
+  r"""The configuration setting for Airflow database data retention mechanism.
+
+  Fields:
+    airflowDatabaseRetentionDays: Optional. The number of days describing for
+      how long to store event-based records in airflow database. If the
+      retention mechanism is enabled this value must be a positive integer
+      otherwise, value should be set to 0.
+  """
+
+  airflowDatabaseRetentionDays = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
 class DatabaseConfig(_messages.Message):
   r"""The configuration of Cloud SQL instance that is used by the Apache
   Airflow software.
@@ -626,6 +639,8 @@ class EnvironmentConfig(_messages.Message):
       a hierarchical file tree can be simulated using "/"-delimited object
       name prefixes. DAG objects for this environment reside in a simulated
       directory with the given prefix.
+    dataRetentionConfig: Optional. The configuration setting for Airflow
+      database data retention mechanism.
     databaseConfig: Optional. The configuration settings for Cloud SQL
       instance used internally by Apache Airflow software.
     encryptionConfig: Optional. The encryption options for the Cloud Composer
@@ -692,20 +707,21 @@ class EnvironmentConfig(_messages.Message):
 
   airflowUri = _messages.StringField(1)
   dagGcsPrefix = _messages.StringField(2)
-  databaseConfig = _messages.MessageField('DatabaseConfig', 3)
-  encryptionConfig = _messages.MessageField('EncryptionConfig', 4)
-  environmentSize = _messages.EnumField('EnvironmentSizeValueValuesEnum', 5)
-  gkeCluster = _messages.StringField(6)
-  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 7)
-  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 8)
-  nodeConfig = _messages.MessageField('NodeConfig', 9)
-  nodeCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  privateEnvironmentConfig = _messages.MessageField('PrivateEnvironmentConfig', 11)
-  recoveryConfig = _messages.MessageField('RecoveryConfig', 12)
-  softwareConfig = _messages.MessageField('SoftwareConfig', 13)
-  webServerConfig = _messages.MessageField('WebServerConfig', 14)
-  webServerNetworkAccessControl = _messages.MessageField('WebServerNetworkAccessControl', 15)
-  workloadsConfig = _messages.MessageField('WorkloadsConfig', 16)
+  dataRetentionConfig = _messages.MessageField('DataRetentionConfig', 3)
+  databaseConfig = _messages.MessageField('DatabaseConfig', 4)
+  encryptionConfig = _messages.MessageField('EncryptionConfig', 5)
+  environmentSize = _messages.EnumField('EnvironmentSizeValueValuesEnum', 6)
+  gkeCluster = _messages.StringField(7)
+  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 8)
+  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 9)
+  nodeConfig = _messages.MessageField('NodeConfig', 10)
+  nodeCount = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  privateEnvironmentConfig = _messages.MessageField('PrivateEnvironmentConfig', 12)
+  recoveryConfig = _messages.MessageField('RecoveryConfig', 13)
+  softwareConfig = _messages.MessageField('SoftwareConfig', 14)
+  webServerConfig = _messages.MessageField('WebServerConfig', 15)
+  webServerNetworkAccessControl = _messages.MessageField('WebServerNetworkAccessControl', 16)
+  workloadsConfig = _messages.MessageField('WorkloadsConfig', 17)
 
 
 class IPAllocationPolicy(_messages.Message):

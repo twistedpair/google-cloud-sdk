@@ -710,8 +710,8 @@ class ApigeeOrganizationsDeleteRequest(_messages.Message):
     Values:
       DELETION_RETENTION_UNSPECIFIED: Default data retention settings will be
         applied.
-      MINIMUM: Organization data will be retained for the bare minimum period
-        of time.
+      MINIMUM: Organization data will be retained for the minimum period of 24
+        hours.
     """
     DELETION_RETENTION_UNSPECIFIED = 0
     MINIMUM = 1
@@ -4064,6 +4064,22 @@ class ApigeeOrganizationsSitesApicategoriesListRequest(_messages.Message):
   """
 
   parent = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsTestIamPermissionsRequest(_messages.Message):
+  r"""A ApigeeOrganizationsTestIamPermissionsRequest object.
+
+  Fields:
+    googleIamV1TestIamPermissionsRequest: A
+      GoogleIamV1TestIamPermissionsRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+  """
+
+  googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
+  resource = _messages.StringField(2, required=True)
 
 
 class ApigeeOrganizationsUndeleteRequest(_messages.Message):
@@ -9820,8 +9836,8 @@ class GoogleIamV1AuditConfig(_messages.Message):
   "audit_log_configs": [ { "log_type": "DATA_READ" }, { "log_type":
   "DATA_WRITE", "exempted_members": [ "user:aliya@example.com" ] } ] } ] } For
   sampleservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ
-  logging. It also exempts jose@example.com from DATA_READ logging, and
-  aliya@example.com from DATA_WRITE logging.
+  logging. It also exempts `jose@example.com` from DATA_READ logging, and
+  `aliya@example.com` from DATA_WRITE logging.
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.

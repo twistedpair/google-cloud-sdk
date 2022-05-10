@@ -189,6 +189,13 @@ properties:
     - NOOP
     - POST_KEY_REVOCATION_ACTION_TYPE_UNSPECIFIED
     - SHUTDOWN
+  keyRevocationActionType:
+    description: KeyRevocationActionType of the instance.
+    type: string
+    enum:
+    - NONE
+    - STOP
+    - KEY_REVOCATION_ACTION_TYPE_UNSPECIFIED
   privateIpv6GoogleAccess:
     description: |-
       The private IPv6 google access type for the VM. If not

@@ -172,6 +172,43 @@ class AssuredworkloadsOrganizationsLocationsWorkloadsRestrictAllowedServicesRequ
   name = _messages.StringField(2, required=True)
 
 
+class AssuredworkloadsOrganizationsLocationsWorkloadsViolationsGetRequest(_messages.Message):
+  r"""A AssuredworkloadsOrganizationsLocationsWorkloadsViolationsGetRequest
+  object.
+
+  Fields:
+    name: Required. The resource name of the Violation to fetch (ie.
+      Violation.name). Format: organizations/{organization}/locations/{locatio
+      n}/workloads/{workload}/violations/{violation}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AssuredworkloadsOrganizationsLocationsWorkloadsViolationsListRequest(_messages.Message):
+  r"""A AssuredworkloadsOrganizationsLocationsWorkloadsViolationsListRequest
+  object.
+
+  Fields:
+    filter: Optional. A custom filter for filtering by the Violations
+      properties.
+    interval_endTime: The end of the time window. Default is NOW.
+    interval_startTime: The start of the time window. Default is the value of
+      end_time.
+    pageSize: Optional. Page size.
+    pageToken: Optional. Page token returned from previous request.
+    parent: Required. The Workload name. Format
+      `organizations/{org_id}/locations/{location}/workloads/{workload}`.
+  """
+
+  filter = _messages.StringField(1)
+  interval_endTime = _messages.StringField(2)
+  interval_startTime = _messages.StringField(3)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
+  parent = _messages.StringField(6, required=True)
+
+
 class GoogleCloudAssuredworkloadsV1CreateWorkloadOperationMetadata(_messages.Message):
   r"""Operation metadata to give request details of CreateWorkload.
 
@@ -971,6 +1008,75 @@ class GoogleCloudAssuredworkloadsV1beta1WorkloadSaaEnrollmentResponse(_messages.
 
   setupErrors = _messages.EnumField('SetupErrorsValueListEntryValuesEnum', 1, repeated=True)
   setupStatus = _messages.EnumField('SetupStatusValueValuesEnum', 2)
+
+
+class GoogleCloudAssuredworkloadsVersioningV1beta1ListViolationsResponse(_messages.Message):
+  r"""Response of ListViolations endpoint.
+
+  Fields:
+    nextPageToken: The next page token. Returns empty if reached the last
+      page.
+    violations: List of Violations under a Workload.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  violations = _messages.MessageField('GoogleCloudAssuredworkloadsVersioningV1beta1Violation', 2, repeated=True)
+
+
+class GoogleCloudAssuredworkloadsVersioningV1beta1Violation(_messages.Message):
+  r"""Workload monitoring Violation.
+
+  Enums:
+    StateValueValuesEnum: Output only. State of the violation
+
+  Fields:
+    auditLogLink: Output only. Immutable. Audit Log Link for violated resource
+      Format: https://console.cloud.google.com/logs/query;query={logName}{prot
+      oPayload.resourceName}{timeRange}{folder}
+    beginTime: Output only. Time of the event which triggered the Violation.
+    category: Output only. Category under which this violation is mapped. e.g.
+      Location, Service Usage, Access, Encryption, etc.
+    description: Output only. Description for the Violation. e.g. OrgPolicy
+      gcp.resourceLocations has non compliant value.
+    name: Output only. Immutable. Name of the Violation. Format: organizations
+      /{organization}/locations/{location}/workloads/{workload_id}/violations/
+      {violations_id}
+    nonCompliantOrgPolicy: Output only. Immutable. Name of the OrgPolicy which
+      was modified with non-compliant change and resulted this violation.
+      Format: projects/{project_number}/policies/{constraint_name}
+      folders/{folder_id}/policies/{constraint_name}
+      organizations/{organization_id}/policies/{constraint_name}
+    orgPolicyConstraint: Output only. Immutable. The org-policy-constraint
+      that was incorrectly changed, which resulted in this violation.
+    resolveTime: Output only. Time of the event which fixed the Violation. If
+      the violation is ACTIVE this will be empty.
+    state: Output only. State of the violation
+    updateTime: Output only. The last time when the Violation record was
+      updated.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. State of the violation
+
+    Values:
+      STATE_UNSPECIFIED: Unspecified state.
+      ACTIVE: Violation currently active.
+      RESOLVED: Violation is resolved.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    RESOLVED = 2
+
+  auditLogLink = _messages.StringField(1)
+  beginTime = _messages.StringField(2)
+  category = _messages.StringField(3)
+  description = _messages.StringField(4)
+  name = _messages.StringField(5)
+  nonCompliantOrgPolicy = _messages.StringField(6)
+  orgPolicyConstraint = _messages.StringField(7)
+  resolveTime = _messages.StringField(8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  updateTime = _messages.StringField(10)
 
 
 class GoogleCloudAssuredworkloadsVersioningV1beta1Workload(_messages.Message):

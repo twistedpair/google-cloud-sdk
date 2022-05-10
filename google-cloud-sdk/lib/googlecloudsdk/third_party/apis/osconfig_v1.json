@@ -110,6 +110,82 @@
     }
   },
   "schemas": {
+    "Operation": {
+      "id": "Operation",
+      "description": "This resource represents a long-running operation that is the result of a network API call.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The server-assigned name, which is only unique within the same service that originally returns it. If you use the default HTTP mapping, the `name` should be a resource name ending with `operations\/{unique_id}`.",
+          "type": "string"
+        },
+        "metadata": {
+          "description": "Service-specific metadata associated with the operation. It typically contains progress information and common metadata such as create time. Some services might not provide such metadata. Any method that returns a long-running operation should document the metadata type, if any.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        },
+        "done": {
+          "description": "If the value is `false`, it means the operation is still in progress. If `true`, the operation is completed, and either `error` or `response` is available.",
+          "type": "boolean"
+        },
+        "error": {
+          "description": "The error result of the operation in case of failure or cancellation.",
+          "$ref": "Status"
+        },
+        "response": {
+          "description": "The normal response of the operation in case of success. If the original method returns no data on success, such as `Delete`, the response is `google.protobuf.Empty`. If the original method is standard `Get`\/`Create`\/`Update`, the response should be the resource. For other methods, the response should have the type `XxxResponse`, where `Xxx` is the original method name. For example, if the original method name is `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        }
+      }
+    },
+    "Status": {
+      "id": "Status",
+      "description": "The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https:\/\/github.com\/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https:\/\/cloud.google.com\/apis\/design\/errors).",
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "The status code, which should be an enum value of google.rpc.Code.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "description": "A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the google.rpc.Status.details field, or localized by the client.",
+          "type": "string"
+        },
+        "details": {
+          "description": "A list of messages that carry the error details. There is a common set of message types for APIs to use.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "any",
+              "description": "Properties of the object. Contains field @type with type URL."
+            }
+          }
+        }
+      }
+    },
+    "CancelOperationRequest": {
+      "id": "CancelOperationRequest",
+      "description": "The request message for Operations.CancelOperation.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "Empty": {
+      "id": "Empty",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }",
+      "type": "object",
+      "properties": {
+      }
+    },
     "ExecutePatchJobRequest": {
       "id": "ExecutePatchJobRequest",
       "description": "A request message to initiate patching across Compute Engine instances.",
@@ -1111,13 +1187,6 @@
         }
       }
     },
-    "Empty": {
-      "id": "Empty",
-      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }",
-      "type": "object",
-      "properties": {
-      }
-    },
     "PausePatchDeploymentRequest": {
       "id": "PausePatchDeploymentRequest",
       "description": "A request message for pausing a patch deployment.",
@@ -1128,75 +1197,6 @@
     "ResumePatchDeploymentRequest": {
       "id": "ResumePatchDeploymentRequest",
       "description": "A request message for resuming a patch deployment.",
-      "type": "object",
-      "properties": {
-      }
-    },
-    "Operation": {
-      "id": "Operation",
-      "description": "This resource represents a long-running operation that is the result of a network API call.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "The server-assigned name, which is only unique within the same service that originally returns it. If you use the default HTTP mapping, the `name` should be a resource name ending with `operations\/{unique_id}`.",
-          "type": "string"
-        },
-        "metadata": {
-          "description": "Service-specific metadata associated with the operation. It typically contains progress information and common metadata such as create time. Some services might not provide such metadata. Any method that returns a long-running operation should document the metadata type, if any.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "any",
-            "description": "Properties of the object. Contains field @type with type URL."
-          }
-        },
-        "done": {
-          "description": "If the value is `false`, it means the operation is still in progress. If `true`, the operation is completed, and either `error` or `response` is available.",
-          "type": "boolean"
-        },
-        "error": {
-          "description": "The error result of the operation in case of failure or cancellation.",
-          "$ref": "Status"
-        },
-        "response": {
-          "description": "The normal response of the operation in case of success. If the original method returns no data on success, such as `Delete`, the response is `google.protobuf.Empty`. If the original method is standard `Get`\/`Create`\/`Update`, the response should be the resource. For other methods, the response should have the type `XxxResponse`, where `Xxx` is the original method name. For example, if the original method name is `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "any",
-            "description": "Properties of the object. Contains field @type with type URL."
-          }
-        }
-      }
-    },
-    "Status": {
-      "id": "Status",
-      "description": "The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https:\/\/github.com\/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https:\/\/cloud.google.com\/apis\/design\/errors).",
-      "type": "object",
-      "properties": {
-        "code": {
-          "description": "The status code, which should be an enum value of google.rpc.Code.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "message": {
-          "description": "A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the google.rpc.Status.details field, or localized by the client.",
-          "type": "string"
-        },
-        "details": {
-          "description": "A list of messages that carry the error details. There is a common set of message types for APIs to use.",
-          "type": "array",
-          "items": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "any",
-              "description": "Properties of the object. Contains field @type with type URL."
-            }
-          }
-        }
-      }
-    },
-    "CancelOperationRequest": {
-      "id": "CancelOperationRequest",
-      "description": "The request message for Operations.CancelOperation.",
       "type": "object",
       "properties": {
       }
@@ -2883,393 +2883,6 @@
   "resources": {
     "projects": {
       "resources": {
-        "patchJobs": {
-          "methods": {
-            "execute": {
-              "id": "osconfig.projects.patchJobs.execute",
-              "path": "v1/{+parent}/patchJobs:execute",
-              "flatPath": "v1/projects/{projectsId}/patchJobs:execute",
-              "httpMethod": "POST",
-              "parameters": {
-                "parent": {
-                  "description": "Required. The project in which to run this patch in the form `projects\/*`",
-                  "pattern": "^projects\/[^\/]+$",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "parent"
-              ],
-              "request": {
-                "$ref": "ExecutePatchJobRequest"
-              },
-              "response": {
-                "$ref": "PatchJob"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
-              "description": "Patch VM instances by creating and running a patch job."
-            },
-            "get": {
-              "id": "osconfig.projects.patchJobs.get",
-              "path": "v1/{+name}",
-              "flatPath": "v1/projects/{projectsId}/patchJobs/{patchJobsId}",
-              "httpMethod": "GET",
-              "parameters": {
-                "name": {
-                  "description": "Required. Name of the patch in the form `projects\/*\/patchJobs\/*`",
-                  "pattern": "^projects\/[^\/]+\/patchJobs\/[^\/]+$",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "name"
-              ],
-              "response": {
-                "$ref": "PatchJob"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
-              "description": "Get the patch job. This can be used to track the progress of an ongoing patch job or review the details of completed jobs."
-            },
-            "cancel": {
-              "id": "osconfig.projects.patchJobs.cancel",
-              "path": "v1/{+name}:cancel",
-              "flatPath": "v1/projects/{projectsId}/patchJobs/{patchJobsId}:cancel",
-              "httpMethod": "POST",
-              "parameters": {
-                "name": {
-                  "description": "Required. Name of the patch in the form `projects\/*\/patchJobs\/*`",
-                  "pattern": "^projects\/[^\/]+\/patchJobs\/[^\/]+$",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "name"
-              ],
-              "request": {
-                "$ref": "CancelPatchJobRequest"
-              },
-              "response": {
-                "$ref": "PatchJob"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
-              "description": "Cancel a patch job. The patch job must be active. Canceled patch jobs cannot be restarted."
-            },
-            "list": {
-              "id": "osconfig.projects.patchJobs.list",
-              "path": "v1/{+parent}/patchJobs",
-              "flatPath": "v1/projects/{projectsId}/patchJobs",
-              "httpMethod": "GET",
-              "parameters": {
-                "parent": {
-                  "description": "Required. In the form of `projects\/*`",
-                  "pattern": "^projects\/[^\/]+$",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                },
-                "pageSize": {
-                  "description": "The maximum number of instance status to return.",
-                  "location": "query",
-                  "type": "integer",
-                  "format": "int32"
-                },
-                "pageToken": {
-                  "description": "A pagination token returned from a previous call that indicates where this listing should continue from.",
-                  "location": "query",
-                  "type": "string"
-                },
-                "filter": {
-                  "description": "If provided, this field specifies the criteria that must be met by patch jobs to be included in the response. Currently, filtering is only available on the patch_deployment field.",
-                  "location": "query",
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "parent"
-              ],
-              "response": {
-                "$ref": "ListPatchJobsResponse"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
-              "description": "Get a list of patch jobs."
-            }
-          }
-          ,
-          "resources": {
-            "instanceDetails": {
-              "methods": {
-                "list": {
-                  "id": "osconfig.projects.patchJobs.instanceDetails.list",
-                  "path": "v1/{+parent}/instanceDetails",
-                  "flatPath": "v1/projects/{projectsId}/patchJobs/{patchJobsId}/instanceDetails",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "parent": {
-                      "description": "Required. The parent for the instances are in the form of `projects\/*\/patchJobs\/*`.",
-                      "pattern": "^projects\/[^\/]+\/patchJobs\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "pageSize": {
-                      "description": "The maximum number of instance details records to return. Default is 100.",
-                      "location": "query",
-                      "type": "integer",
-                      "format": "int32"
-                    },
-                    "pageToken": {
-                      "description": "A pagination token returned from a previous call that indicates where this listing should continue from.",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "filter": {
-                      "description": "A filter expression that filters results listed in the response. This field supports filtering results by instance zone, name, state, or `failure_reason`.",
-                      "location": "query",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "parent"
-                  ],
-                  "response": {
-                    "$ref": "ListPatchJobInstanceDetailsResponse"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Get a list of instance details for a given patch job."
-                }
-              }
-            }
-          }
-        },
-        "patchDeployments": {
-          "methods": {
-            "create": {
-              "id": "osconfig.projects.patchDeployments.create",
-              "path": "v1/{+parent}/patchDeployments",
-              "flatPath": "v1/projects/{projectsId}/patchDeployments",
-              "httpMethod": "POST",
-              "parameters": {
-                "parent": {
-                  "description": "Required. The project to apply this patch deployment to in the form `projects\/*`.",
-                  "pattern": "^projects\/[^\/]+$",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                },
-                "patchDeploymentId": {
-                  "description": "Required. A name for the patch deployment in the project. When creating a name the following rules apply: * Must contain only lowercase letters, numbers, and hyphens. * Must start with a letter. * Must be between 1-63 characters. * Must end with a number or a letter. * Must be unique within the project.",
-                  "location": "query",
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "parent"
-              ],
-              "request": {
-                "$ref": "PatchDeployment"
-              },
-              "response": {
-                "$ref": "PatchDeployment"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
-              "description": "Create an OS Config patch deployment."
-            },
-            "get": {
-              "id": "osconfig.projects.patchDeployments.get",
-              "path": "v1/{+name}",
-              "flatPath": "v1/projects/{projectsId}/patchDeployments/{patchDeploymentsId}",
-              "httpMethod": "GET",
-              "parameters": {
-                "name": {
-                  "description": "Required. The resource name of the patch deployment in the form `projects\/*\/patchDeployments\/*`.",
-                  "pattern": "^projects\/[^\/]+\/patchDeployments\/[^\/]+$",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "name"
-              ],
-              "response": {
-                "$ref": "PatchDeployment"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
-              "description": "Get an OS Config patch deployment."
-            },
-            "list": {
-              "id": "osconfig.projects.patchDeployments.list",
-              "path": "v1/{+parent}/patchDeployments",
-              "flatPath": "v1/projects/{projectsId}/patchDeployments",
-              "httpMethod": "GET",
-              "parameters": {
-                "parent": {
-                  "description": "Required. The resource name of the parent in the form `projects\/*`.",
-                  "pattern": "^projects\/[^\/]+$",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                },
-                "pageSize": {
-                  "description": "Optional. The maximum number of patch deployments to return. Default is 100.",
-                  "location": "query",
-                  "type": "integer",
-                  "format": "int32"
-                },
-                "pageToken": {
-                  "description": "Optional. A pagination token returned from a previous call to ListPatchDeployments that indicates where this listing should continue from.",
-                  "location": "query",
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "parent"
-              ],
-              "response": {
-                "$ref": "ListPatchDeploymentsResponse"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
-              "description": "Get a page of OS Config patch deployments."
-            },
-            "delete": {
-              "id": "osconfig.projects.patchDeployments.delete",
-              "path": "v1/{+name}",
-              "flatPath": "v1/projects/{projectsId}/patchDeployments/{patchDeploymentsId}",
-              "httpMethod": "DELETE",
-              "parameters": {
-                "name": {
-                  "description": "Required. The resource name of the patch deployment in the form `projects\/*\/patchDeployments\/*`.",
-                  "pattern": "^projects\/[^\/]+\/patchDeployments\/[^\/]+$",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "name"
-              ],
-              "response": {
-                "$ref": "Empty"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
-              "description": "Delete an OS Config patch deployment."
-            },
-            "patch": {
-              "id": "osconfig.projects.patchDeployments.patch",
-              "path": "v1/{+name}",
-              "flatPath": "v1/projects/{projectsId}/patchDeployments/{patchDeploymentsId}",
-              "httpMethod": "PATCH",
-              "parameters": {
-                "name": {
-                  "description": "Unique name for the patch deployment resource in a project. The patch deployment name is in the form: `projects\/{project_id}\/patchDeployments\/{patch_deployment_id}`. This field is ignored when you create a new patch deployment.",
-                  "pattern": "^projects\/[^\/]+\/patchDeployments\/[^\/]+$",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                },
-                "updateMask": {
-                  "description": "Optional. Field mask that controls which fields of the patch deployment should be updated.",
-                  "location": "query",
-                  "type": "string",
-                  "format": "google-fieldmask"
-                }
-              },
-              "parameterOrder": [
-                "name"
-              ],
-              "request": {
-                "$ref": "PatchDeployment"
-              },
-              "response": {
-                "$ref": "PatchDeployment"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
-              "description": "Update an OS Config patch deployment."
-            },
-            "pause": {
-              "id": "osconfig.projects.patchDeployments.pause",
-              "path": "v1/{+name}:pause",
-              "flatPath": "v1/projects/{projectsId}/patchDeployments/{patchDeploymentsId}:pause",
-              "httpMethod": "POST",
-              "parameters": {
-                "name": {
-                  "description": "Required. The resource name of the patch deployment in the form `projects\/*\/patchDeployments\/*`.",
-                  "pattern": "^projects\/[^\/]+\/patchDeployments\/[^\/]+$",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "name"
-              ],
-              "request": {
-                "$ref": "PausePatchDeploymentRequest"
-              },
-              "response": {
-                "$ref": "PatchDeployment"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
-              "description": "Change state of patch deployment to \"PAUSED\". Patch deployment in paused state doesn't generate patch jobs."
-            },
-            "resume": {
-              "id": "osconfig.projects.patchDeployments.resume",
-              "path": "v1/{+name}:resume",
-              "flatPath": "v1/projects/{projectsId}/patchDeployments/{patchDeploymentsId}:resume",
-              "httpMethod": "POST",
-              "parameters": {
-                "name": {
-                  "description": "Required. The resource name of the patch deployment in the form `projects\/*\/patchDeployments\/*`.",
-                  "pattern": "^projects\/[^\/]+\/patchDeployments\/[^\/]+$",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "name"
-              ],
-              "request": {
-                "$ref": "ResumePatchDeploymentRequest"
-              },
-              "response": {
-                "$ref": "PatchDeployment"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
-              "description": "Change state of patch deployment back to \"ACTIVE\". Patch deployment in active state continues to generate patch jobs."
-            }
-          }
-        },
         "locations": {
           "resources": {
             "osPolicyAssignments": {
@@ -3772,6 +3385,393 @@
                   }
                 }
               }
+            }
+          }
+        },
+        "patchJobs": {
+          "methods": {
+            "execute": {
+              "id": "osconfig.projects.patchJobs.execute",
+              "path": "v1/{+parent}/patchJobs:execute",
+              "flatPath": "v1/projects/{projectsId}/patchJobs:execute",
+              "httpMethod": "POST",
+              "parameters": {
+                "parent": {
+                  "description": "Required. The project in which to run this patch in the form `projects\/*`",
+                  "pattern": "^projects\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "request": {
+                "$ref": "ExecutePatchJobRequest"
+              },
+              "response": {
+                "$ref": "PatchJob"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Patch VM instances by creating and running a patch job."
+            },
+            "get": {
+              "id": "osconfig.projects.patchJobs.get",
+              "path": "v1/{+name}",
+              "flatPath": "v1/projects/{projectsId}/patchJobs/{patchJobsId}",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Required. Name of the patch in the form `projects\/*\/patchJobs\/*`",
+                  "pattern": "^projects\/[^\/]+\/patchJobs\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "PatchJob"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Get the patch job. This can be used to track the progress of an ongoing patch job or review the details of completed jobs."
+            },
+            "cancel": {
+              "id": "osconfig.projects.patchJobs.cancel",
+              "path": "v1/{+name}:cancel",
+              "flatPath": "v1/projects/{projectsId}/patchJobs/{patchJobsId}:cancel",
+              "httpMethod": "POST",
+              "parameters": {
+                "name": {
+                  "description": "Required. Name of the patch in the form `projects\/*\/patchJobs\/*`",
+                  "pattern": "^projects\/[^\/]+\/patchJobs\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "CancelPatchJobRequest"
+              },
+              "response": {
+                "$ref": "PatchJob"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Cancel a patch job. The patch job must be active. Canceled patch jobs cannot be restarted."
+            },
+            "list": {
+              "id": "osconfig.projects.patchJobs.list",
+              "path": "v1/{+parent}/patchJobs",
+              "flatPath": "v1/projects/{projectsId}/patchJobs",
+              "httpMethod": "GET",
+              "parameters": {
+                "parent": {
+                  "description": "Required. In the form of `projects\/*`",
+                  "pattern": "^projects\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "The maximum number of instance status to return.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "A pagination token returned from a previous call that indicates where this listing should continue from.",
+                  "location": "query",
+                  "type": "string"
+                },
+                "filter": {
+                  "description": "If provided, this field specifies the criteria that must be met by patch jobs to be included in the response. Currently, filtering is only available on the patch_deployment field.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "response": {
+                "$ref": "ListPatchJobsResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Get a list of patch jobs."
+            }
+          }
+          ,
+          "resources": {
+            "instanceDetails": {
+              "methods": {
+                "list": {
+                  "id": "osconfig.projects.patchJobs.instanceDetails.list",
+                  "path": "v1/{+parent}/instanceDetails",
+                  "flatPath": "v1/projects/{projectsId}/patchJobs/{patchJobsId}/instanceDetails",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent for the instances are in the form of `projects\/*\/patchJobs\/*`.",
+                      "pattern": "^projects\/[^\/]+\/patchJobs\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The maximum number of instance details records to return. Default is 100.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "A pagination token returned from a previous call that indicates where this listing should continue from.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "A filter expression that filters results listed in the response. This field supports filtering results by instance zone, name, state, or `failure_reason`.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListPatchJobInstanceDetailsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Get a list of instance details for a given patch job."
+                }
+              }
+            }
+          }
+        },
+        "patchDeployments": {
+          "methods": {
+            "create": {
+              "id": "osconfig.projects.patchDeployments.create",
+              "path": "v1/{+parent}/patchDeployments",
+              "flatPath": "v1/projects/{projectsId}/patchDeployments",
+              "httpMethod": "POST",
+              "parameters": {
+                "parent": {
+                  "description": "Required. The project to apply this patch deployment to in the form `projects\/*`.",
+                  "pattern": "^projects\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "patchDeploymentId": {
+                  "description": "Required. A name for the patch deployment in the project. When creating a name the following rules apply: * Must contain only lowercase letters, numbers, and hyphens. * Must start with a letter. * Must be between 1-63 characters. * Must end with a number or a letter. * Must be unique within the project.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "request": {
+                "$ref": "PatchDeployment"
+              },
+              "response": {
+                "$ref": "PatchDeployment"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Create an OS Config patch deployment."
+            },
+            "get": {
+              "id": "osconfig.projects.patchDeployments.get",
+              "path": "v1/{+name}",
+              "flatPath": "v1/projects/{projectsId}/patchDeployments/{patchDeploymentsId}",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Required. The resource name of the patch deployment in the form `projects\/*\/patchDeployments\/*`.",
+                  "pattern": "^projects\/[^\/]+\/patchDeployments\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "PatchDeployment"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Get an OS Config patch deployment."
+            },
+            "list": {
+              "id": "osconfig.projects.patchDeployments.list",
+              "path": "v1/{+parent}/patchDeployments",
+              "flatPath": "v1/projects/{projectsId}/patchDeployments",
+              "httpMethod": "GET",
+              "parameters": {
+                "parent": {
+                  "description": "Required. The resource name of the parent in the form `projects\/*`.",
+                  "pattern": "^projects\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "Optional. The maximum number of patch deployments to return. Default is 100.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "Optional. A pagination token returned from a previous call to ListPatchDeployments that indicates where this listing should continue from.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "response": {
+                "$ref": "ListPatchDeploymentsResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Get a page of OS Config patch deployments."
+            },
+            "delete": {
+              "id": "osconfig.projects.patchDeployments.delete",
+              "path": "v1/{+name}",
+              "flatPath": "v1/projects/{projectsId}/patchDeployments/{patchDeploymentsId}",
+              "httpMethod": "DELETE",
+              "parameters": {
+                "name": {
+                  "description": "Required. The resource name of the patch deployment in the form `projects\/*\/patchDeployments\/*`.",
+                  "pattern": "^projects\/[^\/]+\/patchDeployments\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "Empty"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Delete an OS Config patch deployment."
+            },
+            "patch": {
+              "id": "osconfig.projects.patchDeployments.patch",
+              "path": "v1/{+name}",
+              "flatPath": "v1/projects/{projectsId}/patchDeployments/{patchDeploymentsId}",
+              "httpMethod": "PATCH",
+              "parameters": {
+                "name": {
+                  "description": "Unique name for the patch deployment resource in a project. The patch deployment name is in the form: `projects\/{project_id}\/patchDeployments\/{patch_deployment_id}`. This field is ignored when you create a new patch deployment.",
+                  "pattern": "^projects\/[^\/]+\/patchDeployments\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "updateMask": {
+                  "description": "Optional. Field mask that controls which fields of the patch deployment should be updated.",
+                  "location": "query",
+                  "type": "string",
+                  "format": "google-fieldmask"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "PatchDeployment"
+              },
+              "response": {
+                "$ref": "PatchDeployment"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Update an OS Config patch deployment."
+            },
+            "pause": {
+              "id": "osconfig.projects.patchDeployments.pause",
+              "path": "v1/{+name}:pause",
+              "flatPath": "v1/projects/{projectsId}/patchDeployments/{patchDeploymentsId}:pause",
+              "httpMethod": "POST",
+              "parameters": {
+                "name": {
+                  "description": "Required. The resource name of the patch deployment in the form `projects\/*\/patchDeployments\/*`.",
+                  "pattern": "^projects\/[^\/]+\/patchDeployments\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "PausePatchDeploymentRequest"
+              },
+              "response": {
+                "$ref": "PatchDeployment"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Change state of patch deployment to \"PAUSED\". Patch deployment in paused state doesn't generate patch jobs."
+            },
+            "resume": {
+              "id": "osconfig.projects.patchDeployments.resume",
+              "path": "v1/{+name}:resume",
+              "flatPath": "v1/projects/{projectsId}/patchDeployments/{patchDeploymentsId}:resume",
+              "httpMethod": "POST",
+              "parameters": {
+                "name": {
+                  "description": "Required. The resource name of the patch deployment in the form `projects\/*\/patchDeployments\/*`.",
+                  "pattern": "^projects\/[^\/]+\/patchDeployments\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "ResumePatchDeploymentRequest"
+              },
+              "response": {
+                "$ref": "PatchDeployment"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Change state of patch deployment back to \"ACTIVE\". Patch deployment in active state continues to generate patch jobs."
             }
           }
         }

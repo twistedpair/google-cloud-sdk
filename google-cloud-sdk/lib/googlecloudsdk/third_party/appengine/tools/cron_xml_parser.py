@@ -102,7 +102,7 @@ class CronXmlParser(object):
       if xml_root.tag != 'cronentries':
         raise AppEngineConfigException('Root tag must be <cronentries>')
 
-      for child in xml_root.getchildren():
+      for child in list(xml_root):
         self.ProcessCronNode(child)
 
       if self.errors:

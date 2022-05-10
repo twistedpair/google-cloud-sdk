@@ -99,7 +99,7 @@ class IndexesXmlParser(object):
       if xml_root.tag != 'datastore-indexes':
         raise ValidationError('Root tag must be <datastore-indexes>')
 
-      for child in xml_root.getchildren():
+      for child in list(xml_root):
         self.ProcessIndexNode(child)
 
       if self.errors:
@@ -136,7 +136,7 @@ class IndexesXmlParser(object):
       self.errors.append(
           'Value for ancestor should be true or false, not "%s"' % ancestor)
     properties = []
-    property_nodes = [n for n in node.getchildren() if n.tag == 'property']
+    property_nodes = [n for n in list(node) if n.tag == 'property']
 
     # Check if there are any geospatial properties
     has_geospatial = any(

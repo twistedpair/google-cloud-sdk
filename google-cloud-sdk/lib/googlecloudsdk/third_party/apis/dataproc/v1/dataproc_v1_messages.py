@@ -41,6 +41,36 @@ class AcceleratorConfig(_messages.Message):
   acceleratorTypeUri = _messages.StringField(2)
 
 
+class AuthenticationConfig(_messages.Message):
+  r"""Configuration for using injectable credentials or service account
+
+  Enums:
+    AuthenticationTypeValueValuesEnum: Authentication type for session
+      execution.
+
+  Fields:
+    authenticationType: Authentication type for session execution.
+    injectableCredentialsConfig: Configuration for using end user
+      authentication
+  """
+
+  class AuthenticationTypeValueValuesEnum(_messages.Enum):
+    r"""Authentication type for session execution.
+
+    Values:
+      AUTHENTICATION_TYPE_UNSPECIFIED: If AuthenticationType is unspecified,
+        SERVICE_ACCOUNT is used
+      SERVICE_ACCOUNT: Defaults to using service account credentials
+      INJECTABLE_CREDENTIALS: Injectable credentials authentication type
+    """
+    AUTHENTICATION_TYPE_UNSPECIFIED = 0
+    SERVICE_ACCOUNT = 1
+    INJECTABLE_CREDENTIALS = 2
+
+  authenticationType = _messages.EnumField('AuthenticationTypeValueValuesEnum', 1)
+  injectableCredentialsConfig = _messages.MessageField('InjectableCredentialsConfig', 2)
+
+
 class AutoscalingConfig(_messages.Message):
   r"""Autoscaling Policy config associated with the cluster.
 
@@ -3172,6 +3202,10 @@ class InjectSessionCredentialsRequest(_messages.Message):
   requestId = _messages.StringField(2)
 
 
+class InjectableCredentialsConfig(_messages.Message):
+  r"""Specific injectable credentials authentication parameters"""
+
+
 class InstanceGroupAutoscalingPolicyConfig(_messages.Message):
   r"""Configuration for the size bounds of an instance group, including its
   proportional size to other groups.
@@ -4869,6 +4903,8 @@ class RuntimeConfig(_messages.Message):
       used.
     properties: Optional. A mapping of property names to values, which are
       used to configure workload execution.
+    sessionAuthenticationConfig: Optional. Authentication configuration for
+      the session execution.
     version: Optional. Version of the batch runtime.
   """
 
@@ -4899,7 +4935,8 @@ class RuntimeConfig(_messages.Message):
 
   containerImage = _messages.StringField(1)
   properties = _messages.MessageField('PropertiesValue', 2)
-  version = _messages.StringField(3)
+  sessionAuthenticationConfig = _messages.MessageField('AuthenticationConfig', 3)
+  version = _messages.StringField(4)
 
 
 class RuntimeInfo(_messages.Message):

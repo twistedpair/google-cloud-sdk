@@ -26,7 +26,7 @@ def GetTag(node):
 
 def GetChild(node, tag):
   """Returns first child of node with tag."""
-  for child in node.getchildren():
+  for child in list(node):
     if GetTag(child) == tag:
       return child
 
@@ -42,7 +42,7 @@ def GetAttribute(node, attr):
 
 def GetChildNodeText(node, child_tag, default=''):
   """Finds child xml node with desired tag and returns its text."""
-  for child in node.getchildren():
+  for child in list(node):
     if GetTag(child) == child_tag:
       return GetNodeText(child) or default
   return default
@@ -56,4 +56,4 @@ def GetNodeText(node):
 
 def GetNodes(node, match_tag):
   """Gets all children of a node with the desired tag."""
-  return (child for child in node.getchildren() if GetTag(child) == match_tag)
+  return (child for child in list(node) if GetTag(child) == match_tag)

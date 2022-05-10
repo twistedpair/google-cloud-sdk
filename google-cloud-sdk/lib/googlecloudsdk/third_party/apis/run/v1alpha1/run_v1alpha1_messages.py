@@ -390,6 +390,23 @@ class ExecAction(_messages.Message):
   command = _messages.StringField(1, repeated=True)
 
 
+class GRPCAction(_messages.Message):
+  r"""Not supported by Cloud Run GRPCAction describes an action involving a
+  GRPC port.
+
+  Fields:
+    port: Port number of the gRPC service. Number must be in the range 1 to
+      65535.
+    service: Service is the name of the service to place in the gRPC
+      HealthCheckRequest (see
+      https://github.com/grpc/grpc/blob/master/doc/health-checking.md). If
+      this is not specified, the default behavior is defined by gRPC.
+  """
+
+  port = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  service = _messages.StringField(2)
+
+
 class GoogleRpcStatus(_messages.Message):
   r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
@@ -1076,6 +1093,8 @@ class Probe(_messages.Message):
     failureThreshold: (Optional) Minimum consecutive failures for the probe to
       be considered failed after having succeeded. Defaults to 3. Minimum
       value is 1.
+    grpc: (Optional) GRPCAction specifies an action involving a GRPC port. A
+      field inlined from the Handler message.
     httpGet: (Optional) HTTPGet specifies the http request to perform. A field
       inlined from the Handler message.
     initialDelaySeconds: (Optional) Number of seconds after the container has
@@ -1102,12 +1121,13 @@ class Probe(_messages.Message):
 
   exec_ = _messages.MessageField('ExecAction', 1)
   failureThreshold = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  httpGet = _messages.MessageField('HTTPGetAction', 3)
-  initialDelaySeconds = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  periodSeconds = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  successThreshold = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  tcpSocket = _messages.MessageField('TCPSocketAction', 7)
-  timeoutSeconds = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  grpc = _messages.MessageField('GRPCAction', 3)
+  httpGet = _messages.MessageField('HTTPGetAction', 4)
+  initialDelaySeconds = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  periodSeconds = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  successThreshold = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  tcpSocket = _messages.MessageField('TCPSocketAction', 8)
+  timeoutSeconds = _messages.IntegerField(9, variant=_messages.Variant.INT32)
 
 
 class ResourceRecord(_messages.Message):

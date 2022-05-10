@@ -657,7 +657,43 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "sessionAuthenticationConfig": {
+          "description": "Optional. Authentication configuration for the session execution.",
+          "$ref": "AuthenticationConfig"
         }
+      }
+    },
+    "AuthenticationConfig": {
+      "id": "AuthenticationConfig",
+      "description": "Configuration for using injectable credentials or service account",
+      "type": "object",
+      "properties": {
+        "authenticationType": {
+          "description": "Authentication type for session execution.",
+          "type": "string",
+          "enumDescriptions": [
+            "If AuthenticationType is unspecified, SERVICE_ACCOUNT is used",
+            "Defaults to using service account credentials",
+            "Injectable credentials authentication type"
+          ],
+          "enum": [
+            "AUTHENTICATION_TYPE_UNSPECIFIED",
+            "SERVICE_ACCOUNT",
+            "INJECTABLE_CREDENTIALS"
+          ]
+        },
+        "injectableCredentialsConfig": {
+          "description": "Configuration for using end user authentication",
+          "$ref": "InjectableCredentialsConfig"
+        }
+      }
+    },
+    "InjectableCredentialsConfig": {
+      "id": "InjectableCredentialsConfig",
+      "description": "Specific injectable credentials authentication parameters",
+      "type": "object",
+      "properties": {
       }
     },
     "EnvironmentConfig": {

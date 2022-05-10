@@ -634,6 +634,14 @@
           "description": "Output only. Indicates whether the VPC Service Controls reference architecture is configured for the producer VPC host network.",
           "readOnly": true,
           "type": "boolean"
+        },
+        "usedIpRanges": {
+          "description": "Output only. The IP ranges already in use by consumer or producer",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -3071,6 +3079,11 @@
                           "location": "path",
                           "required": true,
                           "type": "string"
+                        },
+                        "includeUsedIpRanges": {
+                          "description": "Optional. When true, include the used IP ranges as part of the GetConsumerConfig output. This includes routes created inside the service networking network, consumer network, peers of the consumer network, and reserved ranges inside the service networking network. By default, this is false",
+                          "location": "query",
+                          "type": "boolean"
                         }
                       },
                       "parameterOrder": [

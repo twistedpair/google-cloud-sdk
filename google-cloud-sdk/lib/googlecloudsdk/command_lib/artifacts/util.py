@@ -311,14 +311,6 @@ def AppendParentInfoToListVersionsAndTagsResponse(response, args):
   return response
 
 
-def AppendParentInfoToListFilesResponse(response, args):
-  """Adds log to clarify parent resources for ListFilesRequest."""
-  log.status.Print(
-      "Listing items under project {}, location {}, repository {}.\n".format(
-          GetProject(args), GetLocation(args), GetRepo(args)))
-  return response
-
-
 def GetGCRRepos(buckets, project):
   """Gets a list of GCR repositories given a list of GCR bucket names."""
   messages = ar_requests.GetMessages()
@@ -398,6 +390,26 @@ def ListRepositories(args):
   repos.sort(key=lambda x: x.name.split("/")[-1])
 
   return repos
+
+
+def ListFiles(args):
+  """Lists files in a given project.
+
+  Args:
+    args: User input arguments.
+
+  Returns:
+    List of files.
+  """
+  project = GetProject(args)
+  location = args.location or properties.VALUES.artifacts.location.Get()
+  repo = GetRepo(args)
+  page_size = args.page_size
+
+  repo_path = "projects/{}/locations/{}/repositories/{}".format(
+      project, location, repo)
+
+  return ar_requests.ListFiles(repo_path, page_size)
 
 
 def AddEncryptionLogToRepositoryInfo(response, unused_args):

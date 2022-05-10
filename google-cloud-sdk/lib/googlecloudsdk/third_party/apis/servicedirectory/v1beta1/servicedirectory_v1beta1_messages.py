@@ -60,8 +60,8 @@ class AuditConfig(_messages.Message):
   "audit_log_configs": [ { "log_type": "DATA_READ" }, { "log_type":
   "DATA_WRITE", "exempted_members": [ "user:aliya@example.com" ] } ] } ] } For
   sampleservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ
-  logging. It also exempts jose@example.com from DATA_READ logging, and
-  aliya@example.com from DATA_WRITE logging.
+  logging. It also exempts `jose@example.com` from DATA_READ logging, and
+  `aliya@example.com` from DATA_WRITE logging.
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
@@ -2162,6 +2162,8 @@ class WorkloadGroupAttributes(_messages.Message):
       responsible for this workload group.
 
   Fields:
+    managedRegistration: Output only. TODO(b/230323652) Update documentation
+      for managed_registration field !
     managerType: Output only. The GCP resource/product responsible for this
       workload group.
   """
@@ -2179,7 +2181,8 @@ class WorkloadGroupAttributes(_messages.Message):
     GKE_HUB = 1
     BACKEND_SERVICE = 2
 
-  managerType = _messages.EnumField('ManagerTypeValueValuesEnum', 1)
+  managedRegistration = _messages.BooleanField(1)
+  managerType = _messages.EnumField('ManagerTypeValueValuesEnum', 2)
 
 
 encoding.AddCustomJsonFieldMapping(

@@ -149,6 +149,13 @@ def _ParseStorageType(sql_messages, storage_type):
   return None
 
 
+def _ParseWorkloadTier(sql_messages, workload_tier):
+  if workload_tier:
+    return sql_messages.Settings.WorkloadTierValueValuesEnum.lookup_by_name(
+        workload_tier.upper())
+  return None
+
+
 # TODO(b/122660263): Remove when V1 instances are no longer supported.
 def ShowV1DeprecationWarning(plural=False):
   message = (
@@ -301,6 +308,10 @@ class _BaseInstances(object):
               'using [--storage-auto-increase-limit], '
               '[--storage-auto-increase] must be enabled.')
 
+    if _IsAlpha(release_track):
+      if args.IsSpecified('workload_tier'):
+        settings.workloadTier = _ParseWorkloadTier(sql_messages,
+                                                   args.workload_tier)
     return settings
 
   @classmethod
@@ -385,7 +396,8 @@ class _BaseInstances(object):
             password_policy_disallow_username_substring=args
             .password_policy_disallow_username_substring,
             password_policy_password_change_interval=args
-            .password_policy_password_change_interval))
+            .password_policy_password_change_interval,
+            enable_password_policy=args.enable_password_policy))
 
     # BETA args.
     if _IsBetaOrNewer(release_track):
@@ -509,6 +521,7 @@ class _BaseInstances(object):
             .password_policy_disallow_username_substring,
             password_policy_password_change_interval=args
             .password_policy_password_change_interval,
+            enable_password_policy=args.enable_password_policy,
             clear_password_policy=args.clear_password_policy))
 
     # BETA args.

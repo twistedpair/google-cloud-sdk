@@ -1049,6 +1049,33 @@ class BigtableadminV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Patch(self, request, global_params=None):
+      r"""Updates a specified table.
+
+      Args:
+        request: (BigtableadminProjectsInstancesTablesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}',
+        http_method='PATCH',
+        method_id='bigtableadmin.projects.instances.tables.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}',
+        request_field='table',
+        request_type_name='BigtableadminProjectsInstancesTablesPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Restore(self, request, global_params=None):
       r"""Create a new table by restoring from a completed backup. The new table must be in the same project as the instance containing the backup. The returned table long-running operation can be used to track the progress of the operation, and to cancel it. The metadata field type is RestoreTableMetadata. The response type is Table, if successful.
 

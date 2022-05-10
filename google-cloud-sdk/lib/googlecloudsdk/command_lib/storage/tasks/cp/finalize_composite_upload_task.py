@@ -87,6 +87,7 @@ class FinalizeCompositeUploadTask(copy_util.CopyTaskWithExitHandler):
     compose_task = compose_objects_task.ComposeObjectsTask(
         uploaded_objects,
         self._destination_resource,
+        original_source_resource=self._source_resource,
         user_request_args=self._user_request_args)
     compose_task_output = compose_task.execute(
         task_status_queue=task_status_queue)

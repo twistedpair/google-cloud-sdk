@@ -119,8 +119,8 @@ class AuditConfig(_messages.Message):
   "audit_log_configs": [ { "log_type": "DATA_READ" }, { "log_type":
   "DATA_WRITE", "exempted_members": [ "user:aliya@example.com" ] } ] } ] } For
   sampleservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ
-  logging. It also exempts jose@example.com from DATA_READ logging, and
-  aliya@example.com from DATA_WRITE logging.
+  logging. It also exempts `jose@example.com` from DATA_READ logging, and
+  `aliya@example.com` from DATA_WRITE logging.
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
@@ -1909,8 +1909,7 @@ class Step(_messages.Message):
 
   Fields:
     abort: Display information of the final state "abort" and reason.
-    appEngineVersionInfo: Display information of an App Engine service
-      version.
+    appEngineVersion: Display information of an App Engine service version.
     causesDrop: This is a step that leads to the final state Drop.
     cloudFunction: Display information of a Cloud function.
     cloudSqlInstance: Display information of a Cloud SQL instance.
@@ -2022,7 +2021,7 @@ class Step(_messages.Message):
     VIEWER_PERMISSION_MISSING = 25
 
   abort = _messages.MessageField('AbortInfo', 1)
-  appEngineVersionInfo = _messages.MessageField('AppEngineVersionInfo', 2)
+  appEngineVersion = _messages.MessageField('AppEngineVersionInfo', 2)
   causesDrop = _messages.BooleanField(3)
   cloudFunction = _messages.MessageField('CloudFunctionInfo', 4)
   cloudSqlInstance = _messages.MessageField('CloudSQLInstanceInfo', 5)

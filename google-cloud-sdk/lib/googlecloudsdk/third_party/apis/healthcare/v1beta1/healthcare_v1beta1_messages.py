@@ -322,8 +322,8 @@ class AuditConfig(_messages.Message):
   "audit_log_configs": [ { "log_type": "DATA_READ" }, { "log_type":
   "DATA_WRITE", "exempted_members": [ "user:aliya@example.com" ] } ] } ] } For
   sampleservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ
-  logging. It also exempts jose@example.com from DATA_READ logging, and
-  aliya@example.com from DATA_WRITE logging.
+  logging. It also exempts `jose@example.com` from DATA_READ logging, and
+  `aliya@example.com` from DATA_WRITE logging.
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
@@ -4506,7 +4506,12 @@ class HealthcareProjectsLocationsDatasetsFhirStoresFhirResourceValidateRequest(_
     httpBody: A HttpBody resource to be passed as the request body.
     parent: The name of the FHIR store that holds the profiles being used for
       validation.
-    profile: A profile that this resource should be validated against.
+    profile: The canonical URL of a profile that this resource should be
+      validated against. For example, to validate a Patient resource against
+      the US Core Patient profile this parameter would be
+      `http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient`. A
+      StructureDefinition with this canonical URL must exist in the FHIR
+      store.
     type: The FHIR resource type of the resource being validated. For a
       complete list, see the FHIR Resource Index ([DSTU2](http://hl7.org/imple
       ment/standards/fhir/DSTU2/resourcelist.html),

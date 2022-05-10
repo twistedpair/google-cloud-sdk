@@ -2387,6 +2387,8 @@ class RunQueryResponse(_messages.Message):
 
   Fields:
     document: A query result, not set when reporting partial progress.
+    done: If present, Firestore has completely finished the request and no
+      more documents will be returned.
     readTime: The time at which the document was read. This may be
       monotonically increasing; in this case, the previous documents in the
       result stream are guaranteed not to have changed between their
@@ -2402,9 +2404,10 @@ class RunQueryResponse(_messages.Message):
   """
 
   document = _messages.MessageField('Document', 1)
-  readTime = _messages.StringField(2)
-  skippedResults = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  transaction = _messages.BytesField(4)
+  done = _messages.BooleanField(2)
+  readTime = _messages.StringField(3)
+  skippedResults = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  transaction = _messages.BytesField(5)
 
 
 class StandardQueryParameters(_messages.Message):

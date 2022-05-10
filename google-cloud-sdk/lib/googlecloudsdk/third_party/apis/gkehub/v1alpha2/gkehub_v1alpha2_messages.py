@@ -13,6 +13,19 @@ from apitools.base.py import extra_types
 package = 'gkehub'
 
 
+class ApplianceCluster(_messages.Message):
+  r"""ApplianceCluster contains information specific to GDC Edge Appliance
+  Clusters.
+
+  Fields:
+    resourceLink: Immutable. Self-link of the GCP resource for the Appliance
+      Cluster. For example: //transferappliance.googleapis.com/projects/my-
+      project/locations/us-west1-a/appliances/my-appliance
+  """
+
+  resourceLink = _messages.StringField(1)
+
+
 class AuditConfig(_messages.Message):
   r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
@@ -28,8 +41,8 @@ class AuditConfig(_messages.Message):
   "audit_log_configs": [ { "log_type": "DATA_READ" }, { "log_type":
   "DATA_WRITE", "exempted_members": [ "user:aliya@example.com" ] } ] } ] } For
   sampleservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ
-  logging. It also exempts jose@example.com from DATA_READ logging, and
-  aliya@example.com from DATA_WRITE logging.
+  logging. It also exempts `jose@example.com` from DATA_READ logging, and
+  `aliya@example.com` from DATA_WRITE logging.
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
@@ -910,6 +923,8 @@ class MembershipEndpoint(_messages.Message):
   API, endpoint and any additional Kubernetes metadata.
 
   Fields:
+    applianceCluster: Optional. Specific information for a GDC Edge Appliance
+      cluster.
     edgeCluster: Optional. Specific information for a Google Edge cluster.
     gkeCluster: Optional. Specific information for a GKE-on-GCP cluster.
     kubernetesMetadata: Output only. Useful Kubernetes-specific metadata.
@@ -926,12 +941,13 @@ class MembershipEndpoint(_messages.Message):
       this field, it should have a nil "type" instead.
   """
 
-  edgeCluster = _messages.MessageField('EdgeCluster', 1)
-  gkeCluster = _messages.MessageField('GkeCluster', 2)
-  kubernetesMetadata = _messages.MessageField('KubernetesMetadata', 3)
-  kubernetesResource = _messages.MessageField('KubernetesResource', 4)
-  multiCloudCluster = _messages.MessageField('MultiCloudCluster', 5)
-  onPremCluster = _messages.MessageField('OnPremCluster', 6)
+  applianceCluster = _messages.MessageField('ApplianceCluster', 1)
+  edgeCluster = _messages.MessageField('EdgeCluster', 2)
+  gkeCluster = _messages.MessageField('GkeCluster', 3)
+  kubernetesMetadata = _messages.MessageField('KubernetesMetadata', 4)
+  kubernetesResource = _messages.MessageField('KubernetesResource', 5)
+  multiCloudCluster = _messages.MessageField('MultiCloudCluster', 6)
+  onPremCluster = _messages.MessageField('OnPremCluster', 7)
 
 
 class MembershipState(_messages.Message):

@@ -113,6 +113,12 @@ _INFO = {
             api='meshconfig.googleapis.com',
             cmd_group='mesh',
         ),
+    'workloadcertificate':
+        Info(
+            display_name='Workload Certificate',
+            api='workloadcertificate.googleapis.com',
+            cmd_group='workload-certificate',
+        ),
 }
 
 

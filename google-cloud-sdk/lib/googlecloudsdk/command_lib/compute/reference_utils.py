@@ -55,3 +55,21 @@ def BuildServiceBindingUrl(project_name, location, binding_name):
       location=location,
       collection_name='serviceBindings',
       resource_name=binding_name)
+
+
+def CompareUrlRelativeReferences(url1, url2):
+  """Compares relative resource references (skips namespace)."""
+  return url1.split('projects')[1] == url2.split('projects')[1]
+
+
+def UrlInReferences(url, references):
+  return bool(
+      list(
+          filter(lambda ref: CompareUrlRelativeReferences(url, ref),
+                 references)))
+
+
+def FilterReferences(references, references_to_remove):
+  return list(
+      filter(lambda ref: not (UrlInReferences(ref, references_to_remove)),
+             references))

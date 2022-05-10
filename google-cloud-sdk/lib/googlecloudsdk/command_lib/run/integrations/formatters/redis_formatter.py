@@ -92,8 +92,9 @@ class RedisFormatter(base_formatter.BaseFormatter):
     ## correct variables. This will not be trivial since binding is not
     ## contained with redis resource.
 
-    return ('To connect to this Redis instance the Cloud Run service must '
-            'utilize environment variables {}:{}.'.format(
+    return ('To connect to the Redis instance utilize the '
+            'environment variables {} and {}. These have '
+            'been added to the Cloud Run service for you.'.format(
                 'REDISHOST', 'REDISPORT'))
 
   def _VpcFromResources(self, records):

@@ -6,7 +6,7 @@
   "canonicalName": "Edge Network",
   "version": "v1alpha1",
   "revision": "0",
-  "title": "edgenetwork API (prod)",
+  "title": "Distributed Cloud Edge Network API",
   "description": "",
   "ownerDomain": "google.com",
   "ownerName": "Google",
@@ -335,6 +335,11 @@
       "description": "DiagnoseNetworkResponse contains the current status for a specific network.",
       "type": "object",
       "properties": {
+        "updateTime": {
+          "description": "The time when the network status was last updated.",
+          "type": "string",
+          "format": "google-datetime"
+        },
         "result": {
           "description": "The network status of a specific network.",
           "$ref": "NetworkStatus"
@@ -589,6 +594,11 @@
       "description": "DiagnoseInterconnectResponse contains the current diagnostics for a specific interconnect.",
       "type": "object",
       "properties": {
+        "updateTime": {
+          "description": "The time when the interconnect diagnostics was last updated.",
+          "type": "string",
+          "format": "google-datetime"
+        },
         "result": {
           "description": "The network status of a specific interconnect.",
           "$ref": "InterconnectDiagnostics"
@@ -1021,6 +1031,11 @@
       "description": "DiagnoseRouterResponse contains the current status for a specific router.",
       "type": "object",
       "properties": {
+        "updateTime": {
+          "description": "The time when the router status was last updated.",
+          "type": "string",
+          "format": "google-datetime"
+        },
         "result": {
           "description": "The network status of a specific router.",
           "$ref": "RouterStatus"

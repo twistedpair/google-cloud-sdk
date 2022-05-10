@@ -8466,8 +8466,18 @@ class GoogleCloudDialogflowV2AgentAssistantRecord(_messages.Message):
 class GoogleCloudDialogflowV2AnalyzeContentRequest(_messages.Message):
   r"""The request message for Participants.AnalyzeContent.
 
+  Messages:
+    CxParametersValue: Additional parameters to be put into Dialogflow CX
+      session parameters. To remove a parameter from the session, clients
+      should explicitly set the parameter value to null. Note: this field
+      should only be used if you are connecting to a Dialogflow CX agent.
+
   Fields:
     assistQueryParams: Parameters for a human assist query.
+    cxParameters: Additional parameters to be put into Dialogflow CX session
+      parameters. To remove a parameter from the session, clients should
+      explicitly set the parameter value to null. Note: this field should only
+      be used if you are connecting to a Dialogflow CX agent.
     eventInput: An input event to send to Dialogflow.
     queryParams: Parameters for a Dialogflow virtual-agent query.
     replyAudioConfig: Speech synthesis configuration. The speech synthesis
@@ -8480,12 +8490,41 @@ class GoogleCloudDialogflowV2AnalyzeContentRequest(_messages.Message):
     textInput: The natural language text to be processed.
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class CxParametersValue(_messages.Message):
+    r"""Additional parameters to be put into Dialogflow CX session parameters.
+    To remove a parameter from the session, clients should explicitly set the
+    parameter value to null. Note: this field should only be used if you are
+    connecting to a Dialogflow CX agent.
+
+    Messages:
+      AdditionalProperty: An additional property for a CxParametersValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a CxParametersValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   assistQueryParams = _messages.MessageField('GoogleCloudDialogflowV2AssistQueryParameters', 1)
-  eventInput = _messages.MessageField('GoogleCloudDialogflowV2EventInput', 2)
-  queryParams = _messages.MessageField('GoogleCloudDialogflowV2QueryParameters', 3)
-  replyAudioConfig = _messages.MessageField('GoogleCloudDialogflowV2OutputAudioConfig', 4)
-  requestId = _messages.StringField(5)
-  textInput = _messages.MessageField('GoogleCloudDialogflowV2TextInput', 6)
+  cxParameters = _messages.MessageField('CxParametersValue', 2)
+  eventInput = _messages.MessageField('GoogleCloudDialogflowV2EventInput', 3)
+  queryParams = _messages.MessageField('GoogleCloudDialogflowV2QueryParameters', 4)
+  replyAudioConfig = _messages.MessageField('GoogleCloudDialogflowV2OutputAudioConfig', 5)
+  requestId = _messages.StringField(6)
+  textInput = _messages.MessageField('GoogleCloudDialogflowV2TextInput', 7)
 
 
 class GoogleCloudDialogflowV2AnalyzeContentResponse(_messages.Message):

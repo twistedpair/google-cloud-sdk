@@ -48,6 +48,9 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.command_lib.eventarc import types as trigger_types
 
+GEN_1 = '1st gen'
+GEN_2 = '2nd gen'
+
 
 def _TransformState(data, undefined=''):
   """Returns textual information about functions state.
@@ -79,7 +82,7 @@ def TransformTrigger(data, undefined=''):
     str containing information about functions trigger.
   """
   generation = _TransformGeneration(data)
-  if generation == '1st gen':
+  if generation == GEN_1:
     if 'httpsTrigger' in data:
       return 'HTTP Trigger'
     if 'gcsTrigger' in data:
@@ -90,7 +93,7 @@ def TransformTrigger(data, undefined=''):
       return 'Event Trigger'
     return undefined
 
-  elif generation == '2nd gen':
+  elif generation == GEN_2:
     if 'eventTrigger' in data:
       event_trigger = data['eventTrigger']
       event_type = event_trigger.get('eventType')
@@ -132,21 +135,40 @@ def _TransformGeneration(data, undefined='-'):
   build_id = data.get('buildId')
   runtime = data.get('runtime')
   if any([entry_point, build_id, runtime]):
-    return '1st gen'
+    return GEN_1
 
   build_config = data.get('buildConfig')
   service_config = data.get('serviceConfig')
 
   if any([build_config, service_config]):
-    return '2nd gen'
+    return GEN_2
 
   return undefined
 
+
+def _TransformEnvironments(data):
+  """Returns Cloud Functions product version.
+
+  Args:
+    data: JSON-serializable Runtimes object.
+
+  Returns:
+    str containing inferred product version.
+  """
+  generations = []
+  for env in data.get('environments'):
+    if env == 'GEN_1':
+      generations.append(GEN_1)
+    if env == 'GEN_2':
+      generations.append(GEN_2)
+
+  return ', '.join(generations)
 
 _TRANSFORMS = {
     'trigger': TransformTrigger,
     'state': _TransformState,
     'generation': _TransformGeneration,
+    'environments': _TransformEnvironments,
 }
 
 

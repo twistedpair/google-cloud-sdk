@@ -286,7 +286,8 @@ class GkemulticloudProjectsLocationsAwsClustersPatchRequest(_messages.Message):
       `control_plane.root_volume.kms_key_arn`. *
       `control_plane.root_volume.volume_type`. *
       `control_plane.root_volume.size_gib`. * `control_plane.ssh_config`. *
-      `control_plane.ssh_config.ec2_key_pair`.
+      `control_plane.ssh_config.ec2_key_pair`. *
+      `control_plane.instance_placement.tenancy`.
     validateOnly: If set, only validate the request, but do not actually
       update the cluster.
   """

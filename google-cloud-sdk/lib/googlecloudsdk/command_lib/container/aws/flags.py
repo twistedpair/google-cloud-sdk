@@ -61,14 +61,32 @@ def GetInstanceType(args):
   return getattr(args, 'instance_type', None)
 
 
-def AddSshEC2KeyPair(parser):
+def AddSshEC2KeyPair(parser, kind='control plane'):
+  """Adds the --ssh-ec2-key-pair flag."""
   parser.add_argument(
       '--ssh-ec2-key-pair',
-      help='Name of the EC2 key pair to log in into control plane nodes.')
+      help='Name of the EC2 key pair authorized to login to the {} nodes.'
+      .format(kind))
 
 
 def GetSshEC2KeyPair(args):
   return getattr(args, 'ssh_ec2_key_pair', None)
+
+
+def AddClearSshEc2KeyPair(parser, kind):
+  """Adds the --clear-ssh-ec2-key-pair flag."""
+  parser.add_argument(
+      '--clear-ssh-ec2-key-pair',
+      action='store_true',
+      default=None,
+      help='Clear the EC2 key pair to log in into the {} nodes.'.format(kind))
+
+
+def AddSshEC2KeyPairForUpdate(parser, kind='control plane'):
+  """Adds SSH config EC2 key pair related flags for update."""
+  group = parser.add_group('SSH config', mutex=True)
+  AddSshEC2KeyPair(group, kind)
+  AddClearSshEc2KeyPair(group, kind)
 
 
 def AddRoleArn(parser, required=True):

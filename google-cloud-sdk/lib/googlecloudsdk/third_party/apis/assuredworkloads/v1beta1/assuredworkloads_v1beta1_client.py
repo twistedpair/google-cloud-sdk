@@ -43,6 +43,7 @@ class AssuredworkloadsV1beta1(base_api.BaseApiClient):
     self.organizations_locations_workloads_organizations_locations_workloads = self.OrganizationsLocationsWorkloadsOrganizationsLocationsWorkloadsService(self)
     self.organizations_locations_workloads_organizations_locations = self.OrganizationsLocationsWorkloadsOrganizationsLocationsService(self)
     self.organizations_locations_workloads_organizations = self.OrganizationsLocationsWorkloadsOrganizationsService(self)
+    self.organizations_locations_workloads_violations = self.OrganizationsLocationsWorkloadsViolationsService(self)
     self.organizations_locations_workloads = self.OrganizationsLocationsWorkloadsService(self)
     self.organizations_locations = self.OrganizationsLocationsService(self)
     self.organizations = self.OrganizationsService(self)
@@ -167,6 +168,70 @@ class AssuredworkloadsV1beta1(base_api.BaseApiClient):
       super(AssuredworkloadsV1beta1.OrganizationsLocationsWorkloadsOrganizationsService, self).__init__(client)
       self._upload_configs = {
           }
+
+  class OrganizationsLocationsWorkloadsViolationsService(base_api.BaseApiService):
+    """Service class for the organizations_locations_workloads_violations resource."""
+
+    _NAME = 'organizations_locations_workloads_violations'
+
+    def __init__(self, client):
+      super(AssuredworkloadsV1beta1.OrganizationsLocationsWorkloadsViolationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves Assured Workload Violation based on ID.
+
+      Args:
+        request: (AssuredworkloadsOrganizationsLocationsWorkloadsViolationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAssuredworkloadsVersioningV1beta1Violation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/organizations/{organizationsId}/locations/{locationsId}/workloads/{workloadsId}/violations/{violationsId}',
+        http_method='GET',
+        method_id='assuredworkloads.organizations.locations.workloads.violations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='AssuredworkloadsOrganizationsLocationsWorkloadsViolationsGetRequest',
+        response_type_name='GoogleCloudAssuredworkloadsVersioningV1beta1Violation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists the Violations in the AssuredWorkload Environment. Callers may also choose to read across multiple Workloads as per [AIP-159](https://google.aip.dev/159) by using '-' (the hyphen or dash character) as a wildcard character instead of workload-id in the parent. Format `organizations/{org_id}/locations/{location}/workloads/-`.
+
+      Args:
+        request: (AssuredworkloadsOrganizationsLocationsWorkloadsViolationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAssuredworkloadsVersioningV1beta1ListViolationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/organizations/{organizationsId}/locations/{locationsId}/workloads/{workloadsId}/violations',
+        http_method='GET',
+        method_id='assuredworkloads.organizations.locations.workloads.violations.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'interval_endTime', 'interval_startTime', 'pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/violations',
+        request_field='',
+        request_type_name='AssuredworkloadsOrganizationsLocationsWorkloadsViolationsListRequest',
+        response_type_name='GoogleCloudAssuredworkloadsVersioningV1beta1ListViolationsResponse',
+        supports_download=False,
+    )
 
   class OrganizationsLocationsWorkloadsService(base_api.BaseApiService):
     """Service class for the organizations_locations_workloads resource."""

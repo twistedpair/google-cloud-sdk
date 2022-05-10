@@ -443,6 +443,34 @@
         "cmekSettings": {
           "description": "The CMEK settings of the log bucket. If present, new log entries written to this log bucket are encrypted using the CMEK key provided in this configuration. If a log bucket has CMEK settings, the CMEK settings cannot be disabled later by updating the log bucket. Changing the KMS key is allowed.",
           "$ref": "CmekSettings"
+        },
+        "unmetAnalyticsUpgradeRequirements": {
+          "description": "Output only. The requirements for an upgrade to analytics that are not satisfied by the current bucket configuration, in an arbitrary order. This will eventually be deprecated once there is not a need to upgrade existing buckets (i.e. when analytics becomes default-enabled).",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enumDescriptions": [
+              "Unexpected default.",
+              "The requirement that a bucket must be in the ACTIVE lifecycle state.",
+              "The requirement that a bucket must be in the \"global\" region.",
+              "The requirement that buckets other than the \"_Required\" bucket must have the default retention duration of 30 days set.",
+              "The requirement that the \"_Required\" bucket must have its default retention of 400 days set.",
+              "The requirement that no field level access controls are configured for the bucket.",
+              "The requirement that no CMEK configuration is set for the bucket.",
+              "The requirement that the bucket is not locked."
+            ],
+            "enum": [
+              "REQUIREMENT_UNSPECIFIED",
+              "ACTIVE_LIFECYCLE_STATE",
+              "GLOBAL_BUCKET_REGION",
+              "DEFAULT_RETENTION_DURATION",
+              "REQUIRED_RETENTION_DURATION",
+              "FIELD_LEVEL_ACCESS_CONTROLS_UNSET",
+              "CMEK_UNSET",
+              "NOT_LOCKED"
+            ]
+          }
         }
       }
     },
@@ -731,7 +759,7 @@
           "type": "string"
         },
         "description": {
-          "description": "Describes this link.",
+          "description": "Describes this link.The maximum length of the description is 8000 characters.",
           "type": "string"
         },
         "createTime": {
@@ -773,7 +801,8 @@
       "type": "object",
       "properties": {
         "datasetId": {
-          "description": "The full resource name of the BigQuery dataset. The DATASET_ID will match the ID of the link, so the link must match the naming restrictions of BigQuery datasets (alphanumeric characters and underscores only).The dataset will have a resource path of \"bigquery.googleapis.com\/projects\/PROJECT_ID\/datasets\/DATASET_ID\"",
+          "description": "Output only. The full resource name of the BigQuery dataset. The DATASET_ID will match the ID of the link, so the link must match the naming restrictions of BigQuery datasets (alphanumeric characters and underscores only).The dataset will have a resource path of \"bigquery.googleapis.com\/projects\/PROJECT_ID\/datasets\/DATASET_ID\"",
+          "readOnly": true,
           "type": "string"
         }
       }
@@ -1944,6 +1973,10 @@
         },
         "traceId": {
           "description": "Stackdriver Trace identifier for this request.",
+          "type": "string"
+        },
+        "spanId": {
+          "description": "Stackdriver Trace span identifier for this request.",
           "type": "string"
         },
         "traceSampled": {

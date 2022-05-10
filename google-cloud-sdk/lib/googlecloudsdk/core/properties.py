@@ -1141,6 +1141,8 @@ class _SectionApiEndpointOverrides(_Section):
     self.edgenetwork = self._Add(
         'edgenetwork', command='gcloud edge-cloud networking', hidden=True)
     self.eventarc = self._Add('eventarc', command='gcloud eventarc')
+    self.eventarcpublishing = self._Add(
+        'eventarcpublishing', command='gcloud eventarc publish')
     self.events = self._Add('events', command='gcloud events')
     self.file = self._Add('file', command='gcloud filestore')
     self.firestore = self._Add('firestore', command='gcloud firestore')

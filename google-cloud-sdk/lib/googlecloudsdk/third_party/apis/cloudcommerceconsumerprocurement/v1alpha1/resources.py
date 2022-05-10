@@ -41,17 +41,6 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  BILLINGACCOUNTS_ACCOUNTS_OPERATIONS = (
-      'billingAccounts.accounts.operations',
-      '{+name}',
-      {
-          '':
-              'billingAccounts/{billingAccountsId}/accounts/{accountsId}/'
-              'operations/{operationsId}',
-      },
-      ['name'],
-      True
-  )
   BILLINGACCOUNTS_ORDERS = (
       'billingAccounts.orders',
       '{+name}',
@@ -84,18 +73,6 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  BILLINGACCOUNTS_ORDERS_ORDERALLOCATIONS_OPERATIONS = (
-      'billingAccounts.orders.orderAllocations.operations',
-      '{+name}',
-      {
-          '':
-              'billingAccounts/{billingAccountsId}/orders/{ordersId}/'
-              'orderAllocations/{orderAllocationsId}/operations/'
-              '{operationsId}',
-      },
-      ['name'],
-      True
-  )
   PROJECTS = (
       'projects',
       'projects/{projectsId}',
@@ -119,17 +96,6 @@ class Collections(enum.Enum):
       {
           '':
               'projects/{projectsId}/freeTrials/{freeTrialsId}',
-      },
-      ['name'],
-      True
-  )
-  PROJECTS_FREETRIALS_OPERATIONS = (
-      'projects.freeTrials.operations',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/freeTrials/{freeTrialsId}/operations/'
-              '{operationsId}',
       },
       ['name'],
       True

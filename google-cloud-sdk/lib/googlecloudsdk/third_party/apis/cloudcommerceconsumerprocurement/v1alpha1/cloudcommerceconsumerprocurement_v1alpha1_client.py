@@ -39,136 +39,16 @@ class CloudcommerceconsumerprocurementV1alpha1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
-    self.billingAccounts_accounts_operations = self.BillingAccountsAccountsOperationsService(self)
     self.billingAccounts_accounts = self.BillingAccountsAccountsService(self)
     self.billingAccounts_consents = self.BillingAccountsConsentsService(self)
     self.billingAccounts_orders_operations = self.BillingAccountsOrdersOperationsService(self)
-    self.billingAccounts_orders_orderAllocations_operations = self.BillingAccountsOrdersOrderAllocationsOperationsService(self)
     self.billingAccounts_orders_orderAllocations = self.BillingAccountsOrdersOrderAllocationsService(self)
+    self.billingAccounts_orders_orderAttributions = self.BillingAccountsOrdersOrderAttributionsService(self)
     self.billingAccounts_orders = self.BillingAccountsOrdersService(self)
     self.billingAccounts = self.BillingAccountsService(self)
     self.projects_entitlements = self.ProjectsEntitlementsService(self)
-    self.projects_freeTrials_operations = self.ProjectsFreeTrialsOperationsService(self)
     self.projects_freeTrials = self.ProjectsFreeTrialsService(self)
     self.projects = self.ProjectsService(self)
-
-  class BillingAccountsAccountsOperationsService(base_api.BaseApiService):
-    """Service class for the billingAccounts_accounts_operations resource."""
-
-    _NAME = 'billingAccounts_accounts_operations'
-
-    def __init__(self, client):
-      super(CloudcommerceconsumerprocurementV1alpha1.BillingAccountsAccountsOperationsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Cancel(self, request, global_params=None):
-      r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
-
-      Args:
-        request: (CloudcommerceconsumerprocurementBillingAccountsAccountsOperationsCancelRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleProtobufEmpty) The response message.
-      """
-      config = self.GetMethodConfig('Cancel')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Cancel.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/billingAccounts/{billingAccountsId}/accounts/{accountsId}/operations/{operationsId}:cancel',
-        http_method='POST',
-        method_id='cloudcommerceconsumerprocurement.billingAccounts.accounts.operations.cancel',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha1/{+name}:cancel',
-        request_field='googleLongrunningCancelOperationRequest',
-        request_type_name='CloudcommerceconsumerprocurementBillingAccountsAccountsOperationsCancelRequest',
-        response_type_name='GoogleProtobufEmpty',
-        supports_download=False,
-    )
-
-    def Delete(self, request, global_params=None):
-      r"""Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`.
-
-      Args:
-        request: (CloudcommerceconsumerprocurementBillingAccountsAccountsOperationsDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleProtobufEmpty) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/billingAccounts/{billingAccountsId}/accounts/{accountsId}/operations/{operationsId}',
-        http_method='DELETE',
-        method_id='cloudcommerceconsumerprocurement.billingAccounts.accounts.operations.delete',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha1/{+name}',
-        request_field='',
-        request_type_name='CloudcommerceconsumerprocurementBillingAccountsAccountsOperationsDeleteRequest',
-        response_type_name='GoogleProtobufEmpty',
-        supports_download=False,
-    )
-
-    def Get(self, request, global_params=None):
-      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
-
-      Args:
-        request: (CloudcommerceconsumerprocurementBillingAccountsAccountsOperationsGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleLongrunningOperation) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/billingAccounts/{billingAccountsId}/accounts/{accountsId}/operations/{operationsId}',
-        http_method='GET',
-        method_id='cloudcommerceconsumerprocurement.billingAccounts.accounts.operations.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha1/{+name}',
-        request_field='',
-        request_type_name='CloudcommerceconsumerprocurementBillingAccountsAccountsOperationsGetRequest',
-        response_type_name='GoogleLongrunningOperation',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users/*/operations`. To override the binding, API services can add a binding such as `"/v1/{name=users/*}/operations"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id.
-
-      Args:
-        request: (CloudcommerceconsumerprocurementBillingAccountsAccountsOperationsListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleLongrunningListOperationsResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/billingAccounts/{billingAccountsId}/accounts/{accountsId}/operations',
-        http_method='GET',
-        method_id='cloudcommerceconsumerprocurement.billingAccounts.accounts.operations.list',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
-        relative_path='v1alpha1/{+name}/operations',
-        request_field='',
-        request_type_name='CloudcommerceconsumerprocurementBillingAccountsAccountsOperationsListRequest',
-        response_type_name='GoogleLongrunningListOperationsResponse',
-        supports_download=False,
-    )
 
   class BillingAccountsAccountsService(base_api.BaseApiService):
     """Service class for the billingAccounts_accounts resource."""
@@ -416,60 +296,6 @@ class CloudcommerceconsumerprocurementV1alpha1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
-    def Cancel(self, request, global_params=None):
-      r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
-
-      Args:
-        request: (CloudcommerceconsumerprocurementBillingAccountsOrdersOperationsCancelRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleProtobufEmpty) The response message.
-      """
-      config = self.GetMethodConfig('Cancel')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Cancel.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/billingAccounts/{billingAccountsId}/orders/{ordersId}/operations/{operationsId}:cancel',
-        http_method='POST',
-        method_id='cloudcommerceconsumerprocurement.billingAccounts.orders.operations.cancel',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha1/{+name}:cancel',
-        request_field='googleLongrunningCancelOperationRequest',
-        request_type_name='CloudcommerceconsumerprocurementBillingAccountsOrdersOperationsCancelRequest',
-        response_type_name='GoogleProtobufEmpty',
-        supports_download=False,
-    )
-
-    def Delete(self, request, global_params=None):
-      r"""Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`.
-
-      Args:
-        request: (CloudcommerceconsumerprocurementBillingAccountsOrdersOperationsDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleProtobufEmpty) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/billingAccounts/{billingAccountsId}/orders/{ordersId}/operations/{operationsId}',
-        http_method='DELETE',
-        method_id='cloudcommerceconsumerprocurement.billingAccounts.orders.operations.delete',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha1/{+name}',
-        request_field='',
-        request_type_name='CloudcommerceconsumerprocurementBillingAccountsOrdersOperationsDeleteRequest',
-        response_type_name='GoogleProtobufEmpty',
-        supports_download=False,
-    )
-
     def Get(self, request, global_params=None):
       r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
 
@@ -494,151 +320,6 @@ class CloudcommerceconsumerprocurementV1alpha1(base_api.BaseApiClient):
         request_field='',
         request_type_name='CloudcommerceconsumerprocurementBillingAccountsOrdersOperationsGetRequest',
         response_type_name='GoogleLongrunningOperation',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users/*/operations`. To override the binding, API services can add a binding such as `"/v1/{name=users/*}/operations"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id.
-
-      Args:
-        request: (CloudcommerceconsumerprocurementBillingAccountsOrdersOperationsListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleLongrunningListOperationsResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/billingAccounts/{billingAccountsId}/orders/{ordersId}/operations',
-        http_method='GET',
-        method_id='cloudcommerceconsumerprocurement.billingAccounts.orders.operations.list',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
-        relative_path='v1alpha1/{+name}/operations',
-        request_field='',
-        request_type_name='CloudcommerceconsumerprocurementBillingAccountsOrdersOperationsListRequest',
-        response_type_name='GoogleLongrunningListOperationsResponse',
-        supports_download=False,
-    )
-
-  class BillingAccountsOrdersOrderAllocationsOperationsService(base_api.BaseApiService):
-    """Service class for the billingAccounts_orders_orderAllocations_operations resource."""
-
-    _NAME = 'billingAccounts_orders_orderAllocations_operations'
-
-    def __init__(self, client):
-      super(CloudcommerceconsumerprocurementV1alpha1.BillingAccountsOrdersOrderAllocationsOperationsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Cancel(self, request, global_params=None):
-      r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
-
-      Args:
-        request: (CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsOperationsCancelRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleProtobufEmpty) The response message.
-      """
-      config = self.GetMethodConfig('Cancel')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Cancel.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/billingAccounts/{billingAccountsId}/orders/{ordersId}/orderAllocations/{orderAllocationsId}/operations/{operationsId}:cancel',
-        http_method='POST',
-        method_id='cloudcommerceconsumerprocurement.billingAccounts.orders.orderAllocations.operations.cancel',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha1/{+name}:cancel',
-        request_field='googleLongrunningCancelOperationRequest',
-        request_type_name='CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsOperationsCancelRequest',
-        response_type_name='GoogleProtobufEmpty',
-        supports_download=False,
-    )
-
-    def Delete(self, request, global_params=None):
-      r"""Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`.
-
-      Args:
-        request: (CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsOperationsDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleProtobufEmpty) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/billingAccounts/{billingAccountsId}/orders/{ordersId}/orderAllocations/{orderAllocationsId}/operations/{operationsId}',
-        http_method='DELETE',
-        method_id='cloudcommerceconsumerprocurement.billingAccounts.orders.orderAllocations.operations.delete',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha1/{+name}',
-        request_field='',
-        request_type_name='CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsOperationsDeleteRequest',
-        response_type_name='GoogleProtobufEmpty',
-        supports_download=False,
-    )
-
-    def Get(self, request, global_params=None):
-      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
-
-      Args:
-        request: (CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsOperationsGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleLongrunningOperation) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/billingAccounts/{billingAccountsId}/orders/{ordersId}/orderAllocations/{orderAllocationsId}/operations/{operationsId}',
-        http_method='GET',
-        method_id='cloudcommerceconsumerprocurement.billingAccounts.orders.orderAllocations.operations.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha1/{+name}',
-        request_field='',
-        request_type_name='CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsOperationsGetRequest',
-        response_type_name='GoogleLongrunningOperation',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users/*/operations`. To override the binding, API services can add a binding such as `"/v1/{name=users/*}/operations"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id.
-
-      Args:
-        request: (CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsOperationsListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleLongrunningListOperationsResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/billingAccounts/{billingAccountsId}/orders/{ordersId}/orderAllocations/{orderAllocationsId}/operations',
-        http_method='GET',
-        method_id='cloudcommerceconsumerprocurement.billingAccounts.orders.orderAllocations.operations.list',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
-        relative_path='v1alpha1/{+name}/operations',
-        request_field='',
-        request_type_name='CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsOperationsListRequest',
-        response_type_name='GoogleLongrunningListOperationsResponse',
         supports_download=False,
     )
 
@@ -783,6 +464,97 @@ class CloudcommerceconsumerprocurementV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+name}',
         request_field='googleCloudCommerceConsumerProcurementV1alpha1OrderAllocation',
         request_type_name='CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsPatchRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Replace(self, request, global_params=None):
+      r"""Replaces all OrderAllocation of the parent Order with the specified values.
+
+      Args:
+        request: (CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsReplaceRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Replace')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Replace.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/billingAccounts/{billingAccountsId}/orders/{ordersId}/orderAllocations:replace',
+        http_method='POST',
+        method_id='cloudcommerceconsumerprocurement.billingAccounts.orders.orderAllocations.replace',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1alpha1/{+parent}/orderAllocations:replace',
+        request_field='googleCloudCommerceConsumerProcurementV1alpha1ReplaceOrderAllocationsRequest',
+        request_type_name='CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsReplaceRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+  class BillingAccountsOrdersOrderAttributionsService(base_api.BaseApiService):
+    """Service class for the billingAccounts_orders_orderAttributions resource."""
+
+    _NAME = 'billingAccounts_orders_orderAttributions'
+
+    def __init__(self, client):
+      super(CloudcommerceconsumerprocurementV1alpha1.BillingAccountsOrdersOrderAttributionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists all OrderAttribution of the parent [Order].
+
+      Args:
+        request: (CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAttributionsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudCommerceConsumerProcurementV1alpha1ListOrderAttributionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/billingAccounts/{billingAccountsId}/orders/{ordersId}/orderAttributions',
+        http_method='GET',
+        method_id='cloudcommerceconsumerprocurement.billingAccounts.orders.orderAttributions.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/orderAttributions',
+        request_field='',
+        request_type_name='CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAttributionsListRequest',
+        response_type_name='GoogleCloudCommerceConsumerProcurementV1alpha1ListOrderAttributionsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the specified OrderAttribution resource.
+
+      Args:
+        request: (CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAttributionsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/billingAccounts/{billingAccountsId}/orders/{ordersId}/orderAttributions/{orderAttributionsId}',
+        http_method='PATCH',
+        method_id='cloudcommerceconsumerprocurement.billingAccounts.orders.orderAttributions.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='googleCloudCommerceConsumerProcurementV1alpha1OrderAttribution',
+        request_type_name='CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAttributionsPatchRequest',
         response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
@@ -1057,124 +829,6 @@ class CloudcommerceconsumerprocurementV1alpha1(base_api.BaseApiClient):
         request_field='',
         request_type_name='CloudcommerceconsumerprocurementProjectsEntitlementsListRequest',
         response_type_name='GoogleCloudCommerceConsumerProcurementV1alpha1ListEntitlementsResponse',
-        supports_download=False,
-    )
-
-  class ProjectsFreeTrialsOperationsService(base_api.BaseApiService):
-    """Service class for the projects_freeTrials_operations resource."""
-
-    _NAME = 'projects_freeTrials_operations'
-
-    def __init__(self, client):
-      super(CloudcommerceconsumerprocurementV1alpha1.ProjectsFreeTrialsOperationsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Cancel(self, request, global_params=None):
-      r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
-
-      Args:
-        request: (CloudcommerceconsumerprocurementProjectsFreeTrialsOperationsCancelRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleProtobufEmpty) The response message.
-      """
-      config = self.GetMethodConfig('Cancel')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Cancel.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/freeTrials/{freeTrialsId}/operations/{operationsId}:cancel',
-        http_method='POST',
-        method_id='cloudcommerceconsumerprocurement.projects.freeTrials.operations.cancel',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha1/{+name}:cancel',
-        request_field='googleLongrunningCancelOperationRequest',
-        request_type_name='CloudcommerceconsumerprocurementProjectsFreeTrialsOperationsCancelRequest',
-        response_type_name='GoogleProtobufEmpty',
-        supports_download=False,
-    )
-
-    def Delete(self, request, global_params=None):
-      r"""Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`.
-
-      Args:
-        request: (CloudcommerceconsumerprocurementProjectsFreeTrialsOperationsDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleProtobufEmpty) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/freeTrials/{freeTrialsId}/operations/{operationsId}',
-        http_method='DELETE',
-        method_id='cloudcommerceconsumerprocurement.projects.freeTrials.operations.delete',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha1/{+name}',
-        request_field='',
-        request_type_name='CloudcommerceconsumerprocurementProjectsFreeTrialsOperationsDeleteRequest',
-        response_type_name='GoogleProtobufEmpty',
-        supports_download=False,
-    )
-
-    def Get(self, request, global_params=None):
-      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
-
-      Args:
-        request: (CloudcommerceconsumerprocurementProjectsFreeTrialsOperationsGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleLongrunningOperation) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/freeTrials/{freeTrialsId}/operations/{operationsId}',
-        http_method='GET',
-        method_id='cloudcommerceconsumerprocurement.projects.freeTrials.operations.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha1/{+name}',
-        request_field='',
-        request_type_name='CloudcommerceconsumerprocurementProjectsFreeTrialsOperationsGetRequest',
-        response_type_name='GoogleLongrunningOperation',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users/*/operations`. To override the binding, API services can add a binding such as `"/v1/{name=users/*}/operations"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id.
-
-      Args:
-        request: (CloudcommerceconsumerprocurementProjectsFreeTrialsOperationsListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleLongrunningListOperationsResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/freeTrials/{freeTrialsId}/operations',
-        http_method='GET',
-        method_id='cloudcommerceconsumerprocurement.projects.freeTrials.operations.list',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
-        relative_path='v1alpha1/{+name}/operations',
-        request_field='',
-        request_type_name='CloudcommerceconsumerprocurementProjectsFreeTrialsOperationsListRequest',
-        response_type_name='GoogleLongrunningListOperationsResponse',
         supports_download=False,
     )
 

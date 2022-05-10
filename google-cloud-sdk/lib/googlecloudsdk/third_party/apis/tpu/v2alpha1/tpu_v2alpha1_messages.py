@@ -14,6 +14,39 @@ from apitools.base.py import extra_types
 package = 'tpu'
 
 
+class AcceleratorConfig(_messages.Message):
+  r"""A TPU accelerator configuration.
+
+  Enums:
+    TypeValueValuesEnum: Required. Type of TPU.
+
+  Fields:
+    topology: Required. Topology of TPU in chips.
+    type: Required. Type of TPU.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Required. Type of TPU.
+
+    Values:
+      TYPE_UNSPECIFIED: Unspecified version.
+      V2: TPU v2 single device.
+      V2_POD: TPU v2 pod.
+      V3: TPU v3 single device.
+      V3_POD: TPU v3 pod.
+      V4_POD: TPU v4 pod.
+    """
+    TYPE_UNSPECIFIED = 0
+    V2 = 1
+    V2_POD = 2
+    V3 = 3
+    V3_POD = 4
+    V4_POD = 5
+
+  topology = _messages.StringField(1)
+  type = _messages.EnumField('TypeValueValuesEnum', 2)
+
+
 class AcceleratorType(_messages.Message):
   r"""A accelerator type that a Node can be configured with.
 
@@ -430,6 +463,7 @@ class Node(_messages.Message):
       script and shutdown-script
 
   Fields:
+    acceleratorConfig: The AccleratorConfig for the TPU Node.
     acceleratorType: The type of hardware accelerators associated with this
       node.
     apiVersion: Output only. The API version that created this Node.
@@ -464,6 +498,7 @@ class Node(_messages.Message):
     serviceAccount: The Google Cloud Platform Service Account to be used by
       the TPU node VMs. If None is specified, the default compute service
       account will be used.
+    shieldedInstanceConfig: Shielded Instance options.
     state: Output only. The current state for the TPU Node.
     symptoms: Output only. The Symptoms that have occurred to the TPU Node.
     tags: Tags to apply to the TPU Node. Tags are used to identify valid
@@ -590,27 +625,29 @@ class Node(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  acceleratorType = _messages.StringField(1)
-  apiVersion = _messages.EnumField('ApiVersionValueValuesEnum', 2)
-  cidrBlock = _messages.StringField(3)
-  createTime = _messages.StringField(4)
-  dataDisks = _messages.MessageField('AttachedDisk', 5, repeated=True)
-  description = _messages.StringField(6)
-  health = _messages.EnumField('HealthValueValuesEnum', 7)
-  healthDescription = _messages.StringField(8)
-  id = _messages.IntegerField(9)
-  labels = _messages.MessageField('LabelsValue', 10)
-  metadata = _messages.MessageField('MetadataValue', 11)
-  name = _messages.StringField(12)
-  networkConfig = _messages.MessageField('NetworkConfig', 13)
-  networkEndpoints = _messages.MessageField('NetworkEndpoint', 14, repeated=True)
-  queuedResource = _messages.StringField(15)
-  runtimeVersion = _messages.StringField(16)
-  schedulingConfig = _messages.MessageField('SchedulingConfig', 17)
-  serviceAccount = _messages.MessageField('ServiceAccount', 18)
-  state = _messages.EnumField('StateValueValuesEnum', 19)
-  symptoms = _messages.MessageField('Symptom', 20, repeated=True)
-  tags = _messages.StringField(21, repeated=True)
+  acceleratorConfig = _messages.MessageField('AcceleratorConfig', 1)
+  acceleratorType = _messages.StringField(2)
+  apiVersion = _messages.EnumField('ApiVersionValueValuesEnum', 3)
+  cidrBlock = _messages.StringField(4)
+  createTime = _messages.StringField(5)
+  dataDisks = _messages.MessageField('AttachedDisk', 6, repeated=True)
+  description = _messages.StringField(7)
+  health = _messages.EnumField('HealthValueValuesEnum', 8)
+  healthDescription = _messages.StringField(9)
+  id = _messages.IntegerField(10)
+  labels = _messages.MessageField('LabelsValue', 11)
+  metadata = _messages.MessageField('MetadataValue', 12)
+  name = _messages.StringField(13)
+  networkConfig = _messages.MessageField('NetworkConfig', 14)
+  networkEndpoints = _messages.MessageField('NetworkEndpoint', 15, repeated=True)
+  queuedResource = _messages.StringField(16)
+  runtimeVersion = _messages.StringField(17)
+  schedulingConfig = _messages.MessageField('SchedulingConfig', 18)
+  serviceAccount = _messages.MessageField('ServiceAccount', 19)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 20)
+  state = _messages.EnumField('StateValueValuesEnum', 21)
+  symptoms = _messages.MessageField('Symptom', 22, repeated=True)
+  tags = _messages.StringField(23, repeated=True)
 
 
 class NodeSpec(_messages.Message):
@@ -918,6 +955,16 @@ class ServiceIdentity(_messages.Message):
   """
 
   email = _messages.StringField(1)
+
+
+class ShieldedInstanceConfig(_messages.Message):
+  r"""A set of Shielded Instance options.
+
+  Fields:
+    enableSecureBoot: Defines whether the instance has Secure Boot enabled.
+  """
+
+  enableSecureBoot = _messages.BooleanField(1)
 
 
 class StandardQueryParameters(_messages.Message):

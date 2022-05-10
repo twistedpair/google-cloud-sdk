@@ -785,12 +785,14 @@ class GcsApi(cloud_api.CloudApi):
     if upload_strategy == cloud_api.UploadStrategy.SIMPLE:
       upload = gcs_upload.SimpleUpload(self, self._upload_http_client,
                                        source_stream, destination_resource,
-                                       should_gzip_in_flight, request_config)
+                                       should_gzip_in_flight, request_config,
+                                       source_resource)
     elif upload_strategy == cloud_api.UploadStrategy.RESUMABLE:
       upload = gcs_upload.ResumableUpload(self, self._upload_http_client,
                                           source_stream, destination_resource,
                                           should_gzip_in_flight, request_config,
-                                          serialization_data, tracker_callback)
+                                          source_resource, serialization_data,
+                                          tracker_callback)
     else:
       raise command_errors.Error(
           'Invalid upload strategy: {}.'.format(upload_strategy.value))
@@ -814,8 +816,11 @@ class GcsApi(cloud_api.CloudApi):
     return gcs_metadata_util.get_object_resource_from_metadata(metadata)
 
   @_catch_http_error_raise_gcs_api_error()
-  def compose_objects(self, source_resources, destination_resource,
-                      request_config):
+  def compose_objects(self,
+                      source_resources,
+                      destination_resource,
+                      request_config,
+                      original_source_resource=None):
     """See CloudApi class for function doc strings."""
 
     if not source_resources:
@@ -838,8 +843,14 @@ class GcsApi(cloud_api.CloudApi):
 
     destination_metadata = gcs_metadata_util.get_apitools_metadata_from_url(
         destination_resource.storage_url)
+    if original_source_resource and isinstance(
+        original_source_resource, resource_reference.FileObjectResource):
+      original_source_file_path = (
+          original_source_resource.storage_url.object_name)
+    else:
+      original_source_file_path = None
     gcs_metadata_util.update_object_metadata_from_request_config(
-        destination_metadata, request_config)
+        destination_metadata, request_config, original_source_file_path)
 
     compose_request_payload = self.messages.ComposeRequest(
         sourceObjects=source_messages,

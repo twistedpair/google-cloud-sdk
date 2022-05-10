@@ -60,6 +60,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  ORGANIZATIONS_LOCATIONS_WORKLOADS_VIOLATIONS = (
+      'organizations.locations.workloads.violations',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/locations/{locationsId}/'
+              'workloads/{workloadsId}/violations/{violationsId}',
+      },
+      ['name'],
+      True
+  )
 
   def __init__(self, collection_name, path, flat_paths, params,
                enable_uri_parsing):

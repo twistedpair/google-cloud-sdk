@@ -358,9 +358,8 @@ class BuilderConfig(_messages.Message):
 class CVSS(_messages.Message):
   r"""Common Vulnerability Scoring System. For details, see
   https://www.first.org/cvss/specification-document This is a message we will
-  try to use for storing multiple versions of CVSS. The intention is that as
-  new versions of CVSS scores get added, we will be able to modify this
-  message rather than adding new protos for each new version of the score.
+  try to use for storing various versions of CVSS rather than making a
+  separate proto for storing a specific version.
 
   Enums:
     AttackComplexityValueValuesEnum:
@@ -2791,6 +2790,17 @@ class GoogleDevtoolsContaineranalysisV1alpha1OperationMetadata(_messages.Message
   endTime = _messages.StringField(2)
 
 
+class GrafeasV1FileLocation(_messages.Message):
+  r"""Indicates the location at which a package was found.
+
+  Fields:
+    filePath: For jars that are contained inside .war files, this filepath can
+      indicate the path to war file combined with the path to jar file.
+  """
+
+  filePath = _messages.StringField(1)
+
+
 class Hash(_messages.Message):
   r"""Container message for hash values.
 
@@ -3280,6 +3290,7 @@ class PackageIssue(_messages.Message):
     effectiveSeverity: Output only. The distro or language system assigned
       severity for this vulnerability when that is available and note provider
       assigned severity when it is not available.
+    fileLocation: The location at which this package was found.
     fixAvailable: Output only. Whether a fix is available for this package.
     fixedCpeUri: The [CPE URI](https://cpe.mitre.org/specification/) this
       vulnerability was fixed in. It is possible for this to be different from
@@ -3316,11 +3327,12 @@ class PackageIssue(_messages.Message):
   affectedPackage = _messages.StringField(2)
   affectedVersion = _messages.MessageField('Version', 3)
   effectiveSeverity = _messages.EnumField('EffectiveSeverityValueValuesEnum', 4)
-  fixAvailable = _messages.BooleanField(5)
-  fixedCpeUri = _messages.StringField(6)
-  fixedPackage = _messages.StringField(7)
-  fixedVersion = _messages.MessageField('Version', 8)
-  packageType = _messages.StringField(9)
+  fileLocation = _messages.MessageField('GrafeasV1FileLocation', 5, repeated=True)
+  fixAvailable = _messages.BooleanField(6)
+  fixedCpeUri = _messages.StringField(7)
+  fixedPackage = _messages.StringField(8)
+  fixedVersion = _messages.MessageField('Version', 9)
+  packageType = _messages.StringField(10)
 
 
 class PackageNote(_messages.Message):

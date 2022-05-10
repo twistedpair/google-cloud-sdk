@@ -73,7 +73,7 @@ class DosXmlParser(object):
       if xml_root.tag != 'blacklistentries':
         raise AppEngineConfigException('Root tag must be <blacklistentries>')
 
-      for child in xml_root.getchildren():
+      for child in list(xml_root.getchildren()):
         self.ProcessBlacklistNode(child)
 
       if self.errors:

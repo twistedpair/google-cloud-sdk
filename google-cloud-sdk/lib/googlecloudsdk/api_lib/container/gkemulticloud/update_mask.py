@@ -48,7 +48,11 @@ AWS_CLUSTER_ARGS_TO_UPDATE_MASKS = {
     'proxy_secret_arn':
         'control_plane.proxy_config.secret_arn',
     'proxy_secret_version_id':
-        'control_plane.proxy_config.secret_version'
+        'control_plane.proxy_config.secret_version',
+    'ssh_ec2_key_pair':
+        'control_plane.ssh_config.ec2_key_pair',
+    'clear_ssh_ec2_key_pair':
+        'control_plane.ssh_config.ec2_key_pair'
 }
 
 AWS_NODEPOOL_ARGS_TO_UPDATE_MASKS = {
@@ -64,7 +68,9 @@ AWS_NODEPOOL_ARGS_TO_UPDATE_MASKS = {
     'root_volume_kms_key_arn': 'config.root_volume.kms_key_arn',
     'clear_proxy_config': 'config.proxy_config',
     'proxy_secret_arn': 'config.proxy_config.secret_arn',
-    'proxy_secret_version_id': 'config.proxy_config.secret_version'
+    'proxy_secret_version_id': 'config.proxy_config.secret_version',
+    'ssh_ec2_key_pair': 'config.ssh_config.ec2_key_pair',
+    'clear_ssh_ec2_key_pair': 'config.ssh_config.ec2_key_pair'
 }
 
 AZURE_CLUSTER_ARGS_TO_UPDATE_MASKS = {

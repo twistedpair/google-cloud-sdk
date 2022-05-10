@@ -24,6 +24,7 @@ import os
 from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import manifest_util
 from googlecloudsdk.command_lib.storage import plurality_checkable_iterator
+from googlecloudsdk.command_lib.storage import posix_util
 from googlecloudsdk.command_lib.storage import progress_callbacks
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage import wildcard_iterator
@@ -326,6 +327,8 @@ class CopyTaskIterator:
 
       source_url = source.resource.storage_url
       destination_url = destination_resource.storage_url
+      posix_util.raise_if_source_and_destination_not_valid_for_preserve_posix(
+          source_url, destination_url, self._user_request_args)
       if (isinstance(source.resource, resource_reference.ObjectResource) and
           isinstance(destination_url, storage_url.FileUrl) and
           destination_url.object_name.endswith(destination_url.delimiter)):

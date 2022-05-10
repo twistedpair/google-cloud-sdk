@@ -146,7 +146,7 @@ class SLZOverwatchClient(object):
       response: The json response from the Update method of API client.
     """
     overwatch = self._messages.GoogleCloudSecuredlandingzoneV1betaOverwatch(
-        name=overwatch_path, blueprint_plan=blueprint_plan)
+        name=overwatch_path, planData=blueprint_plan)
     request = self._messages.SecuredlandingzoneOrganizationsLocationsOverwatchesPatchRequest(
         name=overwatch_path,
         googleCloudSecuredlandingzoneV1betaOverwatch=overwatch,

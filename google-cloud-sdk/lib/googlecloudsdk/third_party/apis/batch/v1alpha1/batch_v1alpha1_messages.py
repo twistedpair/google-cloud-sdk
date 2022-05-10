@@ -133,6 +133,21 @@ class AllocationPolicy(_messages.Message):
   serviceAccount = _messages.StringField(8)
 
 
+class AttachedDisk(_messages.Message):
+  r"""A new or an existing persistent disk attached to a VM instance.
+
+  Fields:
+    deviceName: Device name that the guest operating system will see. If not
+      specified, this is default to the disk name.
+    existingDisk: Name of an existing PD.
+    newDisk: A Disk attribute.
+  """
+
+  deviceName = _messages.StringField(1)
+  existingDisk = _messages.StringField(2)
+  newDisk = _messages.MessageField('Disk', 3)
+
+
 class AuditConfig(_messages.Message):
   r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
@@ -148,8 +163,8 @@ class AuditConfig(_messages.Message):
   "audit_log_configs": [ { "log_type": "DATA_READ" }, { "log_type":
   "DATA_WRITE", "exempted_members": [ "user:aliya@example.com" ] } ] } ] } For
   sampleservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ
-  logging. It also exempts jose@example.com from DATA_READ logging, and
-  aliya@example.com from DATA_WRITE logging.
+  logging. It also exempts `jose@example.com` from DATA_READ logging, and
+  `aliya@example.com` from DATA_WRITE logging.
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
@@ -637,6 +652,9 @@ class Container(_messages.Message):
   r"""Container runnable.
 
   Fields:
+    blockExternalNetwork: If set to true, external network access to and from
+      container will be blocked. The container will use the default internal
+      network 'goog-internal'.
     commands: Overrides the `CMD` specified in the container. If there is an
       ENTRYPOINT (either in the container image or with the entrypoint field
       below) then commands are appended as arguments to the ENTRYPOINT.
@@ -649,11 +667,33 @@ class Container(_messages.Message):
       option, e.g. /foo:/bar, or /foo:/bar:ro
   """
 
-  commands = _messages.StringField(1, repeated=True)
-  entrypoint = _messages.StringField(2)
-  imageUri = _messages.StringField(3)
-  options = _messages.StringField(4)
-  volumes = _messages.StringField(5, repeated=True)
+  blockExternalNetwork = _messages.BooleanField(1)
+  commands = _messages.StringField(2, repeated=True)
+  entrypoint = _messages.StringField(3)
+  imageUri = _messages.StringField(4)
+  options = _messages.StringField(5)
+  volumes = _messages.StringField(6, repeated=True)
+
+
+class Disk(_messages.Message):
+  r"""A new persistent disk.
+
+  Fields:
+    disk: Name of an existing PD used as the data source. The full name is in
+      the format of `projects/{project}/zones/{zone}/disks/{disk}`
+    image: Name of a public or custom image used as the data source.
+    sizeGb: Disk size in GB. This field is ignored if `data_source` is `disk`
+      or `image`.
+    snapshot: Name of a snapshot used as the data source.
+    type: Disk type as shown in `gcloud compute disk-types list` For example,
+      "pd-ssd", "pd-standard", "pd-balanced".
+  """
+
+  disk = _messages.StringField(1)
+  image = _messages.StringField(2)
+  sizeGb = _messages.IntegerField(3)
+  snapshot = _messages.StringField(4)
+  type = _messages.StringField(5)
 
 
 class Empty(_messages.Message):
@@ -766,6 +806,9 @@ class InstancePolicy(_messages.Message):
   Fields:
     accelerators: The accelerators attached to each VM instance.
     allowedMachineTypes: A string attribute.
+    disks: Non-boot disks to be attached for each VM created by this
+      InstancePolicy. New disks will be deleted when the attached VM is
+      deleted.
     machineType: The Compute Engine machine type.
     minCpuPlatform: The minimum CPU platform. See
       `https://cloud.google.com/compute/docs/instances/specify-min-cpu-
@@ -793,9 +836,10 @@ class InstancePolicy(_messages.Message):
 
   accelerators = _messages.MessageField('Accelerator', 1, repeated=True)
   allowedMachineTypes = _messages.StringField(2, repeated=True)
-  machineType = _messages.StringField(3)
-  minCpuPlatform = _messages.StringField(4)
-  provisioningModel = _messages.EnumField('ProvisioningModelValueValuesEnum', 5)
+  disks = _messages.MessageField('AttachedDisk', 3, repeated=True)
+  machineType = _messages.StringField(4)
+  minCpuPlatform = _messages.StringField(5)
+  provisioningModel = _messages.EnumField('ProvisioningModelValueValuesEnum', 6)
 
 
 class InstancePolicyOrTemplate(_messages.Message):
@@ -821,6 +865,7 @@ class InstanceStatus(_messages.Message):
   Fields:
     machineType: The Compute Engine machine type.
     provisioningModel: The VM instance provisioning model.
+    taskPack: The max number of tasks can be assigned to this instance type.
   """
 
   class ProvisioningModelValueValuesEnum(_messages.Enum):
@@ -843,6 +888,7 @@ class InstanceStatus(_messages.Message):
 
   machineType = _messages.StringField(1)
   provisioningModel = _messages.EnumField('ProvisioningModelValueValuesEnum', 2)
+  taskPack = _messages.IntegerField(3)
 
 
 class Job(_messages.Message):
@@ -2153,6 +2199,7 @@ class Volume(_messages.Message):
   task.
 
   Fields:
+    deviceName: Device name of an attached disk
     gcs: A Google Cloud Storage source for the volume.
     mountOptions: Mount options For Google Cloud Storage, mount options are
       the global options supported by gcsfuse tool. Batch will use them to
@@ -2165,11 +2212,12 @@ class Volume(_messages.Message):
     pd: A persistent disk source for the volume.
   """
 
-  gcs = _messages.MessageField('GCS', 1)
-  mountOptions = _messages.StringField(2, repeated=True)
-  mountPath = _messages.StringField(3)
-  nfs = _messages.MessageField('NFS', 4)
-  pd = _messages.MessageField('PD', 5)
+  deviceName = _messages.StringField(1)
+  gcs = _messages.MessageField('GCS', 2)
+  mountOptions = _messages.StringField(3, repeated=True)
+  mountPath = _messages.StringField(4)
+  nfs = _messages.MessageField('NFS', 5)
+  pd = _messages.MessageField('PD', 6)
 
 
 encoding.AddCustomJsonFieldMapping(

@@ -315,11 +315,13 @@ class ModelMonitoringJobsClient(object):
     job_spec.endpoint = endpoint_ref.RelativeName()
     job_spec.displayName = args.display_name
 
+    enable_anomaly_cloud_logging = False if args.anomaly_cloud_logging is None else args.anomaly_cloud_logging
     job_spec.modelMonitoringAlertConfig = api_util.GetMessage(
         'ModelMonitoringAlertConfig', self._version)(
+            enableLogging=enable_anomaly_cloud_logging,
             emailAlertConfig=api_util.GetMessage(
-                'ModelMonitoringAlertConfigEmailAlertConfig', self._version)(
-                    userEmails=args.emails))
+                'ModelMonitoringAlertConfigEmailAlertConfig',
+                self._version)(userEmails=args.emails))
 
     job_spec.loggingSamplingStrategy = api_util.GetMessage(
         'SamplingStrategy', self._version)(
@@ -404,7 +406,13 @@ class ModelMonitoringJobsClient(object):
               emailAlertConfig=api_util.GetMessage(
                   'ModelMonitoringAlertConfigEmailAlertConfig', self._version)(
                       userEmails=args.emails))
-      update_mask.append('model_monitoring_alert_config')
+      update_mask.append('model_monitoring_alert_config.email_alert_config')
+
+    if args.anomaly_cloud_logging is not None:
+      model_monitoring_job_to_update.modelMonitoringAlertConfig = api_util.GetMessage(
+          'ModelMonitoringAlertConfig', self._version)(
+              enableLogging=args.anomaly_cloud_logging)
+      update_mask.append('model_monitoring_alert_config.enable_logging')
 
     # sampling rate
     if args.prediction_sampling_rate:

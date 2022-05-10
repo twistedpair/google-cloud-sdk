@@ -29,6 +29,7 @@ class ComposeObjectsTask(task.Task):
   def __init__(self,
                source_resources,
                destination_resource,
+               original_source_resource=None,
                user_request_args=None):
     """Initializes task.
 
@@ -39,11 +40,15 @@ class ComposeObjectsTask(task.Task):
         been created.
       destination_resource (resource_reference.UnknownResource): Metadata for
         the resulting composite object.
+      original_source_resource (Resource|None): Useful for finding metadata to
+        apply to final object. For instance, if doing a composite upload, this
+        would represent the pre-split local file.
       user_request_args (UserRequestArgs|None): Values for RequestConfig.
     """
     super(ComposeObjectsTask, self).__init__()
     self._source_resources = source_resources
     self._destination_resource = destination_resource
+    self._original_source_resource = original_source_resource
     self._user_request_args = user_request_args
 
   def execute(self, task_status_queue=None):
@@ -54,7 +59,10 @@ class ComposeObjectsTask(task.Task):
 
     provider = self._destination_resource.storage_url.scheme
     created_resource = api_factory.get_api(provider).compose_objects(
-        self._source_resources, self._destination_resource, request_config)
+        self._source_resources,
+        self._destination_resource,
+        request_config,
+        original_source_resource=self._original_source_resource)
     return task.Output(
         messages=[
             task.Message(

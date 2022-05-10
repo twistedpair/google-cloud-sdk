@@ -1172,3 +1172,11 @@ def AddModelMonitoringJobResourceArg(parser, verb):
       GetMonitoringJobResourceSpec(),
       'The model deployment monitoring job {}.'.format(verb),
       required=True).AddToParser(parser)
+
+
+def GetAnomalyCloudLoggingArg(required=False):
+  return base.Argument(
+      '--anomaly-cloud-logging',
+      action=arg_parsers.StoreTrueFalseAction,
+      help="""If true, anomaly will be sent to Cloud Logging.""",
+      required=required)

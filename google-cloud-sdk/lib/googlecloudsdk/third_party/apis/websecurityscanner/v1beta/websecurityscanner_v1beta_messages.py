@@ -377,10 +377,12 @@ class ScanConfig(_messages.Message):
         with this enum value will be rejected with INVALID_ARGUMENT error.
       APP_ENGINE: Google App Engine service.
       COMPUTE: Google Compute Engine service.
+      CLOUD_RUN: Google Cloud Run service.
     """
     TARGET_PLATFORM_UNSPECIFIED = 0
     APP_ENGINE = 1
     COMPUTE = 2
+    CLOUD_RUN = 3
 
   class UserAgentValueValuesEnum(_messages.Enum):
     r"""The user agent used during scanning.

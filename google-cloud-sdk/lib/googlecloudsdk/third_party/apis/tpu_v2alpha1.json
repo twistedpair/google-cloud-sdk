@@ -451,6 +451,14 @@
           "description": "Output only. The qualified name of the QueuedResource that requested this Node.",
           "readOnly": true,
           "type": "string"
+        },
+        "acceleratorConfig": {
+          "description": "The AccleratorConfig for the TPU Node.",
+          "$ref": "AcceleratorConfig"
+        },
+        "shieldedInstanceConfig": {
+          "description": "Shielded Instance options.",
+          "$ref": "ShieldedInstanceConfig"
         }
       }
     },
@@ -606,6 +614,48 @@
         "workerId": {
           "description": "A string used to uniquely distinguish a worker within a TPU node.",
           "type": "string"
+        }
+      }
+    },
+    "AcceleratorConfig": {
+      "id": "AcceleratorConfig",
+      "description": "A TPU accelerator configuration.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "Required. Type of TPU.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified version.",
+            "TPU v2 single device.",
+            "TPU v2 pod.",
+            "TPU v3 single device.",
+            "TPU v3 pod.",
+            "TPU v4 pod."
+          ],
+          "enum": [
+            "TYPE_UNSPECIFIED",
+            "V2",
+            "V2_POD",
+            "V3",
+            "V3_POD",
+            "V4_POD"
+          ]
+        },
+        "topology": {
+          "description": "Required. Topology of TPU in chips.",
+          "type": "string"
+        }
+      }
+    },
+    "ShieldedInstanceConfig": {
+      "id": "ShieldedInstanceConfig",
+      "description": "A set of Shielded Instance options.",
+      "type": "object",
+      "properties": {
+        "enableSecureBoot": {
+          "description": "Defines whether the instance has Secure Boot enabled.",
+          "type": "boolean"
         }
       }
     },

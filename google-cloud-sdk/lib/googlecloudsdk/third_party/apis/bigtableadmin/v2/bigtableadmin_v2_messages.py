@@ -55,8 +55,8 @@ class AuditConfig(_messages.Message):
   "audit_log_configs": [ { "log_type": "DATA_READ" }, { "log_type":
   "DATA_WRITE", "exempted_members": [ "user:aliya@example.com" ] } ] } ] } For
   sampleservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ
-  logging. It also exempts jose@example.com from DATA_READ logging, and
-  aliya@example.com from DATA_WRITE logging.
+  logging. It also exempts `jose@example.com` from DATA_READ logging, and
+  `aliya@example.com` from DATA_WRITE logging.
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
@@ -124,9 +124,16 @@ class AutoscalingTargets(_messages.Message):
       trying to achieve. This number is on a scale from 0 (no utilization) to
       100 (total utilization), and is limited between 10 and 80, otherwise it
       will return INVALID_ARGUMENT error.
+    storageUtilizationGibPerNode: The storage utilization that the Autoscaler
+      should be trying to achieve. This number is limited between 2560
+      (2.5TiB) and 5120 (5TiB) for a SSD cluster and between 8192 (8TiB) and
+      16384 (16TiB) for an HDD cluster, otherwise it will return
+      INVALID_ARGUMENT error. If this value is set to 0, it will be treated as
+      if it were set to the default value: 2560 for SSD, 8192 for HDD.
   """
 
   cpuUtilizationPercent = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  storageUtilizationGibPerNode = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class Backup(_messages.Message):
@@ -406,8 +413,9 @@ class BigtableadminProjectsInstancesClustersBackupsGetIamPolicyRequest(_messages
     getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
       request body.
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
@@ -510,8 +518,9 @@ class BigtableadminProjectsInstancesClustersBackupsSetIamPolicyRequest(_messages
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
@@ -526,8 +535,9 @@ class BigtableadminProjectsInstancesClustersBackupsTestIamPermissionsRequest(_me
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """
@@ -660,8 +670,9 @@ class BigtableadminProjectsInstancesGetIamPolicyRequest(_messages.Message):
     getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
       request body.
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
@@ -713,8 +724,9 @@ class BigtableadminProjectsInstancesSetIamPolicyRequest(_messages.Message):
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
@@ -801,8 +813,9 @@ class BigtableadminProjectsInstancesTablesGetIamPolicyRequest(_messages.Message)
     getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
       request body.
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
@@ -920,6 +933,31 @@ class BigtableadminProjectsInstancesTablesModifyColumnFamiliesRequest(_messages.
   name = _messages.StringField(2, required=True)
 
 
+class BigtableadminProjectsInstancesTablesPatchRequest(_messages.Message):
+  r"""A BigtableadminProjectsInstancesTablesPatchRequest object.
+
+  Fields:
+    name: The unique name of the table. Values are of the form
+      `projects/{project}/instances/{instance}/tables/_a-zA-Z0-9*`. Views:
+      `NAME_ONLY`, `SCHEMA_VIEW`, `REPLICATION_VIEW`, `FULL`
+    table: A Table resource to be passed as the request body.
+    updateMask: The list of fields to update. A mask specifying which fields
+      (e.g. `change_stream_config`) in the `table` field should be updated.
+      This mask is relative to the `table` field, not to the request message.
+      If an update mask is not provided, it is treated as an implied mask
+      equivalent to all fields that are set on the `table`. Currently
+      UpdateTable is only supported for the following fields: *
+      `change_stream_config` * `change_stream_config.retention_period` If
+      other fields in `update_mask` are set, it will return an
+      INVALID_ARGUMENT error. Fields set on the `table` but not in
+      `update_mask` will be ignored.
+  """
+
+  name = _messages.StringField(1, required=True)
+  table = _messages.MessageField('Table', 2)
+  updateMask = _messages.StringField(3)
+
+
 class BigtableadminProjectsInstancesTablesRestoreRequest(_messages.Message):
   r"""A BigtableadminProjectsInstancesTablesRestoreRequest object.
 
@@ -940,8 +978,9 @@ class BigtableadminProjectsInstancesTablesSetIamPolicyRequest(_messages.Message)
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
@@ -955,8 +994,9 @@ class BigtableadminProjectsInstancesTablesTestIamPermissionsRequest(_messages.Me
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """
@@ -984,8 +1024,9 @@ class BigtableadminProjectsInstancesTestIamPermissionsRequest(_messages.Message)
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """
@@ -1074,6 +1115,19 @@ class Binding(_messages.Message):
   condition = _messages.MessageField('Expr', 1)
   members = _messages.StringField(2, repeated=True)
   role = _messages.StringField(3)
+
+
+class ChangeStreamConfig(_messages.Message):
+  r"""Change stream configuration.
+
+  Fields:
+    retentionPeriod: How long the change stream should be retained. Change
+      stream data older than the retention period will not be returned when
+      reading the change stream from the table. Values must be at least 1 day
+      and at most 7 days, and will be truncated to microsecond granularity.
+  """
+
+  retentionPeriod = _messages.StringField(1)
 
 
 class CheckConsistencyRequest(_messages.Message):
@@ -2679,6 +2733,9 @@ class Table(_messages.Message):
       by column family ID. Views: `SCHEMA_VIEW`, `FULL`
 
   Fields:
+    changeStreamConfig: If specified, enable the change stream on this table.
+      Otherwise, the change stream is disabled and the change stream is not
+      retained.
     clusterStates: Output only. Map from cluster ID to per-cluster table
       state. If it could not be determined whether or not the table has data
       in a particular cluster (for example, if its zone is unavailable), then
@@ -2769,11 +2826,12 @@ class Table(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  clusterStates = _messages.MessageField('ClusterStatesValue', 1)
-  columnFamilies = _messages.MessageField('ColumnFamiliesValue', 2)
-  granularity = _messages.EnumField('GranularityValueValuesEnum', 3)
-  name = _messages.StringField(4)
-  restoreInfo = _messages.MessageField('RestoreInfo', 5)
+  changeStreamConfig = _messages.MessageField('ChangeStreamConfig', 1)
+  clusterStates = _messages.MessageField('ClusterStatesValue', 2)
+  columnFamilies = _messages.MessageField('ColumnFamiliesValue', 3)
+  granularity = _messages.EnumField('GranularityValueValuesEnum', 4)
+  name = _messages.StringField(5)
+  restoreInfo = _messages.MessageField('RestoreInfo', 6)
 
 
 class TableProgress(_messages.Message):
@@ -2904,6 +2962,21 @@ class UpdateInstanceMetadata(_messages.Message):
   finishTime = _messages.StringField(1)
   originalRequest = _messages.MessageField('PartialUpdateInstanceRequest', 2)
   requestTime = _messages.StringField(3)
+
+
+class UpdateTableMetadata(_messages.Message):
+  r"""Metadata type for the operation returned by UpdateTable.
+
+  Fields:
+    endTime: If set, the time at which this operation finished or was
+      canceled.
+    name: The name of the table being updated.
+    startTime: The time at which this operation started.
+  """
+
+  endTime = _messages.StringField(1)
+  name = _messages.StringField(2)
+  startTime = _messages.StringField(3)
 
 
 encoding.AddCustomJsonFieldMapping(

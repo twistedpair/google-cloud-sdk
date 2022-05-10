@@ -18,9 +18,9 @@ class BigQueryDataset(_messages.Message):
   r"""Describes a BigQuery dataset that was created by a link.
 
   Fields:
-    datasetId: The full resource name of the BigQuery dataset. The DATASET_ID
-      will match the ID of the link, so the link must match the naming
-      restrictions of BigQuery datasets (alphanumeric characters and
+    datasetId: Output only. The full resource name of the BigQuery dataset.
+      The DATASET_ID will match the ID of the link, so the link must match the
+      naming restrictions of BigQuery datasets (alphanumeric characters and
       underscores only).The dataset will have a resource path of
       "bigquery.googleapis.com/projects/PROJECT_ID/datasets/DATASET_ID"
   """
@@ -506,7 +506,8 @@ class Link(_messages.Message):
       project as the LogBucket it's linked to. This dataset will also have
       BigQuery Views corresponding to the LogViews in the bucket.
     createTime: Output only. The creation timestamp of the link.
-    description: Describes this link.
+    description: Describes this link.The maximum length of the description is
+      8000 characters.
     lifecycleState: Output only. The resource lifecycle state.
     name: The resource name of the link. The name can have up to 1,024
       characters. A valid name must only have alphanumeric characters and
@@ -896,6 +897,7 @@ class LogBucket(_messages.Message):
 
   Enums:
     LifecycleStateValueValuesEnum: Output only. The bucket lifecycle state.
+    UnmetAnalyticsUpgradeRequirementsValueListEntryValuesEnum:
 
   Fields:
     analyticsEnabled: Whether advanced log analytics is enabled for this
@@ -936,6 +938,11 @@ class LogBucket(_messages.Message):
       after which they will automatically be deleted. The minimum retention
       period is 1 day. If this value is set to zero at bucket creation time,
       the default time of 30 days will be used.
+    unmetAnalyticsUpgradeRequirements: Output only. The requirements for an
+      upgrade to analytics that are not satisfied by the current bucket
+      configuration, in an arbitrary order. This will eventually be deprecated
+      once there is not a need to upgrade existing buckets (i.e. when
+      analytics becomes default-enabled).
     updateTime: Output only. The last update timestamp of the bucket.
   """
 
@@ -962,6 +969,35 @@ class LogBucket(_messages.Message):
     CREATING = 4
     FAILED = 5
 
+  class UnmetAnalyticsUpgradeRequirementsValueListEntryValuesEnum(_messages.Enum):
+    r"""UnmetAnalyticsUpgradeRequirementsValueListEntryValuesEnum enum type.
+
+    Values:
+      REQUIREMENT_UNSPECIFIED: Unexpected default.
+      ACTIVE_LIFECYCLE_STATE: The requirement that a bucket must be in the
+        ACTIVE lifecycle state.
+      GLOBAL_BUCKET_REGION: The requirement that a bucket must be in the
+        "global" region.
+      DEFAULT_RETENTION_DURATION: The requirement that buckets other than the
+        "_Required" bucket must have the default retention duration of 30 days
+        set.
+      REQUIRED_RETENTION_DURATION: The requirement that the "_Required" bucket
+        must have its default retention of 400 days set.
+      FIELD_LEVEL_ACCESS_CONTROLS_UNSET: The requirement that no field level
+        access controls are configured for the bucket.
+      CMEK_UNSET: The requirement that no CMEK configuration is set for the
+        bucket.
+      NOT_LOCKED: The requirement that the bucket is not locked.
+    """
+    REQUIREMENT_UNSPECIFIED = 0
+    ACTIVE_LIFECYCLE_STATE = 1
+    GLOBAL_BUCKET_REGION = 2
+    DEFAULT_RETENTION_DURATION = 3
+    REQUIRED_RETENTION_DURATION = 4
+    FIELD_LEVEL_ACCESS_CONTROLS_UNSET = 5
+    CMEK_UNSET = 6
+    NOT_LOCKED = 7
+
   analyticsEnabled = _messages.BooleanField(1)
   cmekSettings = _messages.MessageField('CmekSettings', 2)
   createTime = _messages.StringField(3)
@@ -974,7 +1010,8 @@ class LogBucket(_messages.Message):
   name = _messages.StringField(10)
   restrictedFields = _messages.StringField(11, repeated=True)
   retentionDays = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  updateTime = _messages.StringField(13)
+  unmetAnalyticsUpgradeRequirements = _messages.EnumField('UnmetAnalyticsUpgradeRequirementsValueListEntryValuesEnum', 13, repeated=True)
+  updateTime = _messages.StringField(14)
 
 
 class LogEntry(_messages.Message):
@@ -6111,6 +6148,7 @@ class RequestLog(_messages.Message):
     sourceReference: Source code for the application that handled this
       request. There can be more than one source reference per deployed
       application if source code is distributed among multiple repositories.
+    spanId: Stackdriver Trace span identifier for this request.
     startTime: Time when the request started.
     status: HTTP response status code. Example: 200, 404.
     taskName: Task name of the request, in the case of an offline request.
@@ -6148,16 +6186,17 @@ class RequestLog(_messages.Message):
   resource = _messages.StringField(21)
   responseSize = _messages.IntegerField(22)
   sourceReference = _messages.MessageField('SourceReference', 23, repeated=True)
-  startTime = _messages.StringField(24)
-  status = _messages.IntegerField(25, variant=_messages.Variant.INT32)
-  taskName = _messages.StringField(26)
-  taskQueueName = _messages.StringField(27)
-  traceId = _messages.StringField(28)
-  traceSampled = _messages.BooleanField(29)
-  urlMapEntry = _messages.StringField(30)
-  userAgent = _messages.StringField(31)
-  versionId = _messages.StringField(32)
-  wasLoadingRequest = _messages.BooleanField(33)
+  spanId = _messages.StringField(24)
+  startTime = _messages.StringField(25)
+  status = _messages.IntegerField(26, variant=_messages.Variant.INT32)
+  taskName = _messages.StringField(27)
+  taskQueueName = _messages.StringField(28)
+  traceId = _messages.StringField(29)
+  traceSampled = _messages.BooleanField(30)
+  urlMapEntry = _messages.StringField(31)
+  userAgent = _messages.StringField(32)
+  versionId = _messages.StringField(33)
+  wasLoadingRequest = _messages.BooleanField(34)
 
 
 class Settings(_messages.Message):

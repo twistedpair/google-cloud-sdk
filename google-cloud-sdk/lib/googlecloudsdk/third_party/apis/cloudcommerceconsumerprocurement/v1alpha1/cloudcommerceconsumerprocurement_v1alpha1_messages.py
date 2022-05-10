@@ -71,62 +71,6 @@ class CloudcommerceconsumerprocurementBillingAccountsAccountsListRequest(_messag
   parent = _messages.StringField(3, required=True)
 
 
-class CloudcommerceconsumerprocurementBillingAccountsAccountsOperationsCancelRequest(_messages.Message):
-  r"""A CloudcommerceconsumerprocurementBillingAccountsAccountsOperationsCance
-  lRequest object.
-
-  Fields:
-    googleLongrunningCancelOperationRequest: A
-      GoogleLongrunningCancelOperationRequest resource to be passed as the
-      request body.
-    name: The name of the operation resource to be cancelled.
-  """
-
-  googleLongrunningCancelOperationRequest = _messages.MessageField('GoogleLongrunningCancelOperationRequest', 1)
-  name = _messages.StringField(2, required=True)
-
-
-class CloudcommerceconsumerprocurementBillingAccountsAccountsOperationsDeleteRequest(_messages.Message):
-  r"""A CloudcommerceconsumerprocurementBillingAccountsAccountsOperationsDelet
-  eRequest object.
-
-  Fields:
-    name: The name of the operation resource to be deleted.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class CloudcommerceconsumerprocurementBillingAccountsAccountsOperationsGetRequest(_messages.Message):
-  r"""A
-  CloudcommerceconsumerprocurementBillingAccountsAccountsOperationsGetRequest
-  object.
-
-  Fields:
-    name: The name of the operation resource.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class CloudcommerceconsumerprocurementBillingAccountsAccountsOperationsListRequest(_messages.Message):
-  r"""A
-  CloudcommerceconsumerprocurementBillingAccountsAccountsOperationsListRequest
-  object.
-
-  Fields:
-    filter: The standard list filter.
-    name: The name of the operation's parent resource.
-    pageSize: The standard list page size.
-    pageToken: The standard list page token.
-  """
-
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-
-
 class CloudcommerceconsumerprocurementBillingAccountsConsentsCheckRequest(_messages.Message):
   r"""A CloudcommerceconsumerprocurementBillingAccountsConsentsCheckRequest
   object.
@@ -305,34 +249,6 @@ class CloudcommerceconsumerprocurementBillingAccountsOrdersModifyRequest(_messag
   name = _messages.StringField(2, required=True)
 
 
-class CloudcommerceconsumerprocurementBillingAccountsOrdersOperationsCancelRequest(_messages.Message):
-  r"""A
-  CloudcommerceconsumerprocurementBillingAccountsOrdersOperationsCancelRequest
-  object.
-
-  Fields:
-    googleLongrunningCancelOperationRequest: A
-      GoogleLongrunningCancelOperationRequest resource to be passed as the
-      request body.
-    name: The name of the operation resource to be cancelled.
-  """
-
-  googleLongrunningCancelOperationRequest = _messages.MessageField('GoogleLongrunningCancelOperationRequest', 1)
-  name = _messages.StringField(2, required=True)
-
-
-class CloudcommerceconsumerprocurementBillingAccountsOrdersOperationsDeleteRequest(_messages.Message):
-  r"""A
-  CloudcommerceconsumerprocurementBillingAccountsOrdersOperationsDeleteRequest
-  object.
-
-  Fields:
-    name: The name of the operation resource to be deleted.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
 class CloudcommerceconsumerprocurementBillingAccountsOrdersOperationsGetRequest(_messages.Message):
   r"""A
   CloudcommerceconsumerprocurementBillingAccountsOrdersOperationsGetRequest
@@ -343,24 +259,6 @@ class CloudcommerceconsumerprocurementBillingAccountsOrdersOperationsGetRequest(
   """
 
   name = _messages.StringField(1, required=True)
-
-
-class CloudcommerceconsumerprocurementBillingAccountsOrdersOperationsListRequest(_messages.Message):
-  r"""A
-  CloudcommerceconsumerprocurementBillingAccountsOrdersOperationsListRequest
-  object.
-
-  Fields:
-    filter: The standard list filter.
-    name: The name of the operation's parent resource.
-    pageSize: The standard list page size.
-    pageToken: The standard list page token.
-  """
-
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
 
 
 class CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsCreateRequest(_messages.Message):
@@ -423,60 +321,6 @@ class CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsListR
   parent = _messages.StringField(3, required=True)
 
 
-class CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsOperationsCancelRequest(_messages.Message):
-  r"""A CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsO
-  perationsCancelRequest object.
-
-  Fields:
-    googleLongrunningCancelOperationRequest: A
-      GoogleLongrunningCancelOperationRequest resource to be passed as the
-      request body.
-    name: The name of the operation resource to be cancelled.
-  """
-
-  googleLongrunningCancelOperationRequest = _messages.MessageField('GoogleLongrunningCancelOperationRequest', 1)
-  name = _messages.StringField(2, required=True)
-
-
-class CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsOperationsDeleteRequest(_messages.Message):
-  r"""A CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsO
-  perationsDeleteRequest object.
-
-  Fields:
-    name: The name of the operation resource to be deleted.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsOperationsGetRequest(_messages.Message):
-  r"""A CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsO
-  perationsGetRequest object.
-
-  Fields:
-    name: The name of the operation resource.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsOperationsListRequest(_messages.Message):
-  r"""A CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsO
-  perationsListRequest object.
-
-  Fields:
-    filter: The standard list filter.
-    name: The name of the operation's parent resource.
-    pageSize: The standard list page size.
-    pageToken: The standard list page token.
-  """
-
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-
-
 class CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsPatchRequest(_messages.Message):
   r"""A CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsP
   atchRequest object.
@@ -494,6 +338,61 @@ class CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsPatch
   """
 
   googleCloudCommerceConsumerProcurementV1alpha1OrderAllocation = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1OrderAllocation', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsReplaceRequest(_messages.Message):
+  r"""A CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsR
+  eplaceRequest object.
+
+  Fields:
+    googleCloudCommerceConsumerProcurementV1alpha1ReplaceOrderAllocationsReque
+      st: A GoogleCloudCommerceConsumerProcurementV1alpha1ReplaceOrderAllocati
+      onsRequest resource to be passed as the request body.
+    parent: Required. The parent resource to replace OrderAllocations for.
+      This field is in this form: billingAccounts/{billing-account-
+      id}/orders/{order-id}.
+  """
+
+  googleCloudCommerceConsumerProcurementV1alpha1ReplaceOrderAllocationsRequest = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1ReplaceOrderAllocationsRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAttributionsListRequest(_messages.Message):
+  r"""A CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAttributions
+  ListRequest object.
+
+  Fields:
+    pageSize: The maximum number of entries returned per call.
+    pageToken: The token for fetching the next page of entries.
+    parent: Required. The parent Order to query for OrderAttributions. This
+      field is of the form `billingAccounts/{billing-account-
+      id}/orders/{order-id}`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAttributionsPatchRequest(_messages.Message):
+  r"""A CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAttributions
+  PatchRequest object.
+
+  Fields:
+    googleCloudCommerceConsumerProcurementV1alpha1OrderAttribution: A
+      GoogleCloudCommerceConsumerProcurementV1alpha1OrderAttribution resource
+      to be passed as the request body.
+    name: Output only. Resource name of the attribution configuration Format:
+      billingAccounts/{billing_account}/orders/{order}/orderAttributions/{orde
+      r_attribution} attribution_target references the Order parameter that
+      defines the total attributable amount of this resource.
+    updateMask: Optional. Mask used to indicate which parts of
+      OrderAttribution are to be updated.
+  """
+
+  googleCloudCommerceConsumerProcurementV1alpha1OrderAttribution = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1OrderAttribution', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
 
@@ -614,63 +513,6 @@ class CloudcommerceconsumerprocurementProjectsFreeTrialsListRequest(_messages.Me
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
-
-
-class CloudcommerceconsumerprocurementProjectsFreeTrialsOperationsCancelRequest(_messages.Message):
-  r"""A
-  CloudcommerceconsumerprocurementProjectsFreeTrialsOperationsCancelRequest
-  object.
-
-  Fields:
-    googleLongrunningCancelOperationRequest: A
-      GoogleLongrunningCancelOperationRequest resource to be passed as the
-      request body.
-    name: The name of the operation resource to be cancelled.
-  """
-
-  googleLongrunningCancelOperationRequest = _messages.MessageField('GoogleLongrunningCancelOperationRequest', 1)
-  name = _messages.StringField(2, required=True)
-
-
-class CloudcommerceconsumerprocurementProjectsFreeTrialsOperationsDeleteRequest(_messages.Message):
-  r"""A
-  CloudcommerceconsumerprocurementProjectsFreeTrialsOperationsDeleteRequest
-  object.
-
-  Fields:
-    name: The name of the operation resource to be deleted.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class CloudcommerceconsumerprocurementProjectsFreeTrialsOperationsGetRequest(_messages.Message):
-  r"""A CloudcommerceconsumerprocurementProjectsFreeTrialsOperationsGetRequest
-  object.
-
-  Fields:
-    name: The name of the operation resource.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class CloudcommerceconsumerprocurementProjectsFreeTrialsOperationsListRequest(_messages.Message):
-  r"""A
-  CloudcommerceconsumerprocurementProjectsFreeTrialsOperationsListRequest
-  object.
-
-  Fields:
-    filter: The standard list filter.
-    name: The name of the operation's parent resource.
-    pageSize: The standard list page size.
-    pageToken: The standard list page token.
-  """
-
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
 
 
 class GoogleCloudCommerceConsumerProcurementV1alpha1Account(_messages.Message):
@@ -1355,7 +1197,6 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1LineItemInfo(_messages.Messa
       formats: 'billingAccounts/{billing_account}/offers/{offer}', or
       'services/{service}/standardOffers/{offer}'.
     parameters: Optional. User provided parameters.
-    pricePlanVersion: The price plan version being purchased.
     productExternalName: External name of the product being purchased.
     quoteExternalName: Output only. External name of the quote this product is
       associated with. Present if the product is part of a Quote.
@@ -1396,11 +1237,10 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1LineItemInfo(_messages.Messa
   flavorExternalName = _messages.StringField(4)
   offer = _messages.StringField(5)
   parameters = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1Parameter', 6, repeated=True)
-  pricePlanVersion = _messages.StringField(7)
-  productExternalName = _messages.StringField(8)
-  quoteExternalName = _messages.StringField(9)
-  subscription = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1Subscription', 10)
-  systemProperties = _messages.MessageField('SystemPropertiesValue', 11)
+  productExternalName = _messages.StringField(7)
+  quoteExternalName = _messages.StringField(8)
+  subscription = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1Subscription', 9)
+  systemProperties = _messages.MessageField('SystemPropertiesValue', 10)
 
 
 class GoogleCloudCommerceConsumerProcurementV1alpha1ListAccountsResponse(_messages.Message):
@@ -1473,6 +1313,18 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1ListOrderAllocationsResponse
 
   nextPageToken = _messages.StringField(1)
   orderAllocations = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1OrderAllocation', 2, repeated=True)
+
+
+class GoogleCloudCommerceConsumerProcurementV1alpha1ListOrderAttributionsResponse(_messages.Message):
+  r"""Response message for ConsumerProcurementService.ListOrderAttributions.
+
+  Fields:
+    nextPageToken: The token for fetching the next page of entries.
+    orderAttributions: The OrderAttributions from this response
+  """
+
+  nextPageToken = _messages.StringField(1)
+  orderAttributions = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1OrderAttribution', 2, repeated=True)
 
 
 class GoogleCloudCommerceConsumerProcurementV1alpha1ListOrdersResponse(_messages.Message):
@@ -1871,6 +1723,45 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1OrderAllocationAllocationEnt
   targets = _messages.StringField(4, repeated=True)
 
 
+class GoogleCloudCommerceConsumerProcurementV1alpha1OrderAttribution(_messages.Message):
+  r"""Determines how credits generated by this Order are assigned to specific
+  targets (e.g. projects).
+
+  Fields:
+    allotments: The segments that define how total_attributable should be
+      broken up. These are in priority order from highest to lowest. (The
+      zero-indexed item has the highest priority.)
+    intTotalAttributable: Output only. An integer amount of attributable
+      resources.
+    name: Output only. Resource name of the attribution configuration Format:
+      billingAccounts/{billing_account}/orders/{order}/orderAttributions/{orde
+      r_attribution} attribution_target references the Order parameter that
+      defines the total attributable amount of this resource.
+    unit: Output only. Human friendly name for what's being attributed
+  """
+
+  allotments = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1OrderAttributionAllotment', 1, repeated=True)
+  intTotalAttributable = _messages.IntegerField(2)
+  name = _messages.StringField(3)
+  unit = _messages.StringField(4)
+
+
+class GoogleCloudCommerceConsumerProcurementV1alpha1OrderAttributionAllotment(_messages.Message):
+  r"""Defines a specific chunk of credits that are assigned to specific
+  targets.
+
+  Fields:
+    intAllotmentAmount: An integer allotment of resources.
+    targets: Targets for this allotment. Currently, only projects are
+      supported. Targets should be associated with this billing account.
+      Targets not associated with this billing account are ignored. Format:
+      project/{project_id} or project/{project_number}
+  """
+
+  intAllotmentAmount = _messages.IntegerField(1)
+  targets = _messages.StringField(2, repeated=True)
+
+
 class GoogleCloudCommerceConsumerProcurementV1alpha1Parameter(_messages.Message):
   r"""LINT.IfChange User provided Parameters.
 
@@ -1926,7 +1817,8 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1PlaceOrderRequest(_messages.
     placeProductsOrderRequest: Optional. Places order for non-quote products.
     placeQuoteOrderRequest: Optional. Places order for quote.
     provider: Required. Provider of the items being purchased. Provider has
-      the format of `providers/{provider_id}`.
+      the format of `providers/{provider_id}`. Optional when an offer is
+      specified.
     requestId: Optional. A unique identifier for this request. The server will
       ignore subsequent requests that provide a duplicate request ID for at
       least 120 minutes after the first request. The request ID must be a
@@ -1991,6 +1883,18 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1ReplaceOrderAllocationsMetad
 
 
 
+class GoogleCloudCommerceConsumerProcurementV1alpha1ReplaceOrderAllocationsRequest(_messages.Message):
+  r"""Request message for ConsumerProcurementService.ReplaceOrderAllocations.
+
+  Fields:
+    orderAllocations: Required. The replacement OrderAllocations. They will
+      replace all existing OrderAllocations belonging to the parent. The limit
+      on the number of OrderAllocations is 1000.
+  """
+
+  orderAllocations = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1OrderAllocation', 1, repeated=True)
+
+
 class GoogleCloudCommerceConsumerProcurementV1alpha1ReplaceOrderAllocationsResponse(_messages.Message):
   r"""Message stored in the response field of the Operation returned by
   ConsumerProcurementService.ReplaceOrderAllocations.
@@ -2038,23 +1942,6 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1UpdateOrderAllocationMetadat
   ConsumerProcurementService.UpdateOrderAllocation.
   """
 
-
-
-class GoogleLongrunningCancelOperationRequest(_messages.Message):
-  r"""The request message for Operations.CancelOperation."""
-
-
-class GoogleLongrunningListOperationsResponse(_messages.Message):
-  r"""The response message for Operations.ListOperations.
-
-  Fields:
-    nextPageToken: The standard List next-page token.
-    operations: A list of operations that matches the specified filter in the
-      request.
-  """
-
-  nextPageToken = _messages.StringField(1)
-  operations = _messages.MessageField('GoogleLongrunningOperation', 2, repeated=True)
 
 
 class GoogleLongrunningOperation(_messages.Message):
@@ -2163,15 +2050,6 @@ class GoogleLongrunningOperation(_messages.Message):
   metadata = _messages.MessageField('MetadataValue', 3)
   name = _messages.StringField(4)
   response = _messages.MessageField('ResponseValue', 5)
-
-
-class GoogleProtobufEmpty(_messages.Message):
-  r"""A generic empty message that you can re-use to avoid defining duplicated
-  empty messages in your APIs. A typical example is to use it as the request
-  or the response type of an API method. For instance: service Foo { rpc
-  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
-  """
-
 
 
 class GoogleRpcStatus(_messages.Message):

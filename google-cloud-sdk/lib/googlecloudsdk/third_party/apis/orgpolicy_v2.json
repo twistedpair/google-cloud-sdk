@@ -1119,6 +1119,11 @@
                   "location": "path",
                   "required": true,
                   "type": "string"
+                },
+                "validateOnly": {
+                  "description": "Optional. Only validates the request, but do not perform any mutations. The default is false.",
+                  "location": "query",
+                  "type": "boolean"
                 }
               },
               "parameterOrder": [
@@ -1147,6 +1152,11 @@
                   "location": "path",
                   "required": true,
                   "type": "string"
+                },
+                "validateOnly": {
+                  "description": "Optional. Only validates the request, but do not perform any mutations. The default is false.",
+                  "location": "query",
+                  "type": "boolean"
                 }
               },
               "parameterOrder": [

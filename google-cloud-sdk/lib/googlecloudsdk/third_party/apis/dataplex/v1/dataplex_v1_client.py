@@ -465,33 +465,6 @@ class DataplexV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified contentitem resource. Replaces any existing policy.Caller must have Google IAM dataplex.content.setIamPolicy permission on the resource.
-
-      Args:
-        request: (DataplexProjectsLocationsLakesContentitemsSetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleIamV1Policy) The response message.
-      """
-      config = self.GetMethodConfig('SetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/contentitems/{contentitemsId}:setIamPolicy',
-        http_method='POST',
-        method_id='dataplex.projects.locations.lakes.contentitems.setIamPolicy',
-        ordered_params=['resource'],
-        path_params=['resource'],
-        query_params=[],
-        relative_path='v1/{+resource}:setIamPolicy',
-        request_field='googleIamV1SetIamPolicyRequest',
-        request_type_name='DataplexProjectsLocationsLakesContentitemsSetIamPolicyRequest',
-        response_type_name='GoogleIamV1Policy',
-        supports_download=False,
-    )
-
   class ProjectsLocationsLakesEnvironmentsSessionsService(base_api.BaseApiService):
     """Service class for the projects_locations_lakes_environments_sessions resource."""
 

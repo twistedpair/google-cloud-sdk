@@ -108,9 +108,11 @@ class DiagnoseInterconnectResponse(_messages.Message):
 
   Fields:
     result: The network status of a specific interconnect.
+    updateTime: The time when the interconnect diagnostics was last updated.
   """
 
   result = _messages.MessageField('InterconnectDiagnostics', 1)
+  updateTime = _messages.StringField(2)
 
 
 class DiagnoseNetworkResponse(_messages.Message):
@@ -119,9 +121,11 @@ class DiagnoseNetworkResponse(_messages.Message):
 
   Fields:
     result: The network status of a specific network.
+    updateTime: The time when the network status was last updated.
   """
 
   result = _messages.MessageField('NetworkStatus', 1)
+  updateTime = _messages.StringField(2)
 
 
 class DiagnoseRouterResponse(_messages.Message):
@@ -130,9 +134,11 @@ class DiagnoseRouterResponse(_messages.Message):
 
   Fields:
     result: The network status of a specific router.
+    updateTime: The time when the router status was last updated.
   """
 
   result = _messages.MessageField('RouterStatus', 1)
+  updateTime = _messages.StringField(2)
 
 
 class EdgenetworkProjectsLocationsGetRequest(_messages.Message):

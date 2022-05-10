@@ -8064,6 +8064,33 @@ class ApigeeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Tests the permissions of a user on an organization, and returns a subset of permissions that the user has on the organization. If the organization does not exist, an empty permission set is returned (a NOT_FOUND error is not returned).
+
+      Args:
+        request: (ApigeeOrganizationsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}:testIamPermissions',
+        http_method='POST',
+        method_id='apigee.organizations.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:testIamPermissions',
+        request_field='googleIamV1TestIamPermissionsRequest',
+        request_type_name='ApigeeOrganizationsTestIamPermissionsRequest',
+        response_type_name='GoogleIamV1TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
     def Undelete(self, request, global_params=None):
       r"""Undelete an Apigee organization that is soft-deleted.
 

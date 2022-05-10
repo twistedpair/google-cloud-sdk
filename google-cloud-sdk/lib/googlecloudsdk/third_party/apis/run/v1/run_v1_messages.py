@@ -42,8 +42,8 @@ class AuditConfig(_messages.Message):
   "audit_log_configs": [ { "log_type": "DATA_READ" }, { "log_type":
   "DATA_WRITE", "exempted_members": [ "user:aliya@example.com" ] } ] } ] } For
   sampleservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ
-  logging. It also exempts jose@example.com from DATA_READ logging, and
-  aliya@example.com from DATA_WRITE logging.
+  logging. It also exempts `jose@example.com` from DATA_READ logging, and
+  `aliya@example.com` from DATA_WRITE logging.
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
@@ -415,21 +415,6 @@ class ContainerPort(_messages.Message):
   protocol = _messages.StringField(3)
 
 
-class ContainerStatus(_messages.Message):
-  r"""ContainerStatus holds the information of container name and image digest
-  value.
-
-  Fields:
-    imageDigest: ImageDigest holds the resolved digest for the image
-      specified, regardless of whether a tag or digest was originally
-      specified in the Container object.
-    name: The name of the container, if specified.
-  """
-
-  imageDigest = _messages.StringField(1)
-  name = _messages.StringField(2)
-
-
 class DomainMapping(_messages.Message):
   r"""Resource to hold the state and status of a user's domain mapping. NOTE:
   This resource is currently in Beta.
@@ -753,6 +738,23 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
+class GRPCAction(_messages.Message):
+  r"""Not supported by Cloud Run GRPCAction describes an action involving a
+  GRPC port.
+
+  Fields:
+    port: Port number of the gRPC service. Number must be in the range 1 to
+      65535.
+    service: Service is the name of the service to place in the gRPC
+      HealthCheckRequest (see
+      https://github.com/grpc/grpc/blob/master/doc/health-checking.md). If
+      this is not specified, the default behavior is defined by gRPC.
+  """
+
+  port = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  service = _messages.StringField(2)
+
+
 class GoogleCloudRunV1Condition(_messages.Message):
   r"""Condition defines a generic condition for a Resource.
 
@@ -917,9 +919,6 @@ class JobStatus(_messages.Message):
       More info:
       https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-
       completion/
-    containerStatuses: Status information for each of the specified
-      containers. The status includes the resolved digest for specified
-      images, which occurs during creation of the job.
     executionCount: Number of executions created for this job.
     latestCreatedExecution: A pointer to the most recently created execution
       for this job. This is set regardless of the eventual state of the
@@ -929,10 +928,9 @@ class JobStatus(_messages.Message):
   """
 
   conditions = _messages.MessageField('GoogleCloudRunV1Condition', 1, repeated=True)
-  containerStatuses = _messages.MessageField('ContainerStatus', 2, repeated=True)
-  executionCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  latestCreatedExecution = _messages.MessageField('ExecutionReference', 4)
-  observedGeneration = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  executionCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  latestCreatedExecution = _messages.MessageField('ExecutionReference', 3)
+  observedGeneration = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
 class KeyToPath(_messages.Message):
@@ -1613,6 +1611,8 @@ class Probe(_messages.Message):
     failureThreshold: (Optional) Minimum consecutive failures for the probe to
       be considered failed after having succeeded. Defaults to 3. Minimum
       value is 1.
+    grpc: (Optional) GRPCAction specifies an action involving a GRPC port. A
+      field inlined from the Handler message.
     httpGet: (Optional) HTTPGet specifies the http request to perform. A field
       inlined from the Handler message.
     initialDelaySeconds: (Optional) Number of seconds after the container has
@@ -1639,12 +1639,13 @@ class Probe(_messages.Message):
 
   exec_ = _messages.MessageField('ExecAction', 1)
   failureThreshold = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  httpGet = _messages.MessageField('HTTPGetAction', 3)
-  initialDelaySeconds = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  periodSeconds = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  successThreshold = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  tcpSocket = _messages.MessageField('TCPSocketAction', 7)
-  timeoutSeconds = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  grpc = _messages.MessageField('GRPCAction', 3)
+  httpGet = _messages.MessageField('HTTPGetAction', 4)
+  initialDelaySeconds = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  periodSeconds = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  successThreshold = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  tcpSocket = _messages.MessageField('TCPSocketAction', 8)
+  timeoutSeconds = _messages.IntegerField(9, variant=_messages.Variant.INT32)
 
 
 class ResourceRecord(_messages.Message):

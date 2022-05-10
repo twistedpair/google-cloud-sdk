@@ -540,10 +540,13 @@ class OrgpolicyOrganizationsCustomConstraintsCreateRequest(_messages.Message):
       request body.
     parent: Required. Must be in the following form: *
       `organizations/{organization_id}`
+    validateOnly: Optional. Only validates the request, but do not perform any
+      mutations. The default is false.
   """
 
   googleCloudOrgpolicyV2CustomConstraint = _messages.MessageField('GoogleCloudOrgpolicyV2CustomConstraint', 1)
   parent = _messages.StringField(2, required=True)
+  validateOnly = _messages.BooleanField(3)
 
 
 class OrgpolicyOrganizationsCustomConstraintsGetRequest(_messages.Message):
@@ -575,6 +578,26 @@ class OrgpolicyOrganizationsCustomConstraintsListRequest(_messages.Message):
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+
+
+class OrgpolicyOrganizationsCustomConstraintsPatchRequest(_messages.Message):
+  r"""A OrgpolicyOrganizationsCustomConstraintsPatchRequest object.
+
+  Fields:
+    googleCloudOrgpolicyV2CustomConstraint: A
+      GoogleCloudOrgpolicyV2CustomConstraint resource to be passed as the
+      request body.
+    name: Immutable. Name of the constraint. This is unique within the
+      organization. Format of the name should be * `organizations/{organizatio
+      n_id}/customConstraints/{custom_constraint_id}` Example :
+      "organizations/123/customConstraints/custom.createOnlyE2TypeVms"
+    validateOnly: Optional. Only validates the request, but do not perform any
+      mutations. The default is false.
+  """
+
+  googleCloudOrgpolicyV2CustomConstraint = _messages.MessageField('GoogleCloudOrgpolicyV2CustomConstraint', 1)
+  name = _messages.StringField(2, required=True)
+  validateOnly = _messages.BooleanField(3)
 
 
 class OrgpolicyOrganizationsPoliciesCreateRequest(_messages.Message):

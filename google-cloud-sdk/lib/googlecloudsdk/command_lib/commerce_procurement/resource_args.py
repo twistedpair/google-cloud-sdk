@@ -123,26 +123,6 @@ def GetOrderOperationResourceSpec():
       operationsId=OperationAttributeConfig())
 
 
-def GetFreeTrialOperationResourceSpec():
-  return concepts.ResourceSpec(
-      'cloudcommerceconsumerprocurement.projects.freeTrials.operations',
-      resource_name='free-trial-operation',
-      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
-      freeTrialsId=FreeTrialAttributeConfig(),
-      operationsId=OperationAttributeConfig())
-
-
-def GetOrderAllocationOperationResourceSpec():
-  return concepts.ResourceSpec(
-      'cloudcommerceconsumerprocurement.billingAccounts.orders.orderAllocations.operations',
-      resource_name='order-allocation-operation',
-      billingAccountsId=BillingAccountAttributeConfig(
-          name='order-allocation-operation-billing-account'),
-      ordersId=OrderAttributeConfig(name='order-allocation-operation-order'),
-      orderAllocationsId=OrderAllocationAttributeConfig(),
-      operationsId=OperationAttributeConfig())
-
-
 def AddBillingAccountResourceArg(parser, description):
   concept_parsers.ConceptParser.ForResource(
       '--billing-account',
@@ -183,19 +163,7 @@ def AddOrderAllocationResourceArg(parser, description):
       required=True).AddToParser(parser)
 
 
-def AddFreeTrialOperationResourceArg(parser, description):
-  concept_parsers.ConceptParser.ForResource('--free-trial-operation',
-                                            GetFreeTrialOperationResourceSpec(),
-                                            description).AddToParser(parser)
-
-
 def AddOrderOperationResourceArg(parser, description):
   concept_parsers.ConceptParser.ForResource('--order-operation',
                                             GetOrderOperationResourceSpec(),
                                             description).AddToParser(parser)
-
-
-def AddOrderAllocationOperationResourceArg(parser, description):
-  concept_parsers.ConceptParser.ForResource(
-      '--order-allocation-operation', GetOrderAllocationOperationResourceSpec(),
-      description).AddToParser(parser)

@@ -6873,6 +6873,15 @@
         "network": {
           "description": "The full name of the Compute Engine [network](\/compute\/docs\/networks-and-firewalls#networks) to which the Pipeline Job's workload should be peered. For example, `projects\/12345\/global\/networks\/myVPC`. [Format](\/compute\/docs\/reference\/rest\/v1\/networks\/insert) is of the form `projects\/{project}\/global\/networks\/{network}`. Where {project} is a project number, as in `12345`, and {network} is a network name. Private services access must already be configured for the network. Pipeline job will apply the network configuration to the GCP resources being launched, if applied, such as Vertex AI Training or Dataflow job. If left unspecified, the workload is not peered with any network.",
           "type": "string"
+        },
+        "templateUri": {
+          "description": "A template uri from where the PipelineJob.pipeline_spec, if empty, will be downloaded.",
+          "type": "string"
+        },
+        "templateMetadata": {
+          "description": "Output only. Pipeline template metadata. Will fill up fields if PipelineJob.template_uri is from supported template registry.",
+          "readOnly": true,
+          "$ref": "GoogleCloudAiplatformV1beta1PipelineTemplateMetadata"
         }
       }
     },
@@ -7161,6 +7170,17 @@
         },
         "stringValue": {
           "description": "A string value.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1PipelineTemplateMetadata": {
+      "id": "GoogleCloudAiplatformV1beta1PipelineTemplateMetadata",
+      "description": "Pipeline template metadata if PipelineJob.template_uri is from supported template registry. Currently, the only supported registry is Artifact Registry.",
+      "type": "object",
+      "properties": {
+        "version": {
+          "description": "The version_name in artifact registry. Will always be presented in output if the PipelineJob.template_uri is from supported template registry. Format is \"sha256:abcdef123456...\".",
           "type": "string"
         }
       }

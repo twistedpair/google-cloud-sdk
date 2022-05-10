@@ -69,7 +69,7 @@ class DispatchXmlParser(object):
       if xml_root.tag != 'dispatch-entries':
         raise AppEngineConfigException('Root tag must be <dispatch-entries>')
 
-      for child in xml_root.getchildren():
+      for child in list(xml_root):
         self.ProcessDispatchNode(child)
 
       if self.errors:

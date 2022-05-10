@@ -165,6 +165,9 @@ class AcceleratorTypeAggregatedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -204,19 +207,20 @@ class AcceleratorTypeAggregatedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -317,6 +321,9 @@ class AcceleratorTypeList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -356,19 +363,20 @@ class AcceleratorTypeList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -462,6 +470,9 @@ class AcceleratorTypesScopedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -501,19 +512,20 @@ class AcceleratorTypesScopedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -839,6 +851,8 @@ class Address(_messages.Message):
       PRIVATE_SERVICE_CONNECT: A private network IP address that can be used
         to configure Private Service Connect. This purpose can be specified
         only for GLOBAL addresses of Type INTERNAL
+      SERVERLESS: A regional internal IP address range reserved for
+        Serverless.
       SHARED_LOADBALANCER_VIP: A private network IP address that can be shared
         by multiple Internal Load Balancer forwarding rules.
       VPC_PEERING: IP range for peer networks.
@@ -848,8 +862,9 @@ class Address(_messages.Message):
     IPSEC_INTERCONNECT = 2
     NAT_AUTO = 3
     PRIVATE_SERVICE_CONNECT = 4
-    SHARED_LOADBALANCER_VIP = 5
-    VPC_PEERING = 6
+    SERVERLESS = 5
+    SHARED_LOADBALANCER_VIP = 6
+    VPC_PEERING = 7
 
   class StatusValueValuesEnum(_messages.Enum):
     r"""[Output Only] The status of the address, which can be one of
@@ -1009,6 +1024,9 @@ class AddressAggregatedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -1048,19 +1066,20 @@ class AddressAggregatedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -1161,6 +1180,9 @@ class AddressList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -1200,19 +1222,20 @@ class AddressList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -1305,6 +1328,9 @@ class AddressesScopedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -1344,19 +1370,20 @@ class AddressesScopedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -2157,6 +2184,9 @@ class AutoscalerAggregatedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -2196,19 +2226,20 @@ class AutoscalerAggregatedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -2309,6 +2340,9 @@ class AutoscalerList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -2348,19 +2382,20 @@ class AutoscalerList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -2641,6 +2676,9 @@ class AutoscalersScopedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -2680,19 +2718,20 @@ class AutoscalersScopedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -3497,6 +3536,9 @@ class BackendBucketList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -3536,19 +3578,20 @@ class BackendBucketList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -4135,6 +4178,9 @@ class BackendServiceAggregatedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -4174,19 +4220,20 @@ class BackendServiceAggregatedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -4722,6 +4769,9 @@ class BackendServiceList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -4761,19 +4811,20 @@ class BackendServiceList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -4998,6 +5049,9 @@ class BackendServicesScopedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -5037,19 +5091,20 @@ class BackendServicesScopedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -5828,6 +5883,9 @@ class CommitmentAggregatedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -5867,19 +5925,20 @@ class CommitmentAggregatedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -5980,6 +6039,9 @@ class CommitmentList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -6019,19 +6081,20 @@ class CommitmentList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -6124,6 +6187,9 @@ class CommitmentsScopedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -6163,19 +6229,20 @@ class CommitmentsScopedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -21249,6 +21316,229 @@ class ComputeRegionSslCertificatesTestIamPermissionsRequest(_messages.Message):
   testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
 
 
+class ComputeRegionSslPoliciesDeleteRequest(_messages.Message):
+  r"""A ComputeRegionSslPoliciesDeleteRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    sslPolicy: Name of the SSL policy to delete. The name must be 1-63
+      characters long, and comply with RFC1035.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  sslPolicy = _messages.StringField(4, required=True)
+
+
+class ComputeRegionSslPoliciesGetRequest(_messages.Message):
+  r"""A ComputeRegionSslPoliciesGetRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    sslPolicy: Name of the SSL policy to update. The name must be 1-63
+      characters long, and comply with RFC1035.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  sslPolicy = _messages.StringField(3, required=True)
+
+
+class ComputeRegionSslPoliciesInsertRequest(_messages.Message):
+  r"""A ComputeRegionSslPoliciesInsertRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    sslPolicy: A SslPolicy resource to be passed as the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  sslPolicy = _messages.MessageField('SslPolicy', 4)
+
+
+class ComputeRegionSslPoliciesListAvailableFeaturesRequest(_messages.Message):
+  r"""A ComputeRegionSslPoliciesListAvailableFeaturesRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
+      instances, you can exclude instances named `example-instance` by
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
+      fields. For example, you could specify `scheduling.automaticRestart =
+      false` to include instances only if they are not scheduled for automatic
+      restarts. You can use filtering on nested fields to filter based on
+      resource labels. To filter on multiple expressions, provide each
+      separate expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ```
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than
+      `maxResults`, Compute Engine returns a `nextPageToken` that can be used
+      to get the next page of results in subsequent list requests. Acceptable
+      values are `0` to `500`, inclusive. (Default: `500`)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name. You can
+      also sort results in descending order based on the creation timestamp
+      using `orderBy="creationTimestamp desc"`. This sorts results based on
+      the `creationTimestamp` field in reverse chronological order (newest
+      result first). Use this to sort resources like operations so that the
+      newest operation is returned first. Currently, only sorting by `name` or
+      `creationTimestamp desc` is supported.
+    pageToken: Specifies a page token to use. Set `pageToken` to the
+      `nextPageToken` returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+  region = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
+
+
+class ComputeRegionSslPoliciesListRequest(_messages.Message):
+  r"""A ComputeRegionSslPoliciesListRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
+      instances, you can exclude instances named `example-instance` by
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
+      fields. For example, you could specify `scheduling.automaticRestart =
+      false` to include instances only if they are not scheduled for automatic
+      restarts. You can use filtering on nested fields to filter based on
+      resource labels. To filter on multiple expressions, provide each
+      separate expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ```
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than
+      `maxResults`, Compute Engine returns a `nextPageToken` that can be used
+      to get the next page of results in subsequent list requests. Acceptable
+      values are `0` to `500`, inclusive. (Default: `500`)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name. You can
+      also sort results in descending order based on the creation timestamp
+      using `orderBy="creationTimestamp desc"`. This sorts results based on
+      the `creationTimestamp` field in reverse chronological order (newest
+      result first). Use this to sort resources like operations so that the
+      newest operation is returned first. Currently, only sorting by `name` or
+      `creationTimestamp desc` is supported.
+    pageToken: Specifies a page token to use. Set `pageToken` to the
+      `nextPageToken` returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+  region = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
+
+
+class ComputeRegionSslPoliciesPatchRequest(_messages.Message):
+  r"""A ComputeRegionSslPoliciesPatchRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    sslPolicy: Name of the SSL policy to update. The name must be 1-63
+      characters long, and comply with RFC1035.
+    sslPolicyResource: A SslPolicy resource to be passed as the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  sslPolicy = _messages.StringField(4, required=True)
+  sslPolicyResource = _messages.MessageField('SslPolicy', 5)
+
+
+class ComputeRegionSslPoliciesTestIamPermissionsRequest(_messages.Message):
+  r"""A ComputeRegionSslPoliciesTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    resource: Name or id of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
+
+
 class ComputeRegionTargetHttpProxiesDeleteRequest(_messages.Message):
   r"""A ComputeRegionTargetHttpProxiesDeleteRequest object.
 
@@ -24012,6 +24302,68 @@ class ComputeSslCertificatesTestIamPermissionsRequest(_messages.Message):
   project = _messages.StringField(1, required=True)
   resource = _messages.StringField(2, required=True)
   testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
+
+
+class ComputeSslPoliciesAggregatedListRequest(_messages.Message):
+  r"""A ComputeSslPoliciesAggregatedListRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
+      instances, you can exclude instances named `example-instance` by
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
+      fields. For example, you could specify `scheduling.automaticRestart =
+      false` to include instances only if they are not scheduled for automatic
+      restarts. You can use filtering on nested fields to filter based on
+      resource labels. To filter on multiple expressions, provide each
+      separate expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ```
+    includeAllScopes: Indicates whether every visible scope for each scope
+      type (zone, region, global) should be included in the response. For new
+      resource types added after this field, the flag has no effect as new
+      resource types will always include every visible scope for each scope
+      type in response. For resource types which predate this field, if this
+      flag is omitted or false, only scopes of the scope types where the
+      resource type is expected to be found will be included.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than
+      `maxResults`, Compute Engine returns a `nextPageToken` that can be used
+      to get the next page of results in subsequent list requests. Acceptable
+      values are `0` to `500`, inclusive. (Default: `500`)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name. You can
+      also sort results in descending order based on the creation timestamp
+      using `orderBy="creationTimestamp desc"`. This sorts results based on
+      the `creationTimestamp` field in reverse chronological order (newest
+      result first). Use this to sort resources like operations so that the
+      newest operation is returned first. Currently, only sorting by `name` or
+      `creationTimestamp desc` is supported.
+    pageToken: Specifies a page token to use. Set `pageToken` to the
+      `nextPageToken` returned by a previous list request to get the next page
+      of results.
+    project: Name of the project scoping this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false.
+  """
+
+  filter = _messages.StringField(1)
+  includeAllScopes = _messages.BooleanField(2)
+  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(4)
+  pageToken = _messages.StringField(5)
+  project = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
 
 
 class ComputeSslPoliciesDeleteRequest(_messages.Message):
@@ -28236,6 +28588,9 @@ class DiskAggregatedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -28275,19 +28630,20 @@ class DiskAggregatedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -28478,6 +28834,9 @@ class DiskList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -28517,19 +28876,20 @@ class DiskList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -28723,6 +29083,9 @@ class DiskTypeAggregatedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -28762,19 +29125,20 @@ class DiskTypeAggregatedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -28875,6 +29239,9 @@ class DiskTypeList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -28914,19 +29281,20 @@ class DiskTypeList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -29019,6 +29387,9 @@ class DiskTypesScopedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -29058,19 +29429,20 @@ class DiskTypesScopedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -29190,6 +29562,9 @@ class DisksScopedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -29229,19 +29604,20 @@ class DisksScopedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -29460,6 +29836,9 @@ class ExchangedPeeringRoutesList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -29499,19 +29878,20 @@ class ExchangedPeeringRoutesList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -29794,6 +30174,9 @@ class ExternalVpnGatewayList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -29833,19 +30216,20 @@ class ExternalVpnGatewayList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -30160,6 +30544,9 @@ class FirewallList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -30199,19 +30586,20 @@ class FirewallList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -30450,6 +30838,9 @@ class FirewallPolicyList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -30489,19 +30880,20 @@ class FirewallPolicyList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -30762,24 +31154,29 @@ class ForwardingRule(_messages.Message):
       RFC1035. Label values may be empty.
 
   Fields:
-    IPAddress: IP address that this forwarding rule serves. When a client
-      sends traffic to this IP address, the forwarding rule directs the
-      traffic to the target that you specify in the forwarding rule. If you
-      don't specify a reserved IP address, an ephemeral IP address is
-      assigned. Methods for specifying an IP address: * IPv4 dotted decimal,
-      as in `100.1.2.3` * Full URL, as in
+    IPAddress: IP address for which this forwarding rule accepts traffic. When
+      a client sends traffic to this IP address, the forwarding rule directs
+      the traffic to the referenced target or backendService. While creating a
+      forwarding rule, specifying an IPAddress is required under the following
+      circumstances: - When the target is set to targetGrpcProxy and
+      validateForProxyless is set to true, the IPAddress should be set to
+      0.0.0.0. - When the target is a Private Service Connect Google APIs
+      bundle, you must specify an IPAddress. Otherwise, you can optionally
+      specify an IP address that references an existing static (reserved) IP
+      address resource. When omitted, Google Cloud assigns an ephemeral IP
+      address. Use one of the following formats to specify an IP address while
+      creating a forwarding rule: * IP address number, as in `100.1.2.3` *
+      Full resource URL, as in
       https://www.googleapis.com/compute/v1/projects/project_id/regions/region
       /addresses/address-name * Partial URL or by name, as in: -
       projects/project_id/regions/region/addresses/address-name -
       regions/region/addresses/address-name - global/addresses/address-name -
-      address-name The loadBalancingScheme and the forwarding rule's target
-      determine the type of IP address that you can use. For detailed
-      information, see [IP address
+      address-name The forwarding rule's target or backendService, and in most
+      cases, also the loadBalancingScheme, determine the type of IP address
+      that you can use. For detailed information, see [IP address
       specifications](https://cloud.google.com/load-balancing/docs/forwarding-
-      rule-concepts#ip_address_specifications). Must be set to `0.0.0.0` when
-      the target is targetGrpcProxy that has validateForProxyless field set to
-      true. For Private Service Connect forwarding rules that forward traffic
-      to Google APIs, IP address must be provided.
+      rule-concepts#ip_address_specifications). When reading an IPAddress, the
+      API always returns the IP address number.
     IPProtocol: The IP protocol to which this rule applies. For protocol
       forwarding, valid options are TCP, UDP, ESP, AH, SCTP, ICMP and
       L3_DEFAULT. The valid IP protocols are different for different load
@@ -31188,6 +31585,9 @@ class ForwardingRuleAggregatedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -31227,19 +31627,20 @@ class ForwardingRuleAggregatedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -31339,6 +31740,9 @@ class ForwardingRuleList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -31378,19 +31782,20 @@ class ForwardingRuleList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -31513,6 +31918,9 @@ class ForwardingRulesScopedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -31552,19 +31960,20 @@ class ForwardingRulesScopedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -32284,6 +32693,9 @@ class HealthCheckList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -32323,19 +32735,20 @@ class HealthCheckList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -32614,6 +33027,9 @@ class HealthCheckServicesList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -32653,19 +33069,20 @@ class HealthCheckServicesList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -32791,6 +33208,9 @@ class HealthChecksAggregatedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -32830,19 +33250,20 @@ class HealthChecksAggregatedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -32936,6 +33357,9 @@ class HealthChecksScopedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -32975,19 +33399,20 @@ class HealthChecksScopedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -33165,10 +33590,10 @@ class HostRule(_messages.Message):
       property when you create the resource.
     hosts: The list of host patterns to match. They must be valid hostnames
       with optional port numbers in the format host:port. * matches any string
-      of ([a-z0-9-.]*). In that case, * must be the first character and must
-      be followed in the pattern by either - or .. * based matching is not
-      supported when the URL map is bound to a target gRPC proxy that has the
-      validateForProxyless field set to true.
+      of ([a-z0-9-.]*). In that case, * must be the first character, and if
+      followed by anything, the immediate following character must be either -
+      or .. * based matching is not supported when the URL map is bound to a
+      target gRPC proxy that has the validateForProxyless field set to true.
     pathMatcher: The name of the PathMatcher to use to match the path portion
       of the URL if the hostRule matches the URL's host portion.
   """
@@ -33477,6 +33902,9 @@ class HttpHealthCheckList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -33516,19 +33944,20 @@ class HttpHealthCheckList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -33722,7 +34151,10 @@ class HttpRouteAction(_messages.Message):
       balancer for a percentage of requests. timeout and retry_policy is
       ignored by clients that are configured with a fault_injection_policy if:
       1. The traffic is generated by fault injection AND 2. The fault
-      injection is not a delay fault injection.
+      injection is not a delay fault injection. Fault injection is not
+      supported with the global external HTTP(S) load balancer (classic). To
+      see which load balancers support fault injection, see Load balancing:
+      Routing and traffic management features.
     maxStreamDuration: Specifies the maximum duration (timeout) for streams on
       the selected route. Unlike the timeout field where the timeout duration
       starts from the time the request has been fully processed (known as
@@ -34038,6 +34470,9 @@ class HttpsHealthCheckList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -34077,19 +34512,20 @@ class HttpsHealthCheckList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -34476,6 +34912,9 @@ class ImageList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -34515,19 +34954,20 @@ class ImageList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -34978,6 +35418,9 @@ class InstanceAggregatedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -35017,19 +35460,20 @@ class InstanceAggregatedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -35251,6 +35695,9 @@ class InstanceGroupAggregatedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -35290,19 +35737,20 @@ class InstanceGroupAggregatedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -35403,6 +35851,9 @@ class InstanceGroupList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -35442,19 +35893,20 @@ class InstanceGroupList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -35765,6 +36217,9 @@ class InstanceGroupManagerAggregatedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -35804,19 +36259,20 @@ class InstanceGroupManagerAggregatedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -35951,6 +36407,9 @@ class InstanceGroupManagerList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -35990,19 +36449,20 @@ class InstanceGroupManagerList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -36576,6 +37036,9 @@ class InstanceGroupManagersListPerInstanceConfigsResp(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -36615,19 +37078,20 @@ class InstanceGroupManagersListPerInstanceConfigsResp(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -36770,6 +37234,9 @@ class InstanceGroupManagersScopedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -36809,19 +37276,20 @@ class InstanceGroupManagersScopedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -36984,6 +37452,9 @@ class InstanceGroupsListInstances(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -37023,19 +37494,20 @@ class InstanceGroupsListInstances(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -37171,6 +37643,9 @@ class InstanceGroupsScopedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -37210,19 +37685,20 @@ class InstanceGroupsScopedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -37336,6 +37812,9 @@ class InstanceList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -37375,19 +37854,20 @@ class InstanceList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -37487,6 +37967,9 @@ class InstanceListReferrers(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -37526,19 +38009,20 @@ class InstanceListReferrers(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -38154,6 +38638,9 @@ class InstanceTemplateList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -38193,19 +38680,20 @@ class InstanceTemplateList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -38453,6 +38941,9 @@ class InstancesScopedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -38492,19 +38983,20 @@ class InstancesScopedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -39487,6 +39979,9 @@ class InterconnectAttachmentAggregatedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -39526,19 +40021,20 @@ class InterconnectAttachmentAggregatedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -39641,6 +40137,9 @@ class InterconnectAttachmentList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -39680,19 +40179,20 @@ class InterconnectAttachmentList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -39821,6 +40321,9 @@ class InterconnectAttachmentsScopedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -39860,19 +40363,20 @@ class InterconnectAttachmentsScopedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -40138,6 +40642,9 @@ class InterconnectList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -40177,19 +40684,20 @@ class InterconnectList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -40407,6 +40915,9 @@ class InterconnectLocationList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -40446,19 +40957,20 @@ class InterconnectLocationList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -40872,6 +41384,9 @@ class LicensesListResponse(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -40911,19 +41426,20 @@ class LicensesListResponse(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -41340,6 +41856,9 @@ class MachineImageList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -41379,19 +41898,20 @@ class MachineImageList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -41582,6 +42102,9 @@ class MachineTypeAggregatedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -41621,19 +42144,20 @@ class MachineTypeAggregatedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -41734,6 +42258,9 @@ class MachineTypeList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -41773,19 +42300,20 @@ class MachineTypeList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -41879,6 +42407,9 @@ class MachineTypesScopedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -41918,19 +42449,20 @@ class MachineTypesScopedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -42619,6 +43151,9 @@ class NetworkEdgeSecurityServiceAggregatedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -42658,19 +43193,20 @@ class NetworkEdgeSecurityServiceAggregatedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -42766,6 +43302,9 @@ class NetworkEdgeSecurityServicesScopedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -42805,19 +43344,20 @@ class NetworkEdgeSecurityServicesScopedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -43143,6 +43683,9 @@ class NetworkEndpointGroupAggregatedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -43182,19 +43725,20 @@ class NetworkEndpointGroupAggregatedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -43394,6 +43938,9 @@ class NetworkEndpointGroupList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -43433,19 +43980,20 @@ class NetworkEndpointGroupList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -43644,6 +44192,9 @@ class NetworkEndpointGroupsListNetworkEndpoints(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -43683,19 +44234,20 @@ class NetworkEndpointGroupsListNetworkEndpoints(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -43788,6 +44340,9 @@ class NetworkEndpointGroupsScopedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -43827,19 +44382,20 @@ class NetworkEndpointGroupsScopedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -44079,6 +44635,9 @@ class NetworkList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -44118,19 +44677,20 @@ class NetworkList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -44633,6 +45193,9 @@ class NodeGroupAggregatedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -44672,19 +45235,20 @@ class NodeGroupAggregatedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -44821,6 +45385,9 @@ class NodeGroupList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -44860,19 +45427,20 @@ class NodeGroupList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -45078,6 +45646,9 @@ class NodeGroupsListNodes(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -45117,19 +45688,20 @@ class NodeGroupsListNodes(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -45222,6 +45794,9 @@ class NodeGroupsScopedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -45261,19 +45836,20 @@ class NodeGroupsScopedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -45535,6 +46111,9 @@ class NodeTemplateAggregatedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -45574,19 +46153,20 @@ class NodeTemplateAggregatedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -45687,6 +46267,9 @@ class NodeTemplateList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -45726,19 +46309,20 @@ class NodeTemplateList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -45846,6 +46430,9 @@ class NodeTemplatesScopedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -45885,19 +46472,20 @@ class NodeTemplatesScopedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -46065,6 +46653,9 @@ class NodeTypeAggregatedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -46104,19 +46695,20 @@ class NodeTypeAggregatedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -46217,6 +46809,9 @@ class NodeTypeList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -46256,19 +46851,20 @@ class NodeTypeList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -46361,6 +46957,9 @@ class NodeTypesScopedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -46400,19 +46999,20 @@ class NodeTypesScopedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -46577,6 +47177,9 @@ class NotificationEndpointList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -46616,19 +47219,20 @@ class NotificationEndpointList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -46824,6 +47428,9 @@ class Operation(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -46863,19 +47470,20 @@ class Operation(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -47020,6 +47628,9 @@ class OperationAggregatedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -47059,19 +47670,20 @@ class OperationAggregatedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -47172,6 +47784,9 @@ class OperationList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -47211,19 +47826,20 @@ class OperationList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -47316,6 +47932,9 @@ class OperationsScopedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -47355,19 +47974,20 @@ class OperationsScopedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -47702,6 +48322,9 @@ class PacketMirroringAggregatedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -47741,19 +48364,20 @@ class PacketMirroringAggregatedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -47907,6 +48531,9 @@ class PacketMirroringList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -47946,19 +48573,20 @@ class PacketMirroringList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -48112,6 +48740,9 @@ class PacketMirroringsScopedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -48151,19 +48782,20 @@ class PacketMirroringsScopedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -49023,6 +49655,9 @@ class PublicAdvertisedPrefixList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -49062,19 +49697,20 @@ class PublicAdvertisedPrefixList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -49319,6 +49955,9 @@ class PublicDelegatedPrefixAggregatedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -49358,19 +49997,20 @@ class PublicDelegatedPrefixAggregatedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -49471,6 +50111,9 @@ class PublicDelegatedPrefixList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -49510,19 +50153,20 @@ class PublicDelegatedPrefixList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -49657,6 +50301,9 @@ class PublicDelegatedPrefixesScopedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -49696,19 +50343,20 @@ class PublicDelegatedPrefixesScopedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -49776,6 +50424,7 @@ class Quota(_messages.Message):
       COMMITTED_N2A_CPUS: <no description>
       COMMITTED_N2D_CPUS: <no description>
       COMMITTED_N2_CPUS: <no description>
+      COMMITTED_NVIDIA_A100_80GB_GPUS: <no description>
       COMMITTED_NVIDIA_A100_GPUS: <no description>
       COMMITTED_NVIDIA_K80_GPUS: <no description>
       COMMITTED_NVIDIA_P100_GPUS: <no description>
@@ -49826,6 +50475,7 @@ class Quota(_messages.Message):
       NETWORK_FIREWALL_POLICIES: <no description>
       NODE_GROUPS: <no description>
       NODE_TEMPLATES: <no description>
+      NVIDIA_A100_80GB_GPUS: <no description>
       NVIDIA_A100_GPUS: <no description>
       NVIDIA_K80_GPUS: <no description>
       NVIDIA_P100_GPUS: <no description>
@@ -49839,6 +50489,7 @@ class Quota(_messages.Message):
       PD_EXTREME_TOTAL_PROVISIONED_IOPS: <no description>
       PREEMPTIBLE_CPUS: <no description>
       PREEMPTIBLE_LOCAL_SSD_GB: <no description>
+      PREEMPTIBLE_NVIDIA_A100_80GB_GPUS: <no description>
       PREEMPTIBLE_NVIDIA_A100_GPUS: <no description>
       PREEMPTIBLE_NVIDIA_K80_GPUS: <no description>
       PREEMPTIBLE_NVIDIA_P100_GPUS: <no description>
@@ -49907,114 +50558,117 @@ class Quota(_messages.Message):
     COMMITTED_N2A_CPUS = 19
     COMMITTED_N2D_CPUS = 20
     COMMITTED_N2_CPUS = 21
-    COMMITTED_NVIDIA_A100_GPUS = 22
-    COMMITTED_NVIDIA_K80_GPUS = 23
-    COMMITTED_NVIDIA_P100_GPUS = 24
-    COMMITTED_NVIDIA_P4_GPUS = 25
-    COMMITTED_NVIDIA_T4_GPUS = 26
-    COMMITTED_NVIDIA_V100_GPUS = 27
-    COMMITTED_T2A_CPUS = 28
-    COMMITTED_T2D_CPUS = 29
-    CPUS = 30
-    CPUS_ALL_REGIONS = 31
-    DISKS_TOTAL_GB = 32
-    E2_CPUS = 33
-    EXTERNAL_MANAGED_FORWARDING_RULES = 34
-    EXTERNAL_NETWORK_LB_FORWARDING_RULES = 35
-    EXTERNAL_PROTOCOL_FORWARDING_RULES = 36
-    EXTERNAL_VPN_GATEWAYS = 37
-    FIREWALLS = 38
-    FORWARDING_RULES = 39
-    GLOBAL_EXTERNAL_MANAGED_FORWARDING_RULES = 40
-    GLOBAL_INTERNAL_ADDRESSES = 41
-    GPUS_ALL_REGIONS = 42
-    HEALTH_CHECKS = 43
-    IMAGES = 44
-    INSTANCES = 45
-    INSTANCE_GROUPS = 46
-    INSTANCE_GROUP_MANAGERS = 47
-    INSTANCE_TEMPLATES = 48
-    INTERCONNECTS = 49
-    INTERCONNECT_ATTACHMENTS_PER_REGION = 50
-    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 51
-    INTERCONNECT_TOTAL_GBPS = 52
-    INTERNAL_ADDRESSES = 53
-    INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES = 54
-    IN_PLACE_SNAPSHOTS = 55
-    IN_USE_ADDRESSES = 56
-    IN_USE_BACKUP_SCHEDULES = 57
-    IN_USE_SNAPSHOT_SCHEDULES = 58
-    LOCAL_SSD_TOTAL_GB = 59
-    M1_CPUS = 60
-    M2_CPUS = 61
-    M3_CPUS = 62
-    MACHINE_IMAGES = 63
-    N2A_CPUS = 64
-    N2D_CPUS = 65
-    N2_CPUS = 66
-    NETWORKS = 67
-    NETWORK_ENDPOINT_GROUPS = 68
-    NETWORK_FIREWALL_POLICIES = 69
-    NODE_GROUPS = 70
-    NODE_TEMPLATES = 71
-    NVIDIA_A100_GPUS = 72
-    NVIDIA_K80_GPUS = 73
-    NVIDIA_P100_GPUS = 74
-    NVIDIA_P100_VWS_GPUS = 75
-    NVIDIA_P4_GPUS = 76
-    NVIDIA_P4_VWS_GPUS = 77
-    NVIDIA_T4_GPUS = 78
-    NVIDIA_T4_VWS_GPUS = 79
-    NVIDIA_V100_GPUS = 80
-    PACKET_MIRRORINGS = 81
-    PD_EXTREME_TOTAL_PROVISIONED_IOPS = 82
-    PREEMPTIBLE_CPUS = 83
-    PREEMPTIBLE_LOCAL_SSD_GB = 84
-    PREEMPTIBLE_NVIDIA_A100_GPUS = 85
-    PREEMPTIBLE_NVIDIA_K80_GPUS = 86
-    PREEMPTIBLE_NVIDIA_P100_GPUS = 87
-    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 88
-    PREEMPTIBLE_NVIDIA_P4_GPUS = 89
-    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 90
-    PREEMPTIBLE_NVIDIA_T4_GPUS = 91
-    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 92
-    PREEMPTIBLE_NVIDIA_V100_GPUS = 93
-    PRIVATE_V6_ACCESS_SUBNETWORKS = 94
-    PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK = 95
-    PSC_INTERNAL_LB_FORWARDING_RULES = 96
-    PUBLIC_ADVERTISED_PREFIXES = 97
-    PUBLIC_DELEGATED_PREFIXES = 98
-    REGIONAL_AUTOSCALERS = 99
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 100
-    RESERVATIONS = 101
-    RESOURCE_POLICIES = 102
-    ROUTERS = 103
-    ROUTES = 104
-    SECURITY_POLICIES = 105
-    SECURITY_POLICIES_PER_REGION = 106
-    SECURITY_POLICY_CEVAL_RULES = 107
-    SECURITY_POLICY_RULES = 108
-    SECURITY_POLICY_RULES_PER_REGION = 109
-    SERVICE_ATTACHMENTS = 110
-    SNAPSHOTS = 111
-    SSD_TOTAL_GB = 112
-    SSL_CERTIFICATES = 113
-    STATIC_ADDRESSES = 114
-    STATIC_BYOIP_ADDRESSES = 115
-    SUBNETWORKS = 116
-    T2A_CPUS = 117
-    T2D_CPUS = 118
-    TARGET_HTTPS_PROXIES = 119
-    TARGET_HTTP_PROXIES = 120
-    TARGET_INSTANCES = 121
-    TARGET_POOLS = 122
-    TARGET_SSL_PROXIES = 123
-    TARGET_TCP_PROXIES = 124
-    TARGET_VPN_GATEWAYS = 125
-    URL_MAPS = 126
-    VPN_GATEWAYS = 127
-    VPN_TUNNELS = 128
-    XPN_SERVICE_PROJECTS = 129
+    COMMITTED_NVIDIA_A100_80GB_GPUS = 22
+    COMMITTED_NVIDIA_A100_GPUS = 23
+    COMMITTED_NVIDIA_K80_GPUS = 24
+    COMMITTED_NVIDIA_P100_GPUS = 25
+    COMMITTED_NVIDIA_P4_GPUS = 26
+    COMMITTED_NVIDIA_T4_GPUS = 27
+    COMMITTED_NVIDIA_V100_GPUS = 28
+    COMMITTED_T2A_CPUS = 29
+    COMMITTED_T2D_CPUS = 30
+    CPUS = 31
+    CPUS_ALL_REGIONS = 32
+    DISKS_TOTAL_GB = 33
+    E2_CPUS = 34
+    EXTERNAL_MANAGED_FORWARDING_RULES = 35
+    EXTERNAL_NETWORK_LB_FORWARDING_RULES = 36
+    EXTERNAL_PROTOCOL_FORWARDING_RULES = 37
+    EXTERNAL_VPN_GATEWAYS = 38
+    FIREWALLS = 39
+    FORWARDING_RULES = 40
+    GLOBAL_EXTERNAL_MANAGED_FORWARDING_RULES = 41
+    GLOBAL_INTERNAL_ADDRESSES = 42
+    GPUS_ALL_REGIONS = 43
+    HEALTH_CHECKS = 44
+    IMAGES = 45
+    INSTANCES = 46
+    INSTANCE_GROUPS = 47
+    INSTANCE_GROUP_MANAGERS = 48
+    INSTANCE_TEMPLATES = 49
+    INTERCONNECTS = 50
+    INTERCONNECT_ATTACHMENTS_PER_REGION = 51
+    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 52
+    INTERCONNECT_TOTAL_GBPS = 53
+    INTERNAL_ADDRESSES = 54
+    INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES = 55
+    IN_PLACE_SNAPSHOTS = 56
+    IN_USE_ADDRESSES = 57
+    IN_USE_BACKUP_SCHEDULES = 58
+    IN_USE_SNAPSHOT_SCHEDULES = 59
+    LOCAL_SSD_TOTAL_GB = 60
+    M1_CPUS = 61
+    M2_CPUS = 62
+    M3_CPUS = 63
+    MACHINE_IMAGES = 64
+    N2A_CPUS = 65
+    N2D_CPUS = 66
+    N2_CPUS = 67
+    NETWORKS = 68
+    NETWORK_ENDPOINT_GROUPS = 69
+    NETWORK_FIREWALL_POLICIES = 70
+    NODE_GROUPS = 71
+    NODE_TEMPLATES = 72
+    NVIDIA_A100_80GB_GPUS = 73
+    NVIDIA_A100_GPUS = 74
+    NVIDIA_K80_GPUS = 75
+    NVIDIA_P100_GPUS = 76
+    NVIDIA_P100_VWS_GPUS = 77
+    NVIDIA_P4_GPUS = 78
+    NVIDIA_P4_VWS_GPUS = 79
+    NVIDIA_T4_GPUS = 80
+    NVIDIA_T4_VWS_GPUS = 81
+    NVIDIA_V100_GPUS = 82
+    PACKET_MIRRORINGS = 83
+    PD_EXTREME_TOTAL_PROVISIONED_IOPS = 84
+    PREEMPTIBLE_CPUS = 85
+    PREEMPTIBLE_LOCAL_SSD_GB = 86
+    PREEMPTIBLE_NVIDIA_A100_80GB_GPUS = 87
+    PREEMPTIBLE_NVIDIA_A100_GPUS = 88
+    PREEMPTIBLE_NVIDIA_K80_GPUS = 89
+    PREEMPTIBLE_NVIDIA_P100_GPUS = 90
+    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 91
+    PREEMPTIBLE_NVIDIA_P4_GPUS = 92
+    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 93
+    PREEMPTIBLE_NVIDIA_T4_GPUS = 94
+    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 95
+    PREEMPTIBLE_NVIDIA_V100_GPUS = 96
+    PRIVATE_V6_ACCESS_SUBNETWORKS = 97
+    PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK = 98
+    PSC_INTERNAL_LB_FORWARDING_RULES = 99
+    PUBLIC_ADVERTISED_PREFIXES = 100
+    PUBLIC_DELEGATED_PREFIXES = 101
+    REGIONAL_AUTOSCALERS = 102
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 103
+    RESERVATIONS = 104
+    RESOURCE_POLICIES = 105
+    ROUTERS = 106
+    ROUTES = 107
+    SECURITY_POLICIES = 108
+    SECURITY_POLICIES_PER_REGION = 109
+    SECURITY_POLICY_CEVAL_RULES = 110
+    SECURITY_POLICY_RULES = 111
+    SECURITY_POLICY_RULES_PER_REGION = 112
+    SERVICE_ATTACHMENTS = 113
+    SNAPSHOTS = 114
+    SSD_TOTAL_GB = 115
+    SSL_CERTIFICATES = 116
+    STATIC_ADDRESSES = 117
+    STATIC_BYOIP_ADDRESSES = 118
+    SUBNETWORKS = 119
+    T2A_CPUS = 120
+    T2D_CPUS = 121
+    TARGET_HTTPS_PROXIES = 122
+    TARGET_HTTP_PROXIES = 123
+    TARGET_INSTANCES = 124
+    TARGET_POOLS = 125
+    TARGET_SSL_PROXIES = 126
+    TARGET_TCP_PROXIES = 127
+    TARGET_VPN_GATEWAYS = 128
+    URL_MAPS = 129
+    VPN_GATEWAYS = 130
+    VPN_TUNNELS = 131
+    XPN_SERVICE_PROJECTS = 132
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -50157,6 +50811,9 @@ class RegionAutoscalerList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -50196,19 +50853,20 @@ class RegionAutoscalerList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -50319,6 +50977,9 @@ class RegionDiskTypeList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -50358,19 +51019,20 @@ class RegionDiskTypeList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -50500,6 +51162,9 @@ class RegionInstanceGroupList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -50539,19 +51204,20 @@ class RegionInstanceGroupList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -50663,6 +51329,9 @@ class RegionInstanceGroupManagerList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -50702,19 +51371,20 @@ class RegionInstanceGroupManagerList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -50978,6 +51648,9 @@ class RegionInstanceGroupManagersListInstanceConfigsResp(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -51017,19 +51690,20 @@ class RegionInstanceGroupManagersListInstanceConfigsResp(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -51219,6 +51893,9 @@ class RegionInstanceGroupsListInstances(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -51258,19 +51935,20 @@ class RegionInstanceGroupsListInstances(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -51418,6 +52096,9 @@ class RegionList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -51457,19 +52138,20 @@ class RegionList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -51866,6 +52548,9 @@ class ReservationAggregatedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -51905,19 +52590,20 @@ class ReservationAggregatedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -52018,6 +52704,9 @@ class ReservationList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -52057,19 +52746,20 @@ class ReservationList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -52173,6 +52863,9 @@ class ReservationsScopedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -52212,19 +52905,20 @@ class ReservationsScopedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -52365,6 +53059,9 @@ class ResourcePoliciesScopedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -52404,19 +53101,20 @@ class ResourcePoliciesScopedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -52606,6 +53304,9 @@ class ResourcePolicyAggregatedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -52645,19 +53346,20 @@ class ResourcePolicyAggregatedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -52859,6 +53561,9 @@ class ResourcePolicyList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -52898,19 +53603,20 @@ class ResourcePolicyList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -53360,6 +54066,9 @@ class Route(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -53399,19 +54108,20 @@ class Route(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -53575,6 +54285,9 @@ class RouteList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -53614,19 +54327,20 @@ class RouteList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -53819,6 +54533,9 @@ class RouterAggregatedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -53858,19 +54575,20 @@ class RouterAggregatedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -54332,6 +55050,9 @@ class RouterList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -54371,19 +55092,20 @@ class RouterList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -54440,6 +55162,7 @@ class RouterNat(_messages.Message):
   auto-allocate ephemeral IPs if no external IPs are provided.
 
   Enums:
+    EndpointTypesValueListEntryValuesEnum:
     NatIpAllocateOptionValueValuesEnum: Specify the NatIpAllocateOption, which
       can take one of the following values: - MANUAL_ONLY: Uses only Nat IP
       addresses provided by customers. When there are not enough specified Nat
@@ -54470,6 +55193,9 @@ class RouterNat(_messages.Message):
       to 32. If minPortsPerVm is not set, a minimum of 32 ports will be
       allocated to a VM from this NAT config.
     enableEndpointIndependentMapping: A boolean attribute.
+    endpointTypes: List of NAT-ted endpoint types supported by the Nat
+      Gateway. If the list is empty, then it will be equivalent to include
+      ENDPOINT_TYPE_VM
     icmpIdleTimeoutSec: Timeout (in seconds) for ICMP connections. Defaults to
       30s if not set.
     logConfig: Configure logging on this NAT.
@@ -54519,6 +55245,16 @@ class RouterNat(_messages.Message):
       30s if not set.
   """
 
+  class EndpointTypesValueListEntryValuesEnum(_messages.Enum):
+    r"""EndpointTypesValueListEntryValuesEnum enum type.
+
+    Values:
+      ENDPOINT_TYPE_SWG: This is used for Secure Web Gateway endpoints.
+      ENDPOINT_TYPE_VM: This is the default.
+    """
+    ENDPOINT_TYPE_SWG = 0
+    ENDPOINT_TYPE_VM = 1
+
   class NatIpAllocateOptionValueValuesEnum(_messages.Enum):
     r"""Specify the NatIpAllocateOption, which can take one of the following
     values: - MANUAL_ONLY: Uses only Nat IP addresses provided by customers.
@@ -54563,20 +55299,21 @@ class RouterNat(_messages.Message):
   drainNatIps = _messages.StringField(1, repeated=True)
   enableDynamicPortAllocation = _messages.BooleanField(2)
   enableEndpointIndependentMapping = _messages.BooleanField(3)
-  icmpIdleTimeoutSec = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  logConfig = _messages.MessageField('RouterNatLogConfig', 5)
-  maxPortsPerVm = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  minPortsPerVm = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  name = _messages.StringField(8)
-  natIpAllocateOption = _messages.EnumField('NatIpAllocateOptionValueValuesEnum', 9)
-  natIps = _messages.StringField(10, repeated=True)
-  rules = _messages.MessageField('RouterNatRule', 11, repeated=True)
-  sourceSubnetworkIpRangesToNat = _messages.EnumField('SourceSubnetworkIpRangesToNatValueValuesEnum', 12)
-  subnetworks = _messages.MessageField('RouterNatSubnetworkToNat', 13, repeated=True)
-  tcpEstablishedIdleTimeoutSec = _messages.IntegerField(14, variant=_messages.Variant.INT32)
-  tcpTimeWaitTimeoutSec = _messages.IntegerField(15, variant=_messages.Variant.INT32)
-  tcpTransitoryIdleTimeoutSec = _messages.IntegerField(16, variant=_messages.Variant.INT32)
-  udpIdleTimeoutSec = _messages.IntegerField(17, variant=_messages.Variant.INT32)
+  endpointTypes = _messages.EnumField('EndpointTypesValueListEntryValuesEnum', 4, repeated=True)
+  icmpIdleTimeoutSec = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  logConfig = _messages.MessageField('RouterNatLogConfig', 6)
+  maxPortsPerVm = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  minPortsPerVm = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  name = _messages.StringField(9)
+  natIpAllocateOption = _messages.EnumField('NatIpAllocateOptionValueValuesEnum', 10)
+  natIps = _messages.StringField(11, repeated=True)
+  rules = _messages.MessageField('RouterNatRule', 12, repeated=True)
+  sourceSubnetworkIpRangesToNat = _messages.EnumField('SourceSubnetworkIpRangesToNatValueValuesEnum', 13)
+  subnetworks = _messages.MessageField('RouterNatSubnetworkToNat', 14, repeated=True)
+  tcpEstablishedIdleTimeoutSec = _messages.IntegerField(15, variant=_messages.Variant.INT32)
+  tcpTimeWaitTimeoutSec = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+  tcpTransitoryIdleTimeoutSec = _messages.IntegerField(17, variant=_messages.Variant.INT32)
+  udpIdleTimeoutSec = _messages.IntegerField(18, variant=_messages.Variant.INT32)
 
 
 class RouterNatLogConfig(_messages.Message):
@@ -54932,6 +55669,9 @@ class RoutersScopedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -54971,19 +55711,20 @@ class RoutersScopedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -55599,6 +56340,9 @@ class SecurityPoliciesAggregatedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -55638,19 +56382,20 @@ class SecurityPoliciesAggregatedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -55755,6 +56500,9 @@ class SecurityPoliciesScopedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -55794,19 +56542,20 @@ class SecurityPoliciesScopedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -56201,6 +56950,9 @@ class SecurityPolicyList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -56240,19 +56992,20 @@ class SecurityPolicyList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -56937,6 +57690,9 @@ class ServiceAttachmentAggregatedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -56976,19 +57732,20 @@ class ServiceAttachmentAggregatedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -57136,6 +57893,9 @@ class ServiceAttachmentList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -57175,19 +57935,20 @@ class ServiceAttachmentList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -57280,6 +58041,9 @@ class ServiceAttachmentsScopedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -57319,19 +58083,20 @@ class ServiceAttachmentsScopedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -57812,6 +58577,9 @@ class SnapshotList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -57851,19 +58619,20 @@ class SnapshotList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -58237,6 +59006,9 @@ class SslCertificateAggregatedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -58276,19 +59048,20 @@ class SslCertificateAggregatedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -58388,6 +59161,9 @@ class SslCertificateList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -58427,19 +59203,20 @@ class SslCertificateList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -58657,6 +59434,9 @@ class SslCertificatesScopedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -58696,19 +59476,20 @@ class SslCertificatesScopedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -58734,6 +59515,191 @@ class SslCertificatesScopedList(_messages.Message):
 
   sslCertificates = _messages.MessageField('SslCertificate', 1, repeated=True)
   warning = _messages.MessageField('WarningValue', 2)
+
+
+class SslPoliciesAggregatedList(_messages.Message):
+  r"""A SslPoliciesAggregatedList object.
+
+  Messages:
+    ItemsValue: A list of SslPoliciesScopedList resources.
+    WarningValue: [Output Only] Informational warning message.
+
+  Fields:
+    etag: A string attribute.
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of SslPoliciesScopedList resources.
+    kind: [Output Only] Type of resource. Always
+      compute#sslPolicyAggregatedList for lists of SSL Policies.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for this resource.
+    unreachables: [Output Only] Unreachable resources.
+    warning: [Output Only] Informational warning message.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ItemsValue(_messages.Message):
+    r"""A list of SslPoliciesScopedList resources.
+
+    Messages:
+      AdditionalProperty: An additional property for a ItemsValue object.
+
+    Fields:
+      additionalProperties: Name of the scope containing this set of SSL
+        policies.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ItemsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A SslPoliciesScopedList attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('SslPoliciesScopedList', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  class WarningValue(_messages.Message):
+    r"""[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      r"""[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: Warning about failed cleanup of transient changes made
+          by a failed operation.
+        DEPRECATED_RESOURCE_USED: A link to a deprecated resource was created.
+        DEPRECATED_TYPE_USED: When deploying and at least one of the resources
+          has a type marked as deprecated
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: The user created a boot disk that is
+          larger than image size.
+        EXPERIMENTAL_TYPE_USED: When deploying and at least one of the
+          resources has a type marked as experimental
+        EXTERNAL_API_WARNING: Warning that is present in an external api call
+        FIELD_VALUE_OVERRIDEN: Warning that value of a field has been
+          overridden. Deprecated unused field.
+        INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
+          kernel, which is deprecated.
+        LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
+          exceedingly large number of resources
+        MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: The route's nextHopIp address is not
+          assigned to an instance on the network.
+        NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
+          forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
+        NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
+          an instance that does not exist.
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
+          refers to an instance that is not on the same network as the route.
+        NEXT_HOP_NOT_RUNNING: The route's next hop instance does not have a
+          status of RUNNING.
+        NOT_CRITICAL_ERROR: Error which is not critical. We decided to
+          continue the process despite the mentioned error.
+        NO_RESULTS_ON_PAGE: No results are present on a particular list page.
+        PARTIAL_SUCCESS: Success is reported, but some results may be missing
+          due to errors
+        REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
+          requires a TOS they have not accepted.
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
+          in use.
+        RESOURCE_NOT_DELETED: One or more of the resources set to auto-delete
+          could not be deleted because they were in use.
+        SCHEMA_VALIDATION_IGNORED: When a resource schema validation is
+          ignored.
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: Instance template used in instance
+          group manager is valid as such, but its application does not make a
+          lot of sense, because it allows only single instance in instance
+          group.
+        UNDECLARED_PROPERTIES: When undeclared properties in the schema are
+          present
+        UNREACHABLE: A given scope cannot be reached.
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      LARGE_DEPLOYMENT_WARNING = 8
+      MISSING_TYPE_DEPENDENCY = 9
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
+      NEXT_HOP_CANNOT_IP_FORWARD = 11
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
+
+    class DataValueListEntry(_messages.Message):
+      r"""A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
+  etag = _messages.StringField(1)
+  id = _messages.StringField(2)
+  items = _messages.MessageField('ItemsValue', 3)
+  kind = _messages.StringField(4, default='compute#sslPoliciesAggregatedList')
+  nextPageToken = _messages.StringField(5)
+  selfLink = _messages.StringField(6)
+  unreachables = _messages.StringField(7, repeated=True)
+  warning = _messages.MessageField('WarningValue', 8)
 
 
 class SslPoliciesList(_messages.Message):
@@ -58804,6 +59770,9 @@ class SslPoliciesList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -58843,19 +59812,20 @@ class SslPoliciesList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -58895,6 +59865,150 @@ class SslPoliciesListAvailableFeaturesResponse(_messages.Message):
   """
 
   features = _messages.StringField(1, repeated=True)
+
+
+class SslPoliciesScopedList(_messages.Message):
+  r"""A SslPoliciesScopedList object.
+
+  Messages:
+    WarningValue: Informational warning which replaces the list of SSL
+      policies when the list is empty.
+
+  Fields:
+    sslPolicies: A list of SslPolicies contained in this scope.
+    warning: Informational warning which replaces the list of SSL policies
+      when the list is empty.
+  """
+
+  class WarningValue(_messages.Message):
+    r"""Informational warning which replaces the list of SSL policies when the
+    list is empty.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      r"""[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: Warning about failed cleanup of transient changes made
+          by a failed operation.
+        DEPRECATED_RESOURCE_USED: A link to a deprecated resource was created.
+        DEPRECATED_TYPE_USED: When deploying and at least one of the resources
+          has a type marked as deprecated
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: The user created a boot disk that is
+          larger than image size.
+        EXPERIMENTAL_TYPE_USED: When deploying and at least one of the
+          resources has a type marked as experimental
+        EXTERNAL_API_WARNING: Warning that is present in an external api call
+        FIELD_VALUE_OVERRIDEN: Warning that value of a field has been
+          overridden. Deprecated unused field.
+        INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
+          kernel, which is deprecated.
+        LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
+          exceedingly large number of resources
+        MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: The route's nextHopIp address is not
+          assigned to an instance on the network.
+        NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
+          forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
+        NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
+          an instance that does not exist.
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
+          refers to an instance that is not on the same network as the route.
+        NEXT_HOP_NOT_RUNNING: The route's next hop instance does not have a
+          status of RUNNING.
+        NOT_CRITICAL_ERROR: Error which is not critical. We decided to
+          continue the process despite the mentioned error.
+        NO_RESULTS_ON_PAGE: No results are present on a particular list page.
+        PARTIAL_SUCCESS: Success is reported, but some results may be missing
+          due to errors
+        REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
+          requires a TOS they have not accepted.
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
+          in use.
+        RESOURCE_NOT_DELETED: One or more of the resources set to auto-delete
+          could not be deleted because they were in use.
+        SCHEMA_VALIDATION_IGNORED: When a resource schema validation is
+          ignored.
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: Instance template used in instance
+          group manager is valid as such, but its application does not make a
+          lot of sense, because it allows only single instance in instance
+          group.
+        UNDECLARED_PROPERTIES: When undeclared properties in the schema are
+          present
+        UNREACHABLE: A given scope cannot be reached.
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      LARGE_DEPLOYMENT_WARNING = 8
+      MISSING_TYPE_DEPENDENCY = 9
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
+      NEXT_HOP_CANNOT_IP_FORWARD = 11
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
+
+    class DataValueListEntry(_messages.Message):
+      r"""A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
+  sslPolicies = _messages.MessageField('SslPolicy', 1, repeated=True)
+  warning = _messages.MessageField('WarningValue', 2)
 
 
 class SslPolicy(_messages.Message):
@@ -58948,6 +60062,8 @@ class SslPolicy(_messages.Message):
       load balancer when negotiating SSL with clients. This can be one of
       COMPATIBLE, MODERN, RESTRICTED, or CUSTOM. If using CUSTOM, the set of
       SSL features to enable must be specified in the customFeatures field.
+    region: [Output Only] URL of the region where the regional SSL policy
+      resides. This field is not applicable to global SSL policies.
     selfLink: [Output Only] Server-defined URL for the resource.
     warnings: [Output Only] If potential misconfigurations are detected for
       this SSL policy, this field will be populated with warning messages.
@@ -59036,6 +60152,9 @@ class SslPolicy(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -59075,19 +60194,20 @@ class SslPolicy(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -59121,8 +60241,9 @@ class SslPolicy(_messages.Message):
   minTlsVersion = _messages.EnumField('MinTlsVersionValueValuesEnum', 8)
   name = _messages.StringField(9)
   profile = _messages.EnumField('ProfileValueValuesEnum', 10)
-  selfLink = _messages.StringField(11)
-  warnings = _messages.MessageField('WarningsValueListEntry', 12, repeated=True)
+  region = _messages.StringField(11)
+  selfLink = _messages.StringField(12)
+  warnings = _messages.MessageField('WarningsValueListEntry', 13, repeated=True)
 
 
 class SslPolicyReference(_messages.Message):
@@ -59753,6 +60874,9 @@ class SubnetworkAggregatedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -59792,19 +60916,20 @@ class SubnetworkAggregatedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -59905,6 +61030,9 @@ class SubnetworkList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -59944,19 +61072,20 @@ class SubnetworkList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -60166,6 +61295,9 @@ class SubnetworksScopedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -60205,19 +61337,20 @@ class SubnetworksScopedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -60531,6 +61664,9 @@ class TargetGrpcProxyList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -60570,19 +61706,20 @@ class TargetGrpcProxyList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -60675,6 +61812,9 @@ class TargetHttpProxiesScopedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -60714,19 +61854,20 @@ class TargetHttpProxiesScopedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -60927,6 +62068,9 @@ class TargetHttpProxyAggregatedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -60966,19 +62110,20 @@ class TargetHttpProxyAggregatedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -61079,6 +62224,9 @@ class TargetHttpProxyList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -61118,19 +62266,20 @@ class TargetHttpProxyList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -61223,6 +62372,9 @@ class TargetHttpsProxiesScopedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -61262,19 +62414,20 @@ class TargetHttpsProxiesScopedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -61603,6 +62756,9 @@ class TargetHttpsProxyAggregatedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -61642,19 +62798,20 @@ class TargetHttpsProxyAggregatedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -61755,6 +62912,9 @@ class TargetHttpsProxyList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -61794,19 +62954,20 @@ class TargetHttpsProxyList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -61997,6 +63158,9 @@ class TargetInstanceAggregatedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -62036,19 +63200,20 @@ class TargetInstanceAggregatedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -62148,6 +63313,9 @@ class TargetInstanceList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -62187,19 +63355,20 @@ class TargetInstanceList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -62292,6 +63461,9 @@ class TargetInstancesScopedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -62331,19 +63503,20 @@ class TargetInstancesScopedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -62597,6 +63770,9 @@ class TargetPoolAggregatedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -62636,19 +63812,20 @@ class TargetPoolAggregatedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -62763,6 +63940,9 @@ class TargetPoolList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -62802,19 +63982,20 @@ class TargetPoolList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -62957,6 +64138,9 @@ class TargetPoolsScopedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -62996,19 +64180,20 @@ class TargetPoolsScopedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -63241,6 +64426,9 @@ class TargetSslProxyList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -63280,19 +64468,20 @@ class TargetSslProxyList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -63495,6 +64684,9 @@ class TargetTcpProxyList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -63534,19 +64726,20 @@ class TargetTcpProxyList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -63786,6 +64979,9 @@ class TargetVpnGatewayAggregatedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -63825,19 +65021,20 @@ class TargetVpnGatewayAggregatedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -63938,6 +65135,9 @@ class TargetVpnGatewayList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -63977,19 +65177,20 @@ class TargetVpnGatewayList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -64083,6 +65284,9 @@ class TargetVpnGatewaysScopedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -64122,19 +65326,20 @@ class TargetVpnGatewaysScopedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -64398,6 +65603,9 @@ class UrlMapList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -64437,19 +65645,20 @@ class UrlMapList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -64656,6 +65865,9 @@ class UrlMapsAggregatedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -64695,19 +65907,20 @@ class UrlMapsAggregatedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -64801,6 +66014,9 @@ class UrlMapsScopedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -64840,19 +66056,20 @@ class UrlMapsScopedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -65055,6 +66272,9 @@ class UsableSubnetworksAggregatedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -65094,19 +66314,20 @@ class UsableSubnetworksAggregatedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -65275,6 +66496,9 @@ class VmEndpointNatMappingsList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -65314,19 +66538,20 @@ class VmEndpointNatMappingsList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -65558,6 +66783,9 @@ class VpnGatewayAggregatedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -65597,19 +66825,20 @@ class VpnGatewayAggregatedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -65710,6 +66939,9 @@ class VpnGatewayList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -65749,19 +66981,20 @@ class VpnGatewayList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -65995,6 +67228,9 @@ class VpnGatewaysScopedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -66034,19 +67270,20 @@ class VpnGatewaysScopedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -66397,6 +67634,9 @@ class VpnTunnelAggregatedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -66436,19 +67676,20 @@ class VpnTunnelAggregatedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -66549,6 +67790,9 @@ class VpnTunnelList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -66588,19 +67832,20 @@ class VpnTunnelList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -66693,6 +67938,9 @@ class VpnTunnelsScopedList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -66732,19 +67980,20 @@ class VpnTunnelsScopedList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -66905,6 +68154,9 @@ class XpnHostList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -66944,19 +68196,20 @@ class XpnHostList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -67134,6 +68387,9 @@ class ZoneList(_messages.Message):
           assigned to an instance on the network.
         NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
           forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
         NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
           an instance that does not exist.
         NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
@@ -67173,19 +68429,20 @@ class ZoneList(_messages.Message):
       MISSING_TYPE_DEPENDENCY = 9
       NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
       NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.

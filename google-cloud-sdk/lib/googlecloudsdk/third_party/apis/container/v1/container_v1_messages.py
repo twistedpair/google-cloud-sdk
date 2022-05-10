@@ -807,6 +807,8 @@ class ClusterUpdate(_messages.Message):
       if "desired_node_version", "desired_image_family" or
       "desired_node_pool_autoscaling" is specified and there is more than one
       node pool on the cluster.
+    desiredNodePoolLoggingConfig: The desired node pool logging configuration
+      defaults for the cluster.
     desiredNodeVersion: The Kubernetes version to change the nodes to
       (typically an upgrade). Users may specify either explicit versions
       offered by Kubernetes Engine or version aliases, which have the
@@ -899,17 +901,18 @@ class ClusterUpdate(_messages.Message):
   desiredNodePoolAutoConfigNetworkTags = _messages.MessageField('NetworkTags', 26)
   desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 27)
   desiredNodePoolId = _messages.StringField(28)
-  desiredNodeVersion = _messages.StringField(29)
-  desiredNotificationConfig = _messages.MessageField('NotificationConfig', 30)
-  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 31)
-  desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 32)
-  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 33)
-  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 34)
-  desiredServiceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 35)
-  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 36)
-  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 37)
-  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 38)
-  etag = _messages.StringField(39)
+  desiredNodePoolLoggingConfig = _messages.MessageField('NodePoolLoggingConfig', 29)
+  desiredNodeVersion = _messages.StringField(30)
+  desiredNotificationConfig = _messages.MessageField('NotificationConfig', 31)
+  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 32)
+  desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 33)
+  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 34)
+  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 35)
+  desiredServiceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 36)
+  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 37)
+  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 38)
+  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 39)
+  etag = _messages.StringField(40)
 
 
 class CompleteIPRotationRequest(_messages.Message):
@@ -2174,6 +2177,31 @@ class LoggingConfig(_messages.Message):
   componentConfig = _messages.MessageField('LoggingComponentConfig', 1)
 
 
+class LoggingVariantConfig(_messages.Message):
+  r"""LoggingVariantConfig specifies the behaviour of the logging component.
+
+  Enums:
+    VariantValueValuesEnum: Logging variant deployed on nodes.
+
+  Fields:
+    variant: Logging variant deployed on nodes.
+  """
+
+  class VariantValueValuesEnum(_messages.Enum):
+    r"""Logging variant deployed on nodes.
+
+    Values:
+      VARIANT_UNSPECIFIED: Default value. This shouldn't be used.
+      DEFAULT: default logging variant.
+      MAX_THROUGHPUT: maximum logging throughput variant.
+    """
+    VARIANT_UNSPECIFIED = 0
+    DEFAULT = 1
+    MAX_THROUGHPUT = 2
+
+  variant = _messages.EnumField('VariantValueValuesEnum', 1)
+
+
 class MaintenanceExclusionOptions(_messages.Message):
   r"""Represents the Maintenance exclusion option.
 
@@ -3013,6 +3041,7 @@ class NodePool(_messages.Message):
       rence/rest/v1/projects.locations.clusters#Cluster.FIELDS.locations)
       value will be used, instead. Warning: changing node pool locations will
       result in nodes being added and/or removed.
+    loggingConfig: Logging configuration.
     management: NodeManagement configuration for this NodePool.
     maxPodsConstraint: The constraint on the maximum number of pods that can
       be run simultaneously on a node in the node pool.
@@ -3068,17 +3097,18 @@ class NodePool(_messages.Message):
   initialNodeCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
   instanceGroupUrls = _messages.StringField(6, repeated=True)
   locations = _messages.StringField(7, repeated=True)
-  management = _messages.MessageField('NodeManagement', 8)
-  maxPodsConstraint = _messages.MessageField('MaxPodsConstraint', 9)
-  name = _messages.StringField(10)
-  networkConfig = _messages.MessageField('NodeNetworkConfig', 11)
-  podIpv4CidrSize = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  selfLink = _messages.StringField(13)
-  status = _messages.EnumField('StatusValueValuesEnum', 14)
-  statusMessage = _messages.StringField(15)
-  updateInfo = _messages.MessageField('UpdateInfo', 16)
-  upgradeSettings = _messages.MessageField('UpgradeSettings', 17)
-  version = _messages.StringField(18)
+  loggingConfig = _messages.MessageField('NodePoolLoggingConfig', 8)
+  management = _messages.MessageField('NodeManagement', 9)
+  maxPodsConstraint = _messages.MessageField('MaxPodsConstraint', 10)
+  name = _messages.StringField(11)
+  networkConfig = _messages.MessageField('NodeNetworkConfig', 12)
+  podIpv4CidrSize = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  selfLink = _messages.StringField(14)
+  status = _messages.EnumField('StatusValueValuesEnum', 15)
+  statusMessage = _messages.StringField(16)
+  updateInfo = _messages.MessageField('UpdateInfo', 17)
+  upgradeSettings = _messages.MessageField('UpgradeSettings', 18)
+  version = _messages.StringField(19)
 
 
 class NodePoolAutoConfig(_messages.Message):
@@ -3147,10 +3177,22 @@ class NodePoolDefaults(_messages.Message):
   r"""Subset of Nodepool message that has defaults.
 
   Fields:
+    loggingConfig: Logging configuration for node pools.
     nodeConfigDefaults: Subset of NodeConfig message that has defaults.
   """
 
-  nodeConfigDefaults = _messages.MessageField('NodeConfigDefaults', 1)
+  loggingConfig = _messages.MessageField('NodePoolLoggingConfig', 1)
+  nodeConfigDefaults = _messages.MessageField('NodeConfigDefaults', 2)
+
+
+class NodePoolLoggingConfig(_messages.Message):
+  r"""NodePoolLoggingConfig specifies logging configuration for nodepools.
+
+  Fields:
+    variantConfig: Logging variant configuration.
+  """
+
+  variantConfig = _messages.MessageField('LoggingVariantConfig', 1)
 
 
 class NodeTaint(_messages.Message):
@@ -4610,6 +4652,7 @@ class UpdateNodePoolRequest(_messages.Message):
       the node pool's nodes should be located. Changing the locations for a
       node pool will result in nodes being either created or removed from the
       node pool, depending on whether locations are being added or removed.
+    loggingConfig: Logging configuration.
     name: The name (project, location, cluster, node pool) of the node pool to
       update. Specified in the format
       `projects/*/locations/*/clusters/*/nodePools/*`.
@@ -4659,16 +4702,17 @@ class UpdateNodePoolRequest(_messages.Message):
   labels = _messages.MessageField('NodeLabels', 11)
   linuxNodeConfig = _messages.MessageField('LinuxNodeConfig', 12)
   locations = _messages.StringField(13, repeated=True)
-  name = _messages.StringField(14)
-  nodeNetworkConfig = _messages.MessageField('NodeNetworkConfig', 15)
-  nodePoolId = _messages.StringField(16)
-  nodeVersion = _messages.StringField(17)
-  projectId = _messages.StringField(18)
-  tags = _messages.MessageField('NetworkTags', 19)
-  taints = _messages.MessageField('NodeTaints', 20)
-  upgradeSettings = _messages.MessageField('UpgradeSettings', 21)
-  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 22)
-  zone = _messages.StringField(23)
+  loggingConfig = _messages.MessageField('NodePoolLoggingConfig', 14)
+  name = _messages.StringField(15)
+  nodeNetworkConfig = _messages.MessageField('NodeNetworkConfig', 16)
+  nodePoolId = _messages.StringField(17)
+  nodeVersion = _messages.StringField(18)
+  projectId = _messages.StringField(19)
+  tags = _messages.MessageField('NetworkTags', 20)
+  taints = _messages.MessageField('NodeTaints', 21)
+  upgradeSettings = _messages.MessageField('UpgradeSettings', 22)
+  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 23)
+  zone = _messages.StringField(24)
 
 
 class UpgradeAvailableEvent(_messages.Message):

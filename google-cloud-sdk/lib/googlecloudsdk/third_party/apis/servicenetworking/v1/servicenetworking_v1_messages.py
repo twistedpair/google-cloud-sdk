@@ -575,6 +575,8 @@ class ConsumerConfig(_messages.Message):
       project number e.g. '12345' and {network} is the network name.
     reservedRanges: Output only. The reserved ranges associated with this
       private service access connection.
+    usedIpRanges: Output only. The IP ranges already in use by consumer or
+      producer
     vpcScReferenceArchitectureEnabled: Output only. Indicates whether the VPC
       Service Controls reference architecture is configured for the producer
       VPC host network.
@@ -590,7 +592,8 @@ class ConsumerConfig(_messages.Message):
   producerImportSubnetRoutesWithPublicIp = _messages.BooleanField(8)
   producerNetwork = _messages.StringField(9)
   reservedRanges = _messages.MessageField('GoogleCloudServicenetworkingV1ConsumerConfigReservedRange', 10, repeated=True)
-  vpcScReferenceArchitectureEnabled = _messages.BooleanField(11)
+  usedIpRanges = _messages.StringField(11, repeated=True)
+  vpcScReferenceArchitectureEnabled = _messages.BooleanField(12)
 
 
 class ConsumerConfigMetadata(_messages.Message):
@@ -2999,6 +3002,11 @@ class ServicenetworkingServicesProjectsGlobalNetworksGetRequest(_messages.Messag
   r"""A ServicenetworkingServicesProjectsGlobalNetworksGetRequest object.
 
   Fields:
+    includeUsedIpRanges: Optional. When true, include the used IP ranges as
+      part of the GetConsumerConfig output. This includes routes created
+      inside the service networking network, consumer network, peers of the
+      consumer network, and reserved ranges inside the service networking
+      network. By default, this is false
     name: Required. Name of the consumer config to retrieve in the format:
       `services/{service}/projects/{project}/global/networks/{network}`.
       {service} is the peering service that is managing connectivity for the
@@ -3009,7 +3017,8 @@ class ServicenetworkingServicesProjectsGlobalNetworksGetRequest(_messages.Messag
       VPC network.
   """
 
-  name = _messages.StringField(1, required=True)
+  includeUsedIpRanges = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
 
 
 class ServicenetworkingServicesProjectsGlobalNetworksPeeredDnsDomainsCreateRequest(_messages.Message):

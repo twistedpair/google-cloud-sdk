@@ -656,43 +656,12 @@ class OrderAllocations(object):
 class Operations(object):
   """The Operations set of Commerce Procurement Consumer API functions."""
 
-  GET_FREE_TRIAL_OPERATION_REQUEST = GetMessagesModule(
-  ).CloudcommerceconsumerprocurementProjectsFreeTrialsOperationsGetRequest
   GET_ORDER_OPERATION_REQUEST = GetMessagesModule(
   ).CloudcommerceconsumerprocurementBillingAccountsOrdersOperationsGetRequest
-  GET_ORDER_ALLOCATION_OPERATION_REQUEST = GetMessagesModule(
-  ).CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsOperationsGetRequest
-
-  @staticmethod
-  def GetFreeTrialOperationService():
-    return GetClientInstance().projects_freeTrials_operations
 
   @staticmethod
   def GetOrderOperationService():
     return GetClientInstance().billingAccounts_orders_operations
-
-  @staticmethod
-  def GetOrderAllocationOperationService():
-    return GetClientInstance(
-    ).billingAccounts_orders_orderAllocations_operations
-
-  @staticmethod
-  def GetFreeTrialOperation(operation_name):
-    """Calls the Procurement Consumer FreeTrials.Operations.Get method.
-
-    Args:
-      operation_name: Name of the free trial operation.
-
-    Returns:
-      Free trial operation.
-    """
-    request = GetMessagesModule(
-    ).CloudcommerceconsumerprocurementProjectsFreeTrialsOperationsGetRequest(
-        name=operation_name)
-    try:
-      return Operations.GetFreeTrialOperationService().Get(request)
-    except apitools_exceptions.HttpError as error:
-      raise exceptions.HttpException(error)
 
   @staticmethod
   def GetOrderOperation(operation_name):
@@ -709,24 +678,6 @@ class Operations(object):
         name=operation_name)
     try:
       return Operations.GetOrderOperationService().Get(request)
-    except apitools_exceptions.HttpError as error:
-      raise exceptions.HttpException(error)
-
-  @staticmethod
-  def GetOrderAllocationOperation(operation_name):
-    """Calls the Procurement Consumer OrderAllocations.Operations.Get method.
-
-    Args:
-      operation_name: Name of the order allocation operation.
-
-    Returns:
-      Order operation.
-    """
-    request = GetMessagesModule(
-    ).CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsOperationsGetRequest(
-        name=operation_name)
-    try:
-      return Operations.GetOrderAllocationOperationService().Get(request)
     except apitools_exceptions.HttpError as error:
       raise exceptions.HttpException(error)
 

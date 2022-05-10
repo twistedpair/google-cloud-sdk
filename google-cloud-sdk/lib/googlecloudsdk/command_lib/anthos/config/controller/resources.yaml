@@ -15,7 +15,7 @@ location:
   - &location
     parameter_name: locationsId
     attribute_name: location
-    help: The name of the Anthos Config Controller instance location. Currently, only `us-central1`, `us-east1`, `northamerica-northeast1`, and `asia-northeast1` are supported.
+    help: The name of the Anthos Config Controller instance location. Currently, only `us-central1`, `us-east1`, `northamerica-northeast1`, `europe-north1`, `australia-southeast1` and `asia-northeast1` are supported.
   disable_auto_completers: false
 
 instance:
@@ -40,7 +40,7 @@ location-list:
     fallthroughs:
     - hook: googlecloudsdk.command_lib.anthos.config.controller.utils:SetLocation
       hint: use global location
-    help: The name of the Anthos Config Controller instance location. Currently, only `us-central1`, `us-east1`, `northamerica-northeast1`, and `asia-northeast1` are supported.
+    help: The name of the Anthos Config Controller instance location. Currently, only `us-central1`, `us-east1`, `northamerica-northeast1`, `europe-north1`, `australia-southeast1`, and `asia-northeast1` are supported.
   disable_auto_completers: false
 
 instance-list:

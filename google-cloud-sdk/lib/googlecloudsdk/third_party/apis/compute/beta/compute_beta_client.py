@@ -100,6 +100,7 @@ class ComputeBeta(base_api.BaseApiClient):
     self.regionOperations = self.RegionOperationsService(self)
     self.regionSecurityPolicies = self.RegionSecurityPoliciesService(self)
     self.regionSslCertificates = self.RegionSslCertificatesService(self)
+    self.regionSslPolicies = self.RegionSslPoliciesService(self)
     self.regionTargetHttpProxies = self.RegionTargetHttpProxiesService(self)
     self.regionTargetHttpsProxies = self.RegionTargetHttpsProxiesService(self)
     self.regionTargetTcpProxies = self.RegionTargetTcpProxiesService(self)
@@ -14519,6 +14520,198 @@ class ComputeBeta(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class RegionSslPoliciesService(base_api.BaseApiService):
+    """Service class for the regionSslPolicies resource."""
+
+    _NAME = 'regionSslPolicies'
+
+    def __init__(self, client):
+      super(ComputeBeta.RegionSslPoliciesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified SSL policy. The SSL policy resource can be deleted only if it is not in use by any TargetHttpsProxy or TargetSslProxy resources.
+
+      Args:
+        request: (ComputeRegionSslPoliciesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='DELETE',
+        method_id='compute.regionSslPolicies.delete',
+        ordered_params=['project', 'region', 'sslPolicy'],
+        path_params=['project', 'region', 'sslPolicy'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/sslPolicies/{sslPolicy}',
+        request_field='',
+        request_type_name='ComputeRegionSslPoliciesDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Lists all of the ordered rules present in a single specified policy.
+
+      Args:
+        request: (ComputeRegionSslPoliciesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SslPolicy) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.regionSslPolicies.get',
+        ordered_params=['project', 'region', 'sslPolicy'],
+        path_params=['project', 'region', 'sslPolicy'],
+        query_params=[],
+        relative_path='projects/{project}/regions/{region}/sslPolicies/{sslPolicy}',
+        request_field='',
+        request_type_name='ComputeRegionSslPoliciesGetRequest',
+        response_type_name='SslPolicy',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      r"""Creates a new policy in the specified project and region using the data included in the request.
+
+      Args:
+        request: (ComputeRegionSslPoliciesInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionSslPolicies.insert',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/sslPolicies',
+        request_field='sslPolicy',
+        request_type_name='ComputeRegionSslPoliciesInsertRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all the SSL policies that have been configured for the specified project and region.
+
+      Args:
+        request: (ComputeRegionSslPoliciesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SslPoliciesList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.regionSslPolicies.list',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/regions/{region}/sslPolicies',
+        request_field='',
+        request_type_name='ComputeRegionSslPoliciesListRequest',
+        response_type_name='SslPoliciesList',
+        supports_download=False,
+    )
+
+    def ListAvailableFeatures(self, request, global_params=None):
+      r"""Lists all features that can be specified in the SSL policy when using custom profile.
+
+      Args:
+        request: (ComputeRegionSslPoliciesListAvailableFeaturesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SslPoliciesListAvailableFeaturesResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListAvailableFeatures')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListAvailableFeatures.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.regionSslPolicies.listAvailableFeatures',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/regions/{region}/sslPolicies/listAvailableFeatures',
+        request_field='',
+        request_type_name='ComputeRegionSslPoliciesListAvailableFeaturesRequest',
+        response_type_name='SslPoliciesListAvailableFeaturesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Patches the specified SSL policy with the data included in the request.
+
+      Args:
+        request: (ComputeRegionSslPoliciesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='PATCH',
+        method_id='compute.regionSslPolicies.patch',
+        ordered_params=['project', 'region', 'sslPolicy'],
+        path_params=['project', 'region', 'sslPolicy'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/sslPolicies/{sslPolicy}',
+        request_field='sslPolicyResource',
+        request_type_name='ComputeRegionSslPoliciesPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeRegionSslPoliciesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionSslPolicies.testIamPermissions',
+        ordered_params=['project', 'region', 'resource'],
+        path_params=['project', 'region', 'resource'],
+        query_params=[],
+        relative_path='projects/{project}/regions/{region}/sslPolicies/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeRegionSslPoliciesTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
+        supports_download=False,
+    )
+
   class RegionTargetHttpProxiesService(base_api.BaseApiService):
     """Service class for the regionTargetHttpProxies resource."""
 
@@ -17258,6 +17451,32 @@ class ComputeBeta(base_api.BaseApiClient):
       super(ComputeBeta.SslPoliciesService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def AggregatedList(self, request, global_params=None):
+      r"""Retrieves the list of all SslPolicy resources, regional and global, available to the specified project.
+
+      Args:
+        request: (ComputeSslPoliciesAggregatedListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SslPoliciesAggregatedList) The response message.
+      """
+      config = self.GetMethodConfig('AggregatedList')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.sslPolicies.aggregatedList',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/aggregated/sslPolicies',
+        request_field='',
+        request_type_name='ComputeSslPoliciesAggregatedListRequest',
+        response_type_name='SslPoliciesAggregatedList',
+        supports_download=False,
+    )
 
     def Delete(self, request, global_params=None):
       r"""Deletes the specified SSL policy. The SSL policy resource can be deleted only if it is not in use by any TargetHttpsProxy or TargetSslProxy resources.

@@ -18,13 +18,15 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import collections
+
 from googlecloudsdk.api_lib.functions.v2 import client
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 
 
 def Run(args, release_track):
-  """Lists GCF v2 runtimes available with the given args.
+  """Lists GCF runtimes available with the given args from the v2 API.
 
   Args:
     args: an argparse namespace. All the arguments that were provided to this
@@ -32,8 +34,7 @@ def Run(args, release_track):
     release_track: base.ReleaseTrack, The release track (ga, beta, alpha)
 
   Returns:
-    List[cloudfunctions_v2alpha|beta.Runtime], List of available GCF
-      v2 runtimes
+    List[Runtime], List of available GCF runtimes
   """
   del args
   if not properties.VALUES.functions.region.IsExplicitlySet():
@@ -46,6 +47,33 @@ def Run(args, release_track):
   response = gcf_client.ListRuntimes(region)
 
   if response:
-    return response.runtimes
+    runtime_mapping = collections.OrderedDict()
+    for runtime in response.runtimes:
+      runtime_mapping.setdefault(runtime.name, []).append(runtime)
+
+    return [Runtime(value) for value in runtime_mapping.values()]
   else:
     return []
+
+
+class Runtime:
+  """Runtimes wrapper for ListRuntimesResponse#Runtimes.
+
+  The runtimes response from GCFv2 duplicates runtimes for each environment. To
+  make formatting easier, this includes all environments under a single object.
+
+  Attributes:
+    name: A string name of the runtime.
+    stage: An enum of the release state of the runtime, e.g., GA, BETA, etc.
+    environments: A list of supported runtimes, [GEN_1, GEN_2]
+  """
+
+  def __init__(self, runtimes):
+    for runtime in runtimes:
+      if runtime.name != runtimes[0].name:
+        raise ValueError('Only runtimes with the same name should be included')
+
+    self.name = runtimes[0].name if runtimes else ''
+    self.stage = runtimes[0].stage if runtimes else ''
+    self.environments = [runtime.environment for runtime in runtimes]
+

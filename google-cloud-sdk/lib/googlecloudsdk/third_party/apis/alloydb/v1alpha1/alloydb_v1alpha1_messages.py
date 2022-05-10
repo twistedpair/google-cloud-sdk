@@ -548,7 +548,7 @@ class AlloydbProjectsLocationsSupportedDatabaseFlagsListRequest(_messages.Messag
 
 class AutomatedBackupPolicy(_messages.Message):
   r"""Message describing the user-specified automated backup policy. NEXT_ID:
-  8
+  9
 
   Messages:
     LabelsValue: Labels to apply to backups created using this configuration.

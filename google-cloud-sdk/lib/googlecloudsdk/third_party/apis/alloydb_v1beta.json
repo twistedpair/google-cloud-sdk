@@ -354,15 +354,6 @@
         "sslConfig": {
           "description": "SSL configuration for this AlloyDB Cluster.",
           "$ref": "SslConfig"
-        },
-        "encryptionConfig": {
-          "description": "The encryption config can be specified to encrypt the data disks and other persistent data resources of a cluster with a customer-managed encryption key (CMEK). When this field is not specified, the cluster will then use default encryption scheme to protect the user data.",
-          "$ref": "EncryptionConfig"
-        },
-        "encryptionInfo": {
-          "description": "Output only. The encryption information for the cluster.",
-          "readOnly": true,
-          "$ref": "EncryptionInfo"
         }
       }
     },
@@ -424,7 +415,7 @@
     },
     "AutomatedBackupPolicy": {
       "id": "AutomatedBackupPolicy",
-      "description": "Message describing the user-specified automated backup policy. NEXT_ID: 8",
+      "description": "Message describing the user-specified automated backup policy. NEXT_ID: 9",
       "type": "object",
       "properties": {
         "weeklySchedule": {
@@ -588,54 +579,13 @@
         }
       }
     },
-    "EncryptionConfig": {
-      "id": "EncryptionConfig",
-      "description": "EncryptionConfig describes the encryption config of a cluster or a backup that is encrypted with a CMEK (customer-managed encryption key).",
-      "type": "object",
-      "properties": {
-        "kmsKeyName": {
-          "description": "The fully-qualified resource name of the KMS key. Each Cloud KMS key is regionalized and has the following format: projects\/[PROJECT]\/locations\/[REGION]\/keyRings\/[RING]\/cryptoKeys\/[KEY_NAME]",
-          "type": "string"
-        }
-      }
-    },
-    "EncryptionInfo": {
-      "id": "EncryptionInfo",
-      "description": "EncryptionInfo describes the encryption information of a cluster or a backup. NEXT_ID: 3",
-      "type": "object",
-      "properties": {
-        "encryptionType": {
-          "description": "Output only. Type of encryption.",
-          "readOnly": true,
-          "type": "string",
-          "enumDescriptions": [
-            "Encryption type not specified. Defaults to GOOGLE_DEFAULT_ENCRYPTION.",
-            "The data is encrypted at rest with a key that is fully managed by Google. No key version will be populated. This is the default state.",
-            "The data is encrypted at rest with a key that is managed by the customer. KMS key versions will be populated."
-          ],
-          "enum": [
-            "TYPE_UNSPECIFIED",
-            "GOOGLE_DEFAULT_ENCRYPTION",
-            "CUSTOMER_MANAGED_ENCRYPTION"
-          ]
-        },
-        "kmsKeyVersions": {
-          "description": "Output only. Cloud KMS key versions that are being used to protect the database or the backup.",
-          "readOnly": true,
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
     "RestoreClusterRequest": {
       "id": "RestoreClusterRequest",
-      "description": "Message for restoring a Cluster from a backup",
+      "description": "Message for restoring a Cluster from a backup or another cluster at a given point in time.",
       "type": "object",
       "properties": {
         "backupSource": {
-          "description": "Required. Backup source.",
+          "description": "Backup source.",
           "$ref": "BackupSource"
         },
         "clusterId": {
@@ -987,15 +937,6 @@
           "description": "Output only. Reconciling (https:\/\/google.aip.dev\/128#reconciliation), if true, indicates that the service is actively updating the resource. This can happen due to user-triggered updates or system actions like failover or maintenance.",
           "readOnly": true,
           "type": "boolean"
-        },
-        "encryptionConfig": {
-          "description": "The encryption config can be specified to encrypt the backup with a customer-managed encryption key (CMEK). When this field is not specified, the backup will then use default encryption scheme to protect the user data.",
-          "$ref": "EncryptionConfig"
-        },
-        "encryptionInfo": {
-          "description": "Output only. The encryption information for the backup.",
-          "readOnly": true,
-          "$ref": "EncryptionInfo"
         },
         "etag": {
           "description": "For Resource freshness validation (https:\/\/google.aip.dev\/154)",
@@ -1718,7 +1659,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Creates a new Cluster in a given project and location, with a volume restored from the provided backup ID."
+                  "description": "Creates a new Cluster in a given project and location, with a volume restored from the provided source, either a backup ID or a point-in-time and a source cluster."
                 },
                 "generateClientCertificate": {
                   "id": "alloydb.projects.locations.clusters.generateClientCertificate",

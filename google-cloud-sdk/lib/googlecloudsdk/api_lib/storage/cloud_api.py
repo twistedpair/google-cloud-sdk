@@ -402,8 +402,11 @@ class CloudApi(object):
     """
     raise NotImplementedError('upload_object must be overridden.')
 
-  def compose_objects(self, source_resources, destination_resource,
-                      request_config):
+  def compose_objects(self,
+                      source_resources,
+                      destination_resource,
+                      request_config,
+                      original_source_resource=None):
     """Concatenates a list of objects into a new object.
 
     Args:
@@ -413,6 +416,9 @@ class CloudApi(object):
         the resulting composite object.
       request_config (RequestConfig): Object containing general API function
         arguments. Subclasses for specific cloud providers are available.
+      original_source_resource (Resource|None): Useful for finding metadata
+        to apply to final object. For instance, if doing a composite upload,
+        this would represent the pre-split local file.
 
     Returns:
       resource_reference.ObjectResource with composite object's metadata.

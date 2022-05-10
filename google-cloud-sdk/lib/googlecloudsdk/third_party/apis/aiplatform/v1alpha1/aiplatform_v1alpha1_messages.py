@@ -22568,6 +22568,10 @@ class GoogleCloudAiplatformV1alpha1PipelineJob(_messages.Message):
     runtimeConfig: Runtime config of the pipeline.
     startTime: Output only. Pipeline start time.
     state: Output only. The detailed state of the job.
+    templateMetadata: Output only. Pipeline template metadata. Will fill up
+      fields if PipelineJob.template_uri is from supported template registry.
+    templateUri: A template uri from where the PipelineJob.pipeline_spec, if
+      empty, will be downloaded.
     updateTime: Output only. Timestamp when this PipelineJob was most recently
       updated.
   """
@@ -22664,7 +22668,9 @@ class GoogleCloudAiplatformV1alpha1PipelineJob(_messages.Message):
   runtimeConfig = _messages.MessageField('GoogleCloudAiplatformV1alpha1PipelineJobRuntimeConfig', 9)
   startTime = _messages.StringField(10)
   state = _messages.EnumField('StateValueValuesEnum', 11)
-  updateTime = _messages.StringField(12)
+  templateMetadata = _messages.MessageField('GoogleCloudAiplatformV1alpha1PipelineTemplateMetadata', 12)
+  templateUri = _messages.StringField(13)
+  updateTime = _messages.StringField(14)
 
 
 class GoogleCloudAiplatformV1alpha1PipelineJobDetail(_messages.Message):
@@ -22909,6 +22915,20 @@ class GoogleCloudAiplatformV1alpha1PipelineTaskExecutorDetailCustomJobDetail(_me
   """
 
   job = _messages.StringField(1)
+
+
+class GoogleCloudAiplatformV1alpha1PipelineTemplateMetadata(_messages.Message):
+  r"""Pipeline template metadata if PipelineJob.template_uri is from supported
+  template registry. Currently, the only supported registry is Artifact
+  Registry.
+
+  Fields:
+    version: The version_name in artifact registry. Will always be presented
+      in output if the PipelineJob.template_uri is from supported template
+      registry. Format is "sha256:abcdef123456...".
+  """
+
+  version = _messages.StringField(1)
 
 
 class GoogleCloudAiplatformV1alpha1Port(_messages.Message):

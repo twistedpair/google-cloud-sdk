@@ -578,11 +578,22 @@
     },
     "DetachVolumeRequest": {
       "id": "DetachVolumeRequest",
-      "description": "Message for detaching Volume to an instance. All Luns of the Volume will be attached.",
+      "description": "Message for detaching Volume from an instance. All Luns of the Volume will be detached.",
       "type": "object",
       "properties": {
         "volume": {
-          "description": "Required. Name of the Volume to detach from.",
+          "description": "Required. Name of the Volume to detach.",
+          "type": "string"
+        }
+      }
+    },
+    "DetachLunRequest": {
+      "id": "DetachLunRequest",
+      "description": "Message for detach specific LUN from an Instance.",
+      "type": "object",
+      "properties": {
+        "lun": {
+          "description": "Required. Name of the Lun to detach.",
           "type": "string"
         }
       }
@@ -2217,6 +2228,34 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Detach volume from instance."
+                },
+                "detachLun": {
+                  "id": "baremetalsolution.projects.locations.instances.detachLun",
+                  "path": "v2/{+instance}:detachLun",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:detachLun",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "instance": {
+                      "description": "Required. Name of the instance.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "instance"
+                  ],
+                  "request": {
+                    "$ref": "DetachLunRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Detach LUN from Instance."
                 }
               }
             },
@@ -2736,7 +2775,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Delete a Lun."
+                      "description": "Delete a Lun. Lun shouldn't be attached to any Instances."
                     }
                   }
                 }

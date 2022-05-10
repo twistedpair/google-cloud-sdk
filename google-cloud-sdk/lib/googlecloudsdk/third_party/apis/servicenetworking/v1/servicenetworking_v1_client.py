@@ -561,7 +561,7 @@ class ServicenetworkingV1(base_api.BaseApiClient):
         method_id='servicenetworking.services.projects.global.networks.get',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=[],
+        query_params=['includeUsedIpRanges'],
         relative_path='v1/{+name}',
         request_field='',
         request_type_name='ServicenetworkingServicesProjectsGlobalNetworksGetRequest',

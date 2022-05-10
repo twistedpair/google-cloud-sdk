@@ -165,6 +165,11 @@ class FilePartUploadTask(file_part_task.FilePartTask):
         size=self._length,
         user_request_args=self._user_request_args)
 
+    if self._component_number is None:
+      source_resource_for_metadata = self._source_resource
+    else:
+      source_resource_for_metadata = None
+
     with self._get_upload_stream(digesters, task_status_queue) as source_stream:
       upload_strategy = upload_util.get_upload_strategy(api, self._length)
       if upload_strategy == cloud_api.UploadStrategy.RESUMABLE:
@@ -229,7 +234,7 @@ class FilePartUploadTask(file_part_task.FilePartTask):
             source_stream,
             self._destination_resource,
             request_config,
-            source_resource=self._source_resource,
+            source_resource=source_resource_for_metadata,
             serialization_data=serialization_data,
             tracker_callback=tracker_callback,
             upload_strategy=upload_strategy)
@@ -294,7 +299,7 @@ class FilePartUploadTask(file_part_task.FilePartTask):
             source_stream,
             self._destination_resource,
             request_config,
-            source_resource=self._source_resource,
+            source_resource=source_resource_for_metadata,
             upload_strategy=upload_strategy)
 
       upload_util.validate_uploaded_object(digesters, destination_resource,

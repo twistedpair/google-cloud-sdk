@@ -335,7 +335,7 @@ class OrgpolicyV2(base_api.BaseApiClient):
         method_id='orgpolicy.organizations.customConstraints.create',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=[],
+        query_params=['validateOnly'],
         relative_path='v2/{+parent}/customConstraints',
         request_field='googleCloudOrgpolicyV2CustomConstraint',
         request_type_name='OrgpolicyOrganizationsCustomConstraintsCreateRequest',
@@ -401,7 +401,7 @@ class OrgpolicyV2(base_api.BaseApiClient):
       r"""Updates a Custom Constraint. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the constraint does not exist. Note: the supplied policy will perform a full overwrite of all fields.
 
       Args:
-        request: (GoogleCloudOrgpolicyV2CustomConstraint) input message
+        request: (OrgpolicyOrganizationsCustomConstraintsPatchRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (GoogleCloudOrgpolicyV2CustomConstraint) The response message.
@@ -416,10 +416,10 @@ class OrgpolicyV2(base_api.BaseApiClient):
         method_id='orgpolicy.organizations.customConstraints.patch',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=[],
+        query_params=['validateOnly'],
         relative_path='v2/{+name}',
-        request_field='<request>',
-        request_type_name='GoogleCloudOrgpolicyV2CustomConstraint',
+        request_field='googleCloudOrgpolicyV2CustomConstraint',
+        request_type_name='OrgpolicyOrganizationsCustomConstraintsPatchRequest',
         response_type_name='GoogleCloudOrgpolicyV2CustomConstraint',
         supports_download=False,
     )
