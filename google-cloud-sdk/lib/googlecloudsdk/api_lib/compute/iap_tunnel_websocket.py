@@ -259,23 +259,30 @@ class IapTunnelWebSocket(object):
     if self._get_access_token_callback:
       headers += ['Authorization: Bearer ' + self._get_access_token_callback()]
 
+    log.debug('Using new websocket library')
+
     if self._connection_sid:
       url = utils.CreateWebSocketReconnectUrl(
-          self._tunnel_target, self._connection_sid, self._total_bytes_received)
+          self._tunnel_target,
+          self._connection_sid,
+          self._total_bytes_received,
+          should_use_new_websocket=True)
       log.info('Reconnecting with URL [%r]', url)
     else:
-      url = utils.CreateWebSocketConnectUrl(self._tunnel_target)
+      url = utils.CreateWebSocketConnectUrl(
+          self._tunnel_target, should_use_new_websocket=True)
       log.info('Connecting with URL [%r]', url)
 
     self._connect_msg_received = False
-    should_use_new_websocket = (
-        properties.VALUES.compute.iap_tunnel_use_new_websocket.GetBool())
-    if should_use_new_websocket:
-      log.debug('Using new websocket library')
 
     self._websocket_helper = helper.IapTunnelWebSocketHelper(
-        url, headers, self._ignore_certs, self._tunnel_target.proxy_info,
-        self._OnData, self._OnClose, should_use_new_websocket)
+        url,
+        headers,
+        self._ignore_certs,
+        self._tunnel_target.proxy_info,
+        self._OnData,
+        self._OnClose,
+        should_use_new_websocket=True)
     self._websocket_helper.StartReceivingThread()
 
   def _SendAck(self):

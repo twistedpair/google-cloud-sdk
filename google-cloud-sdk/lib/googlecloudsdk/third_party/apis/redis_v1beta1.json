@@ -490,9 +490,32 @@
             "READ_REPLICAS_ENABLED"
           ]
         },
+        "customerManagedKey": {
+          "description": "Optional. The KMS key reference that the customer provides when trying to create the instance.",
+          "type": "string"
+        },
         "persistenceConfig": {
           "description": "Optional. Persistence configuration parameters",
           "$ref": "PersistenceConfig"
+        },
+        "suspensionReasons": {
+          "description": "Optional. reasons that causes instance in \"SUSPENDED\" state.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enumDescriptions": [
+              "Not set.",
+              "Something wrong with the CMEK key provided by customer."
+            ],
+            "enum": [
+              "SUSPENSION_REASON_UNSPECIFIED",
+              "CUSTOMER_MANAGED_KEY_ISSUE"
+            ]
+          }
+        },
+        "maintenanceVersion": {
+          "description": "Optional. The self service update maintenance version. The version is date based such as \"20210712_00_00\".",
+          "type": "string"
         }
       }
     },

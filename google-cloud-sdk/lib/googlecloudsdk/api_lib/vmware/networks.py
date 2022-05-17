@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.vmware import util
+from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.vmware.networks import util as networks_util
 
 
@@ -41,12 +42,12 @@ class NetworksClient(util.VmwareClientBase):
     parent = resource.Parent().RelativeName()
     network_id = resource.Name()
     network = self.messages.VmwareEngineNetwork(description=description)
-    if network_type is None or network_type.strip().upper() == 'STANDARD':
-      network.type = self.messages.VmwareEngineNetwork.TypeValueValuesEnum.STANDARD
-    elif network_type.strip().upper() == 'LEGACY':
-      network.type = self.messages.VmwareEngineNetwork.TypeValueValuesEnum.LEGACY
-    else:
-      network.type = self.messages.VmwareEngineNetwork.TypeValueValuesEnum.TYPE_UNSPECIFIED
+    type_enum = arg_utils.ChoiceEnumMapper(
+        arg_name='type',
+        message_enum=self.messages.VmwareEngineNetwork.TypeValueValuesEnum,
+        include_filter=lambda x: 'TYPE_UNSPECIFIED' not in x).GetEnumForChoice(
+            arg_utils.EnumNameToChoice(network_type))
+    network.type = type_enum
     request = self.messages.VmwareengineProjectsLocationsVmwareEngineNetworksCreateRequest(
         parent=parent,
         vmwareEngineNetwork=network,

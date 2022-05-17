@@ -42,6 +42,91 @@ class AnthosObservabilityMembershipSpec(_messages.Message):
   version = _messages.StringField(3)
 
 
+class AnthosVMMembershipSpec(_messages.Message):
+  r"""AnthosVMMembershipSpec contains the AnthosVM feature configuration for a
+  membership/cluster.
+
+  Fields:
+    subfeaturesSpec: List of configurations of the Anthos For VM subfeatures
+      that are to be enabled
+  """
+
+  subfeaturesSpec = _messages.MessageField('AnthosVMSubFeatureSpec', 1, repeated=True)
+
+
+class AnthosVMMembershipState(_messages.Message):
+  r"""AnthosVMFeatureState contains the state of the AnthosVM feature. It
+  represents the actual state in the cluster, while the AnthosVMMembershipSpec
+  represents the desired state.
+
+  Fields:
+    localControllerState: State of the local PE-controller inside the cluster
+    subfeatureState: List of AnthosVM subfeature states
+  """
+
+  localControllerState = _messages.MessageField('LocalControllerState', 1)
+  subfeatureState = _messages.MessageField('AnthosVMSubFeatureState', 2, repeated=True)
+
+
+class AnthosVMSubFeatureSpec(_messages.Message):
+  r"""AnthosVMSubFeatureSpec contains the subfeature configuration for a
+  membership/cluster.
+
+  Fields:
+    enabled: Indicates whether the subfeature should be enabled on the cluster
+      or not. If set to true, the subfeature's control plane and resources
+      will be installed in the cluster. If set to false, the oneof spec if
+      present will be ignored and nothing will be installed in the cluster.
+    migrateSpec: MigrateSpec repsents the configuration for Migrate
+      subfeature.
+    serviceMeshSpec: ServiceMeshSpec repsents the configuration for Service
+      Mesh subfeature.
+  """
+
+  enabled = _messages.BooleanField(1)
+  migrateSpec = _messages.MessageField('MigrateSpec', 2)
+  serviceMeshSpec = _messages.MessageField('ServiceMeshSpec', 3)
+
+
+class AnthosVMSubFeatureState(_messages.Message):
+  r"""AnthosVMSubFeatureState contains the state of the AnthosVM subfeatures.
+
+  Enums:
+    InstallationStateValueValuesEnum: InstallationState represents the state
+      of installation of the subfeature in the cluster.
+
+  Fields:
+    description: Description represents human readable description of the
+      subfeature state. If the deployment failed, this should also contain the
+      reason for the failure.
+    installationState: InstallationState represents the state of installation
+      of the subfeature in the cluster.
+    migrateState: MigrateState represents the state of the Migrate subfeature.
+    serviceMeshState: ServiceMeshState represents the state of the Service
+      Mesh subfeature.
+  """
+
+  class InstallationStateValueValuesEnum(_messages.Enum):
+    r"""InstallationState represents the state of installation of the
+    subfeature in the cluster.
+
+    Values:
+      INSTALLATION_STATE_UNSPECIFIED: state of installation is unknown
+      INSTALLATION_STATE_NOT_INSTALLED: component is not installed
+      INSTALLATION_STATE_INSTALLED: component is successfully installed
+      INSTALLATION_STATE_FAILED: installation failed
+    """
+    INSTALLATION_STATE_UNSPECIFIED = 0
+    INSTALLATION_STATE_NOT_INSTALLED = 1
+    INSTALLATION_STATE_INSTALLED = 2
+    INSTALLATION_STATE_FAILED = 3
+
+  description = _messages.StringField(1)
+  installationState = _messages.EnumField('InstallationStateValueValuesEnum', 2)
+  migrateState = _messages.MessageField('MigrateState', 3)
+  serviceMeshState = _messages.MessageField('ServiceMeshState', 4)
+
+
 class ApigeeMembershipSpec(_messages.Message):
   r"""**Apigee**: Per-Membership Feature spec.
 
@@ -1479,8 +1564,9 @@ class GkehubProjectsLocationsFeaturesGetIamPolicyRequest(_messages.Message):
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1559,8 +1645,9 @@ class GkehubProjectsLocationsFeaturesSetIamPolicyRequest(_messages.Message):
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
@@ -1574,8 +1661,9 @@ class GkehubProjectsLocationsFeaturesTestIamPermissionsRequest(_messages.Message
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """
@@ -1794,8 +1882,9 @@ class GkehubProjectsLocationsMembershipsGetIamPolicyRequest(_messages.Message):
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1901,8 +1990,9 @@ class GkehubProjectsLocationsMembershipsSetIamPolicyRequest(_messages.Message):
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
@@ -1916,8 +2006,9 @@ class GkehubProjectsLocationsMembershipsTestIamPermissionsRequest(_messages.Mess
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """
@@ -2518,6 +2609,40 @@ class ListOperationsResponse(_messages.Message):
   operations = _messages.MessageField('Operation', 2, repeated=True)
 
 
+class LocalControllerState(_messages.Message):
+  r"""LocalControllerState contains the state of the local controller deployed
+  in the cluster.
+
+  Enums:
+    InstallationStateValueValuesEnum: InstallationState represents the state
+      of deployment of the local PE controller in the cluster.
+
+  Fields:
+    description: Description represents the human readable description of the
+      current state of the local PE controller
+    installationState: InstallationState represents the state of deployment of
+      the local PE controller in the cluster.
+  """
+
+  class InstallationStateValueValuesEnum(_messages.Enum):
+    r"""InstallationState represents the state of deployment of the local PE
+    controller in the cluster.
+
+    Values:
+      INSTALLATION_STATE_UNSPECIFIED: state of installation is unknown
+      INSTALLATION_STATE_NOT_INSTALLED: component is not installed
+      INSTALLATION_STATE_INSTALLED: component is successfully installed
+      INSTALLATION_STATE_FAILED: installation failed
+    """
+    INSTALLATION_STATE_UNSPECIFIED = 0
+    INSTALLATION_STATE_NOT_INSTALLED = 1
+    INSTALLATION_STATE_INSTALLED = 2
+    INSTALLATION_STATE_FAILED = 3
+
+  description = _messages.StringField(1)
+  installationState = _messages.EnumField('InstallationStateValueValuesEnum', 2)
+
+
 class Location(_messages.Message):
   r"""A resource that represents Google Cloud Platform location.
 
@@ -2739,6 +2864,7 @@ class MembershipFeatureSpec(_messages.Message):
 
   Fields:
     anthosobservability: Anthos Observability-specific spec
+    anthosvm: AnthosVM spec.
     apigee: Apigee-specific spec.
     cloudbuild: Cloud Build-specific spec
     configmanagement: Config Management-specific spec.
@@ -2750,14 +2876,15 @@ class MembershipFeatureSpec(_messages.Message):
   """
 
   anthosobservability = _messages.MessageField('AnthosObservabilityMembershipSpec', 1)
-  apigee = _messages.MessageField('ApigeeMembershipSpec', 2)
-  cloudbuild = _messages.MessageField('CloudBuildMembershipSpec', 3)
-  configmanagement = _messages.MessageField('ConfigManagementMembershipSpec', 4)
-  helloworld = _messages.MessageField('HelloWorldMembershipSpec', 5)
-  identityservice = _messages.MessageField('IdentityServiceMembershipSpec', 6)
-  mesh = _messages.MessageField('ServiceMeshMembershipSpec', 7)
-  policycontroller = _messages.MessageField('PolicyControllerMembershipSpec', 8)
-  workloadcertificate = _messages.MessageField('MembershipSpec', 9)
+  anthosvm = _messages.MessageField('AnthosVMMembershipSpec', 2)
+  apigee = _messages.MessageField('ApigeeMembershipSpec', 3)
+  cloudbuild = _messages.MessageField('CloudBuildMembershipSpec', 4)
+  configmanagement = _messages.MessageField('ConfigManagementMembershipSpec', 5)
+  helloworld = _messages.MessageField('HelloWorldMembershipSpec', 6)
+  identityservice = _messages.MessageField('IdentityServiceMembershipSpec', 7)
+  mesh = _messages.MessageField('ServiceMeshMembershipSpec', 8)
+  policycontroller = _messages.MessageField('PolicyControllerMembershipSpec', 9)
+  workloadcertificate = _messages.MessageField('MembershipSpec', 10)
 
 
 class MembershipFeatureState(_messages.Message):
@@ -2765,6 +2892,7 @@ class MembershipFeatureState(_messages.Message):
   Membership.
 
   Fields:
+    anthosvm: AnthosVM state.
     appdevexperience: Appdevexperience specific state.
     configmanagement: Config Management-specific state.
     helloworld: Hello World-specific state.
@@ -2775,14 +2903,15 @@ class MembershipFeatureState(_messages.Message):
     state: The high-level state of this Feature for a single membership.
   """
 
-  appdevexperience = _messages.MessageField('AppDevExperienceFeatureState', 1)
-  configmanagement = _messages.MessageField('ConfigManagementMembershipState', 2)
-  helloworld = _messages.MessageField('HelloWorldMembershipState', 3)
-  identityservice = _messages.MessageField('IdentityServiceMembershipState', 4)
-  metering = _messages.MessageField('MeteringMembershipState', 5)
-  policycontroller = _messages.MessageField('PolicyControllerMembershipState', 6)
-  servicemesh = _messages.MessageField('ServiceMeshMembershipState', 7)
-  state = _messages.MessageField('FeatureState', 8)
+  anthosvm = _messages.MessageField('AnthosVMMembershipState', 1)
+  appdevexperience = _messages.MessageField('AppDevExperienceFeatureState', 2)
+  configmanagement = _messages.MessageField('ConfigManagementMembershipState', 3)
+  helloworld = _messages.MessageField('HelloWorldMembershipState', 4)
+  identityservice = _messages.MessageField('IdentityServiceMembershipState', 5)
+  metering = _messages.MessageField('MeteringMembershipState', 6)
+  policycontroller = _messages.MessageField('PolicyControllerMembershipState', 7)
+  servicemesh = _messages.MessageField('ServiceMeshMembershipState', 8)
+  state = _messages.MessageField('FeatureState', 9)
 
 
 class MembershipSpec(_messages.Message):
@@ -2857,6 +2986,14 @@ class MeteringMembershipState(_messages.Message):
 
   lastMeasurementTime = _messages.StringField(1)
   preciseLastMeasuredClusterVcpuCapacity = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+
+
+class MigrateSpec(_messages.Message):
+  r"""MigrateSpec contains the migrate subfeature configuration."""
+
+
+class MigrateState(_messages.Message):
+  r"""MigrateState contains the state of Migrate subfeature"""
 
 
 class MultiCloudCluster(_messages.Message):
@@ -3857,6 +3994,14 @@ class ServiceMeshMembershipState(_messages.Message):
   controlPlaneRevisions = _messages.MessageField('ServiceMeshControlPlaneRevision', 4, repeated=True)
   dataPlaneManagement = _messages.MessageField('ServiceMeshDataPlaneManagement', 5)
   defaultChannel = _messages.EnumField('DefaultChannelValueValuesEnum', 6)
+
+
+class ServiceMeshSpec(_messages.Message):
+  r"""ServiceMeshSpec contains the serviceMesh subfeature configuration."""
+
+
+class ServiceMeshState(_messages.Message):
+  r"""ServiceMeshState contains the state of Service Mesh subfeature"""
 
 
 class ServiceMeshStatusDetails(_messages.Message):

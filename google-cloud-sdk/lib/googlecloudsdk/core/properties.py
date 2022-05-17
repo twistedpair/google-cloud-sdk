@@ -1400,7 +1400,7 @@ class _SectionAuth(_Section):
     self.impersonate_service_account = self._Add(
         'impersonate_service_account',
         help_text="""\
-        For this `gcloud` invocation, all API requests will be
+        While set, all API requests will be
         made as the given service account or target service account in an
         impersonation delegation chain instead of the currently selected
         account. You can specify either a single service account as the
@@ -1423,8 +1423,8 @@ class _SectionAuth(_Section):
         each service account delegates its permissions to the next
         service account in the chain. Each service account in the list
         must have the `roles/iam.serviceAccountTokenCreator` role on the
-        next service account in the list. For example, when
-        `--impersonate-service-account=`
+        next service account in the list. For example, when the property is set
+        via `gcloud config set auth/impersonate-service-account=`
         ``SERVICE_ACCOUNT_1'',``SERVICE_ACCOUNT_2'',
         the active account must have the
         `roles/iam.serviceAccountTokenCreator` role on
@@ -2934,6 +2934,12 @@ class _SectionStorage(_Section):
 
   def __init__(self):
     super(_SectionStorage, self).__init__('storage')
+    self.run_by_gsutil_shim = self._AddBool(
+        'run_by_gsutil_shim',
+        help_text=(
+            'Indicates command was launched by gsutil-to-gcloud-storage shim.'),
+        hidden=True)
+
     self.check_hashes = self._Add(
         'check_hashes',
         default=CheckHashes.IF_FAST_ELSE_FAIL.value,

@@ -414,7 +414,7 @@ class Hcx(_messages.Message):
     StateValueValuesEnum: Output only. The state of the appliance.
 
   Fields:
-    externalIp: External IP address of the appliance.
+    externalIp: Deprecated: External IP address of the appliance.
     fqdn: Fully qualified domain name of the appliance.
     internalIp: Internal IP address of the appliance.
     state: Output only. The state of the appliance.
@@ -1070,7 +1070,7 @@ class Nsx(_messages.Message):
     StateValueValuesEnum: Output only. The state of the appliance.
 
   Fields:
-    externalIp: External IP address of the appliance.
+    externalIp: Deprecated: External IP address of the appliance.
     fqdn: Fully qualified domain name of the appliance.
     internalIp: Internal IP address of the appliance.
     state: Output only. The state of the appliance.
@@ -1643,7 +1643,7 @@ class Vcenter(_messages.Message):
     StateValueValuesEnum: Output only. The state of the appliance.
 
   Fields:
-    externalIp: External IP address of the appliance.
+    externalIp: Deprecated: External IP address of the appliance.
     fqdn: Fully qualified domain name of the appliance.
     internalIp: Internal IP address of the appliance.
     state: Output only. The state of the appliance.
@@ -2227,8 +2227,9 @@ class VmwareengineProjectsLocationsNetworkPoliciesGetIamPolicyRequest(_messages.
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -2330,8 +2331,9 @@ class VmwareengineProjectsLocationsNetworkPoliciesSetIamPolicyRequest(_messages.
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
@@ -2346,8 +2348,9 @@ class VmwareengineProjectsLocationsNetworkPoliciesTestIamPermissionsRequest(_mes
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """
@@ -2373,8 +2376,9 @@ class VmwareengineProjectsLocationsNodeTypesGetIamPolicyRequest(_messages.Messag
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -2434,8 +2438,9 @@ class VmwareengineProjectsLocationsNodeTypesSetIamPolicyRequest(_messages.Messag
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
@@ -2450,8 +2455,9 @@ class VmwareengineProjectsLocationsNodeTypesTestIamPermissionsRequest(_messages.
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """
@@ -2565,8 +2571,9 @@ class VmwareengineProjectsLocationsPrivateCloudsClustersGetIamPolicyRequest(_mes
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -2657,8 +2664,9 @@ class VmwareengineProjectsLocationsPrivateCloudsClustersSetIamPolicyRequest(_mes
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
@@ -2674,8 +2682,9 @@ class VmwareengineProjectsLocationsPrivateCloudsClustersTestIamPermissionsReques
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """
@@ -2930,8 +2939,9 @@ class VmwareengineProjectsLocationsPrivateCloudsGetIamPolicyRequest(_messages.Me
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -3008,8 +3018,9 @@ class VmwareengineProjectsLocationsPrivateCloudsHcxActivationKeysGetIamPolicyReq
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -3061,8 +3072,9 @@ class VmwareengineProjectsLocationsPrivateCloudsHcxActivationKeysSetIamPolicyReq
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
@@ -3077,8 +3089,9 @@ class VmwareengineProjectsLocationsPrivateCloudsHcxActivationKeysTestIamPermissi
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """
@@ -3198,8 +3211,9 @@ class VmwareengineProjectsLocationsPrivateCloudsSetIamPolicyRequest(_messages.Me
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
@@ -3245,8 +3259,9 @@ class VmwareengineProjectsLocationsPrivateCloudsTestIamPermissionsRequest(_messa
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """

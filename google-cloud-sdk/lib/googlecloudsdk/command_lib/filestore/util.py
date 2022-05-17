@@ -19,10 +19,13 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from googlecloudsdk.api_lib.filestore import filestore_client
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
+
+V1_API_VERSION = 'v1'
+ALPHA_API_VERSION = 'v1p1alpha1'
+BETA_API_VERSION = 'v1beta1'
 
 PARENT_TEMPLATE = 'projects/{}/locations/{}'
 LOCATION_WILDCARD = '-'
@@ -45,9 +48,9 @@ def GetApiVersionFromArgs(args):
   """Return API version based on args."""
   release_track = args.calliope_command.ReleaseTrack()
   if release_track == base.ReleaseTrack.ALPHA:
-    return filestore_client.ALPHA_API_VERSION
+    return ALPHA_API_VERSION
   if release_track == base.ReleaseTrack.BETA:
-    return filestore_client.BETA_API_VERSION
+    return BETA_API_VERSION
   if release_track == base.ReleaseTrack.GA:
-    return filestore_client.V1_API_VERSION
+    return V1_API_VERSION
   raise exceptions.UnsupportedReleaseTrackError(release_track)

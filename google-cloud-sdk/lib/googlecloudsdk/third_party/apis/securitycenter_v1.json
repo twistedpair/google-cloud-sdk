@@ -757,7 +757,8 @@
               "T1190",
               "T1556",
               "T1485",
-              "T1484"
+              "T1484",
+              "T1562"
             ],
             "enum": [
               "TECHNIQUE_UNSPECIFIED",
@@ -790,7 +791,8 @@
               "EXPLOIT_PUBLIC_FACING_APPLICATION",
               "MODIFY_AUTHENTICATION_PROCESS",
               "DATA_DESTRUCTION",
-              "DOMAIN_POLICY_MODIFICATION"
+              "DOMAIN_POLICY_MODIFICATION",
+              "IMPAIR_DEFENSES"
             ]
           }
         },
@@ -871,7 +873,8 @@
               "T1190",
               "T1556",
               "T1485",
-              "T1484"
+              "T1484",
+              "T1562"
             ],
             "enum": [
               "TECHNIQUE_UNSPECIFIED",
@@ -904,7 +907,8 @@
               "EXPLOIT_PUBLIC_FACING_APPLICATION",
               "MODIFY_AUTHENTICATION_PROCESS",
               "DATA_DESTRUCTION",
-              "DOMAIN_POLICY_MODIFICATION"
+              "DOMAIN_POLICY_MODIFICATION",
+              "IMPAIR_DEFENSES"
             ]
           }
         },
@@ -4124,7 +4128,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "resource": {
-                  "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                  "description": "REQUIRED: The resource for which the policy is being requested. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
                   "pattern": "^organizations\/[^\/]+\/sources\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -4213,7 +4217,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "resource": {
-                  "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                  "description": "REQUIRED: The resource for which the policy is being specified. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
                   "pattern": "^organizations\/[^\/]+\/sources\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -4241,7 +4245,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "resource": {
-                  "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                  "description": "REQUIRED: The resource for which the policy detail is being requested. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
                   "pattern": "^organizations\/[^\/]+\/sources\/[^\/]+$",
                   "location": "path",
                   "required": true,

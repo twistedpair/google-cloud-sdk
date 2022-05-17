@@ -51,7 +51,7 @@ class CloudVpn(_messages.Message):
 
 
 class Cluster(_messages.Message):
-  r"""A Google Edge Cloud Kubernetes cluster.
+  r"""A Google Distributed Cloud Edge Kubernetes cluster.
 
   Messages:
     LabelsValue: Labels associated with this resource.
@@ -661,6 +661,10 @@ class LocalDiskEncryption(_messages.Message):
       `KEY_AVAILABLE`, then nodes may go offline as they cannot access their
       local data. This can be caused by a lack of permissions to use the key,
       or if the key is disabled or deleted.
+    kmsStatus: Output only. Error status returned by Cloud KMS when using this
+      key. This field may be populated only if `kms_key_state` is not
+      `KMS_KEY_STATE_KEY_AVAILABLE`. If populated, this field contains the
+      error status reported by Cloud KMS.
   """
 
   class KmsKeyStateValueValuesEnum(_messages.Enum):
@@ -683,6 +687,7 @@ class LocalDiskEncryption(_messages.Message):
   kmsKey = _messages.StringField(1)
   kmsKeyActiveVersion = _messages.StringField(2)
   kmsKeyState = _messages.EnumField('KmsKeyStateValueValuesEnum', 3)
+  kmsStatus = _messages.MessageField('Status', 4)
 
 
 class Location(_messages.Message):
@@ -769,18 +774,19 @@ class LocationMetadata(_messages.Message):
   r"""Metadata for a given google.cloud.location.Location.
 
   Messages:
-    AvailableZonesValue: The set of available Google Edge Cloud zones in the
-      location. The map is keyed by the lowercase ID of each zone.
+    AvailableZonesValue: The set of available Google Distributed Cloud Edge
+      zones in the location. The map is keyed by the lowercase ID of each
+      zone.
 
   Fields:
-    availableZones: The set of available Google Edge Cloud zones in the
-      location. The map is keyed by the lowercase ID of each zone.
+    availableZones: The set of available Google Distributed Cloud Edge zones
+      in the location. The map is keyed by the lowercase ID of each zone.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AvailableZonesValue(_messages.Message):
-    r"""The set of available Google Edge Cloud zones in the location. The map
-    is keyed by the lowercase ID of each zone.
+    r"""The set of available Google Distributed Cloud Edge zones in the
+    location. The map is keyed by the lowercase ID of each zone.
 
     Messages:
       AdditionalProperty: An additional property for a AvailableZonesValue
@@ -807,7 +813,8 @@ class LocationMetadata(_messages.Message):
 
 
 class Machine(_messages.Message):
-  r"""A Google Edge Cloud machine capable of acting as a Kubernetes node.
+  r"""A Google Distributed Cloud Edge machine capable of acting as a
+  Kubernetes node.
 
   Messages:
     LabelsValue: Labels associated with this resource.
@@ -821,7 +828,7 @@ class Machine(_messages.Message):
     labels: Labels associated with this resource.
     name: Required. The resource name of the machine.
     updateTime: Output only. The time when the node pool was last updated.
-    zone: The Google Edge Cloud zone of this machine.
+    zone: The Google Distributed Cloud Edge zone of this machine.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -894,8 +901,8 @@ class NodePool(_messages.Message):
       is documented in more detail in [AIP-160](https://google.aip.dev/160).
     name: Required. The resource name of the node pool.
     nodeCount: Required. The number of nodes in the pool.
-    nodeLocation: Name of the Google Edge Cloud zone where this node pool will
-      be created. For example: `us-central1-edge-customer-a`.
+    nodeLocation: Name of the Google Distributed Cloud Edge zone where this
+      node pool will be created. For example: `us-central1-edge-customer-a`.
     updateTime: Output only. The time when the node pool was last updated.
   """
 
@@ -1301,7 +1308,7 @@ class VpnConnection(_messages.Message):
 
 
 class ZoneMetadata(_messages.Message):
-  r"""A Google Edge Cloud zone where edge machines are located.
+  r"""A Google Distributed Cloud Edge zone where edge machines are located.
 
   Fields:
     quota: Quota for resources in this zone.

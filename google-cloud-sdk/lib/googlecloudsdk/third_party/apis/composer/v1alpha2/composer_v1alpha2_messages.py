@@ -137,11 +137,11 @@ class CheckUpgradeResponse(_messages.Message):
 
 
 class CidrBlock(_messages.Message):
-  r"""CidrBlock contains an optional name and one CIDR block.
+  r"""CIDR block with an optional name.
 
   Fields:
-    cidrBlock: cidr_block must be specified in CIDR notation.
-    displayName: display_name is a field for users to identify CIDR blocks.
+    cidrBlock: CIDR block that must be specified in CIDR notation.
+    displayName: User-defined name that identifies the CIDR block.
   """
 
   cidrBlock = _messages.StringField(1)
@@ -913,7 +913,7 @@ class EnvironmentConfig(_messages.Message):
       least 4 hours. If this value is omitted, Cloud Composer components may
       be subject to maintenance at any time.
     masterAuthorizedNetworksConfig: Optional. The configuration options for
-      GKE clusters master authorized networks. By default master authorized
+      GKE cluster master authorized networks. By default master authorized
       networks feature is: - in case of private environment: enabled with no
       external networks allowlisted. - in case of public environment:
       disabled.
@@ -1231,9 +1231,9 @@ class MasterAuthorizedNetworksConfig(_messages.Message):
   blocks, Google Compute Engine Public IPs and Google Prod IPs.
 
   Fields:
-    cidrBlocks: cidr_blocks define up to 50 external networks that could
-      access Kubernetes master through HTTPS.
-    enabled: Whether or not master authorized networks is enabled.
+    cidrBlocks: Up to 50 external networks that could access Kubernetes master
+      through HTTPS.
+    enabled: Whether or not master authorized networks feature is enabled.
   """
 
   cidrBlocks = _messages.MessageField('CidrBlock', 1, repeated=True)

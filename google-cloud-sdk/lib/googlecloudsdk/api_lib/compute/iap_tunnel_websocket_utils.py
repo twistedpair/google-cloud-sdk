@@ -156,11 +156,12 @@ def CheckPythonVersion(ignore_certs):
          sys.version_info.micro))
 
 
-def CreateWebSocketConnectUrl(tunnel_target):
+def CreateWebSocketConnectUrl(tunnel_target, should_use_new_websocket):
   """Create Connect URL for WebSocket connection."""
   url_query_pieces = {
       'project': tunnel_target.project,
-      'port': tunnel_target.port
+      'port': tunnel_target.port,
+      'newWebsocket': should_use_new_websocket
   }
   if tunnel_target.host:
     url_query_pieces['region'] = tunnel_target.region
@@ -178,9 +179,14 @@ def CreateWebSocketConnectUrl(tunnel_target):
                              tunnel_target.url_override)
 
 
-def CreateWebSocketReconnectUrl(tunnel_target, sid, ack_bytes):
+def CreateWebSocketReconnectUrl(tunnel_target, sid, ack_bytes,
+                                should_use_new_websocket):
   """Create Reconnect URL for WebSocket connection."""
-  url_query_pieces = {'sid': sid, 'ack': ack_bytes}
+  url_query_pieces = {
+      'sid': sid,
+      'ack': ack_bytes,
+      'newWebsocket': should_use_new_websocket
+  }
 
   if tunnel_target.host:
     url_query_pieces['region'] = tunnel_target.region

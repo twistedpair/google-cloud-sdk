@@ -152,6 +152,19 @@ def AddLocationResourceArg(parser, group_help_text, required=False):
   concept_parser.AddToParser(parser)
 
 
+def AddProjectResourceArg(parser):
+  """Adds a resource argument for a project."""
+  resource_spec = concepts.ResourceSpec(
+      'eventarc.projects',
+      resource_name='project',
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
+  concept_parser = concept_parsers.ConceptParser.ForResource(
+      '--project', resource_spec,
+      'Project ID of the Google Cloud project for the {resource}.',
+      required=True)
+  concept_parser.AddToParser(parser)
+
+
 def AddTriggerResourceArg(parser, group_help_text, required=False):
   """Adds a resource argument for an Eventarc trigger."""
   concept_parsers.ConceptParser.ForResource(

@@ -4524,3 +4524,17 @@ def VerifyGetCredentialsFlags(args):
       args.IsSpecified('cross_connect_subnetwork') +
       args.IsSpecified('private_endpoint_fqdn')) > 1:
     raise util.Error(constants.CONFLICTING_GET_CREDS_FLAGS_ERROR_MSG)
+
+
+def AddEnableGoogleCloudAccess(parser, hidden=True):
+  """Adds a --enable-google-cloud-access to the given clusters parser."""
+  help_text = """\
+  When you enable Google Cloud Access, anyone who uses Google Cloud can reach
+  the public control plane endpoint of your cluster.
+  """
+  parser.add_argument(
+      '--enable-google-cloud-access',
+      hidden=hidden,
+      default=None,
+      action='store_true',
+      help=help_text)

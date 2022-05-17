@@ -532,8 +532,8 @@ class CreateInstanceConfigRequest(_messages.Message):
   Fields:
     instanceConfig: Required. The InstanceConfig proto of the configuration to
       create. instance_config.name must be `/instanceConfigs/`.
-      instance_config.base_config must be a Google managed configuration id,
-      e.g. us-east1, nam3.
+      instance_config.base_config must be a Google managed configuration name,
+      e.g. /instanceConfigs/us-east1, /instanceConfigs/nam3.
     instanceConfigId: Required. The ID of the instance config to create. Valid
       identifiers are of the form `custom-[-a-z0-9]*[a-z0-9]` and must be
       between 2 and 64 characters in length. The `custom-` prefix is required
@@ -5100,10 +5100,16 @@ class Type(_messages.Message):
         values of this type should be treated as PostgreSQL NUMERIC values.
         Currently this annotation is always needed for NUMERIC when a client
         interacts with PostgreSQL-enabled Spanner databases.
+      PG_JSONB: PostgreSQL compatible JSONB type. This annotation needs to be
+        applied to Type instances having JSON type code to specify that values
+        of this type should be treated as PostgreSQL JSONB values. Currently
+        this annotation is always needed for JSON when a client interacts with
+        PostgreSQL-enabled Spanner databases.
     """
     TYPE_ANNOTATION_CODE_UNSPECIFIED = 0
     INT32 = 1
     PG_NUMERIC = 2
+    PG_JSONB = 3
 
   arrayElementType = _messages.MessageField('Type', 1)
   code = _messages.EnumField('CodeValueValuesEnum', 2)

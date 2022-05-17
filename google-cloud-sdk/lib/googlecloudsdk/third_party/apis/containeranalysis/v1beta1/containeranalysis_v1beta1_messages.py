@@ -431,9 +431,179 @@ class ByProducts(_messages.Message):
   customValues = _messages.MessageField('CustomValuesValue', 1)
 
 
-class CVSSv3(_messages.Message):
-  r"""Common Vulnerability Scoring System version 3. For details, see
+class CVSS(_messages.Message):
+  r"""Common Vulnerability Scoring System. For details, see
   https://www.first.org/cvss/specification-document
+
+  Enums:
+    AttackComplexityValueValuesEnum:
+    AttackVectorValueValuesEnum: Base Metrics Represents the intrinsic
+      characteristics of a vulnerability that are constant over time and
+      across user environments.
+    AuthenticationValueValuesEnum:
+    AvailabilityImpactValueValuesEnum:
+    ConfidentialityImpactValueValuesEnum:
+    IntegrityImpactValueValuesEnum:
+    PrivilegesRequiredValueValuesEnum:
+    ScopeValueValuesEnum:
+    UserInteractionValueValuesEnum:
+
+  Fields:
+    attackComplexity: A AttackComplexityValueValuesEnum attribute.
+    attackVector: Base Metrics Represents the intrinsic characteristics of a
+      vulnerability that are constant over time and across user environments.
+    authentication: A AuthenticationValueValuesEnum attribute.
+    availabilityImpact: A AvailabilityImpactValueValuesEnum attribute.
+    baseScore: The base score is a function of the base metric scores.
+    confidentialityImpact: A ConfidentialityImpactValueValuesEnum attribute.
+    exploitabilityScore: A number attribute.
+    impactScore: A number attribute.
+    integrityImpact: A IntegrityImpactValueValuesEnum attribute.
+    privilegesRequired: A PrivilegesRequiredValueValuesEnum attribute.
+    scope: A ScopeValueValuesEnum attribute.
+    userInteraction: A UserInteractionValueValuesEnum attribute.
+  """
+
+  class AttackComplexityValueValuesEnum(_messages.Enum):
+    r"""AttackComplexityValueValuesEnum enum type.
+
+    Values:
+      ATTACK_COMPLEXITY_UNSPECIFIED: <no description>
+      ATTACK_COMPLEXITY_LOW: <no description>
+      ATTACK_COMPLEXITY_HIGH: <no description>
+    """
+    ATTACK_COMPLEXITY_UNSPECIFIED = 0
+    ATTACK_COMPLEXITY_LOW = 1
+    ATTACK_COMPLEXITY_HIGH = 2
+
+  class AttackVectorValueValuesEnum(_messages.Enum):
+    r"""Base Metrics Represents the intrinsic characteristics of a
+    vulnerability that are constant over time and across user environments.
+
+    Values:
+      ATTACK_VECTOR_UNSPECIFIED: <no description>
+      ATTACK_VECTOR_NETWORK: <no description>
+      ATTACK_VECTOR_ADJACENT: <no description>
+      ATTACK_VECTOR_LOCAL: <no description>
+      ATTACK_VECTOR_PHYSICAL: <no description>
+    """
+    ATTACK_VECTOR_UNSPECIFIED = 0
+    ATTACK_VECTOR_NETWORK = 1
+    ATTACK_VECTOR_ADJACENT = 2
+    ATTACK_VECTOR_LOCAL = 3
+    ATTACK_VECTOR_PHYSICAL = 4
+
+  class AuthenticationValueValuesEnum(_messages.Enum):
+    r"""AuthenticationValueValuesEnum enum type.
+
+    Values:
+      AUTHENTICATION_UNSPECIFIED: <no description>
+      AUTHENTICATION_MULTIPLE: <no description>
+      AUTHENTICATION_SINGLE: <no description>
+      AUTHENTICATION_NONE: <no description>
+    """
+    AUTHENTICATION_UNSPECIFIED = 0
+    AUTHENTICATION_MULTIPLE = 1
+    AUTHENTICATION_SINGLE = 2
+    AUTHENTICATION_NONE = 3
+
+  class AvailabilityImpactValueValuesEnum(_messages.Enum):
+    r"""AvailabilityImpactValueValuesEnum enum type.
+
+    Values:
+      IMPACT_UNSPECIFIED: <no description>
+      IMPACT_HIGH: <no description>
+      IMPACT_LOW: <no description>
+      IMPACT_NONE: <no description>
+    """
+    IMPACT_UNSPECIFIED = 0
+    IMPACT_HIGH = 1
+    IMPACT_LOW = 2
+    IMPACT_NONE = 3
+
+  class ConfidentialityImpactValueValuesEnum(_messages.Enum):
+    r"""ConfidentialityImpactValueValuesEnum enum type.
+
+    Values:
+      IMPACT_UNSPECIFIED: <no description>
+      IMPACT_HIGH: <no description>
+      IMPACT_LOW: <no description>
+      IMPACT_NONE: <no description>
+    """
+    IMPACT_UNSPECIFIED = 0
+    IMPACT_HIGH = 1
+    IMPACT_LOW = 2
+    IMPACT_NONE = 3
+
+  class IntegrityImpactValueValuesEnum(_messages.Enum):
+    r"""IntegrityImpactValueValuesEnum enum type.
+
+    Values:
+      IMPACT_UNSPECIFIED: <no description>
+      IMPACT_HIGH: <no description>
+      IMPACT_LOW: <no description>
+      IMPACT_NONE: <no description>
+    """
+    IMPACT_UNSPECIFIED = 0
+    IMPACT_HIGH = 1
+    IMPACT_LOW = 2
+    IMPACT_NONE = 3
+
+  class PrivilegesRequiredValueValuesEnum(_messages.Enum):
+    r"""PrivilegesRequiredValueValuesEnum enum type.
+
+    Values:
+      PRIVILEGES_REQUIRED_UNSPECIFIED: <no description>
+      PRIVILEGES_REQUIRED_NONE: <no description>
+      PRIVILEGES_REQUIRED_LOW: <no description>
+      PRIVILEGES_REQUIRED_HIGH: <no description>
+    """
+    PRIVILEGES_REQUIRED_UNSPECIFIED = 0
+    PRIVILEGES_REQUIRED_NONE = 1
+    PRIVILEGES_REQUIRED_LOW = 2
+    PRIVILEGES_REQUIRED_HIGH = 3
+
+  class ScopeValueValuesEnum(_messages.Enum):
+    r"""ScopeValueValuesEnum enum type.
+
+    Values:
+      SCOPE_UNSPECIFIED: <no description>
+      SCOPE_UNCHANGED: <no description>
+      SCOPE_CHANGED: <no description>
+    """
+    SCOPE_UNSPECIFIED = 0
+    SCOPE_UNCHANGED = 1
+    SCOPE_CHANGED = 2
+
+  class UserInteractionValueValuesEnum(_messages.Enum):
+    r"""UserInteractionValueValuesEnum enum type.
+
+    Values:
+      USER_INTERACTION_UNSPECIFIED: <no description>
+      USER_INTERACTION_NONE: <no description>
+      USER_INTERACTION_REQUIRED: <no description>
+    """
+    USER_INTERACTION_UNSPECIFIED = 0
+    USER_INTERACTION_NONE = 1
+    USER_INTERACTION_REQUIRED = 2
+
+  attackComplexity = _messages.EnumField('AttackComplexityValueValuesEnum', 1)
+  attackVector = _messages.EnumField('AttackVectorValueValuesEnum', 2)
+  authentication = _messages.EnumField('AuthenticationValueValuesEnum', 3)
+  availabilityImpact = _messages.EnumField('AvailabilityImpactValueValuesEnum', 4)
+  baseScore = _messages.FloatField(5, variant=_messages.Variant.FLOAT)
+  confidentialityImpact = _messages.EnumField('ConfidentialityImpactValueValuesEnum', 6)
+  exploitabilityScore = _messages.FloatField(7, variant=_messages.Variant.FLOAT)
+  impactScore = _messages.FloatField(8, variant=_messages.Variant.FLOAT)
+  integrityImpact = _messages.EnumField('IntegrityImpactValueValuesEnum', 9)
+  privilegesRequired = _messages.EnumField('PrivilegesRequiredValueValuesEnum', 10)
+  scope = _messages.EnumField('ScopeValueValuesEnum', 11)
+  userInteraction = _messages.EnumField('UserInteractionValueValuesEnum', 12)
+
+
+class CVSSv3(_messages.Message):
+  r"""Deprecated. Common Vulnerability Scoring System version 3. For details,
+  see https://www.first.org/cvss/specification-document
 
   Enums:
     AttackComplexityValueValuesEnum:
@@ -1800,8 +1970,9 @@ class ContaineranalysisProjectsNotesGetIamPolicyRequest(_messages.Message):
     getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
       request body.
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
@@ -1874,8 +2045,9 @@ class ContaineranalysisProjectsNotesSetIamPolicyRequest(_messages.Message):
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
@@ -1889,8 +2061,9 @@ class ContaineranalysisProjectsNotesTestIamPermissionsRequest(_messages.Message)
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """
@@ -1944,8 +2117,9 @@ class ContaineranalysisProjectsOccurrencesGetIamPolicyRequest(_messages.Message)
     getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
       request body.
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
@@ -2027,8 +2201,9 @@ class ContaineranalysisProjectsOccurrencesSetIamPolicyRequest(_messages.Message)
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
@@ -2042,8 +2217,9 @@ class ContaineranalysisProjectsOccurrencesTestIamPermissionsRequest(_messages.Me
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """
@@ -2207,6 +2383,19 @@ class Details(_messages.Message):
   attestation = _messages.MessageField('Attestation', 1)
 
 
+class Digest(_messages.Message):
+  r"""Digest information.
+
+  Fields:
+    algo: `SHA1`, `SHA512` etc.
+    digestValue: Value of the digest encoded. For example: SHA512 - base64
+      encoding, SHA1 - hex encoding.
+  """
+
+  algo = _messages.StringField(1)
+  digestValue = _messages.StringField(2)
+
+
 class Discovered(_messages.Message):
   r"""Provides information about the analysis status of a discovered resource.
 
@@ -2359,7 +2548,7 @@ class Distribution(_messages.Message):
 
 
 class DocumentNote(_messages.Message):
-  r"""DocumentNote represents an SPDX Document Creation Infromation section:
+  r"""DocumentNote represents an SPDX Document Creation Information section:
   https://spdx.github.io/spdx-spec/2-document-creation-information/
 
   Fields:
@@ -2421,6 +2610,34 @@ class Empty(_messages.Message):
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
 
+
+
+class Envelope(_messages.Message):
+  r"""MUST match https://github.com/secure-systems-
+  lab/dsse/blob/master/envelope.proto. An authenticated message of arbitrary
+  type.
+
+  Fields:
+    payload: A byte attribute.
+    payloadType: A string attribute.
+    signatures: A EnvelopeSignature attribute.
+  """
+
+  payload = _messages.BytesField(1)
+  payloadType = _messages.StringField(2)
+  signatures = _messages.MessageField('EnvelopeSignature', 3, repeated=True)
+
+
+class EnvelopeSignature(_messages.Message):
+  r"""A EnvelopeSignature object.
+
+  Fields:
+    keyid: A string attribute.
+    sig: A byte attribute.
+  """
+
+  keyid = _messages.StringField(1)
+  sig = _messages.BytesField(2)
 
 
 class Environment(_messages.Message):
@@ -3104,14 +3321,49 @@ class Installation(_messages.Message):
   r"""This represents how a particular software package may be installed on a
   system.
 
+  Enums:
+    ArchitectureValueValuesEnum: Output only. The CPU architecture for which
+      packages in this distribution channel were built. Architecture will be
+      blank for language packages.
+
   Fields:
-    location: Required. All of the places within the filesystem versions of
-      this package have been found.
-    name: Output only. The name of the installed package.
+    architecture: Output only. The CPU architecture for which packages in this
+      distribution channel were built. Architecture will be blank for language
+      packages.
+    cpeUri: Output only. The cpe_uri in [CPE
+      format](https://cpe.mitre.org/specification/) denoting the package
+      manager version distributing a package. The cpe_uri will be blank for
+      language packages.
+    license: Licenses that have been declared by the authors of the package.
+    location: All of the places within the filesystem versions of this package
+      have been found.
+    name: Required. Output only. The name of the installed package.
+    packageType: Output only. The type of package; whether native or non
+      native (e.g., ruby gems, node.js packages, etc.).
+    version: Output only. The version of the package.
   """
 
-  location = _messages.MessageField('Location', 1, repeated=True)
-  name = _messages.StringField(2)
+  class ArchitectureValueValuesEnum(_messages.Enum):
+    r"""Output only. The CPU architecture for which packages in this
+    distribution channel were built. Architecture will be blank for language
+    packages.
+
+    Values:
+      ARCHITECTURE_UNSPECIFIED: Unknown architecture.
+      X86: X86 architecture.
+      X64: X64 architecture.
+    """
+    ARCHITECTURE_UNSPECIFIED = 0
+    X86 = 1
+    X64 = 2
+
+  architecture = _messages.EnumField('ArchitectureValueValuesEnum', 1)
+  cpeUri = _messages.StringField(2)
+  license = _messages.MessageField('License', 3)
+  location = _messages.MessageField('Location', 4, repeated=True)
+  name = _messages.StringField(5)
+  packageType = _messages.StringField(6)
+  version = _messages.MessageField('Version', 7)
 
 
 class KnowledgeBase(_messages.Message):
@@ -3188,13 +3440,15 @@ class Layer(_messages.Message):
 
 
 class License(_messages.Message):
-  r"""License information: https://spdx.github.io/spdx-spec/3-package-
-  information/#315-declared-license
+  r"""License information.
 
   Fields:
     comments: Comments
-    expression: Expression: https://spdx.github.io/spdx-spec/appendix-IV-SPDX-
-      license-expressions/
+    expression: Often a single license can be used to represent the licensing
+      terms. Sometimes it is necessary to include a choice of one or more
+      licenses or some combination of license identifiers. Examples:
+      "LGPL-2.1-only OR MIT", "LGPL-2.1-only AND MIT", "GPL-2.0-or-later WITH
+      Bison-exception-2.2".
   """
 
   comments = _messages.StringField(1)
@@ -3294,12 +3548,12 @@ class Location(_messages.Message):
   system's filesystem. E.g., glibc was found in `/var/lib/dpkg/status`.
 
   Fields:
-    cpeUri: Required. The CPE URI in [CPE
+    cpeUri: Deprecated. The CPE URI in [CPE
       format](https://cpe.mitre.org/specification/) denoting the package
       manager version distributing a package.
     path: The path from which we gathered that this package/version is
       installed.
-    version: The version installed at this location.
+    version: Deprecated. The version installed at this location.
   """
 
   cpeUri = _messages.StringField(1)
@@ -3418,6 +3672,7 @@ class Occurrence(_messages.Message):
     derivedImage: Describes how this resource derives from the basis in the
       associated note.
     discovered: Describes when a resource was discovered.
+    envelope: https://github.com/secure-systems-lab/dsse
     installation: Describes the installation of a package on the linked
       resource.
     intoto: Describes a specific in-toto link.
@@ -3482,33 +3737,73 @@ class Occurrence(_messages.Message):
   deployment = _messages.MessageField('GrafeasV1beta1DeploymentDetails', 4)
   derivedImage = _messages.MessageField('GrafeasV1beta1ImageDetails', 5)
   discovered = _messages.MessageField('GrafeasV1beta1DiscoveryDetails', 6)
-  installation = _messages.MessageField('GrafeasV1beta1PackageDetails', 7)
-  intoto = _messages.MessageField('GrafeasV1beta1IntotoDetails', 8)
-  kind = _messages.EnumField('KindValueValuesEnum', 9)
-  name = _messages.StringField(10)
-  noteName = _messages.StringField(11)
-  remediation = _messages.StringField(12)
-  resource = _messages.MessageField('Resource', 13)
-  sbom = _messages.MessageField('DocumentOccurrence', 14)
-  spdxFile = _messages.MessageField('FileOccurrence', 15)
-  spdxPackage = _messages.MessageField('PackageInfoOccurrence', 16)
-  spdxRelationship = _messages.MessageField('RelationshipOccurrence', 17)
-  updateTime = _messages.StringField(18)
-  vulnerability = _messages.MessageField('GrafeasV1beta1VulnerabilityDetails', 19)
+  envelope = _messages.MessageField('Envelope', 7)
+  installation = _messages.MessageField('GrafeasV1beta1PackageDetails', 8)
+  intoto = _messages.MessageField('GrafeasV1beta1IntotoDetails', 9)
+  kind = _messages.EnumField('KindValueValuesEnum', 10)
+  name = _messages.StringField(11)
+  noteName = _messages.StringField(12)
+  remediation = _messages.StringField(13)
+  resource = _messages.MessageField('Resource', 14)
+  sbom = _messages.MessageField('DocumentOccurrence', 15)
+  spdxFile = _messages.MessageField('FileOccurrence', 16)
+  spdxPackage = _messages.MessageField('PackageInfoOccurrence', 17)
+  spdxRelationship = _messages.MessageField('RelationshipOccurrence', 18)
+  updateTime = _messages.StringField(19)
+  vulnerability = _messages.MessageField('GrafeasV1beta1VulnerabilityDetails', 20)
 
 
 class Package(_messages.Message):
-  r"""This represents a particular package that is distributed over various
-  channels. E.g., glibc (aka libc6) is distributed by many, at various
-  versions.
+  r"""Package represents a particular package version.
+
+  Enums:
+    ArchitectureValueValuesEnum: The CPU architecture for which packages in
+      this distribution channel were built. Architecture will be blank for
+      language packages.
 
   Fields:
+    architecture: The CPU architecture for which packages in this distribution
+      channel were built. Architecture will be blank for language packages.
+    cpeUri: The cpe_uri in [CPE format](https://cpe.mitre.org/specification/)
+      denoting the package manager version distributing a package. The cpe_uri
+      will be blank for language packages.
+    description: The description of this package.
+    digest: Hash value, typically a file digest, that allows unique
+      identification a specific package.
     distribution: The various channels by which a package is distributed.
+    license: Licenses that have been declared by the authors of the package.
+    maintainer: A freeform text denoting the maintainer of this package.
     name: Required. Immutable. The name of the package.
+    packageType: The type of package; whether native or non native (e.g., ruby
+      gems, node.js packages, etc.).
+    url: The homepage for this package.
+    version: The version of the package.
   """
 
-  distribution = _messages.MessageField('Distribution', 1, repeated=True)
-  name = _messages.StringField(2)
+  class ArchitectureValueValuesEnum(_messages.Enum):
+    r"""The CPU architecture for which packages in this distribution channel
+    were built. Architecture will be blank for language packages.
+
+    Values:
+      ARCHITECTURE_UNSPECIFIED: Unknown architecture.
+      X86: X86 architecture.
+      X64: X64 architecture.
+    """
+    ARCHITECTURE_UNSPECIFIED = 0
+    X86 = 1
+    X64 = 2
+
+  architecture = _messages.EnumField('ArchitectureValueValuesEnum', 1)
+  cpeUri = _messages.StringField(2)
+  description = _messages.StringField(3)
+  digest = _messages.MessageField('Digest', 4, repeated=True)
+  distribution = _messages.MessageField('Distribution', 5, repeated=True)
+  license = _messages.MessageField('License', 6)
+  maintainer = _messages.StringField(7)
+  name = _messages.StringField(8)
+  packageType = _messages.StringField(9)
+  url = _messages.StringField(10)
+  version = _messages.MessageField('Version', 11)
 
 
 class PackageInfoNote(_messages.Message):
@@ -3681,7 +3976,7 @@ class PgpSignedAttestation(_messages.Message):
     pgpKeyId: The cryptographic fingerprint of the key used to generate the
       signature, as output by, e.g. `gpg --list-keys`. This should be the
       version 4, full 160-bit fingerprint, expressed as a 40 character
-      hexidecimal string. See https://tools.ietf.org/html/rfc4880#section-12.2
+      hexadecimal string. See https://tools.ietf.org/html/rfc4880#section-12.2
       for details. Implementations may choose to acknowledge "LONG", "SHORT",
       or other abbreviated key IDs, but only the full fingerprint is
       guaranteed to work. In gpg, the full fingerprint can be retrieved from
@@ -4554,7 +4849,10 @@ class Vulnerability(_messages.Message):
 
   Fields:
     cvssScore: The CVSS score for this vulnerability.
-    cvssV3: The full description of the CVSSv3.
+    cvssV2: The full description of the CVSS for version 2.
+    cvssV3: The full description of the CVSS for version 3.
+    cwe: A list of CWE for this vulnerability. For details, see:
+      https://cwe.mitre.org/index.html
     details: All information about the package to specifically identify this
       vulnerability. One entry per (version range and cpe_uri) the package
       vulnerability has manifested in.
@@ -4588,11 +4886,13 @@ class Vulnerability(_messages.Message):
     CRITICAL = 5
 
   cvssScore = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
-  cvssV3 = _messages.MessageField('CVSSv3', 2)
-  details = _messages.MessageField('Detail', 3, repeated=True)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 4)
-  sourceUpdateTime = _messages.StringField(5)
-  windowsDetails = _messages.MessageField('WindowsDetail', 6, repeated=True)
+  cvssV2 = _messages.MessageField('CVSS', 2)
+  cvssV3 = _messages.MessageField('CVSSv3', 3)
+  cwe = _messages.StringField(4, repeated=True)
+  details = _messages.MessageField('Detail', 5, repeated=True)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 6)
+  sourceUpdateTime = _messages.StringField(7)
+  windowsDetails = _messages.MessageField('WindowsDetail', 8, repeated=True)
 
 
 class VulnerabilityLocation(_messages.Message):

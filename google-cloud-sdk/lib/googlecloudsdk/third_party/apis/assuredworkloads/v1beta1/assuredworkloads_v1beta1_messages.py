@@ -209,6 +209,35 @@ class AssuredworkloadsOrganizationsLocationsWorkloadsViolationsListRequest(_mess
   parent = _messages.StringField(6, required=True)
 
 
+class AssuredworkloadsProjectsOrganizationsLocationsWorkloadsAnalyzeWorkloadMoveRequest(_messages.Message):
+  r"""A AssuredworkloadsProjectsOrganizationsLocationsWorkloadsAnalyzeWorkload
+  MoveRequest object.
+
+  Fields:
+    project: The Source is a project based to be moved. This is the project's
+      relative path in the API, formatted as
+      "cloudresourcemanager.googleapis.com/projects/{project_number}"
+      "projects/{project_number}"
+      "cloudresourcemanager.googleapis.com/projects/{project_id}"
+      "projects/{project_id}" For example, "organizations/123/locations/us-
+      east1/workloads/assured-workload-1".
+    source: The Source is project based Workload to be moved. This is the
+      workloads's relative path in the API, formatted as "organizations/{organ
+      ization_id}/locations/{location_id}/workloads/{workload_id}". For
+      example, "organizations/123/locations/us-east1/workloads/assured-
+      workload-1".
+    target: Required. The resource name of the Workload to fetch. This is the
+      workloads's relative path in the API, formatted as "organizations/{organ
+      ization_id}/locations/{location_id}/workloads/{workload_id}". For
+      example, "organizations/123/locations/us-east1/workloads/assured-
+      workload-2".
+  """
+
+  project = _messages.StringField(1, required=True)
+  source = _messages.StringField(2)
+  target = _messages.StringField(3, required=True)
+
+
 class GoogleCloudAssuredworkloadsV1CreateWorkloadOperationMetadata(_messages.Message):
   r"""Operation metadata to give request details of CreateWorkload.
 
@@ -1008,6 +1037,18 @@ class GoogleCloudAssuredworkloadsV1beta1WorkloadSaaEnrollmentResponse(_messages.
 
   setupErrors = _messages.EnumField('SetupErrorsValueListEntryValuesEnum', 1, repeated=True)
   setupStatus = _messages.EnumField('SetupStatusValueValuesEnum', 2)
+
+
+class GoogleCloudAssuredworkloadsVersioningV1beta1AnalyzeWorkloadMoveResponse(_messages.Message):
+  r"""Response with the analysis if the source workload can be moved to the
+  target workload
+
+  Fields:
+    blockers: List of blockers that prevent moving the source workload to the
+      target workload
+  """
+
+  blockers = _messages.StringField(1, repeated=True)
 
 
 class GoogleCloudAssuredworkloadsVersioningV1beta1ListViolationsResponse(_messages.Message):

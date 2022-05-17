@@ -23,6 +23,7 @@ from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import exceptions as compute_exceptions
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 from googlecloudsdk.command_lib.compute import scope as compute_scope
+from googlecloudsdk.command_lib.network_services import completers as network_services_completers
 from googlecloudsdk.command_lib.util import completers
 from googlecloudsdk.command_lib.util.apis import arg_utils
 
@@ -629,9 +630,7 @@ def AddServiceBindings(parser, required=False, is_update=False, help_text=None):
       metavar='SERVICE_BINDING',
       required=required,
       type=arg_parsers.ArgList(min_length=1),
-      # TODO(b/199261361): enable when gcloud list command for serviceBindings
-      # is available
-      # completer=network_services_completers.ServiceBindingsCompleter,
+      completer=network_services_completers.ServiceBindingsCompleter,
       help=help_text if help_text is not None else SERVICE_BINDINGS_HELP)
   if is_update:
     group.add_argument(

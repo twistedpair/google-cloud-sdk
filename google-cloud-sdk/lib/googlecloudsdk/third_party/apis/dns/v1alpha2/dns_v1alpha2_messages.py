@@ -756,8 +756,9 @@ class DnsProjectsManagedZonesGetIamPolicyRequest(_messages.Message):
     googleIamV1GetIamPolicyRequest: A GoogleIamV1GetIamPolicyRequest resource
       to be passed as the request body.
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   googleIamV1GetIamPolicyRequest = _messages.MessageField('GoogleIamV1GetIamPolicyRequest', 1)
@@ -771,8 +772,9 @@ class DnsProjectsManagedZonesSetIamPolicyRequest(_messages.Message):
     googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
       to be passed as the request body.
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
@@ -787,8 +789,9 @@ class DnsProjectsManagedZonesTestIamPermissionsRequest(_messages.Message):
       GoogleIamV1TestIamPermissionsRequest resource to be passed as the
       request body.
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)

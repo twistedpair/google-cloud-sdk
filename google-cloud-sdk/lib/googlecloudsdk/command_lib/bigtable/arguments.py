@@ -611,14 +611,22 @@ def AddTableRestoreResourceArg(parser):
 
   arg_specs = [
       resource_args.GetResourcePresentationSpec(
-          verb='to copy from', name='source', required=True, prefixes=True,
-          attribute_overrides={'table': 'source'}, positional=False,
+          verb='to restore from',
+          name='source',
+          required=True,
+          prefixes=True,
+          attribute_overrides={'backup': 'source'},
+          positional=False,
           resource_data=backup_spec_data.GetData()),
       resource_args.GetResourcePresentationSpec(
-          verb='to copy to', name='destination',
-          required=True, prefixes=True,
-          attribute_overrides={'table': 'destination'}, positional=False,
-          resource_data=table_spec_data.GetData())]
+          verb='to restore to',
+          name='destination',
+          required=True,
+          prefixes=True,
+          attribute_overrides={'table': 'destination'},
+          positional=False,
+          resource_data=table_spec_data.GetData())
+  ]
   fallthroughs = {
       '--source.instance': ['--destination.instance'],
       '--destination.instance': ['--source.instance']
@@ -683,3 +691,32 @@ def AddEndTimeArgs(parser, verb):
       help=('End time of the time range {}. '
             'See $ gcloud topic datetimes for information on time formats.'
             .format(verb)))
+
+
+def AddCopyBackupResourceArgs(parser):
+  """Add backup resource args (source, destination) for copy command."""
+  backup_spec_data = yaml_data.ResourceYAMLData.FromPath('bigtable.backup')
+
+  arg_specs = [
+      resource_args.GetResourcePresentationSpec(
+          verb='to copy from',
+          name='source',
+          required=True,
+          prefixes=True,
+          attribute_overrides={'backup': 'source'},
+          positional=False,
+          resource_data=backup_spec_data.GetData()),
+      resource_args.GetResourcePresentationSpec(
+          verb='to copy to',
+          name='destination',
+          required=True,
+          prefixes=True,
+          attribute_overrides={'backup': 'destination'},
+          positional=False,
+          resource_data=backup_spec_data.GetData())
+  ]
+  fallthroughs = {
+      '--source.instance': ['--destination.instance'],
+      '--destination.instance': ['--source.instance']
+  }
+  concept_parsers.ConceptParser(arg_specs, fallthroughs).AddToParser(parser)

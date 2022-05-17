@@ -843,6 +843,20 @@
         }
       }
     },
+    "GoogleCloudAssuredworkloadsVersioningV1beta1AnalyzeWorkloadMoveResponse": {
+      "id": "GoogleCloudAssuredworkloadsVersioningV1beta1AnalyzeWorkloadMoveResponse",
+      "description": "Response with the analysis if the source workload can be moved to the target workload",
+      "type": "object",
+      "properties": {
+        "blockers": {
+          "description": "List of blockers that prevent moving the source workload to the target workload",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "GoogleCloudAssuredworkloadsVersioningV1beta1ListViolationsResponse": {
       "id": "GoogleCloudAssuredworkloadsVersioningV1beta1ListViolationsResponse",
       "description": "Response of ListViolations endpoint.",
@@ -1924,7 +1938,7 @@
                                 "target"
                               ],
                               "response": {
-                                "$ref": "GoogleCloudAssuredworkloadsV1beta1AnalyzeWorkloadMoveResponse"
+                                "$ref": "GoogleCloudAssuredworkloadsVersioningV1beta1AnalyzeWorkloadMoveResponse"
                               },
                               "scopes": [
                                 "https://www.googleapis.com/auth/cloud-platform"
@@ -2016,6 +2030,60 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Retrieves Assured Workload Violation based on ID."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "projects": {
+      "resources": {
+        "organizations": {
+          "resources": {
+            "locations": {
+              "resources": {
+                "workloads": {
+                  "methods": {
+                    "analyzeWorkloadMove": {
+                      "id": "assuredworkloads.projects.organizations.locations.workloads.analyzeWorkloadMove",
+                      "path": "v1beta1/{+project}/{+target}:analyzeWorkloadMove",
+                      "flatPath": "v1beta1/projects/{projectsId}/organizations/{organizationsId}/locations/{locationsId}/workloads/{workloadsId}:analyzeWorkloadMove",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "project": {
+                          "description": "The Source is a project based to be moved. This is the project's relative path in the API, formatted as \"cloudresourcemanager.googleapis.com\/projects\/{project_number}\" \"projects\/{project_number}\" \"cloudresourcemanager.googleapis.com\/projects\/{project_id}\" \"projects\/{project_id}\" For example, \"organizations\/123\/locations\/us-east1\/workloads\/assured-workload-1\".",
+                          "pattern": "^projects\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "target": {
+                          "description": "Required. The resource name of the Workload to fetch. This is the workloads's relative path in the API, formatted as \"organizations\/{organization_id}\/locations\/{location_id}\/workloads\/{workload_id}\". For example, \"organizations\/123\/locations\/us-east1\/workloads\/assured-workload-2\".",
+                          "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/workloads\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "source": {
+                          "description": "The Source is project based Workload to be moved. This is the workloads's relative path in the API, formatted as \"organizations\/{organization_id}\/locations\/{location_id}\/workloads\/{workload_id}\". For example, \"organizations\/123\/locations\/us-east1\/workloads\/assured-workload-1\".",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "project",
+                        "target"
+                      ],
+                      "response": {
+                        "$ref": "GoogleCloudAssuredworkloadsV1beta1AnalyzeWorkloadMoveResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Analyze if the source Assured Workloads can be moved to the target Assured Workload"
                     }
                   }
                 }

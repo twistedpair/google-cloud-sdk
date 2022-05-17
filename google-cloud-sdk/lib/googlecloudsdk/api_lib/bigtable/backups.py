@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.api_lib.bigtable import util
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core.util import times
 
@@ -84,3 +85,16 @@ def AddExpireTimeToUpdateReq(unused_backup_ref, args, req):
   return req
 
 
+def CopyBackup(source_backup_ref, destination_backup_ref, args):
+  """Copy a backup."""
+  client = util.GetAdminClient()
+  msgs = util.GetAdminMessages()
+  copy_backup_request = msgs.CopyBackupRequest(
+      backupId=destination_backup_ref.Name(),
+      sourceBackup=source_backup_ref.RelativeName())
+  copy_backup_request.expireTime = GetExpireTime(args)
+
+  req = msgs.BigtableadminProjectsInstancesClustersBackupsCopyRequest(
+      parent=destination_backup_ref.Parent().RelativeName(),
+      copyBackupRequest=copy_backup_request)
+  return client.projects_instances_clusters_backups.Copy(req)

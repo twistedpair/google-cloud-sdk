@@ -18,11 +18,15 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.command_lib.filestore import util
 from googlecloudsdk.core import properties
 
 INSTANCE_NAME_TEMPLATE = 'projects/{}/locations/{}/instances/{}'
 BACKUP_NAME_TEMPLATE = 'projects/{}/locations/{}/backups/{}'
 PARENT_TEMPLATE = 'projects/{}/locations/{}'
+
+V1_API_VERSION = 'v1'
+ALPHA_API_VERSION = 'v1p1alpha1'
 
 
 def FormatBackupCreateRequest(ref, args, req):
@@ -48,8 +52,19 @@ def AddInstanceNameToRequest(ref, args, req):
   """Python hook for yaml commands to process the source instance name."""
   del ref
   project = properties.VALUES.core.project.Get(required=True)
-  req.backup.sourceInstance = INSTANCE_NAME_TEMPLATE.format(
-      project, args.instance_zone, args.instance)
+
+  api_version = util.GetApiVersionFromArgs(args)
+  if api_version == ALPHA_API_VERSION or api_version == V1_API_VERSION:
+    req.backup.sourceInstance = INSTANCE_NAME_TEMPLATE.format(
+        project, args.instance_zone, args.instance)
+    return req
+
+  if args.instance_zone is not None:
+    req.backup.sourceInstance = INSTANCE_NAME_TEMPLATE.format(
+        project, args.instance_zone, args.instance)
+  if args.instance_location is not None:
+    req.backup.sourceInstance = INSTANCE_NAME_TEMPLATE.format(
+        project, args.instance_location, args.instance)
   return req
 
 

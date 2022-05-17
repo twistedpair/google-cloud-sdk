@@ -41,6 +41,5 @@ class ServiceBindingsCompleter(completers.ListCommandCompleter):
   def __init__(self, **kwargs):
     super(ServiceBindingsCompleter, self).__init__(
         collection='networkservices.projects.locations.serviceBindings',
-        api_version='v1alpha1',
         list_command='network-services service-bindings list --location=global --uri',
         **kwargs)

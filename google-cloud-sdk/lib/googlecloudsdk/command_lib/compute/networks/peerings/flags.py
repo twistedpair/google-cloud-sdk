@@ -85,5 +85,5 @@ def AddStackType(parser):
          IPV4_IPV6
             IPv4 traffic and routes will be exchanged across this peering.
             IPv6 traffic and routes will be exchanged if the matching peering
-            also has stack_type IPV4_IPV6.
+            configuration also has stack_type set to IPV4_IPV6.
       """)

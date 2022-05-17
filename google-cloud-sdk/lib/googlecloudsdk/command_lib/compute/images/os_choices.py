@@ -54,6 +54,8 @@ OS_CHOICES_IMAGE_IMPORT_GA = [
     'windows-2016-byol',
     'windows-2019',
     'windows-2019-byol',
+    'windows-2022',
+    'windows-2022-byol',
     'windows-7-x64-byol',
     'windows-7-x86-byol',
     'windows-8-x64-byol',

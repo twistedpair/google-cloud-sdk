@@ -28,6 +28,14 @@ class InsufficientPermissionsError(exceptions.Error):
     super(InsufficientPermissionsError, self).__init__(message)
 
 
+class InvalidFlagValueError(exceptions.Error):
+  """An error raised for an invalid value for certain flags."""
+
+  def __init__(self, msg):
+    message = 'Invalid flag value: {}'.format(msg)
+    super(InvalidFlagValueError, self).__init__(message)
+
+
 class UnknownApiEndpointOverrideError(exceptions.Error):
   """An error raised for an invalid value for `api_endpoint_overrides`."""
 

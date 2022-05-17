@@ -48,6 +48,7 @@ from googlecloudsdk.command_lib.storage import tracker_file_util
 from googlecloudsdk.command_lib.storage import user_request_args_factory
 from googlecloudsdk.command_lib.storage.resources import resource_reference
 from googlecloudsdk.command_lib.storage.tasks.cp import copy_util
+from googlecloudsdk.command_lib.storage.tasks.cp import download_util
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
@@ -716,6 +717,12 @@ class GcsApi(cloud_api.CloudApi):
     else:
       posix_attributes_to_set = None
 
+    if download_util.return_and_report_if_nothing_to_download(
+        cloud_resource, progress_callback):
+      return cloud_api.DownloadApiClientReturnValue(
+          posix_attributes=posix_attributes_to_set,
+          server_reported_encoding=None)
+
     serialization_data = get_download_serialization_data(
         cloud_resource, start_byte)
     apitools_download = apitools_transfer.Download.FromData(
@@ -862,6 +869,11 @@ class GcsApi(cloud_api.CloudApi):
         destinationObject=destination_resource.storage_url.object_name,
         ifGenerationMatch=request_config.precondition_generation_match,
         ifMetagenerationMatch=request_config.precondition_metageneration_match)
+
+    if request_config.resource_args:
+      encryption_key = request_config.resource_args.encryption_key
+      if encryption_key and encryption_key.type == encryption_util.KeyType.CMEK:
+        compose_request.kmsKeyName = encryption_key.key
 
     if request_config.predefined_acl_string is not None:
       compose_request.destinationPredefinedAcl = getattr(

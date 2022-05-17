@@ -737,6 +737,7 @@ class Device(_messages.Message):
   ownership, type, and whether it is assigned or in use by a user.
 
   Enums:
+    ClientTypesValueListEntryValuesEnum:
     CompromisedStateValueValuesEnum: Output only. Represents whether the
       Device is compromised.
     DeviceTypeValueValuesEnum: Output only. Type of device.
@@ -754,6 +755,7 @@ class Device(_messages.Message):
     bootloaderVersion: Output only. Device bootloader version. Example: 0.6.7.
     brand: Output only. Device brand. Example: Samsung.
     buildNumber: Output only. Build number of the device.
+    clientTypes: List of the clients the device is reporting to.
     compromisedState: Output only. Represents whether the Device is
       compromised.
     createTime: Output only. When the Company-Owned device was imported. This
@@ -794,6 +796,25 @@ class Device(_messages.Message):
     serialNumber: Serial Number of device. Example: HT82V1A01076.
     wifiMacAddresses: WiFi MAC addresses of device.
   """
+
+  class ClientTypesValueListEntryValuesEnum(_messages.Enum):
+    r"""ClientTypesValueListEntryValuesEnum enum type.
+
+    Values:
+      CLIENT_TYPE_UNSPECIFIED: Default value
+      DRIVE_FS: Managed by DriveFS
+      FUNDAMENTAL: Management type for every secure device
+      ENDPOINT_VERIFICATION: Managed by Endpoint Verification
+      WINDOWS_ADVANCED: Managed by Windows
+      GOOGLE_CREDENTIALS_PROVIDER_FOR_WINDOWS: Managed by Google credential
+        provider for windows
+    """
+    CLIENT_TYPE_UNSPECIFIED = 0
+    DRIVE_FS = 1
+    FUNDAMENTAL = 2
+    ENDPOINT_VERIFICATION = 3
+    WINDOWS_ADVANCED = 4
+    GOOGLE_CREDENTIALS_PROVIDER_FOR_WINDOWS = 5
 
   class CompromisedStateValueValuesEnum(_messages.Enum):
     r"""Output only. Represents whether the Device is compromised.
@@ -886,31 +907,32 @@ class Device(_messages.Message):
   bootloaderVersion = _messages.StringField(4)
   brand = _messages.StringField(5)
   buildNumber = _messages.StringField(6)
-  compromisedState = _messages.EnumField('CompromisedStateValueValuesEnum', 7)
-  createTime = _messages.StringField(8)
-  deviceId = _messages.StringField(9)
-  deviceType = _messages.EnumField('DeviceTypeValueValuesEnum', 10)
-  enabledDeveloperOptions = _messages.BooleanField(11)
-  enabledUsbDebugging = _messages.BooleanField(12)
-  encryptionState = _messages.EnumField('EncryptionStateValueValuesEnum', 13)
-  endpointVerificationSpecificAttributes = _messages.MessageField('EndpointVerificationSpecificAttributes', 14)
-  hostname = _messages.StringField(15)
-  imei = _messages.StringField(16)
-  kernelVersion = _messages.StringField(17)
-  lastSyncTime = _messages.StringField(18)
-  managementState = _messages.EnumField('ManagementStateValueValuesEnum', 19)
-  manufacturer = _messages.StringField(20)
-  meid = _messages.StringField(21)
-  model = _messages.StringField(22)
-  name = _messages.StringField(23)
-  networkOperator = _messages.StringField(24)
-  osVersion = _messages.StringField(25)
-  otherAccounts = _messages.StringField(26, repeated=True)
-  ownerType = _messages.EnumField('OwnerTypeValueValuesEnum', 27)
-  releaseVersion = _messages.StringField(28)
-  securityPatchTime = _messages.StringField(29)
-  serialNumber = _messages.StringField(30)
-  wifiMacAddresses = _messages.StringField(31, repeated=True)
+  clientTypes = _messages.EnumField('ClientTypesValueListEntryValuesEnum', 7, repeated=True)
+  compromisedState = _messages.EnumField('CompromisedStateValueValuesEnum', 8)
+  createTime = _messages.StringField(9)
+  deviceId = _messages.StringField(10)
+  deviceType = _messages.EnumField('DeviceTypeValueValuesEnum', 11)
+  enabledDeveloperOptions = _messages.BooleanField(12)
+  enabledUsbDebugging = _messages.BooleanField(13)
+  encryptionState = _messages.EnumField('EncryptionStateValueValuesEnum', 14)
+  endpointVerificationSpecificAttributes = _messages.MessageField('EndpointVerificationSpecificAttributes', 15)
+  hostname = _messages.StringField(16)
+  imei = _messages.StringField(17)
+  kernelVersion = _messages.StringField(18)
+  lastSyncTime = _messages.StringField(19)
+  managementState = _messages.EnumField('ManagementStateValueValuesEnum', 20)
+  manufacturer = _messages.StringField(21)
+  meid = _messages.StringField(22)
+  model = _messages.StringField(23)
+  name = _messages.StringField(24)
+  networkOperator = _messages.StringField(25)
+  osVersion = _messages.StringField(26)
+  otherAccounts = _messages.StringField(27, repeated=True)
+  ownerType = _messages.EnumField('OwnerTypeValueValuesEnum', 28)
+  releaseVersion = _messages.StringField(29)
+  securityPatchTime = _messages.StringField(30)
+  serialNumber = _messages.StringField(31)
+  wifiMacAddresses = _messages.StringField(32, repeated=True)
 
 
 class DeviceUser(_messages.Message):

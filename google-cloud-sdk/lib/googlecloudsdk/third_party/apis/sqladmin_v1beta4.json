@@ -201,7 +201,8 @@
             "",
             "Creates clone instance.",
             "Reschedule maintenance to another time.",
-            "Starts external sync of a Cloud SQL EM replica to an external primary instance."
+            "Starts external sync of a Cloud SQL EM replica to an external primary instance.",
+            "Recovers logs from an instance's old data disk."
           ],
           "enum": [
             "SQL_OPERATION_TYPE_UNSPECIFIED",
@@ -238,7 +239,8 @@
             "DEFER_MAINTENANCE",
             "CREATE_CLONE",
             "RESCHEDULE_MAINTENANCE",
-            "START_EXTERNAL_SYNC"
+            "START_EXTERNAL_SYNC",
+            "LOG_CLEANUP"
           ]
         },
         "importContext": {
@@ -2197,7 +2199,7 @@
     },
     "SqlScheduledMaintenance": {
       "id": "SqlScheduledMaintenance",
-      "description": "Any scheduled maintenancce for this instance.",
+      "description": "Any scheduled maintenance for this instance.",
       "type": "object",
       "properties": {
         "startTime": {

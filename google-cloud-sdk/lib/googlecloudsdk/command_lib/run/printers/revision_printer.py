@@ -98,6 +98,10 @@ class RevisionPrinter(cp.CustomPrinterBase):
     return execution_env_value
 
   @staticmethod
+  def GetSessionAffinity(record):
+    return record.annotations.get(revision.SESSION_AFFINITY_ANNOTATION, '')
+
+  @staticmethod
   def TransformSpec(record):
     limits = container_util.GetLimits(record)
     return cp.Labeled([
@@ -122,4 +126,5 @@ class RevisionPrinter(cp.CustomPrinterBase):
         ('HTTP/2 Enabled', RevisionPrinter.GetHttp2Enabled(record)),
         ('CPU Allocation', RevisionPrinter.GetCpuAllocation(record)),
         ('Execution Environment', RevisionPrinter.GetExecutionEnv(record)),
+        ('Session Affinity', RevisionPrinter.GetSessionAffinity(record)),
     ])

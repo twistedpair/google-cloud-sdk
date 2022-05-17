@@ -1817,6 +1817,20 @@
         "restartJobOnWorkerRestart": {
           "description": "Restarts the entire CustomJob if a worker gets restarted. This feature can be used by distributed training jobs that are not resilient to workers leaving and joining a job.",
           "type": "boolean"
+        },
+        "strategy": {
+          "description": "Optional. This determines which type of scheduling strategy to use.",
+          "type": "string",
+          "enumDescriptions": [
+            "Strategy will default to ON_DEMAND.",
+            "Regular on-demand provisioning strategy.",
+            "Low cost by making potential use of spot resources."
+          ],
+          "enum": [
+            "STRATEGY_UNSPECIFIED",
+            "ON_DEMAND",
+            "LOW_COST"
+          ]
         }
       }
     },
@@ -17218,6 +17232,13 @@
           "description": "Configuration that defines the hierarchical relationship of time series and parameters for hierarchical forecasting strategies.",
           "$ref": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionHierarchyConfig"
         },
+        "holidayRegions": {
+          "description": "The geographical region based on which the holiday effect is applied in modeling by adding holiday categorical array feature that include all holidays matching the date. This option only allowed when data_granularity is day. By default, holiday effect modeling is disabled. To turn it on, specify the holiday region using this option.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "validationOptions": {
           "description": "Validation options for the data validation component. The available options are: * \"fail-pipeline\" - default, will validate against the validation and fail the pipeline if it fails. * \"ignore-validation\" - ignore the results of the validation and continue",
           "type": "string"
@@ -18182,6 +18203,20 @@
         "restartJobOnWorkerRestart": {
           "description": "Restarts the entire CustomJob if a worker gets restarted. This feature can be used by distributed training jobs that are not resilient to workers leaving and joining a job.",
           "type": "boolean"
+        },
+        "strategy": {
+          "description": "Optional. This determines which type of scheduling strategy to use.",
+          "type": "string",
+          "enumDescriptions": [
+            "Strategy will default to ON_DEMAND.",
+            "Regular on-demand provisioning strategy.",
+            "Low cost by making potential use of spot resources."
+          ],
+          "enum": [
+            "STRATEGY_UNSPECIFIED",
+            "ON_DEMAND",
+            "LOW_COST"
+          ]
         }
       }
     },
@@ -22186,6 +22221,13 @@
           "description": "Configuration that defines the hierarchical relationship of time series and parameters for hierarchical forecasting strategies.",
           "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionHierarchyConfig"
         },
+        "holidayRegions": {
+          "description": "The geographical region based on which the holiday effect is applied in modeling by adding holiday categorical array feature that include all holidays matching the date. This option only allowed when data_granularity is day. By default, holiday effect modeling is disabled. To turn it on, specify the holiday region using this option.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "validationOptions": {
           "description": "Validation options for the data validation component. The available options are: * \"fail-pipeline\" - default, will validate against the validation and fail the pipeline if it fails. * \"ignore-validation\" - ignore the results of the validation and continue",
           "type": "string"
@@ -23179,6 +23221,20 @@
         "restartJobOnWorkerRestart": {
           "description": "Restarts the entire CustomJob if a worker gets restarted. This feature can be used by distributed training jobs that are not resilient to workers leaving and joining a job.",
           "type": "boolean"
+        },
+        "strategy": {
+          "description": "Optional. This determines which type of scheduling strategy to use.",
+          "type": "string",
+          "enumDescriptions": [
+            "Strategy will default to ON_DEMAND.",
+            "Regular on-demand provisioning strategy.",
+            "Low cost by making potential use of spot resources."
+          ],
+          "enum": [
+            "STRATEGY_UNSPECIFIED",
+            "ON_DEMAND",
+            "LOW_COST"
+          ]
         }
       }
     },

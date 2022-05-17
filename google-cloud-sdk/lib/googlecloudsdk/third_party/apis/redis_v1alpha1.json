@@ -224,7 +224,7 @@
     },
     "Instance": {
       "id": "Instance",
-      "description": "A Memorystore for Redis instance. next id = 42",
+      "description": "A Memorystore for Redis instance. next id = 43",
       "type": "object",
       "properties": {
         "name": {
@@ -460,6 +460,10 @@
               "CUSTOMER_MANAGED_KEY_ISSUE"
             ]
           }
+        },
+        "maintenanceVersion": {
+          "description": "Optional. The self service update maintenance version. The version is date based such as \"20210712_00_00\".",
+          "type": "string"
         }
       }
     },

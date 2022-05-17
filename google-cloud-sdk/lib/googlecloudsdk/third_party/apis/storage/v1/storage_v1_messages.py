@@ -326,10 +326,16 @@ class Bucket(_messages.Message):
             Access" launch stage and is only available to a whitelisted set of
             users; that means that this feature may be changed in backward-
             incompatible ways and that it is not guaranteed to be released.
+          matchesPrefix: List of object name prefixes. This condition will be
+            satisfied when at least one of the prefixes exactly matches the
+            beginning of the object name.
           matchesStorageClass: Objects having any of the storage classes
             specified by this condition will be matched. Values include
             MULTI_REGIONAL, REGIONAL, NEARLINE, COLDLINE, ARCHIVE, STANDARD,
             and DURABLE_REDUCED_AVAILABILITY.
+          matchesSuffix: List of object name suffixes. This condition will be
+            satisfied when at least one of the suffixes exactly matches the
+            end of the object name.
           noncurrentTimeBefore: A date in RFC 3339 format with only the date
             part (for instance, "2013-01-15"). This condition is satisfied
             when the noncurrent time on an object is before this date in UTC.
@@ -347,9 +353,11 @@ class Bucket(_messages.Message):
         daysSinceNoncurrentTime = _messages.IntegerField(5, variant=_messages.Variant.INT32)
         isLive = _messages.BooleanField(6)
         matchesPattern = _messages.StringField(7)
-        matchesStorageClass = _messages.StringField(8, repeated=True)
-        noncurrentTimeBefore = extra_types.DateField(9)
-        numNewerVersions = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+        matchesPrefix = _messages.StringField(8, repeated=True)
+        matchesStorageClass = _messages.StringField(9, repeated=True)
+        matchesSuffix = _messages.StringField(10, repeated=True)
+        noncurrentTimeBefore = extra_types.DateField(11)
+        numNewerVersions = _messages.IntegerField(12, variant=_messages.Variant.INT32)
 
       action = _messages.MessageField('ActionValue', 1)
       condition = _messages.MessageField('ConditionValue', 2)

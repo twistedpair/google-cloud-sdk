@@ -358,7 +358,7 @@
     },
     "LifecycleState": {
       "id": "LifecycleState",
-      "description": "Describes the lifecycle state of an Immersive Edge resource.",
+      "description": "Describes the lifecycle state of an Immersive Stream for XR resource.",
       "type": "object",
       "properties": {
         "state": {

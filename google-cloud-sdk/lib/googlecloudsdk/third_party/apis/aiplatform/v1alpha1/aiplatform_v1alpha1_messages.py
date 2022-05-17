@@ -13441,15 +13441,34 @@ class GoogleCloudAiplatformV1SampledShapleyAttribution(_messages.Message):
 class GoogleCloudAiplatformV1Scheduling(_messages.Message):
   r"""All parameters related to queuing and scheduling of custom jobs.
 
+  Enums:
+    StrategyValueValuesEnum: Optional. This determines which type of
+      scheduling strategy to use.
+
   Fields:
     restartJobOnWorkerRestart: Restarts the entire CustomJob if a worker gets
       restarted. This feature can be used by distributed training jobs that
       are not resilient to workers leaving and joining a job.
+    strategy: Optional. This determines which type of scheduling strategy to
+      use.
     timeout: The maximum job running time. The default is 7 days.
   """
 
+  class StrategyValueValuesEnum(_messages.Enum):
+    r"""Optional. This determines which type of scheduling strategy to use.
+
+    Values:
+      STRATEGY_UNSPECIFIED: Strategy will default to ON_DEMAND.
+      ON_DEMAND: Regular on-demand provisioning strategy.
+      LOW_COST: Low cost by making potential use of spot resources.
+    """
+    STRATEGY_UNSPECIFIED = 0
+    ON_DEMAND = 1
+    LOW_COST = 2
+
   restartJobOnWorkerRestart = _messages.BooleanField(1)
-  timeout = _messages.StringField(2)
+  strategy = _messages.EnumField('StrategyValueValuesEnum', 2)
+  timeout = _messages.StringField(3)
 
 
 class GoogleCloudAiplatformV1SchemaAnnotationSpecColor(_messages.Message):
@@ -14598,6 +14617,11 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputs(
       by the `data_granularity` field.
     hierarchyConfig: Configuration that defines the hierarchical relationship
       of time series and parameters for hierarchical forecasting strategies.
+    holidayRegions: The geographical region based on which the holiday effect
+      is applied in modeling by adding holiday categorical array feature that
+      include all holidays matching the date. This option only allowed when
+      data_granularity is day. By default, holiday effect modeling is
+      disabled. To turn it on, specify the holiday region using this option.
     optimizationObjective: Objective function the model is optimizing towards.
       The training process creates a model that optimizes the value of the
       objective function over the validation set. The supported optimization
@@ -14661,17 +14685,18 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputs(
   exportEvaluatedDataItemsConfig = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionExportEvaluatedDataItemsConfig', 5)
   forecastHorizon = _messages.IntegerField(6)
   hierarchyConfig = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionHierarchyConfig', 7)
-  optimizationObjective = _messages.StringField(8)
-  quantiles = _messages.FloatField(9, repeated=True)
-  targetColumn = _messages.StringField(10)
-  timeColumn = _messages.StringField(11)
-  timeSeriesAttributeColumns = _messages.StringField(12, repeated=True)
-  timeSeriesIdentifierColumn = _messages.StringField(13)
-  trainBudgetMilliNodeHours = _messages.IntegerField(14)
-  transformations = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformation', 15, repeated=True)
-  unavailableAtForecastColumns = _messages.StringField(16, repeated=True)
-  validationOptions = _messages.StringField(17)
-  weightColumn = _messages.StringField(18)
+  holidayRegions = _messages.StringField(8, repeated=True)
+  optimizationObjective = _messages.StringField(9)
+  quantiles = _messages.FloatField(10, repeated=True)
+  targetColumn = _messages.StringField(11)
+  timeColumn = _messages.StringField(12)
+  timeSeriesAttributeColumns = _messages.StringField(13, repeated=True)
+  timeSeriesIdentifierColumn = _messages.StringField(14)
+  trainBudgetMilliNodeHours = _messages.IntegerField(15)
+  transformations = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformation', 16, repeated=True)
+  unavailableAtForecastColumns = _messages.StringField(17, repeated=True)
+  validationOptions = _messages.StringField(18)
+  weightColumn = _messages.StringField(19)
 
 
 class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsGranularity(_messages.Message):
@@ -23311,15 +23336,34 @@ class GoogleCloudAiplatformV1alpha1Scalar(_messages.Message):
 class GoogleCloudAiplatformV1alpha1Scheduling(_messages.Message):
   r"""All parameters related to queuing and scheduling of custom jobs.
 
+  Enums:
+    StrategyValueValuesEnum: Optional. This determines which type of
+      scheduling strategy to use.
+
   Fields:
     restartJobOnWorkerRestart: Restarts the entire CustomJob if a worker gets
       restarted. This feature can be used by distributed training jobs that
       are not resilient to workers leaving and joining a job.
+    strategy: Optional. This determines which type of scheduling strategy to
+      use.
     timeout: The maximum job running time. The default is 7 days.
   """
 
+  class StrategyValueValuesEnum(_messages.Enum):
+    r"""Optional. This determines which type of scheduling strategy to use.
+
+    Values:
+      STRATEGY_UNSPECIFIED: Strategy will default to ON_DEMAND.
+      ON_DEMAND: Regular on-demand provisioning strategy.
+      LOW_COST: Low cost by making potential use of spot resources.
+    """
+    STRATEGY_UNSPECIFIED = 0
+    ON_DEMAND = 1
+    LOW_COST = 2
+
   restartJobOnWorkerRestart = _messages.BooleanField(1)
-  timeout = _messages.StringField(2)
+  strategy = _messages.EnumField('StrategyValueValuesEnum', 2)
+  timeout = _messages.StringField(3)
 
 
 class GoogleCloudAiplatformV1alpha1SchemaAnnotationSpecColor(_messages.Message):
@@ -27865,15 +27909,34 @@ class GoogleCloudAiplatformV1beta1SampledShapleyAttribution(_messages.Message):
 class GoogleCloudAiplatformV1beta1Scheduling(_messages.Message):
   r"""All parameters related to queuing and scheduling of custom jobs.
 
+  Enums:
+    StrategyValueValuesEnum: Optional. This determines which type of
+      scheduling strategy to use.
+
   Fields:
     restartJobOnWorkerRestart: Restarts the entire CustomJob if a worker gets
       restarted. This feature can be used by distributed training jobs that
       are not resilient to workers leaving and joining a job.
+    strategy: Optional. This determines which type of scheduling strategy to
+      use.
     timeout: The maximum job running time. The default is 7 days.
   """
 
+  class StrategyValueValuesEnum(_messages.Enum):
+    r"""Optional. This determines which type of scheduling strategy to use.
+
+    Values:
+      STRATEGY_UNSPECIFIED: Strategy will default to ON_DEMAND.
+      ON_DEMAND: Regular on-demand provisioning strategy.
+      LOW_COST: Low cost by making potential use of spot resources.
+    """
+    STRATEGY_UNSPECIFIED = 0
+    ON_DEMAND = 1
+    LOW_COST = 2
+
   restartJobOnWorkerRestart = _messages.BooleanField(1)
-  timeout = _messages.StringField(2)
+  strategy = _messages.EnumField('StrategyValueValuesEnum', 2)
+  timeout = _messages.StringField(3)
 
 
 class GoogleCloudAiplatformV1beta1SchemaAnnotationSpecColor(_messages.Message):
@@ -29025,6 +29088,11 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingIn
       by the `data_granularity` field.
     hierarchyConfig: Configuration that defines the hierarchical relationship
       of time series and parameters for hierarchical forecasting strategies.
+    holidayRegions: The geographical region based on which the holiday effect
+      is applied in modeling by adding holiday categorical array feature that
+      include all holidays matching the date. This option only allowed when
+      data_granularity is day. By default, holiday effect modeling is
+      disabled. To turn it on, specify the holiday region using this option.
     optimizationObjective: Objective function the model is optimizing towards.
       The training process creates a model that optimizes the value of the
       objective function over the validation set. The supported optimization
@@ -29088,17 +29156,18 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingIn
   exportEvaluatedDataItemsConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionExportEvaluatedDataItemsConfig', 5)
   forecastHorizon = _messages.IntegerField(6)
   hierarchyConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionHierarchyConfig', 7)
-  optimizationObjective = _messages.StringField(8)
-  quantiles = _messages.FloatField(9, repeated=True)
-  targetColumn = _messages.StringField(10)
-  timeColumn = _messages.StringField(11)
-  timeSeriesAttributeColumns = _messages.StringField(12, repeated=True)
-  timeSeriesIdentifierColumn = _messages.StringField(13)
-  trainBudgetMilliNodeHours = _messages.IntegerField(14)
-  transformations = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformation', 15, repeated=True)
-  unavailableAtForecastColumns = _messages.StringField(16, repeated=True)
-  validationOptions = _messages.StringField(17)
-  weightColumn = _messages.StringField(18)
+  holidayRegions = _messages.StringField(8, repeated=True)
+  optimizationObjective = _messages.StringField(9)
+  quantiles = _messages.FloatField(10, repeated=True)
+  targetColumn = _messages.StringField(11)
+  timeColumn = _messages.StringField(12)
+  timeSeriesAttributeColumns = _messages.StringField(13, repeated=True)
+  timeSeriesIdentifierColumn = _messages.StringField(14)
+  trainBudgetMilliNodeHours = _messages.IntegerField(15)
+  transformations = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformation', 16, repeated=True)
+  unavailableAtForecastColumns = _messages.StringField(17, repeated=True)
+  validationOptions = _messages.StringField(18)
+  weightColumn = _messages.StringField(19)
 
 
 class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsGranularity(_messages.Message):

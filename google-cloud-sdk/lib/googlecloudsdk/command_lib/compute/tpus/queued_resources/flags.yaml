@@ -15,9 +15,13 @@
 node_id:
   arg_name: node-id
   required: true
+  type: arg_list
   help_text: |
     The unqualified Node identifier, used to identify the TPU in the Nodes
     collection once provisioned.
+
+    To request a resource with multiple nodes, enter multiple, unique, unqualified Node identifiers
+    as a comma delimited list.
 
 accelerator_type:
   arg_name: accelerator-type

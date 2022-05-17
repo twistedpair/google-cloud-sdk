@@ -1796,8 +1796,9 @@ class ContaineranalysisProjectsNotesGetIamPolicyRequest(_messages.Message):
     getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
       request body.
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
@@ -1872,8 +1873,9 @@ class ContaineranalysisProjectsNotesSetIamPolicyRequest(_messages.Message):
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
@@ -1887,8 +1889,9 @@ class ContaineranalysisProjectsNotesTestIamPermissionsRequest(_messages.Message)
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """
@@ -1931,8 +1934,9 @@ class ContaineranalysisProjectsOccurrencesGetIamPolicyRequest(_messages.Message)
     getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
       request body.
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
@@ -2059,8 +2063,9 @@ class ContaineranalysisProjectsOccurrencesSetIamPolicyRequest(_messages.Message)
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
@@ -2074,8 +2079,9 @@ class ContaineranalysisProjectsOccurrencesTestIamPermissionsRequest(_messages.Me
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """
@@ -2189,8 +2195,9 @@ class ContaineranalysisProvidersNotesGetIamPolicyRequest(_messages.Message):
     getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
       request body.
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
@@ -2265,8 +2272,9 @@ class ContaineranalysisProvidersNotesSetIamPolicyRequest(_messages.Message):
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
@@ -2280,8 +2288,9 @@ class ContaineranalysisProvidersNotesTestIamPermissionsRequest(_messages.Message
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """
@@ -2452,6 +2461,19 @@ class Detail(_messages.Message):
   severityName = _messages.StringField(9)
   source = _messages.StringField(10)
   vendor = _messages.StringField(11)
+
+
+class Digest(_messages.Message):
+  r"""Digest information.
+
+  Fields:
+    algo: `SHA1`, `SHA512` etc.
+    digestValue: Value of the digest encoded. For example: SHA512 - base64
+      encoding, SHA1 - hex encoding.
+  """
+
+  algo = _messages.StringField(1)
+  digestValue = _messages.StringField(2)
 
 
 class Discovered(_messages.Message):
@@ -2803,6 +2825,17 @@ class FileHashes(_messages.Message):
   """
 
   fileHash = _messages.MessageField('Hash', 1, repeated=True)
+
+
+class FileLocation(_messages.Message):
+  r"""Indicates the location at which a package was found.
+
+  Fields:
+    filePath: For jars that are contained inside .war files, this filepath can
+      indicate the path to war file combined with the path to jar file.
+  """
+
+  filePath = _messages.StringField(1)
 
 
 class FileNote(_messages.Message):
@@ -3192,14 +3225,49 @@ class Installation(_messages.Message):
   r"""This represents how a particular software package may be installed on a
   system.
 
+  Enums:
+    ArchitectureValueValuesEnum: Output only. The CPU architecture for which
+      packages in this distribution channel were built. Architecture will be
+      blank for language packages.
+
   Fields:
+    architecture: Output only. The CPU architecture for which packages in this
+      distribution channel were built. Architecture will be blank for language
+      packages.
+    cpeUri: Output only. The cpe_uri in [CPE
+      format](https://cpe.mitre.org/specification/) denoting the package
+      manager version distributing a package. The cpe_uri will be blank for
+      language packages.
+    license: Licenses that have been declared by the authors of the package.
     location: All of the places within the filesystem versions of this package
       have been found.
     name: Output only. The name of the installed package.
+    packageType: Output only. The type of package; whether native or non
+      native (e.g., ruby gems, node.js packages, etc.).
+    version: Output only. The version of the package.
   """
 
-  location = _messages.MessageField('Location', 1, repeated=True)
-  name = _messages.StringField(2)
+  class ArchitectureValueValuesEnum(_messages.Enum):
+    r"""Output only. The CPU architecture for which packages in this
+    distribution channel were built. Architecture will be blank for language
+    packages.
+
+    Values:
+      ARCHITECTURE_UNSPECIFIED: Unknown architecture
+      X86: X86 architecture
+      X64: X64 architecture
+    """
+    ARCHITECTURE_UNSPECIFIED = 0
+    X86 = 1
+    X64 = 2
+
+  architecture = _messages.EnumField('ArchitectureValueValuesEnum', 1)
+  cpeUri = _messages.StringField(2)
+  license = _messages.MessageField('License', 3)
+  location = _messages.MessageField('Location', 4, repeated=True)
+  name = _messages.StringField(5)
+  packageType = _messages.StringField(6)
+  version = _messages.MessageField('Version', 7)
 
 
 class Layer(_messages.Message):
@@ -3262,13 +3330,15 @@ class Layer(_messages.Message):
 
 
 class License(_messages.Message):
-  r"""License information: https://spdx.github.io/spdx-spec/3-package-
-  information/#315-declared-license
+  r"""License information.
 
   Fields:
     comments: Comments
-    expression: Expression: https://spdx.github.io/spdx-spec/appendix-IV-SPDX-
-      license-expressions/
+    expression: Often a single license can be used to represent the licensing
+      terms. Sometimes it is necessary to include a choice of one or more
+      licenses or some combination of license identifiers. Examples:
+      "LGPL-2.1-only OR MIT", "LGPL-2.1-only AND MIT", "GPL-2.0-or-later WITH
+      Bison-exception-2.2".
   """
 
   comments = _messages.StringField(1)
@@ -3332,11 +3402,12 @@ class Location(_messages.Message):
   system's filesystem. e.g. glibc was found in /var/lib/dpkg/status
 
   Fields:
-    cpeUri: The cpe_uri in [cpe format](https://cpe.mitre.org/specification/)
-      denoting the package manager version distributing a package.
+    cpeUri: Deprecated. The cpe_uri in [cpe
+      format](https://cpe.mitre.org/specification/) denoting the package
+      manager version distributing a package.
     path: The path from which we gathered that this package/version is
       installed.
-    version: The version installed at this location.
+    version: Deprecated. The version installed at this location.
   """
 
   cpeUri = _messages.StringField(1)
@@ -3754,13 +3825,54 @@ class Package(_messages.Message):
   channels. e.g. glibc (aka libc6) is distributed by many, at various
   versions.
 
+  Enums:
+    ArchitectureValueValuesEnum: The CPU architecture for which packages in
+      this distribution channel were built. Architecture will be blank for
+      language packages.
+
   Fields:
+    architecture: The CPU architecture for which packages in this distribution
+      channel were built. Architecture will be blank for language packages.
+    cpeUri: The cpe_uri in [CPE format](https://cpe.mitre.org/specification/)
+      denoting the package manager version distributing a package. The cpe_uri
+      will be blank for language packages.
+    description: The description of this package.
+    digest: Hash value, typically a file digest, that allows unique
+      identification a specific package.
     distribution: The various channels by which a package is distributed.
+    license: Licenses that have been declared by the authors of the package.
+    maintainer: A freeform text denoting the maintainer of this package.
     name: The name of the package.
+    packageType: The type of package; whether native or non native (e.g., ruby
+      gems, node.js packages, etc.).
+    url: The homepage for this package.
+    version: The version of the package.
   """
 
-  distribution = _messages.MessageField('Distribution', 1, repeated=True)
-  name = _messages.StringField(2)
+  class ArchitectureValueValuesEnum(_messages.Enum):
+    r"""The CPU architecture for which packages in this distribution channel
+    were built. Architecture will be blank for language packages.
+
+    Values:
+      ARCHITECTURE_UNSPECIFIED: Unknown architecture
+      X86: X86 architecture
+      X64: X64 architecture
+    """
+    ARCHITECTURE_UNSPECIFIED = 0
+    X86 = 1
+    X64 = 2
+
+  architecture = _messages.EnumField('ArchitectureValueValuesEnum', 1)
+  cpeUri = _messages.StringField(2)
+  description = _messages.StringField(3)
+  digest = _messages.MessageField('Digest', 4, repeated=True)
+  distribution = _messages.MessageField('Distribution', 5, repeated=True)
+  license = _messages.MessageField('License', 6)
+  maintainer = _messages.StringField(7)
+  name = _messages.StringField(8)
+  packageType = _messages.StringField(9)
+  url = _messages.StringField(10)
+  version = _messages.MessageField('Version', 11)
 
 
 class PackageInfoNote(_messages.Message):
@@ -5217,14 +5329,16 @@ class VulnerabilityLocation(_messages.Message):
     cpeUri: The cpe_uri in [cpe format] (https://cpe.mitre.org/specification/)
       format. Examples include distro or storage location for vulnerable jar.
       This field can be used as a filter in list requests.
+    fileLocation: The file location at which this package was found.
     package: The package being described.
     version: The version of the package being described. This field can be
       used as a filter in list requests.
   """
 
   cpeUri = _messages.StringField(1)
-  package = _messages.StringField(2)
-  version = _messages.MessageField('Version', 3)
+  fileLocation = _messages.MessageField('FileLocation', 2, repeated=True)
+  package = _messages.StringField(3)
+  version = _messages.MessageField('Version', 4)
 
 
 class VulnerabilityType(_messages.Message):
@@ -5236,6 +5350,9 @@ class VulnerabilityType(_messages.Message):
 
   Fields:
     cvssScore: The CVSS score for this Vulnerability.
+    cvssV2: The full description of the CVSS for version 2.
+    cwe: A list of CWE for this vulnerability. For details, see:
+      https://cwe.mitre.org/index.html
     details: All information about the package to specifically identify this
       vulnerability. One entry per (version range and cpe_uri) the package
       vulnerability has manifested in.
@@ -5261,8 +5378,10 @@ class VulnerabilityType(_messages.Message):
     CRITICAL = 5
 
   cvssScore = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
-  details = _messages.MessageField('Detail', 2, repeated=True)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 3)
+  cvssV2 = _messages.MessageField('CVSS', 2)
+  cwe = _messages.StringField(3, repeated=True)
+  details = _messages.MessageField('Detail', 4, repeated=True)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 5)
 
 
 encoding.AddCustomJsonFieldMapping(

@@ -337,6 +337,33 @@ class SecuritycenterV1beta2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetSecurityCenterSettings(self, request, global_params=None):
+      r"""Get the SecurityCenterSettings resource.
+
+      Args:
+        request: (SecuritycenterFoldersGetSecurityCenterSettingsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SecurityCenterSettings) The response message.
+      """
+      config = self.GetMethodConfig('GetSecurityCenterSettings')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetSecurityCenterSettings.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta2/folders/{foldersId}/securityCenterSettings',
+        http_method='GET',
+        method_id='securitycenter.folders.getSecurityCenterSettings',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta2/{+name}',
+        request_field='',
+        request_type_name='SecuritycenterFoldersGetSecurityCenterSettingsRequest',
+        response_type_name='SecurityCenterSettings',
+        supports_download=False,
+    )
+
     def GetSecurityHealthAnalyticsSettings(self, request, global_params=None):
       r"""Get the SecurityHealthAnalyticsSettings resource.
 
@@ -1483,6 +1510,33 @@ class SecuritycenterV1beta2(base_api.BaseApiClient):
         request_field='',
         request_type_name='SecuritycenterProjectsGetOnboardingStateRequest',
         response_type_name='OnboardingState',
+        supports_download=False,
+    )
+
+    def GetSecurityCenterSettings(self, request, global_params=None):
+      r"""Get the SecurityCenterSettings resource.
+
+      Args:
+        request: (SecuritycenterProjectsGetSecurityCenterSettingsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SecurityCenterSettings) The response message.
+      """
+      config = self.GetMethodConfig('GetSecurityCenterSettings')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetSecurityCenterSettings.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta2/projects/{projectsId}/securityCenterSettings',
+        http_method='GET',
+        method_id='securitycenter.projects.getSecurityCenterSettings',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta2/{+name}',
+        request_field='',
+        request_type_name='SecuritycenterProjectsGetSecurityCenterSettingsRequest',
+        response_type_name='SecurityCenterSettings',
         supports_download=False,
     )
 

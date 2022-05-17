@@ -212,6 +212,10 @@
         "osImage": {
           "description": "The OS image currently installed on the server.",
           "type": "string"
+        },
+        "pod": {
+          "description": "Immutable. Pod name. Pod is an independent part of infrastructure. Instance can be connected to the assets (networks, volumes) allocated in the same pod only.",
+          "type": "string"
         }
       }
     },
@@ -767,6 +771,10 @@
         "snapshotEnabled": {
           "description": "Whether snapshots are enabled.",
           "type": "boolean"
+        },
+        "pod": {
+          "description": "Immutable. Pod name.",
+          "type": "string"
         }
       }
     },
@@ -2013,7 +2021,7 @@
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "The list of fields to update. The only currently supported fields are: `labels` `hyperthreading_enabled`",
+                      "description": "The list of fields to update. The currently supported fields are: `labels` `hyperthreading_enabled` `os_image`",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"

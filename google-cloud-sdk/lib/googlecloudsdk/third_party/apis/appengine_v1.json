@@ -563,7 +563,7 @@
           "type": "boolean"
         },
         "appEngineApis": {
-          "description": "app_engine_apis allows second generation runtimes to access the App Engine APIs.",
+          "description": "Allows App Engine second generation runtimes to access the legacy bundled services.",
           "type": "boolean"
         },
         "betaSettings": {

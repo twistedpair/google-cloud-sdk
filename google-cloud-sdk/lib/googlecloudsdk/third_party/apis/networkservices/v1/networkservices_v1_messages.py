@@ -457,14 +457,18 @@ class EdgeCacheKeyset(_messages.Message):
       the regular expression a-zA-Z* which means the first character must be a
       letter, and all following characters must be a dash, underscore, letter
       or digit.
-    publicKeys: Required. An ordered list of Ed25519 public keys to use for
-      validating signed requests. You must specify at least one (1) key, and
-      may have up to three (3) keys. Ed25519 public keys are not secret, and
-      only allow Google to validate a request was signed by your corresponding
+    publicKeys: Optional. An ordered list of Ed25519 public keys to use for
+      validating signed requests. Ed25519 public keys are not secret, and only
+      allow Google to validate a request was signed by your corresponding
       private key. You should ensure that the private key is kept secret, and
       that only authorized users can add public keys to a keyset. You can
       rotate keys by appending (pushing) a new key to the list of public keys,
-      and removing any superseded keys.
+      and removing any superseded keys. You must specify at least one of
+      publicKeys and validationSharedKeys. You may specify both publicKeys and
+      validationSharedKeys. The keys in publicKeys will be checked first. You
+      may specify at most 1 Google-managed public key. If you specify
+      publicKeys, you must specify at least one (1) key and may have up to
+      three (3) keys.
     updateTime: Output only. Update timestamp in RFC3339 text format.
   """
 
@@ -699,8 +703,8 @@ class EdgeCacheService(_messages.Message):
       that only "global" certificates with a "scope" of "EDGE_CACHE" can be
       attached to an EdgeCacheService. The following are both valid paths to a
       Certificate resource: *
-      projects/project/locations/global/certificates/media-example-com-cert *
-      media-example-com-cert You may specify up to 5 SSL certificates.
+      `projects/project/locations/global/certificates/media-example-com-cert`
+      * `media-example-com-cert` You may specify up to 5 SSL certificates.
     ipv4Addresses: Output only. The IPv4 addresses associated with this
       service. Addresses are static for the lifetime of the service. IP
       addresses provisioned via Bring-Your-Own-IP (BYOIP) are not supported.
@@ -1438,8 +1442,9 @@ class NetworkservicesProjectsLocationsEdgeCacheKeysetsGetIamPolicyRequest(_messa
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1503,8 +1508,9 @@ class NetworkservicesProjectsLocationsEdgeCacheKeysetsSetIamPolicyRequest(_messa
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
@@ -1520,8 +1526,9 @@ class NetworkservicesProjectsLocationsEdgeCacheKeysetsTestIamPermissionsRequest(
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """
@@ -1576,8 +1583,9 @@ class NetworkservicesProjectsLocationsEdgeCacheOriginsGetIamPolicyRequest(_messa
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1641,8 +1649,9 @@ class NetworkservicesProjectsLocationsEdgeCacheOriginsSetIamPolicyRequest(_messa
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
@@ -1658,8 +1667,9 @@ class NetworkservicesProjectsLocationsEdgeCacheOriginsTestIamPermissionsRequest(
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """
@@ -1714,8 +1724,9 @@ class NetworkservicesProjectsLocationsEdgeCacheServicesGetIamPolicyRequest(_mess
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1797,8 +1808,9 @@ class NetworkservicesProjectsLocationsEdgeCacheServicesSetIamPolicyRequest(_mess
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
@@ -1814,8 +1826,9 @@ class NetworkservicesProjectsLocationsEdgeCacheServicesTestIamPermissionsRequest
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """
@@ -1870,8 +1883,9 @@ class NetworkservicesProjectsLocationsEndpointPoliciesGetIamPolicyRequest(_messa
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1933,8 +1947,9 @@ class NetworkservicesProjectsLocationsEndpointPoliciesSetIamPolicyRequest(_messa
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
@@ -1950,8 +1965,9 @@ class NetworkservicesProjectsLocationsEndpointPoliciesTestIamPermissionsRequest(
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """
@@ -2085,8 +2101,9 @@ class NetworkservicesProjectsLocationsServiceBindingsGetIamPolicyRequest(_messag
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -2127,8 +2144,9 @@ class NetworkservicesProjectsLocationsServiceBindingsSetIamPolicyRequest(_messag
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
@@ -2144,8 +2162,9 @@ class NetworkservicesProjectsLocationsServiceBindingsTestIamPermissionsRequest(_
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """
@@ -2395,10 +2414,11 @@ class PublicKey(_messages.Message):
       long, and match the regular expression a-zA-Z* which means the first
       character must be a letter, and all following characters must be a dash,
       underscore, letter or digit.
-    value: Required. The base64-encoded value of the Ed25519 public key. The
+    value: Optional. The base64-encoded value of the Ed25519 public key. The
       base64 encoding can be padded (44 bytes) or unpadded (43 bytes).
       Representations or encodings of the public key other than this will be
-      rejected with an error.
+      rejected with an error. Exactly one of value or managed must be
+      specified.
   """
 
   id = _messages.StringField(1)

@@ -5762,8 +5762,8 @@
             "$ref": "GoogleCloudApigeeV1ScoreComponentRecommendation"
           }
         },
-        "latestDataCaptureTime": {
-          "description": "Time when data was last captured to compute the score.",
+        "dataCaptureTime": {
+          "description": "Time in the requested time period when data was last captured to compute the score.",
           "type": "string",
           "format": "google-datetime"
         },
@@ -6931,7 +6931,7 @@
               "type": "string"
             },
             "retention": {
-              "description": "Optional. The settings that control how long Organization data will be retained after the initial delete operation completes. During this period, the Organization may be restored to its last known state. After this period, the Organization will no longer be able to be restored.",
+              "description": "Optional. This setting is only applicable for organizations that are soft-deleted (i.e. BillingType is not EVALUATION). It controls how long Organization data will be retained after the initial delete operation completes. During this period, the Organization may be restored to its last known state. After this period, the Organization will no longer be able to be restored.",
               "location": "query",
               "type": "string",
               "enumDescriptions": [
@@ -6953,7 +6953,7 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
           ],
-          "description": "Delete an Apigee organization. Only supported for SubscriptionType TRIAL."
+          "description": "Delete an Apigee organization. For organizations with BillingType EVALUATION, an immediate deletion is performed. For paid organizations, a soft-deletion is performed. The organization can be restored within the soft-deletion period - which can be controlled using the retention field in the request."
         },
         "undelete": {
           "id": "apigee.organizations.undelete",
@@ -7158,7 +7158,7 @@
           "httpMethod": "POST",
           "parameters": {
             "resource": {
-              "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+              "description": "REQUIRED: The resource for which the policy detail is being requested. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
               "pattern": "^organizations\/.*$",
               "location": "path",
               "required": true,
@@ -8270,7 +8270,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "resource": {
-                  "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                  "description": "REQUIRED: The resource for which the policy is being specified. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
                   "pattern": "^organizations\/[^\/]+\/environments\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -8298,7 +8298,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "resource": {
-                  "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                  "description": "REQUIRED: The resource for which the policy is being requested. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
                   "pattern": "^organizations\/[^\/]+\/environments\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -8329,7 +8329,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "resource": {
-                  "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                  "description": "REQUIRED: The resource for which the policy detail is being requested. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
                   "pattern": "^organizations\/[^\/]+\/environments\/[^\/]+$",
                   "location": "path",
                   "required": true,

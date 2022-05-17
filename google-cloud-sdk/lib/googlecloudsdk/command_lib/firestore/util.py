@@ -238,3 +238,36 @@ def CreateFieldUpdateRequest(ref, args):
           googleFirestoreAdminV1Field=field))
 
   return request
+
+
+def GetDatabaseType(value):
+  """Return API required format for type specified by value."""
+  messages = GetMessagesModule()
+  if value == 'firestore-native':
+    return messages.GoogleFirestoreAdminV1Database.TypeValueValuesEnum.FIRESTORE_NATIVE
+  elif value == 'datastore-mode':
+    return messages.GoogleFirestoreAdminV1Database.TypeValueValuesEnum.DATASTORE_MODE
+  else:
+    raise exceptions.InvalidArgumentException('invalid type: ' + value)
+
+
+def CreateDatabaseUpdateRequest(ref, args):
+  """Create a database update request.
+
+  Args:
+    ref: The resource ref.
+    args: The parsed arg namespace.
+
+  Returns:
+    A new database update request with new retention.
+  """
+  messages = GetMessagesModule()
+  database = messages.GoogleFirestoreAdminV1Database(
+      name=ref.RelativeName(),
+      type=GetDatabaseType(args.type))
+  request = (
+      messages.FirestoreProjectsDatabasesPatchRequest(
+          name=ref.RelativeName(),
+          updateMask='type',
+          googleFirestoreAdminV1Database=database))
+  return request

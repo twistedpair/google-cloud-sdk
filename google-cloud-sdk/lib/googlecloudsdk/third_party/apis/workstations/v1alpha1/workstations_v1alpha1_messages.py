@@ -1408,14 +1408,18 @@ class WorkstationsProjectsLocationsWorkstationClustersDeleteRequest(_messages.Me
   Fields:
     etag: If set, the request will be rejected if the latest version of the
       cluster on the server does not have this etag.
+    force: If set, any WorkstationConfigs and Workstations in the cluster will
+      also be deleted. Otherwise, the request will work only if the cluster
+      has no configs or workstations.
     name: Required. Name of the cluster to delete.
     validateOnly: If set, validate the request and preview the review, but do
       not actually apply it.
   """
 
   etag = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  validateOnly = _messages.BooleanField(3)
+  force = _messages.BooleanField(2)
+  name = _messages.StringField(3, required=True)
+  validateOnly = _messages.BooleanField(4)
 
 
 class WorkstationsProjectsLocationsWorkstationClustersGetRequest(_messages.Message):
@@ -1519,8 +1523,9 @@ class WorkstationsProjectsLocationsWorkstationClustersWorkstationConfigsGetIamPo
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1584,8 +1589,9 @@ class WorkstationsProjectsLocationsWorkstationClustersWorkstationConfigsSetIamPo
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
@@ -1600,8 +1606,9 @@ class WorkstationsProjectsLocationsWorkstationClustersWorkstationConfigsTestIamP
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """
@@ -1680,8 +1687,9 @@ class WorkstationsProjectsLocationsWorkstationClustersWorkstationsGetIamPolicyRe
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1745,8 +1753,9 @@ class WorkstationsProjectsLocationsWorkstationClustersWorkstationsSetIamPolicyRe
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
@@ -1791,8 +1800,9 @@ class WorkstationsProjectsLocationsWorkstationClustersWorkstationsTestIamPermiss
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """

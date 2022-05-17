@@ -161,6 +161,22 @@ def ParseTriggerArgs(args, messages):
   return trigger, False
 
 
+def AddIncludeLogsArgs(flag_config):
+  """Add flag related to including logs for GitHub checkrun summary page.
+
+  Args:
+    flag_config: argparse argument group. Include logs for GitHub will be
+    added to this config.
+  """
+
+  flag_config.add_argument(
+      '--include-logs-with-status',
+      help=(
+          'Build logs will be sent back to GitHub as part of the checkrun '
+          'result.'
+      ), action='store_true')
+
+
 def AddRepoEventArgs(flag_config):
   """Adds additional argparse flags related to repo events.
 
@@ -530,3 +546,18 @@ def ParseRequireApproval(trigger, args, messages):
 
   if args.require_approval:
     trigger.approvalConfig = messages.ApprovalConfig(approvalRequired=True)
+
+
+def ParseIncludeLogsWithStatus(trigger, args, messages):
+  """Parses include logs with status flag.
+
+  Args:
+    trigger: The trigger to populate.
+    args: An argparse arguments object.
+    messages: A Cloud Build messages module.
+  """
+
+  if args.include_logs_with_status:
+    trigger.includeBuildLogs = (
+        messages.BuildTrigger
+        .IncludeBuildLogsValueValuesEnum.INCLUDE_BUILD_LOGS_WITH_STATUS)

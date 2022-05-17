@@ -1132,6 +1132,9 @@ class RunappsProjectsLocationsApplicationsDeleteRequest(_messages.Message):
   r"""A RunappsProjectsLocationsApplicationsDeleteRequest object.
 
   Fields:
+    force: If set to true, any child deployments of this application will also
+      be deleted. Followed the best practice from
+      https://aip.dev/135#cascading-delete
     name: Required. Name of the resource
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
@@ -1146,8 +1149,9 @@ class RunappsProjectsLocationsApplicationsDeleteRequest(_messages.Message):
       not supported (00000000-0000-0000-0000-000000000000).
   """
 
-  name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
+  force = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
 
 
 class RunappsProjectsLocationsApplicationsDeploymentsCreateRequest(_messages.Message):

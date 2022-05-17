@@ -108,6 +108,8 @@ def CreatePasswordPolicyFromArgs(sql_messages, release_track, args):
       enable_password_verification is not None,
       clear_password_policy is not None,
   ])
+
+  # Config does not exist, do not generate a policy
   if not should_generate_policy:
     return None
 
@@ -120,6 +122,7 @@ def CreatePasswordPolicyFromArgs(sql_messages, release_track, args):
 
   if allowed_failed_attempts is not None:
     password_policy.allowedFailedAttempts = allowed_failed_attempts
+    password_policy.enableFailedAttemptsCheck = True
   if password_expiration_duration is not None:
     password_policy.passwordExpirationDuration = str(
         password_expiration_duration) + 's'

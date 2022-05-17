@@ -1029,6 +1029,29 @@
         "hostname": {
           "description": "Host name of the device.",
           "type": "string"
+        },
+        "clientTypes": {
+          "description": "List of the clients the device is reporting to.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enumDescriptions": [
+              "Default value",
+              "Managed by DriveFS",
+              "Management type for every secure device",
+              "Managed by Endpoint Verification",
+              "Managed by Windows",
+              "Managed by Google credential provider for windows"
+            ],
+            "enum": [
+              "CLIENT_TYPE_UNSPECIFIED",
+              "DRIVE_FS",
+              "FUNDAMENTAL",
+              "ENDPOINT_VERIFICATION",
+              "WINDOWS_ADVANCED",
+              "GOOGLE_CREDENTIALS_PROVIDER_FOR_WINDOWS"
+            ]
+          }
         }
       }
     },

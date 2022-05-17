@@ -566,6 +566,13 @@
         "version": {
           "description": "The version of the package being described. This field can be used as a filter in list requests.",
           "$ref": "Version"
+        },
+        "fileLocation": {
+          "description": "The file location at which this package was found.",
+          "type": "array",
+          "items": {
+            "$ref": "FileLocation"
+          }
         }
       }
     },
@@ -604,6 +611,17 @@
         "inclusive": {
           "description": "Whether this version is vulnerable, when defining the version bounds. For example, if the minimum version is 2.0, inclusive=true would say 2.0 is vulnerable, while inclusive=false would say it's not",
           "type": "boolean"
+        }
+      }
+    },
+    "FileLocation": {
+      "id": "FileLocation",
+      "description": "Indicates the location at which a package was found.",
+      "type": "object",
+      "properties": {
+        "filePath": {
+          "description": "For jars that are contained inside .war files, this filepath can indicate the path to war file combined with the path to jar file.",
+          "type": "string"
         }
       }
     },
@@ -1426,6 +1444,7 @@
       "properties": {
         "name": {
           "description": "Output only. The name of the installed package.",
+          "readOnly": true,
           "type": "string"
         },
         "location": {
@@ -1434,6 +1453,40 @@
           "items": {
             "$ref": "Location"
           }
+        },
+        "packageType": {
+          "description": "Output only. The type of package; whether native or non native (e.g., ruby gems, node.js packages, etc.).",
+          "readOnly": true,
+          "type": "string"
+        },
+        "cpeUri": {
+          "description": "Output only. The cpe_uri in [CPE format](https:\/\/cpe.mitre.org\/specification\/) denoting the package manager version distributing a package. The cpe_uri will be blank for language packages.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "architecture": {
+          "description": "Output only. The CPU architecture for which packages in this distribution channel were built. Architecture will be blank for language packages.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Unknown architecture",
+            "X86 architecture",
+            "X64 architecture"
+          ],
+          "enum": [
+            "ARCHITECTURE_UNSPECIFIED",
+            "X86",
+            "X64"
+          ]
+        },
+        "license": {
+          "description": "Licenses that have been declared by the authors of the package.",
+          "$ref": "License"
+        },
+        "version": {
+          "description": "Output only. The version of the package.",
+          "readOnly": true,
+          "$ref": "Version"
         }
       }
     },
@@ -1443,15 +1496,30 @@
       "type": "object",
       "properties": {
         "cpeUri": {
-          "description": "The cpe_uri in [cpe format](https:\/\/cpe.mitre.org\/specification\/) denoting the package manager version distributing a package.",
+          "description": "Deprecated. The cpe_uri in [cpe format](https:\/\/cpe.mitre.org\/specification\/) denoting the package manager version distributing a package.",
           "type": "string"
         },
         "version": {
-          "description": "The version installed at this location.",
+          "description": "Deprecated. The version installed at this location.",
           "$ref": "Version"
         },
         "path": {
           "description": "The path from which we gathered that this package\/version is installed.",
+          "type": "string"
+        }
+      }
+    },
+    "License": {
+      "id": "License",
+      "description": "License information.",
+      "type": "object",
+      "properties": {
+        "expression": {
+          "description": "Often a single license can be used to represent the licensing terms. Sometimes it is necessary to include a choice of one or more licenses or some combination of license identifiers. Examples: \"LGPL-2.1-only OR MIT\", \"LGPL-2.1-only AND MIT\", \"GPL-2.0-or-later WITH Bison-exception-2.2\".",
+          "type": "string"
+        },
+        "comments": {
+          "description": "Comments",
           "type": "string"
         }
       }
@@ -1850,21 +1918,6 @@
         "summaryDescription": {
           "description": "Output only. A short description of the package",
           "readOnly": true,
-          "type": "string"
-        }
-      }
-    },
-    "License": {
-      "id": "License",
-      "description": "License information: https:\/\/spdx.github.io\/spdx-spec\/3-package-information\/#315-declared-license",
-      "type": "object",
-      "properties": {
-        "expression": {
-          "description": "Expression: https:\/\/spdx.github.io\/spdx-spec\/appendix-IV-SPDX-license-expressions\/",
-          "type": "string"
-        },
-        "comments": {
-          "description": "Comments",
           "type": "string"
         }
       }
@@ -2282,6 +2335,17 @@
           "items": {
             "$ref": "Detail"
           }
+        },
+        "cvssV2": {
+          "description": "The full description of the CVSS for version 2.",
+          "$ref": "CVSS"
+        },
+        "cwe": {
+          "description": "A list of CWE for this vulnerability. For details, see: https:\/\/cwe.mitre.org\/index.html",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -2414,6 +2478,55 @@
           "items": {
             "$ref": "Distribution"
           }
+        },
+        "packageType": {
+          "description": "The type of package; whether native or non native (e.g., ruby gems, node.js packages, etc.).",
+          "type": "string"
+        },
+        "cpeUri": {
+          "description": "The cpe_uri in [CPE format](https:\/\/cpe.mitre.org\/specification\/) denoting the package manager version distributing a package. The cpe_uri will be blank for language packages.",
+          "type": "string"
+        },
+        "architecture": {
+          "description": "The CPU architecture for which packages in this distribution channel were built. Architecture will be blank for language packages.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unknown architecture",
+            "X86 architecture",
+            "X64 architecture"
+          ],
+          "enum": [
+            "ARCHITECTURE_UNSPECIFIED",
+            "X86",
+            "X64"
+          ]
+        },
+        "version": {
+          "description": "The version of the package.",
+          "$ref": "Version"
+        },
+        "maintainer": {
+          "description": "A freeform text denoting the maintainer of this package.",
+          "type": "string"
+        },
+        "url": {
+          "description": "The homepage for this package.",
+          "type": "string"
+        },
+        "description": {
+          "description": "The description of this package.",
+          "type": "string"
+        },
+        "license": {
+          "description": "Licenses that have been declared by the authors of the package.",
+          "$ref": "License"
+        },
+        "digest": {
+          "description": "Hash value, typically a file digest, that allows unique identification a specific package.",
+          "type": "array",
+          "items": {
+            "$ref": "Digest"
+          }
         }
       }
     },
@@ -2454,6 +2567,21 @@
         },
         "description": {
           "description": "The distribution channel-specific description of this package.",
+          "type": "string"
+        }
+      }
+    },
+    "Digest": {
+      "id": "Digest",
+      "description": "Digest information.",
+      "type": "object",
+      "properties": {
+        "algo": {
+          "description": "`SHA1`, `SHA512` etc.",
+          "type": "string"
+        },
+        "digestValue": {
+          "description": "Value of the digest encoded. For example: SHA512 - base64 encoding, SHA1 - hex encoding.",
           "type": "string"
         }
       }
@@ -4515,7 +4643,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "resource": {
-                  "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                  "description": "REQUIRED: The resource for which the policy is being specified. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
                   "pattern": "^projects\/[^\/]+\/occurrences\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -4543,7 +4671,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "resource": {
-                  "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                  "description": "REQUIRED: The resource for which the policy is being requested. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
                   "pattern": "^projects\/[^\/]+\/occurrences\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -4571,7 +4699,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "resource": {
-                  "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                  "description": "REQUIRED: The resource for which the policy detail is being requested. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
                   "pattern": "^projects\/[^\/]+\/occurrences\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -4771,7 +4899,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "resource": {
-                  "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                  "description": "REQUIRED: The resource for which the policy is being specified. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
                   "pattern": "^projects\/[^\/]+\/notes\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -4799,7 +4927,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "resource": {
-                  "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                  "description": "REQUIRED: The resource for which the policy is being requested. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
                   "pattern": "^projects\/[^\/]+\/notes\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -4827,7 +4955,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "resource": {
-                  "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                  "description": "REQUIRED: The resource for which the policy detail is being requested. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
                   "pattern": "^projects\/[^\/]+\/notes\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -5243,7 +5371,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "resource": {
-                  "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                  "description": "REQUIRED: The resource for which the policy is being specified. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
                   "pattern": "^providers\/[^\/]+\/notes\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -5271,7 +5399,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "resource": {
-                  "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                  "description": "REQUIRED: The resource for which the policy is being requested. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
                   "pattern": "^providers\/[^\/]+\/notes\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -5299,7 +5427,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "resource": {
-                  "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                  "description": "REQUIRED: The resource for which the policy detail is being requested. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
                   "pattern": "^providers\/[^\/]+\/notes\/[^\/]+$",
                   "location": "path",
                   "required": true,

@@ -783,6 +783,24 @@ def Hidden(cmd_class):
   return cmd_class
 
 
+def Visible(cmd_class):
+  """Decorator for making visible calliope commands and groups.
+
+  Decorate a subclass of base.Command or base.Group with this function, and the
+  decorated command or group will show up in help text. This is the default
+  for base.Command and base.Group subclasses.
+
+  Args:
+    cmd_class: base._Common, A calliope command or group.
+
+  Returns:
+    A modified version of the provided class.
+  """
+  # pylint: disable=protected-access
+  cmd_class._is_hidden = False
+  return cmd_class
+
+
 def UnicodeIsSupported(cmd_class):
   """Decorator for calliope commands and groups that support unicode.
 

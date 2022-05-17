@@ -19,11 +19,12 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import re
+
 from apitools.base.py import encoding
 from googlecloudsdk.api_lib.compute import utils
+from googlecloudsdk.api_lib.functions import secrets as secrets_util
 from googlecloudsdk.api_lib.functions.v1 import env_vars as env_vars_api_util
 from googlecloudsdk.api_lib.functions.v1 import exceptions as function_exceptions
-from googlecloudsdk.api_lib.functions.v1 import secrets as secrets_util
 from googlecloudsdk.api_lib.functions.v1 import util as api_util
 from googlecloudsdk.calliope import base as calliope_base
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
@@ -146,30 +147,35 @@ def _ApplySecretsArgsToFunction(function, args):
   Returns:
     updated_fields: update mask containing the list of fields to be updated.
   """
-  updated_fields = []
-  new_secrets_dict_by_type = {}
-  needs_update = {}
   if not secrets_config.IsArgsSpecified(args):
-    return updated_fields
-  old_secrets_dict = secrets_util.GetSecretsAsDict(function)
+    return []
+
+  old_secrets = secrets_util.GetSecretsAsDict(
+      function.secretEnvironmentVariables, function.secretVolumes)
+  new_secrets = {}
   try:
-    new_secrets_dict_by_type, needs_update = secrets_config.ApplyFlags(
-        old_secrets_dict, args, _GetProject(),
+    new_secrets = secrets_config.ApplyFlags(
+        old_secrets, args, _GetProject(),
         project_util.GetProjectNumber(_GetProject()))
   except ArgumentTypeError as error:
     exceptions.reraise(function_exceptions.FunctionsError(error))
 
-  if new_secrets_dict_by_type[
-      'secret_environment_variables'] or new_secrets_dict_by_type[
-          'secret_volumes']:
+  if new_secrets:
     _LogSecretsPermissionMessage(_GetProject(), function.serviceAccountEmail)
-  if needs_update['secret_environment_variables']:
+
+  old_secret_env_vars, old_secret_volumes = secrets_config.SplitSecretsDict(
+      old_secrets)
+  new_secret_env_vars, new_secret_volumes = secrets_config.SplitSecretsDict(
+      new_secrets)
+
+  updated_fields = []
+  if old_secret_env_vars != new_secret_env_vars:
     function.secretEnvironmentVariables = secrets_util.SecretEnvVarsToMessages(
-        new_secrets_dict_by_type['secret_environment_variables'])
+        new_secret_env_vars, api_util.GetApiMessagesModule())
     updated_fields.append('secretEnvironmentVariables')
-  if needs_update['secret_volumes']:
+  if old_secret_volumes != new_secret_volumes:
     function.secretVolumes = secrets_util.SecretVolumesToMessages(
-        new_secrets_dict_by_type['secret_volumes'])
+        new_secret_volumes, api_util.GetApiMessagesModule())
     updated_fields.append('secretVolumes')
   return updated_fields
 

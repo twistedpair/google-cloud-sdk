@@ -1078,7 +1078,7 @@ class GoogleDevtoolsRemotebuildbotCommandStatus(_messages.Message):
       DOCKER_CREATE_RUNTIME_CANNOT_MOUNT_TO_PROC: Docker failed to create OCI
         runtime because input root cannot be proc.
       DOCKER_START_RUNTIME_FILE_NOT_FOUND: Docker failed to start OCI runtime
-        because because of file not found.
+        because of file not found.
     """
     OK = 0
     INVALID_ARGUMENT = 1

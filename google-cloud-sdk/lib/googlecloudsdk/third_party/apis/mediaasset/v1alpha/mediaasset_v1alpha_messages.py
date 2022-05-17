@@ -816,6 +816,9 @@ class AssetType(_messages.Message):
 class AssetTypeConfig(_messages.Message):
   r"""Catalog search item that includes the asset type and it's configuration.
 
+  Enums:
+    StateValueValuesEnum: Output only. Current state of the asset type config.
+
   Messages:
     IndexedFieldConfigsValue: A map between user-defined key and
       IndexedFieldConfig, where the key is indexed with the value configured
@@ -831,7 +834,23 @@ class AssetTypeConfig(_messages.Message):
       by IndexedFieldConfig and customers can use the key as search operator
       if the expression is nonempty. If the expression in
       CatalogIndexedFieldConfig is empty, the key must be "".
+    state: Output only. Current state of the asset type config.
   """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. Current state of the asset type config.
+
+    Values:
+      STATE_UNSPECIFIED: Unknown state.
+      CREATING: Asset type config is being created.
+      ACTIVE: Asset type config is active.
+      DELETING: Asset type config is being deleted and will be automatically
+        removed from catalog when the background deletion is done.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    ACTIVE = 2
+    DELETING = 3
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class IndexedFieldConfigsValue(_messages.Message):
@@ -864,6 +883,7 @@ class AssetTypeConfig(_messages.Message):
 
   assetType = _messages.StringField(1)
   indexedFieldConfigs = _messages.MessageField('IndexedFieldConfigsValue', 2)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
 
 
 class AssetTypeStats(_messages.Message):
@@ -2368,8 +2388,9 @@ class MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsAnnotationsGetIam
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -2442,8 +2463,9 @@ class MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsAnnotationsSetIam
     googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
       to be passed as the request body.
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
@@ -2459,8 +2481,9 @@ class MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsAnnotationsTestIa
       GoogleIamV1TestIamPermissionsRequest resource to be passed as the
       request body.
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
@@ -2486,8 +2509,9 @@ class MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsGetIamPolicyReque
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -2541,8 +2565,9 @@ class MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsSetIamPolicyReque
     googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
       to be passed as the request body.
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
@@ -2558,8 +2583,9 @@ class MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsTestIamPermission
       GoogleIamV1TestIamPermissionsRequest resource to be passed as the
       request body.
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
@@ -2626,8 +2652,9 @@ class MediaassetProjectsLocationsAssetTypesAssetsGetIamPolicyRequest(_messages.M
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -2719,8 +2746,9 @@ class MediaassetProjectsLocationsAssetTypesAssetsSetIamPolicyRequest(_messages.M
     googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
       to be passed as the request body.
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
@@ -2736,8 +2764,9 @@ class MediaassetProjectsLocationsAssetTypesAssetsTestIamPermissionsRequest(_mess
       GoogleIamV1TestIamPermissionsRequest resource to be passed as the
       request body.
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
@@ -2811,8 +2840,9 @@ class MediaassetProjectsLocationsAssetTypesGetIamPolicyRequest(_messages.Message
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -2993,8 +3023,9 @@ class MediaassetProjectsLocationsAssetTypesSetIamPolicyRequest(_messages.Message
     googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
       to be passed as the request body.
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
@@ -3009,8 +3040,9 @@ class MediaassetProjectsLocationsAssetTypesTestIamPermissionsRequest(_messages.M
       GoogleIamV1TestIamPermissionsRequest resource to be passed as the
       request body.
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
@@ -3085,11 +3117,11 @@ class MediaassetProjectsLocationsCatalogsPatchRequest(_messages.Message):
     catalog: A Catalog resource to be passed as the request body.
     name: The resource name of the catalog, in the following form:
       `projects/{project}/locations/{location}/catalogs/{catalog}`.
-    updateMask: Field mask is used to specify the fields to be overwritten in
-      the Catalog resource by the update. The fields specified in the
-      update_mask are relative to the resource, not the full request. A field
-      will be overwritten if it is in the mask. If the user does not provide a
-      mask then all fields will be overwritten.
+    updateMask: update_mask is a comma separated fields used to specify
+      changes in catalog. The fields specified in the update_mask are relative
+      to the resource, not the full request. A field will be overwritten if it
+      is in the mask. If the user does not provide a mask then all fields will
+      be overwritten.
   """
 
   catalog = _messages.MessageField('Catalog', 1)
@@ -3179,8 +3211,9 @@ class MediaassetProjectsLocationsComplexTypesGetIamPolicyRequest(_messages.Messa
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -3264,8 +3297,9 @@ class MediaassetProjectsLocationsComplexTypesSetIamPolicyRequest(_messages.Messa
     googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
       to be passed as the request body.
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
@@ -3281,8 +3315,9 @@ class MediaassetProjectsLocationsComplexTypesTestIamPermissionsRequest(_messages
       GoogleIamV1TestIamPermissionsRequest resource to be passed as the
       request body.
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
@@ -3518,8 +3553,9 @@ class MediaassetProjectsLocationsTransformersGetIamPolicyRequest(_messages.Messa
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -3604,8 +3640,9 @@ class MediaassetProjectsLocationsTransformersSetIamPolicyRequest(_messages.Messa
     googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
       to be passed as the request body.
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
@@ -3621,8 +3658,9 @@ class MediaassetProjectsLocationsTransformersTestIamPermissionsRequest(_messages
       GoogleIamV1TestIamPermissionsRequest resource to be passed as the
       request body.
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)

@@ -287,8 +287,9 @@ class CloudfunctionsProjectsLocationsFunctionsGetIamPolicyRequest(_messages.Mess
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -354,8 +355,9 @@ class CloudfunctionsProjectsLocationsFunctionsSetIamPolicyRequest(_messages.Mess
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
@@ -370,8 +372,9 @@ class CloudfunctionsProjectsLocationsFunctionsTestIamPermissionsRequest(_message
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """
@@ -1631,8 +1634,7 @@ class SecretEnvVar(_messages.Message):
     key: Name of the environment variable.
     projectId: Project identifier (preferably project number but can also be
       the project ID) of the project that contains the secret. If not set, it
-      will be populated with the function's project assuming that the secret
-      exists in the same project as of the function.
+      is assumed that the secret is in the same project as the function.
     secret: Name of the secret in secret manager (not the full resource name).
     version: Version of the secret (version number or the string 'latest'). It
       is recommended to use a numeric version for secret environment variables
@@ -1644,6 +1646,49 @@ class SecretEnvVar(_messages.Message):
   projectId = _messages.StringField(2)
   secret = _messages.StringField(3)
   version = _messages.StringField(4)
+
+
+class SecretVersion(_messages.Message):
+  r"""Configuration for a single version.
+
+  Fields:
+    path: Relative path of the file under the mount path where the secret
+      value for this version will be fetched and made available. For example,
+      setting the mount_path as '/etc/secrets' and path as `/secret_foo` would
+      mount the secret value file at `/etc/secrets/secret_foo`.
+    version: Version of the secret (version number or the string 'latest'). It
+      is preferable to use `latest` version with secret volumes as secret
+      value changes are reflected immediately.
+  """
+
+  path = _messages.StringField(1)
+  version = _messages.StringField(2)
+
+
+class SecretVolume(_messages.Message):
+  r"""Configuration for a secret volume. It has the information necessary to
+  fetch the secret value from secret manager and make it available as files
+  mounted at the requested paths within the application container.
+
+  Fields:
+    mountPath: The path within the container to mount the secret volume. For
+      example, setting the mount_path as `/etc/secrets` would mount the secret
+      value files under the `/etc/secrets` directory. This directory will also
+      be completely shadowed and unavailable to mount any other secrets.
+      Recommended mount path: /etc/secrets
+    projectId: Project identifier (preferably project number but can also be
+      the project ID) of the project that contains the secret. If not set, it
+      is assumed that the secret is in the same project as the function.
+    secret: Name of the secret in secret manager (not the full resource name).
+    versions: List of secret versions to mount for this secret. If empty, the
+      `latest` version of the secret will be made available in a file named
+      after the secret under the mount point.
+  """
+
+  mountPath = _messages.StringField(1)
+  projectId = _messages.StringField(2)
+  secret = _messages.StringField(3)
+  versions = _messages.MessageField('SecretVersion', 4, repeated=True)
 
 
 class ServiceConfig(_messages.Message):
@@ -1694,6 +1739,7 @@ class ServiceConfig(_messages.Message):
       been stopped in the default case.
     revision: Output only. The name of service revision.
     secretEnvironmentVariables: Secret environment variables configuration.
+    secretVolumes: Secret volumes configuration.
     service: Output only. Name of the service associated with a Function. The
       format of this field is
       `projects/{project}/locations/{region}/services/{service}`
@@ -1776,12 +1822,13 @@ class ServiceConfig(_messages.Message):
   minInstanceCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
   revision = _messages.StringField(7)
   secretEnvironmentVariables = _messages.MessageField('SecretEnvVar', 8, repeated=True)
-  service = _messages.StringField(9)
-  serviceAccountEmail = _messages.StringField(10)
-  timeoutSeconds = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  uri = _messages.StringField(12)
-  vpcConnector = _messages.StringField(13)
-  vpcConnectorEgressSettings = _messages.EnumField('VpcConnectorEgressSettingsValueValuesEnum', 14)
+  secretVolumes = _messages.MessageField('SecretVolume', 9, repeated=True)
+  service = _messages.StringField(10)
+  serviceAccountEmail = _messages.StringField(11)
+  timeoutSeconds = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  uri = _messages.StringField(13)
+  vpcConnector = _messages.StringField(14)
+  vpcConnectorEgressSettings = _messages.EnumField('VpcConnectorEgressSettingsValueValuesEnum', 15)
 
 
 class SetIamPolicyRequest(_messages.Message):

@@ -820,7 +820,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "resource": {
-                  "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                  "description": "REQUIRED: The resource for which the policy is being requested. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
                   "pattern": "^projects\/[^\/]+\/taxonomies\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -848,7 +848,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "resource": {
-                  "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                  "description": "REQUIRED: The resource for which the policy is being specified. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
                   "pattern": "^projects\/[^\/]+\/taxonomies\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -876,7 +876,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "resource": {
-                  "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                  "description": "REQUIRED: The resource for which the policy detail is being requested. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
                   "pattern": "^projects\/[^\/]+\/taxonomies\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -1116,7 +1116,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "resource": {
-                      "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                      "description": "REQUIRED: The resource for which the policy is being requested. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
                       "pattern": "^projects\/[^\/]+\/taxonomies\/[^\/]+\/categories\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -1144,7 +1144,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "resource": {
-                      "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                      "description": "REQUIRED: The resource for which the policy is being specified. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
                       "pattern": "^projects\/[^\/]+\/taxonomies\/[^\/]+\/categories\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -1172,7 +1172,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "resource": {
-                      "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                      "description": "REQUIRED: The resource for which the policy detail is being requested. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
                       "pattern": "^projects\/[^\/]+\/taxonomies\/[^\/]+\/categories\/[^\/]+$",
                       "location": "path",
                       "required": true,

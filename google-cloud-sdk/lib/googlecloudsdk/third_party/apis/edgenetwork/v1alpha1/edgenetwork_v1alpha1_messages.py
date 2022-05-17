@@ -220,56 +220,6 @@ class EdgenetworkProjectsLocationsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
-class EdgenetworkProjectsLocationsZonesCreateRequest(_messages.Message):
-  r"""A EdgenetworkProjectsLocationsZonesCreateRequest object.
-
-  Fields:
-    parent: Required. Value for parent.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    zone: A Zone resource to be passed as the request body.
-    zoneId: Required. Id of the requesting object If auto-generating Id
-      server-side, remove this field and zone_id from the method_signature of
-      Create RPC
-  """
-
-  parent = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
-  zone = _messages.MessageField('Zone', 3)
-  zoneId = _messages.StringField(4)
-
-
-class EdgenetworkProjectsLocationsZonesDeleteRequest(_messages.Message):
-  r"""A EdgenetworkProjectsLocationsZonesDeleteRequest object.
-
-  Fields:
-    name: Required. Name of the resource
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes after the first
-      request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-  """
-
-  name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
-
-
 class EdgenetworkProjectsLocationsZonesGetRequest(_messages.Message):
   r"""A EdgenetworkProjectsLocationsZonesGetRequest object.
 
@@ -362,56 +312,6 @@ class EdgenetworkProjectsLocationsZonesInterconnectAttachmentsListRequest(_messa
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
-
-
-class EdgenetworkProjectsLocationsZonesInterconnectsCreateRequest(_messages.Message):
-  r"""A EdgenetworkProjectsLocationsZonesInterconnectsCreateRequest object.
-
-  Fields:
-    interconnect: A Interconnect resource to be passed as the request body.
-    interconnectId: Required. Id of the requesting object If auto-generating
-      Id server-side, remove this field and interconnect_id from the
-      method_signature of Create RPC
-    parent: Required. Value for parent.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-  """
-
-  interconnect = _messages.MessageField('Interconnect', 1)
-  interconnectId = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-  requestId = _messages.StringField(4)
-
-
-class EdgenetworkProjectsLocationsZonesInterconnectsDeleteRequest(_messages.Message):
-  r"""A EdgenetworkProjectsLocationsZonesInterconnectsDeleteRequest object.
-
-  Fields:
-    name: Required. Name of the resource
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes after the first
-      request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-  """
-
-  name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
 
 
 class EdgenetworkProjectsLocationsZonesInterconnectsDiagnoseRequest(_messages.Message):
@@ -1067,13 +967,14 @@ class LinkStatus(_messages.Message):
   Fields:
     circuitId: The unique ID for this link assigned during turn up by Google.
     lacpStatus: Describing the state of a LACP link.
-    lldpStatus: Describing the state of a LLDP link.
+    lldpStatuses: A list of LinkLLDPStatus objects, used to describe LLDP
+      status of each peer for each link on the Interconnect.
     packetCounts: Packet counts specific statistics for this link.
   """
 
   circuitId = _messages.StringField(1)
   lacpStatus = _messages.MessageField('LinkLACPStatus', 2)
-  lldpStatus = _messages.MessageField('LinkLLDPStatus', 3)
+  lldpStatuses = _messages.MessageField('LinkLLDPStatus', 3, repeated=True)
   packetCounts = _messages.MessageField('PacketCounts', 4)
 
 

@@ -50,7 +50,8 @@ def BuildServiceLbPolicyUrl(project_name, location, policy_name):
 
 def BuildServiceBindingUrl(project_name, location, binding_name):
   return BuildFullResourceUrl(
-      base_uri=network_services.GetApiBaseUrl(),
+      base_uri=network_services.GetApiBaseUrl(
+          network_services.base.ReleaseTrack.GA),
       project_name=project_name,
       location=location,
       collection_name='serviceBindings',

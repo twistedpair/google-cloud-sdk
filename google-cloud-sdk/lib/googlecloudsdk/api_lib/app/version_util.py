@@ -63,9 +63,15 @@ class Version(object):
                            'services/(?P<service>.*)/'
                            'versions/(?P<version>.*)')
 
-  def __init__(self, project, service, version_id, traffic_split=None,
-               last_deployed_time=None, environment=None,
-               version_resource=None):
+  def __init__(self,
+               project,
+               service,
+               version_id,
+               traffic_split=None,
+               last_deployed_time=None,
+               environment=None,
+               version_resource=None,
+               service_account=None):
     self.project = project
     self.service = service
     self.id = version_id
@@ -73,6 +79,7 @@ class Version(object):
     self.traffic_split = traffic_split
     self.last_deployed_time = last_deployed_time
     self.environment = environment
+    self.service_account = service_account
 
   @classmethod
   def FromResourcePath(cls, path):

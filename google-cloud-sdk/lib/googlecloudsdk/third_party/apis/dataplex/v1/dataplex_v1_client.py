@@ -494,7 +494,7 @@ class DataplexV1(base_api.BaseApiClient):
         method_id='dataplex.projects.locations.lakes.environments.sessions.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken'],
         relative_path='v1/{+parent}/sessions',
         request_field='',
         request_type_name='DataplexProjectsLocationsLakesEnvironmentsSessionsListRequest',

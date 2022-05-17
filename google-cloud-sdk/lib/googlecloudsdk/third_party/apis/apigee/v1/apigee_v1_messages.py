@@ -685,27 +685,31 @@ class ApigeeOrganizationsDeleteRequest(_messages.Message):
   r"""A ApigeeOrganizationsDeleteRequest object.
 
   Enums:
-    RetentionValueValuesEnum: Optional. The settings that control how long
-      Organization data will be retained after the initial delete operation
-      completes. During this period, the Organization may be restored to its
-      last known state. After this period, the Organization will no longer be
-      able to be restored.
+    RetentionValueValuesEnum: Optional. This setting is only applicable for
+      organizations that are soft-deleted (i.e. BillingType is not
+      EVALUATION). It controls how long Organization data will be retained
+      after the initial delete operation completes. During this period, the
+      Organization may be restored to its last known state. After this period,
+      the Organization will no longer be able to be restored.
 
   Fields:
     name: Required. Name of the organization. Use the following structure in
       your request: `organizations/{org}`
-    retention: Optional. The settings that control how long Organization data
-      will be retained after the initial delete operation completes. During
-      this period, the Organization may be restored to its last known state.
-      After this period, the Organization will no longer be able to be
-      restored.
+    retention: Optional. This setting is only applicable for organizations
+      that are soft-deleted (i.e. BillingType is not EVALUATION). It controls
+      how long Organization data will be retained after the initial delete
+      operation completes. During this period, the Organization may be
+      restored to its last known state. After this period, the Organization
+      will no longer be able to be restored.
   """
 
   class RetentionValueValuesEnum(_messages.Enum):
-    r"""Optional. The settings that control how long Organization data will be
-    retained after the initial delete operation completes. During this period,
-    the Organization may be restored to its last known state. After this
-    period, the Organization will no longer be able to be restored.
+    r"""Optional. This setting is only applicable for organizations that are
+    soft-deleted (i.e. BillingType is not EVALUATION). It controls how long
+    Organization data will be retained after the initial delete operation
+    completes. During this period, the Organization may be restored to its
+    last known state. After this period, the Organization will no longer be
+    able to be restored.
 
     Values:
       DELETION_RETENTION_UNSPECIFIED: Default data retention settings will be
@@ -1972,8 +1976,9 @@ class ApigeeOrganizationsEnvironmentsGetIamPolicyRequest(_messages.Message):
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -2624,8 +2629,9 @@ class ApigeeOrganizationsEnvironmentsSetIamPolicyRequest(_messages.Message):
     googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
       to be passed as the request body.
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
@@ -2817,8 +2823,9 @@ class ApigeeOrganizationsEnvironmentsTestIamPermissionsRequest(_messages.Message
       GoogleIamV1TestIamPermissionsRequest resource to be passed as the
       request body.
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
@@ -4074,8 +4081,9 @@ class ApigeeOrganizationsTestIamPermissionsRequest(_messages.Message):
       GoogleIamV1TestIamPermissionsRequest resource to be passed as the
       request body.
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
@@ -8868,9 +8876,9 @@ class GoogleCloudApigeeV1ScoreComponent(_messages.Message):
 
   Fields:
     calculateTime: Time when score was calculated.
+    dataCaptureTime: Time in the requested time period when data was last
+      captured to compute the score.
     drilldownPaths: List of paths for next components.
-    latestDataCaptureTime: Time when data was last captured to compute the
-      score.
     recommendations: List of recommendations to improve API security.
     score: Score for the component.
     scorePath: Path of the component. Example:
@@ -8878,8 +8886,8 @@ class GoogleCloudApigeeV1ScoreComponent(_messages.Message):
   """
 
   calculateTime = _messages.StringField(1)
-  drilldownPaths = _messages.StringField(2, repeated=True)
-  latestDataCaptureTime = _messages.StringField(3)
+  dataCaptureTime = _messages.StringField(2)
+  drilldownPaths = _messages.StringField(3, repeated=True)
   recommendations = _messages.MessageField('GoogleCloudApigeeV1ScoreComponentRecommendation', 4, repeated=True)
   score = _messages.IntegerField(5, variant=_messages.Variant.INT32)
   scorePath = _messages.StringField(6)

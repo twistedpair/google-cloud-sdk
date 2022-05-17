@@ -320,6 +320,8 @@ def Delete(env_ref, target, gcs_subdir, release_track=base.ReleaseTrack.GA):
     _DeleteGsutil(gcs_bucket, target, gcs_subdir)
   else:
     _DeleteStorageApi(gcs_bucket, target, gcs_subdir)
+  log.status.Print('Deletion operation succeeded.')
+
   _EnsureSubdirExists(gcs_bucket, gcs_subdir)
 
 
@@ -418,8 +420,12 @@ def _EnsureSubdirExists(bucket_ref, subdir):
       storage_client.client.objects.Insert(insert_req, upload=upload)
     except apitools_exceptions.HttpError:
       raise command_util.Error(
-          'Error re-creating empty {}/ directory. List calls may'.format(subdir)
-          + 'fail, but importing will restore the directory.')
+          'Error re-creating empty {}/ directory most likely due to lack of '
+          'permissions.'.format(subdir))
+  except apitools_exceptions.HttpForbiddenError:
+    raise command_util.Error(
+        'Error checking directory {}/ marker object exists due to lack of '
+        'permissions.'.format(subdir))
 
 
 def _GetStorageBucket(env_ref, release_track=base.ReleaseTrack.GA):

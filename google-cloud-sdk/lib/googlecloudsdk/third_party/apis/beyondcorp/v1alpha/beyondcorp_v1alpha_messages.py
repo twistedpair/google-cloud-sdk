@@ -258,8 +258,9 @@ class BeyondcorpProjectsLocationsAppConnectionsGetIamPolicyRequest(_messages.Mes
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -372,8 +373,9 @@ class BeyondcorpProjectsLocationsAppConnectionsSetIamPolicyRequest(_messages.Mes
     googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
       to be passed as the request body.
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
@@ -389,8 +391,9 @@ class BeyondcorpProjectsLocationsAppConnectionsTestIamPermissionsRequest(_messag
       GoogleIamV1TestIamPermissionsRequest resource to be passed as the
       request body.
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
@@ -474,8 +477,9 @@ class BeyondcorpProjectsLocationsAppConnectorsGetIamPolicyRequest(_messages.Mess
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -588,8 +592,9 @@ class BeyondcorpProjectsLocationsAppConnectorsSetIamPolicyRequest(_messages.Mess
     googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
       to be passed as the request body.
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
@@ -605,8 +610,9 @@ class BeyondcorpProjectsLocationsAppConnectorsTestIamPermissionsRequest(_message
       GoogleIamV1TestIamPermissionsRequest resource to be passed as the
       request body.
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
@@ -688,8 +694,9 @@ class BeyondcorpProjectsLocationsAppGatewaysGetIamPolicyRequest(_messages.Messag
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -740,8 +747,9 @@ class BeyondcorpProjectsLocationsAppGatewaysSetIamPolicyRequest(_messages.Messag
     googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
       to be passed as the request body.
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
@@ -757,8 +765,9 @@ class BeyondcorpProjectsLocationsAppGatewaysTestIamPermissionsRequest(_messages.
       GoogleIamV1TestIamPermissionsRequest resource to be passed as the
       request body.
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
@@ -843,8 +852,9 @@ class BeyondcorpProjectsLocationsClientConnectorServicesGetIamPolicyRequest(_mes
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -927,8 +937,9 @@ class BeyondcorpProjectsLocationsClientConnectorServicesSetIamPolicyRequest(_mes
     googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
       to be passed as the request body.
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
@@ -945,8 +956,9 @@ class BeyondcorpProjectsLocationsClientConnectorServicesTestIamPermissionsReques
       GoogleIamV1TestIamPermissionsRequest resource to be passed as the
       request body.
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
@@ -1026,8 +1038,9 @@ class BeyondcorpProjectsLocationsClientGatewaysGetIamPolicyRequest(_messages.Mes
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1071,8 +1084,9 @@ class BeyondcorpProjectsLocationsClientGatewaysSetIamPolicyRequest(_messages.Mes
     googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
       to be passed as the request body.
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
@@ -1088,8 +1102,9 @@ class BeyondcorpProjectsLocationsClientGatewaysTestIamPermissionsRequest(_messag
       GoogleIamV1TestIamPermissionsRequest resource to be passed as the
       request body.
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
@@ -1171,8 +1186,9 @@ class BeyondcorpProjectsLocationsConnectionsGetIamPolicyRequest(_messages.Messag
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1283,8 +1299,9 @@ class BeyondcorpProjectsLocationsConnectionsSetIamPolicyRequest(_messages.Messag
     googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
       to be passed as the request body.
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
@@ -1300,8 +1317,9 @@ class BeyondcorpProjectsLocationsConnectionsTestIamPermissionsRequest(_messages.
       GoogleIamV1TestIamPermissionsRequest resource to be passed as the
       request body.
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
@@ -1384,8 +1402,9 @@ class BeyondcorpProjectsLocationsConnectorsGetIamPolicyRequest(_messages.Message
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1496,8 +1515,9 @@ class BeyondcorpProjectsLocationsConnectorsSetIamPolicyRequest(_messages.Message
     googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
       to be passed as the request body.
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
@@ -1512,8 +1532,9 @@ class BeyondcorpProjectsLocationsConnectorsTestIamPermissionsRequest(_messages.M
       GoogleIamV1TestIamPermissionsRequest resource to be passed as the
       request body.
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)

@@ -305,8 +305,9 @@ class BatchProjectsLocationsJobsGetIamPolicyRequest(_messages.Message):
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -344,8 +345,9 @@ class BatchProjectsLocationsJobsSetIamPolicyRequest(_messages.Message):
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
@@ -387,8 +389,9 @@ class BatchProjectsLocationsJobsTestIamPermissionsRequest(_messages.Message):
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """
@@ -434,8 +437,9 @@ class BatchProjectsLocationsNodesGetIamPolicyRequest(_messages.Message):
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -447,8 +451,9 @@ class BatchProjectsLocationsNodesSetIamPolicyRequest(_messages.Message):
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
@@ -462,8 +467,9 @@ class BatchProjectsLocationsNodesTestIamPermissionsRequest(_messages.Message):
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """
@@ -538,8 +544,9 @@ class BatchProjectsLocationsTasksGetIamPolicyRequest(_messages.Message):
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -551,8 +558,9 @@ class BatchProjectsLocationsTasksSetIamPolicyRequest(_messages.Message):
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
@@ -566,8 +574,9 @@ class BatchProjectsLocationsTasksTestIamPermissionsRequest(_messages.Message):
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """
@@ -636,9 +645,9 @@ class ComputeResource(_messages.Message):
   r"""Compute resource requirements
 
   Fields:
-    bootDiskMib: Boot disk size in MiB
+    bootDiskMib: Extra boot disk size in MiB for each task.
     cpuMilli: The milliCPU count.
-    gpuCount: The GPU count.
+    gpuCount: The GPU count. [NotImplemented]
     memoryMib: Memory in MiB.
   """
 
@@ -706,25 +715,18 @@ class Empty(_messages.Message):
 
 
 class Environment(_messages.Message):
-  r"""TaskGroup.Environment is a workaround for proto3 not supporting repeated
-  map.
+  r"""A Environment object.
 
   Messages:
-    VariablesValue: An map of environment variable names to values. The map
-      may contain at most 10 key/value pairs with keys length up to 64
-      characters and values up to 4 KB.
+    VariablesValue: A map of environment variable names to values.
 
   Fields:
-    variables: An map of environment variable names to values. The map may
-      contain at most 10 key/value pairs with keys length up to 64 characters
-      and values up to 4 KB.
+    variables: A map of environment variable names to values.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class VariablesValue(_messages.Message):
-    r"""An map of environment variable names to values. The map may contain at
-    most 10 key/value pairs with keys length up to 64 characters and values up
-    to 4 KB.
+    r"""A map of environment variable names to values.
 
     Messages:
       AdditionalProperty: An additional property for a VariablesValue object.
@@ -1959,7 +1961,8 @@ class TaskGroup(_messages.Message):
     schedulingPolicy: Scheduling policy for Tasks in the TaskGroup.
     taskCount: Number of Tasks in the TaskGroup. default is 1
     taskCountPerNode: Max number of tasks that can be run on a node at the
-      same time. Default is 1.
+      same time. If not specified, the system will decide a value based on
+      available compute resources on a VM and task requirements.
     taskEnvironments: An array of environment variable mappings, which are
       passed to Tasks with matching indices. If task_environments is used then
       task_count should not be specified in the request (and will be ignored).

@@ -3319,7 +3319,7 @@
           "httpMethod": "POST",
           "parameters": {
             "servicesId": {
-              "description": "Part of `resource`. REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+              "description": "Part of `resource`. REQUIRED: The resource for which the policy is being specified. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
               "location": "path",
               "required": true,
               "type": "string"
@@ -3347,7 +3347,7 @@
           "httpMethod": "POST",
           "parameters": {
             "servicesId": {
-              "description": "Part of `resource`. REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+              "description": "Part of `resource`. REQUIRED: The resource for which the policy is being requested. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
               "location": "path",
               "required": true,
               "type": "string"
@@ -3377,7 +3377,7 @@
           "httpMethod": "POST",
           "parameters": {
             "servicesId": {
-              "description": "Part of `resource`. REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+              "description": "Part of `resource`. REQUIRED: The resource for which the policy detail is being requested. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
               "location": "path",
               "required": true,
               "type": "string"
@@ -3916,7 +3916,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "servicesId": {
-                  "description": "Part of `resource`. REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                  "description": "Part of `resource`. REQUIRED: The resource for which the policy is being specified. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -3951,7 +3951,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "servicesId": {
-                  "description": "Part of `resource`. REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                  "description": "Part of `resource`. REQUIRED: The resource for which the policy is being requested. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -3988,7 +3988,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "servicesId": {
-                  "description": "Part of `resource`. REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                  "description": "Part of `resource`. REQUIRED: The resource for which the policy detail is being requested. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
                   "location": "path",
                   "required": true,
                   "type": "string"

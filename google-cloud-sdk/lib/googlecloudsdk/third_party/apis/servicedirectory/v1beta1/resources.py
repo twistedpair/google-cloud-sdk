@@ -52,6 +52,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_NAMESPACES_SERVICEWORKLOADS = (
+      'projects.locations.namespaces.serviceWorkloads',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/namespaces/'
+              '{namespacesId}/serviceWorkloads/{serviceWorkloadsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_NAMESPACES_SERVICES = (
       'projects.locations.namespaces.services',
       '{+name}',

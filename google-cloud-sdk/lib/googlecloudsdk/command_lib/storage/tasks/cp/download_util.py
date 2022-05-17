@@ -109,3 +109,11 @@ def validate_download_hash_and_delete_corrupt_files(download_path, source_hash,
     tracker_file_util.delete_download_tracker_files(
         storage_url.storage_url_from_string(download_path))
     raise
+
+
+def return_and_report_if_nothing_to_download(cloud_resource, progress_callback):
+  """Returns valid download range bool and reports progress if not."""
+  if cloud_resource.size == 0:
+    progress_callback(0)
+    return True
+  return False

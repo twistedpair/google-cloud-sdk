@@ -25,29 +25,44 @@ def GetAttachmentPointFlag():
   return base.Argument(
       '--attachment-point',
       required=True,
-      help='Resource to which the policy is attached.')
+      help='Resource to which the policy is attached. For valid formats, see '
+      'https://cloud.google.com/iam/help/deny/attachment-point.')
 
 
 def GetKindFlag():
-  return base.Argument('--kind', required=True, help='Kind of the policy.')
+  return base.Argument(
+      '--kind',
+      required=True,
+      help='Policy type. Use `denypolicies` for deny policies.')
 
 
 def GetPolicyIDFlag():
-  return base.Argument('policy_id', help='Id of the policy.')
+  return base.Argument(
+      'policy_id',
+      help='Policy ID that is unique for the resource to which the policy is '
+      'attached.')
 
 
 def GetEtagFlag():
-  return base.Argument('--etag', help='Etag of the existing policy.')
+  return base.Argument(
+      '--etag',
+      help='Etag that identifies the version of the existing policy. If '
+      'omitted, the command gets the `etag` for the current version of the '
+      'policy.')
 
 
 def GetPolicyFileFlag():
   return base.Argument(
-      '--policy-file', required=True, help='Contents of the policy.')
+      '--policy-file', required=True, help='Path to the file that contains the '
+      'policy, in JSON or YAML format. For valid syntax, see '
+      'https://cloud.google.com/iam/help/deny/policy-syntax.')
 
 
 def GetPageTokenFlag():
   return base.Argument(
-      '--page_token', help='Page token received from a previous call.')
+      '--page_token',
+      help='Page token received from a previous call. Provide this token to '
+      'retrieve the next page.')
 
 
 def AddIncludeDenyFlag(parser):

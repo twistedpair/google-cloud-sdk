@@ -257,7 +257,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The resource name of the SecurityCenterSettings. Format: organizations\/{organization}\/securityCenterSettings",
+          "description": "The resource name of the SecurityCenterSettings. Format: organizations\/{organization}\/securityCenterSettings Format: folders\/{folder}\/securityCenterSettings Format: projects\/{project}\/securityCenterSettings",
           "type": "string"
         },
         "orgServiceAccount": {
@@ -1121,7 +1121,8 @@
               "T1190",
               "T1556",
               "T1485",
-              "T1484"
+              "T1484",
+              "T1562"
             ],
             "enum": [
               "TECHNIQUE_UNSPECIFIED",
@@ -1154,7 +1155,8 @@
               "EXPLOIT_PUBLIC_FACING_APPLICATION",
               "MODIFY_AUTHENTICATION_PROCESS",
               "DATA_DESTRUCTION",
-              "DOMAIN_POLICY_MODIFICATION"
+              "DOMAIN_POLICY_MODIFICATION",
+              "IMPAIR_DEFENSES"
             ]
           }
         },
@@ -1235,7 +1237,8 @@
               "T1190",
               "T1556",
               "T1485",
-              "T1484"
+              "T1484",
+              "T1562"
             ],
             "enum": [
               "TECHNIQUE_UNSPECIFIED",
@@ -1268,7 +1271,8 @@
               "EXPLOIT_PUBLIC_FACING_APPLICATION",
               "MODIFY_AUTHENTICATION_PROCESS",
               "DATA_DESTRUCTION",
-              "DOMAIN_POLICY_MODIFICATION"
+              "DOMAIN_POLICY_MODIFICATION",
+              "IMPAIR_DEFENSES"
             ]
           }
         },
@@ -1838,7 +1842,7 @@
           "httpMethod": "GET",
           "parameters": {
             "name": {
-              "description": "Required. The name of the SecurityCenterSettings to retrieve. Format: organizations\/{organization}\/securityCenterSettings",
+              "description": "Required. The name of the SecurityCenterSettings to retrieve. Format: organizations\/{organization}\/securityCenterSettings Format: folders\/{folder}\/securityCenterSettings Format: projects\/{project}\/securityCenterSettings",
               "pattern": "^organizations\/[^\/]+\/securityCenterSettings$",
               "location": "path",
               "required": true,
@@ -2353,6 +2357,31 @@
           ],
           "description": "Update the EventThreatDetectionSettings resource."
         },
+        "getSecurityCenterSettings": {
+          "id": "securitycenter.folders.getSecurityCenterSettings",
+          "path": "v1beta2/{+name}",
+          "flatPath": "v1beta2/folders/{foldersId}/securityCenterSettings",
+          "httpMethod": "GET",
+          "parameters": {
+            "name": {
+              "description": "Required. The name of the SecurityCenterSettings to retrieve. Format: organizations\/{organization}\/securityCenterSettings Format: folders\/{folder}\/securityCenterSettings Format: projects\/{project}\/securityCenterSettings",
+              "pattern": "^folders\/[^\/]+\/securityCenterSettings$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "SecurityCenterSettings"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Get the SecurityCenterSettings resource."
+        },
         "getSecurityHealthAnalyticsSettings": {
           "id": "securitycenter.folders.getSecurityHealthAnalyticsSettings",
           "path": "v1beta2/{+name}",
@@ -2824,6 +2853,31 @@
             "https://www.googleapis.com/auth/cloud-platform"
           ],
           "description": "Update the EventThreatDetectionSettings resource."
+        },
+        "getSecurityCenterSettings": {
+          "id": "securitycenter.projects.getSecurityCenterSettings",
+          "path": "v1beta2/{+name}",
+          "flatPath": "v1beta2/projects/{projectsId}/securityCenterSettings",
+          "httpMethod": "GET",
+          "parameters": {
+            "name": {
+              "description": "Required. The name of the SecurityCenterSettings to retrieve. Format: organizations\/{organization}\/securityCenterSettings Format: folders\/{folder}\/securityCenterSettings Format: projects\/{project}\/securityCenterSettings",
+              "pattern": "^projects\/[^\/]+\/securityCenterSettings$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "SecurityCenterSettings"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Get the SecurityCenterSettings resource."
         },
         "getSecurityHealthAnalyticsSettings": {
           "id": "securitycenter.projects.getSecurityHealthAnalyticsSettings",

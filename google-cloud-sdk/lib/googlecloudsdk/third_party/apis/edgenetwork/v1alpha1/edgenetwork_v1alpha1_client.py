@@ -295,60 +295,6 @@ class EdgenetworkV1alpha1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
-    def Create(self, request, global_params=None):
-      r"""Creates a new Interconnect in a given project and location.
-
-      Args:
-        request: (EdgenetworkProjectsLocationsZonesInterconnectsCreateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Create')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/zones/{zonesId}/interconnects',
-        http_method='POST',
-        method_id='edgenetwork.projects.locations.zones.interconnects.create',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['interconnectId', 'requestId'],
-        relative_path='v1alpha1/{+parent}/interconnects',
-        request_field='interconnect',
-        request_type_name='EdgenetworkProjectsLocationsZonesInterconnectsCreateRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def Delete(self, request, global_params=None):
-      r"""Deletes a single Interconnect.
-
-      Args:
-        request: (EdgenetworkProjectsLocationsZonesInterconnectsDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/zones/{zonesId}/interconnects/{interconnectsId}',
-        http_method='DELETE',
-        method_id='edgenetwork.projects.locations.zones.interconnects.delete',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['requestId'],
-        relative_path='v1alpha1/{+name}',
-        request_field='',
-        request_type_name='EdgenetworkProjectsLocationsZonesInterconnectsDeleteRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
     def Diagnose(self, request, global_params=None):
       r"""Get the diagnostics of a single interconnect resource.
 
@@ -901,60 +847,6 @@ class EdgenetworkV1alpha1(base_api.BaseApiClient):
       super(EdgenetworkV1alpha1.ProjectsLocationsZonesService, self).__init__(client)
       self._upload_configs = {
           }
-
-    def Create(self, request, global_params=None):
-      r"""Creates a new Zone in a given project and location.
-
-      Args:
-        request: (EdgenetworkProjectsLocationsZonesCreateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Create')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/zones',
-        http_method='POST',
-        method_id='edgenetwork.projects.locations.zones.create',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['requestId', 'zoneId'],
-        relative_path='v1alpha1/{+parent}/zones',
-        request_field='zone',
-        request_type_name='EdgenetworkProjectsLocationsZonesCreateRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def Delete(self, request, global_params=None):
-      r"""Deletes a single Zone.
-
-      Args:
-        request: (EdgenetworkProjectsLocationsZonesDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/zones/{zonesId}',
-        http_method='DELETE',
-        method_id='edgenetwork.projects.locations.zones.delete',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['requestId'],
-        relative_path='v1alpha1/{+name}',
-        request_field='',
-        request_type_name='EdgenetworkProjectsLocationsZonesDeleteRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
 
     def Get(self, request, global_params=None):
       r"""Gets details of a single Zone.

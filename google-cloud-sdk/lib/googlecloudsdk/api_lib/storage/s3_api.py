@@ -31,13 +31,13 @@ from googlecloudsdk.command_lib.storage import errors as command_errors
 from googlecloudsdk.command_lib.storage import posix_util
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage.resources import s3_resource_reference
+from googlecloudsdk.command_lib.storage.tasks.cp import download_util
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import retry
 from googlecloudsdk.core.util import scaled_integer
 import s3transfer
-
 
 # S3 does not allow upload of size > 5 GiB for put_object.
 MAX_PUT_OBJECT_SIZE = 5 * (1024**3)  # 5 GiB
@@ -425,6 +425,12 @@ class S3Api(cloud_api.CloudApi):
         raise posix_util.SETTING_INVALID_POSIX_ERROR
     else:
       posix_attributes_to_set = None
+
+    if download_util.return_and_report_if_nothing_to_download(
+        cloud_resource, progress_callback):
+      return cloud_api.DownloadApiClientReturnValue(
+          posix_attributes=posix_attributes_to_set,
+          server_reported_encoding=None)
 
     if digesters is not None:
       digesters_dict = digesters

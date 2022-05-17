@@ -24,23 +24,26 @@ def GetMessagesModule(version='v2alpha1'):
   return apis.GetMessagesModule('tpu', version)
 
 
-def CreateSingletonNodeSpec(ref, args, request):
-  """Creates a single instance of the repeated structure nodeSpec from args."""
+def CreateNodeSpec(ref, args, request):
+  """Creates the repeated structure nodeSpec from args."""
   tpu_messages = GetMessagesModule()
   if request.queuedResource is None:
     request.queuedResource = tpu_messages.QueuedResource()
   if request.queuedResource.tpu is None:
     request.queuedResource.tpu = tpu_messages.Tpu()
 
-  node_spec = tpu_messages.NodeSpec()
-  node_spec.nodeId = args.node_id
-  node_spec.parent = ref.Parent().RelativeName()
+  request.queuedResource.tpu.nodeSpec = []
+  for node_id in args.node_id:
+    node_spec = tpu_messages.NodeSpec()
+    node_spec.nodeId = node_id
+    node_spec.parent = ref.Parent().RelativeName()
 
-  node_spec.node = tpu_messages.Node()
-  node_spec.node.acceleratorType = args.accelerator_type
-  node_spec.node.runtimeVersion = args.runtime_version
+    node_spec.node = tpu_messages.Node()
+    node_spec.node.acceleratorType = args.accelerator_type
+    node_spec.node.runtimeVersion = args.runtime_version
 
-  request.queuedResource.tpu.nodeSpec = [node_spec]
+    request.queuedResource.tpu.nodeSpec.append(node_spec)
+
   return request
 
 

@@ -2971,10 +2971,13 @@ class FlexTemplateRuntimeEnvironment(_messages.Message):
       value pairs. Example: { "name": "wrench", "mass": "1kg", "count": "3" }.
     autoscalingAlgorithm: The algorithm to use for autoscaling
     diskSizeGb: Worker disk size, in gigabytes.
-    dumpHeapOnOom: If true, save a heap dump before killing a thread or
-      process which is GC thrashing or out of memory. The location of the heap
-      file will either be echoed back to the user, or the user will be given
-      the opportunity to download the heap file.
+    dumpHeapOnOom: If true, when processing time is spent almost entirely on
+      garbage collection (GC), saves a heap dump before ending the thread or
+      process. If false, ends the thread or process without saving a heap
+      dump. Does not save a heap dump when the Java Virtual Machine (JVM) has
+      an out of memory error during processing. The location of the heap file
+      is either echoed back to the user, or the user is given the opportunity
+      to download the heap file.
     enableStreamingEngine: Whether to enable Streaming Engine for the job.
     flexrsGoal: Set FlexRS goal for the job.
       https://cloud.google.com/dataflow/docs/guides/flexrs
@@ -2992,8 +2995,8 @@ class FlexTemplateRuntimeEnvironment(_messages.Message):
     numWorkers: The initial number of Google Compute Engine instances for the
       job.
     saveHeapDumpsToGcsPath: Cloud Storage bucket (directory) to upload heap
-      dumps to the given location. Enabling this implies that heap dumps
-      should be generated on OOM (dump_heap_on_oom is set to true).
+      dumps to. Enabling this field implies that `dump_heap_on_oom` is set to
+      true.
     sdkContainerImage: Docker registry location of container image to use for
       the 'worker harness. Default is the container for the version of the
       SDK. Note this field is only valid for portable pipelines.

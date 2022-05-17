@@ -2237,6 +2237,10 @@
             "DISABLED",
             "PROJECT_SINGLETON_POLICY_ENFORCE"
           ]
+        },
+        "policy": {
+          "description": "The relative resource name of the binauthz platform policy to audit and\/or enforce against. GKE platform policies have the following format: `projects\/{project_number}\/platforms\/gke\/policies\/{policy_id}`. If absent, this defaults to a Google managed policy with pre-configured safeguards.",
+          "type": "string"
         }
       }
     },

@@ -3639,7 +3639,8 @@ class ServicemanagementServicesConsumersGetIamPolicyRequest(_messages.Message):
     getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
       request body.
     servicesId: Part of `resource`. REQUIRED: The resource for which the
-      policy is being requested. See the operation documentation for the
+      policy is being requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
       appropriate value for this field.
   """
 
@@ -3654,7 +3655,8 @@ class ServicemanagementServicesConsumersSetIamPolicyRequest(_messages.Message):
   Fields:
     consumersId: Part of `resource`. See documentation of `servicesId`.
     servicesId: Part of `resource`. REQUIRED: The resource for which the
-      policy is being specified. See the operation documentation for the
+      policy is being specified. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
       appropriate value for this field.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
@@ -3671,8 +3673,9 @@ class ServicemanagementServicesConsumersTestIamPermissionsRequest(_messages.Mess
   Fields:
     consumersId: Part of `resource`. See documentation of `servicesId`.
     servicesId: Part of `resource`. REQUIRED: The resource for which the
-      policy detail is being requested. See the operation documentation for
-      the appropriate value for this field.
+      policy detail is being requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """
@@ -3815,7 +3818,8 @@ class ServicemanagementServicesGetIamPolicyRequest(_messages.Message):
     getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
       request body.
     servicesId: Part of `resource`. REQUIRED: The resource for which the
-      policy is being requested. See the operation documentation for the
+      policy is being requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
       appropriate value for this field.
   """
 
@@ -4028,7 +4032,8 @@ class ServicemanagementServicesSetIamPolicyRequest(_messages.Message):
 
   Fields:
     servicesId: Part of `resource`. REQUIRED: The resource for which the
-      policy is being specified. See the operation documentation for the
+      policy is being specified. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
       appropriate value for this field.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
@@ -4043,8 +4048,9 @@ class ServicemanagementServicesTestIamPermissionsRequest(_messages.Message):
 
   Fields:
     servicesId: Part of `resource`. REQUIRED: The resource for which the
-      policy detail is being requested. See the operation documentation for
-      the appropriate value for this field.
+      policy detail is being requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """

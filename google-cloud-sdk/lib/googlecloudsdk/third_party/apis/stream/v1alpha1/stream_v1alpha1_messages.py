@@ -58,7 +58,7 @@ class Empty(_messages.Message):
 
 
 class LifecycleState(_messages.Message):
-  r"""Describes the lifecycle state of an Immersive Edge resource.
+  r"""Describes the lifecycle state of an Immersive Stream for XR resource.
 
   Enums:
     StateValueValuesEnum: Current lifecycle state of the resource (e.g. if

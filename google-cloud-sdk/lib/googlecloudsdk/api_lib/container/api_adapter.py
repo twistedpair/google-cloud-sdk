@@ -618,6 +618,7 @@ class CreateClusterOptions(object):
       enable_autoprovisioning_blue_green_update=None,
       autoprovisioning_standard_rollout_policy=None,
       autoprovisioning_node_pool_soak_duration=None,
+      enable_google_cloud_access=None,
   ):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
@@ -783,6 +784,7 @@ class CreateClusterOptions(object):
     self.enable_autoprovisioning_blue_green_update = enable_autoprovisioning_blue_green_update
     self.autoprovisioning_standard_rollout_policy = autoprovisioning_standard_rollout_policy
     self.autoprovisioning_node_pool_soak_duration = autoprovisioning_node_pool_soak_duration
+    self.enable_google_cloud_access = enable_google_cloud_access
 
 
 class UpdateClusterOptions(object):
@@ -892,6 +894,7 @@ class UpdateClusterOptions(object):
       enable_autoprovisioning_blue_green_update=None,
       autoprovisioning_standard_rollout_policy=None,
       autoprovisioning_node_pool_soak_duration=None,
+      enable_google_cloud_access=None,
   ):
     self.version = version
     self.update_master = bool(update_master)
@@ -996,6 +999,7 @@ class UpdateClusterOptions(object):
     self.enable_autoprovisioning_blue_green_update = enable_autoprovisioning_blue_green_update
     self.autoprovisioning_standard_rollout_policy = autoprovisioning_standard_rollout_policy
     self.autoprovisioning_node_pool_soak_duration = autoprovisioning_node_pool_soak_duration
+    self.enable_google_cloud_access = enable_google_cloud_access
 
 
 class SetMasterAuthOptions(object):
@@ -2100,6 +2104,14 @@ class APIAdapter(object):
           authorized_networks.cidrBlocks.append(
               self.messages.CidrBlock(cidrBlock=network))
       cluster.masterAuthorizedNetworksConfig = authorized_networks
+
+    if options.enable_google_cloud_access is not None:
+      if cluster.masterAuthorizedNetworksConfig is None:
+        cluster.masterAuthorizedNetworksConfig = (
+            self.messages.MasterAuthorizedNetworksConfig(enabled=False))
+
+      cluster.masterAuthorizedNetworksConfig.gcpPublicCidrsAccessEnabled = (
+          options.enable_google_cloud_access)
 
   def ParseClusterDNSOptions(self, options):
     """Parses the options for ClusterDNS."""
@@ -3987,6 +3999,22 @@ class APIAdapter(object):
                                         cluster_ref.clusterId),
             update=update))
 
+    return self.ParseOperation(op.name, cluster_ref.zone)
+
+  def ModifyGoogleCloudAccess(self, cluster_ref, existing_authorized_networks,
+                              goole_cloud_access):
+    """Update enable_google_cloud_access and schedule cluster update request."""
+    authorized_networks = self.messages.MasterAuthorizedNetworksConfig(
+        enabled=existing_authorized_networks.enabled,
+        cidrBlocks=existing_authorized_networks.cidrBlocks,
+        gcpPublicCidrsAccessEnabled=goole_cloud_access)
+    update = self.messages.ClusterUpdate(
+        desiredMasterAuthorizedNetworksConfig=authorized_networks)
+    op = self.client.projects_locations_clusters.Update(
+        self.messages.UpdateClusterRequest(
+            name=ProjectLocationCluster(cluster_ref.projectId, cluster_ref.zone,
+                                        cluster_ref.clusterId),
+            update=update))
     return self.ParseOperation(op.name, cluster_ref.zone)
 
 

@@ -1087,6 +1087,23 @@
           "additionalProperties": {
             "$ref": "CatalogIndexedFieldConfig"
           }
+        },
+        "state": {
+          "description": "Output only. Current state of the asset type config.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Unknown state.",
+            "Asset type config is being created.",
+            "Asset type config is active.",
+            "Asset type config is being deleted and will be automatically removed from catalog when the background deletion is done."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "CREATING",
+            "ACTIVE",
+            "DELETING"
+          ]
         }
       }
     },
@@ -2620,7 +2637,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "resource": {
-                      "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                      "description": "REQUIRED: The resource for which the policy is being specified. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/assetTypes\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -2648,7 +2665,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "resource": {
-                      "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                      "description": "REQUIRED: The resource for which the policy is being requested. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/assetTypes\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -2679,7 +2696,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "resource": {
-                      "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                      "description": "REQUIRED: The resource for which the policy detail is being requested. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/assetTypes\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -2894,7 +2911,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "resource": {
-                          "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                          "description": "REQUIRED: The resource for which the policy is being specified. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/assetTypes\/[^\/]+\/assets\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -2922,7 +2939,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "resource": {
-                          "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                          "description": "REQUIRED: The resource for which the policy is being requested. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/assetTypes\/[^\/]+\/assets\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -2953,7 +2970,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "resource": {
-                          "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                          "description": "REQUIRED: The resource for which the policy detail is being requested. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/assetTypes\/[^\/]+\/assets\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -3183,7 +3200,7 @@
                           "httpMethod": "POST",
                           "parameters": {
                             "resource": {
-                              "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                              "description": "REQUIRED: The resource for which the policy is being specified. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
                               "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/assetTypes\/[^\/]+\/assets\/[^\/]+\/annotationSets\/[^\/]+$",
                               "location": "path",
                               "required": true,
@@ -3211,7 +3228,7 @@
                           "httpMethod": "GET",
                           "parameters": {
                             "resource": {
-                              "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                              "description": "REQUIRED: The resource for which the policy is being requested. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
                               "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/assetTypes\/[^\/]+\/assets\/[^\/]+\/annotationSets\/[^\/]+$",
                               "location": "path",
                               "required": true,
@@ -3242,7 +3259,7 @@
                           "httpMethod": "POST",
                           "parameters": {
                             "resource": {
-                              "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                              "description": "REQUIRED: The resource for which the policy detail is being requested. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
                               "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/assetTypes\/[^\/]+\/assets\/[^\/]+\/annotationSets\/[^\/]+$",
                               "location": "path",
                               "required": true,
@@ -3437,7 +3454,7 @@
                               "httpMethod": "POST",
                               "parameters": {
                                 "resource": {
-                                  "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                                  "description": "REQUIRED: The resource for which the policy is being specified. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
                                   "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/assetTypes\/[^\/]+\/assets\/[^\/]+\/annotationSets\/[^\/]+\/annotations\/[^\/]+$",
                                   "location": "path",
                                   "required": true,
@@ -3465,7 +3482,7 @@
                               "httpMethod": "GET",
                               "parameters": {
                                 "resource": {
-                                  "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                                  "description": "REQUIRED: The resource for which the policy is being requested. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
                                   "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/assetTypes\/[^\/]+\/assets\/[^\/]+\/annotationSets\/[^\/]+\/annotations\/[^\/]+$",
                                   "location": "path",
                                   "required": true,
@@ -3496,7 +3513,7 @@
                               "httpMethod": "POST",
                               "parameters": {
                                 "resource": {
-                                  "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                                  "description": "REQUIRED: The resource for which the policy detail is being requested. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
                                   "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/assetTypes\/[^\/]+\/assets\/[^\/]+\/annotationSets\/[^\/]+\/annotations\/[^\/]+$",
                                   "location": "path",
                                   "required": true,
@@ -3831,10 +3848,9 @@
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "Field mask is used to specify the fields to be overwritten in the Catalog resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
+                      "description": "update_mask is a comma separated fields used to specify changes in catalog. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
                       "location": "query",
-                      "type": "string",
-                      "format": "google-fieldmask"
+                      "type": "string"
                     }
                   },
                   "parameterOrder": [
@@ -4067,7 +4083,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "resource": {
-                      "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                      "description": "REQUIRED: The resource for which the policy is being specified. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/complexTypes\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -4095,7 +4111,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "resource": {
-                      "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                      "description": "REQUIRED: The resource for which the policy is being requested. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/complexTypes\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -4126,7 +4142,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "resource": {
-                      "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                      "description": "REQUIRED: The resource for which the policy detail is being requested. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/complexTypes\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -4502,7 +4518,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "resource": {
-                      "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                      "description": "REQUIRED: The resource for which the policy is being specified. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/transformers\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -4530,7 +4546,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "resource": {
-                      "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                      "description": "REQUIRED: The resource for which the policy is being requested. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/transformers\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -4561,7 +4577,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "resource": {
-                      "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                      "description": "REQUIRED: The resource for which the policy detail is being requested. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/transformers\/[^\/]+$",
                       "location": "path",
                       "required": true,

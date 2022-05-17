@@ -1384,6 +1384,7 @@ def DeleteGeneratedProperties(cluster, dataproc):
       'hdfs:dfs.namenode.lifeline.rpc-address',
       'hdfs:dfs.namenode.servicerpc-address'
   ]
+
   prop_keys_to_delete = [
       prop_key for prop_key in props.keys()
       if any(prop_key.startswith(prop_to_delete)

@@ -32,6 +32,7 @@ from googlecloudsdk.command_lib.artifacts import requests as ar_requests
 from googlecloudsdk.command_lib.projects import util as project_util
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.resource import resource_printer
@@ -401,15 +402,85 @@ def ListFiles(args):
   Returns:
     List of files.
   """
+  client = ar_requests.GetClient()
+  messages = ar_requests.GetMessages()
   project = GetProject(args)
   location = args.location or properties.VALUES.artifacts.location.Get()
   repo = GetRepo(args)
+  package = args.package
+  version = args.version
+  tag = args.tag
   page_size = args.page_size
+  arg_filters = ""
 
-  repo_path = "projects/{}/locations/{}/repositories/{}".format(
-      project, location, repo)
+  # Parse fully qualified path in package argument
+  if package:
+    if re.match(r"projects\/.*\/locations\/.*\/repositories\/.*\/packages\/.*",
+                package):
+      params = package.replace("projects/", "", 1).replace(
+          "/locations/", " ", 1).replace("/repositories/", " ",
+                                         1).replace("/packages/", " ",
+                                                    1).split(" ")
+      project, location, repo, package = [params[i] for i in range(len(params))]
 
-  return ar_requests.ListFiles(repo_path, page_size)
+  # Escape slashes in package name
+  if package:
+    package = package.replace("/", "%2F")
+
+  # Retrieve version from tag name
+  if version and tag:
+    raise ar_exceptions.InvalidInputValueError(
+        "Specify either --version or --tag with --package argument.")
+  if package and tag:
+    tag_path = resources.Resource.RelativeName(
+        resources.REGISTRY.Create(
+            "artifactregistry.projects.locations.repositories.packages.tags",
+            projectsId=project,
+            locationsId=location,
+            repositoriesId=repo,
+            packagesId=package,
+            tagsId=tag))
+    version = ar_requests.GetVersionFromTag(client, messages, tag_path)
+
+  if package and version:
+    version_path = resources.Resource.RelativeName(
+        resources.REGISTRY.Create(
+            "artifactregistry.projects.locations.repositories.packages.versions",
+            projectsId=project,
+            locationsId=location,
+            repositoriesId=repo,
+            packagesId=package,
+            versionsId=version))
+    arg_filters = 'owner="{}"'.format(version_path)
+  elif package:
+    package_path = resources.Resource.RelativeName(
+        resources.REGISTRY.Create(
+            "artifactregistry.projects.locations.repositories.packages",
+            projectsId=project,
+            locationsId=location,
+            repositoriesId=repo,
+            packagesId=package))
+    arg_filters = 'owner="{}"'.format(package_path)
+  elif version or tag:
+    raise ar_exceptions.InvalidInputValueError(
+        "Package name is required when specifying version or tag.")
+
+  repo_path = resources.Resource.RelativeName(
+      resources.REGISTRY.Create(
+          "artifactregistry.projects.locations.repositories",
+          projectsId=project,
+          locationsId=location,
+          repositoriesId=repo))
+  files = ar_requests.ListFiles(client, messages, repo_path, arg_filters,
+                                page_size)
+
+  for file in files:
+    file.name = resources.REGISTRY.ParseRelativeName(
+        file.name,
+        collection="artifactregistry.projects.locations.repositories.files"
+    ).filesId.replace("%2F", "/").split("/")[-1]
+
+  return files
 
 
 def AddEncryptionLogToRepositoryInfo(response, unused_args):

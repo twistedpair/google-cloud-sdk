@@ -217,8 +217,8 @@ class BaremetalsolutionProjectsLocationsInstancesPatchRequest(_messages.Message)
       are schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. Format:
       `projects/{project}/locations/{location}/instances/{instance}`
-    updateMask: The list of fields to update. The only currently supported
-      fields are: `labels` `hyperthreading_enabled`
+    updateMask: The list of fields to update. The currently supported fields
+      are: `labels` `hyperthreading_enabled` `os_image`
   """
 
   instance = _messages.MessageField('Instance', 1)
@@ -840,6 +840,9 @@ class Instance(_messages.Message):
       `projects/{project}/locations/{location}/instances/{instance}`
     networks: List of networks associated with this server.
     osImage: The OS image currently installed on the server.
+    pod: Immutable. Pod name. Pod is an independent part of infrastructure.
+      Instance can be connected to the assets (networks, volumes) allocated in
+      the same pod only.
     state: The state of the server.
     updateTime: Output only. Update a time stamp.
   """
@@ -892,8 +895,9 @@ class Instance(_messages.Message):
   name = _messages.StringField(8)
   networks = _messages.MessageField('Network', 9, repeated=True)
   osImage = _messages.StringField(10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  updateTime = _messages.StringField(12)
+  pod = _messages.StringField(11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  updateTime = _messages.StringField(13)
 
 
 class InstanceConfig(_messages.Message):
@@ -2228,6 +2232,7 @@ class Volume(_messages.Message):
       schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. Format:
       `projects/{project}/locations/{location}/volumes/{volume}`
+    pod: Immutable. Pod name.
     remainingSpaceGib: The space remaining in the storage volume for new LUNs,
       in GiB, excluding space reserved for snapshots.
     requestedSizeGib: The requested size of this storage volume, in GiB.
@@ -2313,14 +2318,15 @@ class Volume(_messages.Message):
   id = _messages.StringField(4)
   labels = _messages.MessageField('LabelsValue', 5)
   name = _messages.StringField(6)
-  remainingSpaceGib = _messages.IntegerField(7)
-  requestedSizeGib = _messages.IntegerField(8)
-  snapshotAutoDeleteBehavior = _messages.EnumField('SnapshotAutoDeleteBehaviorValueValuesEnum', 9)
-  snapshotEnabled = _messages.BooleanField(10)
-  snapshotReservationDetail = _messages.MessageField('SnapshotReservationDetail', 11)
-  snapshotSchedulePolicy = _messages.StringField(12)
-  state = _messages.EnumField('StateValueValuesEnum', 13)
-  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 14)
+  pod = _messages.StringField(7)
+  remainingSpaceGib = _messages.IntegerField(8)
+  requestedSizeGib = _messages.IntegerField(9)
+  snapshotAutoDeleteBehavior = _messages.EnumField('SnapshotAutoDeleteBehaviorValueValuesEnum', 10)
+  snapshotEnabled = _messages.BooleanField(11)
+  snapshotReservationDetail = _messages.MessageField('SnapshotReservationDetail', 12)
+  snapshotSchedulePolicy = _messages.StringField(13)
+  state = _messages.EnumField('StateValueValuesEnum', 14)
+  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 15)
 
 
 class VolumeConfig(_messages.Message):

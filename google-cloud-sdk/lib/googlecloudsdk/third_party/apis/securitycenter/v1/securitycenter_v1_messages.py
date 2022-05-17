@@ -2054,6 +2054,7 @@ class MitreAttack(_messages.Message):
       MODIFY_AUTHENTICATION_PROCESS: T1556
       DATA_DESTRUCTION: T1485
       DOMAIN_POLICY_MODIFICATION: T1484
+      IMPAIR_DEFENSES: T1562
     """
     TECHNIQUE_UNSPECIFIED = 0
     ACTIVE_SCANNING = 1
@@ -2086,6 +2087,7 @@ class MitreAttack(_messages.Message):
     MODIFY_AUTHENTICATION_PROCESS = 28
     DATA_DESTRUCTION = 29
     DOMAIN_POLICY_MODIFICATION = 30
+    IMPAIR_DEFENSES = 31
 
   class PrimaryTacticValueValuesEnum(_messages.Enum):
     r"""The MITRE ATT&CK tactic most closely represented by this finding, if
@@ -2159,6 +2161,7 @@ class MitreAttack(_messages.Message):
       MODIFY_AUTHENTICATION_PROCESS: T1556
       DATA_DESTRUCTION: T1485
       DOMAIN_POLICY_MODIFICATION: T1484
+      IMPAIR_DEFENSES: T1562
     """
     TECHNIQUE_UNSPECIFIED = 0
     ACTIVE_SCANNING = 1
@@ -2191,6 +2194,7 @@ class MitreAttack(_messages.Message):
     MODIFY_AUTHENTICATION_PROCESS = 28
     DATA_DESTRUCTION = 29
     DOMAIN_POLICY_MODIFICATION = 30
+    IMPAIR_DEFENSES = 31
 
   additionalTactics = _messages.EnumField('AdditionalTacticsValueListEntryValuesEnum', 1, repeated=True)
   additionalTechniques = _messages.EnumField('AdditionalTechniquesValueListEntryValuesEnum', 2, repeated=True)
@@ -3894,8 +3898,9 @@ class SecuritycenterOrganizationsSourcesGetIamPolicyRequest(_messages.Message):
     getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
       request body.
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
@@ -3954,8 +3959,9 @@ class SecuritycenterOrganizationsSourcesSetIamPolicyRequest(_messages.Message):
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
@@ -3969,8 +3975,9 @@ class SecuritycenterOrganizationsSourcesTestIamPermissionsRequest(_messages.Mess
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """

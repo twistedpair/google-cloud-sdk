@@ -1569,7 +1569,7 @@ class VmwareengineV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Modifies a `PrivateCloud` resource. Only the following fields can be updated: `description`, `network_config.external_ip_access`. Only fields specified in `updateMask` are applied. During operation processing, the resource is temporarily in the `ACTIVE` state before the operation fully completes. For that period of time, you can't update the resource. Use the operation status to determine when the processing fully completes.
+      r"""Modifies a `PrivateCloud` resource. Only the following fields can be updated: `description`. Only fields specified in `updateMask` are applied. During operation processing, the resource is temporarily in the `ACTIVE` state before the operation fully completes. For that period of time, you can't update the resource. Use the operation status to determine when the processing fully completes.
 
       Args:
         request: (VmwareengineProjectsLocationsPrivateCloudsPatchRequest) input message

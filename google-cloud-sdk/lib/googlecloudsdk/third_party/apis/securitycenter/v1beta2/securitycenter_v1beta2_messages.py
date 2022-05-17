@@ -1546,6 +1546,7 @@ class MitreAttack(_messages.Message):
       MODIFY_AUTHENTICATION_PROCESS: T1556
       DATA_DESTRUCTION: T1485
       DOMAIN_POLICY_MODIFICATION: T1484
+      IMPAIR_DEFENSES: T1562
     """
     TECHNIQUE_UNSPECIFIED = 0
     ACTIVE_SCANNING = 1
@@ -1578,6 +1579,7 @@ class MitreAttack(_messages.Message):
     MODIFY_AUTHENTICATION_PROCESS = 28
     DATA_DESTRUCTION = 29
     DOMAIN_POLICY_MODIFICATION = 30
+    IMPAIR_DEFENSES = 31
 
   class PrimaryTacticValueValuesEnum(_messages.Enum):
     r"""The MITRE ATT&CK tactic most closely represented by this finding, if
@@ -1651,6 +1653,7 @@ class MitreAttack(_messages.Message):
       MODIFY_AUTHENTICATION_PROCESS: T1556
       DATA_DESTRUCTION: T1485
       DOMAIN_POLICY_MODIFICATION: T1484
+      IMPAIR_DEFENSES: T1562
     """
     TECHNIQUE_UNSPECIFIED = 0
     ACTIVE_SCANNING = 1
@@ -1683,6 +1686,7 @@ class MitreAttack(_messages.Message):
     MODIFY_AUTHENTICATION_PROCESS = 28
     DATA_DESTRUCTION = 29
     DOMAIN_POLICY_MODIFICATION = 30
+    IMPAIR_DEFENSES = 31
 
   additionalTactics = _messages.EnumField('AdditionalTacticsValueListEntryValuesEnum', 1, repeated=True)
   additionalTechniques = _messages.EnumField('AdditionalTechniquesValueListEntryValuesEnum', 2, repeated=True)
@@ -1752,7 +1756,9 @@ class SecurityCenterSettings(_messages.Message):
       value is only referenced by services that support log sink. Please refer
       to the documentation for an updated list of compatible services.
     name: The resource name of the SecurityCenterSettings. Format:
-      organizations/{organization}/securityCenterSettings
+      organizations/{organization}/securityCenterSettings Format:
+      folders/{folder}/securityCenterSettings Format:
+      projects/{project}/securityCenterSettings
     orgServiceAccount: The organization level service account to be used for
       security center components.
   """
@@ -1980,6 +1986,19 @@ class SecuritycenterFoldersGetOnboardingStateRequest(_messages.Message):
     name: Required. The name of the OnboardingState to retrieve. Formats: *
       organizations/{organization}/onboardingState *
       folders/{folder}/onboardingState * projects/{project}/onboardingState
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SecuritycenterFoldersGetSecurityCenterSettingsRequest(_messages.Message):
+  r"""A SecuritycenterFoldersGetSecurityCenterSettingsRequest object.
+
+  Fields:
+    name: Required. The name of the SecurityCenterSettings to retrieve.
+      Format: organizations/{organization}/securityCenterSettings Format:
+      folders/{folder}/securityCenterSettings Format:
+      projects/{project}/securityCenterSettings
   """
 
   name = _messages.StringField(1, required=True)
@@ -2251,7 +2270,9 @@ class SecuritycenterOrganizationsGetSecurityCenterSettingsRequest(_messages.Mess
 
   Fields:
     name: Required. The name of the SecurityCenterSettings to retrieve.
-      Format: organizations/{organization}/securityCenterSettings
+      Format: organizations/{organization}/securityCenterSettings Format:
+      folders/{folder}/securityCenterSettings Format:
+      projects/{project}/securityCenterSettings
   """
 
   name = _messages.StringField(1, required=True)
@@ -2527,6 +2548,19 @@ class SecuritycenterProjectsGetOnboardingStateRequest(_messages.Message):
     name: Required. The name of the OnboardingState to retrieve. Formats: *
       organizations/{organization}/onboardingState *
       folders/{folder}/onboardingState * projects/{project}/onboardingState
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SecuritycenterProjectsGetSecurityCenterSettingsRequest(_messages.Message):
+  r"""A SecuritycenterProjectsGetSecurityCenterSettingsRequest object.
+
+  Fields:
+    name: Required. The name of the SecurityCenterSettings to retrieve.
+      Format: organizations/{organization}/securityCenterSettings Format:
+      folders/{folder}/securityCenterSettings Format:
+      projects/{project}/securityCenterSettings
   """
 
   name = _messages.StringField(1, required=True)

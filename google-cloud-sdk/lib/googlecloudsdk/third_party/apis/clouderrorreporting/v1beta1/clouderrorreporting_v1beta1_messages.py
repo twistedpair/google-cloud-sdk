@@ -134,7 +134,7 @@ class ClouderrorreportingProjectsGroupStatsListRequest(_messages.Message):
       project. Written as `projects/{projectID}` or
       `projects/{projectNumber}`, where `{projectID}` and `{projectNumber}`
       can be found in the [Google Cloud
-      Console](https://support.google.com/cloud/answer/6158840). Examples:
+      console](https://support.google.com/cloud/answer/6158840). Examples:
       `projects/my-project-123`, `projects/5551234`.
     serviceFilter_resourceType: Optional. The exact value to match against
       [`ServiceContext.resource_type`](/error-

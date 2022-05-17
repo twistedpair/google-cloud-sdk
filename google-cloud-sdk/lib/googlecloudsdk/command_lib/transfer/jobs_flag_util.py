@@ -95,6 +95,7 @@ class PreserveMetadataField(enum.Enum):
 class OverwriteOption(enum.Enum):
   ALWAYS = 'always'
   DIFFERENT = 'different'
+  NEVER = 'never'
 
 
 class StorageClass(enum.Enum):
@@ -353,7 +354,9 @@ def setup_parser(parser, is_update=False):
       " - 'different' - Overwrites files with the same name if the contents"
       " are different (e.g., if etags or checksums don't match)\n"
       " - 'always' - Overwrite destination file whenever source file has the"
-      " same name -- even if they're identical")
+      " same name -- even if they're identical\n"
+      " - 'never' - Never overwrite destination file when source file has the"
+      ' same name')
   transfer_options.add_argument(
       '--delete-from',
       choices=sorted([option.value for option in DeleteOption]),

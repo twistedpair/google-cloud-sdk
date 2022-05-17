@@ -128,7 +128,7 @@ class GkemulticloudProjectsLocationsAwsClustersAwsNodePoolsPatchRequest(_message
       Names](https://cloud.google.com/apis/design/resource_names)
     updateMask: Required. Mask of fields to update. At least one path must be
       supplied in this field. The elements of the repeated paths field can
-      only include these fields from AwsNodePool: *. `annotations`. *
+      only include these fields from AwsNodePool: * `annotations`. *
       `version`. * `autoscaling.min_node_count`. *
       `autoscaling.max_node_count`. * `config.config_encryption.kms_key_arn`.
       * `config.security_group_ids`. * `config.root_volume.iops`. *
@@ -287,7 +287,7 @@ class GkemulticloudProjectsLocationsAwsClustersPatchRequest(_messages.Message):
       `control_plane.root_volume.volume_type`. *
       `control_plane.root_volume.size_gib`. * `control_plane.ssh_config`. *
       `control_plane.ssh_config.ec2_key_pair`. *
-      `control_plane.instance_placement.tenancy`.
+      `control_plane.instance_placement.tenancy`. * `logging_config`.
     validateOnly: If set, only validate the request, but do not actually
       update the cluster.
   """
@@ -647,7 +647,7 @@ class GkemulticloudProjectsLocationsAzureClustersPatchRequest(_messages.Message)
       only include these fields from AzureCluster: * `description`. *
       `annotations`. * `azureClient`. * `control_plane.version`. *
       `control_plane.vm_size`. * `authorization.admin_users`. *
-      `control_plane.root_volume.size_gib`.
+      `control_plane.root_volume.size_gib`. * `logging_config`
     validateOnly: If set, only validate the request, but do not actually
       update the cluster.
   """
@@ -1042,9 +1042,9 @@ class GoogleCloudGkemulticloudV1AwsDatabaseEncryption(_messages.Message):
 
 
 class GoogleCloudGkemulticloudV1AwsInstancePlacement(_messages.Message):
-  r"""Details of placement information for an instance. Limitation for using
-  the `host` tenancy. * T3 instances that use the unlimited CPU credit option
-  do not support host tenancy.
+  r"""Details of placement information for an instance. Limitations for using
+  the `host` tenancy: * T3 instances that use the unlimited CPU credit option
+  don't support host tenancy.
 
   Enums:
     TenancyValueValuesEnum: Required. The tenancy for instance.
@@ -1060,7 +1060,7 @@ class GoogleCloudGkemulticloudV1AwsInstancePlacement(_messages.Message):
       TENANCY_UNSPECIFIED: Not set.
       DEFAULT: Use default VPC tenancy.
       DEDICATED: Run a dedicated instance.
-      HOST: Launch this instance to a dedicated Host.
+      HOST: Launch this instance to a dedicated host.
     """
     TENANCY_UNSPECIFIED = 0
     DEFAULT = 1

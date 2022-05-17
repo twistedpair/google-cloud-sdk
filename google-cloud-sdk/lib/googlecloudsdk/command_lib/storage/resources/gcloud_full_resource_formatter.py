@@ -68,7 +68,7 @@ _BUCKET_DISPLAY_TITLES_AND_DEFAULTS = (
         labels=base.FieldDisplayTitleAndDefault(
             title='Labels', default=None),
         default_kms_key=base.FieldDisplayTitleAndDefault(
-            title='Default KMS Key', default=None),
+            title='Default KMS Key', default=_NONE_STRING),
         creation_time=base.FieldDisplayTitleAndDefault(
             title='Time Created', default=None),
         update_time=base.FieldDisplayTitleAndDefault(
@@ -152,13 +152,6 @@ class GcloudFullResourceFormatter(base.FullResourceFormatter):
       # Checking for string because these feilds might have error strings.
       if value and not isinstance(value, str):
         setattr(displayable_bucket_data, field, _PRESENT)
-
-    if displayable_bucket_data.default_kms_key is not None:
-      # Handle default_kms_key separately because the value itself can
-      # be a string. So the check above will not work.
-      # Default KMS Key will never have a error string, so it's safe to not
-      # do the str type check.
-      displayable_bucket_data.default_kms_key = _PRESENT
 
     return base.get_formatted_string(
         url_string,

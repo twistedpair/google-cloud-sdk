@@ -208,13 +208,13 @@ def ListRepositories(project, page_size=None):
           field="repositories"))
 
 
-def ListFiles(repo, page_size=None):
+def ListFiles(client, messages, repo, arg_filters, page_size=None):
   """Lists all files under a repository."""
   client = GetClient()
   messages = GetMessages()
   list_files_req = (
       messages.ArtifactregistryProjectsLocationsRepositoriesFilesListRequest(
-          parent=repo))
+          parent=repo, filter=arg_filters))
   return list(
       list_pager.YieldFromList(
           client.projects_locations_repositories_files,

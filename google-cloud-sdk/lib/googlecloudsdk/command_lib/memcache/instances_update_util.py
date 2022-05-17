@@ -34,12 +34,12 @@ def AddFieldToUpdateMask(update_mask, field):
     update_mask.append(field)
 
 
-def CreateUpdateRequestAlpha(ref, args):
-  """Generate alpha memcache update instance request."""
+def CreateUpdateRequest(ref, args):
+  """Returns an Update or UpdateParameters request depending on the args given."""
   messages = memcache.Messages(ref.GetCollectionInfo().api_version)
   mask = []
   instance = messages.Instance()
-  maintenance_policy = messages.GoogleCloudMemcacheV1beta2MaintenancePolicy()
+  maintenance_policy = _GetMaintenancePolicy(messages)
   weekly_maintenance_window = messages.WeeklyMaintenanceWindow()
   start_time = messages.TimeOfDay()
   if args.IsSpecified('maintenance_window_day'):
@@ -62,12 +62,6 @@ def CreateUpdateRequestAlpha(ref, args):
     AddFieldToUpdateMask(mask, 'maintenancePolicy')
     instance.maintenancePolicy = None
 
-  return CreateUpdateRequest(ref, args, mask, instance)
-
-
-def CreateUpdateRequest(ref, args, mask=None, instance=None):
-  """Returns an Update or UpdateParameters request depending on the args given."""
-  messages = memcache.Messages(ref.GetCollectionInfo().api_version)
   if args.IsSpecified('parameters'):
     params = encoding.DictToMessage(args.parameters,
                                     messages.MemcacheParameters.ParamsValue)
@@ -78,10 +72,6 @@ def CreateUpdateRequest(ref, args, mask=None, instance=None):
         messages.MemcacheProjectsLocationsInstancesUpdateParametersRequest(
             name=ref.RelativeName(), updateParametersRequest=param_req))
   else:
-    if mask is None:
-      mask = []
-    if instance is None:
-      instance = messages.Instance()
     if args.IsSpecified('display_name'):
       AddFieldToUpdateMask(mask, 'displayName')
       instance.displayName = args.display_name
@@ -98,3 +88,13 @@ def CreateUpdateRequest(ref, args, mask=None, instance=None):
             name=ref.RelativeName(), instance=instance, updateMask=update_mask))
 
   return request
+
+
+def _GetMaintenancePolicy(message_module):
+  """Returns a maintenance policy of the appropriate version."""
+  if hasattr(message_module, 'GoogleCloudMemcacheV1beta2MaintenancePolicy'):
+    return message_module.GoogleCloudMemcacheV1beta2MaintenancePolicy()
+  elif hasattr(message_module, 'GoogleCloudMemcacheV1MaintenancePolicy'):
+    return message_module.GoogleCloudMemcacheV1MaintenancePolicy()
+
+  raise AttributeError('No MaintenancePolicy found for version V1 or V1beta2.')

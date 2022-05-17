@@ -30,6 +30,21 @@ from googlecloudsdk.core.util import platforms
 SETTING_INVALID_POSIX_ERROR = ValueError(
     'Setting preserved POSIX data will result in invalid file metadata.')
 
+_MISSING_UID_FORMAT = (
+    "UID in {} metadata doesn't exist on current system. UID: {}")
+_MISSING_GID_FORMAT = (
+    "GID in {} metadata doesn't exist on current system. GID: {}")
+_INSUFFICIENT_USER_READ_ACCESS_FORMAT = (
+    'Insufficient access to local destination to copy {}. User {} owns'
+    ' file, but owner does not have read permission in mode {}.')
+_INSUFFICIENT_GROUP_READ_ACCESS_FORMAT = (
+    'Insufficient access to local destination to copy {}. Group {}'
+    ' would own file, but group does not have read permission in mode {}.')
+_INSUFFICIENT_OTHER_READ_ACCESS_FORMAT = (
+    'Insufficient access to local destination to copy {}. UID {} is not'
+    ' owner of file, and user is not in a group that owns the file. Users in'
+    ' "other" category do not have read permission in mode {}.')
+
 # For transporting POSIX info through an object's custom metadata.
 _ATIME_METADATA_KEY = 'goog-reserved-file-atime'
 _GID_METADATA_KEY = 'goog-reserved-posix-gid'
@@ -66,8 +81,10 @@ class PosixMode:
   @classmethod
   def from_base_ten_int(cls, base_ten_int):
     """Initializes class from base ten int. E.g. 73."""
-    return PosixMode(base_ten_int,
-                     convert_base_ten_to_base_eight_str(base_ten_int))
+    base_eight_str = convert_base_ten_to_base_eight_str(base_ten_int)
+    # Not using original base_ten_int because str version removes unwanted bits.
+    return PosixMode(
+        convert_base_eight_str_to_base_ten_int(base_eight_str), base_eight_str)
 
   @classmethod
   def from_base_eight_str(cls, base_eight_str):
@@ -179,17 +196,13 @@ def are_file_permissions_valid(url_string,
     try:
       pwd.getpwuid(uid)
     except KeyError:
-      log.error(
-          "UID in {} metadata doesn't exist on current system. UID: {}".format(
-              url_string, uid))
+      log.error(_MISSING_UID_FORMAT.format(url_string, uid))
       return False
   if gid is not None:
     try:
       grp.getgrgid(gid)
     except (KeyError, OverflowError):
-      log.error(
-          "GID in {} metadata doesn't exist on current system. GID: {}".format(
-              url_string, gid))
+      log.error(_MISSING_GID_FORMAT.format(url_string, gid))
       return False
 
   if mode is None:
@@ -204,9 +217,8 @@ def are_file_permissions_valid(url_string,
     if mode_to_set.base_ten_int & stat.S_IRUSR:
       return True
     log.error(
-        ('Insufficient access to local destination to copy {}. User {} owns'
-         ' file, but owner does not have read permission in mode {}.').format(
-             url_string, uid_to_set, mode_to_set.base_eight_str))
+        _INSUFFICIENT_USER_READ_ACCESS_FORMAT.format(
+            url_string, uid_to_set, mode_to_set.base_eight_str))
     return False
 
   if gid is None or gid in system_posix_data.user_groups:
@@ -216,20 +228,17 @@ def are_file_permissions_valid(url_string,
       return True
 
     log.error(
-        ('Insufficient access to local destination to copy {}. Group {}'
-         ' would own file, but group does not have read permission in mode {}.'
-        ).format(url_string, '[user primary group]' if gid is None else gid,
-                 mode_to_set.base_eight_str))
+        _INSUFFICIENT_GROUP_READ_ACCESS_FORMAT.format(
+            url_string, '[user primary group]' if gid is None else gid,
+            mode_to_set.base_eight_str))
     return False
 
   if mode_to_set.base_ten_int & stat.S_IROTH:
     # User is not owner and not in relevant group. User is "other".
     return True
   log.error(
-      ('Insufficient access to local destination to copy {}. UID {} is not'
-       ' owner of file, and user is not in a group that owns the file. Users in'
-       ' "other" category do not have read permission in mode {}.').format(
-           url_string, uid_to_set, mode_to_set.base_eight_str))
+      _INSUFFICIENT_OTHER_READ_ACCESS_FORMAT.format(url_string, uid_to_set,
+                                                    mode_to_set.base_eight_str))
   return False
 
 

@@ -79,7 +79,7 @@ class ArtifactregistryProjectsLocationsListRequest(_messages.Message):
 
   Fields:
     filter: A filter to narrow down results to a preferred subset. The
-      filtering language accepts strings like "displayName=tokyo", and is
+      filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
     name: The resource that owns the locations collection, if applicable.
     pageSize: The maximum number of results to return. If not set, the service
@@ -242,8 +242,9 @@ class ArtifactregistryProjectsLocationsRepositoriesGetIamPolicyRequest(_messages
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -258,6 +259,21 @@ class ArtifactregistryProjectsLocationsRepositoriesGetRequest(_messages.Message)
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class ArtifactregistryProjectsLocationsRepositoriesGoModulesUploadRequest(_messages.Message):
+  r"""A ArtifactregistryProjectsLocationsRepositoriesGoModulesUploadRequest
+  object.
+
+  Fields:
+    parent: The resource name of the repository where the Go module will be
+      uploaded.
+    uploadGoModuleRequest: A UploadGoModuleRequest resource to be passed as
+      the request body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  uploadGoModuleRequest = _messages.MessageField('UploadGoModuleRequest', 2)
 
 
 class ArtifactregistryProjectsLocationsRepositoriesListRequest(_messages.Message):
@@ -508,8 +524,9 @@ class ArtifactregistryProjectsLocationsRepositoriesSetIamPolicyRequest(_messages
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
@@ -524,8 +541,9 @@ class ArtifactregistryProjectsLocationsRepositoriesTestIamPermissionsRequest(_me
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """
@@ -581,6 +599,16 @@ class ArtifactregistryProjectsUpdateProjectSettingsRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class BatchDeleteVersionsMetadata(_messages.Message):
+  r"""The metadata of an LRO from deleting multiple versions.
+
+  Fields:
+    failedVersions: The versions the operation failed to delete.
+  """
+
+  failedVersions = _messages.StringField(1, repeated=True)
+
+
 class Binding(_messages.Message):
   r"""Associates `members`, or principals, with a `role`.
 
@@ -594,7 +622,7 @@ class Binding(_messages.Message):
       policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
-    members: Specifies the principals requesting access for a Cloud Platform
+    members: Specifies the principals requesting access for a Google Cloud
       resource. `members` can have the following values: * `allUsers`: A
       special identifier that represents anyone who is on the internet; with
       or without a Google account. * `allAuthenticatedUsers`: A special
@@ -716,6 +744,23 @@ class Expr(_messages.Message):
   expression = _messages.StringField(2)
   location = _messages.StringField(3)
   title = _messages.StringField(4)
+
+
+class GoModule(_messages.Message):
+  r"""GoModule represents a Go module.
+
+  Fields:
+    createTime: Output only. The time when the Go module is created.
+    name: The resource name of a Go module.
+    updateTime: Output only. The time when the Go module is updated.
+    version: The version of the Go module. Must be a valid canonical version
+      as defined in https://go.dev/ref/mod#glos-canonical-version.
+  """
+
+  createTime = _messages.StringField(1)
+  name = _messages.StringField(2)
+  updateTime = _messages.StringField(3)
+  version = _messages.StringField(4)
 
 
 class GoogleDevtoolsArtifactregistryV1File(_messages.Message):
@@ -1363,6 +1408,7 @@ class Repository(_messages.Message):
       YUM: YUM package format.
       PYTHON: Python package format.
       KFP: Kubeflow Pipelines package format.
+      GO: GO package format.
     """
     FORMAT_UNSPECIFIED = 0
     DOCKER = 1
@@ -1372,6 +1418,7 @@ class Repository(_messages.Message):
     YUM = 5
     PYTHON = 6
     KFP = 7
+    GO = 8
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1417,8 +1464,8 @@ class SetIamPolicyRequest(_messages.Message):
   Fields:
     policy: REQUIRED: The complete policy to be applied to the `resource`. The
       size of the policy is limited to a few 10s of KB. An empty policy is a
-      valid policy but certain Cloud Platform services (such as Projects)
-      might reject them.
+      valid policy but certain Google Cloud services (such as Projects) might
+      reject them.
   """
 
   policy = _messages.MessageField('Policy', 1)
@@ -1564,7 +1611,7 @@ class TestIamPermissionsRequest(_messages.Message):
 
   Fields:
     permissions: The set of permissions to check for the `resource`.
-      Permissions with wildcards (such as '*' or 'storage.*') are not allowed.
+      Permissions with wildcards (such as `*` or `storage.*`) are not allowed.
       For more information see [IAM
       Overview](https://cloud.google.com/iam/docs/overview#permissions).
   """
@@ -1593,6 +1640,10 @@ class UploadAptArtifactMediaResponse(_messages.Message):
   operation = _messages.MessageField('Operation', 1)
 
 
+class UploadAptArtifactMetadata(_messages.Message):
+  r"""The operation metadata for uploading artifacts."""
+
+
 class UploadAptArtifactRequest(_messages.Message):
   r"""The request to upload an artifact."""
 
@@ -1608,6 +1659,24 @@ class UploadAptArtifactResponse(_messages.Message):
   aptArtifacts = _messages.MessageField('AptArtifact', 1, repeated=True)
 
 
+class UploadGoModuleMediaResponse(_messages.Message):
+  r"""The response to upload a Go module.
+
+  Fields:
+    operation: Operation to be returned to the user.
+  """
+
+  operation = _messages.MessageField('Operation', 1)
+
+
+class UploadGoModuleMetadata(_messages.Message):
+  r"""The operation metadata for uploading go modules."""
+
+
+class UploadGoModuleRequest(_messages.Message):
+  r"""The request to upload a Go module."""
+
+
 class UploadYumArtifactMediaResponse(_messages.Message):
   r"""The response to upload an artifact.
 
@@ -1616,6 +1685,10 @@ class UploadYumArtifactMediaResponse(_messages.Message):
   """
 
   operation = _messages.MessageField('Operation', 1)
+
+
+class UploadYumArtifactMetadata(_messages.Message):
+  r"""The operation metadata for uploading artifacts."""
 
 
 class UploadYumArtifactRequest(_messages.Message):

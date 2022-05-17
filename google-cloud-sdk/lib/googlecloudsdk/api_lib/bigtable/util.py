@@ -76,6 +76,13 @@ def AwaitTable(operation_ref, message):
   return _Await(client.projects_instances_tables, operation_ref, message)
 
 
+def AwaitBackup(operation_ref, message):
+  """Waits for backup long running operation to complete."""
+  client = GetAdminClient()
+  return _Await(client.projects_instances_clusters_backups, operation_ref,
+                message)
+
+
 def GetAppProfileRef(instance, app_profile):
   """Get a resource reference to an app profile."""
   return resources.REGISTRY.Parse(

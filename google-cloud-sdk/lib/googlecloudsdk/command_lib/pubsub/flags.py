@@ -327,17 +327,22 @@ def AddSubscriptionSettingsFlags(parser,
           message. Value should be between 0 and 600 seconds. Defaults to 10
           seconds. {}""".format(DURATION_HELP_STR))
   if support_enable_exactly_once_delivery:
+    help_text_suffix = ''
+    if is_update:
+      help_text_suffix = (' To disable exactly-once delivery use '
+                          '`--no-enable-exactly-once-delivery`.')
     parser.add_argument(
         '--enable-exactly-once-delivery',
         action='store_true',
         default=None,
         help="""\
-            Whether or not to enble exactly once delivery on the subscription.
+            Whether or not to enable exactly-once delivery on the subscription.
             If true, Pub/Sub provides the following guarantees for the delivery
             of a message with a given value of `message_id` on this
             subscription: The message sent to a subscriber is guaranteed not to
-            be resent before the message's acknowledgement deadline expires. An
-            acknowledged message will not be resent to a subscriber.""")
+            be resent before the message's acknowledgment deadline expires. An
+            acknowledged message will not be resent to a subscriber.""" +
+        help_text_suffix)
 
 
 def AddPublishMessageFlags(parser, add_deprecated=False):

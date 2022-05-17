@@ -12,6 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+type:
+  api_field: googleFirestoreAdminV1Database.type
+  arg_name: type
+  help_text: The database type.
+  required: false
+  choices:
+  - arg_value: firestore-native
+    enum_value: FIRESTORE_NATIVE
+  - arg_value: datastore-mode
+    enum_value: DATASTORE_MODE
+  processor: googlecloudsdk.command_lib.firestore.util:GetDatabaseType
+
 query_scope:
   api_field: googleFirestoreAdminV1Index.queryScope
   arg_name: query-scope

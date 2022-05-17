@@ -869,6 +869,22 @@ class Layer(_messages.Message):
   directive = _messages.StringField(2)
 
 
+class License(_messages.Message):
+  r"""License information.
+
+  Fields:
+    comments: Comments
+    expression: Often a single license can be used to represent the licensing
+      terms. Sometimes it is necessary to include a choice of one or more
+      licenses or some combination of license identifiers. Examples:
+      "LGPL-2.1-only OR MIT", "LGPL-2.1-only AND MIT", "GPL-2.0-or-later WITH
+      Bison-exception-2.2".
+  """
+
+  comments = _messages.StringField(1)
+  expression = _messages.StringField(2)
+
+
 class ListOperationsResponse(_messages.Message):
   r"""The response message for Operations.ListOperations.
 
@@ -901,12 +917,11 @@ class Location(_messages.Message):
   system's filesystem. E.g., glibc was found in `/var/lib/dpkg/status`.
 
   Fields:
-    cpeUri: Required. The CPE URI in [CPE
-      format](https://cpe.mitre.org/specification/) denoting the package
-      manager version distributing a package.
+    cpeUri: Deprecated. The CPE URI in [CPE
+      format](https://cpe.mitre.org/specification/)
     path: The path from which we gathered that this package/version is
       installed.
-    version: The version installed at this location.
+    version: Deprecated. The version installed at this location.
   """
 
   cpeUri = _messages.StringField(1)
@@ -1400,14 +1415,49 @@ class PackageIssue(_messages.Message):
 class PackageOccurrence(_messages.Message):
   r"""Details on how a particular software package was installed on a system.
 
+  Enums:
+    ArchitectureValueValuesEnum: Output only. The CPU architecture for which
+      packages in this distribution channel were built. Architecture will be
+      blank for language packages.
+
   Fields:
-    location: Required. All of the places within the filesystem versions of
-      this package have been found.
-    name: Output only. The name of the installed package.
+    architecture: Output only. The CPU architecture for which packages in this
+      distribution channel were built. Architecture will be blank for language
+      packages.
+    cpeUri: Output only. The cpe_uri in [CPE
+      format](https://cpe.mitre.org/specification/) denoting the package
+      manager version distributing a package. The cpe_uri will be blank for
+      language packages.
+    license: Licenses that have been declared by the authors of the package.
+    location: All of the places within the filesystem versions of this package
+      have been found.
+    name: Required. Output only. The name of the installed package.
+    packageType: Output only. The type of package; whether native or non
+      native (e.g., ruby gems, node.js packages, etc.).
+    version: Output only. The version of the package.
   """
 
-  location = _messages.MessageField('Location', 1, repeated=True)
-  name = _messages.StringField(2)
+  class ArchitectureValueValuesEnum(_messages.Enum):
+    r"""Output only. The CPU architecture for which packages in this
+    distribution channel were built. Architecture will be blank for language
+    packages.
+
+    Values:
+      ARCHITECTURE_UNSPECIFIED: Unknown architecture.
+      X86: X86 architecture.
+      X64: X64 architecture.
+    """
+    ARCHITECTURE_UNSPECIFIED = 0
+    X86 = 1
+    X64 = 2
+
+  architecture = _messages.EnumField('ArchitectureValueValuesEnum', 1)
+  cpeUri = _messages.StringField(2)
+  license = _messages.MessageField('License', 3)
+  location = _messages.MessageField('Location', 4, repeated=True)
+  name = _messages.StringField(5)
+  packageType = _messages.StringField(6)
+  version = _messages.MessageField('Version', 7)
 
 
 class ProjectRepoId(_messages.Message):

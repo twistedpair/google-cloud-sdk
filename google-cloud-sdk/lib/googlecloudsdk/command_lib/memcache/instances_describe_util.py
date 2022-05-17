@@ -29,6 +29,8 @@ def FormatResponse(response, _):
     modified_response['createTime'] = response.createTime
   if response.discoveryEndpoint:
     modified_response['discoveryEndpoint'] = response.discoveryEndpoint
+  if response.displayName:
+    modified_response['displayName'] = response.displayName
   if response.maintenanceSchedule:
     modified_response['maintenanceSchedule'] = response.maintenanceSchedule
   if response.memcacheFullVersion:
@@ -63,7 +65,7 @@ def FormatResponse(response, _):
       item = {}
       # convert seconds to minutes
       duration_secs = int(mw.duration[:-1])
-      duration_mins = int(duration_secs/60)
+      duration_mins = int(duration_secs / 60)
       item['day'] = mw.day
       item['hour'] = mw.startTime.hours
       item['duration'] = six.text_type(duration_mins) + ' minutes'

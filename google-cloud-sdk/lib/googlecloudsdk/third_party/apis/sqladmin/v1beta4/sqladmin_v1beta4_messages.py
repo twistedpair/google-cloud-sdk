@@ -1871,6 +1871,7 @@ class Operation(_messages.Message):
       RESCHEDULE_MAINTENANCE: Reschedule maintenance to another time.
       START_EXTERNAL_SYNC: Starts external sync of a Cloud SQL EM replica to
         an external primary instance.
+      LOG_CLEANUP: Recovers logs from an instance's old data disk.
     """
     SQL_OPERATION_TYPE_UNSPECIFIED = 0
     IMPORT = 1
@@ -1907,6 +1908,7 @@ class Operation(_messages.Message):
     CREATE_CLONE = 32
     RESCHEDULE_MAINTENANCE = 33
     START_EXTERNAL_SYNC = 34
+    LOG_CLEANUP = 35
 
   class StatusValueValuesEnum(_messages.Enum):
     r"""The status of an operation.
@@ -3171,7 +3173,7 @@ class SqlProjectsInstancesVerifyExternalSyncSettingsRequest(_messages.Message):
 
 
 class SqlScheduledMaintenance(_messages.Message):
-  r"""Any scheduled maintenancce for this instance.
+  r"""Any scheduled maintenance for this instance.
 
   Fields:
     canDefer: A boolean attribute.

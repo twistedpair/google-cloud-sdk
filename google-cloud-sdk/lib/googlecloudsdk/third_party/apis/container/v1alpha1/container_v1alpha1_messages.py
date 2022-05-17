@@ -256,6 +256,11 @@ class BinaryAuthorization(_messages.Message):
     evaluationMode: Mode of operation for binauthz policy evaluation.
       Currently the only options are equivalent to enable/disable. If
       unspecified, defaults to DISABLED.
+    policy: The relative resource name of the binauthz platform policy to
+      audit and/or enforce against. GKE platform policies have the following
+      format: `projects/{project_number}/platforms/gke/policies/{policy_id}`.
+      If absent, this defaults to a Google managed policy with pre-configured
+      safeguards.
   """
 
   class EvaluationModeValueValuesEnum(_messages.Enum):
@@ -276,6 +281,7 @@ class BinaryAuthorization(_messages.Message):
 
   enabled = _messages.BooleanField(1)
   evaluationMode = _messages.EnumField('EvaluationModeValueValuesEnum', 2)
+  policy = _messages.StringField(3)
 
 
 class BlueGreenInfo(_messages.Message):

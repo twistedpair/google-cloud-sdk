@@ -23,7 +23,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import math
 import os
 import random
 
@@ -41,19 +40,6 @@ from googlecloudsdk.command_lib.storage.tasks.cp import finalize_composite_uploa
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import scaled_integer
-
-
-def _get_component_count(file_size, api_max_component_count):
-  """Returns the number of components to use for an upload."""
-  preferred_component_size = scaled_integer.ParseInteger(
-      properties.VALUES.storage.parallel_composite_upload_component_size.Get())
-  component_count = math.ceil(file_size / preferred_component_size)
-
-  if component_count < 2:
-    return 2
-  if component_count > api_max_component_count:
-    return api_max_component_count
-  return component_count
 
 
 def _get_random_prefix():

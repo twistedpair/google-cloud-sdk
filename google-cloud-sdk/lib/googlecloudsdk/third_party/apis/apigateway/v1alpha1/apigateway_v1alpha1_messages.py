@@ -975,8 +975,9 @@ class ApigatewayProjectsLocationsApisConfigsGetIamPolicyRequest(_messages.Messag
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1060,8 +1061,9 @@ class ApigatewayProjectsLocationsApisConfigsSetIamPolicyRequest(_messages.Messag
     apigatewaySetIamPolicyRequest: A ApigatewaySetIamPolicyRequest resource to
       be passed as the request body.
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   apigatewaySetIamPolicyRequest = _messages.MessageField('ApigatewaySetIamPolicyRequest', 1)
@@ -1076,8 +1078,9 @@ class ApigatewayProjectsLocationsApisConfigsTestIamPermissionsRequest(_messages.
     apigatewayTestIamPermissionsRequest: A ApigatewayTestIamPermissionsRequest
       resource to be passed as the request body.
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   apigatewayTestIamPermissionsRequest = _messages.MessageField('ApigatewayTestIamPermissionsRequest', 1)
@@ -1128,8 +1131,9 @@ class ApigatewayProjectsLocationsApisGetIamPolicyRequest(_messages.Message):
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1192,8 +1196,9 @@ class ApigatewayProjectsLocationsApisSetIamPolicyRequest(_messages.Message):
     apigatewaySetIamPolicyRequest: A ApigatewaySetIamPolicyRequest resource to
       be passed as the request body.
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   apigatewaySetIamPolicyRequest = _messages.MessageField('ApigatewaySetIamPolicyRequest', 1)
@@ -1207,8 +1212,9 @@ class ApigatewayProjectsLocationsApisTestIamPermissionsRequest(_messages.Message
     apigatewayTestIamPermissionsRequest: A ApigatewayTestIamPermissionsRequest
       resource to be passed as the request body.
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   apigatewayTestIamPermissionsRequest = _messages.MessageField('ApigatewayTestIamPermissionsRequest', 1)
@@ -1260,8 +1266,9 @@ class ApigatewayProjectsLocationsGatewaysGetIamPolicyRequest(_messages.Message):
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1325,8 +1332,9 @@ class ApigatewayProjectsLocationsGatewaysSetIamPolicyRequest(_messages.Message):
     apigatewaySetIamPolicyRequest: A ApigatewaySetIamPolicyRequest resource to
       be passed as the request body.
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   apigatewaySetIamPolicyRequest = _messages.MessageField('ApigatewaySetIamPolicyRequest', 1)
@@ -1340,8 +1348,9 @@ class ApigatewayProjectsLocationsGatewaysTestIamPermissionsRequest(_messages.Mes
     apigatewayTestIamPermissionsRequest: A ApigatewayTestIamPermissionsRequest
       resource to be passed as the request body.
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   apigatewayTestIamPermissionsRequest = _messages.MessageField('ApigatewayTestIamPermissionsRequest', 1)

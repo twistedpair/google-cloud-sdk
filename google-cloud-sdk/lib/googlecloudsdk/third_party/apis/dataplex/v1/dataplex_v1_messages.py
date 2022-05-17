@@ -89,8 +89,8 @@ class DataplexProjectsLocationsLakesContentGetIamPolicyRequest(_messages.Message
       their IAM policies, see the IAM documentation
       (https://cloud.google.com/iam/help/conditions/resource-policies).
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See Resource names (https://cloud.google.com/apis/design/resource_names)
+      for the appropriate value for this field.
   """
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -180,8 +180,8 @@ class DataplexProjectsLocationsLakesContentSetIamPolicyRequest(_messages.Message
     googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
       to be passed as the request body.
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See Resource names (https://cloud.google.com/apis/design/resource_names)
+      for the appropriate value for this field.
   """
 
   googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
@@ -196,8 +196,9 @@ class DataplexProjectsLocationsLakesContentTestIamPermissionsRequest(_messages.M
       GoogleIamV1TestIamPermissionsRequest resource to be passed as the
       request body.
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See Resource names
+      (https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
@@ -393,8 +394,8 @@ class DataplexProjectsLocationsLakesEnvironmentsGetIamPolicyRequest(_messages.Me
       their IAM policies, see the IAM documentation
       (https://cloud.google.com/iam/help/conditions/resource-policies).
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See Resource names (https://cloud.google.com/apis/design/resource_names)
+      for the appropriate value for this field.
   """
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -461,6 +462,13 @@ class DataplexProjectsLocationsLakesEnvironmentsSessionsListRequest(_messages.Me
   r"""A DataplexProjectsLocationsLakesEnvironmentsSessionsListRequest object.
 
   Fields:
+    filter: Optional. Filter request. The following mode filter is supported
+      to return only the sessions belonging to the requester when the mode is
+      USER and return sessions of all the users when the mode is ADMIN. When
+      no filter is sent default to USER mode. NOTE: When the mode is ADMIN,
+      the requester should have dataplex.environments.listAllSessions
+      permission to list all sessions, in absence of the permission, the
+      request fails.mode = ADMIN | USER
     pageSize: Optional. Maximum number of sessions to return. The service may
       return fewer than this value. If unspecified, at most 10 sessions will
       be returned. The maximum value is 1000; values above 1000 will be
@@ -474,9 +482,10 @@ class DataplexProjectsLocationsLakesEnvironmentsSessionsListRequest(_messages.Me
       ronment_id}
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class DataplexProjectsLocationsLakesEnvironmentsSetIamPolicyRequest(_messages.Message):
@@ -486,8 +495,8 @@ class DataplexProjectsLocationsLakesEnvironmentsSetIamPolicyRequest(_messages.Me
     googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
       to be passed as the request body.
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See Resource names (https://cloud.google.com/apis/design/resource_names)
+      for the appropriate value for this field.
   """
 
   googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
@@ -503,8 +512,9 @@ class DataplexProjectsLocationsLakesEnvironmentsTestIamPermissionsRequest(_messa
       GoogleIamV1TestIamPermissionsRequest resource to be passed as the
       request body.
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See Resource names
+      (https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
@@ -527,8 +537,8 @@ class DataplexProjectsLocationsLakesGetIamPolicyRequest(_messages.Message):
       their IAM policies, see the IAM documentation
       (https://cloud.google.com/iam/help/conditions/resource-policies).
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See Resource names (https://cloud.google.com/apis/design/resource_names)
+      for the appropriate value for this field.
   """
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -598,8 +608,8 @@ class DataplexProjectsLocationsLakesSetIamPolicyRequest(_messages.Message):
     googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
       to be passed as the request body.
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See Resource names (https://cloud.google.com/apis/design/resource_names)
+      for the appropriate value for this field.
   """
 
   googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
@@ -653,8 +663,8 @@ class DataplexProjectsLocationsLakesTasksGetIamPolicyRequest(_messages.Message):
       their IAM policies, see the IAM documentation
       (https://cloud.google.com/iam/help/conditions/resource-policies).
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See Resource names (https://cloud.google.com/apis/design/resource_names)
+      for the appropriate value for this field.
   """
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -774,8 +784,8 @@ class DataplexProjectsLocationsLakesTasksSetIamPolicyRequest(_messages.Message):
     googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
       to be passed as the request body.
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See Resource names (https://cloud.google.com/apis/design/resource_names)
+      for the appropriate value for this field.
   """
 
   googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
@@ -790,8 +800,9 @@ class DataplexProjectsLocationsLakesTasksTestIamPermissionsRequest(_messages.Mes
       GoogleIamV1TestIamPermissionsRequest resource to be passed as the
       request body.
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See Resource names
+      (https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
@@ -806,8 +817,9 @@ class DataplexProjectsLocationsLakesTestIamPermissionsRequest(_messages.Message)
       GoogleIamV1TestIamPermissionsRequest resource to be passed as the
       request body.
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See Resource names
+      (https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
@@ -909,8 +921,8 @@ class DataplexProjectsLocationsLakesZonesAssetsGetIamPolicyRequest(_messages.Mes
       their IAM policies, see the IAM documentation
       (https://cloud.google.com/iam/help/conditions/resource-policies).
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See Resource names (https://cloud.google.com/apis/design/resource_names)
+      for the appropriate value for this field.
   """
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -982,8 +994,8 @@ class DataplexProjectsLocationsLakesZonesAssetsSetIamPolicyRequest(_messages.Mes
     googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
       to be passed as the request body.
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See Resource names (https://cloud.google.com/apis/design/resource_names)
+      for the appropriate value for this field.
   """
 
   googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
@@ -999,8 +1011,9 @@ class DataplexProjectsLocationsLakesZonesAssetsTestIamPermissionsRequest(_messag
       GoogleIamV1TestIamPermissionsRequest resource to be passed as the
       request body.
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See Resource names
+      (https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
@@ -1278,8 +1291,8 @@ class DataplexProjectsLocationsLakesZonesGetIamPolicyRequest(_messages.Message):
       their IAM policies, see the IAM documentation
       (https://cloud.google.com/iam/help/conditions/resource-policies).
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See Resource names (https://cloud.google.com/apis/design/resource_names)
+      for the appropriate value for this field.
   """
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1350,8 +1363,8 @@ class DataplexProjectsLocationsLakesZonesSetIamPolicyRequest(_messages.Message):
     googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
       to be passed as the request body.
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See Resource names (https://cloud.google.com/apis/design/resource_names)
+      for the appropriate value for this field.
   """
 
   googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
@@ -1366,8 +1379,9 @@ class DataplexProjectsLocationsLakesZonesTestIamPermissionsRequest(_messages.Mes
       GoogleIamV1TestIamPermissionsRequest resource to be passed as the
       request body.
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See Resource names
+      (https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
@@ -3658,9 +3672,11 @@ class GoogleCloudDataplexV1TaskInfrastructureSpecBatchComputeResources(_messages
   r"""Batch compute resources associated with the task.
 
   Fields:
-    executorsCount: Optional. Total number of job executors.
+    executorsCount: Optional. Total number of job executors. Executor Count
+      should be between 2 and 100. Default=2
     maxExecutorsCount: Optional. Max configurable executors. If
-      max_executors_count > executors_count, then auto-scaling is enabled.
+      max_executors_count > executors_count, then auto-scaling is enabled. Max
+      Executor Count should be between 2 and 1000. Default=1000
   """
 
   executorsCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)

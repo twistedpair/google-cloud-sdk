@@ -159,8 +159,9 @@ class CloudresourcemanagerFoldersGetIamPolicyRequest(_messages.Message):
 
   Fields:
     foldersId: Part of `resource`. REQUIRED: The resource for which the policy
-      is being requested. See the operation documentation for the appropriate
-      value for this field.
+      is being requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
       request body.
   """
@@ -222,8 +223,9 @@ class CloudresourcemanagerFoldersSetIamPolicyRequest(_messages.Message):
 
   Fields:
     foldersId: Part of `resource`. REQUIRED: The resource for which the policy
-      is being specified. See the operation documentation for the appropriate
-      value for this field.
+      is being specified. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
@@ -237,7 +239,8 @@ class CloudresourcemanagerFoldersTestIamPermissionsRequest(_messages.Message):
 
   Fields:
     foldersId: Part of `resource`. REQUIRED: The resource for which the policy
-      detail is being requested. See the operation documentation for the
+      detail is being requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
       appropriate value for this field.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.

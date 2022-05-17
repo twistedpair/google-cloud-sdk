@@ -693,6 +693,19 @@ class ListNamespacesResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class ListServiceWorkloadsResponse(_messages.Message):
+  r"""The response message for RegistrationService.ListServiceWorkloads.
+
+  Fields:
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+    serviceWorkloads: The list of service workloads.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  serviceWorkloads = _messages.MessageField('ServiceWorkload', 2, repeated=True)
+
+
 class ListServicesResponse(_messages.Message):
   r"""The response message for RegistrationService.ListServices.
 
@@ -1214,6 +1227,97 @@ class ServiceIdentity(_messages.Message):
   spiffeId = _messages.StringField(2)
 
 
+class ServiceWorkload(_messages.Message):
+  r"""An individual ServiceWorkload. A logical collection of workloads that
+  provide the same functionality, with a common set of core attributes, that
+  power services in Service Directory and to which policies can be applied.
+
+  Messages:
+    AnnotationsValue: Optional. Blackbox annotations on the service workload.
+
+  Fields:
+    annotations: Optional. Blackbox annotations on the service workload.
+    attributes: Optional. Attributes associated with this service workload. --
+      Attributes should stay visibility protected until we have user-visible
+      attributes to share with the user.
+    components: Optional. List of workloads (as schemeless URIs) that are part
+      of this ServiceWorkload. Ex. [
+      //compute.googleapis.com/projects/1234/zones/us-east1-c/instances/mig1,
+      //compute.googleapis.com/projects/1234/zones/us-east1-a/instances/mig2]
+    createTime: Output only. The timestamp when this service workload was
+      created in Service Directory.
+    displayName: Optional. Friendly name. User modifiable.
+    name: Immutable. The resource name for the service workload in the format
+      `projects/*/locations/*/namespaces/*/serviceWorkloads/*`.
+    uid: Output only. A globally unique identifier (in UUID4 format) for this
+      service workload.
+    updateTime: Output only. The timestamp when the service workload was last
+      updated in Service Directory.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""Optional. Blackbox annotations on the service workload.
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  attributes = _messages.MessageField('ServiceWorkloadAttributes', 2)
+  components = _messages.StringField(3, repeated=True)
+  createTime = _messages.StringField(4)
+  displayName = _messages.StringField(5)
+  name = _messages.StringField(6)
+  uid = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
+
+
+class ServiceWorkloadAttributes(_messages.Message):
+  r"""Attributes associated with service workload.
+
+  Enums:
+    ManagerTypeValueValuesEnum: Output only. The GCP resource/product
+      responsible for this service workload.
+
+  Fields:
+    managerType: Output only. The GCP resource/product responsible for this
+      service workload.
+  """
+
+  class ManagerTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. The GCP resource/product responsible for this service
+    workload.
+
+    Values:
+      TYPE_UNSPECIFIED: Default. Should not be used.
+      GKE_HUB: Resource managed by GKE Hub.
+      BACKEND_SERVICE: Resource managed by Arcus, Backend Service
+    """
+    TYPE_UNSPECIFIED = 0
+    GKE_HUB = 1
+    BACKEND_SERVICE = 2
+
+  managerType = _messages.EnumField('ManagerTypeValueValuesEnum', 1)
+
+
 class ServicedirectoryProjectsLocationsGetRequest(_messages.Message):
   r"""A ServicedirectoryProjectsLocationsGetRequest object.
 
@@ -1284,8 +1388,9 @@ class ServicedirectoryProjectsLocationsNamespacesGetIamPolicyRequest(_messages.M
     getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
       request body.
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
@@ -1354,6 +1459,123 @@ class ServicedirectoryProjectsLocationsNamespacesPatchRequest(_messages.Message)
   name = _messages.StringField(1, required=True)
   namespace = _messages.MessageField('Namespace', 2)
   updateMask = _messages.StringField(3)
+
+
+class ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsCreateRequest(_messages.Message):
+  r"""A
+  ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsCreateRequest
+  object.
+
+  Fields:
+    parent: Required. The resource name of the namespace this service workload
+      will belong to.
+    serviceWorkload: A ServiceWorkload resource to be passed as the request
+      body.
+    serviceWorkloadId: Required. The Resource ID must be 1-63 characters long,
+      and comply with [RFC 1035](https://www.ietf.org/rfc/rfc1035.txt).
+      Specifically, the name must be 1-63 characters long and match the
+      regular expression `[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?` which means the
+      first character must be a lowercase letter, and all following characters
+      must be a dash, lowercase letter, or digit, except the last character,
+      which cannot be a dash.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  serviceWorkload = _messages.MessageField('ServiceWorkload', 2)
+  serviceWorkloadId = _messages.StringField(3)
+
+
+class ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsDeleteRequest(_messages.Message):
+  r"""A
+  ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The name of the service workload to delete.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsGetRequest(_messages.Message):
+  r"""A ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsGetRequest
+  object.
+
+  Fields:
+    name: Required. The name of the service workload to get.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsListRequest(_messages.Message):
+  r"""A ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsListRequest
+  object.
+
+  Fields:
+    filter: Optional. The filter to list results by. General `filter` string
+      syntax: ` ()` * `` can be any field name on the ServiceWorkload proto.
+      For example: `name`, `create_time`, `annotations.`, or `workloads` * ``
+      can be `<`, `>`, `<=`, `>=`, `!=`, `=`, `:`. Of which `:` means `HAS`,
+      and is roughly the same as `=` * `` must be the same data type as field
+      * `` can be `AND`, `OR`, `NOT` Examples of valid filters: *
+      `annotations.owner` returns service workloads that have an annotation
+      with the key `owner`, this is the same as `annotations:owner` *
+      `workloads:projects/123/locations/us-east1/namespaces/my-
+      ns/workloads/my-wl` returns service workloads that contain the specified
+      workload * `name>projects/my-project/locations/us-east1/namespaces/my-
+      namespace/serviceWorkloads/service-workload-c` returns workloads that
+      have names that are alphabetically later than the string, so "service-
+      workload-e" is returned but "service-workload-a" is not *
+      `annotations.owner!=sd AND annotations.foo=bar` returns service
+      workloads that have `owner` in annotation key but value is not `sd` AND
+      have key/value `foo=bar` * `doesnotexist.foo=bar` returns an empty list.
+      Note that service workload doesn't have a field called "doesnotexist".
+      Since the filter does not match any service workloads, it returns no
+      results For more information about filtering, see [API
+      Filtering](https://aip.dev/160).
+    orderBy: Optional. The order to list results by. General `order_by` string
+      syntax: ` () (,)` * `` allows values: `name`, `display_name`,
+      `create_time`, `update_time` * `` ascending or descending order by ``.
+      If this is left blank, `asc` is used Note that an empty `order_by`
+      string results in default order, which is order by `name` in ascending
+      order.
+    pageSize: Optional. The maximum number of items to return.
+    pageToken: Optional. The next_page_token value returned from a previous
+      List request, if any.
+    parent: Required. The resource name of the namespace whose service
+      workloads you'd like to list.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsPatchRequest(_messages.Message):
+  r"""A
+  ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsPatchRequest
+  object.
+
+  Fields:
+    allowMissing: If set to true, and the service workload is not found, a new
+      service workload will be created. -- Will remain GOOGLE_INTERNAL
+      visibility post-launch.
+    name: Immutable. The resource name for the service workload in the format
+      `projects/*/locations/*/namespaces/*/serviceWorkloads/*`.
+    serviceWorkload: A ServiceWorkload resource to be passed as the request
+      body.
+    updateMask: Required. List of fields to be updated in this request.
+      Allowable fields: `display_name`, `annotations`. -- Internal
+      integrations may update other service_workload fields
+  """
+
+  allowMissing = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
+  serviceWorkload = _messages.MessageField('ServiceWorkload', 3)
+  updateMask = _messages.StringField(4)
 
 
 class ServicedirectoryProjectsLocationsNamespacesServicesCreateRequest(_messages.Message):
@@ -1503,8 +1725,9 @@ class ServicedirectoryProjectsLocationsNamespacesServicesGetIamPolicyRequest(_me
     getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
       request body.
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
@@ -1597,8 +1820,9 @@ class ServicedirectoryProjectsLocationsNamespacesServicesSetIamPolicyRequest(_me
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
@@ -1614,8 +1838,9 @@ class ServicedirectoryProjectsLocationsNamespacesServicesTestIamPermissionsReque
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """
@@ -1629,8 +1854,9 @@ class ServicedirectoryProjectsLocationsNamespacesSetIamPolicyRequest(_messages.M
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
@@ -1645,8 +1871,9 @@ class ServicedirectoryProjectsLocationsNamespacesTestIamPermissionsRequest(_mess
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """

@@ -96,7 +96,7 @@ class MigrationJobsClient(object):
       params['vpcPeeringConnectivity'] = self._GetVpcPeeringConnectivity(args)
     elif args.IsSpecified('vm_ip'):
       params['reverseSshConnectivity'] = self._GetReverseSshConnectivity(args)
-    else:
+    elif args.IsSpecified('static_ip'):
       params['staticIpConnectivity'] = self._GetStaticIpConnectivity()
     return migration_job_type(
         name=migration_job_id,
@@ -111,16 +111,25 @@ class MigrationJobsClient(object):
 
   def _UpdateConnectivity(self, migration_job, args):
     """Update connectivity method for the migration job."""
+    if args.IsSpecified('static_ip'):
+      migration_job.staticIpConnectivity = self._GetStaticIpConnectivity()
+      migration_job.vpcPeeringConnectivity = None
+      migration_job.reverseSshConnectivity = None
+      return
+
     if args.IsSpecified('peer_vpc'):
       migration_job.vpcPeeringConnectivity = self._GetVpcPeeringConnectivity(
           args)
       migration_job.reverseSshConnectivity = None
+      migration_job.staticIpConnectivity = None
       return
+
     for field in self._REVERSE_MAP:
       if args.IsSpecified(field):
         migration_job.reverseSshConnectivity = self._GetReverseSshConnectivity(
             args)
         migration_job.vpcPeeringConnectivity = None
+        migration_job.staticIpConnectivity = None
         return
 
   def _GetUpdateMask(self, args):

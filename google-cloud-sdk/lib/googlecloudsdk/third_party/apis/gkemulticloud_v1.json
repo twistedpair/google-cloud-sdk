@@ -511,7 +511,7 @@
     },
     "GoogleCloudGkemulticloudV1AwsInstancePlacement": {
       "id": "GoogleCloudGkemulticloudV1AwsInstancePlacement",
-      "description": "Details of placement information for an instance. Limitation for using the `host` tenancy. * T3 instances that use the unlimited CPU credit option do not support host tenancy.",
+      "description": "Details of placement information for an instance. Limitations for using the `host` tenancy: * T3 instances that use the unlimited CPU credit option don't support host tenancy.",
       "type": "object",
       "properties": {
         "tenancy": {
@@ -521,7 +521,7 @@
             "Not set.",
             "Use default VPC tenancy.",
             "Run a dedicated instance.",
-            "Launch this instance to a dedicated Host."
+            "Launch this instance to a dedicated host."
           ],
           "enum": [
             "TENANCY_UNSPECIFIED",
@@ -2021,7 +2021,7 @@
                       "type": "boolean"
                     },
                     "updateMask": {
-                      "description": "Required. Mask of fields to update. At least one path must be supplied in this field. The elements of the repeated paths field can only include these fields from AwsCluster: * `description`. * `annotations`. * `control_plane.version`. * `authorization.admin_users`. * `control_plane.aws_services_authentication.role_arn`. * `control_plane.aws_services_authentication.role_session_name`. * `control_plane.config_encryption.kms_key_arn`. * `control_plane.instance_type`. * `control_plane.security_group_ids`. * `control_plane.proxy_config`. * `control_plane.proxy_config.secret_arn`. * `control_plane.proxy_config.secret_version`. * `control_plane.root_volume.iops`. * `control_plane.root_volume.kms_key_arn`. * `control_plane.root_volume.volume_type`. * `control_plane.root_volume.size_gib`. * `control_plane.ssh_config`. * `control_plane.ssh_config.ec2_key_pair`. * `control_plane.instance_placement.tenancy`.",
+                      "description": "Required. Mask of fields to update. At least one path must be supplied in this field. The elements of the repeated paths field can only include these fields from AwsCluster: * `description`. * `annotations`. * `control_plane.version`. * `authorization.admin_users`. * `control_plane.aws_services_authentication.role_arn`. * `control_plane.aws_services_authentication.role_session_name`. * `control_plane.config_encryption.kms_key_arn`. * `control_plane.instance_type`. * `control_plane.security_group_ids`. * `control_plane.proxy_config`. * `control_plane.proxy_config.secret_arn`. * `control_plane.proxy_config.secret_version`. * `control_plane.root_volume.iops`. * `control_plane.root_volume.kms_key_arn`. * `control_plane.root_volume.volume_type`. * `control_plane.root_volume.size_gib`. * `control_plane.ssh_config`. * `control_plane.ssh_config.ec2_key_pair`. * `control_plane.instance_placement.tenancy`. * `logging_config`.",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
@@ -2254,7 +2254,7 @@
                           "type": "boolean"
                         },
                         "updateMask": {
-                          "description": "Required. Mask of fields to update. At least one path must be supplied in this field. The elements of the repeated paths field can only include these fields from AwsNodePool: *. `annotations`. * `version`. * `autoscaling.min_node_count`. * `autoscaling.max_node_count`. * `config.config_encryption.kms_key_arn`. * `config.security_group_ids`. * `config.root_volume.iops`. * `config.root_volume.kms_key_arn`. * `config.root_volume.volume_type`. * `config.root_volume.size_gib`. * `config.proxy_config`. * `config.proxy_config.secret_arn`. * `config.proxy_config.secret_version`. * `config.ssh_config`. * `config.ssh_config.ec2_key_pair`.",
+                          "description": "Required. Mask of fields to update. At least one path must be supplied in this field. The elements of the repeated paths field can only include these fields from AwsNodePool: * `annotations`. * `version`. * `autoscaling.min_node_count`. * `autoscaling.max_node_count`. * `config.config_encryption.kms_key_arn`. * `config.security_group_ids`. * `config.root_volume.iops`. * `config.root_volume.kms_key_arn`. * `config.root_volume.volume_type`. * `config.root_volume.size_gib`. * `config.proxy_config`. * `config.proxy_config.secret_arn`. * `config.proxy_config.secret_version`. * `config.ssh_config`. * `config.ssh_config.ec2_key_pair`.",
                           "location": "query",
                           "type": "string",
                           "format": "google-fieldmask"
@@ -2605,7 +2605,7 @@
                       "type": "boolean"
                     },
                     "updateMask": {
-                      "description": "Required. Mask of fields to update. At least one path must be supplied in this field. The elements of the repeated paths field can only include these fields from AzureCluster: * `description`. * `annotations`. * `azureClient`. * `control_plane.version`. * `control_plane.vm_size`. * `authorization.admin_users`. * `control_plane.root_volume.size_gib`.",
+                      "description": "Required. Mask of fields to update. At least one path must be supplied in this field. The elements of the repeated paths field can only include these fields from AzureCluster: * `description`. * `annotations`. * `azureClient`. * `control_plane.version`. * `control_plane.vm_size`. * `authorization.admin_users`. * `control_plane.root_volume.size_gib`. * `logging_config`",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"

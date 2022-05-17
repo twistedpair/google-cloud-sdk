@@ -7768,7 +7768,7 @@ class ApigeeV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Delete an Apigee organization. Only supported for SubscriptionType TRIAL.
+      r"""Delete an Apigee organization. For organizations with BillingType EVALUATION, an immediate deletion is performed. For paid organizations, a soft-deletion is performed. The organization can be restored within the soft-deletion period - which can be controlled using the retention field in the request.
 
       Args:
         request: (ApigeeOrganizationsDeleteRequest) input message

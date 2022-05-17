@@ -98,11 +98,11 @@ apis:
   alloydb:
     v1alpha1:
       discovery_doc: alloydb_v1alpha1.json
-      default: true
     v1alpha:
       discovery_doc: alloydb_v1alpha.json
     v1beta:
       discovery_doc: alloydb_v1beta.json
+      default: true
   anthosevents:
     v1:
       discovery_doc: anthosevents_v1.json

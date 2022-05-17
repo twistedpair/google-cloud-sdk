@@ -248,7 +248,7 @@ MAP = {
                     class_path='googlecloudsdk.third_party.apis.alloydb.v1alpha1',
                     client_classpath='alloydb_v1alpha1_client.AlloydbV1alpha1',
                     messages_modulepath='alloydb_v1alpha1_messages'),
-                default_version=True,
+                default_version=False,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
         'v1beta':
@@ -257,7 +257,7 @@ MAP = {
                     class_path='googlecloudsdk.third_party.apis.alloydb.v1beta',
                     client_classpath='alloydb_v1beta_client.AlloydbV1beta',
                     messages_modulepath='alloydb_v1beta_messages'),
-                default_version=False,
+                default_version=True,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },

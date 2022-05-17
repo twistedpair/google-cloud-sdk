@@ -170,7 +170,7 @@ class InputConfig(_messages.Message):
 
 
 class Instance(_messages.Message):
-  r"""A Memorystore for Redis instance. next id = 42
+  r"""A Memorystore for Redis instance. next id = 43
 
   Enums:
     ConnectModeValueValuesEnum: Optional. The network connect mode of the
@@ -228,6 +228,8 @@ class Instance(_messages.Message):
       not provided, maintenance events can be performed at any time.
     maintenanceSchedule: Output only. Date and time of upcoming maintenance
       events which have been scheduled.
+    maintenanceVersion: Optional. The self service update maintenance version.
+      The version is date based such as "20210712_00_00".
     memorySizeGb: Required. Redis memory size in GiB.
     name: Required. Unique name of the resource in this scope including
       project and location using the form:
@@ -462,26 +464,27 @@ class Instance(_messages.Message):
   locationId = _messages.StringField(11)
   maintenancePolicy = _messages.MessageField('MaintenancePolicy', 12)
   maintenanceSchedule = _messages.MessageField('MaintenanceSchedule', 13)
-  memorySizeGb = _messages.IntegerField(14, variant=_messages.Variant.INT32)
-  name = _messages.StringField(15)
-  nodes = _messages.MessageField('NodeInfo', 16, repeated=True)
-  persistenceConfig = _messages.MessageField('PersistenceConfig', 17)
-  persistenceIamIdentity = _messages.StringField(18)
-  port = _messages.IntegerField(19, variant=_messages.Variant.INT32)
-  readEndpoint = _messages.StringField(20)
-  readEndpointPort = _messages.IntegerField(21, variant=_messages.Variant.INT32)
-  readReplicasMode = _messages.EnumField('ReadReplicasModeValueValuesEnum', 22)
-  redisConfigs = _messages.MessageField('RedisConfigsValue', 23)
-  redisVersion = _messages.StringField(24)
-  replicaCount = _messages.IntegerField(25, variant=_messages.Variant.INT32)
-  reservedIpRange = _messages.StringField(26)
-  secondaryIpRange = _messages.StringField(27)
-  serverCaCerts = _messages.MessageField('TlsCertificate', 28, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 29)
-  statusMessage = _messages.StringField(30)
-  suspensionReasons = _messages.EnumField('SuspensionReasonsValueListEntryValuesEnum', 31, repeated=True)
-  tier = _messages.EnumField('TierValueValuesEnum', 32)
-  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 33)
+  maintenanceVersion = _messages.StringField(14)
+  memorySizeGb = _messages.IntegerField(15, variant=_messages.Variant.INT32)
+  name = _messages.StringField(16)
+  nodes = _messages.MessageField('NodeInfo', 17, repeated=True)
+  persistenceConfig = _messages.MessageField('PersistenceConfig', 18)
+  persistenceIamIdentity = _messages.StringField(19)
+  port = _messages.IntegerField(20, variant=_messages.Variant.INT32)
+  readEndpoint = _messages.StringField(21)
+  readEndpointPort = _messages.IntegerField(22, variant=_messages.Variant.INT32)
+  readReplicasMode = _messages.EnumField('ReadReplicasModeValueValuesEnum', 23)
+  redisConfigs = _messages.MessageField('RedisConfigsValue', 24)
+  redisVersion = _messages.StringField(25)
+  replicaCount = _messages.IntegerField(26, variant=_messages.Variant.INT32)
+  reservedIpRange = _messages.StringField(27)
+  secondaryIpRange = _messages.StringField(28)
+  serverCaCerts = _messages.MessageField('TlsCertificate', 29, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 30)
+  statusMessage = _messages.StringField(31)
+  suspensionReasons = _messages.EnumField('SuspensionReasonsValueListEntryValuesEnum', 32, repeated=True)
+  tier = _messages.EnumField('TierValueValuesEnum', 33)
+  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 34)
 
 
 class InstanceAuthString(_messages.Message):

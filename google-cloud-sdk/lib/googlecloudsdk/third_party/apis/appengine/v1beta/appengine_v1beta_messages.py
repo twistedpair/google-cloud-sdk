@@ -2872,8 +2872,8 @@ class Version(_messages.Message):
     apiConfig: Serving configuration for Google Cloud Endpoints
       (https://cloud.google.com/appengine/docs/python/endpoints/).Only
       returned in GET requests if view=FULL is set.
-    appEngineApis: app_engine_apis allows second generation runtimes to access
-      the App Engine APIs.
+    appEngineApis: Allows App Engine second generation runtimes to access the
+      legacy bundled services.
     automaticScaling: Automatic scaling is based on request rate, response
       latencies, and other application metrics. Instances are dynamically
       created and destroyed as needed in order to handle traffic.

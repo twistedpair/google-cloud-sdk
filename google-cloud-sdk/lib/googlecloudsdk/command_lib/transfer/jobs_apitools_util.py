@@ -71,9 +71,11 @@ def _create_or_modify_transfer_options(transfer_spec, args, messages):
   if not transfer_spec.transferOptions:
     transfer_spec.transferOptions = messages.TransferOptions()
 
-  if getattr(args, 'overwrite_when', None) and jobs_flag_util.OverwriteOption(
-      args.overwrite_when) is jobs_flag_util.OverwriteOption.ALWAYS:
-    transfer_spec.transferOptions.overwriteObjectsAlreadyExistingInSink = True
+  overwrite_when_argument = getattr(args, 'overwrite_when', None)
+  if overwrite_when_argument:
+    transfer_spec.transferOptions.overwriteWhen = getattr(
+        messages.TransferOptions.OverwriteWhenValueValuesEnum,
+        overwrite_when_argument.upper())
 
   if getattr(args, 'delete_from', None):
     delete_option = jobs_flag_util.DeleteOption(args.delete_from)

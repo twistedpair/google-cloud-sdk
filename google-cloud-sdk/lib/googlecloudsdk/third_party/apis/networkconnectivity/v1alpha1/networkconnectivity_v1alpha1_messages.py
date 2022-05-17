@@ -130,7 +130,7 @@ class Binding(_messages.Message):
 
 
 class ConnectionPolicy(_messages.Message):
-  r"""The ConnectionPolicy resource. Next id: 6
+  r"""The ConnectionPolicy resource. Next id: 7
 
   Messages:
     LabelsValue: User-defined labels.
@@ -142,6 +142,8 @@ class ConnectionPolicy(_messages.Message):
     name: Immutable. The name of a ConnectionPolicy. Format: projects/{project
       }/locations/{location}/connectionPolicies/{connection_policy} See:
       https://google.aip.dev/122#fields-representing-resource-names
+    network: The URI of the consumer network. Example:
+      projects/{project}/global/networks/{resourceId}.
     updateTime: Output only. Time when the ServiceInstance was updated.
   """
 
@@ -173,7 +175,8 @@ class ConnectionPolicy(_messages.Message):
   description = _messages.StringField(2)
   labels = _messages.MessageField('LabelsValue', 3)
   name = _messages.StringField(4)
-  updateTime = _messages.StringField(5)
+  network = _messages.StringField(5)
+  updateTime = _messages.StringField(6)
 
 
 class Empty(_messages.Message):
@@ -855,8 +858,9 @@ class NetworkconnectivityProjectsLocationsConnectionPoliciesGetIamPolicyRequest(
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -935,8 +939,9 @@ class NetworkconnectivityProjectsLocationsConnectionPoliciesSetIamPolicyRequest(
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
@@ -951,8 +956,9 @@ class NetworkconnectivityProjectsLocationsConnectionPoliciesTestIamPermissionsRe
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """
@@ -1037,8 +1043,9 @@ class NetworkconnectivityProjectsLocationsGlobalHubsGetIamPolicyRequest(_message
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1110,8 +1117,9 @@ class NetworkconnectivityProjectsLocationsGlobalHubsSetIamPolicyRequest(_message
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
@@ -1127,8 +1135,9 @@ class NetworkconnectivityProjectsLocationsGlobalHubsTestIamPermissionsRequest(_m
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """
@@ -1207,8 +1216,9 @@ class NetworkconnectivityProjectsLocationsInternalRangesGetIamPolicyRequest(_mes
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1282,8 +1292,9 @@ class NetworkconnectivityProjectsLocationsInternalRangesSetIamPolicyRequest(_mes
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
@@ -1299,8 +1310,9 @@ class NetworkconnectivityProjectsLocationsInternalRangesTestIamPermissionsReques
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """
@@ -1452,8 +1464,9 @@ class NetworkconnectivityProjectsLocationsServiceInstancesGetIamPolicyRequest(_m
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1531,8 +1544,9 @@ class NetworkconnectivityProjectsLocationsServiceInstancesSetIamPolicyRequest(_m
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
@@ -1547,8 +1561,9 @@ class NetworkconnectivityProjectsLocationsServiceInstancesTestIamPermissionsRequ
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """
@@ -1622,8 +1637,9 @@ class NetworkconnectivityProjectsLocationsSpokesGetIamPolicyRequest(_messages.Me
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1694,8 +1710,9 @@ class NetworkconnectivityProjectsLocationsSpokesSetIamPolicyRequest(_messages.Me
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
@@ -1710,8 +1727,9 @@ class NetworkconnectivityProjectsLocationsSpokesTestIamPermissionsRequest(_messa
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """
@@ -1841,7 +1859,7 @@ class RouterApplianceInstance(_messages.Message):
 
 
 class ServiceInstance(_messages.Message):
-  r"""The ServiceInstance resource. Next id: 6
+  r"""The ServiceInstance resource. Next id: 7
 
   Messages:
     LabelsValue: User-defined labels.
@@ -1853,6 +1871,8 @@ class ServiceInstance(_messages.Message):
     name: Immutable. The name of a ServiceInstance. Format: projects/{project}
       /locations/{location}/serviceInstances/{service_instance} See:
       https://google.aip.dev/122#fields-representing-resource-names
+    network: The URI of the producer network. Example:
+      projects/{project}/global/networks/{resourceId}.
     updateTime: Output only. Time when the ServiceInstance was updated.
   """
 
@@ -1884,7 +1904,8 @@ class ServiceInstance(_messages.Message):
   description = _messages.StringField(2)
   labels = _messages.MessageField('LabelsValue', 3)
   name = _messages.StringField(4)
-  updateTime = _messages.StringField(5)
+  network = _messages.StringField(5)
+  updateTime = _messages.StringField(6)
 
 
 class SetIamPolicyRequest(_messages.Message):

@@ -753,7 +753,7 @@ class WorkstationsV1alpha1(base_api.BaseApiClient):
         method_id='workstations.projects.locations.workstationClusters.delete',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['etag', 'validateOnly'],
+        query_params=['etag', 'force', 'validateOnly'],
         relative_path='v1alpha1/{+name}',
         request_field='',
         request_type_name='WorkstationsProjectsLocationsWorkstationClustersDeleteRequest',

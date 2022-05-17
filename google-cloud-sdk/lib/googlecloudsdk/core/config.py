@@ -176,6 +176,7 @@ CLOUDSDK_SCOPES = (
     'https://www.googleapis.com/auth/userinfo.email',
     'https://www.googleapis.com/auth/cloud-platform',
     'https://www.googleapis.com/auth/appengine.admin',
+    'https://www.googleapis.com/auth/sqlservice.login',  # needed by Cloud SQL
     'https://www.googleapis.com/auth/compute',  # needed by autoscaler
 )
 

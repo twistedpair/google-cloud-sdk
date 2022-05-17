@@ -231,7 +231,7 @@
     },
     "Cluster": {
       "id": "Cluster",
-      "description": "A Google Edge Cloud Kubernetes cluster.",
+      "description": "A Google Distributed Cloud Edge Kubernetes cluster.",
       "type": "object",
       "properties": {
         "name": {
@@ -504,11 +504,11 @@
           }
         },
         "site": {
-          "description": "Name of the Google Edge Cloud zone where this node pool will be created.",
+          "description": "Name of the Google Distributed Cloud Edge zone where this node pool will be created.",
           "type": "string"
         },
         "nodeLocation": {
-          "description": "Name of the Google Edge Cloud zone where this node pool will be created. For example: `us-central1-edge-customer-a`.",
+          "description": "Name of the Google Distributed Cloud Edge zone where this node pool will be created. For example: `us-central1-edge-customer-a`.",
           "type": "string"
         },
         "nodeCount": {
@@ -554,6 +554,11 @@
             "KMS_KEY_STATE_KEY_AVAILABLE",
             "KMS_KEY_STATE_KEY_UNAVAILABLE"
           ]
+        },
+        "kmsStatus": {
+          "description": "Output only. Error status returned by Cloud KMS when using this key. This field may be populated only if `kms_key_state` is not `KMS_KEY_STATE_KEY_AVAILABLE`. If populated, this field contains the error status reported by Cloud KMS.",
+          "readOnly": true,
+          "$ref": "Status"
         }
       }
     },
@@ -584,7 +589,7 @@
     },
     "Machine": {
       "id": "Machine",
-      "description": "A Google Edge Cloud machine capable of acting as a Kubernetes node.",
+      "description": "A Google Distributed Cloud Edge machine capable of acting as a Kubernetes node.",
       "type": "object",
       "properties": {
         "name": {
@@ -615,7 +620,7 @@
           "type": "string"
         },
         "zone": {
-          "description": "The Google Edge Cloud zone of this machine.",
+          "description": "The Google Distributed Cloud Edge zone of this machine.",
           "type": "string"
         }
       }
@@ -865,7 +870,7 @@
       "type": "object",
       "properties": {
         "availableZones": {
-          "description": "The set of available Google Edge Cloud zones in the location. The map is keyed by the lowercase ID of each zone.",
+          "description": "The set of available Google Distributed Cloud Edge zones in the location. The map is keyed by the lowercase ID of each zone.",
           "type": "object",
           "additionalProperties": {
             "$ref": "ZoneMetadata"
@@ -875,7 +880,7 @@
     },
     "ZoneMetadata": {
       "id": "ZoneMetadata",
-      "description": "A Google Edge Cloud zone where edge machines are located.",
+      "description": "A Google Distributed Cloud Edge zone where edge machines are located.",
       "type": "object",
       "properties": {
         "quota": {

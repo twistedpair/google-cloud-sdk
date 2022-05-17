@@ -192,7 +192,7 @@ class RunappsV1alpha1(base_api.BaseApiClient):
         method_id='runapps.projects.locations.applications.delete',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['requestId'],
+        query_params=['force', 'requestId'],
         relative_path='v1alpha1/{+name}',
         request_field='',
         request_type_name='RunappsProjectsLocationsApplicationsDeleteRequest',

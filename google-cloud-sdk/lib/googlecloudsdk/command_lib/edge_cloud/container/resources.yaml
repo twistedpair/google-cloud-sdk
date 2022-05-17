@@ -44,6 +44,24 @@ cluster:
     help: Kubernetes cluster.
   disable_auto_completers: false
 
+cluster_with_default:
+  name: cluster
+  collection: edgecontainer.projects.locations.clusters
+  request_id_field: clusterId
+  attributes:
+  - *project
+  - *location
+  - &cluster_with_default
+    parameter_name: clustersId
+    attribute_name: cluster
+    help: Kubernetes cluster.
+    fallthroughs:
+    # TODO(b/231638586): figure out a solution to prevent duplicate help text.
+    - hook: googlecloudsdk.command_lib.edge_cloud.container.fallthrough:GetClusterFallthrough
+      hint: |-
+        provide the argument --cluster on the command line
+  disable_auto_completers: false
+
 nodePool:
   name: node pool
   collection: edgecontainer.projects.locations.clusters.nodePools
