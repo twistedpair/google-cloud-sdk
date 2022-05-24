@@ -346,6 +346,11 @@
         "kubernetesResource": {
           "description": "Optional. The in-cluster Kubernetes Resources that should be applied for a correctly registered cluster, in the steady state. These resources: * Ensure that the cluster is exclusively registered to one and only one Hub Membership. * Propagate Workload Pool Information available in the Membership Authority field. * Ensure proper initial configuration of default Hub Features.",
           "$ref": "KubernetesResource"
+        },
+        "googleManaged": {
+          "description": "Output only. Whether the lifecycle of this membership is managed by a google cluster platform service.",
+          "readOnly": true,
+          "type": "boolean"
         }
       }
     },
@@ -2844,6 +2849,20 @@
         "managedNamespaces": {
           "description": "Optional. If true, namespaces must be explicitly declared in a `Namespace` object in order to use Fleet Features. Deprecated, not included in final fleet namespaces design",
           "type": "boolean"
+        },
+        "samenessMode": {
+          "description": "Optional. The sameness mode this fleet is using.",
+          "type": "string",
+          "enumDescriptions": [
+            "",
+            "All cluster namespaces are considered the same (default).",
+            "Restrict sameness to cluster namespaces that are active-fleet namespaces on the membership."
+          ],
+          "enum": [
+            "SAMENESS_MODE_UNSPECIFIED",
+            "ALL_CLUSTER_NAMESPACES",
+            "MAPPED_FLEET_NAMESPACES"
+          ]
         },
         "fleetName": {
           "description": "The name for the fleet. The name must meet the following constraints: + The name of a fleet should be unique within the organization; + It must consist of lower case alphanumeric characters or `-`; + The length of the name must be less than or equal to 63; + Unicode names must be expressed in Punycode format (rfc3492). Examples: + prod-fleet + xn--wlq33vhyw9jb \uFF08Punycode form for \"\u751F\u4EA7\u73AF\u5883\")",

@@ -135,6 +135,11 @@ def ArgsForClusterRef(parser,
       help='The type of machine to use for workers. Defaults to '
       'server-specified.')
   parser.add_argument(
+      '--secondary-worker-machine-type',
+      hidden=True,
+      help='Type of machine to use for secondary workers. Defaults to '
+      'server-specified.')
+  parser.add_argument(
       '--driver-pool-size',
       type=int,
       hidden=True,
@@ -1056,6 +1061,7 @@ def GetClusterConfig(args,
       args.num_secondary_worker_local_ssds,
       args.num_preemptible_worker_local_ssds)
   if (num_secondary_workers is not None or
+      args.secondary_worker_machine_type is not None or
       secondary_worker_boot_disk_size_gb is not None or
       secondary_worker_boot_disk_type is not None or
       num_secondary_worker_local_ssds is not None or
@@ -1064,6 +1070,7 @@ def GetClusterConfig(args,
     cluster_config.secondaryWorkerConfig = (
         dataproc.messages.InstanceGroupConfig(
             numInstances=num_secondary_workers,
+            machineTypeUri=args.secondary_worker_machine_type,
             accelerators=secondary_worker_accelerators,
             diskConfig=GetDiskConfig(
                 dataproc,

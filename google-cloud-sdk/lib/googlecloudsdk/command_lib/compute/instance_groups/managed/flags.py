@@ -282,7 +282,8 @@ def AddFlagsForUpdateAllInstancesConfig(parser):
   """Adds args for all-instances' config update command."""
   # Add  metadata args
   metadata_argument_name = '--metadata'
-  metadata_help_text = 'Add metadata to all-instances\' config configuration.'
+  metadata_help_text = ("Add metadata to the group's all instances "
+                        "configuration.")
   parser.add_argument(
       metadata_argument_name,
       type=arg_parsers.ArgDict(min_length=1),
@@ -292,7 +293,7 @@ def AddFlagsForUpdateAllInstancesConfig(parser):
       help=metadata_help_text)
   # Add labels args
   labels_argument_name = '--labels'
-  metadata_help_text = 'Add labels to all-instances\' config configuration.'
+  metadata_help_text = "Add labels to the group's all instances configuration."
   parser.add_argument(
       labels_argument_name,
       type=arg_parsers.ArgDict(min_length=1),
@@ -310,14 +311,15 @@ def AddFlagsForDeleteAllInstancesConfig(parser):
       metadata_argument_name,
       metavar='KEY',
       type=arg_parsers.ArgList(min_length=1),
-      help='Remove metadata keys from all-instances\' config configuration.')
+      help="Remove metadata keys from the group's all instances configuration."
+  )
   # Add labels args
   labels_argument_name = '--labels'
   parser.add_argument(
       labels_argument_name,
       metavar='KEY',
       type=arg_parsers.ArgList(min_length=1),
-      help='Remove labels keys from all-instances\' config configuration.')
+      help="Remove labels keys from the group's all instances configuration.")
 
 
 def ValidateRegionalMigFlagsUsage(args, regional_flags_dests, igm_ref):

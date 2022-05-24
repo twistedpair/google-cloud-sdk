@@ -371,7 +371,7 @@ MASTER_AUTHORIZED_NETWORKS_FLAG = base.Argument(
     help="""
     Comma separated Master Authorized Networks specified in CIDR notation.
 
-    Cannot be specified unless '--enable-master-authorized-networks' is also specified.
+    Cannot be specified unless `--enable-master-authorized-networks` is also specified.
     """)
 
 CLUSTER_SECONDARY_RANGE_NAME_FLAG = base.Argument(
@@ -382,7 +382,7 @@ CLUSTER_SECONDARY_RANGE_NAME_FLAG = base.Argument(
     allocated from this secondary range. NAME must be the name of an existing
     secondary range in the cluster subnetwork.
 
-    Cannot be specified unless '--enable-ip-alias' is also specified.
+    Cannot be specified unless `--enable-ip-alias` is also specified.
     """)
 
 SERVICES_SECONDARY_RANGE_NAME_FLAG = base.Argument(
@@ -392,7 +392,7 @@ SERVICES_SECONDARY_RANGE_NAME_FLAG = base.Argument(
     Secondary range to be used for services (e.g. ClusterIPs). NAME must be the
     name of an existing secondary range in the cluster subnetwork.
 
-    Cannot be specified unless '--enable-ip-alias' is also specified.
+    Cannot be specified unless `--enable-ip-alias` is also specified.
     """)
 
 MAX_PODS_PER_NODE = base.Argument(
@@ -402,7 +402,7 @@ MAX_PODS_PER_NODE = base.Argument(
     Maximum number of pods that can be assigned to a single node, can be used to
     limit the size of IP range assigned to the node in VPC native cluster setup.
 
-    Cannot be specified unless '--enable-ip-alias' is also specified.
+    Cannot be specified unless `--enable-ip-alias` is also specified.
     """)
 
 WEB_SERVER_ALLOW_IP = base.Argument(
@@ -419,8 +419,8 @@ WEB_SERVER_ALLOW_IP = base.Argument(
 
     This is a repeated argument that can be specified multiple times to specify
     multiple IP ranges.
-    (e.g. --web-server-allow-ip=ip_range=130.211.160.0/28,description="office network"
-    --web-server-allow-ip=ip_range=130.211.114.0/28,description="legacy network")
+    (e.g. `--web-server-allow-ip=ip_range=130.211.160.0/28,description="office network"`
+    `--web-server-allow-ip=ip_range=130.211.114.0/28,description="legacy network"`)
 
     *ip_range*::: IPv4 or IPv6 range of addresses allowed to access the Airflow
     web server.
@@ -663,7 +663,7 @@ CLUSTER_IPV4_CIDR_FLAG = base.Argument(
     IP address range for the pods in this cluster in CIDR notation
     (e.g. 10.0.0.0/14).
 
-    Cannot be specified unless '--enable-ip-alias' is also specified.
+    Cannot be specified unless `--enable-ip-alias` is also specified.
     """)
 
 SERVICES_IPV4_CIDR_FLAG = base.Argument(
@@ -680,7 +680,7 @@ SERVICES_IPV4_CIDR_FLAG = base.Argument(
     If unspecified, the services CIDR range will be chosen with a default
     mask size.
 
-    Cannot be specified unless '--enable-ip-alias' is also specified.
+    Cannot be specified unless `--enable-ip-alias` is also specified.
     """)
 
 ENABLE_IP_MASQ_AGENT_FLAG = base.Argument(
@@ -691,7 +691,7 @@ ENABLE_IP_MASQ_AGENT_FLAG = base.Argument(
     When enabled the IP Masq Agent is deployed to the cluster with configuration
     to masquarade all traffic except between pods.
 
-    Cannot be specified unless '--enable-ip-alias' is also specified.
+    Cannot be specified unless `--enable-ip-alias` is also specified.
     """)
 
 ENABLE_PRIVATE_ENVIRONMENT_FLAG = base.Argument(
@@ -704,7 +704,7 @@ ENABLE_PRIVATE_ENVIRONMENT_FLAG = base.Argument(
 
     If not specified, cluster nodes will be assigned public IP addresses.
 
-    Cannot be specified unless '--enable-ip-alias' is also specified.
+    Cannot be specified unless `--enable-ip-alias` is also specified.
     """)
 
 ENABLE_PRIVATE_ENDPOINT_FLAG = base.Argument(
@@ -719,7 +719,7 @@ ENABLE_PRIVATE_ENDPOINT_FLAG = base.Argument(
     If not specified, the master API endpoint will be accessible by its public
     IP address.
 
-    Cannot be specified unless '--enable-private-environment' is also
+    Cannot be specified unless `--enable-private-environment` is also
     specified.
     """)
 
@@ -729,10 +729,10 @@ ENABLE_PRIVATELY_USED_PUBLIC_IPS_FLAG = base.Argument(
     action='store_true',
     help="""\
     When enabled GKE pods and services may use public(non-RFC1918) IP ranges
-    privately. The ranges are specified by '--cluster-ipv4-cidr' and '
-    --services-ipv4-cidr' flags.
+    privately. The ranges are specified by '--cluster-ipv4-cidr' and
+    `--services-ipv4-cidr` flags.
 
-    Cannot be specified unless '--enable-private-environment' is also
+    Cannot be specified unless `--enable-private-environment` is also
     specified.
     """)
 
@@ -747,7 +747,7 @@ CONNECTION_SUBNETWORK_FLAG = base.Argument(
     connected.
 
     Can be specified for Composer 2.X or greater. Cannot be specified
-    unless '--enable-private-environment' is also specified.
+    unless `--enable-private-environment` is also specified.
     """)
 
 
@@ -803,7 +803,7 @@ MASTER_IPV4_CIDR_FLAG = base.Argument(
     IPv4 CIDR range to use for the cluster master network. This should have a
     size of the netmask between 23 and 28.
 
-    Cannot be specified unless '--enable-private-environment' is also
+    Cannot be specified unless `--enable-private-environment` is also
     specified.
     """)
 
@@ -822,7 +822,7 @@ WEB_SERVER_IPV4_CIDR_FLAG = base.Argument(
     IPv4 CIDR range to use for the Airflow web server network. This should have
     a size of the netmask between 24 and 29.
 
-    Cannot be specified unless '--enable-private-environment' is also
+    Cannot be specified unless `--enable-private-environment` is also
     specified.
     """)
 
@@ -841,7 +841,7 @@ CLOUD_SQL_IPV4_CIDR_FLAG = base.Argument(
     IPv4 CIDR range to use for the Cloud SQL network. This should have a size
     of the netmask not greater than 24.
 
-    Cannot be specified unless '--enable-private-environment' is also
+    Cannot be specified unless `--enable-private-environment` is also
     specified.
     """)
 _IS_VALID_COMPOSER_NETWORK_IPV4_CIDR_BLOCK = (
@@ -861,7 +861,7 @@ COMPOSER_NETWORK_IPV4_CIDR_FLAG = base.Argument(
     a size of the netmask between 24 and 29.
 
     Can be specified for Composer 2.X or greater. Cannot be specified
-    unless '--enable-private-environment' is also specified.
+    unless `--enable-private-environment` is also specified.
     """)
 
 MAINTENANCE_WINDOW_START_FLAG = base.Argument(
@@ -1070,7 +1070,7 @@ def ValidateDiskSize(parameter_name, disk_size):
 
   Args:
     parameter_name: parameter_name, the name of the parameter, formatted as it
-      would be in help text (e.g., '--disk-size' or 'DISK_SIZE')
+      would be in help text (e.g., `--disk-size` or 'DISK_SIZE')
     disk_size: int, the disk size in bytes, or None for default value
 
   Raises:
@@ -1140,7 +1140,7 @@ def AddIpAliasEnvironmentFlags(update_type_group, support_max_pods_per_node):
     MAX_PODS_PER_NODE.AddToParser(group)
 
 
-def AddPrivateIpEnvironmentFlags(update_type_group, release_track):
+def AddPrivateIpEnvironmentFlags(update_type_group):
   """Adds flags related to private clusters to parser.
 
   Private cluster flags are related to similar flags found within GKE SDK:
@@ -1148,7 +1148,6 @@ def AddPrivateIpEnvironmentFlags(update_type_group, release_track):
 
   Args:
     update_type_group: argument group, the group to which flag should be added.
-    release_track: release track for the command, one of: GA, BETA, ALPHA.
   """
   group = update_type_group.add_group(help='Private Clusters')
   ENABLE_PRIVATE_ENVIRONMENT_FLAG.AddToParser(group)
@@ -1158,8 +1157,7 @@ def AddPrivateIpEnvironmentFlags(update_type_group, release_track):
   CLOUD_SQL_IPV4_CIDR_FLAG.AddToParser(group)
   COMPOSER_NETWORK_IPV4_CIDR_FLAG.AddToParser(group)
   CONNECTION_SUBNETWORK_FLAG.AddToParser(group)
-  if release_track != base.ReleaseTrack.GA:
-    ENABLE_PRIVATELY_USED_PUBLIC_IPS_FLAG.AddToParser(group)
+  ENABLE_PRIVATELY_USED_PUBLIC_IPS_FLAG.AddToParser(group)
 
 
 def AddPypiUpdateFlagsToGroup(update_type_group):

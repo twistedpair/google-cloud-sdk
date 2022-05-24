@@ -2352,6 +2352,8 @@ class MembershipEndpoint(_messages.Message):
       cluster.
     edgeCluster: Optional. Specific information for a Google Edge cluster.
     gkeCluster: Optional. Specific information for a GKE-on-GCP cluster.
+    googleManaged: Output only. Whether the lifecycle of this membership is
+      managed by a google cluster platform service.
     kubernetesMetadata: Output only. Useful Kubernetes-specific metadata.
     kubernetesResource: Optional. The in-cluster Kubernetes Resources that
       should be applied for a correctly registered cluster, in the steady
@@ -2369,10 +2371,11 @@ class MembershipEndpoint(_messages.Message):
   applianceCluster = _messages.MessageField('ApplianceCluster', 1)
   edgeCluster = _messages.MessageField('EdgeCluster', 2)
   gkeCluster = _messages.MessageField('GkeCluster', 3)
-  kubernetesMetadata = _messages.MessageField('KubernetesMetadata', 4)
-  kubernetesResource = _messages.MessageField('KubernetesResource', 5)
-  multiCloudCluster = _messages.MessageField('MultiCloudCluster', 6)
-  onPremCluster = _messages.MessageField('OnPremCluster', 7)
+  googleManaged = _messages.BooleanField(4)
+  kubernetesMetadata = _messages.MessageField('KubernetesMetadata', 5)
+  kubernetesResource = _messages.MessageField('KubernetesResource', 6)
+  multiCloudCluster = _messages.MessageField('MultiCloudCluster', 7)
+  onPremCluster = _messages.MessageField('OnPremCluster', 8)
 
 
 class MembershipFeatureSpec(_messages.Message):

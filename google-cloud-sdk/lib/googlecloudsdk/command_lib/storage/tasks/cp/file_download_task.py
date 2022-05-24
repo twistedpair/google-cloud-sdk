@@ -33,6 +33,7 @@ from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import hash_util
 from googlecloudsdk.command_lib.storage import manifest_util
 from googlecloudsdk.command_lib.storage import posix_util
+from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage import tracker_file_util
 from googlecloudsdk.command_lib.storage.tasks import task
 from googlecloudsdk.command_lib.storage.tasks import task_util
@@ -46,9 +47,6 @@ from googlecloudsdk.command_lib.util import crc32c
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import scaled_integer
-
-
-TEMPORARY_FILE_SUFFIX = '_.gstmp'
 
 
 def _get_hash_check_warning_base():
@@ -171,18 +169,23 @@ class FileDownloadTask(copy_util.CopyTaskWithExitHandler):
 
   def _get_temporary_destination_resource(self):
     temporary_resource = copy.deepcopy(self._destination_resource)
-    temporary_resource.storage_url.object_name += TEMPORARY_FILE_SUFFIX
+    temporary_resource.storage_url.object_name += (
+        storage_url.TEMPORARY_FILE_SUFFIX)
     return temporary_resource
 
   def _get_sliced_download_tasks(self):
     """Creates all tasks necessary for a sliced download."""
     _log_or_raise_crc32c_issues(self._source_resource)
 
-    component_offsets_and_lengths = copy_component_util.get_component_offsets_and_lengths(
-        self._source_resource.size,
-        properties.VALUES.storage.sliced_object_download_component_size.Get(),
-        properties.VALUES.storage.sliced_object_download_max_components.GetInt(
-        ))
+    component_offsets_and_lengths = (
+        copy_component_util.get_component_offsets_and_lengths(
+            self._source_resource.size,
+            copy_component_util.get_component_count(
+                self._source_resource.size,
+                properties.VALUES.storage.sliced_object_download_component_size
+                .Get(),
+                properties.VALUES.storage.sliced_object_download_max_components
+                .GetInt())))
 
     download_component_task_list = []
     for i, (offset, length) in enumerate(component_offsets_and_lengths):

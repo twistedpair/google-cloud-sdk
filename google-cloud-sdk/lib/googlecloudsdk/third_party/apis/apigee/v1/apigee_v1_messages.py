@@ -5614,8 +5614,8 @@ class GoogleCloudApigeeV1Deployment(_messages.Message):
   r"""A GoogleCloudApigeeV1Deployment object.
 
   Enums:
-    StateValueValuesEnum: Current state of the deployment. This field is not
-      populated in List APIs.
+    StateValueValuesEnum: Current state of the deployment. **Note**: This
+      field is displayed only when viewing deployment status.
 
   Fields:
     apiProxy: API proxy.
@@ -5623,28 +5623,30 @@ class GoogleCloudApigeeV1Deployment(_messages.Message):
       plane in millisconds since epoch.
     environment: Environment.
     errors: Errors reported for this deployment. Populated only when state ==
-      ERROR. This field is not populated in List APIs.
-    instances: Status reported by each runtime instance. This field is not
-      populated in List APIs.
-    pods: Status reported by runtime pods. This field is not populated for
-      List APIs. **Note**: **This field is deprecated**. Runtime versions 1.3
-      and above report instance level status rather than pod status.
+      ERROR. **Note**: This field is displayed only when viewing deployment
+      status.
+    instances: Status reported by each runtime instance. **Note**: This field
+      is displayed only when viewing deployment status.
+    pods: Status reported by runtime pods. **Note**: **This field is
+      deprecated**. Runtime versions 1.3 and above report instance level
+      status rather than pod status.
     revision: API proxy revision.
     routeConflicts: Conflicts in the desired state routing configuration. The
       presence of conflicts does not cause the state to be `ERROR`, but it
       will mean that some of the deployment's base paths are not routed to its
       environment. If the conflicts change, the state will transition to
       `PROGRESSING` until the latest configuration is rolled out to all
-      instances. This field is not populated in List APIs.
+      instances. **Note**: This field is displayed only when viewing
+      deployment status.
     serviceAccount: The full resource name of Cloud IAM Service Account that
       this deployment is using, eg, `projects/-/serviceAccounts/{email}`.
-    state: Current state of the deployment. This field is not populated in
-      List APIs.
+    state: Current state of the deployment. **Note**: This field is displayed
+      only when viewing deployment status.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""Current state of the deployment. This field is not populated in List
-    APIs.
+    r"""Current state of the deployment. **Note**: This field is displayed
+    only when viewing deployment status.
 
     Values:
       RUNTIME_STATE_UNSPECIFIED: This value should never be returned.

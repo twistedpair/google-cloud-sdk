@@ -311,6 +311,14 @@
         "loggingConfig": {
           "description": "Optional. Logging configuration for this cluster.",
           "$ref": "GoogleCloudGkemulticloudV1LoggingConfig"
+        },
+        "errors": {
+          "description": "Output only. A set of errors found in the cluster.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudGkemulticloudV1AwsClusterError"
+          }
         }
       }
     },
@@ -627,6 +635,17 @@
         }
       }
     },
+    "GoogleCloudGkemulticloudV1AwsClusterError": {
+      "id": "GoogleCloudGkemulticloudV1AwsClusterError",
+      "description": "AwsClusterError describes errors found on AWS clusters.",
+      "type": "object",
+      "properties": {
+        "message": {
+          "description": "Human-friendly description of the error.",
+          "type": "string"
+        }
+      }
+    },
     "GoogleCloudGkemulticloudV1ListAwsClustersResponse": {
       "id": "GoogleCloudGkemulticloudV1ListAwsClustersResponse",
       "description": "Response message for `AwsClusters.ListAwsClusters` method.",
@@ -747,6 +766,14 @@
         "maxPodsConstraint": {
           "description": "Required. The constraint on the maximum number of pods that can be run simultaneously on a node in the node pool.",
           "$ref": "GoogleCloudGkemulticloudV1MaxPodsConstraint"
+        },
+        "errors": {
+          "description": "Output only. A set of errors found in the node pool.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudGkemulticloudV1AwsNodePoolError"
+          }
         }
       }
     },
@@ -874,6 +901,17 @@
           "description": "Required. The maximum number of pods to schedule on a single node.",
           "type": "string",
           "format": "int64"
+        }
+      }
+    },
+    "GoogleCloudGkemulticloudV1AwsNodePoolError": {
+      "id": "GoogleCloudGkemulticloudV1AwsNodePoolError",
+      "description": "AwsNodePoolError describes errors found on AWS node pools.",
+      "type": "object",
+      "properties": {
+        "message": {
+          "description": "Human-friendly description of the error.",
+          "type": "string"
         }
       }
     },
@@ -1211,13 +1249,21 @@
           "$ref": "GoogleCloudGkemulticloudV1Fleet"
         },
         "managedResources": {
-          "description": "Output only. Mananged Azure resources for this cluster.",
+          "description": "Output only. Managed Azure resources for this cluster.",
           "readOnly": true,
           "$ref": "GoogleCloudGkemulticloudV1AzureClusterResources"
         },
         "loggingConfig": {
           "description": "Optional. Logging configuration for this cluster.",
           "$ref": "GoogleCloudGkemulticloudV1LoggingConfig"
+        },
+        "errors": {
+          "description": "Output only. A set of errors found in the cluster.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudGkemulticloudV1AzureClusterError"
+          }
         }
       }
     },
@@ -1432,6 +1478,17 @@
         }
       }
     },
+    "GoogleCloudGkemulticloudV1AzureClusterError": {
+      "id": "GoogleCloudGkemulticloudV1AzureClusterError",
+      "description": "AzureClusterError describes errors found on Azure clusters.",
+      "type": "object",
+      "properties": {
+        "message": {
+          "description": "Human-friendly description of the error.",
+          "type": "string"
+        }
+      }
+    },
     "GoogleCloudGkemulticloudV1ListAzureClustersResponse": {
       "id": "GoogleCloudGkemulticloudV1ListAzureClustersResponse",
       "description": "Response message for `AzureClusters.ListAzureClusters` method.",
@@ -1556,6 +1613,14 @@
         "azureAvailabilityZone": {
           "description": "Optional. The Azure availability zone of the nodes in this nodepool. When unspecified, it defaults to `1`.",
           "type": "string"
+        },
+        "errors": {
+          "description": "Output only. A set of errors found in the node pool.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudGkemulticloudV1AzureNodePoolError"
+          }
         }
       }
     },
@@ -1625,6 +1690,17 @@
           "description": "Required. Maximum number of nodes in the node pool. Must be greater than or equal to min_node_count and less than or equal to 50.",
           "type": "integer",
           "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudGkemulticloudV1AzureNodePoolError": {
+      "id": "GoogleCloudGkemulticloudV1AzureNodePoolError",
+      "description": "AzureNodePoolError describes errors found on Azure node pools.",
+      "type": "object",
+      "properties": {
+        "message": {
+          "description": "Human-friendly description of the error.",
+          "type": "string"
         }
       }
     },

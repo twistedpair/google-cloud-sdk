@@ -1741,16 +1741,15 @@ class APIAdapter(object):
 
     if options.enable_workload_vulnerability_scanning is not None:
       if cluster.protectConfig is None:
-        cluster.protectConfig = self.messages.ProtectConfig(
-            workloadConfig=self.messages.WorkloadConfig())
+        cluster.protectConfig = self.messages.ProtectConfig()
       if options.enable_workload_vulnerability_scanning:
-        cluster.protectConfig.workloadConfig.vulnerabilityScanningMode = (
-            self.messages.WorkloadConfig
-            .VulnerabilityScanningModeValueValuesEnum.BASIC)
+        cluster.protectConfig.workloadVulnerabilityMode = (
+            self.messages.ProtectConfig
+            .WorkloadVulnerabilityModeValueValuesEnum.BASIC)
       else:
-        cluster.protectConfig.workloadConfig.vulnerabilityScanningMode = (
-            self.messages.WorkloadConfig
-            .VulnerabilityScanningModeValueValuesEnum.DISABLED)
+        cluster.protectConfig.workloadVulnerabilityMode = (
+            self.messages.ProtectConfig
+            .WorkloadVulnerabilityModeValueValuesEnum.DISABLED)
 
     if options.pod_autoscaling_direct_metrics_opt_in is not None:
       pod_autoscaling_config = self.messages.PodAutoscaling(
@@ -2760,9 +2759,9 @@ class APIAdapter(object):
               enabled=options.enable_identity_service))
 
     if options.enable_workload_config_audit is not None or options.enable_workload_vulnerability_scanning is not None:
-      protect_config = self.messages.ProtectConfig(
-          workloadConfig=self.messages.WorkloadConfig())
+      protect_config = self.messages.ProtectConfig()
       if options.enable_workload_config_audit is not None:
+        protect_config.workloadConfig = self.messages.WorkloadConfig()
         if options.enable_workload_config_audit:
           protect_config.workloadConfig.auditMode = (
               self.messages.WorkloadConfig.AuditModeValueValuesEnum.BASIC)
@@ -2772,13 +2771,13 @@ class APIAdapter(object):
 
       if options.enable_workload_vulnerability_scanning is not None:
         if options.enable_workload_vulnerability_scanning:
-          protect_config.workloadConfig.vulnerabilityScanningMode = (
-              self.messages.WorkloadConfig
-              .VulnerabilityScanningModeValueValuesEnum.BASIC)
+          protect_config.workloadVulnerabilityMode = (
+              self.messages.ProtectConfig
+              .WorkloadVulnerabilityModeValueValuesEnum.BASIC)
         else:
-          protect_config.workloadConfig.vulnerabilityScanningMode = (
-              self.messages.WorkloadConfig
-              .VulnerabilityScanningModeValueValuesEnum.DISABLED)
+          protect_config.workloadVulnerabilityMode = (
+              self.messages.ProtectConfig
+              .WorkloadVulnerabilityModeValueValuesEnum.DISABLED)
       update = self.messages.ClusterUpdate(desiredProtectConfig=protect_config)
 
     if options.pod_autoscaling_direct_metrics_opt_in is not None:

@@ -188,9 +188,12 @@ class Guaranteed(_messages.Message):
     minDuration: Optional. Defines the minimum duration of the guarantee. If
       specified, the requested resources will only be provisioned if they can
       be allocated for at least the given duration.
+    reserved: Optional. Specifies the request should be scheduled on reserved
+      capacity.
   """
 
   minDuration = _messages.StringField(1)
+  reserved = _messages.BooleanField(2)
 
 
 class GuestAttributes(_messages.Message):
@@ -812,6 +815,7 @@ class QueuedResource(_messages.Message):
     queueingPolicy: The queueing policy of the QueuedRequest.
     state: Output only. State of the QueuedResource request
     tpu: Defines a TPU resource.
+    trafficConfig: Network traffic configuration.
   """
 
   bestEffort = _messages.MessageField('BestEffort', 1)
@@ -820,6 +824,7 @@ class QueuedResource(_messages.Message):
   queueingPolicy = _messages.MessageField('QueueingPolicy', 4)
   state = _messages.MessageField('QueuedResourceState', 5)
   tpu = _messages.MessageField('Tpu', 6)
+  trafficConfig = _messages.MessageField('TrafficConfig', 7)
 
 
 class QueuedResourceState(_messages.Message):
@@ -1456,6 +1461,10 @@ class TpuProjectsLocationsRuntimeVersionsListRequest(_messages.Message):
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
+
+
+class TrafficConfig(_messages.Message):
+  r"""Network traffic configuration."""
 
 
 encoding.AddCustomJsonFieldMapping(

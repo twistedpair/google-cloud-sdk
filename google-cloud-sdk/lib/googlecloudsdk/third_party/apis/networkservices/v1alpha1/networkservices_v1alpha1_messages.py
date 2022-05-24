@@ -966,7 +966,7 @@ class Gateway(_messages.Message):
       1024 characters.
     labels: Optional. Set of label tags associated with the Gateway resource.
     name: Required. Name of the Gateway resource. It matches pattern
-      `projects/*/locations/global/gateways/`.
+      `projects/*/locations/*/gateways/`.
     ports: Required. One or more ports that the Gateway must receive traffic
       on. The proxy binds to the ports specified. Gateway listen on 0.0.0.0 on
       the ports specified below.
@@ -3288,7 +3288,7 @@ class NetworkservicesProjectsLocationsGatewaysCreateRequest(_messages.Message):
     gateway: A Gateway resource to be passed as the request body.
     gatewayId: Required. Short name of the Gateway resource to be created.
     parent: Required. The parent resource of the Gateway. Must be in the
-      format `projects/*/locations/global`.
+      format `projects/*/locations/*`.
   """
 
   gateway = _messages.MessageField('Gateway', 1)
@@ -3301,7 +3301,7 @@ class NetworkservicesProjectsLocationsGatewaysDeleteRequest(_messages.Message):
 
   Fields:
     name: Required. A name of the Gateway to delete. Must be in the format
-      `projects/*/locations/global/gateways/*`.
+      `projects/*/locations/*/gateways/*`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -3338,7 +3338,7 @@ class NetworkservicesProjectsLocationsGatewaysGetRequest(_messages.Message):
 
   Fields:
     name: Required. A name of the Gateway to get. Must be in the format
-      `projects/*/locations/global/gateways/*`.
+      `projects/*/locations/*/gateways/*`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -3353,7 +3353,7 @@ class NetworkservicesProjectsLocationsGatewaysListRequest(_messages.Message):
       that this is a continuation of a prior `ListGateways` call, and that the
       system should return the next page of data.
     parent: Required. The project and location from which the Gateways should
-      be listed, specified in the format `projects/*/locations/global`.
+      be listed, specified in the format `projects/*/locations/*`.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -3367,7 +3367,7 @@ class NetworkservicesProjectsLocationsGatewaysPatchRequest(_messages.Message):
   Fields:
     gateway: A Gateway resource to be passed as the request body.
     name: Required. Name of the Gateway resource. It matches pattern
-      `projects/*/locations/global/gateways/`.
+      `projects/*/locations/*/gateways/`.
     updateMask: Optional. Field mask is used to specify the fields to be
       overwritten in the Gateway resource by the update. The fields specified
       in the update_mask are relative to the resource, not the full request. A

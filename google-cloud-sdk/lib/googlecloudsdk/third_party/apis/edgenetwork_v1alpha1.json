@@ -258,12 +258,8 @@
           }
         },
         "layoutName": {
-          "description": "The deployment layout type. Defined by the NetworkLayout.name in \/\/cloud\/kubernetes\/edge\/network\/proto\/network_layout.proto The layout definition must exist in \/\/cloud\/kubernetes\/edge\/network\/service\/config\/network_layout",
+          "description": "The deployment layout type.",
           "type": "string"
-        },
-        "migrateToCcfe": {
-          "description": "Optional. \/ Skip GNAS site creation if set to true. This flag should be used for \/ migration only.",
-          "type": "boolean"
         }
       }
     },
@@ -374,26 +370,26 @@
           "description": "BVI MAC address.",
           "type": "string"
         },
-        "arpEntries": {
-          "description": "A list of ARPEntry, describing the ARP neighbor entries seen on this subnet.",
+        "linkLayerAddresses": {
+          "description": "A list of LinkLayerAddress, describing the ip address and corresponding link-layer address of the neighbors for this subnet.",
           "type": "array",
           "items": {
-            "$ref": "ARPEntry"
+            "$ref": "LinkLayerAddress"
           }
         }
       }
     },
-    "ARPEntry": {
-      "id": "ARPEntry",
-      "description": "Describing the ARP neighbor entry.",
+    "LinkLayerAddress": {
+      "id": "LinkLayerAddress",
+      "description": "LinkLayerAddress contains an IP address and corresponding link-layer address.",
       "type": "object",
       "properties": {
         "macAddress": {
-          "description": "The MAC address of this ARP neighbor.",
+          "description": "The MAC address of this neighbor.",
           "type": "string"
         },
         "ipAddress": {
-          "description": "The IP address of this ARP neighbor.",
+          "description": "The IP address of this neighbor.",
           "type": "string"
         }
       }
@@ -484,10 +480,10 @@
           "type": "string",
           "enumDescriptions": [
             "Unspecified state.",
-            "The resource has not been recognized by config push.",
-            "The resource has reached config push.",
-            "The resource has been pushed to device successfully by config push.",
-            "The resource failed to push to device by config push.",
+            "The resource is being prepared to be applied to the rack.",
+            "The resource has started being applied to the rack.",
+            "The resource has been pushed to the rack.",
+            "The resource failed to push to the rack.",
             "The resource is under deletion."
           ],
           "enum": [
@@ -562,8 +558,8 @@
           "description": "Optional. Type of interconnect, which takes only the value 'DEDICATED' for now.",
           "type": "string",
           "enumDescriptions": [
-            "",
-            ""
+            "Unspecified.",
+            "Dedicated Interconnect."
           ],
           "enum": [
             "INTERCONNECT_TYPE_UNSPECIFIED",
@@ -615,11 +611,11 @@
           "description": "The MAC address of the Interconnect's bundle interface.",
           "type": "string"
         },
-        "arpEntries": {
-          "description": "A list of ARPEntry, describing the ARP neighbor entries seen on this interconnect.",
+        "linkLayerAddresses": {
+          "description": "A list of LinkLayerAddress, describing the ip address and corresponding link-layer address of the neighbors for this interconnect.",
           "type": "array",
           "items": {
-            "$ref": "ARPEntry"
+            "$ref": "LinkLayerAddress"
           }
         },
         "links": {
@@ -847,10 +843,10 @@
           "type": "string",
           "enumDescriptions": [
             "Unspecified state.",
-            "The resource has not been recognized by config push.",
-            "The resource has reached config push.",
-            "The resource has been pushed to device successfully by config push.",
-            "The resource failed to push to device by config push.",
+            "The resource is being prepared to be applied to the rack.",
+            "The resource has started being applied to the rack.",
+            "The resource has been pushed to the rack.",
+            "The resource failed to push to the rack.",
             "The resource is under deletion."
           ],
           "enum": [
@@ -949,10 +945,10 @@
           "type": "string",
           "enumDescriptions": [
             "Unspecified state.",
-            "The resource has not been recognized by config push.",
-            "The resource has reached config push.",
-            "The resource has been pushed to device successfully by config push.",
-            "The resource failed to push to device by config push.",
+            "The resource is being prepared to be applied to the rack.",
+            "The resource has started being applied to the rack.",
+            "The resource has been pushed to the rack.",
+            "The resource failed to push to the rack.",
             "The resource is under deletion."
           ],
           "enum": [
@@ -968,28 +964,37 @@
     },
     "Interface": {
       "id": "Interface",
+      "description": "Router Interface defines the GDCE zone side layer-3 information for building the BGP session.",
       "type": "object",
       "properties": {
         "name": {
           "description": "Name of this interface entry. Unique within the Zones resource.",
           "type": "string"
         },
-        "linkedInterconnectAttachment": {
-          "description": "The canonical name of the linked Interconnect attachment.",
+        "ipv4Cidr": {
+          "description": "IP address and range of the interface. This value is only used when linked_interconnect_attachment is set.",
           "type": "string"
         },
-        "ipv4Cidr": {
-          "description": "IP address and range of the interface.",
+        "linkedInterconnectAttachment": {
+          "description": "The canonical name of the linked Interconnect attachment.",
           "type": "string"
         },
         "subnetwork": {
           "description": "The canonical name of the subnetwork resource that this interface belongs to.",
           "type": "string"
+        },
+        "loopbackIpAddresses": {
+          "description": "Create loopback interface in the router when specified. The number of IP addresses must match the number of TOR devices.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
     "BgpPeer": {
       "id": "BgpPeer",
+      "description": "BGPPeer defines the peer side layer-3 information for building the BGP session.",
       "type": "object",
       "properties": {
         "name": {
@@ -1016,6 +1021,7 @@
     },
     "Bgp": {
       "id": "Bgp",
+      "description": "BGP information specific to this router.",
       "type": "object",
       "properties": {
         "asn": {

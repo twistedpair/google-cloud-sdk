@@ -728,6 +728,10 @@
           "description": "Output only. State of the QueuedResource request",
           "readOnly": true,
           "$ref": "QueuedResourceState"
+        },
+        "trafficConfig": {
+          "description": "Network traffic configuration.",
+          "$ref": "TrafficConfig"
         }
       }
     },
@@ -780,6 +784,10 @@
           "description": "Optional. Defines the minimum duration of the guarantee. If specified, the requested resources will only be provisioned if they can be allocated for at least the given duration.",
           "type": "string",
           "format": "google-duration"
+        },
+        "reserved": {
+          "description": "Optional. Specifies the request should be scheduled on reserved capacity.",
+          "type": "boolean"
         }
       }
     },
@@ -952,6 +960,13 @@
     "SuspendedData": {
       "id": "SuspendedData",
       "description": "Further data for the suspended state.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "TrafficConfig": {
+      "id": "TrafficConfig",
+      "description": "Network traffic configuration.",
       "type": "object",
       "properties": {
       }

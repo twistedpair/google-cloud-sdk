@@ -29,6 +29,7 @@ import random
 from googlecloudsdk.api_lib.storage import api_factory
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.api_lib.storage import gcs_api
+from googlecloudsdk.command_lib.storage import gzip_util
 from googlecloudsdk.command_lib.storage import manifest_util
 from googlecloudsdk.command_lib.storage import tracker_file_util
 from googlecloudsdk.command_lib.storage.tasks import task
@@ -101,24 +102,40 @@ class FileUploadTask(copy_util.CopyTaskWithExitHandler):
       return
 
     source_url = self._source_resource.storage_url
-    source_filename = source_url.object_name
+    original_source_path = source_url.object_name
+    should_gzip_locally = gzip_util.should_gzip_locally(
+        getattr(self._user_request_args, 'gzip_settings', None),
+        original_source_path)
 
     if source_url.is_pipe:
       size = None
+      source_path = original_source_path
     else:
-      size = os.path.getsize(source_filename)
+      if should_gzip_locally:
+        source_path = gzip_util.get_temporary_gzipped_file(original_source_path)
+      else:
+        source_path = original_source_path
+      size = os.path.getsize(source_path)
 
     api_capabilties = api_factory.get_capabilities(destination_provider)
+    component_count = copy_component_util.get_component_count(
+        size,
+        properties.VALUES.storage.parallel_composite_upload_component_size.Get(
+        ),
+        # TODO(b/232550921): This is a big no-no. Keep API references out of the
+        # task-level. Porting because in the process of solving a major bug.
+        gcs_api.MAX_OBJECTS_PER_COMPOSE_CALL)
     should_perform_single_transfer = (
         source_url.is_pipe or size < self._composite_upload_threshold or
         not self._composite_upload_threshold or
         cloud_api.Capability.COMPOSE_OBJECTS not in api_capabilties or
-        not task_util.should_use_parallelism())
+        not task_util.should_use_parallelism() or component_count <= 1)
 
     if should_perform_single_transfer:
       task_output = file_part_upload_task.FilePartUploadTask(
           self._source_resource,
           self._destination_resource,
+          source_path,
           offset=0,
           length=size,
           user_request_args=self._user_request_args).execute(task_status_queue)
@@ -133,16 +150,17 @@ class FileUploadTask(copy_util.CopyTaskWithExitHandler):
               self._source_resource,
               self._destination_resource,
               md5_hash=result_resource.md5_hash)
+
+      if should_gzip_locally:
+        # Delete temporary gzipped version of source file.
+        os.remove(source_path)
       if self._delete_source:
+        # Delete original source file.
         os.remove(self._source_resource.storage_url.object_name)
     else:
-      component_size_property = (
-          properties.VALUES.storage.parallel_composite_upload_component_size)
       component_offsets_and_lengths = (
           copy_component_util.get_component_offsets_and_lengths(
-              size,
-              component_size_property.Get(),
-              gcs_api.MAX_OBJECTS_PER_COMPOSE_CALL))
+              size, component_count))
 
       tracker_file_path = tracker_file_util.get_tracker_file_path(
           self._destination_resource.storage_url,
@@ -170,6 +188,7 @@ class FileUploadTask(copy_util.CopyTaskWithExitHandler):
         upload_task = file_part_upload_task.FilePartUploadTask(
             self._source_resource,
             temporary_component_resource,
+            source_path,
             offset,
             length,
             component_number=i,
@@ -183,6 +202,7 @@ class FileUploadTask(copy_util.CopyTaskWithExitHandler):
               expected_component_count=len(file_part_upload_tasks),
               source_resource=self._source_resource,
               destination_resource=self._destination_resource,
+              source_path=source_path,
               random_prefix=random_prefix,
               delete_source=self._delete_source,
               print_created_message=self._print_created_message,

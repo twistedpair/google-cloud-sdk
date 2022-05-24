@@ -220,6 +220,47 @@ def AddSubscriptionTopicResourceFlags(parser):
            'If not set, it defaults to the currently selected cloud project.')
 
 
+def AddBigQueryConfigFlags(parser, is_update):
+  """Adds BigQuery config flags to parser."""
+  current_group = parser
+  if is_update:
+    mutual_exclusive_group = current_group.add_mutually_exclusive_group()
+    mutual_exclusive_group.add_argument(
+        '--clear-bigquery-config',
+        action='store_true',
+        default=None,
+        help="""If set, clear the BigQuery config from the subscription.""")
+    current_group = mutual_exclusive_group
+  bigquery_config_group = current_group.add_argument_group(
+      help="""BigQuery Config Options. The Cloud Pub/Sub service account
+         associated with the enclosing subscription's parent project (i.e.,
+         service-{project_number}@gcp-sa-pubsub.iam.gserviceaccount.com)
+         must have permission to write to this BigQuery table.""")
+  bigquery_config_group.add_argument(
+      '--bigquery-table',
+      required=True,
+      help='A BigQuery table  of the form {project}:{dataset_name}.{table_name} to which to write messages for this subscription.'
+  )
+  bigquery_config_group.add_argument(
+      '--use-topic-schema',
+      action='store_true',
+      default=None,
+      help='Whether or not to use the schema for the subscription\'s topic (if it exists) when writing messages to BigQuery.'
+  )
+  bigquery_config_group.add_argument(
+      '--write-metadata',
+      action='store_true',
+      default=None,
+      help='Whether or not to write message metadata including message ID, publish timestamp, ordering key, and attributes to BigQuery.'
+  )
+  bigquery_config_group.add_argument(
+      '--drop-unknown-fields',
+      action='store_true',
+      default=None,
+      help='When --use-topic-schema is set, whether or not to ignore fields in the topic schema that do not appear in the BigQuery schema. If false, then the BigQuery schema must contain all fields that are also present in the topic schema.'
+  )
+
+
 def ParseSubscriptionRetentionDurationWithDefault(value):
   if value == subscriptions.DEFAULT_MESSAGE_RETENTION_VALUE:
     return value
@@ -245,6 +286,7 @@ def AddSubscriptionSettingsFlags(parser,
   """
   AddAckDeadlineFlag(parser)
   AddPushConfigFlags(parser)
+  AddBigQueryConfigFlags(parser, is_update)
   AddSubscriptionMessageRetentionFlags(parser, is_update)
   if not is_update:
     parser.add_argument(

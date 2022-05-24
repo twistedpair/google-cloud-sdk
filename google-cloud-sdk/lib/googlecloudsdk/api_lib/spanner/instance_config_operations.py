@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 
@@ -71,6 +72,17 @@ def Cancel(config, operation):
   req = msgs.SpannerProjectsInstanceConfigsOperationsCancelRequest(
       name=ref.RelativeName())
   return client.projects_instanceConfigs_operations.Cancel(req)
+
+
+def Await(operation, message):
+  """Wait for the specified operation."""
+  client = apis.GetClientInstance('spanner', 'v1')
+  poller = waiter.CloudOperationPoller(
+      client.projects_instanceConfigs,
+      client.projects_instanceConfigs_operations)
+  ref = resources.REGISTRY.ParseRelativeName(
+      operation.name, collection='spanner.projects.instanceConfigs.operations')
+  return waiter.WaitFor(poller, ref, message)
 
 
 def BuildInstanceConfigOperationTypeFilter(op_type):

@@ -787,6 +787,20 @@
           "description": "Output only. Bool indicating whether an newer image is available in an image family.",
           "readOnly": true,
           "type": "boolean"
+        },
+        "postStartupScriptBehavior": {
+          "description": "Behavior for the post startup script.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified post startup script behavior. Will run only once at creation.",
+            "Runs the post startup script provided during creation at every start.",
+            "Downloads and runs the provided post startup script at every start."
+          ],
+          "enum": [
+            "POST_STARTUP_SCRIPT_BEHAVIOR_UNSPECIFIED",
+            "RUN_EVERY_START",
+            "DOWNLOAD_AND_RUN_EVERY_START"
+          ]
         }
       }
     },
@@ -2668,6 +2682,45 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Creates a new Runtime in a given project and location."
+                },
+                "patch": {
+                  "id": "notebooks.projects.locations.runtimes.patch",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/runtimes/{runtimesId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Output only. The resource name of the runtime. Format: `projects\/{project}\/locations\/{location}\/runtimes\/{runtimeId}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/runtimes\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Required. Specifies the path, relative to `Runtime`, of the field to update. For example, to change the software configuration kernels, the `update_mask` parameter would be specified as `software_config.kernels`, and the `PATCH` request body would specify the new value, as follows: { \"software_config\":{ \"kernels\": [{ 'repository': 'gcr.io\/deeplearning-platform-release\/pytorch-gpu', 'tag': 'latest' }], } } Currently, only the following fields can be updated: - software_config.kernels - software_config.post_startup_script - software_config.custom_gpu_driver_path - software_config.idle_shutdown - software_config.idle_shutdown_timeout",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    },
+                    "requestId": {
+                      "description": "Idempotent request UUID.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "Runtime"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Update Notebook Runtime configuration."
                 },
                 "delete": {
                   "id": "notebooks.projects.locations.runtimes.delete",

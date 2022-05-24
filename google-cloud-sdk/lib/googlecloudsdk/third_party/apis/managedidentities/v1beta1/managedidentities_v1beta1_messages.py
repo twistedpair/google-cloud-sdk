@@ -70,13 +70,15 @@ class Backup(_messages.Message):
     r"""Output only. Indicates whether it's an on-demand backup or scheduled.
 
     Values:
-      TYPE_UNSPECIFIED: Backup was manually created.
+      TYPE_UNSPECIFIED: Backup type not specified.
       ON_DEMAND: Backup was manually created.
       SCHEDULED: Backup was automatically created.
+      SCHEMA_EXTENSION: Backup was taken as part of Schema Extension request.
     """
     TYPE_UNSPECIFIED = 0
     ON_DEMAND = 1
     SCHEDULED = 2
+    SCHEMA_EXTENSION = 3
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):

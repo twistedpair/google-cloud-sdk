@@ -37,7 +37,9 @@ class SimpleUploadTask(upload_task.UploadTask):
     api = api_factory.get_api(self._destination_resource.storage_url.scheme)
     request_config = request_config_factory.get_request_config(
         self._destination_resource.storage_url,
-        content_type=upload_util.get_content_type(self._source_resource),
+        content_type=upload_util.get_content_type(
+            self._source_resource.storage_url.object_name,
+            self._source_resource.storage_url.is_pipe),
         md5_hash=self._source_resource.md5_hash,
         size=self._length)
 

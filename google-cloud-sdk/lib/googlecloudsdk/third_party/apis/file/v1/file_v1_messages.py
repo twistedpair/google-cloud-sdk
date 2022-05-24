@@ -57,8 +57,8 @@ class Backup(_messages.Message):
 
     Values:
       TIER_UNSPECIFIED: Not set.
-      STANDARD: STANDARD tier.
-      PREMIUM: PREMIUM tier.
+      STANDARD: STANDARD tier. BASIC_HDD is the preferred term for this tier.
+      PREMIUM: PREMIUM tier. BASIC_SSD is the preferred term for this tier.
       BASIC_HDD: BASIC instances offer a maximum capacity of 63.9 TB.
         BASIC_HDD is an alias for STANDARD Tier, offering economical
         performance backed by HDD.
@@ -1197,8 +1197,8 @@ class Instance(_messages.Message):
 
     Values:
       TIER_UNSPECIFIED: Not set.
-      STANDARD: STANDARD tier.
-      PREMIUM: PREMIUM tier.
+      STANDARD: STANDARD tier. BASIC_HDD is the preferred term for this tier.
+      PREMIUM: PREMIUM tier. BASIC_SSD is the preferred term for this tier.
       BASIC_HDD: BASIC instances offer a maximum capacity of 63.9 TB.
         BASIC_HDD is an alias for STANDARD Tier, offering economical
         performance backed by HDD.

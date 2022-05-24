@@ -22,6 +22,7 @@ from apitools.base.py import encoding
 
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.dataproc.jobs import base as job_base
+from googlecloudsdk.command_lib.dataproc.jobs import util as job_util
 
 
 class PrestoBase(job_base.JobBase):
@@ -48,6 +49,9 @@ class PrestoBase(job_base.JobBase):
         type=arg_parsers.ArgDict(),
         metavar='PARAM=VALUE',
         help='A list of key value pairs to set Presto session properties.')
+    parser.add_argument(
+        '--properties-file',
+        help=job_util.PROPERTIES_FILE_HELP_TEXT)
     parser.add_argument(
         '--driver-log-levels',
         type=arg_parsers.ArgDict(),
@@ -83,12 +87,16 @@ class PrestoBase(job_base.JobBase):
 
     if args.queries:
       presto_job.queryList = messages.QueryList(queries=args.queries)
-    if args.properties:
-      presto_job.properties = encoding.DictToAdditionalPropertyMessage(
-          args.properties, messages.PrestoJob.PropertiesValue)
     if args.query_output_format:
       presto_job.outputFormat = args.query_output_format
     if args.client_tags:
       presto_job.clientTags = args.client_tags
+
+    job_properties = job_util.BuildJobProperties(
+        args.properties, args.properties_file)
+    if job_properties:
+    # Sort properties to ensure tests comparing messages not fail on ordering.
+      presto_job.properties = encoding.DictToAdditionalPropertyMessage(
+          job_properties, messages.PrestoJob.PropertiesValue, sort_items=True)
 
     job.prestoJob = presto_job

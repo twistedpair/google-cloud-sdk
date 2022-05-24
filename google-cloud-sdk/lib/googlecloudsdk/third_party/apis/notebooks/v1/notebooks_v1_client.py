@@ -1178,6 +1178,33 @@ class NotebooksV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Patch(self, request, global_params=None):
+      r"""Update Notebook Runtime configuration.
+
+      Args:
+        request: (NotebooksProjectsLocationsRuntimesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/runtimes/{runtimesId}',
+        http_method='PATCH',
+        method_id='notebooks.projects.locations.runtimes.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1/{+name}',
+        request_field='runtime',
+        request_type_name='NotebooksProjectsLocationsRuntimesPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def RefreshRuntimeTokenInternal(self, request, global_params=None):
       r"""Gets an access token for the consumer service account that the customer attached to the runtime. Only accessible from the tenant instance.
 

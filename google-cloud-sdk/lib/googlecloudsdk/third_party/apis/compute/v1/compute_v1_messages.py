@@ -3543,10 +3543,10 @@ class BackendService(_messages.Message):
       applicable to external and internal HTTP(S) load balancers and Traffic
       Director and requires GENERATED_COOKIE or HTTP_COOKIE session affinity.
       If set to 0, the cookie is non-persistent and lasts only until the end
-      of the browser session (or equivalent). The maximum allowed value is one
-      day (86,400). Not supported when the backend service is referenced by a
-      URL map that is bound to target gRPC proxy that has validateForProxyless
-      field set to true.
+      of the browser session (or equivalent). The maximum allowed value is two
+      weeks (1,209,600). Not supported when the backend service is referenced
+      by a URL map that is bound to target gRPC proxy that has
+      validateForProxyless field set to true.
     backends: The list of backends that serve this BackendService.
     cdnPolicy: Cloud CDN configuration for this BackendService. Only available
       for specified load balancer types.
@@ -5571,6 +5571,7 @@ class Commitment(_messages.Message):
       GENERAL_PURPOSE_N2D: <no description>
       GENERAL_PURPOSE_T2D: <no description>
       MEMORY_OPTIMIZED: <no description>
+      MEMORY_OPTIMIZED_M3: <no description>
       TYPE_UNSPECIFIED: <no description>
     """
     ACCELERATOR_OPTIMIZED = 0
@@ -5582,7 +5583,8 @@ class Commitment(_messages.Message):
     GENERAL_PURPOSE_N2D = 6
     GENERAL_PURPOSE_T2D = 7
     MEMORY_OPTIMIZED = 8
-    TYPE_UNSPECIFIED = 9
+    MEMORY_OPTIMIZED_M3 = 9
+    TYPE_UNSPECIFIED = 10
 
   autoRenew = _messages.BooleanField(1)
   category = _messages.EnumField('CategoryValueValuesEnum', 2)
@@ -23443,6 +23445,35 @@ class ComputeTargetHttpsProxiesPatchRequest(_messages.Message):
   targetHttpsProxyResource = _messages.MessageField('TargetHttpsProxy', 4)
 
 
+class ComputeTargetHttpsProxiesSetCertificateMapRequest(_messages.Message):
+  r"""A ComputeTargetHttpsProxiesSetCertificateMapRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    targetHttpsProxiesSetCertificateMapRequest: A
+      TargetHttpsProxiesSetCertificateMapRequest resource to be passed as the
+      request body.
+    targetHttpsProxy: Name of the TargetHttpsProxy resource whose
+      CertificateMap is to be set. The name must be 1-63 characters long, and
+      comply with RFC1035.
+  """
+
+  project = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  targetHttpsProxiesSetCertificateMapRequest = _messages.MessageField('TargetHttpsProxiesSetCertificateMapRequest', 3)
+  targetHttpsProxy = _messages.StringField(4, required=True)
+
+
 class ComputeTargetHttpsProxiesSetQuicOverrideRequest(_messages.Message):
   r"""A ComputeTargetHttpsProxiesSetQuicOverrideRequest object.
 
@@ -24217,6 +24248,35 @@ class ComputeTargetSslProxiesSetBackendServiceRequest(_messages.Message):
   project = _messages.StringField(1, required=True)
   requestId = _messages.StringField(2)
   targetSslProxiesSetBackendServiceRequest = _messages.MessageField('TargetSslProxiesSetBackendServiceRequest', 3)
+  targetSslProxy = _messages.StringField(4, required=True)
+
+
+class ComputeTargetSslProxiesSetCertificateMapRequest(_messages.Message):
+  r"""A ComputeTargetSslProxiesSetCertificateMapRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    targetSslProxiesSetCertificateMapRequest: A
+      TargetSslProxiesSetCertificateMapRequest resource to be passed as the
+      request body.
+    targetSslProxy: Name of the TargetSslProxy resource whose CertificateMap
+      is to be set. The name must be 1-63 characters long, and comply with
+      RFC1035.
+  """
+
+  project = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  targetSslProxiesSetCertificateMapRequest = _messages.MessageField('TargetSslProxiesSetCertificateMapRequest', 3)
   targetSslProxy = _messages.StringField(4, required=True)
 
 
@@ -32030,7 +32090,7 @@ class Image(_messages.Message):
 
   Enums:
     SourceTypeValueValuesEnum: The type of the image used to create this disk.
-      The default and only value is RAW
+      The default and only valid value is RAW.
     StatusValueValuesEnum: [Output Only] The status of the image. An image can
       be used to create other resources, such as instances, only after the
       image has been successfully created and the status is set to READY.
@@ -32136,7 +32196,7 @@ class Image(_messages.Message):
       snapshot was taken from the current or a previous instance of a given
       snapshot name.
     sourceType: The type of the image used to create this disk. The default
-      and only value is RAW
+      and only valid value is RAW.
     status: [Output Only] The status of the image. An image can be used to
       create other resources, such as instances, only after the image has been
       successfully created and the status is set to READY. Possible values are
@@ -32147,7 +32207,7 @@ class Image(_messages.Message):
 
   class SourceTypeValueValuesEnum(_messages.Enum):
     r"""The type of the image used to create this disk. The default and only
-    value is RAW
+    valid value is RAW.
 
     Values:
       RAW: <no description>
@@ -33885,12 +33945,16 @@ class InstanceGroupManagerUpdatePolicy(_messages.Message):
       of VM instances across zones in the region. - NONE: For non-autoscaled
       groups, proactive redistribution is disabled.
     MinimalActionValueValuesEnum: Minimal action to be taken on an instance.
-      You can specify either RESTART to restart existing instances or REPLACE
-      to delete and create new instances from the target template. If you
-      specify a RESTART, the Updater will attempt to perform that action only.
-      However, if the Updater determines that the minimal action you specify
-      is not enough to perform the update, it might perform a more disruptive
-      action.
+      Use this option to minimize disruption as much as possible or to apply a
+      more disruptive action than is necessary. - To limit disruption as much
+      as possible, set the minimal action to REFRESH. If your update requires
+      a more disruptive action, Compute Engine performs the necessary action
+      to execute the update. - To apply a more disruptive action than is
+      strictly necessary, set the minimal action to RESTART or REPLACE. For
+      example, Compute Engine does not need to restart a VM to change its
+      metadata. But if your application reads instance metadata only when a VM
+      is restarted, you can set the minimal action to RESTART in order to pick
+      up metadata changes.
     MostDisruptiveAllowedActionValueValuesEnum: Most disruptive action that is
       allowed to be taken on an instance. You can specify either NONE to
       forbid any actions, REFRESH to allow actions that do not need instance
@@ -33935,12 +33999,16 @@ class InstanceGroupManagerUpdatePolicy(_messages.Message):
       number of zones in which the managed instance group operates. At least
       one of either maxSurge or maxUnavailable must be greater than 0. Learn
       more about maxUnavailable.
-    minimalAction: Minimal action to be taken on an instance. You can specify
-      either RESTART to restart existing instances or REPLACE to delete and
-      create new instances from the target template. If you specify a RESTART,
-      the Updater will attempt to perform that action only. However, if the
-      Updater determines that the minimal action you specify is not enough to
-      perform the update, it might perform a more disruptive action.
+    minimalAction: Minimal action to be taken on an instance. Use this option
+      to minimize disruption as much as possible or to apply a more disruptive
+      action than is necessary. - To limit disruption as much as possible, set
+      the minimal action to REFRESH. If your update requires a more disruptive
+      action, Compute Engine performs the necessary action to execute the
+      update. - To apply a more disruptive action than is strictly necessary,
+      set the minimal action to RESTART or REPLACE. For example, Compute
+      Engine does not need to restart a VM to change its metadata. But if your
+      application reads instance metadata only when a VM is restarted, you can
+      set the minimal action to RESTART in order to pick up metadata changes.
     mostDisruptiveAllowedAction: Most disruptive action that is allowed to be
       taken on an instance. You can specify either NONE to forbid any actions,
       REFRESH to allow actions that do not need instance restart, RESTART to
@@ -33973,12 +34041,16 @@ class InstanceGroupManagerUpdatePolicy(_messages.Message):
     PROACTIVE = 1
 
   class MinimalActionValueValuesEnum(_messages.Enum):
-    r"""Minimal action to be taken on an instance. You can specify either
-    RESTART to restart existing instances or REPLACE to delete and create new
-    instances from the target template. If you specify a RESTART, the Updater
-    will attempt to perform that action only. However, if the Updater
-    determines that the minimal action you specify is not enough to perform
-    the update, it might perform a more disruptive action.
+    r"""Minimal action to be taken on an instance. Use this option to minimize
+    disruption as much as possible or to apply a more disruptive action than
+    is necessary. - To limit disruption as much as possible, set the minimal
+    action to REFRESH. If your update requires a more disruptive action,
+    Compute Engine performs the necessary action to execute the update. - To
+    apply a more disruptive action than is strictly necessary, set the minimal
+    action to RESTART or REPLACE. For example, Compute Engine does not need to
+    restart a VM to change its metadata. But if your application reads
+    instance metadata only when a VM is restarted, you can set the minimal
+    action to RESTART in order to pick up metadata changes.
 
     Values:
       NONE: Do not perform any action.
@@ -38485,6 +38557,10 @@ class LocationPolicy(_messages.Message):
   r"""Configuration for location policy among multiple possible locations
   (e.g. preferences for zone selection among zones in a single region).
 
+  Enums:
+    TargetShapeValueValuesEnum: Strategy for distributing VMs across zones in
+      a region.
+
   Messages:
     LocationsValue: Location configurations mapped by location name. Currently
       only zone names are supported and must be represented as valid internal
@@ -38494,7 +38570,30 @@ class LocationPolicy(_messages.Message):
     locations: Location configurations mapped by location name. Currently only
       zone names are supported and must be represented as valid internal URLs,
       such as zones/us-central1-a.
+    targetShape: Strategy for distributing VMs across zones in a region.
   """
+
+  class TargetShapeValueValuesEnum(_messages.Enum):
+    r"""Strategy for distributing VMs across zones in a region.
+
+    Values:
+      ANY: GCE picks zones for creating VM instances to fulfill the requested
+        number of VMs within present resource constraints and to maximize
+        utilization of unused zonal reservations. Recommended for batch
+        workloads that do not require high availability.
+      ANY_SINGLE_ZONE: GCE always selects a single zone for all the VMs,
+        optimizing for resource quotas, available reservations and general
+        capacity. Recommended for batch workloads that cannot tollerate
+        distribution over multiple zones. This the default shape in Bulk
+        Insert and Capacity Advisor APIs.
+      BALANCED: GCE prioritizes acquisition of resources, scheduling VMs in
+        zones where resources are available while distributing VMs as evenly
+        as possible across allowed zones to minimize the impact of zonal
+        failure. Recommended for highly available serving workloads.
+    """
+    ANY = 0
+    ANY_SINGLE_ZONE = 1
+    BALANCED = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LocationsValue(_messages.Message):
@@ -38523,6 +38622,7 @@ class LocationPolicy(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   locations = _messages.MessageField('LocationsValue', 1)
+  targetShape = _messages.EnumField('TargetShapeValueValuesEnum', 2)
 
 
 class LocationPolicyLocation(_messages.Message):
@@ -50093,11 +50193,13 @@ class ResourcePolicyGroupPlacementPolicy(_messages.Message):
     CollocationValueValuesEnum: Specifies network collocation
 
   Fields:
-    availabilityDomainCount: The number of availability domains instances will
-      be spread across. If two instances are in different availability domain,
-      they will not be put in the same low latency network
+    availabilityDomainCount: The number of availability domains to spread
+      instances across. If two instances are in different availability domain,
+      they are not in the same low latency network.
     collocation: Specifies network collocation
-    vmCount: Number of vms in this placement group
+    vmCount: Number of VMs in this placement group. Google does not recommend
+      that you use this field unless you use a compact policy and you want
+      your policy to work only if it contains this exact number of VMs.
   """
 
   class CollocationValueValuesEnum(_messages.Enum):
@@ -52661,7 +52763,7 @@ class Scheduling(_messages.Message):
     OnHostMaintenanceValueValuesEnum: Defines the maintenance behavior for
       this instance. For standard instances, the default behavior is MIGRATE.
       For preemptible instances, the default and only possible behavior is
-      TERMINATE. For more information, see Set VM availability policies.
+      TERMINATE. For more information, see Set VM host maintenance policy.
     ProvisioningModelValueValuesEnum: Specifies the provisioning model of the
       instance.
 
@@ -52685,7 +52787,7 @@ class Scheduling(_messages.Message):
     onHostMaintenance: Defines the maintenance behavior for this instance. For
       standard instances, the default behavior is MIGRATE. For preemptible
       instances, the default and only possible behavior is TERMINATE. For more
-      information, see Set VM availability policies.
+      information, see Set VM host maintenance policy.
     preemptible: Defines whether the instance is preemptible. This can only be
       set during instance creation or while the instance is stopped and
       therefore, in a `TERMINATED` state. See Instance Life Cycle for more
@@ -52710,7 +52812,7 @@ class Scheduling(_messages.Message):
     r"""Defines the maintenance behavior for this instance. For standard
     instances, the default behavior is MIGRATE. For preemptible instances, the
     default and only possible behavior is TERMINATE. For more information, see
-    Set VM availability policies.
+    Set VM host maintenance policy.
 
     Values:
       MIGRATE: *[Default]* Allows Compute Engine to automatically migrate
@@ -58137,6 +58239,17 @@ class TargetHttpsProxiesScopedList(_messages.Message):
   warning = _messages.MessageField('WarningValue', 2)
 
 
+class TargetHttpsProxiesSetCertificateMapRequest(_messages.Message):
+  r"""A TargetHttpsProxiesSetCertificateMapRequest object.
+
+  Fields:
+    certificateMap: URL of the Certificate Map to associate with this
+      TargetHttpsProxy.
+  """
+
+  certificateMap = _messages.StringField(1)
+
+
 class TargetHttpsProxiesSetQuicOverrideRequest(_messages.Message):
   r"""A TargetHttpsProxiesSetQuicOverrideRequest object.
 
@@ -58208,6 +58321,9 @@ class TargetHttpsProxy(_messages.Message):
       only applies to a global TargetHttpsProxy attached to
       globalForwardingRules with the loadBalancingScheme set to
       INTERNAL_SELF_MANAGED. Note: This field currently has no impact.
+    certificateMap: URL of a certificate map that identifies a certificate map
+      associated with the given target proxy. This field can only be set for
+      global target proxies. If set, sslCertificates will be ignored.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
@@ -58294,20 +58410,21 @@ class TargetHttpsProxy(_messages.Message):
     NONE = 2
 
   authorizationPolicy = _messages.StringField(1)
-  creationTimestamp = _messages.StringField(2)
-  description = _messages.StringField(3)
-  fingerprint = _messages.BytesField(4)
-  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(6, default='compute#targetHttpsProxy')
-  name = _messages.StringField(7)
-  proxyBind = _messages.BooleanField(8)
-  quicOverride = _messages.EnumField('QuicOverrideValueValuesEnum', 9)
-  region = _messages.StringField(10)
-  selfLink = _messages.StringField(11)
-  serverTlsPolicy = _messages.StringField(12)
-  sslCertificates = _messages.StringField(13, repeated=True)
-  sslPolicy = _messages.StringField(14)
-  urlMap = _messages.StringField(15)
+  certificateMap = _messages.StringField(2)
+  creationTimestamp = _messages.StringField(3)
+  description = _messages.StringField(4)
+  fingerprint = _messages.BytesField(5)
+  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(7, default='compute#targetHttpsProxy')
+  name = _messages.StringField(8)
+  proxyBind = _messages.BooleanField(9)
+  quicOverride = _messages.EnumField('QuicOverrideValueValuesEnum', 10)
+  region = _messages.StringField(11)
+  selfLink = _messages.StringField(12)
+  serverTlsPolicy = _messages.StringField(13)
+  sslCertificates = _messages.StringField(14, repeated=True)
+  sslPolicy = _messages.StringField(15)
+  urlMap = _messages.StringField(16)
 
 
 class TargetHttpsProxyAggregatedList(_messages.Message):
@@ -59891,6 +60008,17 @@ class TargetSslProxiesSetBackendServiceRequest(_messages.Message):
   service = _messages.StringField(1)
 
 
+class TargetSslProxiesSetCertificateMapRequest(_messages.Message):
+  r"""A TargetSslProxiesSetCertificateMapRequest object.
+
+  Fields:
+    certificateMap: URL of the Certificate Map to associate with this
+      TargetSslProxy.
+  """
+
+  certificateMap = _messages.StringField(1)
+
+
 class TargetSslProxiesSetProxyHeaderRequest(_messages.Message):
   r"""A TargetSslProxiesSetProxyHeaderRequest object.
 
@@ -59941,6 +60069,9 @@ class TargetSslProxy(_messages.Message):
       is NONE.
 
   Fields:
+    certificateMap: URL of a certificate map that identifies a certificate map
+      associated with the given target proxy. This field can only be set for
+      global target proxies. If set, sslCertificates will be ignored.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
@@ -59981,16 +60112,17 @@ class TargetSslProxy(_messages.Message):
     NONE = 0
     PROXY_V1 = 1
 
-  creationTimestamp = _messages.StringField(1)
-  description = _messages.StringField(2)
-  id = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(4, default='compute#targetSslProxy')
-  name = _messages.StringField(5)
-  proxyHeader = _messages.EnumField('ProxyHeaderValueValuesEnum', 6)
-  selfLink = _messages.StringField(7)
-  service = _messages.StringField(8)
-  sslCertificates = _messages.StringField(9, repeated=True)
-  sslPolicy = _messages.StringField(10)
+  certificateMap = _messages.StringField(1)
+  creationTimestamp = _messages.StringField(2)
+  description = _messages.StringField(3)
+  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(5, default='compute#targetSslProxy')
+  name = _messages.StringField(6)
+  proxyHeader = _messages.EnumField('ProxyHeaderValueValuesEnum', 7)
+  selfLink = _messages.StringField(8)
+  service = _messages.StringField(9)
+  sslCertificates = _messages.StringField(10, repeated=True)
+  sslPolicy = _messages.StringField(11)
 
 
 class TargetSslProxyList(_messages.Message):

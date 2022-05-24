@@ -63,6 +63,10 @@ def _get_parallelism_strategy():
   return ParallelismStrategy.SEQUENTIAL.value
 
 
+def _get_run_by_gsutil_shim():
+  return 1 if properties.VALUES.storage.run_by_gsutil_shim.GetBool() else 0
+
+
 def report(source_scheme=UNSET, destination_scheme=UNSET, num_files=0,
            size=0, avg_speed=0, disk_io_time=0):
   """Reports metrics for a transfer.
@@ -76,6 +80,7 @@ def report(source_scheme=UNSET, destination_scheme=UNSET, num_files=0,
     disk_io_time (int): The time spent on disk of a transfer in ms.
   """
   _record_storage_event('ParallelismStrategy', _get_parallelism_strategy())
+  _record_storage_event('RunByGsutilShim', _get_run_by_gsutil_shim())
   _record_storage_event('SourceScheme', source_scheme)
   _record_storage_event('DestinationScheme', destination_scheme)
   _record_storage_event('NumberOfFiles', num_files)

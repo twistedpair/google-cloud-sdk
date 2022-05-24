@@ -639,6 +639,11 @@
             "type": "string"
           }
         },
+        "abandoned": {
+          "description": "Output only. Indicates whether this is an abandoned release.",
+          "readOnly": true,
+          "type": "boolean"
+        },
         "createTime": {
           "description": "Output only. Time at which the `Release` was created.",
           "readOnly": true,
@@ -807,6 +812,20 @@
             "EXECUTION_FAILED"
           ]
         }
+      }
+    },
+    "AbandonReleaseRequest": {
+      "id": "AbandonReleaseRequest",
+      "description": "The request object used by `AbandonRelease`.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "AbandonReleaseResponse": {
+      "id": "AbandonReleaseResponse",
+      "description": "The response object for `AbandonRelease`.",
+      "type": "object",
+      "properties": {
       }
     },
     "ApproveRolloutRequest": {
@@ -985,14 +1004,16 @@
             "Cloud Build is not available, either because it is not enabled or because Cloud Deploy has insufficient permissions. See [required permission](\/deploy\/docs\/cloud-deploy-service-account#required_permissions).",
             "The deploy operation did not complete successfully; check Cloud Build logs.",
             "Deployment did not complete within the alloted time.",
-            "Release is in a failed state."
+            "Release is in a failed state.",
+            "Release is abandoned."
           ],
           "enum": [
             "FAILURE_CAUSE_UNSPECIFIED",
             "CLOUD_BUILD_UNAVAILABLE",
             "EXECUTION_FAILED",
             "DEADLINE_EXCEEDED",
-            "RELEASE_FAILED"
+            "RELEASE_FAILED",
+            "RELEASE_ABANDONED"
           ]
         }
       }
@@ -2108,6 +2129,34 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Creates a new Release in a given project and location."
+                    },
+                    "abandon": {
+                      "id": "clouddeploy.projects.locations.deliveryPipelines.releases.abandon",
+                      "path": "v1/{+name}:abandon",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/deliveryPipelines/{deliveryPipelinesId}/releases/{releasesId}:abandon",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. Name of the Release. Format is projects\/{project}\/locations\/{location}\/deliveryPipelines\/{deliveryPipeline}\/ releases\/{release}.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deliveryPipelines\/[^\/]+\/releases\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "AbandonReleaseRequest"
+                      },
+                      "response": {
+                        "$ref": "AbandonReleaseResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Abandons a Release in the Delivery Pipeline."
                     }
                   }
                   ,

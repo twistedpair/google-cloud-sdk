@@ -851,61 +851,11 @@ class RedisConfig(_messages.Message):
 class RedisInstanceConfig(_messages.Message):
   r"""Message for Redis instance configs.
 
-  Enums:
-    TierValueValuesEnum: The Redis instance tier, e.g. "STANDARD_HA".
-
-  Messages:
-    RedisParametersValue: The "raw" Redis configs:
-      https://redis.io/topics/config
-
   Fields:
     memory_size_gb: The redis instance memory size, in GB.
-    redis_parameters: The "raw" Redis configs: https://redis.io/topics/config
-    tier: The Redis instance tier, e.g. "STANDARD_HA".
-    version: The Redis instance version, e.g. "REDIS_4_0".
   """
 
-  class TierValueValuesEnum(_messages.Enum):
-    r"""The Redis instance tier, e.g. "STANDARD_HA".
-
-    Values:
-      TIER_UNSPECIFIED: Tier unset.
-      BASIC: Basic standalone instance.
-      STANDARD_HA: Highly available primary/replica instances.
-    """
-    TIER_UNSPECIFIED = 0
-    BASIC = 1
-    STANDARD_HA = 2
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class RedisParametersValue(_messages.Message):
-    r"""The "raw" Redis configs: https://redis.io/topics/config
-
-    Messages:
-      AdditionalProperty: An additional property for a RedisParametersValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type RedisParametersValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a RedisParametersValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
   memory_size_gb = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  redis_parameters = _messages.MessageField('RedisParametersValue', 2)
-  tier = _messages.EnumField('TierValueValuesEnum', 3)
-  version = _messages.StringField(4)
 
 
 class Render(_messages.Message):
@@ -1572,8 +1522,6 @@ class VPCConfig(_messages.Message):
 
 encoding.AddCustomJsonFieldMapping(
     RedisInstanceConfig, 'memory_size_gb', 'memory-size-gb')
-encoding.AddCustomJsonFieldMapping(
-    RedisInstanceConfig, 'redis_parameters', 'redis-parameters')
 encoding.AddCustomJsonFieldMapping(
     RouterConfig, 'default_route', 'default-route')
 encoding.AddCustomJsonFieldMapping(

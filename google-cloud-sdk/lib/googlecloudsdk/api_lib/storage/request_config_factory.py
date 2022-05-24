@@ -37,14 +37,16 @@ DEFAULT_CONTENT_TYPE = 'application/octet-stream'
 
 # Bucket update fields and corresponding flags unsupported by S3.
 S3_ERROR_FLAGS = {
-    'gzip_in_flight': [
-        '--gzip-in-flight-all', '-J', '--gzip-in-flight-extensions', '-j'
+    'gzip_settings': [
+        '--gzip-in-flight-all', '-J', '--gzip-in-flight', '-j',
+        '--gzip-local-all', '-Z', '--gzip-local', '-z'
     ],
 }
 S3_WARNING_FLAGS = [
     ('default_encryption_key', '--default-encryption-key'),
     ('default_event_based_hold', '--default-event-based-hold'),
     ('default_storage_class', '--default-storage-class'),
+    ('preserve_acl', '--preserve-acl'),
     ('retention_period', '--retention-period'),
     ('uniform_bucket_level_access', '--uniform-bucket-level-access'),
 ]
@@ -206,6 +208,8 @@ class _ObjectConfig(object):
     encryption_key (encryption_util.EncryptionKey): The key that should be used
       to encrypt information in GCS.
     md5_hash (str|None): MD5 digest to use for validation.
+    preserve_acl (bool): Whether or not to preserve existing ACLs on an object
+      during a copy or other operation.
     size (int|None): Object size in bytes.
     storage_class (str|None): Storage class for cloud object. If None, will use
       bucket's default.
@@ -221,6 +225,7 @@ class _ObjectConfig(object):
                decryption_key=None,
                encryption_key=None,
                md5_hash=None,
+               preserve_acl=False,
                size=None,
                storage_class=None):
     self.cache_control = cache_control
@@ -232,6 +237,7 @@ class _ObjectConfig(object):
     self.decryption_key = decryption_key
     self.encryption_key = encryption_key
     self.md5_hash = md5_hash
+    self.preserve_acl = preserve_acl
     self.size = size
     self.storage_class = storage_class
 
@@ -247,6 +253,7 @@ class _ObjectConfig(object):
             self.decryption_key == other.decryption_key and
             self.encryption_key == other.encryption_key and
             self.md5_hash == other.md5_hash and self.size == other.size and
+            self.preserve_acl == other.preserve_acl and
             self.storage_class == other.storage_class)
 
   def __repr__(self):
@@ -342,10 +349,8 @@ class _GcsRequestConfig(_RequestConfig):
   See super class for additional attributes.
 
   Attributes:
-    gzip_in_flight (str|list|None): Whether to use gzip transport encoding for
-      uploading files. Can be string constant saying to encode all files, list
-      saying to encode files with specific extensions, or None saying not to
-      encode any files.
+    gzip_settings (user_request_args_factory.GzipSettings): Contains settings
+      for gzipping uploaded files.
     max_bytes_per_call (int|None): Integer describing maximum number of bytes to
       write per service call.
     no_clobber (bool): Do not copy if destination resource already exists.
@@ -357,7 +362,7 @@ class _GcsRequestConfig(_RequestConfig):
   # pylint:enable=g-missing-from-attributes
 
   def __init__(self,
-               gzip_in_flight=None,
+               gzip_settings=None,
                max_bytes_per_call=None,
                no_clobber=False,
                precondition_generation_match=None,
@@ -369,7 +374,7 @@ class _GcsRequestConfig(_RequestConfig):
         predefined_acl_string=predefined_acl_string,
         predefined_default_acl_string=predefined_default_acl_string,
         resource_args=resource_args)
-    self.gzip_in_flight = gzip_in_flight
+    self.gzip_settings = gzip_settings
     self.max_bytes_per_call = max_bytes_per_call
     self.no_clobber = no_clobber
     self.precondition_generation_match = precondition_generation_match
@@ -379,7 +384,7 @@ class _GcsRequestConfig(_RequestConfig):
     if not isinstance(other, type(self)):
       return NotImplemented
     return (super(_GcsRequestConfig, self).__eq__(other) and
-            self.gzip_in_flight == other.gzip_in_flight and
+            self.gzip_settings == other.gzip_settings and
             self.max_bytes_per_call == other.max_bytes_per_call and
             self.no_clobber == other.no_clobber and
             self.precondition_generation_match
@@ -394,6 +399,27 @@ class _S3RequestConfig(_RequestConfig):
   Currently just meant for use with S3ObjectConfig and S3BucketConfig in
   the parent class "resource_args" field.
   """
+
+
+def _check_for_unsupported_s3_flags(user_request_args):
+  """Raises error or logs warning if unsupported S3 flag present."""
+  error_flags_present = []
+  for field in S3_ERROR_FLAGS:
+    if getattr(user_request_args, field, None):
+      for flag in S3_ERROR_FLAGS[field]:
+        error_flags_present.append(flag)
+  if error_flags_present:
+    raise ValueError('Flags disallowed for S3: {}'.format(
+        ', '.join(error_flags_present)))
+
+  user_resource_args = getattr(user_request_args, 'resource_args', None)
+  warning_flags_present = []
+  for field, flag in S3_WARNING_FLAGS:
+    if getattr(user_resource_args, field, None):
+      warning_flags_present.append(flag)
+  if warning_flags_present:
+    log.warning('Some flags do not have S3 support: {}.'.format(
+        ', '.join(warning_flags_present)))
 
 
 def _get_request_config_resource_args(url,
@@ -427,23 +453,7 @@ def _get_request_config_resource_args(url,
 
       elif url.scheme == storage_url.ProviderPrefix.S3:
         new_resource_args = _S3BucketConfig()
-
-        error_flags_present = []
-        for field in S3_ERROR_FLAGS:
-          if getattr(user_request_args, field, None):
-            for flag in S3_ERROR_FLAGS[field]:
-              error_flags_present.append(flag)
-        if error_flags_present:
-          raise ValueError('Flags disallowed for S3: {}'.format(
-              ', '.join(error_flags_present)))
-
-        warning_flags_present = []
-        for field, flag in S3_WARNING_FLAGS:
-          if getattr(user_resource_args, field, None):
-            warning_flags_present.append(flag)
-        if warning_flags_present:
-          log.warning('Some flags do not have S3 support: {}.'.format(
-              ', '.join(warning_flags_present)))
+        _check_for_unsupported_s3_flags(user_request_args)
 
     else:
       new_resource_args = _BucketConfig()
@@ -480,6 +490,7 @@ def _get_request_config_resource_args(url,
 
     elif url.scheme == storage_url.ProviderPrefix.S3:
       new_resource_args = _S3ObjectConfig()
+      _check_for_unsupported_s3_flags(user_request_args)
 
     else:
       new_resource_args = _ObjectConfig()
@@ -513,6 +524,8 @@ def _get_request_config_resource_args(url,
       new_resource_args.content_encoding = user_resource_args.content_encoding
       new_resource_args.content_language = user_resource_args.content_language
       new_resource_args.custom_metadata = user_resource_args.custom_metadata
+      new_resource_args.preserve_acl = user_resource_args.preserve_acl
+
       if user_resource_args.storage_class:
         # Currently, all providers require all caps storage classes.
         new_resource_args.storage_class = (
@@ -538,7 +551,7 @@ def get_request_config(url,
   if url.scheme == storage_url.ProviderPrefix.GCS:
     request_config = _GcsRequestConfig(resource_args=resource_args)
     if user_request_args:
-      request_config.gzip_in_flight = user_request_args.gzip_in_flight
+      request_config.gzip_settings = user_request_args.gzip_settings
       if user_request_args.max_bytes_per_call:
         request_config.max_bytes_per_call = int(
             user_request_args.max_bytes_per_call)

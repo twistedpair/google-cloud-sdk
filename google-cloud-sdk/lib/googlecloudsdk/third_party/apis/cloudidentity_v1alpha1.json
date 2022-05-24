@@ -1768,6 +1768,10 @@
             "COMPROMISED",
             "UNCOMPROMISED"
           ]
+        },
+        "deviceId": {
+          "description": "Unique identifier for the device.",
+          "type": "string"
         }
       }
     },
@@ -2188,18 +2192,6 @@
       "description": "Metadata for UpdateClientState LRO.",
       "type": "object",
       "properties": {
-      }
-    },
-    "PasswordEncryptionKey": {
-      "id": "PasswordEncryptionKey",
-      "description": "Message for public encryption key",
-      "type": "object",
-      "properties": {
-        "key": {
-          "description": "Public encryption key in Tink format.",
-          "type": "string",
-          "format": "byte"
-        }
       }
     }
   },

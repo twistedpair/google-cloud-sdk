@@ -122,6 +122,9 @@ def CreateRollout(release_ref,
 
   Raises:
       ListRolloutsError: an error occurred calling rollout list API.
+
+  Returns:
+    The rollout resource created.
   """
   final_rollout_id = rollout_id
   if not final_rollout_id:
@@ -159,6 +162,7 @@ def CreateRollout(release_ref,
   client_util.OperationsClient().WaitForOperation(
       operation, operation_ref,
       'Waiting for rollout creation operation to complete')
+  return rollout.RolloutClient().Get(rollout_ref.RelativeName())
 
 
 def ComputeRolloutID(release_id, target_id, rollouts):

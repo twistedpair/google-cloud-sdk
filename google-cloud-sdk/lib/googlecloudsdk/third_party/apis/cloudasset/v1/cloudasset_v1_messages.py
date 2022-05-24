@@ -149,6 +149,11 @@ class Asset(_messages.Message):
     osInventory: A representation of runtime OS Inventory information. See
       [this topic](https://cloud.google.com/compute/docs/instances/os-
       inventory-management) for more information.
+    relatedAsset: One related asset of the current asset.
+    relatedAssets: DEPRECATED. This field only presents for the purpose of
+      backward-compatibility. The server will never generate responses with
+      this field. The related assets of the asset of one relationship type.
+      One asset only represents one type of relationship.
     resource: A representation of the resource.
     servicePerimeter: Please also refer to the [service perimeter user
       guide](https://cloud.google.com/vpc-service-controls/docs/overview).
@@ -164,9 +169,11 @@ class Asset(_messages.Message):
   name = _messages.StringField(6)
   orgPolicy = _messages.MessageField('GoogleCloudOrgpolicyV1Policy', 7, repeated=True)
   osInventory = _messages.MessageField('Inventory', 8)
-  resource = _messages.MessageField('Resource', 9)
-  servicePerimeter = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ServicePerimeter', 10)
-  updateTime = _messages.StringField(11)
+  relatedAsset = _messages.MessageField('RelatedAsset', 9)
+  relatedAssets = _messages.MessageField('RelatedAssets', 10)
+  resource = _messages.MessageField('Resource', 11)
+  servicePerimeter = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ServicePerimeter', 12)
+  updateTime = _messages.StringField(13)
 
 
 class AttachedResource(_messages.Message):
@@ -3762,6 +3769,54 @@ class QueryResult(_messages.Message):
   totalRows = _messages.IntegerField(4)
 
 
+class RelatedAsset(_messages.Message):
+  r"""An asset identifier in Google Cloud which contains its name, type and
+  ancestors. An asset can be any resource in the Google Cloud [resource
+  hierarchy](https://cloud.google.com/resource-manager/docs/cloud-platform-
+  resource-hierarchy), a resource outside the Google Cloud resource hierarchy
+  (such as Google Kubernetes Engine clusters and objects), or a policy (e.g.
+  Cloud IAM policy). See [Supported asset
+  types](https://cloud.google.com/asset-inventory/docs/supported-asset-types)
+  for more information.
+
+  Fields:
+    ancestors: The ancestors of an asset in Google Cloud [resource
+      hierarchy](https://cloud.google.com/resource-manager/docs/cloud-
+      platform-resource-hierarchy), represented as a list of relative resource
+      names. An ancestry path starts with the closest ancestor in the
+      hierarchy and ends at root. Example: `["projects/123456789",
+      "folders/5432", "organizations/1234"]`
+    asset: The full name of the asset. Example: `//compute.googleapis.com/proj
+      ects/my_project_123/zones/zone1/instances/instance1` See [Resource names
+      ](https://cloud.google.com/apis/design/resource_names#full_resource_name
+      ) for more information.
+    assetType: The type of the asset. Example: `compute.googleapis.com/Disk`
+      See [Supported asset types](https://cloud.google.com/asset-
+      inventory/docs/supported-asset-types) for more information.
+    relationshipType: The unique identifier of the relationship type. Example:
+      `INSTANCE_TO_INSTANCEGROUP`
+  """
+
+  ancestors = _messages.StringField(1, repeated=True)
+  asset = _messages.StringField(2)
+  assetType = _messages.StringField(3)
+  relationshipType = _messages.StringField(4)
+
+
+class RelatedAssets(_messages.Message):
+  r"""DEPRECATED. This message only presents for the purpose of backward-
+  compatibility. The server will never populate this message in responses. The
+  detailed related assets with the `relationship_type`.
+
+  Fields:
+    assets: The peer resources of the relationship.
+    relationshipAttributes: The detailed relationship attributes.
+  """
+
+  assets = _messages.MessageField('RelatedAsset', 1, repeated=True)
+  relationshipAttributes = _messages.MessageField('RelationshipAttributes', 2)
+
+
 class RelatedResource(_messages.Message):
   r"""The detailed related resource.
 
@@ -3785,6 +3840,28 @@ class RelatedResources(_messages.Message):
   """
 
   relatedResources = _messages.MessageField('RelatedResource', 1, repeated=True)
+
+
+class RelationshipAttributes(_messages.Message):
+  r"""DEPRECATED. This message only presents for the purpose of backward-
+  compatibility. The server will never populate this message in responses. The
+  relationship attributes which include `type`, `source_resource_type`,
+  `target_resource_type` and `action`.
+
+  Fields:
+    action: The detail of the relationship, e.g. `contains`, `attaches`
+    sourceResourceType: The source asset type. Example:
+      `compute.googleapis.com/Instance`
+    targetResourceType: The target asset type. Example:
+      `compute.googleapis.com/Disk`
+    type: The unique identifier of the relationship type. Example:
+      `INSTANCE_TO_INSTANCEGROUP`
+  """
+
+  action = _messages.StringField(1)
+  sourceResourceType = _messages.StringField(2)
+  targetResourceType = _messages.StringField(3)
+  type = _messages.StringField(4)
 
 
 class Resource(_messages.Message):

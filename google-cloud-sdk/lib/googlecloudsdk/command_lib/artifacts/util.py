@@ -478,7 +478,7 @@ def ListFiles(args):
     file.name = resources.REGISTRY.ParseRelativeName(
         file.name,
         collection="artifactregistry.projects.locations.repositories.files"
-    ).filesId.replace("%2F", "/").split("/")[-1]
+    ).filesId.replace("%2F", "/")
 
   return files
 

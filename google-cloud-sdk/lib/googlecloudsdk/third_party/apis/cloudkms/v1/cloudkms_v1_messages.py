@@ -1720,9 +1720,9 @@ class EkmConnection(_messages.Message):
 
   Fields:
     createTime: Output only. The time at which the EkmConnection was created.
-    etag: This checksum is computed by the server based on the value of other
-      fields, and may be sent on update requests to ensure the client has an
-      up-to-date value before proceeding.
+    etag: Optional. This checksum is computed by the server based on the value
+      of other fields, and may be sent on update requests to ensure the client
+      has an up-to-date value before proceeding.
     name: Output only. The resource name for the EkmConnection in the format
       `projects/*/locations/*/ekmConnections/*`.
     serviceResolvers: A list of ServiceResolvers where the EKM can be reached.

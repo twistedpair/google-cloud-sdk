@@ -42,33 +42,30 @@ class AcceleratorConfig(_messages.Message):
 
 
 class AuthenticationConfig(_messages.Message):
-  r"""Configuration for using injectable credentials or service account
+  r"""Configuration for workload authentication
 
   Enums:
-    AuthenticationTypeValueValuesEnum: Authentication type for session
+    AuthenticationTypeValueValuesEnum: Authentication type for workload
       execution.
 
   Fields:
-    authenticationType: Authentication type for session execution.
-    injectableCredentialsConfig: Configuration for using end user
-      authentication
+    authenticationType: Authentication type for workload execution.
   """
 
   class AuthenticationTypeValueValuesEnum(_messages.Enum):
-    r"""Authentication type for session execution.
+    r"""Authentication type for workload execution.
 
     Values:
-      AUTHENTICATION_TYPE_UNSPECIFIED: If AuthenticationType is unspecified,
-        SERVICE_ACCOUNT is used
-      SERVICE_ACCOUNT: Defaults to using service account credentials
-      INJECTABLE_CREDENTIALS: Injectable credentials authentication type
+      AUTHENTICATION_TYPE_UNSPECIFIED: If AuthenticationType is unspecified
+        then SERVICE_ACCOUNT is used
+      SERVICE_ACCOUNT: Use service account credentials for authentication
+      CREDENTIALS_INJECTION: Use injected credentials for authentication
     """
     AUTHENTICATION_TYPE_UNSPECIFIED = 0
     SERVICE_ACCOUNT = 1
-    INJECTABLE_CREDENTIALS = 2
+    CREDENTIALS_INJECTION = 2
 
   authenticationType = _messages.EnumField('AuthenticationTypeValueValuesEnum', 1)
-  injectableCredentialsConfig = _messages.MessageField('InjectableCredentialsConfig', 2)
 
 
 class AutoscalingConfig(_messages.Message):
@@ -3209,10 +3206,6 @@ class InjectSessionCredentialsRequest(_messages.Message):
   requestId = _messages.StringField(2)
 
 
-class InjectableCredentialsConfig(_messages.Message):
-  r"""Specific injectable credentials authentication parameters"""
-
-
 class InstanceGroupAutoscalingPolicyConfig(_messages.Message):
   r"""Configuration for the size bounds of an instance group, including its
   proportional size to other groups.
@@ -4246,6 +4239,40 @@ class NodeInitializationAction(_messages.Message):
   executionTimeout = _messages.StringField(2)
 
 
+class NodePool(_messages.Message):
+  r"""indicating a list of workers of same type
+
+  Enums:
+    RepairActionValueValuesEnum: Required. Repair action to take on specified
+      resources of the node pool.
+
+  Fields:
+    id: Required. A unique id of the node pool. Primary and Secondary workers
+      can be specified using special reserved ids PRIMARY_WORKER_POOL and
+      SECONDARY_WORKER_POOL respectively. Aux node pools can be referenced
+      using corresponding pool id.
+    instanceNames: Name of instances to be repaired. These instances must
+      belong to specified node pool.
+    repairAction: Required. Repair action to take on specified resources of
+      the node pool.
+  """
+
+  class RepairActionValueValuesEnum(_messages.Enum):
+    r"""Required. Repair action to take on specified resources of the node
+    pool.
+
+    Values:
+      REPAIR_ACTION_UNSPECIFIED: No action will be taken by default.
+      DELETE: delete the specified list of nodes.
+    """
+    REPAIR_ACTION_UNSPECIFIED = 0
+    DELETE = 1
+
+  id = _messages.StringField(1)
+  instanceNames = _messages.StringField(2, repeated=True)
+  repairAction = _messages.EnumField('RepairActionValueValuesEnum', 3)
+
+
 class NodePoolConfig(_messages.Message):
   r"""Node pool config.
 
@@ -4851,6 +4878,9 @@ class RepairClusterRequest(_messages.Message):
     clusterUuid: Optional. Specifying the cluster_uuid means the RPC will fail
       (with error NOT_FOUND) if a cluster with the specified UUID does not
       exist.
+    nodePools: Optional. Node pools and corresponding repair action to be
+      taken. All node pools should be unique in this request. i.e. Multiple
+      entries for the same node pool id are not allowed.
     requestId: Optional. A unique ID used to identify the request. If the
       server receives two RepairClusterRequests with the same ID, the second
       request is ignored, and the first google.longrunning.Operation created
@@ -4861,7 +4891,8 @@ class RepairClusterRequest(_messages.Message):
   """
 
   clusterUuid = _messages.StringField(1)
-  requestId = _messages.StringField(2)
+  nodePools = _messages.MessageField('NodePool', 2, repeated=True)
+  requestId = _messages.StringField(3)
 
 
 class ReservationAffinity(_messages.Message):
@@ -4905,13 +4936,13 @@ class RuntimeConfig(_messages.Message):
       are used to configure workload execution.
 
   Fields:
+    authenticationConfig: Optional. Authentication configuration for the
+      workload execution.
     containerImage: Optional. Optional custom container image for the job
       runtime environment. If not specified, a default container image will be
       used.
     properties: Optional. A mapping of property names to values, which are
       used to configure workload execution.
-    sessionAuthenticationConfig: Optional. Authentication configuration for
-      the session execution.
     version: Optional. Version of the batch runtime.
   """
 
@@ -4940,9 +4971,9 @@ class RuntimeConfig(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  containerImage = _messages.StringField(1)
-  properties = _messages.MessageField('PropertiesValue', 2)
-  sessionAuthenticationConfig = _messages.MessageField('AuthenticationConfig', 3)
+  authenticationConfig = _messages.MessageField('AuthenticationConfig', 1)
+  containerImage = _messages.StringField(2)
+  properties = _messages.MessageField('PropertiesValue', 3)
   version = _messages.StringField(4)
 
 
@@ -5040,6 +5071,7 @@ class Session(_messages.Message):
     stateMessage: Output only. Session state details, such as a failure
       description if the state is FAILED.
     stateTime: Output only. The time when the session entered a current state.
+    user: Optional. The email address of the user who owns the session.
     uuid: Output only. A session UUID (Unique Universal Identifier). The
       service generates this value when it creates the session.
   """
@@ -5103,7 +5135,8 @@ class Session(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 10)
   stateMessage = _messages.StringField(11)
   stateTime = _messages.StringField(12)
-  uuid = _messages.StringField(13)
+  user = _messages.StringField(13)
+  uuid = _messages.StringField(14)
 
 
 class SessionOperationMetadata(_messages.Message):

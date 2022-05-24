@@ -30,6 +30,7 @@ DEFAULT_MESSAGE_RETENTION_VALUE = 'default'
 NEVER_EXPIRATION_PERIOD_VALUE = 'never'
 CLEAR_DEAD_LETTER_VALUE = 'clear'
 CLEAR_RETRY_VALUE = 'clear'
+CLEAR_BIGQUERY_CONFIG_VALUE = 'clear'
 
 
 class NoFieldsSpecifiedError(exceptions.Error):
@@ -106,7 +107,11 @@ class SubscriptionsClient(object):
              max_delivery_attempts=None,
              min_retry_delay=None,
              max_retry_delay=None,
-             enable_exactly_once_delivery=None):
+             enable_exactly_once_delivery=None,
+             bigquery_table=None,
+             use_topic_schema=None,
+             write_metadata=None,
+             drop_unknown_fields=None):
     """Creates a Subscription.
 
     Args:
@@ -135,6 +140,13 @@ class SubscriptionsClient(object):
         a given message.
       enable_exactly_once_delivery (bool): Whether or not to set exactly once
         delivery on the subscription.
+      bigquery_table (str): BigQuery table to which to write
+      use_topic_schema (bool): Whether or not to use the topic schema when
+        writing to BigQuery
+      write_metadata (bool): Whether or not to write metadata fields when
+        writing to BigQuery
+      drop_unknown_fields (bool): Whether or not to drop fields that are only in
+        the topic schema when writing to BigQuery
 
     Returns:
       Subscription: the created subscription
@@ -154,7 +166,10 @@ class SubscriptionsClient(object):
         deadLetterPolicy=self._DeadLetterPolicy(dead_letter_topic,
                                                 max_delivery_attempts),
         retryPolicy=self._RetryPolicy(min_retry_delay, max_retry_delay),
-        enableExactlyOnceDelivery=enable_exactly_once_delivery)
+        enableExactlyOnceDelivery=enable_exactly_once_delivery,
+        bigqueryConfig=self._BigQueryConfig(bigquery_table, use_topic_schema,
+                                            write_metadata,
+                                            drop_unknown_fields))
 
     return self._service.Create(subscription)
 
@@ -311,6 +326,28 @@ class SubscriptionsClient(object):
           minimumBackoff=min_retry_delay, maximumBackoff=max_retry_delay)
     return None
 
+  def _BigQueryConfig(self, table, use_topic_schema, write_metadata,
+                      drop_unknown_fields):
+    """Builds BigQueryConfig message from argument values.
+
+    Args:
+      table (str): The name of the table
+      use_topic_schema (bool): Whether or not to use the topic schema
+      write_metadata (bool): Whether or not to write metadata fields
+      drop_unknown_fields (bool): Whether or not to drop fields that are only in
+        the topic schema
+
+    Returns:
+      BigQueryConfig message or None
+    """
+    if table:
+      return self.messages.BigQueryConfig(
+          table=table,
+          useTopicSchema=use_topic_schema,
+          writeMetadata=write_metadata,
+          dropUnknownFields=drop_unknown_fields)
+    return None
+
   def _HandleMessageRetentionUpdate(self, update_setting):
     if update_setting.value == DEFAULT_MESSAGE_RETENTION_VALUE:
       update_setting.value = None
@@ -321,6 +358,10 @@ class SubscriptionsClient(object):
 
   def _HandleRetryPolicyUpdate(self, update_setting):
     if update_setting.value == CLEAR_RETRY_VALUE:
+      update_setting.value = None
+
+  def _HandleBigQueryConfigUpdate(self, update_setting):
+    if update_setting.value == CLEAR_BIGQUERY_CONFIG_VALUE:
       update_setting.value = None
 
   def Patch(self,
@@ -338,7 +379,12 @@ class SubscriptionsClient(object):
             min_retry_delay=None,
             max_retry_delay=None,
             clear_retry_policy=False,
-            enable_exactly_once_delivery=None):
+            enable_exactly_once_delivery=None,
+            bigquery_table=None,
+            use_topic_schema=None,
+            write_metadata=None,
+            drop_unknown_fields=None,
+            clear_bigquery_config=False):
     """Updates a Subscription.
 
     Args:
@@ -366,7 +412,15 @@ class SubscriptionsClient(object):
         subscription.
       enable_exactly_once_delivery (bool): Whether or not to set exactly once
         delivery on the subscription.
-
+      bigquery_table (str): BigQuery table to which to write
+      use_topic_schema (bool): Whether or not to use the topic schema when
+        writing to BigQuery
+      write_metadata (bool): Whether or not to write metadata fields when
+        writing to BigQuery
+      drop_unknown_fields (bool): Whether or not to drop fields that are only in
+        the topic schema when writing to BigQuery
+      clear_bigquery_config (bool): If set, clear the BigQuery config from the
+        subscription
     Returns:
       Subscription: The updated subscription.
     Raises:
@@ -392,7 +446,12 @@ class SubscriptionsClient(object):
         _SubscriptionUpdateSetting(
             'retryPolicy',
             CLEAR_RETRY_VALUE if clear_retry_policy else self._RetryPolicy(
-                min_retry_delay, max_retry_delay))
+                min_retry_delay, max_retry_delay)),
+        _SubscriptionUpdateSetting(
+            'bigqueryConfig',
+            CLEAR_BIGQUERY_CONFIG_VALUE if clear_bigquery_config else
+            self._BigQueryConfig(bigquery_table, use_topic_schema,
+                                 write_metadata, drop_unknown_fields))
     ]
     subscription = self.messages.Subscription(
         name=subscription_ref.RelativeName())
@@ -405,6 +464,8 @@ class SubscriptionsClient(object):
           self._HandleDeadLetterPolicyUpdate(update_setting)
         if update_setting.field_name == 'retryPolicy':
           self._HandleRetryPolicyUpdate(update_setting)
+        if update_setting.field_name == 'bigqueryConfig':
+          self._HandleBigQueryConfigUpdate(update_setting)
         setattr(subscription, update_setting.field_name, update_setting.value)
         update_mask.append(update_setting.field_name)
     if not update_mask:

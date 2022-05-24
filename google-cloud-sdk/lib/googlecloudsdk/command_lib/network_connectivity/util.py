@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2020 Google LLC. All Rights Reserved.
+# Copyright 2022 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import argparse
+
 
 def AppendLocationsGlobalToParent(unused_ref, unused_args, request):
   """Add locations/global to parent path."""
@@ -28,3 +30,23 @@ def AppendLocationsGlobalToParent(unused_ref, unused_args, request):
 def SetGlobalLocation():
   """Set default location to global."""
   return "global"
+
+
+class StoreGlobalAction(argparse._StoreConstAction):
+  # pylint: disable=protected-access
+  # pylint: disable=redefined-builtin
+  """Return "global" if the --global argument is used."""
+
+  def __init__(self,
+               option_strings,
+               dest,
+               default="",
+               required=False,
+               help=None):
+    super(StoreGlobalAction, self).__init__(
+        option_strings=option_strings,
+        dest=dest,
+        const="global",
+        default=default,
+        required=required,
+        help=help)

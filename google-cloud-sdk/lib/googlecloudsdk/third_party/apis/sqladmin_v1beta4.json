@@ -845,6 +845,7 @@
               "The database major version is MySQL 8.0 and the minor version is 26.",
               "The database major version is MySQL 8.0 and the minor version is 27.",
               "The database major version is MySQL 8.0 and the minor version is 28.",
+              "The database major version is MySQL 8.0 and the minor version is 29.",
               "The database version is PostgreSQL 13.",
               "The database version is PostgreSQL 14.",
               "The database version is SQL Server 2019 Standard.",
@@ -871,6 +872,7 @@
               "MYSQL_8_0_26",
               "MYSQL_8_0_27",
               "MYSQL_8_0_28",
+              "MYSQL_8_0_29",
               "POSTGRES_13",
               "POSTGRES_14",
               "SQLSERVER_2019_STANDARD",
@@ -1160,6 +1162,7 @@
             "The database major version is MySQL 8.0 and the minor version is 26.",
             "The database major version is MySQL 8.0 and the minor version is 27.",
             "The database major version is MySQL 8.0 and the minor version is 28.",
+            "The database major version is MySQL 8.0 and the minor version is 29.",
             "The database version is PostgreSQL 13.",
             "The database version is PostgreSQL 14.",
             "The database version is SQL Server 2019 Standard.",
@@ -1186,6 +1189,7 @@
             "MYSQL_8_0_26",
             "MYSQL_8_0_27",
             "MYSQL_8_0_28",
+            "MYSQL_8_0_29",
             "POSTGRES_13",
             "POSTGRES_14",
             "SQLSERVER_2019_STANDARD",
@@ -1387,6 +1391,7 @@
             "The database major version is MySQL 8.0 and the minor version is 26.",
             "The database major version is MySQL 8.0 and the minor version is 27.",
             "The database major version is MySQL 8.0 and the minor version is 28.",
+            "The database major version is MySQL 8.0 and the minor version is 29.",
             "The database version is PostgreSQL 13.",
             "The database version is PostgreSQL 14.",
             "The database version is SQL Server 2019 Standard.",
@@ -1413,6 +1418,7 @@
             "MYSQL_8_0_26",
             "MYSQL_8_0_27",
             "MYSQL_8_0_28",
+            "MYSQL_8_0_29",
             "POSTGRES_13",
             "POSTGRES_14",
             "SQLSERVER_2019_STANDARD",
@@ -2600,7 +2606,8 @@
             "The primary instance has been setup and will fail the setup.",
             "The primary instance has unsupported binary log format.",
             "The primary instance's binary log retention setting.",
-            "The primary instance has tables with unsupported storage engine."
+            "The primary instance has tables with unsupported storage engine.",
+            "Source has tables with limited support eg: PostgreSQL tables without primary keys"
           ],
           "enum": [
             "SQL_EXTERNAL_SYNC_SETTING_ERROR_TYPE_UNSPECIFIED",
@@ -2629,7 +2636,8 @@
             "PRIMARY_ALREADY_SETUP",
             "UNSUPPORTED_BINLOG_FORMAT",
             "BINLOG_RETENTION_SETTING",
-            "UNSUPPORTED_STORAGE_ENGINE"
+            "UNSUPPORTED_STORAGE_ENGINE",
+            "LIMITED_SUPPORT_TABLES"
           ]
         },
         "detail": {
@@ -2801,6 +2809,7 @@
             "The database major version is MySQL 8.0 and the minor version is 26.",
             "The database major version is MySQL 8.0 and the minor version is 27.",
             "The database major version is MySQL 8.0 and the minor version is 28.",
+            "The database major version is MySQL 8.0 and the minor version is 29.",
             "The database version is PostgreSQL 13.",
             "The database version is PostgreSQL 14.",
             "The database version is SQL Server 2019 Standard.",
@@ -2827,6 +2836,7 @@
             "MYSQL_8_0_26",
             "MYSQL_8_0_27",
             "MYSQL_8_0_28",
+            "MYSQL_8_0_29",
             "POSTGRES_13",
             "POSTGRES_14",
             "SQLSERVER_2019_STANDARD",

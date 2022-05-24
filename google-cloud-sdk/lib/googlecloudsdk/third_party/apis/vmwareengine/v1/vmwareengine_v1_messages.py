@@ -261,14 +261,14 @@ class ExternalAccessRule(_messages.Message):
     destinationIpRanges: If destination ranges are specified, the external
       access rule applies only to the traffic that has a destination IP
       address in these ranges. The specified IP addresses must have reserved
-      external IP addresses in the scope of the parent network policy. By
-      default, the rule matches all external IP addresses in the scope of the
-      parent network policy.
+      external IP addresses in the scope of the parent network policy. To
+      match all external IP addresses in the scope of the parent network
+      policy, specify `0.0.0.0/0`.
     destinationPorts: A list of destination ports to which the external access
       rule applies. This field is only applicable for the UDP or TCP protocol.
       Each entry must be either an integer or a range. For example: `["22"]`,
-      `["80","443"]`, or `["12345-12349"]`. By default, the external access
-      rule applies to connections through any destination port.
+      `["80","443"]`, or `["12345-12349"]`. To match all destination ports,
+      specify `["0-65535"]`.
     ipProtocol: The IP protocol to which the external access rule applies.
       This value can be one of the following three protocol strings: `tcp`,
       `udp`, or `icmp`.
@@ -288,12 +288,12 @@ class ExternalAccessRule(_messages.Message):
       These ranges can either be expressed in the CIDR format or as an IP
       address. As only inbound rules are supported, `ExternalAddress`
       resources cannot be the source IP addresses of an external access rule.
-      By default, the rule matches all addresses (`0.0.0.0/0`).
+      To match all source addresses, specify `0.0.0.0/0`.
     sourcePorts: A list of source ports to which the external access rule
       applies. This field is only applicable for the UDP or TCP protocol. Each
       entry must be either an integer or a range. For example: `["22"]`,
-      `["80","443"]`, or `["12345-12349"]`. By default, the external access
-      rule applies to connections through any source port.
+      `["80","443"]`, or `["12345-12349"]`. To match all source ports, specify
+      `["0-65535"]`.
     state: Output only. The state of the resource.
     uid: Output only. System-generated unique identifier for the resource.
     updateTime: Output only. Last update time of this resource.
@@ -3361,6 +3361,33 @@ class VmwareengineProjectsLocationsVmwareEngineNetworksDeleteRequest(_messages.M
   requestId = _messages.StringField(3)
 
 
+class VmwareengineProjectsLocationsVmwareEngineNetworksGetIamPolicyRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsVmwareEngineNetworksGetIamPolicyRequest
+  object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
 class VmwareengineProjectsLocationsVmwareEngineNetworksGetRequest(_messages.Message):
   r"""A VmwareengineProjectsLocationsVmwareEngineNetworksGetRequest object.
 
@@ -3450,6 +3477,41 @@ class VmwareengineProjectsLocationsVmwareEngineNetworksPatchRequest(_messages.Me
   requestId = _messages.StringField(2)
   updateMask = _messages.StringField(3)
   vmwareEngineNetwork = _messages.MessageField('VmwareEngineNetwork', 4)
+
+
+class VmwareengineProjectsLocationsVmwareEngineNetworksSetIamPolicyRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsVmwareEngineNetworksSetIamPolicyRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class VmwareengineProjectsLocationsVmwareEngineNetworksTestIamPermissionsRequest(_messages.Message):
+  r"""A
+  VmwareengineProjectsLocationsVmwareEngineNetworksTestIamPermissionsRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class VpcNetwork(_messages.Message):

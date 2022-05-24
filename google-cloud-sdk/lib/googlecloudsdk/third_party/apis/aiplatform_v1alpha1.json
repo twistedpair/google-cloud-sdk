@@ -1166,7 +1166,7 @@
     },
     "GoogleCloudAiplatformV1alpha1FeatureValue": {
       "id": "GoogleCloudAiplatformV1alpha1FeatureValue",
-      "description": "Value for a feature. NEXT ID: 15",
+      "description": "Value for a feature.",
       "type": "object",
       "properties": {
         "boolValue": {
@@ -17232,6 +17232,10 @@
           "description": "Configuration that defines the hierarchical relationship of time series and parameters for hierarchical forecasting strategies.",
           "$ref": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionHierarchyConfig"
         },
+        "windowConfig": {
+          "description": "Config containing strategy for generating sliding windows.",
+          "$ref": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionWindowConfig"
+        },
         "holidayRegions": {
           "description": "The geographical region based on which the holiday effect is applied in modeling by adding holiday categorical array feature that include all holidays matching the date. This option only allowed when data_granularity is day. By default, holiday effect modeling is disabled. To turn it on, specify the holiday region using this option.",
           "type": "array",
@@ -17384,6 +17388,27 @@
           "description": "The weight of the loss for predictions aggregated over both the horizon and time series in the same hierarchy group, or all time series if no group columns are defined.",
           "type": "number",
           "format": "double"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionWindowConfig": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionWindowConfig",
+      "description": "Config that contains the strategy used to generate sliding windows in time series training. A window is a series of rows that comprise the context up to the time of prediction, and the horizon following. The corresponding row for each window marks the start of the forecast horizon. Each window is used as an input example for training\/evaluation.",
+      "type": "object",
+      "properties": {
+        "column": {
+          "description": "Name of the column that should be used to generate sliding windows. The column should contain either booleans or string booleans; if the value of the row is True, generate a sliding window with the horizon starting at that row. The column will not be used as a feature in training.",
+          "type": "string"
+        },
+        "strideLength": {
+          "description": "Stride length used to generate input examples. Within one time series, every {$STRIDE_LENGTH} rows will be used to generate a sliding window.",
+          "type": "string",
+          "format": "int64"
+        },
+        "maxCount": {
+          "description": "Maximum number of windows that should be generated across all time series.",
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -22221,6 +22246,10 @@
           "description": "Configuration that defines the hierarchical relationship of time series and parameters for hierarchical forecasting strategies.",
           "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionHierarchyConfig"
         },
+        "windowConfig": {
+          "description": "Config containing strategy for generating sliding windows.",
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionWindowConfig"
+        },
         "holidayRegions": {
           "description": "The geographical region based on which the holiday effect is applied in modeling by adding holiday categorical array feature that include all holidays matching the date. This option only allowed when data_granularity is day. By default, holiday effect modeling is disabled. To turn it on, specify the holiday region using this option.",
           "type": "array",
@@ -22373,6 +22402,27 @@
           "description": "The weight of the loss for predictions aggregated over both the horizon and time series in the same hierarchy group, or all time series if no group columns are defined.",
           "type": "number",
           "format": "double"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionWindowConfig": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionWindowConfig",
+      "description": "Config that contains the strategy used to generate sliding windows in time series training. A window is a series of rows that comprise the context up to the time of prediction, and the horizon following. The corresponding row for each window marks the start of the forecast horizon. Each window is used as an input example for training\/evaluation.",
+      "type": "object",
+      "properties": {
+        "column": {
+          "description": "Name of the column that should be used to generate sliding windows. The column should contain either booleans or string booleans; if the value of the row is True, generate a sliding window with the horizon starting at that row. The column will not be used as a feature in training.",
+          "type": "string"
+        },
+        "strideLength": {
+          "description": "Stride length used to generate input examples. Within one time series, every {$STRIDE_LENGTH} rows will be used to generate a sliding window.",
+          "type": "string",
+          "format": "int64"
+        },
+        "maxCount": {
+          "description": "Maximum number of windows that should be generated across all time series.",
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -30822,7 +30872,7 @@
                       "type": "string"
                     },
                     "filter": {
-                      "description": "Lists the PipelineJobs that match the filter expression. The following fields are supported: * `pipeline_name`: Supports `=` and `!=` comparisons. * `display_name`: Supports `=`, `!=` comparisons, and `:` wildcard. * `pipeline_job_user_id`: Supports `=`, `!=` comparisons, and `:` wildcard. for example, can check if pipeline's display_name contains *step* by doing display_name:\\\"*step*\\\" * `state`: Supports `=` and `!=` comparisons. * `create_time`: Supports `=`, `!=`, `<`, `>`, `<=`, and `>=` comparisons. Values must be in RFC 3339 format. * `update_time`: Supports `=`, `!=`, `<`, `>`, `<=`, and `>=` comparisons. Values must be in RFC 3339 format. * `end_time`: Supports `=`, `!=`, `<`, `>`, `<=`, and `>=` comparisons. Values must be in RFC 3339 format. * `labels`: Supports key-value equality and key presence. * `template_uri`: Supports `=`, `!=` comparisons, and `:` wildcard. * `template_metadata.version_name`: Supports `=`, `!=` comparisons, and `:` wildcard. Filter expressions can be combined together using logical operators (`AND` & `OR`). For example: `pipeline_name=\"test\" AND create_time>\"2020-05-18T13:30:00Z\"`. The syntax to define filter expression is based on https:\/\/google.aip.dev\/160. Examples: * `create_time>\"2021-05-18T00:00:00Z\" OR update_time>\"2020-05-18T00:00:00Z\"` PipelineJobs created or updated after 2020-05-18 00:00:00 UTC. * `labels.env = \"prod\"` PipelineJobs with label \"env\" set to \"prod\".",
+                      "description": "Lists the PipelineJobs that match the filter expression. The following fields are supported: * `pipeline_name`: Supports `=` and `!=` comparisons. * `display_name`: Supports `=`, `!=` comparisons, and `:` wildcard. * `pipeline_job_user_id`: Supports `=`, `!=` comparisons, and `:` wildcard. for example, can check if pipeline's display_name contains *step* by doing display_name:\\\"*step*\\\" * `state`: Supports `=` and `!=` comparisons. * `create_time`: Supports `=`, `!=`, `<`, `>`, `<=`, and `>=` comparisons. Values must be in RFC 3339 format. * `update_time`: Supports `=`, `!=`, `<`, `>`, `<=`, and `>=` comparisons. Values must be in RFC 3339 format. * `end_time`: Supports `=`, `!=`, `<`, `>`, `<=`, and `>=` comparisons. Values must be in RFC 3339 format. * `labels`: Supports key-value equality and key presence. * `template_uri`: Supports `=`, `!=` comparisons, and `:` wildcard. * `template_metadata.version`: Supports `=`, `!=` comparisons, and `:` wildcard. Filter expressions can be combined together using logical operators (`AND` & `OR`). For example: `pipeline_name=\"test\" AND create_time>\"2020-05-18T13:30:00Z\"`. The syntax to define filter expression is based on https:\/\/google.aip.dev\/160. Examples: * `create_time>\"2021-05-18T00:00:00Z\" OR update_time>\"2020-05-18T00:00:00Z\"` PipelineJobs created or updated after 2020-05-18 00:00:00 UTC. * `labels.env = \"prod\"` PipelineJobs with label \"env\" set to \"prod\".",
                       "location": "query",
                       "type": "string"
                     },

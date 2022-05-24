@@ -1966,6 +1966,32 @@ class NotebooksProjectsLocationsRuntimesListRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
 
 
+class NotebooksProjectsLocationsRuntimesPatchRequest(_messages.Message):
+  r"""A NotebooksProjectsLocationsRuntimesPatchRequest object.
+
+  Fields:
+    name: Output only. The resource name of the runtime. Format:
+      `projects/{project}/locations/{location}/runtimes/{runtimeId}`
+    requestId: Idempotent request UUID.
+    runtime: A Runtime resource to be passed as the request body.
+    updateMask: Required. Specifies the path, relative to `Runtime`, of the
+      field to update. For example, to change the software configuration
+      kernels, the `update_mask` parameter would be specified as
+      `software_config.kernels`, and the `PATCH` request body would specify
+      the new value, as follows: { "software_config":{ "kernels": [{
+      'repository': 'gcr.io/deeplearning-platform-release/pytorch-gpu', 'tag':
+      'latest' }], } } Currently, only the following fields can be updated: -
+      software_config.kernels - software_config.post_startup_script -
+      software_config.custom_gpu_driver_path - software_config.idle_shutdown -
+      software_config.idle_shutdown_timeout
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  runtime = _messages.MessageField('Runtime', 3)
+  updateMask = _messages.StringField(4)
+
+
 class NotebooksProjectsLocationsRuntimesRefreshRuntimeTokenInternalRequest(_messages.Message):
   r"""A NotebooksProjectsLocationsRuntimesRefreshRuntimeTokenInternalRequest
   object.
@@ -2774,6 +2800,10 @@ class RuntimeSoftwareConfig(_messages.Message):
   `key:value` format, for example: * `idle_shutdown: true` *
   `idle_shutdown_timeout: 180` * `enable_health_monitoring: true`
 
+  Enums:
+    PostStartupScriptBehaviorValueValuesEnum: Behavior for the post startup
+      script.
+
   Fields:
     customGpuDriverPath: Specify a custom Cloud Storage path where the GPU
       driver is stored. If not specified, we'll automatically choose from
@@ -2793,9 +2823,25 @@ class RuntimeSoftwareConfig(_messages.Message):
     postStartupScript: Path to a Bash script that automatically runs after a
       notebook instance fully boots up. The path must be a URL or Cloud
       Storage path (`gs://path-to-file/file-name`).
+    postStartupScriptBehavior: Behavior for the post startup script.
     upgradeable: Output only. Bool indicating whether an newer image is
       available in an image family.
   """
+
+  class PostStartupScriptBehaviorValueValuesEnum(_messages.Enum):
+    r"""Behavior for the post startup script.
+
+    Values:
+      POST_STARTUP_SCRIPT_BEHAVIOR_UNSPECIFIED: Unspecified post startup
+        script behavior. Will run only once at creation.
+      RUN_EVERY_START: Runs the post startup script provided during creation
+        at every start.
+      DOWNLOAD_AND_RUN_EVERY_START: Downloads and runs the provided post
+        startup script at every start.
+    """
+    POST_STARTUP_SCRIPT_BEHAVIOR_UNSPECIFIED = 0
+    RUN_EVERY_START = 1
+    DOWNLOAD_AND_RUN_EVERY_START = 2
 
   customGpuDriverPath = _messages.StringField(1)
   enableHealthMonitoring = _messages.BooleanField(2)
@@ -2805,7 +2851,8 @@ class RuntimeSoftwareConfig(_messages.Message):
   kernels = _messages.MessageField('ContainerImage', 6, repeated=True)
   notebookUpgradeSchedule = _messages.StringField(7)
   postStartupScript = _messages.StringField(8)
-  upgradeable = _messages.BooleanField(9)
+  postStartupScriptBehavior = _messages.EnumField('PostStartupScriptBehaviorValueValuesEnum', 9)
+  upgradeable = _messages.BooleanField(10)
 
 
 class Schedule(_messages.Message):

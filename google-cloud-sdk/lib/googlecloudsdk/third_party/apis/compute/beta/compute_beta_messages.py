@@ -3687,10 +3687,10 @@ class BackendService(_messages.Message):
       applicable to external and internal HTTP(S) load balancers and Traffic
       Director and requires GENERATED_COOKIE or HTTP_COOKIE session affinity.
       If set to 0, the cookie is non-persistent and lasts only until the end
-      of the browser session (or equivalent). The maximum allowed value is one
-      day (86,400). Not supported when the backend service is referenced by a
-      URL map that is bound to target gRPC proxy that has validateForProxyless
-      field set to true.
+      of the browser session (or equivalent). The maximum allowed value is two
+      weeks (1,209,600). Not supported when the backend service is referenced
+      by a URL map that is bound to target gRPC proxy that has
+      validateForProxyless field set to true.
     backends: The list of backends that serve this BackendService.
     cdnPolicy: Cloud CDN configuration for this BackendService. Only available
       for specified load balancer types.
@@ -5755,6 +5755,7 @@ class Commitment(_messages.Message):
       GENERAL_PURPOSE_N2D: <no description>
       GENERAL_PURPOSE_T2D: <no description>
       MEMORY_OPTIMIZED: <no description>
+      MEMORY_OPTIMIZED_M3: <no description>
       TYPE_UNSPECIFIED: <no description>
     """
     ACCELERATOR_OPTIMIZED = 0
@@ -5766,7 +5767,8 @@ class Commitment(_messages.Message):
     GENERAL_PURPOSE_N2D = 6
     GENERAL_PURPOSE_T2D = 7
     MEMORY_OPTIMIZED = 8
-    TYPE_UNSPECIFIED = 9
+    MEMORY_OPTIMIZED_M3 = 9
+    TYPE_UNSPECIFIED = 10
 
   autoRenew = _messages.BooleanField(1)
   category = _messages.EnumField('CategoryValueValuesEnum', 2)
@@ -34563,7 +34565,7 @@ class Image(_messages.Message):
 
   Enums:
     SourceTypeValueValuesEnum: The type of the image used to create this disk.
-      The default and only value is RAW
+      The default and only valid value is RAW.
     StatusValueValuesEnum: [Output Only] The status of the image. An image can
       be used to create other resources, such as instances, only after the
       image has been successfully created and the status is set to READY.
@@ -34692,7 +34694,7 @@ class Image(_messages.Message):
       snapshot was taken from the current or a previous instance of a given
       snapshot name.
     sourceType: The type of the image used to create this disk. The default
-      and only value is RAW
+      and only valid value is RAW.
     status: [Output Only] The status of the image. An image can be used to
       create other resources, such as instances, only after the image has been
       successfully created and the status is set to READY. Possible values are
@@ -34709,7 +34711,7 @@ class Image(_messages.Message):
 
   class SourceTypeValueValuesEnum(_messages.Enum):
     r"""The type of the image used to create this disk. The default and only
-    value is RAW
+    valid value is RAW.
 
     Values:
       RAW: <no description>
@@ -36597,12 +36599,16 @@ class InstanceGroupManagerUpdatePolicy(_messages.Message):
       of VM instances across zones in the region. - NONE: For non-autoscaled
       groups, proactive redistribution is disabled.
     MinimalActionValueValuesEnum: Minimal action to be taken on an instance.
-      You can specify either RESTART to restart existing instances or REPLACE
-      to delete and create new instances from the target template. If you
-      specify a RESTART, the Updater will attempt to perform that action only.
-      However, if the Updater determines that the minimal action you specify
-      is not enough to perform the update, it might perform a more disruptive
-      action.
+      Use this option to minimize disruption as much as possible or to apply a
+      more disruptive action than is necessary. - To limit disruption as much
+      as possible, set the minimal action to REFRESH. If your update requires
+      a more disruptive action, Compute Engine performs the necessary action
+      to execute the update. - To apply a more disruptive action than is
+      strictly necessary, set the minimal action to RESTART or REPLACE. For
+      example, Compute Engine does not need to restart a VM to change its
+      metadata. But if your application reads instance metadata only when a VM
+      is restarted, you can set the minimal action to RESTART in order to pick
+      up metadata changes.
     MostDisruptiveAllowedActionValueValuesEnum: Most disruptive action that is
       allowed to be taken on an instance. You can specify either NONE to
       forbid any actions, REFRESH to allow actions that do not need instance
@@ -36649,12 +36655,16 @@ class InstanceGroupManagerUpdatePolicy(_messages.Message):
       more about maxUnavailable.
     minReadySec: Minimum number of seconds to wait for after a newly created
       instance becomes available. This value must be from range [0, 3600].
-    minimalAction: Minimal action to be taken on an instance. You can specify
-      either RESTART to restart existing instances or REPLACE to delete and
-      create new instances from the target template. If you specify a RESTART,
-      the Updater will attempt to perform that action only. However, if the
-      Updater determines that the minimal action you specify is not enough to
-      perform the update, it might perform a more disruptive action.
+    minimalAction: Minimal action to be taken on an instance. Use this option
+      to minimize disruption as much as possible or to apply a more disruptive
+      action than is necessary. - To limit disruption as much as possible, set
+      the minimal action to REFRESH. If your update requires a more disruptive
+      action, Compute Engine performs the necessary action to execute the
+      update. - To apply a more disruptive action than is strictly necessary,
+      set the minimal action to RESTART or REPLACE. For example, Compute
+      Engine does not need to restart a VM to change its metadata. But if your
+      application reads instance metadata only when a VM is restarted, you can
+      set the minimal action to RESTART in order to pick up metadata changes.
     mostDisruptiveAllowedAction: Most disruptive action that is allowed to be
       taken on an instance. You can specify either NONE to forbid any actions,
       REFRESH to allow actions that do not need instance restart, RESTART to
@@ -36687,12 +36697,16 @@ class InstanceGroupManagerUpdatePolicy(_messages.Message):
     PROACTIVE = 1
 
   class MinimalActionValueValuesEnum(_messages.Enum):
-    r"""Minimal action to be taken on an instance. You can specify either
-    RESTART to restart existing instances or REPLACE to delete and create new
-    instances from the target template. If you specify a RESTART, the Updater
-    will attempt to perform that action only. However, if the Updater
-    determines that the minimal action you specify is not enough to perform
-    the update, it might perform a more disruptive action.
+    r"""Minimal action to be taken on an instance. Use this option to minimize
+    disruption as much as possible or to apply a more disruptive action than
+    is necessary. - To limit disruption as much as possible, set the minimal
+    action to REFRESH. If your update requires a more disruptive action,
+    Compute Engine performs the necessary action to execute the update. - To
+    apply a more disruptive action than is strictly necessary, set the minimal
+    action to RESTART or REPLACE. For example, Compute Engine does not need to
+    restart a VM to change its metadata. But if your application reads
+    instance metadata only when a VM is restarted, you can set the minimal
+    action to RESTART in order to pick up metadata changes.
 
     Values:
       NONE: Do not perform any action.
@@ -53419,11 +53433,13 @@ class ResourcePolicyGroupPlacementPolicy(_messages.Message):
     CollocationValueValuesEnum: Specifies network collocation
 
   Fields:
-    availabilityDomainCount: The number of availability domains instances will
-      be spread across. If two instances are in different availability domain,
-      they will not be put in the same low latency network
+    availabilityDomainCount: The number of availability domains to spread
+      instances across. If two instances are in different availability domain,
+      they are not in the same low latency network.
     collocation: Specifies network collocation
-    vmCount: Number of vms in this placement group
+    vmCount: Number of VMs in this placement group. Google does not recommend
+      that you use this field unless you use a compact policy and you want
+      your policy to work only if it contains this exact number of VMs.
   """
 
   class CollocationValueValuesEnum(_messages.Enum):
@@ -56089,7 +56105,7 @@ class Scheduling(_messages.Message):
     OnHostMaintenanceValueValuesEnum: Defines the maintenance behavior for
       this instance. For standard instances, the default behavior is MIGRATE.
       For preemptible instances, the default and only possible behavior is
-      TERMINATE. For more information, see Set VM availability policies.
+      TERMINATE. For more information, see Set VM host maintenance policy.
     ProvisioningModelValueValuesEnum: Specifies the provisioning model of the
       instance.
 
@@ -56121,7 +56137,7 @@ class Scheduling(_messages.Message):
     onHostMaintenance: Defines the maintenance behavior for this instance. For
       standard instances, the default behavior is MIGRATE. For preemptible
       instances, the default and only possible behavior is TERMINATE. For more
-      information, see Set VM availability policies.
+      information, see Set VM host maintenance policy.
     preemptible: Defines whether the instance is preemptible. This can only be
       set during instance creation or while the instance is stopped and
       therefore, in a `TERMINATED` state. See Instance Life Cycle for more
@@ -56160,7 +56176,7 @@ class Scheduling(_messages.Message):
     r"""Defines the maintenance behavior for this instance. For standard
     instances, the default behavior is MIGRATE. For preemptible instances, the
     default and only possible behavior is TERMINATE. For more information, see
-    Set VM availability policies.
+    Set VM host maintenance policy.
 
     Values:
       MIGRATE: *[Default]* Allows Compute Engine to automatically migrate
@@ -56771,11 +56787,30 @@ class SecurityPolicyAdaptiveProtectionConfig(_messages.Message):
   r"""Configuration options for Cloud Armor Adaptive Protection (CAAP).
 
   Fields:
+    autoDeployConfig: A SecurityPolicyAdaptiveProtectionConfigAutoDeployConfig
+      attribute.
     layer7DdosDefenseConfig: If set to true, enables Cloud Armor Machine
       Learning.
   """
 
-  layer7DdosDefenseConfig = _messages.MessageField('SecurityPolicyAdaptiveProtectionConfigLayer7DdosDefenseConfig', 1)
+  autoDeployConfig = _messages.MessageField('SecurityPolicyAdaptiveProtectionConfigAutoDeployConfig', 1)
+  layer7DdosDefenseConfig = _messages.MessageField('SecurityPolicyAdaptiveProtectionConfigLayer7DdosDefenseConfig', 2)
+
+
+class SecurityPolicyAdaptiveProtectionConfigAutoDeployConfig(_messages.Message):
+  r"""Configuration options for Adaptive Protection auto-deploy feature.
+
+  Fields:
+    confidenceThreshold: A number attribute.
+    expirationSec: A integer attribute.
+    impactedBaselineThreshold: A number attribute.
+    loadThreshold: A number attribute.
+  """
+
+  confidenceThreshold = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  expirationSec = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  impactedBaselineThreshold = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+  loadThreshold = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
 
 
 class SecurityPolicyAdaptiveProtectionConfigLayer7DdosDefenseConfig(_messages.Message):
@@ -58411,6 +58446,10 @@ class Snapshot(_messages.Message):
     sourceDiskId: [Output Only] The ID value of the disk used to create this
       snapshot. This value may be used to determine whether the snapshot was
       taken from the current or a previous instance of a given disk name.
+    sourceSnapshotSchedulePolicy: [Output Only] URL of the resource policy
+      which created this scheduled snapshot.
+    sourceSnapshotSchedulePolicyId: [Output Only] ID of the resource policy
+      which created this scheduled snapshot.
     status: [Output Only] The status of the snapshot. This can be CREATING,
       DELETING, FAILED, READY, or UPLOADING.
     storageBytes: [Output Only] A size of the storage used by the snapshot. As
@@ -58503,11 +58542,13 @@ class Snapshot(_messages.Message):
   sourceDisk = _messages.StringField(19)
   sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 20)
   sourceDiskId = _messages.StringField(21)
-  status = _messages.EnumField('StatusValueValuesEnum', 22)
-  storageBytes = _messages.IntegerField(23)
-  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 24)
-  storageLocations = _messages.StringField(25, repeated=True)
-  userLicenses = _messages.StringField(26, repeated=True)
+  sourceSnapshotSchedulePolicy = _messages.StringField(22)
+  sourceSnapshotSchedulePolicyId = _messages.StringField(23)
+  status = _messages.EnumField('StatusValueValuesEnum', 24)
+  storageBytes = _messages.IntegerField(25)
+  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 26)
+  storageLocations = _messages.StringField(27, repeated=True)
+  userLicenses = _messages.StringField(28, repeated=True)
 
 
 class SnapshotList(_messages.Message):

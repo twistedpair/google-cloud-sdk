@@ -175,6 +175,33 @@ class ClouddeployV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Abandon(self, request, global_params=None):
+      r"""Abandons a Release in the Delivery Pipeline.
+
+      Args:
+        request: (ClouddeployProjectsLocationsDeliveryPipelinesReleasesAbandonRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AbandonReleaseResponse) The response message.
+      """
+      config = self.GetMethodConfig('Abandon')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Abandon.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/deliveryPipelines/{deliveryPipelinesId}/releases/{releasesId}:abandon',
+        http_method='POST',
+        method_id='clouddeploy.projects.locations.deliveryPipelines.releases.abandon',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:abandon',
+        request_field='abandonReleaseRequest',
+        request_type_name='ClouddeployProjectsLocationsDeliveryPipelinesReleasesAbandonRequest',
+        response_type_name='AbandonReleaseResponse',
+        supports_download=False,
+    )
+
     def Create(self, request, global_params=None):
       r"""Creates a new Release in a given project and location.
 

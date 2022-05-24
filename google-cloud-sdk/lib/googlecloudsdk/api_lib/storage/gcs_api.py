@@ -42,10 +42,10 @@ from googlecloudsdk.api_lib.storage import patch_gcs_messages
 from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.command_lib.storage import encryption_util
 from googlecloudsdk.command_lib.storage import errors as command_errors
+from googlecloudsdk.command_lib.storage import gzip_util
 from googlecloudsdk.command_lib.storage import posix_util
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage import tracker_file_util
-from googlecloudsdk.command_lib.storage import user_request_args_factory
 from googlecloudsdk.command_lib.storage.resources import resource_reference
 from googlecloudsdk.command_lib.storage.tasks.cp import copy_util
 from googlecloudsdk.command_lib.storage.tasks.cp import download_util
@@ -90,23 +90,6 @@ def _catch_http_error_raise_gcs_api_error(format_str=None):
   """
   return cloud_errors.catch_error_raise_cloud_api_error(
       _ERROR_TRANSLATION, format_str=format_str)
-
-
-def _should_gzip_in_flight(request_config, source_resource):
-  """Determines if resource qualifies for in-flight gzip encoding."""
-  if (request_config.gzip_in_flight ==
-      user_request_args_factory.GZIP_IN_FLIGHT_ALL):
-    return True
-  elif isinstance(request_config.gzip_in_flight, list):
-    source_path = source_resource.storage_url.versionless_url_string
-    for extension in request_config.gzip_in_flight:
-      if extension.startswith('.'):
-        dot_separated_extension = extension
-      else:
-        dot_separated_extension = '.' + extension
-      if source_path.endswith(dot_separated_extension):
-        return True
-  return False
 
 
 def get_download_serialization_data(object_resource, progress):
@@ -600,9 +583,10 @@ class GcsApi(cloud_api.CloudApi):
     if not destination_metadata:
       destination_metadata = gcs_metadata_util.get_apitools_metadata_from_url(
           destination_resource.storage_url)
-      if source_resource.metadata:
-        gcs_metadata_util.copy_select_object_metadata(source_resource.metadata,
-                                                      destination_metadata)
+    if source_resource.metadata:
+      gcs_metadata_util.copy_select_object_metadata(source_resource.metadata,
+                                                    destination_metadata,
+                                                    request_config)
     gcs_metadata_util.update_object_metadata_from_request_config(
         destination_metadata, request_config)
 
@@ -787,8 +771,15 @@ class GcsApi(cloud_api.CloudApi):
               ' Set log_http_show_request_body property to True to print the'
               ' body of this request.'))
 
-    should_gzip_in_flight = _should_gzip_in_flight(request_config,
-                                                   source_resource)
+    if source_resource:
+      source_path = source_resource.storage_url.versionless_url_string
+    else:
+      source_path = None
+    should_gzip_in_flight = gzip_util.should_gzip_in_flight(
+        request_config.gzip_settings, source_path)
+    if should_gzip_in_flight:
+      log.info(
+          'Using compressed transport encoding for {}.'.format(source_path))
     if upload_strategy == cloud_api.UploadStrategy.SIMPLE:
       upload = gcs_upload.SimpleUpload(self, self._upload_http_client,
                                        source_stream, destination_resource,

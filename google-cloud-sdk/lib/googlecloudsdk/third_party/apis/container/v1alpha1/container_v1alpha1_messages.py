@@ -3328,8 +3328,8 @@ class NetworkTags(_messages.Message):
 
 
 class NodeConfig(_messages.Message):
-  r"""Parameters that describe the nodes in a cluster. *Note:* GKE Autopilot
-  clusters do not recognize parameters in `NodeConfig`. Use
+  r"""Parameters that describe the nodes in a cluster. GKE Autopilot clusters
+  do not recognize parameters in `NodeConfig`. Use
   AutoprovisioningNodePoolDefaults instead.
 
   Messages:

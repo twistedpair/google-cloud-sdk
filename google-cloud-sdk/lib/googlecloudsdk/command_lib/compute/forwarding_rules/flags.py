@@ -325,15 +325,28 @@ TARGET_SSL_PROXY_ARG = compute_flags.ResourceArgument(
       Target SSL proxy that receives the traffic. For the acceptable ports, see [Port specifications](https://cloud.google.com/load-balancing/docs/forwarding-rule-concepts#port_specifications).
       """))
 
-TARGET_TCP_PROXY_ARG = compute_flags.ResourceArgument(
-    name='--target-tcp-proxy',
-    required=False,
-    resource_name='tcp proxy',
-    global_collection='compute.targetTcpProxies',
-    short_help='Target TCP proxy that receives the traffic.',
-    detailed_help=textwrap.dedent("""\
+
+def TargetTcpProxyArg(allow_regional=False):
+  """Return a resource argument for parsing a target tcp proxy."""
+
+  target_https_proxy_arg = compute_flags.ResourceArgument(
+      name='--target-tcp-proxy',
+      required=False,
+      resource_name='tcp proxy',
+      global_collection='compute.targetTcpProxies',
+      regional_collection='compute.regionTargetTcpProxies'
+      if allow_regional else None,
+      region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION
+      if allow_regional else None,
+      short_help='Target TCP proxy that receives the traffic.',
+      detailed_help=textwrap.dedent("""\
       Target TCP proxy that receives the traffic. For the acceptable ports, see [Port specifications](https://cloud.google.com/load-balancing/docs/forwarding-rule-concepts#port_specifications).
       """))
+
+  return target_https_proxy_arg
+
+
+TARGET_TCP_PROXY_ARG = TargetTcpProxyArg()
 
 TARGET_VPN_GATEWAY_ARG = compute_flags.ResourceArgument(
     name='--target-vpn-gateway',
@@ -403,7 +416,8 @@ def AddressArg(include_l7_internal_load_balancing):
 def AddUpdateArgs(parser,
                   include_l7_internal_load_balancing=False,
                   include_psc_google_apis=False,
-                  include_target_service_attachment=False):
+                  include_target_service_attachment=False,
+                  include_regional_tcp_proxy=False):
   """Adds common flags for mutating forwarding rule targets."""
   target = parser.add_mutually_exclusive_group(required=True)
 
@@ -423,7 +437,8 @@ def AddUpdateArgs(parser,
   TARGET_INSTANCE_ARG.AddArgument(parser, mutex_group=target)
   TARGET_POOL_ARG.AddArgument(parser, mutex_group=target)
   TARGET_SSL_PROXY_ARG.AddArgument(parser, mutex_group=target)
-  TARGET_TCP_PROXY_ARG.AddArgument(parser, mutex_group=target)
+  TargetTcpProxyArg(allow_regional=include_regional_tcp_proxy).AddArgument(
+      parser, mutex_group=target)
   TARGET_VPN_GATEWAY_ARG.AddArgument(parser, mutex_group=target)
   BACKEND_SERVICE_ARG.AddArgument(parser, mutex_group=target)
 
@@ -448,13 +463,15 @@ def AddUpdateArgs(parser,
       parser,
       include_l7_ilb=include_l7_internal_load_balancing,
       include_psc_google_apis=include_psc_google_apis,
-      include_target_service_attachment=include_target_service_attachment)
+      include_target_service_attachment=include_target_service_attachment,
+      include_regional_tcp_proxy=include_regional_tcp_proxy)
 
 
 def AddLoadBalancingScheme(parser,
                            include_l7_ilb=False,
                            include_psc_google_apis=False,
-                           include_target_service_attachment=False):
+                           include_target_service_attachment=False,
+                           include_regional_tcp_proxy=False):
   """Adds the load-balancing-scheme flag."""
   td_proxies = ('--target-http-proxy, --target-https-proxy, '
                 '--target-grpc-proxy, --target-tcp-proxy')
@@ -474,7 +491,16 @@ def AddLoadBalancingScheme(parser,
           {0}.""".format(td_proxies)
   }
 
-  if include_l7_ilb:
+  if include_regional_tcp_proxy:
+    internal_managed_targets = ['--target-tcp-proxy']
+    if include_l7_ilb:
+      internal_managed_targets.extend(
+          ['--target-http-proxy', '--target-https-proxy'])
+    load_balancing_choices.update({
+        'INTERNAL_MANAGED': 'Internal load balancing, used with '
+                            '{0}.'.format(', '.join(internal_managed_targets))
+    })
+  elif include_l7_ilb:
     load_balancing_choices.update({
         'INTERNAL_MANAGED': 'Internal HTTP(S) Load Balancing, used with '
                             '--target-http-proxy, --target-https-proxy.'

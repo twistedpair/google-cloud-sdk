@@ -578,6 +578,16 @@ def AddTriggerFlagGroup(parser, track=None):
             'multiple arguments. This is only relevant when `--gen2` is provided.'
         ),
     )
+    eventarc_trigger_group.add_argument(
+        '--trigger-event-filters-path-pattern',
+        type=arg_parsers.ArgDict(),
+        action=arg_parsers.UpdateAction,
+        hidden=_ShouldHideV2Flags(track),
+        metavar='ATTRIBUTE=VALUE',
+        help="""\
+        The Eventarc matching criteria for the trigger in path pattern format.
+        The criteria can be specified as a single comma-separated argument or as
+        multiple arguments. This is only relevant when `--gen2` is provided.""")
 
   trigger_provider_spec_group = trigger_group.add_argument_group()
   # check later as type of applicable input depends on options above

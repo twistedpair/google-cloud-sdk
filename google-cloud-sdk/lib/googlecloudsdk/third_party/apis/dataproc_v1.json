@@ -658,42 +658,31 @@
             "type": "string"
           }
         },
-        "sessionAuthenticationConfig": {
-          "description": "Optional. Authentication configuration for the session execution.",
+        "authenticationConfig": {
+          "description": "Optional. Authentication configuration for the workload execution.",
           "$ref": "AuthenticationConfig"
         }
       }
     },
     "AuthenticationConfig": {
       "id": "AuthenticationConfig",
-      "description": "Configuration for using injectable credentials or service account",
+      "description": "Configuration for workload authentication",
       "type": "object",
       "properties": {
         "authenticationType": {
-          "description": "Authentication type for session execution.",
+          "description": "Authentication type for workload execution.",
           "type": "string",
           "enumDescriptions": [
-            "If AuthenticationType is unspecified, SERVICE_ACCOUNT is used",
-            "Defaults to using service account credentials",
-            "Injectable credentials authentication type"
+            "If AuthenticationType is unspecified then SERVICE_ACCOUNT is used",
+            "Use service account credentials for authentication",
+            "Use injected credentials for authentication"
           ],
           "enum": [
             "AUTHENTICATION_TYPE_UNSPECIFIED",
             "SERVICE_ACCOUNT",
-            "INJECTABLE_CREDENTIALS"
+            "CREDENTIALS_INJECTION"
           ]
-        },
-        "injectableCredentialsConfig": {
-          "description": "Configuration for using end user authentication",
-          "$ref": "InjectableCredentialsConfig"
         }
-      }
-    },
-    "InjectableCredentialsConfig": {
-      "id": "InjectableCredentialsConfig",
-      "description": "Specific injectable credentials authentication parameters",
-      "type": "object",
-      "properties": {
       }
     },
     "EnvironmentConfig": {
@@ -1997,6 +1986,43 @@
         "requestId": {
           "description": "Optional. A unique ID used to identify the request. If the server receives two RepairClusterRequests with the same ID, the second request is ignored, and the first google.longrunning.Operation created and stored in the backend is returned.Recommendation: Set this value to a UUID (https:\/\/en.wikipedia.org\/wiki\/Universally_unique_identifier).The ID must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
           "type": "string"
+        },
+        "nodePools": {
+          "description": "Optional. Node pools and corresponding repair action to be taken. All node pools should be unique in this request. i.e. Multiple entries for the same node pool id are not allowed.",
+          "type": "array",
+          "items": {
+            "$ref": "NodePool"
+          }
+        }
+      }
+    },
+    "NodePool": {
+      "id": "NodePool",
+      "description": "indicating a list of workers of same type",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "Required. A unique id of the node pool. Primary and Secondary workers can be specified using special reserved ids PRIMARY_WORKER_POOL and SECONDARY_WORKER_POOL respectively. Aux node pools can be referenced using corresponding pool id.",
+          "type": "string"
+        },
+        "instanceNames": {
+          "description": "Name of instances to be repaired. These instances must belong to specified node pool.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "repairAction": {
+          "description": "Required. Repair action to take on specified resources of the node pool.",
+          "type": "string",
+          "enumDescriptions": [
+            "No action will be taken by default.",
+            "delete the specified list of nodes."
+          ],
+          "enum": [
+            "REPAIR_ACTION_UNSPECIFIED",
+            "DELETE"
+          ]
         }
       }
     },
@@ -2934,6 +2960,10 @@
         "environmentConfig": {
           "description": "Optional. Environment configuration for the session execution.",
           "$ref": "EnvironmentConfig"
+        },
+        "user": {
+          "description": "Optional. The email address of the user who owns the session.",
+          "type": "string"
         }
       }
     },

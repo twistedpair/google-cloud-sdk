@@ -3197,6 +3197,35 @@ def AddPostKeyRevocationActionTypeArgs(parser):
       help=help_text)
 
 
+def AddDistributionTargetShapeArgs(parser):
+  """Adds bulk creation target shape arguments to parser."""
+  choices_text = {
+      'ANY_SINGLE_ZONE':
+          'Enforces VM placement in one allowed zone. Use this to avoid '
+          'cross-zone network egress or to reduce network latency. This is the '
+          'default value.',
+      'BALANCED':
+          'Allows distribution of VMs in zones where resources are available '
+          'while distributing VMs as evenly as possible across selected zones '
+          'to minimize the impact of zonal failures. Recommended for highly '
+          'available serving or batch workloads.',
+      'ANY':
+          'Allows creating VMs in multiple zones if one zone cannot '
+          'accommodate all the requested VMs. The resulting distribution '
+          'shapes can vary.'
+  }
+  parser.add_argument(
+      '--target-distribution-shape',
+      metavar='SHAPE',
+      type=lambda x: x.upper(),
+      choices=choices_text,
+      help="""
+        Specifies whether and how to distribute VMs across multiple zones in a
+        region or to enforce placement of VMs in a single zone.
+        The default shape is `ANY_SINGLE_ZONE`.
+      """)
+
+
 def AddBulkCreateArgs(parser):
   """Adds bulk creation specific arguments to parser."""
   parser.add_argument(
@@ -3287,6 +3316,7 @@ def AddBulkCreateArgs(parser):
 
 
 def ValidateBulkCreateArgs(args):
+  """Validates args for bulk create."""
   if args.IsSpecified('name_pattern') and not args.IsSpecified('count'):
     raise exceptions.RequiredArgumentException(
         '--count',
@@ -3296,7 +3326,17 @@ def ValidateBulkCreateArgs(args):
                                               not args.IsSpecified('region')):
     raise exceptions.RequiredArgumentException(
         '--region',
-        """The '--region' argument must be used alongside the '--location-policy' argument and not '--zone'."""
+        """The `--region` argument must be used alongside the `--location-policy` argument and not `--zone`."""
+    )
+
+
+def ValidateBulkTargetShapeArgs(args):
+  """Validates target shape arg for bulk create."""
+  if args.IsSpecified('target_distribution_shape') and (
+      args.IsSpecified('zone') or not args.IsSpecified('region')):
+    raise exceptions.RequiredArgumentException(
+        '--region',
+        """The `--region` argument must be used alongside the `--target_distribution_shape` argument and not `--zone`."""
     )
 
 

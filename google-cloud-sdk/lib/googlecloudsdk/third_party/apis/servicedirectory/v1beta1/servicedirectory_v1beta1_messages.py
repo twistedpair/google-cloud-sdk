@@ -1298,6 +1298,9 @@ class ServiceWorkloadAttributes(_messages.Message):
       responsible for this service workload.
 
   Fields:
+    managedRegistration: Output only. TODO(b/230323652) Update documentation
+      for managed_registration field ! Indicates if the ServiceWorkload is GCP
+      managed or not.
     managerType: Output only. The GCP resource/product responsible for this
       service workload.
   """
@@ -1315,7 +1318,8 @@ class ServiceWorkloadAttributes(_messages.Message):
     GKE_HUB = 1
     BACKEND_SERVICE = 2
 
-  managerType = _messages.EnumField('ManagerTypeValueValuesEnum', 1)
+  managedRegistration = _messages.BooleanField(1)
+  managerType = _messages.EnumField('ManagerTypeValueValuesEnum', 2)
 
 
 class ServicedirectoryProjectsLocationsGetRequest(_messages.Message):

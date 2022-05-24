@@ -101,12 +101,12 @@ def get_temporary_component_resource(source_resource, destination_resource,
   return resource_reference.UnknownResource(component_url)
 
 
-def get_component_offsets_and_lengths(file_size, target_component_size,
-                                      max_components):
-  """Calculates start bytes and sizes for a multi-component copy operation.
+def get_component_count(file_size, target_component_size, max_components):
+  """Returns the # components a file would be split into for a composite upload.
 
   Args:
-    file_size (int): Total byte size of file being divided into components.
+    file_size (int|None): Total byte size of file being divided into components.
+      None if could not be determined.
     target_component_size (int|str): Target size for each component if not total
       components isn't capped by max_components. May be byte count int or size
       string (e.g. "50M").
@@ -114,22 +114,33 @@ def get_component_offsets_and_lengths(file_size, target_component_size,
       file_size and target_component_size. None indicates no limit.
 
   Returns:
-    List of component offsets and lengths: list[(offset, length)].
-    Total component count can be found by taking the length of the list.
+    int: Number of components to split file into for composite upload.
   """
+  if file_size is None:
+    return 1
   if isinstance(target_component_size, int):
     target_component_size_bytes = target_component_size
   else:
     target_component_size_bytes = scaled_integer.ParseInteger(
         target_component_size)
 
-  target_component_count = min(
+  return min(
       math.ceil(file_size / target_component_size_bytes),
       max_components if max_components is not None else float('inf'))
 
-  component_count = max(target_component_count, 2)
-  component_size = math.ceil(file_size / component_count)
 
+def get_component_offsets_and_lengths(file_size, component_count):
+  """Calculates start bytes and sizes for a multi-component copy operation.
+
+  Args:
+    file_size (int): Total byte size of file being divided into components.
+    component_count (int): Number of components to divide file into.
+
+  Returns:
+    List of component offsets and lengths: list[(offset, length)].
+    Total component count can be found by taking the length of the list.
+  """
+  component_size = math.ceil(file_size / component_count)
   component_offsets_and_lengths = []
   for i in range(component_count):
     offset = i * component_size

@@ -283,6 +283,11 @@
           "description": "Whether Workstations endpoint is private.",
           "type": "boolean"
         },
+        "clusterHostname": {
+          "description": "Output only. Hostname for the Workstation Cluster. This field will be populated only when private endpoint is enabled. To access workstations in the cluster, create a new DNS zone mapping this domain name to an internal IP address and a forwarding rule mapping that address to the service attachment.",
+          "readOnly": true,
+          "type": "string"
+        },
         "serviceAttachmentUri": {
           "description": "Output only. Service attachment URI for the Workstation Cluster. The service attachemnt is created when private endpoint is enabled. To access workstations in the cluster, configure access to the managed service using (Private Service Connect)[https:\/\/cloud.google.com\/vpc\/docs\/configure-private-service-connect-services].",
           "readOnly": true,
@@ -381,6 +386,10 @@
           "type": "integer",
           "format": "int32"
         },
+        "hostConfig": {
+          "description": "Runtime host for the Workstation.",
+          "$ref": "HostConfig"
+        },
         "persistentDirectories": {
           "description": "Directories to persist across Workstation sessions.",
           "type": "array",
@@ -409,6 +418,55 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "HostConfig": {
+      "id": "HostConfig",
+      "description": "Describes the runtime host for the Workstation.",
+      "type": "object",
+      "properties": {
+        "gceInstanceConfig": {
+          "description": "Specifies a Gce Instance as the host.",
+          "$ref": "GceInstanceConfig"
+        }
+      }
+    },
+    "GceInstanceConfig": {
+      "id": "GceInstanceConfig",
+      "description": "Describe a runtime using a Gce Instance.",
+      "type": "object",
+      "properties": {
+        "machineType": {
+          "description": "The name of a Google Compute Engine machine type.",
+          "type": "string"
+        },
+        "serviceAccount": {
+          "description": "Email address of the service account that will be used on VM instances used to support this config. This service account must have permission to pull the specified container image. If not set, VMs will run without a service account, in which case the image must be publicly accessible.",
+          "type": "string"
+        },
+        "serviceAccountScopes": {
+          "description": "Scopes to grant to the service account. Various scopes are automatically added based on feature usage.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "tags": {
+          "description": "Network tags to add to the Google Compute Engine machines backing the Workstations.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "poolSize": {
+          "description": "Number of instances to pool for faster Workstation starup.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "disablePublicIpAddresses": {
+          "description": "Whether instances have no public IP address.",
+          "type": "boolean"
         }
       }
     },

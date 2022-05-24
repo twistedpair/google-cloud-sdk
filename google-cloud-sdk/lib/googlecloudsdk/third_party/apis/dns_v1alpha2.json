@@ -1031,6 +1031,16 @@
           "type": "integer",
           "format": "int32"
         },
+        "responsePolicies": {
+          "description": "Maximum allowed number of response policies per project.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "networksPerResponsePolicy": {
+          "description": "Maximum allowed number of networks per response policy.",
+          "type": "integer",
+          "format": "int32"
+        },
         "gkeClustersPerManagedZone": {
           "description": "Maximum allowed number of GKE clusters to which a privately scoped zone can be attached.",
           "type": "integer",
@@ -1038,6 +1048,11 @@
         },
         "managedZonesPerGkeCluster": {
           "description": "Maximum allowed number of managed zones which can be attached to a GKE cluster.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "gkeClustersPerPolicy": {
+          "description": "Maximum allowed number of GKE clusters per policy.",
           "type": "integer",
           "format": "int32"
         },

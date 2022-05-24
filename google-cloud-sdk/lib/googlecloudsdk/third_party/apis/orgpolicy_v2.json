@@ -1233,6 +1233,31 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Retrieves all of the `CustomConstraints` that exist on a particular organization resource."
+            },
+            "delete": {
+              "id": "orgpolicy.organizations.customConstraints.delete",
+              "path": "v2/{+name}",
+              "flatPath": "v2/organizations/{organizationsId}/customConstraints/{customConstraintsId}",
+              "httpMethod": "DELETE",
+              "parameters": {
+                "name": {
+                  "description": "Required. Name of the custom constraint to delete. See `CustomConstraint` for naming rules.",
+                  "pattern": "^organizations\/[^\/]+\/customConstraints\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "GoogleProtobufEmpty"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Deletes a Custom Constraint. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the constraint does not exist."
             }
           }
         }

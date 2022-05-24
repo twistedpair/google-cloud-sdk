@@ -18,48 +18,13 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import gzip
 import os
-import shutil
 
 from googlecloudsdk.command_lib.storage import errors
+from googlecloudsdk.command_lib.storage import gzip_util
 from googlecloudsdk.command_lib.storage import hash_util
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage import tracker_file_util
-from googlecloudsdk.core.util import files
-
-
-def decompress_gzip_if_necessary(source_resource,
-                                 gzipped_path,
-                                 destination_path,
-                                 do_not_decompress_flag=False):
-  """Checks if file is elligible for decompression and decompresses if true.
-
-  Args:
-    source_resource (ObjectResource): May contain encoding metadata.
-    gzipped_path (str): File path to unzip.
-    destination_path (str): File path to write unzipped file to.
-    do_not_decompress_flag (bool): User flag that blocks decompression.
-
-  Returns:
-    (bool) True if file was successfully decompressed, else False.
-  """
-  content_encoding = getattr(source_resource.metadata, 'contentEncoding', '')
-  if (do_not_decompress_flag or content_encoding is None or
-      'gzip' not in content_encoding.split(',')):
-    return False
-
-  try:
-    with gzip.open(gzipped_path, 'rb') as gzipped_file:
-      with files.BinaryFileWriter(
-          destination_path, create_path=True) as ungzipped_file:
-        shutil.copyfileobj(gzipped_file, ungzipped_file)
-    return True
-  except OSError:
-    # May indicate trying to decompress non-gzipped file. Clean up.
-    os.remove(destination_path)
-
-  return False
 
 
 def decompress_or_rename_file(source_resource,
@@ -81,8 +46,10 @@ def decompress_or_rename_file(source_resource,
   if not os.path.exists(temporary_file_path):
     return False
 
-  if decompress_gzip_if_necessary(source_resource, temporary_file_path,
-                                  final_file_path, do_not_decompress_flag):
+  if gzip_util.decompress_gzip_if_necessary(source_resource,
+                                            temporary_file_path,
+                                            final_file_path,
+                                            do_not_decompress_flag):
     os.remove(temporary_file_path)
   else:
     os.rename(temporary_file_path, final_file_path)

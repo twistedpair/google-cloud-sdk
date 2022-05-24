@@ -5,6 +5,82 @@ Copyright 2014-2022 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 387.0.0 (2022-05-24)
+
+### Anthos Multi-Cloud
+
+*   Fixed issue where `gcloud container aws clusters get-credentials
+    --private-endpoint` and `gcloud container azure clusters get-credentials
+    --private-endpoint` commands do not work for clusters in a project different
+    from the default project.
+
+### Cloud Composer
+
+* Added `--enable-privately-used-public-ips` flag to `gcloud composer environments create` command to enable using privately used public IP address ranges feature in the GKE cluster.
+
+### Cloud Dataproc
+
+*   Added `--properties-file` flag to `gcloud beta dataproc jobs submit`.
+
+### Cloud Deploy
+
+*   Fixed `gcloud deploy releases <create|promote>` and `gcloud deploy targets rollback` to support `--format` flag.
+
+### Cloud Functions
+
+* -   Added `--trigger-event-filters-path-pattern` flag to `gcloud beta functions
+    deploy`.
+
+### Cloud Pub/Sub
+
+*   Added `--bigquery-table`, `--write-metadata`, `--use-topic-schema`, and
+    `--drop-unknown-fields` flags to `gcloud pubsub subscriptions create` to set
+    BigQuery configuration options in Cloud Pub/Sub subscriptions.
+*   Added `--bigquery-table`, `--write-metadata`, `--use-topic-schema`,
+    `--drop-unknown-fields`, and `--clear-bigquery-config` flags to
+    `gcloud pubsub subscriptions update` to update BigQuery configuration
+    options in Cloud Pub/Sub subscriptions.
+
+### Compute Engine
+
+* Added `22.04` to allowed list of values for `--version` of `gcloud beta compute instances ops-agents policies [create|update]`.
+* Promoted `delete` command of `gcloud compute instance-groups managed all-instances-config` to beta.
+* Promoted `update` command of `gcloud compute instance-groups managed all-instances-config` to beta.
+* Promoted `--region` for `gcloud compute ssl-policies` to beta.
+* Promoted `--region` flag for `gcloud compute target-tcp-proxies` to beta.
+* Added `--target-distribution-shape` flag to `gcloud compute instances bulk create` to specify shape of distribution in regional bulk insert for alpha and beta.
+
+### Config Connector
+
+* Updated Google Cloud Config Connector to version 1.85.0.
+  See Config Connector Overview for more details [https://cloud.google.com/config-connector/docs/overview](https://cloud.google.com/config-connector/docs/overview).
+
+### Eventarc
+
+* Added `gcloud eventarc audit-logs-provider` command group.
+
+### Stackdriver Monitoring
+
+* Promoted `gcloud monitoring metrics-scopes` command group to beta.
+
+### Terraform
+
+* Added support for the following resources in CAI-based policies:
+  * `google_access_context_manager_access_policy_iam_binding`
+  * `google_access_context_manager_access_policy_iam_member`
+  * `google_access_context_manager_access_policy_iam_policy`
+  * `google_endpoints_service_consumers_iam_binding`
+  * `google_endpoints_service_consumers_iam_member`
+  * `google_endpoints_service_consumers_iam_policy`
+  * `google_privateca_certificate_template_iam_binding`
+  * `google_privateca_certificate_template_iam_member`
+  * `google_privateca_certificate_template_iam_policy`
+* TF -> CAI resource conversion compiled against [`google` provider version 4.20.0](https://github.com/hashicorp/terraform-provider-google/releases/tag/v4.20.0).
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 386.0.0 (2022-05-17)
 
 ### Google Cloud CLI

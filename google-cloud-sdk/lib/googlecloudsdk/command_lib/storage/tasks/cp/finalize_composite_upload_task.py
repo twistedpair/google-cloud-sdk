@@ -21,7 +21,9 @@ from __future__ import unicode_literals
 import os
 
 from googlecloudsdk.command_lib.storage import errors
+from googlecloudsdk.command_lib.storage import gzip_util
 from googlecloudsdk.command_lib.storage import manifest_util
+from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage import tracker_file_util
 from googlecloudsdk.command_lib.storage.tasks import compose_objects_task
 from googlecloudsdk.command_lib.storage.tasks import task
@@ -38,6 +40,7 @@ class FinalizeCompositeUploadTask(copy_util.CopyTaskWithExitHandler):
                expected_component_count,
                source_resource,
                destination_resource,
+               source_path,
                random_prefix='',
                delete_source=False,
                print_created_message=False,
@@ -50,6 +53,8 @@ class FinalizeCompositeUploadTask(copy_util.CopyTaskWithExitHandler):
         uploaded file.
       destination_resource (resource_reference.UnknownResource): Metadata for
         the final composite object.
+      source_path (str): Path to file to upload. May be the original or a
+        transformed temporary file.
       random_prefix (str): Random id added to component names.
       delete_source (bool): If copy completes successfully, delete the source
         object afterwards.
@@ -62,6 +67,7 @@ class FinalizeCompositeUploadTask(copy_util.CopyTaskWithExitHandler):
         destination_resource,
         user_request_args=user_request_args)
     self._expected_component_count = expected_component_count
+    self._source_path = source_path
     self._random_prefix = random_prefix
     self._delete_source = delete_source
     self._print_created_message = print_created_message
@@ -112,7 +118,14 @@ class FinalizeCompositeUploadTask(copy_util.CopyTaskWithExitHandler):
         source_url=self._source_resource)
     tracker_file_util.delete_tracker_file(tracker_file_path)
 
+    if gzip_util.should_gzip_locally(
+        getattr(self._user_request_args, 'gzip_settings', None),
+        self._source_path) and self._source_path.endswith(
+            storage_url.TEMPORARY_FILE_SUFFIX):
+      # Delete temporary gzipped version of source file.
+      os.remove(self._source_path)
     if self._delete_source:
+      # Delete original source file.
       os.remove(self._source_resource.storage_url.object_name)
 
     return task.Output(
@@ -131,5 +144,6 @@ class FinalizeCompositeUploadTask(copy_util.CopyTaskWithExitHandler):
     return (self._expected_component_count == other._expected_component_count
             and self._source_resource == other._source_resource and
             self._destination_resource == other._destination_resource and
+            self._source_path == other._source_path and
             self._random_prefix == other._random_prefix and
             self._user_request_args == other._user_request_args)

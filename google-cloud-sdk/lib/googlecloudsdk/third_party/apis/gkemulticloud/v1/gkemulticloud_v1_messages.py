@@ -800,6 +800,7 @@ class GoogleCloudGkemulticloudV1AwsCluster(_messages.Message):
     description: Optional. A human readable description of this cluster.
       Cannot be longer than 255 UTF-8 encoded bytes.
     endpoint: Output only. The endpoint of the cluster's API server.
+    errors: Output only. A set of errors found in the cluster.
     etag: Allows clients to perform consistent read-modify-writes through
       optimistic concurrency control. Can be sent on update and delete
       requests to ensure the client has an up-to-date value before proceeding.
@@ -883,16 +884,27 @@ class GoogleCloudGkemulticloudV1AwsCluster(_messages.Message):
   createTime = _messages.StringField(6)
   description = _messages.StringField(7)
   endpoint = _messages.StringField(8)
-  etag = _messages.StringField(9)
-  fleet = _messages.MessageField('GoogleCloudGkemulticloudV1Fleet', 10)
-  loggingConfig = _messages.MessageField('GoogleCloudGkemulticloudV1LoggingConfig', 11)
-  name = _messages.StringField(12)
-  networking = _messages.MessageField('GoogleCloudGkemulticloudV1AwsClusterNetworking', 13)
-  reconciling = _messages.BooleanField(14)
-  state = _messages.EnumField('StateValueValuesEnum', 15)
-  uid = _messages.StringField(16)
-  updateTime = _messages.StringField(17)
-  workloadIdentityConfig = _messages.MessageField('GoogleCloudGkemulticloudV1WorkloadIdentityConfig', 18)
+  errors = _messages.MessageField('GoogleCloudGkemulticloudV1AwsClusterError', 9, repeated=True)
+  etag = _messages.StringField(10)
+  fleet = _messages.MessageField('GoogleCloudGkemulticloudV1Fleet', 11)
+  loggingConfig = _messages.MessageField('GoogleCloudGkemulticloudV1LoggingConfig', 12)
+  name = _messages.StringField(13)
+  networking = _messages.MessageField('GoogleCloudGkemulticloudV1AwsClusterNetworking', 14)
+  reconciling = _messages.BooleanField(15)
+  state = _messages.EnumField('StateValueValuesEnum', 16)
+  uid = _messages.StringField(17)
+  updateTime = _messages.StringField(18)
+  workloadIdentityConfig = _messages.MessageField('GoogleCloudGkemulticloudV1WorkloadIdentityConfig', 19)
+
+
+class GoogleCloudGkemulticloudV1AwsClusterError(_messages.Message):
+  r"""AwsClusterError describes errors found on AWS clusters.
+
+  Fields:
+    message: Human-friendly description of the error.
+  """
+
+  message = _messages.StringField(1)
 
 
 class GoogleCloudGkemulticloudV1AwsClusterNetworking(_messages.Message):
@@ -1227,6 +1239,7 @@ class GoogleCloudGkemulticloudV1AwsNodePool(_messages.Message):
     autoscaling: Required. Autoscaler configuration for this node pool.
     config: Required. The configuration of the node pool.
     createTime: Output only. The time at which this node pool was created.
+    errors: Output only. A set of errors found in the node pool.
     etag: Allows clients to perform consistent read-modify-writes through
       optimistic concurrency control. Can be sent on update and delete
       requests to ensure the client has an up-to-date value before proceeding.
@@ -1308,15 +1321,16 @@ class GoogleCloudGkemulticloudV1AwsNodePool(_messages.Message):
   autoscaling = _messages.MessageField('GoogleCloudGkemulticloudV1AwsNodePoolAutoscaling', 2)
   config = _messages.MessageField('GoogleCloudGkemulticloudV1AwsNodeConfig', 3)
   createTime = _messages.StringField(4)
-  etag = _messages.StringField(5)
-  maxPodsConstraint = _messages.MessageField('GoogleCloudGkemulticloudV1MaxPodsConstraint', 6)
-  name = _messages.StringField(7)
-  reconciling = _messages.BooleanField(8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
-  subnetId = _messages.StringField(10)
-  uid = _messages.StringField(11)
-  updateTime = _messages.StringField(12)
-  version = _messages.StringField(13)
+  errors = _messages.MessageField('GoogleCloudGkemulticloudV1AwsNodePoolError', 5, repeated=True)
+  etag = _messages.StringField(6)
+  maxPodsConstraint = _messages.MessageField('GoogleCloudGkemulticloudV1MaxPodsConstraint', 7)
+  name = _messages.StringField(8)
+  reconciling = _messages.BooleanField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  subnetId = _messages.StringField(11)
+  uid = _messages.StringField(12)
+  updateTime = _messages.StringField(13)
+  version = _messages.StringField(14)
 
 
 class GoogleCloudGkemulticloudV1AwsNodePoolAutoscaling(_messages.Message):
@@ -1332,6 +1346,16 @@ class GoogleCloudGkemulticloudV1AwsNodePoolAutoscaling(_messages.Message):
 
   maxNodeCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   minNodeCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudGkemulticloudV1AwsNodePoolError(_messages.Message):
+  r"""AwsNodePoolError describes errors found on AWS node pools.
+
+  Fields:
+    message: Human-friendly description of the error.
+  """
+
+  message = _messages.StringField(1)
 
 
 class GoogleCloudGkemulticloudV1AwsOpenIdConfig(_messages.Message):
@@ -1589,12 +1613,13 @@ class GoogleCloudGkemulticloudV1AzureCluster(_messages.Message):
     description: Optional. A human readable description of this cluster.
       Cannot be longer than 255 UTF-8 encoded bytes.
     endpoint: Output only. The endpoint of the cluster's API server.
+    errors: Output only. A set of errors found in the cluster.
     etag: Allows clients to perform consistent read-modify-writes through
       optimistic concurrency control. Can be sent on update and delete
       requests to ensure the client has an up-to-date value before proceeding.
     fleet: Optional. Fleet configuration.
     loggingConfig: Optional. Logging configuration for this cluster.
-    managedResources: Output only. Mananged Azure resources for this cluster.
+    managedResources: Output only. Managed Azure resources for this cluster.
     name: The name of this resource. Cluster names are formatted as
       `projects//locations//azureClusters/`. See [Resource
       Names](https://cloud.google.com/apis/design/resource_names) for more
@@ -1677,18 +1702,29 @@ class GoogleCloudGkemulticloudV1AzureCluster(_messages.Message):
   createTime = _messages.StringField(7)
   description = _messages.StringField(8)
   endpoint = _messages.StringField(9)
-  etag = _messages.StringField(10)
-  fleet = _messages.MessageField('GoogleCloudGkemulticloudV1Fleet', 11)
-  loggingConfig = _messages.MessageField('GoogleCloudGkemulticloudV1LoggingConfig', 12)
-  managedResources = _messages.MessageField('GoogleCloudGkemulticloudV1AzureClusterResources', 13)
-  name = _messages.StringField(14)
-  networking = _messages.MessageField('GoogleCloudGkemulticloudV1AzureClusterNetworking', 15)
-  reconciling = _messages.BooleanField(16)
-  resourceGroupId = _messages.StringField(17)
-  state = _messages.EnumField('StateValueValuesEnum', 18)
-  uid = _messages.StringField(19)
-  updateTime = _messages.StringField(20)
-  workloadIdentityConfig = _messages.MessageField('GoogleCloudGkemulticloudV1WorkloadIdentityConfig', 21)
+  errors = _messages.MessageField('GoogleCloudGkemulticloudV1AzureClusterError', 10, repeated=True)
+  etag = _messages.StringField(11)
+  fleet = _messages.MessageField('GoogleCloudGkemulticloudV1Fleet', 12)
+  loggingConfig = _messages.MessageField('GoogleCloudGkemulticloudV1LoggingConfig', 13)
+  managedResources = _messages.MessageField('GoogleCloudGkemulticloudV1AzureClusterResources', 14)
+  name = _messages.StringField(15)
+  networking = _messages.MessageField('GoogleCloudGkemulticloudV1AzureClusterNetworking', 16)
+  reconciling = _messages.BooleanField(17)
+  resourceGroupId = _messages.StringField(18)
+  state = _messages.EnumField('StateValueValuesEnum', 19)
+  uid = _messages.StringField(20)
+  updateTime = _messages.StringField(21)
+  workloadIdentityConfig = _messages.MessageField('GoogleCloudGkemulticloudV1WorkloadIdentityConfig', 22)
+
+
+class GoogleCloudGkemulticloudV1AzureClusterError(_messages.Message):
+  r"""AzureClusterError describes errors found on Azure clusters.
+
+  Fields:
+    message: Human-friendly description of the error.
+  """
+
+  message = _messages.StringField(1)
 
 
 class GoogleCloudGkemulticloudV1AzureClusterNetworking(_messages.Message):
@@ -2037,6 +2073,7 @@ class GoogleCloudGkemulticloudV1AzureNodePool(_messages.Message):
       in this nodepool. When unspecified, it defaults to `1`.
     config: Required. The node configuration of the node pool.
     createTime: Output only. The time at which this node pool was created.
+    errors: Output only. A set of errors found in the node pool.
     etag: Allows clients to perform consistent read-modify-writes through
       optimistic concurrency control. Can be sent on update and delete
       requests to ensure the client has an up-to-date value before proceeding.
@@ -2120,15 +2157,16 @@ class GoogleCloudGkemulticloudV1AzureNodePool(_messages.Message):
   azureAvailabilityZone = _messages.StringField(3)
   config = _messages.MessageField('GoogleCloudGkemulticloudV1AzureNodeConfig', 4)
   createTime = _messages.StringField(5)
-  etag = _messages.StringField(6)
-  maxPodsConstraint = _messages.MessageField('GoogleCloudGkemulticloudV1MaxPodsConstraint', 7)
-  name = _messages.StringField(8)
-  reconciling = _messages.BooleanField(9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  subnetId = _messages.StringField(11)
-  uid = _messages.StringField(12)
-  updateTime = _messages.StringField(13)
-  version = _messages.StringField(14)
+  errors = _messages.MessageField('GoogleCloudGkemulticloudV1AzureNodePoolError', 6, repeated=True)
+  etag = _messages.StringField(7)
+  maxPodsConstraint = _messages.MessageField('GoogleCloudGkemulticloudV1MaxPodsConstraint', 8)
+  name = _messages.StringField(9)
+  reconciling = _messages.BooleanField(10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  subnetId = _messages.StringField(12)
+  uid = _messages.StringField(13)
+  updateTime = _messages.StringField(14)
+  version = _messages.StringField(15)
 
 
 class GoogleCloudGkemulticloudV1AzureNodePoolAutoscaling(_messages.Message):
@@ -2145,6 +2183,16 @@ class GoogleCloudGkemulticloudV1AzureNodePoolAutoscaling(_messages.Message):
 
   maxNodeCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   minNodeCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudGkemulticloudV1AzureNodePoolError(_messages.Message):
+  r"""AzureNodePoolError describes errors found on Azure node pools.
+
+  Fields:
+    message: Human-friendly description of the error.
+  """
+
+  message = _messages.StringField(1)
 
 
 class GoogleCloudGkemulticloudV1AzureOpenIdConfig(_messages.Message):

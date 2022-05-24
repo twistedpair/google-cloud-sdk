@@ -805,14 +805,16 @@
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
+            "Backup type not specified.",
             "Backup was manually created.",
-            "Backup was manually created.",
-            "Backup was automatically created."
+            "Backup was automatically created.",
+            "Backup was taken as part of Schema Extension request."
           ],
           "enum": [
             "TYPE_UNSPECIFIED",
             "ON_DEMAND",
-            "SCHEDULED"
+            "SCHEDULED",
+            "SCHEMA_EXTENSION"
           ]
         },
         "state": {

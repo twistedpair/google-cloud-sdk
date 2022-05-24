@@ -1440,6 +1440,10 @@ class LogMetric(_messages.Message):
       are allowed in a project.
 
   Fields:
+    bucketName: Optional. The resource name of the Log Bucket that owns the
+      Log Metric. Only Log Buckets in projects are supported.For
+      example:projects/my-project/locations/global/buckets/my-bucketIf empty,
+      then the Log Metric is considered a non-Bucket Log Metric.
     bucketOptions: Optional. The bucket_options are required when the logs-
       based metric is using a DISTRIBUTION value type and it describes the
       bucket boundaries used to create a histogram of the extracted values.
@@ -1557,17 +1561,18 @@ class LogMetric(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  bucketOptions = _messages.MessageField('BucketOptions', 1)
-  createTime = _messages.StringField(2)
-  description = _messages.StringField(3)
-  disabled = _messages.BooleanField(4)
-  filter = _messages.StringField(5)
-  labelExtractors = _messages.MessageField('LabelExtractorsValue', 6)
-  metricDescriptor = _messages.MessageField('MetricDescriptor', 7)
-  name = _messages.StringField(8)
-  updateTime = _messages.StringField(9)
-  valueExtractor = _messages.StringField(10)
-  version = _messages.EnumField('VersionValueValuesEnum', 11)
+  bucketName = _messages.StringField(1)
+  bucketOptions = _messages.MessageField('BucketOptions', 2)
+  createTime = _messages.StringField(3)
+  description = _messages.StringField(4)
+  disabled = _messages.BooleanField(5)
+  filter = _messages.StringField(6)
+  labelExtractors = _messages.MessageField('LabelExtractorsValue', 7)
+  metricDescriptor = _messages.MessageField('MetricDescriptor', 8)
+  name = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
+  valueExtractor = _messages.StringField(11)
+  version = _messages.EnumField('VersionValueValuesEnum', 12)
 
 
 class LogSink(_messages.Message):

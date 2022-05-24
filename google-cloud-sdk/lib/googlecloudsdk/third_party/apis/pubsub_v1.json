@@ -693,7 +693,7 @@
       "type": "object",
       "properties": {
         "table": {
-          "description": "The name of the table to which to write data, of the form {projectId}:{datasetId}.{tableId}",
+          "description": "The name of the table to which to write data, of the form {projectId}.{datasetId}.{tableId}",
           "type": "string"
         },
         "useTopicSchema": {

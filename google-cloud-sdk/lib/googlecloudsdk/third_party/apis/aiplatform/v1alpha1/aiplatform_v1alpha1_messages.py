@@ -3064,12 +3064,12 @@ class AiplatformProjectsLocationsPipelineJobsListRequest(_messages.Message):
       in RFC 3339 format. * `end_time`: Supports `=`, `!=`, `<`, `>`, `<=`,
       and `>=` comparisons. Values must be in RFC 3339 format. * `labels`:
       Supports key-value equality and key presence. * `template_uri`: Supports
-      `=`, `!=` comparisons, and `:` wildcard. *
-      `template_metadata.version_name`: Supports `=`, `!=` comparisons, and
-      `:` wildcard. Filter expressions can be combined together using logical
-      operators (`AND` & `OR`). For example: `pipeline_name="test" AND
-      create_time>"2020-05-18T13:30:00Z"`. The syntax to define filter
-      expression is based on https://google.aip.dev/160. Examples: *
+      `=`, `!=` comparisons, and `:` wildcard. * `template_metadata.version`:
+      Supports `=`, `!=` comparisons, and `:` wildcard. Filter expressions can
+      be combined together using logical operators (`AND` & `OR`). For
+      example: `pipeline_name="test" AND create_time>"2020-05-18T13:30:00Z"`.
+      The syntax to define filter expression is based on
+      https://google.aip.dev/160. Examples: *
       `create_time>"2021-05-18T00:00:00Z" OR
       update_time>"2020-05-18T00:00:00Z"` PipelineJobs created or updated
       after 2020-05-18 00:00:00 UTC. * `labels.env = "prod"` PipelineJobs with
@@ -14676,6 +14676,7 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputs(
       inclusively; 0 means the row is ignored for training. If weight column
       field is not set, then all rows are assumed to have equal weight of 1.
       This column must be available at forecast.
+    windowConfig: Config containing strategy for generating sliding windows.
   """
 
   additionalExperiments = _messages.StringField(1, repeated=True)
@@ -14697,6 +14698,7 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputs(
   unavailableAtForecastColumns = _messages.StringField(17, repeated=True)
   validationOptions = _messages.StringField(18)
   weightColumn = _messages.StringField(19)
+  windowConfig = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionWindowConfig', 20)
 
 
 class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsGranularity(_messages.Message):
@@ -15779,6 +15781,31 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionHyperparameterTuningTask
 
   inputs = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionHyperparameterTuningJobSpec', 1)
   metadata = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionHyperparameterTuningJobMetadata', 2)
+
+
+class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionWindowConfig(_messages.Message):
+  r"""Config that contains the strategy used to generate sliding windows in
+  time series training. A window is a series of rows that comprise the context
+  up to the time of prediction, and the horizon following. The corresponding
+  row for each window marks the start of the forecast horizon. Each window is
+  used as an input example for training/evaluation.
+
+  Fields:
+    column: Name of the column that should be used to generate sliding
+      windows. The column should contain either booleans or string booleans;
+      if the value of the row is True, generate a sliding window with the
+      horizon starting at that row. The column will not be used as a feature
+      in training.
+    maxCount: Maximum number of windows that should be generated across all
+      time series.
+    strideLength: Stride length used to generate input examples. Within one
+      time series, every {$STRIDE_LENGTH} rows will be used to generate a
+      sliding window.
+  """
+
+  column = _messages.StringField(1)
+  maxCount = _messages.IntegerField(2)
+  strideLength = _messages.IntegerField(3)
 
 
 class GoogleCloudAiplatformV1SchemaVertex(_messages.Message):
@@ -19931,7 +19958,7 @@ class GoogleCloudAiplatformV1alpha1FeatureStatsAnomaly(_messages.Message):
 
 
 class GoogleCloudAiplatformV1alpha1FeatureValue(_messages.Message):
-  r"""Value for a feature. NEXT ID: 15
+  r"""Value for a feature.
 
   Fields:
     boolArrayValue: A list of bool type feature value.
@@ -29147,6 +29174,7 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingIn
       inclusively; 0 means the row is ignored for training. If weight column
       field is not set, then all rows are assumed to have equal weight of 1.
       This column must be available at forecast.
+    windowConfig: Config containing strategy for generating sliding windows.
   """
 
   additionalExperiments = _messages.StringField(1, repeated=True)
@@ -29168,6 +29196,7 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingIn
   unavailableAtForecastColumns = _messages.StringField(17, repeated=True)
   validationOptions = _messages.StringField(18)
   weightColumn = _messages.StringField(19)
+  windowConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionWindowConfig', 20)
 
 
 class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsGranularity(_messages.Message):
@@ -30251,6 +30280,31 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionHyperparameterTunin
 
   inputs = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionHyperparameterTuningJobSpec', 1)
   metadata = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionHyperparameterTuningJobMetadata', 2)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionWindowConfig(_messages.Message):
+  r"""Config that contains the strategy used to generate sliding windows in
+  time series training. A window is a series of rows that comprise the context
+  up to the time of prediction, and the horizon following. The corresponding
+  row for each window marks the start of the forecast horizon. Each window is
+  used as an input example for training/evaluation.
+
+  Fields:
+    column: Name of the column that should be used to generate sliding
+      windows. The column should contain either booleans or string booleans;
+      if the value of the row is True, generate a sliding window with the
+      horizon starting at that row. The column will not be used as a feature
+      in training.
+    maxCount: Maximum number of windows that should be generated across all
+      time series.
+    strideLength: Stride length used to generate input examples. Within one
+      time series, every {$STRIDE_LENGTH} rows will be used to generate a
+      sliding window.
+  """
+
+  column = _messages.StringField(1)
+  maxCount = _messages.IntegerField(2)
+  strideLength = _messages.IntegerField(3)
 
 
 class GoogleCloudAiplatformV1beta1SchemaVertex(_messages.Message):

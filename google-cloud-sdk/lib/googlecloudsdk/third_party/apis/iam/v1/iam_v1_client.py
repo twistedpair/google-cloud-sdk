@@ -2103,7 +2103,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def Disable(self, request, global_params=None):
-      r"""Disable a ServiceAccountKey. A disabled service account key can be enabled through EnableServiceAccountKey.
+      r"""Disable a ServiceAccountKey. A disabled service account key can be re-enabled with EnableServiceAccountKey.
 
       Args:
         request: (IamProjectsServiceAccountsKeysDisableRequest) input message

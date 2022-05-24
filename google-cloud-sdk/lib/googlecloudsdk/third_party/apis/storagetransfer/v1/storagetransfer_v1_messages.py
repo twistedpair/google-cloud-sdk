@@ -1656,7 +1656,7 @@ class TransferOptions(_messages.Message):
 
   Enums:
     OverwriteWhenValueValuesEnum: When to overwrite objects that already exist
-      in the sink. If not set overwrite behavior is determined by
+      in the sink. If not set, overwrite behavior is determined by
       overwrite_objects_already_existing_in_sink.
 
   Fields:
@@ -1674,21 +1674,24 @@ class TransferOptions(_messages.Message):
       sink whose name matches an object in the source are overwritten with the
       source object.
     overwriteWhen: When to overwrite objects that already exist in the sink.
-      If not set overwrite behavior is determined by
+      If not set, overwrite behavior is determined by
       overwrite_objects_already_existing_in_sink.
   """
 
   class OverwriteWhenValueValuesEnum(_messages.Enum):
-    r"""When to overwrite objects that already exist in the sink. If not set
+    r"""When to overwrite objects that already exist in the sink. If not set,
     overwrite behavior is determined by
     overwrite_objects_already_existing_in_sink.
 
     Values:
-      OVERWRITE_WHEN_UNSPECIFIED: Indicate the option is not set.
-      DIFFERENT: Overwrite destination object with source if the two objects
-        are different.
-      NEVER: Never overwrite destination object.
-      ALWAYS: Always overwrite destination object.
+      OVERWRITE_WHEN_UNSPECIFIED: Overwrite behavior is unspecified.
+      DIFFERENT: Overwrites destination objects with the source objects, only
+        if the objects have the same name but different HTTP ETags or checksum
+        values.
+      NEVER: Never overwrites a destination object if a source object has the
+        same name. In this case, the source object is not transferred.
+      ALWAYS: Always overwrite the destination object with the source object,
+        even if the HTTP Etags or checksum values are the same.
     """
     OVERWRITE_WHEN_UNSPECIFIED = 0
     DIFFERENT = 1

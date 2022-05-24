@@ -1781,6 +1781,39 @@ class FhirFilter(_messages.Message):
   resources = _messages.MessageField('Resources', 1)
 
 
+class FhirNotificationConfig(_messages.Message):
+  r"""Contains the configuration for FHIR notifications.
+
+  Fields:
+    pubsubTopic: The [Pub/Sub](https://cloud.google.com/pubsub/docs/) topic
+      that notifications of changes are published on. Supplied by the client.
+      The notification is a `PubsubMessage` with the following fields: *
+      `PubsubMessage.Data` contains the resource name. *
+      `PubsubMessage.MessageId` is the ID of this notification. It is
+      guaranteed to be unique within the topic. * `PubsubMessage.PublishTime`
+      is the time when the message was published. Note that notifications are
+      only sent if the topic is non-empty. [Topic
+      names](https://cloud.google.com/pubsub/docs/overview#names) must be
+      scoped to a project. The Cloud Healthcare API service account,
+      service-@gcp-sa-healthcare.iam.gserviceaccount.com, must have publisher
+      permissions on the given Pub/Sub topic. Not having adequate permissions
+      causes the calls that send notifications to fail. If a notification
+      can't be published to Pub/Sub, errors are logged to Cloud Logging. For
+      more information, see [Viewing error logs in Cloud
+      Logging](https://cloud.google.com/healthcare-api/docs/how-tos/logging).
+    sendFullResource: Whether to send full FHIR resource to this Pub/Sub topic
+      for Create and Update operation. Note that setting this to true does not
+      guarantee that all resources will be sent in the format of full FHIR
+      resource. When a resource change is too large or during heavy traffic,
+      only the resource name will be sent. Clients should always check the
+      "payloadType" label from a Pub/Sub message to determine whether it needs
+      to fetch the full resource as a separate operation.
+  """
+
+  pubsubTopic = _messages.StringField(1)
+  sendFullResource = _messages.BooleanField(2)
+
+
 class FhirOutput(_messages.Message):
   r"""Details about the FHIR store to write the output to.
 
@@ -1869,6 +1902,8 @@ class FhirStore(_messages.Message):
       this FHIR store to this destination. The Pub/Sub message attributes
       contain a map with a string describing the action that has triggered the
       notification. For example, "action":"CreateResource".
+    notificationConfigs: Specifies where and whether to send notifications
+      upon changes to a Fhir store.
     searchConfig: Configuration for how FHIR resources can be searched.
     streamConfigs: A list of streaming configs that configure the destinations
       of streaming export for every resource mutation in this FHIR store. Each
@@ -1948,10 +1983,11 @@ class FhirStore(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 5)
   name = _messages.StringField(6)
   notificationConfig = _messages.MessageField('NotificationConfig', 7)
-  searchConfig = _messages.MessageField('SearchConfig', 8)
-  streamConfigs = _messages.MessageField('StreamConfig', 9, repeated=True)
-  validationConfig = _messages.MessageField('ValidationConfig', 10)
-  version = _messages.EnumField('VersionValueValuesEnum', 11)
+  notificationConfigs = _messages.MessageField('FhirNotificationConfig', 8, repeated=True)
+  searchConfig = _messages.MessageField('SearchConfig', 9)
+  streamConfigs = _messages.MessageField('StreamConfig', 10, repeated=True)
+  validationConfig = _messages.MessageField('ValidationConfig', 11)
+  version = _messages.EnumField('VersionValueValuesEnum', 12)
 
 
 class Field(_messages.Message):
@@ -4468,12 +4504,14 @@ class HealthcareProjectsLocationsDatasetsFhirStoresFhirPatientEverythingRequest(
       be specified to the second and include a time zone.
     _type: String of comma-delimited FHIR resource types. If provided, only
       resources of the specified resource type(s) are returned.
-    end: The response includes records prior to the end date. If no end date
-      is provided, all records subsequent to the start date are in scope.
+    end: The response includes records prior to the end date. The date uses
+      the format YYYY-MM-DD. If no end date is provided, all records
+      subsequent to the start date are in scope.
     name: Name of the `Patient` resource for which the information is
       required.
-    start: The response includes records subsequent to the start date. If no
-      start date is provided, all records prior to the end date are in scope.
+    start: The response includes records subsequent to the start date. The
+      date uses the format YYYY-MM-DD. If no start date is provided, all
+      records prior to the end date are in scope.
   """
 
   _count = _messages.IntegerField(1, variant=_messages.Variant.INT32)

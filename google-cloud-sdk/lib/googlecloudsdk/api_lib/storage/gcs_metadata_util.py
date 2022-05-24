@@ -25,11 +25,11 @@ from apitools.base.py import encoding_helper
 from googlecloudsdk.api_lib.storage import gcs_metadata_field_converters
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.command_lib.storage import encryption_util
+from googlecloudsdk.command_lib.storage import gzip_util
 from googlecloudsdk.command_lib.storage import posix_util
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage import user_request_args_factory
 from googlecloudsdk.command_lib.storage.resources import gcs_resource_reference
-
 
 # Similar to CORS above, we need a sentinel value allowing us to specify
 # when a default object ACL should be private (containing no entries).
@@ -40,7 +40,8 @@ PRIVATE_DEFAULT_OBJECT_ACL = apis.GetMessagesModule(
     'storage', 'v1').ObjectAccessControl(id='PRIVATE_DEFAULT_OBJ_ACL')
 
 
-def copy_select_object_metadata(source_metadata, destination_metadata):
+def copy_select_object_metadata(source_metadata, destination_metadata,
+                                request_config):
   """Copies specific metadata from source_metadata to destination_metadata.
 
   The API manually generates metadata for destination objects most of the time,
@@ -49,6 +50,8 @@ def copy_select_object_metadata(source_metadata, destination_metadata):
   Args:
     source_metadata (messages.Object): Metadata from source object.
     destination_metadata (messages.Object): Metadata for destination object.
+    request_config (request_config_factory.RequestConfig): Holds context info
+      about the copy operation.
   """
   destination_metadata.cacheControl = source_metadata.cacheControl
   destination_metadata.contentDisposition = source_metadata.contentDisposition
@@ -59,6 +62,11 @@ def copy_select_object_metadata(source_metadata, destination_metadata):
   destination_metadata.customTime = source_metadata.customTime
   destination_metadata.md5Hash = source_metadata.md5Hash
   destination_metadata.metadata = copy.deepcopy(source_metadata.metadata)
+
+  if request_config.resource_args.preserve_acl:
+    if not source_metadata.acl:
+      raise ValueError('Preserve ACL flag present but found no source ACLs.')
+    destination_metadata.acl = copy.deepcopy(source_metadata.acl)
 
 
 def get_apitools_metadata_from_url(cloud_url):
@@ -278,6 +286,9 @@ def update_object_metadata_from_request_config(object_metadata,
                                                file_path=None):
   """Sets Apitools Object fields based on values in request_config.
 
+  User custom metadata takes precedence over preserved POSIX data.
+  Gzip metadata changes take precedence over user custom metadata.
+
   Args:
     object_metadata (storage_v1_messages.Object): Existing object metadata.
     request_config (request_config): May contain data to add to object_metadata.
@@ -312,14 +323,25 @@ def update_object_metadata_from_request_config(object_metadata,
       object_metadata.metadata = encoding_helper.DictToMessage(
           custom_metadata_dict, messages.Object.MetadataValue)
 
+  should_gzip_locally = gzip_util.should_gzip_locally(
+      request_config.gzip_settings, file_path)
+  if should_gzip_locally:
+    content_encoding = 'gzip'
+  else:
+    content_encoding = getattr(resource_args, 'content_encoding', None)
+  _process_value_or_clear_flag(object_metadata, 'contentEncoding',
+                               content_encoding)
+  if should_gzip_locally:
+    cache_control = 'no-transform'
+  else:
+    cache_control = getattr(resource_args, 'cache_control', None)
+  _process_value_or_clear_flag(object_metadata, 'cacheControl', cache_control)
+
   if not resource_args:
     return
-  _process_value_or_clear_flag(object_metadata, 'cacheControl',
-                               resource_args.cache_control)
+
   _process_value_or_clear_flag(object_metadata, 'contentDisposition',
                                resource_args.content_disposition)
-  _process_value_or_clear_flag(object_metadata, 'contentEncoding',
-                               resource_args.content_encoding)
   _process_value_or_clear_flag(object_metadata, 'contentLanguage',
                                resource_args.content_language)
   _process_value_or_clear_flag(object_metadata, 'customTime',

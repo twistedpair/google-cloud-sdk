@@ -175,6 +175,10 @@ class GoogleIamV1betaWorkloadIdentityPool(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 5)
 
 
+class GoogleIamV1betaWorkloadIdentityPoolOperationMetadata(_messages.Message):
+  r"""Metadata for long-running WorkloadIdentityPool operations."""
+
+
 class GoogleIamV1betaWorkloadIdentityPoolProvider(_messages.Message):
   r"""A configuration for an external identity provider.
 

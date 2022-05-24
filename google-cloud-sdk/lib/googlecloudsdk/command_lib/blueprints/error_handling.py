@@ -186,8 +186,8 @@ def PrintKptApplyResultsError(artifacts_folder,
 
   Args:
     artifacts_folder: string, the full Cloud Storage path to the folder
-      containing the revision's apply artifacts,
-      e.g. 'gs://my-bucket/artifacts'.
+      containing the revision's apply artifacts, e.g.
+      'gs://my-bucket/artifacts'.
     action: The type of action performed. Valid values: 'apply', 'delete'.
     max_resource_errors: int, the maximum number of kpt resource errors to
       display before truncating.
@@ -250,8 +250,8 @@ def PrintKptPipelineResultsError(artifacts_folder):
 
   Args:
     artifacts_folder: string, the full Cloud Storage path to the folder
-      containing the revision's pipeline artifacts,
-      e.g. 'gs://my-bucket/artifacts'.
+      containing the revision's pipeline artifacts, e.g.
+      'gs://my-bucket/artifacts'.
 
   Returns:
     bool indicating whether an error was printed or not.
@@ -352,10 +352,10 @@ def PrintApplyRunError(revision):
       apply_results.artifacts, action='apply')
   if not kpt_error_found:
     log.error(revision.stateDetail)
-    PrintCloudBuildResults(apply_results.logs, apply_results.build)
+    PrintCloudBuildResults(revision.logs, revision.build)
 
 
-def PrintDeleteRunError(delete_results):
+def PrintDeleteRunError(delete_results, delete_logs, delete_build):
   """Prints error details for a failed delete run.
 
   Attempts to display kpt-specific errors, and falls back to displaying Cloud
@@ -364,11 +364,13 @@ def PrintDeleteRunError(delete_results):
   Args:
     delete_results: ApplyResults proto, the delete results from the delete
       operation.
+    delete_logs: Location to the GCS files containing build logs
+    delete_build: Cloud Build invocation ID string
   """
   kpt_error_found = PrintKptApplyResultsError(
       delete_results.artifacts, action='delete')
   if not kpt_error_found:
-    PrintCloudBuildResults(delete_results.logs, delete_results.build)
+    PrintCloudBuildResults(delete_logs, delete_build)
 
 
 def PrintPipelineRunError(revision):
@@ -384,7 +386,10 @@ def PrintPipelineRunError(revision):
   kpt_error_found = PrintKptPipelineResultsError(pipeline_results.artifacts)
   if not kpt_error_found:
     log.error(revision.stateDetail)
-    PrintCloudBuildResults(pipeline_results.logs, pipeline_results.build)
+    # TODO(b/233128306): Preview stopped populating logs and build in certain
+    #  cases due to a bug. Remove the if-check once bug is fixed
+    if revision.logs and revision.build:
+      PrintCloudBuildResults(revision.logs, revision.build)
 
 
 def PrintPreviewRunError(preview):
@@ -405,7 +410,10 @@ def PrintPreviewRunError(preview):
     log.debug(
         'Failed to fetch preview results from {0}. Getting GCB logs.'.format(
             artifact_path))
-    PrintCloudBuildResults(preview_results.logs, preview_results.build)
+    # TODO(b/233128306): Preview stopped populating logs and build in certain
+    #  cases due to a bug. Remove the if-check once bug is fixed
+    if preview.logs and preview.build:
+      PrintCloudBuildResults(preview.logs, preview.build)
 
 
 def RevisionFailed(revision_ref):
@@ -450,7 +458,8 @@ def DeploymentFailed(deployment_ref):
     revision_ref = blueprints_util.GetRevision(deployment_ref.latestRevision)
     RevisionFailed(revision_ref)
   elif deployment_error_code == messages.Deployment.ErrorCodeValueValuesEnum.DELETE_BUILD_RUN_FAILED:
-    PrintDeleteRunError(deployment_ref.deleteResults)
+    PrintDeleteRunError(deployment_ref.deleteResults, deployment_ref.deleteLogs,
+                        deployment_ref.deleteBuild)
 
 
 def PreviewFailed(preview_ref):

@@ -519,9 +519,9 @@ class InterconnectAttachment(_messages.Message):
   r"""InterconnectAttachment to which this route applies to.
 
   Fields:
-    region: Optional. The scope of the PBR in the Cloud region. If scope is
-      "all", applies globally to all zakim endpoint. If not present, then does
-      not apply to any region.
+    region: Optional. Cloud region to install this policy based route on
+      interconnect attachment. Use `all` to install it on all interconnect
+      attachments.
   """
 
   region = _messages.StringField(1)
@@ -1474,7 +1474,10 @@ class PolicyBasedRoute(_messages.Message):
       this field when you create the resource.
     filter: Required. The filter to match L4 traffic.
     interconnectAttachment: Optional. The interconnect attachments to which
-      this route applies to.
+      this route applies to. Specifying both `tags` and
+      `interconnect_attachment` is not allowed, and if neither `tags` and
+      `interconnect_attachment` are specified, the PBR will be installed on
+      every network endpoints (e.g. VMs, VPNs, and Interconnects) in the VPC.
     kind: Output only. Type of this resource. Always
       networkconnectivity#policyBasedRoute for Policy Based Route resources.
     labels: User-defined labels.
@@ -1494,9 +1497,12 @@ class PolicyBasedRoute(_messages.Message):
       inclusive.
     selfLink: Output only. Server-defined fully-qualified URL for this
       resource.
-    tags: Optional. A list of instance tags to which this route applies to. If
-      tags is not set, then the PBR will be install on all endpoints within
-      the network.
+    tags: Optional. A list of VM instance tags to which this policy based
+      route applies to. Only VM instances that have ALL tags specified here
+      will install this PBR. Specifying both `tags` and
+      `interconnect_attachment` is not allowed, and if neither `tags` and
+      `interconnect_attachment` are specified, the PBR will be installed on
+      every network endpoints (e.g. VMs, VPNs, and Interconnects) in the VPC.
     updateTime: Output only. Time when the PolicyBasedRoute was updated.
     warnings: Output only. If potential misconfigurations are detected for
       this route, this field will be populated with warning messages.

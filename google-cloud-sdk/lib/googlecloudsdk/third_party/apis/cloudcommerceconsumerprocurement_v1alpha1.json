@@ -272,7 +272,7 @@
     },
     "GoogleCloudCommerceConsumerProcurementV1alpha1PlaceOrderRequest": {
       "id": "GoogleCloudCommerceConsumerProcurementV1alpha1PlaceOrderRequest",
-      "description": "Request message for ConsumerProcurementService.PlaceOrder. Next Id: 14",
+      "description": "Request message for ConsumerProcurementService.PlaceOrder.",
       "type": "object",
       "properties": {
         "displayName": {
@@ -296,7 +296,7 @@
           "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1PlaceQuoteOrderRequest"
         },
         "lineItemInfo": {
-          "description": "Optional. Places order for offer. Required when offer based order is being placed. Setting `line_item_info` will take precedence to place offer order if request is also set.",
+          "description": "Optional. Places order for offer. Required when offer based order is being placed.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1LineItemInfo"
@@ -342,7 +342,7 @@
     },
     "GoogleCloudCommerceConsumerProcurementV1alpha1LineItemInfo": {
       "id": "GoogleCloudCommerceConsumerProcurementV1alpha1LineItemInfo",
-      "description": "Line item information. Next Id: 15",
+      "description": "Line item information.",
       "type": "object",
       "properties": {
         "productExternalName": {
@@ -443,7 +443,7 @@
     },
     "GoogleCloudCommerceConsumerProcurementV1alpha1Parameter": {
       "id": "GoogleCloudCommerceConsumerProcurementV1alpha1Parameter",
-      "description": "LINT.IfChange User provided Parameters.",
+      "description": "User provided Parameters.",
       "type": "object",
       "properties": {
         "name": {
@@ -521,7 +521,7 @@
     },
     "GoogleCloudCommerceConsumerProcurementV1alpha1Order": {
       "id": "GoogleCloudCommerceConsumerProcurementV1alpha1Order",
-      "description": "Order represents a purchase made by a customer on the Cloud Commerce Platform. Creation of an order programs both the Google backend systems as well as external service provider's systems (if needed) to allow use of purchased products and to ensure the appropriate billing events occur. An Order can be made against one Product with multiple add-ons (optional) or one Quote which could potentially references multiple products. Customers typically choose a price plan for each Product purchased when creating an order and can change their plan later, if the product allows. Customers can also cancel their purchases through the Order resource once they no longer need it. The metadata that is needed during an Order's creation is hosted on the Cloud Commerce Inventory system, as part of a Product's definition. Next Id: 13",
+      "description": "Order represents a purchase made by a customer on the Cloud Commerce Platform. Creation of an order programs both the Google backend systems as well as external service provider's systems (if needed) to allow use of purchased products and to ensure the appropriate billing events occur. An Order can be made against one Product with multiple add-ons (optional) or one Quote which could potentially references multiple products. Customers typically choose a price plan for each Product purchased when creating an order and can change their plan later, if the product allows.",
       "type": "object",
       "properties": {
         "name": {
@@ -608,7 +608,7 @@
           "type": "string"
         },
         "lineItemInfo": {
-          "description": "Output only. Current state and information of this item. It tells what, e.g. which plan, is currently effective.",
+          "description": "Output only. Current state and information of this item. It tells what, e.g. which offer, is currently effective.",
           "readOnly": true,
           "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1LineItemInfo"
         },
@@ -629,7 +629,7 @@
     },
     "GoogleCloudCommerceConsumerProcurementV1alpha1LineItemChange": {
       "id": "GoogleCloudCommerceConsumerProcurementV1alpha1LineItemChange",
-      "description": "A change made on a line item. Next Id: 11",
+      "description": "A change made on a line item.",
       "type": "object",
       "properties": {
         "changeId": {
@@ -1857,7 +1857,7 @@
                   "type": "string"
                 },
                 "filter": {
-                  "description": "The filter that can be used to limit the list request. The filter is a query string that can match a selected set of attributes with string values. For example `display_name=abc`. Supported query attributes are * `display_name` * `product_external_name` * `account` If the query contains some special characters other than letters, underscore, or digits, the phrase must be quoted with double quotes. For example, `display_name=\"foo:bar\"`, where the display name needs to be quoted because it contains special character colon. Queries can be combined with `OR`, and `NOT` to form more complex queries. They can also be grouped to force a desired evaluation order. For example, `display_name=abc OR display_name=def`.",
+                  "description": "The filter that can be used to limit the list request. The filter is a query string that can match a selected set of attributes with string values. For example `display_name=abc`. Supported query attributes are * `display_name` If the query contains some special characters other than letters, underscore, or digits, the phrase must be quoted with double quotes. For example, `display_name=\"foo:bar\"`, where the display name needs to be quoted because it contains special character colon. Queries can be combined with `OR`, and `NOT` to form more complex queries. They can also be grouped to force a desired evaluation order. For example, `display_name=abc OR display_name=def`.",
                   "location": "query",
                   "type": "string"
                 }

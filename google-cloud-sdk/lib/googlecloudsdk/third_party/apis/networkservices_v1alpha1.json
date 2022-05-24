@@ -1392,7 +1392,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Required. Name of the Gateway resource. It matches pattern `projects\/*\/locations\/global\/gateways\/`.",
+          "description": "Required. Name of the Gateway resource. It matches pattern `projects\/*\/locations\/*\/gateways\/`.",
           "type": "string"
         },
         "selfLink": {
@@ -4513,7 +4513,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The project and location from which the Gateways should be listed, specified in the format `projects\/*\/locations\/global`.",
+                      "description": "Required. The project and location from which the Gateways should be listed, specified in the format `projects\/*\/locations\/*`.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -4549,7 +4549,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. A name of the Gateway to get. Must be in the format `projects\/*\/locations\/global\/gateways\/*`.",
+                      "description": "Required. A name of the Gateway to get. Must be in the format `projects\/*\/locations\/*\/gateways\/*`.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/gateways\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -4574,7 +4574,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent resource of the Gateway. Must be in the format `projects\/*\/locations\/global`.",
+                      "description": "Required. The parent resource of the Gateway. Must be in the format `projects\/*\/locations\/*`.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -4607,7 +4607,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "Required. Name of the Gateway resource. It matches pattern `projects\/*\/locations\/global\/gateways\/`.",
+                      "description": "Required. Name of the Gateway resource. It matches pattern `projects\/*\/locations\/*\/gateways\/`.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/gateways\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -4641,7 +4641,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Required. A name of the Gateway to delete. Must be in the format `projects\/*\/locations\/global\/gateways\/*`.",
+                      "description": "Required. A name of the Gateway to delete. Must be in the format `projects\/*\/locations\/*\/gateways\/*`.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/gateways\/[^\/]+$",
                       "location": "path",
                       "required": true,

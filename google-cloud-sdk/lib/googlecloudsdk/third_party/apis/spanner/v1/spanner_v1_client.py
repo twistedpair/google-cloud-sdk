@@ -46,6 +46,7 @@ class SpannerV1(base_api.BaseApiClient):
     self.projects_instances_backups_operations = self.ProjectsInstancesBackupsOperationsService(self)
     self.projects_instances_backups = self.ProjectsInstancesBackupsService(self)
     self.projects_instances_databaseOperations = self.ProjectsInstancesDatabaseOperationsService(self)
+    self.projects_instances_databases_databaseRoles = self.ProjectsInstancesDatabasesDatabaseRolesService(self)
     self.projects_instances_databases_operations = self.ProjectsInstancesDatabasesOperationsService(self)
     self.projects_instances_databases_sessions = self.ProjectsInstancesDatabasesSessionsService(self)
     self.projects_instances_databases = self.ProjectsInstancesDatabasesService(self)
@@ -796,6 +797,43 @@ class SpannerV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='SpannerProjectsInstancesDatabaseOperationsListRequest',
         response_type_name='ListDatabaseOperationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsInstancesDatabasesDatabaseRolesService(base_api.BaseApiService):
+    """Service class for the projects_instances_databases_databaseRoles resource."""
+
+    _NAME = 'projects_instances_databases_databaseRoles'
+
+    def __init__(self, client):
+      super(SpannerV1.ProjectsInstancesDatabasesDatabaseRolesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists Cloud Spanner database roles.
+
+      Args:
+        request: (SpannerProjectsInstancesDatabasesDatabaseRolesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListDatabaseRolesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/databaseRoles',
+        http_method='GET',
+        method_id='spanner.projects.instances.databases.databaseRoles.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/databaseRoles',
+        request_field='',
+        request_type_name='SpannerProjectsInstancesDatabasesDatabaseRolesListRequest',
+        response_type_name='ListDatabaseRolesResponse',
         supports_download=False,
     )
 

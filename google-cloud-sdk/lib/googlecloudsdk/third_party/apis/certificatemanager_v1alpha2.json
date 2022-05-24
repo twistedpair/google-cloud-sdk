@@ -994,6 +994,7 @@
     },
     "ResourcesCount": {
       "id": "ResourcesCount",
+      "description": "ResourcesCount represents the resource that stores aggregated project's info in the given location, e.g.: total number of certificates assigned to the project.",
       "type": "object",
       "properties": {
         "name": {

@@ -41,7 +41,7 @@ class BigQueryConfig(_messages.Message):
     state: Output only. An output-only field that indicates whether or not the
       subscription can receive messages.
     table: The name of the table to which to write data, of the form
-      {projectId}:{datasetId}.{tableId}
+      {projectId}.{datasetId}.{tableId}
     useTopicSchema: When true, use the topic's schema as the columns to write
       to in BigQuery, if it exists.
     writeMetadata: When true, write the subscription name, message_id,

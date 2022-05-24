@@ -409,6 +409,8 @@ class ConnectSettings(_messages.Message):
         version is 27.
       MYSQL_8_0_28: The database major version is MySQL 8.0 and the minor
         version is 28.
+      MYSQL_8_0_29: The database major version is MySQL 8.0 and the minor
+        version is 29.
       POSTGRES_13: The database version is PostgreSQL 13.
       POSTGRES_14: The database version is PostgreSQL 14.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
@@ -436,12 +438,13 @@ class ConnectSettings(_messages.Message):
     MYSQL_8_0_26 = 15
     MYSQL_8_0_27 = 16
     MYSQL_8_0_28 = 17
-    POSTGRES_13 = 18
-    POSTGRES_14 = 19
-    SQLSERVER_2019_STANDARD = 20
-    SQLSERVER_2019_ENTERPRISE = 21
-    SQLSERVER_2019_EXPRESS = 22
-    SQLSERVER_2019_WEB = 23
+    MYSQL_8_0_29 = 18
+    POSTGRES_13 = 19
+    POSTGRES_14 = 20
+    SQLSERVER_2019_STANDARD = 21
+    SQLSERVER_2019_ENTERPRISE = 22
+    SQLSERVER_2019_EXPRESS = 23
+    SQLSERVER_2019_WEB = 24
 
   backendType = _messages.EnumField('BackendTypeValueValuesEnum', 1)
   databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 2)
@@ -644,6 +647,8 @@ class DatabaseInstance(_messages.Message):
         version is 27.
       MYSQL_8_0_28: The database major version is MySQL 8.0 and the minor
         version is 28.
+      MYSQL_8_0_29: The database major version is MySQL 8.0 and the minor
+        version is 29.
       POSTGRES_13: The database version is PostgreSQL 13.
       POSTGRES_14: The database version is PostgreSQL 14.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
@@ -671,12 +676,13 @@ class DatabaseInstance(_messages.Message):
     MYSQL_8_0_26 = 15
     MYSQL_8_0_27 = 16
     MYSQL_8_0_28 = 17
-    POSTGRES_13 = 18
-    POSTGRES_14 = 19
-    SQLSERVER_2019_STANDARD = 20
-    SQLSERVER_2019_ENTERPRISE = 21
-    SQLSERVER_2019_EXPRESS = 22
-    SQLSERVER_2019_WEB = 23
+    MYSQL_8_0_29 = 18
+    POSTGRES_13 = 19
+    POSTGRES_14 = 20
+    SQLSERVER_2019_STANDARD = 21
+    SQLSERVER_2019_ENTERPRISE = 22
+    SQLSERVER_2019_EXPRESS = 23
+    SQLSERVER_2019_WEB = 24
 
   class InstalledVersionValueValuesEnum(_messages.Enum):
     r"""Stores the current database version including minor version such as
@@ -707,6 +713,8 @@ class DatabaseInstance(_messages.Message):
         version is 27.
       MYSQL_8_0_28: The database major version is MySQL 8.0 and the minor
         version is 28.
+      MYSQL_8_0_29: The database major version is MySQL 8.0 and the minor
+        version is 29.
       POSTGRES_13: The database version is PostgreSQL 13.
       POSTGRES_14: The database version is PostgreSQL 14.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
@@ -734,12 +742,13 @@ class DatabaseInstance(_messages.Message):
     MYSQL_8_0_26 = 15
     MYSQL_8_0_27 = 16
     MYSQL_8_0_28 = 17
-    POSTGRES_13 = 18
-    POSTGRES_14 = 19
-    SQLSERVER_2019_STANDARD = 20
-    SQLSERVER_2019_ENTERPRISE = 21
-    SQLSERVER_2019_EXPRESS = 22
-    SQLSERVER_2019_WEB = 23
+    MYSQL_8_0_29 = 18
+    POSTGRES_13 = 19
+    POSTGRES_14 = 20
+    SQLSERVER_2019_STANDARD = 21
+    SQLSERVER_2019_ENTERPRISE = 22
+    SQLSERVER_2019_EXPRESS = 23
+    SQLSERVER_2019_WEB = 24
 
   class InstanceTypeValueValuesEnum(_messages.Enum):
     r"""The instance type.
@@ -1173,6 +1182,8 @@ class Flag(_messages.Message):
         version is 27.
       MYSQL_8_0_28: The database major version is MySQL 8.0 and the minor
         version is 28.
+      MYSQL_8_0_29: The database major version is MySQL 8.0 and the minor
+        version is 29.
       POSTGRES_13: The database version is PostgreSQL 13.
       POSTGRES_14: The database version is PostgreSQL 14.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
@@ -1200,12 +1211,13 @@ class Flag(_messages.Message):
     MYSQL_8_0_26 = 15
     MYSQL_8_0_27 = 16
     MYSQL_8_0_28 = 17
-    POSTGRES_13 = 18
-    POSTGRES_14 = 19
-    SQLSERVER_2019_STANDARD = 20
-    SQLSERVER_2019_ENTERPRISE = 21
-    SQLSERVER_2019_EXPRESS = 22
-    SQLSERVER_2019_WEB = 23
+    MYSQL_8_0_29 = 18
+    POSTGRES_13 = 19
+    POSTGRES_14 = 20
+    SQLSERVER_2019_STANDARD = 21
+    SQLSERVER_2019_ENTERPRISE = 22
+    SQLSERVER_2019_EXPRESS = 23
+    SQLSERVER_2019_WEB = 24
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""The type of the flag. Flags are typed to being `BOOLEAN`, `STRING`,
@@ -2618,6 +2630,8 @@ class SqlExternalSyncSettingError(_messages.Message):
         setting.
       UNSUPPORTED_STORAGE_ENGINE: The primary instance has tables with
         unsupported storage engine.
+      LIMITED_SUPPORT_TABLES: Source has tables with limited support eg:
+        PostgreSQL tables without primary keys
     """
     SQL_EXTERNAL_SYNC_SETTING_ERROR_TYPE_UNSPECIFIED = 0
     CONNECTION_FAILURE = 1
@@ -2646,6 +2660,7 @@ class SqlExternalSyncSettingError(_messages.Message):
     UNSUPPORTED_BINLOG_FORMAT = 24
     BINLOG_RETENTION_SETTING = 25
     UNSUPPORTED_STORAGE_ENGINE = 26
+    LIMITED_SUPPORT_TABLES = 27
 
   detail = _messages.StringField(1)
   kind = _messages.StringField(2)

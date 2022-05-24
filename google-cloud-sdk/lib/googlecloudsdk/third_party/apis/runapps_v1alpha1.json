@@ -484,31 +484,6 @@
           "description": "The redis instance memory size, in GB.",
           "type": "integer",
           "format": "int32"
-        },
-        "tier": {
-          "description": "The Redis instance tier, e.g. \"STANDARD_HA\".",
-          "type": "string",
-          "enumDescriptions": [
-            "Tier unset.",
-            "Basic standalone instance.",
-            "Highly available primary\/replica instances."
-          ],
-          "enum": [
-            "TIER_UNSPECIFIED",
-            "BASIC",
-            "STANDARD_HA"
-          ]
-        },
-        "version": {
-          "description": "The Redis instance version, e.g. \"REDIS_4_0\".",
-          "type": "string"
-        },
-        "redis-parameters": {
-          "description": "The \"raw\" Redis configs: https:\/\/redis.io\/topics\/config",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
         }
       }
     },

@@ -455,33 +455,6 @@ class RecaptchaenterpriseV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def RetrieveLegacySecretKey(self, request, global_params=None):
-      r"""Returns the secret key related to the specified public key. You should use the legacy secret key only if you are integrating with a 3rd party using the legacy reCAPTCHA instead of reCAPTCHA Enterprise.
-
-      Args:
-        request: (RecaptchaenterpriseProjectsKeysRetrieveLegacySecretKeyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudRecaptchaenterpriseV1RetrieveLegacySecretKeyResponse) The response message.
-      """
-      config = self.GetMethodConfig('RetrieveLegacySecretKey')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    RetrieveLegacySecretKey.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/keys/{keysId}:retrieveLegacySecretKey',
-        http_method='GET',
-        method_id='recaptchaenterprise.projects.keys.retrieveLegacySecretKey',
-        ordered_params=['key'],
-        path_params=['key'],
-        query_params=[],
-        relative_path='v1/{+key}:retrieveLegacySecretKey',
-        request_field='',
-        request_type_name='RecaptchaenterpriseProjectsKeysRetrieveLegacySecretKeyRequest',
-        response_type_name='GoogleCloudRecaptchaenterpriseV1RetrieveLegacySecretKeyResponse',
-        supports_download=False,
-    )
-
   class ProjectsRelatedaccountgroupmembershipsService(base_api.BaseApiService):
     """Service class for the projects_relatedaccountgroupmemberships resource."""
 

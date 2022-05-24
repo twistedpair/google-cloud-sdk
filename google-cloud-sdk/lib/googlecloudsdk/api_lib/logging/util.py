@@ -371,13 +371,18 @@ def PrintPermissionInstructions(destination, writer_identity):
                        'cloud.google.com/logging/docs/export/configure_export')
 
 
-def CreateLogMetric(metric_name, description=None, log_filter=None, data=None):
+def CreateLogMetric(metric_name,
+                    description=None,
+                    log_filter=None,
+                    bucket_name=None,
+                    data=None):
   """Returns a LogMetric message based on a data stream or a description/filter.
 
   Args:
     metric_name: str, the name of the metric.
     description: str, a description.
     log_filter: str, the filter for the metric's filter field.
+    bucket_name: str, the bucket name which ownes the metric.
     data: str, a stream of data read from a config file.
 
   Returns:
@@ -390,19 +395,26 @@ def CreateLogMetric(metric_name, description=None, log_filter=None, data=None):
                                         messages.LogMetric)
     metric_msg.name = metric_name
   else:
-    metric_msg = messages.LogMetric(name=metric_name,
-                                    description=description,
-                                    filter=log_filter)
+    metric_msg = messages.LogMetric(
+        name=metric_name,
+        description=description,
+        filter=log_filter,
+        bucketName=bucket_name)
   return metric_msg
 
 
-def UpdateLogMetric(metric, description=None, log_filter=None, data=None):
+def UpdateLogMetric(metric,
+                    description=None,
+                    log_filter=None,
+                    bucket_name=None,
+                    data=None):
   """Updates a LogMetric message given description, filter, and/or data.
 
   Args:
     metric: LogMetric, the original metric.
     description: str, updated description if any.
     log_filter: str, updated filter for the metric's filter field if any.
+    bucket_name: str, the bucket name which ownes the metric.
     data: str, a stream of data read from a config file if any.
 
   Returns:
@@ -413,6 +425,8 @@ def UpdateLogMetric(metric, description=None, log_filter=None, data=None):
     metric.description = description
   if log_filter:
     metric.filter = log_filter
+  if bucket_name:
+    metric.bucketName = bucket_name
   if data:
     # Update the top-level fields only.
     update_data = yaml.load(data)

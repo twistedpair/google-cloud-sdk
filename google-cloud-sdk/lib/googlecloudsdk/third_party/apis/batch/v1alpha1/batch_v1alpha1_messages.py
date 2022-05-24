@@ -73,7 +73,8 @@ class AllocationPolicy(_messages.Message):
       Default to allow all. Currently only the first model of the
       provisioning_models list will be considered; specifying additional
       models (e.g., 2nd, 3rd, etc.) is a no-op.
-    serviceAccount: Email of the service account that VMs will run as.
+    serviceAccount: ServiceAccount that VMs will run as. [NotImplemented]
+    serviceAccountEmail: Email of the service account that VMs will run as.
   """
 
   class ProvisioningModelsValueListEntryValuesEnum(_messages.Enum):
@@ -130,7 +131,8 @@ class AllocationPolicy(_messages.Message):
   location = _messages.MessageField('LocationPolicy', 5)
   network = _messages.MessageField('NetworkPolicy', 6)
   provisioningModels = _messages.EnumField('ProvisioningModelsValueListEntryValuesEnum', 7, repeated=True)
-  serviceAccount = _messages.StringField(8)
+  serviceAccount = _messages.MessageField('ServiceAccount', 8)
+  serviceAccountEmail = _messages.StringField(9)
 
 
 class AttachedDisk(_messages.Message):
@@ -671,6 +673,12 @@ class Container(_messages.Message):
     imageUri: The URI to pull the container image from.
     options: Arbitrary additional options to include in the "docker run"
       command when running this container, e.g. "--network host".
+    password: Optional password for logging in to a docker registry. If
+      password matches "projects/*/secrets/*/versions/*" then Batch will read
+      the password from the Secret Manager;
+    username: Optional username for logging in to a docker registry. If
+      username matches "projects/*/secrets/*/versions/*" then Batch will read
+      the username from the Secret Manager.
     volumes: Volumes to mount (bind mount) from the host machine files or
       directories into the container, formatted to match docker run's --volume
       option, e.g. /foo:/bar, or /foo:/bar:ro
@@ -681,7 +689,9 @@ class Container(_messages.Message):
   entrypoint = _messages.StringField(3)
   imageUri = _messages.StringField(4)
   options = _messages.StringField(5)
-  volumes = _messages.StringField(6, repeated=True)
+  password = _messages.StringField(6)
+  username = _messages.StringField(7)
+  volumes = _messages.StringField(8, repeated=True)
 
 
 class Disk(_messages.Message):
@@ -715,14 +725,51 @@ class Empty(_messages.Message):
 
 
 class Environment(_messages.Message):
-  r"""A Environment object.
+  r"""An Environment describes a collection of environment variables to set
+  when executing Tasks. An Environment describes a collection of environment
+  variables to set when executing Tasks.
 
   Messages:
+    SecretVariablesValue: A map of environment variable names to Secret
+      Manager secret names. The VM will access the named secrets to set the
+      value of each environment variable.
     VariablesValue: A map of environment variable names to values.
 
   Fields:
+    encryptedVariables: An encrypted JSON dictionary where the key/value pairs
+      correspond to environment variable names and their values.
+    secretVariables: A map of environment variable names to Secret Manager
+      secret names. The VM will access the named secrets to set the value of
+      each environment variable.
     variables: A map of environment variable names to values.
   """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class SecretVariablesValue(_messages.Message):
+    r"""A map of environment variable names to Secret Manager secret names.
+    The VM will access the named secrets to set the value of each environment
+    variable.
+
+    Messages:
+      AdditionalProperty: An additional property for a SecretVariablesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type SecretVariablesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a SecretVariablesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class VariablesValue(_messages.Message):
@@ -748,7 +795,9 @@ class Environment(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  variables = _messages.MessageField('VariablesValue', 1)
+  encryptedVariables = _messages.MessageField('KMSEnvMap', 1)
+  secretVariables = _messages.MessageField('SecretVariablesValue', 2)
+  variables = _messages.MessageField('VariablesValue', 3)
 
 
 class Expr(_messages.Message):
@@ -1153,6 +1202,20 @@ class JobStatus(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 2)
   statusEvents = _messages.MessageField('StatusEvent', 3, repeated=True)
   taskGroups = _messages.MessageField('TaskGroupsValue', 4)
+
+
+class KMSEnvMap(_messages.Message):
+  r"""A KMSEnvMap object.
+
+  Fields:
+    cipherText: The value of the cipherText response from the `encrypt`
+      method.
+    keyName: The name of the KMS key that will be used to decrypt the cipher
+      text.
+  """
+
+  cipherText = _messages.StringField(1)
+  keyName = _messages.StringField(2)
 
 
 class LifecyclePolicy(_messages.Message):
@@ -1727,6 +1790,8 @@ class Runnable(_messages.Message):
       tools like SSH servers).
     barrier: Barrier runnable.
     container: Container runnable.
+    environment: Environment variables for this Runnable (overrides variables
+      set for the whole Task or TaskGroup.
     ignoreExitStatus: Normally, a non-zero exit status causes the Task to
       fail. This flag allows execution of other Runnables to continue instead.
     script: Script runnable.
@@ -1736,8 +1801,9 @@ class Runnable(_messages.Message):
   background = _messages.BooleanField(2)
   barrier = _messages.MessageField('Barrier', 3)
   container = _messages.MessageField('Container', 4)
-  ignoreExitStatus = _messages.BooleanField(5)
-  script = _messages.MessageField('Script', 6)
+  environment = _messages.MessageField('Environment', 5)
+  ignoreExitStatus = _messages.BooleanField(6)
+  script = _messages.MessageField('Script', 7)
 
 
 class Script(_messages.Message):
@@ -1750,6 +1816,21 @@ class Script(_messages.Message):
 
   path = _messages.StringField(1)
   text = _messages.StringField(2)
+
+
+class ServiceAccount(_messages.Message):
+  r"""Carries information about a Google Cloud service account.
+
+  Fields:
+    email: Email address of the service account. If not specified, the default
+      Compute Engine service account for the project will be used.
+    scopes: List of scopes to be enabled for this service account on the VM,
+      in addition to the cloud-platform API scope that will be added by
+      default.
+  """
+
+  email = _messages.StringField(1)
+  scopes = _messages.StringField(2, repeated=True)
 
 
 class SetIamPolicyRequest(_messages.Message):
@@ -2077,6 +2158,7 @@ class TaskSpec(_messages.Message):
 
   Fields:
     computeResource: ComputeResource requirements.
+    environment: Environment variables to set before running the Task.
     environments: Environment variables to set before running the Task. You
       can set up to 100 environments.
     lifecyclePolicies: Lifecycle management schema when any task in a task
@@ -2131,12 +2213,13 @@ class TaskSpec(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   computeResource = _messages.MessageField('ComputeResource', 1)
-  environments = _messages.MessageField('EnvironmentsValue', 2)
-  lifecyclePolicies = _messages.MessageField('LifecyclePolicy', 3, repeated=True)
-  maxRetryCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  maxRunDuration = _messages.StringField(5)
-  runnables = _messages.MessageField('Runnable', 6, repeated=True)
-  volumes = _messages.MessageField('Volume', 7, repeated=True)
+  environment = _messages.MessageField('Environment', 2)
+  environments = _messages.MessageField('EnvironmentsValue', 3)
+  lifecyclePolicies = _messages.MessageField('LifecyclePolicy', 4, repeated=True)
+  maxRetryCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  maxRunDuration = _messages.StringField(6)
+  runnables = _messages.MessageField('Runnable', 7, repeated=True)
+  volumes = _messages.MessageField('Volume', 8, repeated=True)
 
 
 class TaskStatus(_messages.Message):

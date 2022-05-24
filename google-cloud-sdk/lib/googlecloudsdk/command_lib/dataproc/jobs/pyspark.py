@@ -25,6 +25,7 @@ from apitools.base.py import encoding
 
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.dataproc.jobs import base as job_base
+from googlecloudsdk.command_lib.dataproc.jobs import util as job_util
 
 
 class PySparkBase(job_base.JobBase):
@@ -82,6 +83,9 @@ class PySparkBase(job_base.JobBase):
              'https://spark.apache.org/docs/latest/'
              'configuration.html#available-properties.')
     parser.add_argument(
+        '--properties-file',
+        help=job_util.PROPERTIES_FILE_HELP_TEXT)
+    parser.add_argument(
         '--driver-log-levels',
         type=arg_parsers.ArgDict(),
         metavar='PACKAGE=LEVEL',
@@ -111,8 +115,11 @@ class PySparkBase(job_base.JobBase):
         mainPythonFileUri=files_by_type['py_file'],
         loggingConfig=logging_config)
 
-    if args.properties:
+    job_properties = job_util.BuildJobProperties(
+        args.properties, args.properties_file)
+    if job_properties:
+    # Sort properties to ensure tests comparing messages not fail on ordering.
       pyspark_job.properties = encoding.DictToAdditionalPropertyMessage(
-          args.properties, messages.PySparkJob.PropertiesValue)
+          job_properties, messages.PySparkJob.PropertiesValue, sort_items=True)
 
     job.pysparkJob = pyspark_job

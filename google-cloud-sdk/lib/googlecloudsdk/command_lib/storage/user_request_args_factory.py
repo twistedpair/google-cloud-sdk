@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import collections
 import enum
 import os
 
@@ -26,12 +27,43 @@ from googlecloudsdk.core.util import debug_output
 
 
 CLEAR = '_CLEAR'
-GZIP_IN_FLIGHT_ALL = '_GZIP_IN_FLIGHT_ALL'
+GZIP_ALL = '_GZIP_ALL'
+
+
+class GzipType(enum.Enum):
+  IN_FLIGHT = 'in_flight'
+  LOCAL = 'local'
 
 
 class MetadataType(enum.Enum):
   BUCKET = 'bucket'
   OBJECT = 'object'
+
+
+# Holds formatted info from gzip flags.
+#
+# Attributes:
+#   type (GzipType|None): Whether to gzip upload API requests in-flight
+#     (and decode at destination) or gzip files locally before upload (and leave
+#     zipped at destination). None means don't gzip anything.
+#   extensions (GZIP_ALL|list[str]|None): Whether to use gzip encoding for
+#     uploading files. Can be string constant saying to encode all files, list
+#     saying to encode files with specific extensions, or None saying not to
+#     encode any files.
+GzipSettings = collections.namedtuple('GzipSettings', ['type', 'extensions'])
+
+
+def _get_gzip_settings_from_command_args(args):
+  """Creates GzipSettings object from user flags."""
+  if getattr(args, 'gzip_in_flight_all', None):
+    return GzipSettings(GzipType.IN_FLIGHT, GZIP_ALL)
+  elif getattr(args, 'gzip_in_flight', None):
+    return GzipSettings(GzipType.IN_FLIGHT, args.gzip_in_flight)
+  elif getattr(args, 'gzip_local_all', None):
+    return GzipSettings(GzipType.LOCAL, GZIP_ALL)
+  elif getattr(args, 'gzip_local', None):
+    return GzipSettings(GzipType.LOCAL, args.gzip_local)
+  return None
 
 
 class _UserBucketArgs:
@@ -113,6 +145,7 @@ class _UserObjectArgs:
       custom_metadata=None,
       custom_time=None,
       md5_hash=None,
+      preserve_acl=False,
       storage_class=None,
   ):
     """Initializes class, binding flag values to it."""
@@ -124,6 +157,7 @@ class _UserObjectArgs:
     self.custom_metadata = custom_metadata
     self.custom_time = custom_time
     self.md5_hash = md5_hash
+    self.preserve_acl = preserve_acl
     self.storage_class = storage_class
 
   def __eq__(self, other):
@@ -137,6 +171,7 @@ class _UserObjectArgs:
             self.custom_metadata == other.custom_metadata and
             self.custom_time == other.custom_time and
             self.md5_hash == other.md5_hash and
+            self.preserve_acl == other.preserve_acl and
             self.storage_class == other.storage_class)
 
   def __repr__(self):
@@ -151,7 +186,7 @@ class _UserRequestArgs:
   """
 
   def __init__(self,
-               gzip_in_flight=None,
+               gzip_settings=None,
                manifest_path=None,
                max_bytes_per_call=None,
                no_clobber=False,
@@ -162,7 +197,7 @@ class _UserRequestArgs:
                resource_args=None,
                system_posix_data=None):
     """Sets properties."""
-    self.gzip_in_flight = gzip_in_flight
+    self.gzip_settings = gzip_settings
     self.manifest_path = (
         os.path.expanduser(manifest_path) if manifest_path else None)
     self.max_bytes_per_call = max_bytes_per_call
@@ -177,7 +212,7 @@ class _UserRequestArgs:
   def __eq__(self, other):
     if not isinstance(other, type(self)):
       return NotImplemented
-    return (self.gzip_in_flight == other.gzip_in_flight and
+    return (self.gzip_settings == other.gzip_settings and
             self.manifest_path == other.manifest_path and
             self.max_bytes_per_call == other.max_bytes_per_call and
             self.no_clobber == other.no_clobber and
@@ -270,6 +305,7 @@ def get_user_request_args_from_command_args(args, metadata_type=None):
                                                       'custom_metadata')
       custom_time = _get_clear_or_value_from_flag(args, 'clear_custom_time',
                                                   'custom_time')
+      preserve_acl = getattr(args, 'preserve_acl', False)
       storage_class = getattr(args, 'storage_class', None)
 
       resource_args = _UserObjectArgs(
@@ -281,25 +317,23 @@ def get_user_request_args_from_command_args(args, metadata_type=None):
           custom_metadata=custom_metadata,
           custom_time=custom_time,
           md5_hash=md5_hash,
+          preserve_acl=preserve_acl,
           storage_class=storage_class)
 
-  if getattr(args, 'gzip_in_flight_all', None):
-    gzip_in_flight = GZIP_IN_FLIGHT_ALL
-  else:
-    gzip_in_flight = getattr(args, 'gzip_in_flight_extensions', None)
-
+  gzip_settings = _get_gzip_settings_from_command_args(args)
   if getattr(args, 'preserve_posix', None):
     system_posix_data = posix_util.get_system_posix_data()
   else:
     system_posix_data = None
 
   return _UserRequestArgs(
-      gzip_in_flight=gzip_in_flight,
+      gzip_settings=gzip_settings,
       manifest_path=getattr(args, 'manifest_path', None),
       no_clobber=getattr(args, 'no_clobber', False),
       precondition_generation_match=getattr(args, 'if_generation_match', None),
       precondition_metageneration_match=getattr(args, 'if_metageneration_match',
                                                 None),
+      predefined_acl_string=getattr(args, 'predefined_acl', None),
       resource_args=resource_args,
       system_posix_data=system_posix_data,
   )

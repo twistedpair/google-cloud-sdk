@@ -658,6 +658,10 @@
         "worker": {
           "description": "Optional. Resources used by Airflow workers.",
           "$ref": "WorkerResource"
+        },
+        "triggerer": {
+          "description": "Optional. Resources used by Airflow triggerers.",
+          "$ref": "TriggererResource"
         }
       }
     },
@@ -739,6 +743,28 @@
           "description": "Optional. Maximum number of workers for autoscaling.",
           "type": "integer",
           "format": "int32"
+        }
+      }
+    },
+    "TriggererResource": {
+      "id": "TriggererResource",
+      "description": "Configuration for resources used by Airflow triggerers.",
+      "type": "object",
+      "properties": {
+        "count": {
+          "description": "Optional. The number of triggerers.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "cpu": {
+          "description": "Optional. CPU request and limit for a single Airflow triggerer replica.",
+          "type": "number",
+          "format": "float"
+        },
+        "memoryGb": {
+          "description": "Optional. Memory (GB) request and limit for a single Airflow triggerer replica.",
+          "type": "number",
+          "format": "float"
         }
       }
     },

@@ -460,6 +460,13 @@
           "type": "string"
         }
       }
+    },
+    "GoogleIamV1betaWorkloadIdentityPoolOperationMetadata": {
+      "id": "GoogleIamV1betaWorkloadIdentityPoolOperationMetadata",
+      "description": "Metadata for long-running WorkloadIdentityPool operations.",
+      "type": "object",
+      "properties": {
+      }
     }
   },
   "resources": {

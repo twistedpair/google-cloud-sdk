@@ -32,6 +32,9 @@ import six
 from six.moves import urllib
 
 
+TEMPORARY_FILE_SUFFIX = '_.gstmp'
+
+
 class ProviderPrefix(enum.Enum):
   """Provider prefix strings for storage URLs."""
   FILE = 'file'

@@ -1648,6 +1648,22 @@ class Status(_messages.Message):
   message = _messages.StringField(3)
 
 
+class TriggererResource(_messages.Message):
+  r"""Configuration for resources used by Airflow triggerers.
+
+  Fields:
+    count: Optional. The number of triggerers.
+    cpu: Optional. CPU request and limit for a single Airflow triggerer
+      replica.
+    memoryGb: Optional. Memory (GB) request and limit for a single Airflow
+      triggerer replica.
+  """
+
+  count = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  cpu = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  memoryGb = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+
+
 class WebServerConfig(_messages.Message):
   r"""The configuration settings for the Airflow web server App Engine
   instance. Supported for Cloud Composer environments in versions
@@ -1717,13 +1733,15 @@ class WorkloadsConfig(_messages.Message):
 
   Fields:
     scheduler: Optional. Resources used by Airflow schedulers.
+    triggerer: Optional. Resources used by Airflow triggerers.
     webServer: Optional. Resources used by Airflow web server.
     worker: Optional. Resources used by Airflow workers.
   """
 
   scheduler = _messages.MessageField('SchedulerResource', 1)
-  webServer = _messages.MessageField('WebServerResource', 2)
-  worker = _messages.MessageField('WorkerResource', 3)
+  triggerer = _messages.MessageField('TriggererResource', 2)
+  webServer = _messages.MessageField('WebServerResource', 3)
+  worker = _messages.MessageField('WorkerResource', 4)
 
 
 encoding.AddCustomJsonFieldMapping(

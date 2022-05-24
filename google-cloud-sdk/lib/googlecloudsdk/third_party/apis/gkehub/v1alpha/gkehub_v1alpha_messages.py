@@ -1408,6 +1408,10 @@ class FeatureState(_messages.Message):
 class Fleet(_messages.Message):
   r"""Fleet contains the Fleet-wide metadata and configuration.
 
+  Enums:
+    SamenessModeValueValuesEnum: Optional. The sameness mode this fleet is
+      using.
+
   Fields:
     createTime: Output only. When the Fleet was created.
     deleteTime: Output only. When the Fleet was deleted.
@@ -1428,11 +1432,26 @@ class Fleet(_messages.Message):
     name: Output only. The full, unique resource name of this fleet in the
       format of `projects/{project}/locations/{location}/fleets/{fleet}`. Each
       GCP project can have at most one fleet resource, named "default".
+    samenessMode: Optional. The sameness mode this fleet is using.
     uid: Output only. Google-generated UUID for this resource. This is unique
       across all Fleet resources. If a Fleet resource is deleted and another
       resource with the same name is created, it gets a different uid.
     updateTime: Output only. When the Fleet was last updated.
   """
+
+  class SamenessModeValueValuesEnum(_messages.Enum):
+    r"""Optional. The sameness mode this fleet is using.
+
+    Values:
+      SAMENESS_MODE_UNSPECIFIED: <no description>
+      ALL_CLUSTER_NAMESPACES: All cluster namespaces are considered the same
+        (default).
+      MAPPED_FLEET_NAMESPACES: Restrict sameness to cluster namespaces that
+        are active-fleet namespaces on the membership.
+    """
+    SAMENESS_MODE_UNSPECIFIED = 0
+    ALL_CLUSTER_NAMESPACES = 1
+    MAPPED_FLEET_NAMESPACES = 2
 
   createTime = _messages.StringField(1)
   deleteTime = _messages.StringField(2)
@@ -1440,8 +1459,9 @@ class Fleet(_messages.Message):
   fleetName = _messages.StringField(4)
   managedNamespaces = _messages.BooleanField(5)
   name = _messages.StringField(6)
-  uid = _messages.StringField(7)
-  updateTime = _messages.StringField(8)
+  samenessMode = _messages.EnumField('SamenessModeValueValuesEnum', 7)
+  uid = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
 
 
 class GenerateConnectManifestResponse(_messages.Message):
@@ -2835,6 +2855,8 @@ class MembershipEndpoint(_messages.Message):
       cluster.
     edgeCluster: Optional. Specific information for a Google Edge cluster.
     gkeCluster: Optional. Specific information for a GKE-on-GCP cluster.
+    googleManaged: Output only. Whether the lifecycle of this membership is
+      managed by a google cluster platform service.
     kubernetesMetadata: Output only. Useful Kubernetes-specific metadata.
     kubernetesResource: Optional. The in-cluster Kubernetes Resources that
       should be applied for a correctly registered cluster, in the steady
@@ -2852,10 +2874,11 @@ class MembershipEndpoint(_messages.Message):
   applianceCluster = _messages.MessageField('ApplianceCluster', 1)
   edgeCluster = _messages.MessageField('EdgeCluster', 2)
   gkeCluster = _messages.MessageField('GkeCluster', 3)
-  kubernetesMetadata = _messages.MessageField('KubernetesMetadata', 4)
-  kubernetesResource = _messages.MessageField('KubernetesResource', 5)
-  multiCloudCluster = _messages.MessageField('MultiCloudCluster', 6)
-  onPremCluster = _messages.MessageField('OnPremCluster', 7)
+  googleManaged = _messages.BooleanField(4)
+  kubernetesMetadata = _messages.MessageField('KubernetesMetadata', 5)
+  kubernetesResource = _messages.MessageField('KubernetesResource', 6)
+  multiCloudCluster = _messages.MessageField('MultiCloudCluster', 7)
+  onPremCluster = _messages.MessageField('OnPremCluster', 8)
 
 
 class MembershipFeatureSpec(_messages.Message):

@@ -192,3 +192,13 @@ data_disks:
 
     *mode*::: Specifies the mode in which to attach this disk. Valid options are 'read-write',
     'read-only'. If not specified, the default is 'read-write'.
+
+enable_secure_boot:
+  api_field: node.shieldedInstanceConfig.enableSecureBoot
+  arg_name: shielded-secure-boot
+  type: bool
+  default: false
+  required: false
+  help_text: |
+    Specifies that the TPU instances are created with secure boot enabled. This implicitly makes
+    them Shielded VM instances.

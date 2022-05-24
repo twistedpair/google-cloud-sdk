@@ -23,23 +23,55 @@ from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
 
+class GlobalTargetTcpProxiesCompleter(compute_completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(GlobalTargetTcpProxiesCompleter, self).__init__(
+        collection='compute.targetTcpProxies',
+        list_command='compute target-tcp-proxies list --global --uri',
+        **kwargs)
+
+
+class RegionalTargetTcpProxiesCompleter(compute_completers.ListCommandCompleter
+                                       ):
+
+  def __init__(self, **kwargs):
+    super(RegionalTargetTcpProxiesCompleter, self).__init__(
+        collection='compute.regionTargetTcpProxies',
+        list_command='compute target-tcp-proxies list --filter=region:* --uri',
+        **kwargs)
+
+
 class TargetTcpProxiesCompleter(compute_completers.ListCommandCompleter):
 
   def __init__(self, **kwargs):
     super(TargetTcpProxiesCompleter, self).__init__(
+        completers=[
+            GlobalTargetTcpProxiesCompleter, RegionalTargetTcpProxiesCompleter
+        ],
+        **kwargs)
+
+
+class GATargetTcpProxiesCompleter(compute_completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(GATargetTcpProxiesCompleter, self).__init__(
         collection='compute.targetTcpProxies',
         list_command='compute target-tcp-proxies list --uri',
         **kwargs)
 
 
-def TargetTcpProxyArgument(required=True, plural=False):
+def TargetTcpProxyArgument(required=True, plural=False, allow_regional=False):
   return compute_flags.ResourceArgument(
       resource_name='target TCP proxy',
       completer=TargetTcpProxiesCompleter,
       plural=plural,
       custom_plural='target TCP proxies',
       required=required,
-      global_collection='compute.targetTcpProxies')
+      global_collection='compute.targetTcpProxies',
+      regional_collection='compute.regionTargetTcpProxies'
+      if allow_regional else None,
+      region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION)
 
 
 def AddProxyBind(parser):

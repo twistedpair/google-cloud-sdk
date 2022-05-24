@@ -23,6 +23,7 @@ import argparse
 from apitools.base.py import encoding
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.dataproc.jobs import base as job_base
+from googlecloudsdk.command_lib.dataproc.jobs import util as job_util
 
 
 class SparkRBase(job_base.JobBase):
@@ -63,6 +64,9 @@ class SparkRBase(job_base.JobBase):
         'https://spark.apache.org/docs/latest/'
         'configuration.html#available-properties.')
     parser.add_argument(
+        '--properties-file',
+        help=job_util.PROPERTIES_FILE_HELP_TEXT)
+    parser.add_argument(
         '--driver-log-levels',
         type=arg_parsers.ArgDict(),
         metavar='PACKAGE=LEVEL',
@@ -88,8 +92,10 @@ class SparkRBase(job_base.JobBase):
         mainRFileUri=files_by_type['r_file'],
         loggingConfig=logging_config)
 
-    if args.properties:
+    job_properties = job_util.BuildJobProperties(
+        args.properties, args.properties_file)
+    if job_properties:
       spark_r_job.properties = encoding.DictToMessage(
-          args.properties, messages.SparkRJob.PropertiesValue)
+          job_properties, messages.SparkRJob.PropertiesValue)
 
     job.sparkRJob = spark_r_job

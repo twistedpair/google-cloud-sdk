@@ -64,18 +64,23 @@ def Promote(release_ref,
   Raises:
     googlecloudsdk.command_lib.deploy.exceptions.RolloutIdExhausted
     googlecloudsdk.command_lib.deploy.exceptions.ReleaseInactiveError
+  Returns:
+    The rollout resource created.
   """
   dest_target = to_target
   if not dest_target:
     dest_target = GetToTargetID(release_obj, is_create)
 
-  rollout_util.CreateRollout(release_ref, dest_target, rollout_id, annotations,
-                             labels, description)
+  rollout_resource = rollout_util.CreateRollout(release_ref, dest_target,
+                                                rollout_id, annotations, labels,
+                                                description)
 
   # Check if it requires approval.
   target_obj = release_util.GetSnappedTarget(release_obj, dest_target)
   if target_obj and target_obj.requireApproval:
     log.status.Print('The rollout is pending approval.')
+
+  return rollout_resource
 
 
 def GetToTargetID(release_obj, is_create):

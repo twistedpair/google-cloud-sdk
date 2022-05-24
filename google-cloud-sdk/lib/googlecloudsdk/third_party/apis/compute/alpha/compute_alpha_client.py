@@ -7139,7 +7139,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def SetScheduling(self, request, global_params=None):
-      r"""Sets an instance's scheduling options. You can only call this method on a stopped instance, that is, a VM instance that is in a `TERMINATED` state. See Instance Life Cycle for more information on the possible instance states. For more information about setting scheduling options for a VM, see Set VM availability policies.
+      r"""Sets an instance's scheduling options. You can only call this method on a stopped instance, that is, a VM instance that is in a `TERMINATED` state. See Instance Life Cycle for more information on the possible instance states. For more information about setting scheduling options for a VM, see Set VM host maintenance policy.
 
       Args:
         request: (ComputeInstancesSetSchedulingRequest) input message

@@ -44,7 +44,7 @@ def generate_login_token_from_gcloud_auth(scopes):
       allow_account_impersonation=True,
       use_google_auth=True)
 
-  _downscope_credential(cred, scopes)
+  cred = _downscope_credential(cred, scopes)
 
   c_store.Refresh(cred)
   if c_creds.IsOauth2ClientCredentials(cred):
@@ -73,7 +73,7 @@ def generate_login_token_from_adc(scopes):
     log.debug(e, exc_info=True)
     raise c_exc.ToolException(six.text_type(e))
 
-  _downscope_credential(creds, scopes)
+  creds = _downscope_credential(creds, scopes)
 
   # Converts the user credentials so that it can handle reauth during refresh.
   if isinstance(creds, google_auth_creds.Credentials):
@@ -112,3 +112,4 @@ def _downscope_credential(creds, scopes):
     creds = creds.with_scopes(scopes)
   else:
     creds._scopes = scopes
+  return creds

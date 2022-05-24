@@ -59,6 +59,16 @@ min_duration:
 
     If this flag is set the guaranteed flag is also set.
 
+reserved:
+  arg_name: reserved
+  type: bool
+  action: store_true
+  api_field: queuedResource.guaranteed.reserved
+  help_text: |
+    Specifies the request should be scheduled on reserved capacity.
+
+    If this flag is set the guaranteed flag is also set.
+
 valid_after_duration:
   arg_name: valid-after-duration
   api_field: queuedResource.queueingPolicy.validAfterDuration

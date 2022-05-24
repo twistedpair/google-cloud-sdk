@@ -23,6 +23,7 @@ from apitools.base.py import encoding
 
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.dataproc.jobs import base as job_base
+from googlecloudsdk.command_lib.dataproc.jobs import util as job_util
 
 
 class HiveBase(job_base.JobBase):
@@ -60,6 +61,9 @@ class HiveBase(job_base.JobBase):
         metavar='PROPERTY=VALUE',
         help='A list of key value pairs to configure Hive.')
     parser.add_argument(
+        '--properties-file',
+        help=job_util.PROPERTIES_FILE_HELP_TEXT)
+    parser.add_argument(
         '--continue-on-failure',
         action='store_true',
         help='Whether to continue if a single query fails.')
@@ -84,8 +88,12 @@ class HiveBase(job_base.JobBase):
     if args.params:
       hive_job.scriptVariables = encoding.DictToAdditionalPropertyMessage(
           args.params, messages.HiveJob.ScriptVariablesValue)
-    if args.properties:
+
+    job_properties = job_util.BuildJobProperties(
+        args.properties, args.properties_file)
+    if job_properties:
+    # Sort properties to ensure tests comparing messages not fail on ordering.
       hive_job.properties = encoding.DictToAdditionalPropertyMessage(
-          args.properties, messages.HiveJob.PropertiesValue)
+          job_properties, messages.HiveJob.PropertiesValue, sort_items=True)
 
     job.hiveJob = hive_job

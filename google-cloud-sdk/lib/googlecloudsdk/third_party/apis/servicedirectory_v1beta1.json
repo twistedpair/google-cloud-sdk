@@ -778,6 +778,11 @@
             "GKE_HUB",
             "BACKEND_SERVICE"
           ]
+        },
+        "managedRegistration": {
+          "description": "Output only. TODO(b\/230323652) Update documentation for managed_registration field ! Indicates if the ServiceWorkload is GCP managed or not.",
+          "readOnly": true,
+          "type": "boolean"
         }
       }
     },

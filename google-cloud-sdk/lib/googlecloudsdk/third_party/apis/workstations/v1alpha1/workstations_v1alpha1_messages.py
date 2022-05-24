@@ -485,6 +485,32 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
+class GceInstanceConfig(_messages.Message):
+  r"""Describe a runtime using a Gce Instance.
+
+  Fields:
+    disablePublicIpAddresses: Whether instances have no public IP address.
+    machineType: The name of a Google Compute Engine machine type.
+    poolSize: Number of instances to pool for faster Workstation starup.
+    serviceAccount: Email address of the service account that will be used on
+      VM instances used to support this config. This service account must have
+      permission to pull the specified container image. If not set, VMs will
+      run without a service account, in which case the image must be publicly
+      accessible.
+    serviceAccountScopes: Scopes to grant to the service account. Various
+      scopes are automatically added based on feature usage.
+    tags: Network tags to add to the Google Compute Engine machines backing
+      the Workstations.
+  """
+
+  disablePublicIpAddresses = _messages.BooleanField(1)
+  machineType = _messages.StringField(2)
+  poolSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  serviceAccount = _messages.StringField(4)
+  serviceAccountScopes = _messages.StringField(5, repeated=True)
+  tags = _messages.StringField(6, repeated=True)
+
+
 class GceRegionalPersistentDisk(_messages.Message):
   r"""A PersistentDirectory backed by a Compute Engine regional persistent
   disk.
@@ -528,6 +554,16 @@ class GenerateAccessTokenResponse(_messages.Message):
 
   accessToken = _messages.StringField(1)
   expireTime = _messages.StringField(2)
+
+
+class HostConfig(_messages.Message):
+  r"""Describes the runtime host for the Workstation.
+
+  Fields:
+    gceInstanceConfig: Specifies a Gce Instance as the host.
+  """
+
+  gceInstanceConfig = _messages.MessageField('GceInstanceConfig', 1)
 
 
 class ListOperationsResponse(_messages.Message):
@@ -838,6 +874,11 @@ class PrivateClusterConfig(_messages.Message):
   r"""Configuration options for private clusters.
 
   Fields:
+    clusterHostname: Output only. Hostname for the Workstation Cluster. This
+      field will be populated only when private endpoint is enabled. To access
+      workstations in the cluster, create a new DNS zone mapping this domain
+      name to an internal IP address and a forwarding rule mapping that
+      address to the service attachment.
     enablePrivateEndpoint: Whether Workstations endpoint is private.
     enablePrivateVmInstances: Whether Workstation VM instances have no public
       IP address.
@@ -849,9 +890,10 @@ class PrivateClusterConfig(_messages.Message):
       connect-services].
   """
 
-  enablePrivateEndpoint = _messages.BooleanField(1)
-  enablePrivateVmInstances = _messages.BooleanField(2)
-  serviceAttachmentUri = _messages.StringField(3)
+  clusterHostname = _messages.StringField(1)
+  enablePrivateEndpoint = _messages.BooleanField(2)
+  enablePrivateVmInstances = _messages.BooleanField(3)
+  serviceAttachmentUri = _messages.StringField(4)
 
 
 class Rule(_messages.Message):
@@ -1270,6 +1312,7 @@ class WorkstationConfig(_messages.Message):
       computational resources on standby to support this many workstations.
       Increasing this number will allow workstations to be started more
       quickly but will impose additional costs.
+    hostConfig: Runtime host for the Workstation.
     idleTimeout: How long to wait before automatically stopping an instance
       that hasn't received any user traffic.
     machineType: The name of a Google Compute Engine machine type.
@@ -1323,16 +1366,17 @@ class WorkstationConfig(_messages.Message):
   displayName = _messages.StringField(5)
   etag = _messages.StringField(6)
   fastStartWorkstationCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  idleTimeout = _messages.StringField(8)
-  machineType = _messages.StringField(9)
-  name = _messages.StringField(10)
-  persistentDirectories = _messages.MessageField('PersistentDirectory', 11, repeated=True)
-  reconciling = _messages.BooleanField(12)
-  serviceAccount = _messages.StringField(13)
-  serviceAccountScopes = _messages.StringField(14, repeated=True)
-  tags = _messages.StringField(15, repeated=True)
-  uid = _messages.StringField(16)
-  updateTime = _messages.StringField(17)
+  hostConfig = _messages.MessageField('HostConfig', 8)
+  idleTimeout = _messages.StringField(9)
+  machineType = _messages.StringField(10)
+  name = _messages.StringField(11)
+  persistentDirectories = _messages.MessageField('PersistentDirectory', 12, repeated=True)
+  reconciling = _messages.BooleanField(13)
+  serviceAccount = _messages.StringField(14)
+  serviceAccountScopes = _messages.StringField(15, repeated=True)
+  tags = _messages.StringField(16, repeated=True)
+  uid = _messages.StringField(17)
+  updateTime = _messages.StringField(18)
 
 
 class WorkstationsProjectsLocationsOperationsCancelRequest(_messages.Message):

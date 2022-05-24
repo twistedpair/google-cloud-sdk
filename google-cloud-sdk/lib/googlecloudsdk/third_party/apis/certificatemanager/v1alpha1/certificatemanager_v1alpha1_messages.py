@@ -1168,7 +1168,9 @@ class Policy(_messages.Message):
 
 
 class ResourcesCount(_messages.Message):
-  r"""A ResourcesCount object.
+  r"""ResourcesCount represents the resource that stores aggregated project's
+  info in the given location, e.g.: total number of certificates assigned to
+  the project.
 
   Fields:
     certificates: The count of certificates.

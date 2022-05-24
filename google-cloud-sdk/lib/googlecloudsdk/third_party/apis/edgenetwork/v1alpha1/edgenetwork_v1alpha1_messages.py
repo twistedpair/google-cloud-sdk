@@ -13,20 +13,8 @@ from apitools.base.py import extra_types
 package = 'edgenetwork'
 
 
-class ARPEntry(_messages.Message):
-  r"""Describing the ARP neighbor entry.
-
-  Fields:
-    ipAddress: The IP address of this ARP neighbor.
-    macAddress: The MAC address of this ARP neighbor.
-  """
-
-  ipAddress = _messages.StringField(1)
-  macAddress = _messages.StringField(2)
-
-
 class Bgp(_messages.Message):
-  r"""A Bgp object.
+  r"""BGP information specific to this router.
 
   Fields:
     asn: Locally assigned BGP ASN.
@@ -40,7 +28,8 @@ class Bgp(_messages.Message):
 
 
 class BgpPeer(_messages.Message):
-  r"""A BgpPeer object.
+  r"""BGPPeer defines the peer side layer-3 information for building the BGP
+  session.
 
   Fields:
     interface: A string attribute.
@@ -729,8 +718,8 @@ class Interconnect(_messages.Message):
     for now.
 
     Values:
-      INTERCONNECT_TYPE_UNSPECIFIED: <no description>
-      DEDICATED: <no description>
+      INTERCONNECT_TYPE_UNSPECIFIED: Unspecified.
+      DEDICATED: Dedicated Interconnect.
     """
     INTERCONNECT_TYPE_UNSPECIFIED = 0
     DEDICATED = 1
@@ -809,11 +798,10 @@ class InterconnectAttachment(_messages.Message):
 
     Values:
       STATE_UNKNOWN: Unspecified state.
-      STATE_PENDING: The resource has not been recognized by config push.
-      STATE_PROVISIONING: The resource has reached config push.
-      STATE_RUNNING: The resource has been pushed to device successfully by
-        config push.
-      STATE_SUSPENDED: The resource failed to push to device by config push.
+      STATE_PENDING: The resource is being prepared to be applied to the rack.
+      STATE_PROVISIONING: The resource has started being applied to the rack.
+      STATE_RUNNING: The resource has been pushed to the rack.
+      STATE_SUSPENDED: The resource failed to push to the rack.
       STATE_DELETING: The resource is under deletion.
     """
     STATE_UNKNOWN = 0
@@ -864,25 +852,31 @@ class InterconnectDiagnostics(_messages.Message):
   current technical information about Google's side of the connection.
 
   Fields:
-    arpEntries: A list of ARPEntry, describing the ARP neighbor entries seen
-      on this interconnect.
+    linkLayerAddresses: A list of LinkLayerAddress, describing the ip address
+      and corresponding link-layer address of the neighbors for this
+      interconnect.
     links: A list of LinkStatus objects, used to describe the status for each
       link on the Interconnect.
     macAddress: The MAC address of the Interconnect's bundle interface.
   """
 
-  arpEntries = _messages.MessageField('ARPEntry', 1, repeated=True)
+  linkLayerAddresses = _messages.MessageField('LinkLayerAddress', 1, repeated=True)
   links = _messages.MessageField('LinkStatus', 2, repeated=True)
   macAddress = _messages.StringField(3)
 
 
 class Interface(_messages.Message):
-  r"""A Interface object.
+  r"""Router Interface defines the GDCE zone side layer-3 information for
+  building the BGP session.
 
   Fields:
-    ipv4Cidr: IP address and range of the interface.
+    ipv4Cidr: IP address and range of the interface. This value is only used
+      when linked_interconnect_attachment is set.
     linkedInterconnectAttachment: The canonical name of the linked
       Interconnect attachment.
+    loopbackIpAddresses: Create loopback interface in the router when
+      specified. The number of IP addresses must match the number of TOR
+      devices.
     name: Name of this interface entry. Unique within the Zones resource.
     subnetwork: The canonical name of the subnetwork resource that this
       interface belongs to.
@@ -890,8 +884,9 @@ class Interface(_messages.Message):
 
   ipv4Cidr = _messages.StringField(1)
   linkedInterconnectAttachment = _messages.StringField(2)
-  name = _messages.StringField(3)
-  subnetwork = _messages.StringField(4)
+  loopbackIpAddresses = _messages.StringField(3, repeated=True)
+  name = _messages.StringField(4)
+  subnetwork = _messages.StringField(5)
 
 
 class LinkLACPStatus(_messages.Message):
@@ -959,6 +954,19 @@ class LinkLLDPStatus(_messages.Message):
   peerPortIdType = _messages.StringField(4)
   peerSystemDescription = _messages.StringField(5)
   peerSystemName = _messages.StringField(6)
+
+
+class LinkLayerAddress(_messages.Message):
+  r"""LinkLayerAddress contains an IP address and corresponding link-layer
+  address.
+
+  Fields:
+    ipAddress: The IP address of this neighbor.
+    macAddress: The MAC address of this neighbor.
+  """
+
+  ipAddress = _messages.StringField(1)
+  macAddress = _messages.StringField(2)
 
 
 class LinkStatus(_messages.Message):
@@ -1448,11 +1456,10 @@ class Router(_messages.Message):
 
     Values:
       STATE_UNKNOWN: Unspecified state.
-      STATE_PENDING: The resource has not been recognized by config push.
-      STATE_PROVISIONING: The resource has reached config push.
-      STATE_RUNNING: The resource has been pushed to device successfully by
-        config push.
-      STATE_SUSPENDED: The resource failed to push to device by config push.
+      STATE_PENDING: The resource is being prepared to be applied to the rack.
+      STATE_PROVISIONING: The resource has started being applied to the rack.
+      STATE_RUNNING: The resource has been pushed to the rack.
+      STATE_SUSPENDED: The resource failed to push to the rack.
       STATE_DELETING: The resource is under deletion.
     """
     STATE_UNKNOWN = 0
@@ -1657,11 +1664,10 @@ class Subnet(_messages.Message):
 
     Values:
       STATE_UNKNOWN: Unspecified state.
-      STATE_PENDING: The resource has not been recognized by config push.
-      STATE_PROVISIONING: The resource has reached config push.
-      STATE_RUNNING: The resource has been pushed to device successfully by
-        config push.
-      STATE_SUSPENDED: The resource failed to push to device by config push.
+      STATE_PENDING: The resource is being prepared to be applied to the rack.
+      STATE_PROVISIONING: The resource has started being applied to the rack.
+      STATE_RUNNING: The resource has been pushed to the rack.
+      STATE_SUSPENDED: The resource failed to push to the rack.
       STATE_DELETING: The resource is under deletion.
     """
     STATE_UNKNOWN = 0
@@ -1712,13 +1718,13 @@ class SubnetStatus(_messages.Message):
   this subnet resource.
 
   Fields:
-    arpEntries: A list of ARPEntry, describing the ARP neighbor entries seen
-      on this subnet.
+    linkLayerAddresses: A list of LinkLayerAddress, describing the ip address
+      and corresponding link-layer address of the neighbors for this subnet.
     macAddress: BVI MAC address.
     name: The name of CCFE subnet resource.
   """
 
-  arpEntries = _messages.MessageField('ARPEntry', 1, repeated=True)
+  linkLayerAddresses = _messages.MessageField('LinkLayerAddress', 1, repeated=True)
   macAddress = _messages.StringField(2)
   name = _messages.StringField(3)
 
@@ -1732,12 +1738,7 @@ class Zone(_messages.Message):
   Fields:
     createTime: Output only. The time when the zone was created.
     labels: Labels as key value pairs
-    layoutName: The deployment layout type. Defined by the NetworkLayout.name
-      in //cloud/kubernetes/edge/network/proto/network_layout.proto The layout
-      definition must exist in
-      //cloud/kubernetes/edge/network/service/config/network_layout
-    migrateToCcfe: Optional. / Skip GNAS site creation if set to true. This
-      flag should be used for / migration only.
+    layoutName: The deployment layout type.
     name: Required. The resource name of the zone.
     updateTime: Output only. The time when the zone was last updated.
   """
@@ -1769,9 +1770,8 @@ class Zone(_messages.Message):
   createTime = _messages.StringField(1)
   labels = _messages.MessageField('LabelsValue', 2)
   layoutName = _messages.StringField(3)
-  migrateToCcfe = _messages.BooleanField(4)
-  name = _messages.StringField(5)
-  updateTime = _messages.StringField(6)
+  name = _messages.StringField(4)
+  updateTime = _messages.StringField(5)
 
 
 encoding.AddCustomJsonFieldMapping(

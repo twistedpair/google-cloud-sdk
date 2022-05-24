@@ -195,13 +195,18 @@ def BackendServiceArgumentForTargetSslProxy(required=True):
         """)
 
 
-def BackendServiceArgumentForTargetTcpProxy(required=True):
+def BackendServiceArgumentForTargetTcpProxy(required=True,
+                                            allow_regional=False):
   return compute_flags.ResourceArgument(
       resource_name='backend service',
       name='--backend-service',
       required=required,
       completer=BackendServicesCompleter,
       global_collection='compute.backendServices',
+      regional_collection='compute.regionBackendServices'
+      if allow_regional else None,
+      region_explanation=('If not specified it will be set to the '
+                          'region of the TCP Proxy.'),
       short_help=('.'),
       detailed_help="""\
         A backend service that will be used for connections to the target TCP

@@ -1759,13 +1759,16 @@ class SecurityCenterSettings(_messages.Message):
       organizations/{organization}/securityCenterSettings Format:
       folders/{folder}/securityCenterSettings Format:
       projects/{project}/securityCenterSettings
+    onboardingTime: Timestamp of when the customer organization was onboarded
+      to SCC.
     orgServiceAccount: The organization level service account to be used for
       security center components.
   """
 
   logSinkProject = _messages.StringField(1)
   name = _messages.StringField(2)
-  orgServiceAccount = _messages.StringField(3)
+  onboardingTime = _messages.StringField(3)
+  orgServiceAccount = _messages.StringField(4)
 
 
 class SecurityHealthAnalyticsSettings(_messages.Message):

@@ -793,14 +793,14 @@
           "format": "int64"
         },
         "pods": {
-          "description": "Status reported by runtime pods. This field is not populated for List APIs. **Note**: **This field is deprecated**. Runtime versions 1.3 and above report instance level status rather than pod status.",
+          "description": "Status reported by runtime pods. **Note**: **This field is deprecated**. Runtime versions 1.3 and above report instance level status rather than pod status.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudApigeeV1PodStatus"
           }
         },
         "state": {
-          "description": "Current state of the deployment. This field is not populated in List APIs.",
+          "description": "Current state of the deployment. **Note**: This field is displayed only when viewing deployment status.",
           "type": "string",
           "enumDescriptions": [
             "This value should never be returned.",
@@ -816,21 +816,21 @@
           ]
         },
         "errors": {
-          "description": "Errors reported for this deployment. Populated only when state == ERROR. This field is not populated in List APIs.",
+          "description": "Errors reported for this deployment. Populated only when state == ERROR. **Note**: This field is displayed only when viewing deployment status.",
           "type": "array",
           "items": {
             "$ref": "GoogleRpcStatus"
           }
         },
         "routeConflicts": {
-          "description": "Conflicts in the desired state routing configuration. The presence of conflicts does not cause the state to be `ERROR`, but it will mean that some of the deployment's base paths are not routed to its environment. If the conflicts change, the state will transition to `PROGRESSING` until the latest configuration is rolled out to all instances. This field is not populated in List APIs.",
+          "description": "Conflicts in the desired state routing configuration. The presence of conflicts does not cause the state to be `ERROR`, but it will mean that some of the deployment's base paths are not routed to its environment. If the conflicts change, the state will transition to `PROGRESSING` until the latest configuration is rolled out to all instances. **Note**: This field is displayed only when viewing deployment status.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudApigeeV1DeploymentChangeReportRoutingConflict"
           }
         },
         "instances": {
-          "description": "Status reported by each runtime instance. This field is not populated in List APIs.",
+          "description": "Status reported by each runtime instance. **Note**: This field is displayed only when viewing deployment status.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudApigeeV1InstanceDeploymentStatus"

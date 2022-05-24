@@ -2026,6 +2026,10 @@
             "COMPROMISED",
             "UNCOMPROMISED"
           ]
+        },
+        "deviceId": {
+          "description": "Unique identifier for the device.",
+          "type": "string"
         }
       }
     },

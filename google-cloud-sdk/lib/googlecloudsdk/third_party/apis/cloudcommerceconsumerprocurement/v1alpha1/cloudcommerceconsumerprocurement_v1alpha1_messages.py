@@ -197,14 +197,13 @@ class CloudcommerceconsumerprocurementBillingAccountsOrdersListRequest(_messages
     filter: The filter that can be used to limit the list request. The filter
       is a query string that can match a selected set of attributes with
       string values. For example `display_name=abc`. Supported query
-      attributes are * `display_name` * `product_external_name` * `account` If
-      the query contains some special characters other than letters,
-      underscore, or digits, the phrase must be quoted with double quotes. For
-      example, `display_name="foo:bar"`, where the display name needs to be
-      quoted because it contains special character colon. Queries can be
-      combined with `OR`, and `NOT` to form more complex queries. They can
-      also be grouped to force a desired evaluation order. For example,
-      `display_name=abc OR display_name=def`.
+      attributes are * `display_name` If the query contains some special
+      characters other than letters, underscore, or digits, the phrase must be
+      quoted with double quotes. For example, `display_name="foo:bar"`, where
+      the display name needs to be quoted because it contains special
+      character colon. Queries can be combined with `OR`, and `NOT` to form
+      more complex queries. They can also be grouped to force a desired
+      evaluation order. For example, `display_name=abc OR display_name=def`.
     pageSize: The maximum number of entries that are requested. The default
       page size is 25 and the maximum page size is 200.
     pageToken: The token for fetching the next page.
@@ -1050,7 +1049,7 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1LineItem(_messages.Message):
       operations are allowed on these changes.
     lineItemId: Output only. Line item ID.
     lineItemInfo: Output only. Current state and information of this item. It
-      tells what, e.g. which plan, is currently effective.
+      tells what, e.g. which offer, is currently effective.
     pendingChange: Output only. A change made on the item which is pending and
       not yet effective. Absence of this field indicates the line item is not
       undergoing a change.
@@ -1063,7 +1062,7 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1LineItem(_messages.Message):
 
 
 class GoogleCloudCommerceConsumerProcurementV1alpha1LineItemChange(_messages.Message):
-  r"""A change made on a line item. Next Id: 11
+  r"""A change made on a line item.
 
   Enums:
     ChangeStateValueValuesEnum: Output only. State of the change.
@@ -1180,7 +1179,7 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1LineItemChange(_messages.Mes
 
 
 class GoogleCloudCommerceConsumerProcurementV1alpha1LineItemInfo(_messages.Message):
-  r"""Line item information. Next Id: 15
+  r"""Line item information.
 
   Messages:
     SystemPropertiesValue: Output only. System provided key value pairs.
@@ -1594,11 +1593,7 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1Order(_messages.Message):
   Order can be made against one Product with multiple add-ons (optional) or
   one Quote which could potentially references multiple products. Customers
   typically choose a price plan for each Product purchased when creating an
-  order and can change their plan later, if the product allows. Customers can
-  also cancel their purchases through the Order resource once they no longer
-  need it. The metadata that is needed during an Order's creation is hosted on
-  the Cloud Commerce Inventory system, as part of a Product's definition. Next
-  Id: 13
+  order and can change their plan later, if the product allows.
 
   Enums:
     OrderStateValueValuesEnum: Output only. The state of the order.
@@ -1763,7 +1758,7 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1OrderAttributionAllotment(_m
 
 
 class GoogleCloudCommerceConsumerProcurementV1alpha1Parameter(_messages.Message):
-  r"""LINT.IfChange User provided Parameters.
+  r"""User provided Parameters.
 
   Fields:
     name: Name of the parameter.
@@ -1796,7 +1791,7 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1PlaceOrderMetadata(_messages
 
 
 class GoogleCloudCommerceConsumerProcurementV1alpha1PlaceOrderRequest(_messages.Message):
-  r"""Request message for ConsumerProcurementService.PlaceOrder. Next Id: 14
+  r"""Request message for ConsumerProcurementService.PlaceOrder.
 
   Enums:
     AutoRenewalBehaviorValueValuesEnum: Optional. Auto renewal behavior of the
@@ -1812,8 +1807,7 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1PlaceOrderRequest(_messages.
     displayName: Required. The user-specified name of the order being placed.
       Must be unique within a billing account.
     lineItemInfo: Optional. Places order for offer. Required when offer based
-      order is being placed. Setting `line_item_info` will take precedence to
-      place offer order if request is also set.
+      order is being placed.
     placeProductsOrderRequest: Optional. Places order for non-quote products.
     placeQuoteOrderRequest: Optional. Places order for quote.
     provider: Required. Provider of the items being purchased. Provider has

@@ -13,6 +13,14 @@ from apitools.base.py import extra_types
 package = 'clouddeploy'
 
 
+class AbandonReleaseRequest(_messages.Message):
+  r"""The request object used by `AbandonRelease`."""
+
+
+class AbandonReleaseResponse(_messages.Message):
+  r"""The response object for `AbandonRelease`."""
+
+
 class AnthosCluster(_messages.Message):
   r"""Information specifying an Anthos Cluster.
 
@@ -342,6 +350,21 @@ class ClouddeployProjectsLocationsDeliveryPipelinesPatchRequest(_messages.Messag
   requestId = _messages.StringField(4)
   updateMask = _messages.StringField(5)
   validateOnly = _messages.BooleanField(6)
+
+
+class ClouddeployProjectsLocationsDeliveryPipelinesReleasesAbandonRequest(_messages.Message):
+  r"""A ClouddeployProjectsLocationsDeliveryPipelinesReleasesAbandonRequest
+  object.
+
+  Fields:
+    abandonReleaseRequest: A AbandonReleaseRequest resource to be passed as
+      the request body.
+    name: Required. Name of the Release. Format is projects/{project}/location
+      s/{location}/deliveryPipelines/{deliveryPipeline}/ releases/{release}.
+  """
+
+  abandonReleaseRequest = _messages.MessageField('AbandonReleaseRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class ClouddeployProjectsLocationsDeliveryPipelinesReleasesCreateRequest(_messages.Message):
@@ -1610,6 +1633,7 @@ class Release(_messages.Message):
       render operation for that target.
 
   Fields:
+    abandoned: Output only. Indicates whether this is an abandoned release.
     annotations: User annotations. These attributes can only be set and used
       by the user, and not by Google Cloud Deploy. See
       https://google.aip.dev/128#annotations for more details such as format
@@ -1779,24 +1803,25 @@ class Release(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  annotations = _messages.MessageField('AnnotationsValue', 1)
-  buildArtifacts = _messages.MessageField('BuildArtifact', 2, repeated=True)
-  createTime = _messages.StringField(3)
-  deliveryPipelineSnapshot = _messages.MessageField('DeliveryPipeline', 4)
-  description = _messages.StringField(5)
-  etag = _messages.StringField(6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  name = _messages.StringField(8)
-  renderEndTime = _messages.StringField(9)
-  renderStartTime = _messages.StringField(10)
-  renderState = _messages.EnumField('RenderStateValueValuesEnum', 11)
-  skaffoldConfigPath = _messages.StringField(12)
-  skaffoldConfigUri = _messages.StringField(13)
-  skaffoldVersion = _messages.StringField(14)
-  targetArtifacts = _messages.MessageField('TargetArtifactsValue', 15)
-  targetRenders = _messages.MessageField('TargetRendersValue', 16)
-  targetSnapshots = _messages.MessageField('Target', 17, repeated=True)
-  uid = _messages.StringField(18)
+  abandoned = _messages.BooleanField(1)
+  annotations = _messages.MessageField('AnnotationsValue', 2)
+  buildArtifacts = _messages.MessageField('BuildArtifact', 3, repeated=True)
+  createTime = _messages.StringField(4)
+  deliveryPipelineSnapshot = _messages.MessageField('DeliveryPipeline', 5)
+  description = _messages.StringField(6)
+  etag = _messages.StringField(7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  name = _messages.StringField(9)
+  renderEndTime = _messages.StringField(10)
+  renderStartTime = _messages.StringField(11)
+  renderState = _messages.EnumField('RenderStateValueValuesEnum', 12)
+  skaffoldConfigPath = _messages.StringField(13)
+  skaffoldConfigUri = _messages.StringField(14)
+  skaffoldVersion = _messages.StringField(15)
+  targetArtifacts = _messages.MessageField('TargetArtifactsValue', 16)
+  targetRenders = _messages.MessageField('TargetRendersValue', 17)
+  targetSnapshots = _messages.MessageField('Target', 18, repeated=True)
+  uid = _messages.StringField(19)
 
 
 class ReleaseNotificationEvent(_messages.Message):
@@ -1943,12 +1968,14 @@ class Rollout(_messages.Message):
         check Cloud Build logs.
       DEADLINE_EXCEEDED: Deployment did not complete within the alloted time.
       RELEASE_FAILED: Release is in a failed state.
+      RELEASE_ABANDONED: Release is abandoned.
     """
     FAILURE_CAUSE_UNSPECIFIED = 0
     CLOUD_BUILD_UNAVAILABLE = 1
     EXECUTION_FAILED = 2
     DEADLINE_EXCEEDED = 3
     RELEASE_FAILED = 4
+    RELEASE_ABANDONED = 5
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. Current state of the `Rollout`.

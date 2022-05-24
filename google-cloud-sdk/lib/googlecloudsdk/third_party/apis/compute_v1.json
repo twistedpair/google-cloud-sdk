@@ -4,7 +4,7 @@
   "id": "compute:v1",
   "name": "compute",
   "version": "v1",
-  "revision": "20220429",
+  "revision": "20220513",
   "title": "Compute Engine API",
   "description": "Creates and runs virtual machines on Google Cloud Platform. ",
   "ownerDomain": "google.com",
@@ -2072,7 +2072,7 @@
           "type": "string"
         },
         "sourceType": {
-          "description": "The type of the image used to create this disk. The default and only value is RAW",
+          "description": "The type of the image used to create this disk. The default and only valid value is RAW.",
           "default": "RAW",
           "type": "string",
           "enumDescriptions": [
@@ -4004,7 +4004,7 @@
       "type": "object",
       "properties": {
         "onHostMaintenance": {
-          "description": "Defines the maintenance behavior for this instance. For standard instances, the default behavior is MIGRATE. For preemptible instances, the default and only possible behavior is TERMINATE. For more information, see Set VM availability policies.",
+          "description": "Defines the maintenance behavior for this instance. For standard instances, the default behavior is MIGRATE. For preemptible instances, the default and only possible behavior is TERMINATE. For more information, see Set VM host maintenance policy.",
           "type": "string",
           "enumDescriptions": [
             "*[Default]* Allows Compute Engine to automatically migrate instances out of the way of maintenance events.",
@@ -5090,6 +5090,20 @@
           "additionalProperties": {
             "$ref": "LocationPolicyLocation"
           }
+        },
+        "targetShape": {
+          "description": "Strategy for distributing VMs across zones in a region.",
+          "type": "string",
+          "enumDescriptions": [
+            "GCE picks zones for creating VM instances to fulfill the requested number of VMs within present resource constraints and to maximize utilization of unused zonal reservations. Recommended for batch workloads that do not require high availability.",
+            "GCE always selects a single zone for all the VMs, optimizing for resource quotas, available reservations and general capacity. Recommended for batch workloads that cannot tollerate distribution over multiple zones. This the default shape in Bulk Insert and Capacity Advisor APIs.",
+            "GCE prioritizes acquisition of resources, scheduling VMs in zones where resources are available while distributing VMs as evenly as possible across allowed zones to minimize the impact of zonal failure. Recommended for highly available serving workloads."
+          ],
+          "enum": [
+            "ANY",
+            "ANY_SINGLE_ZONE",
+            "BALANCED"
+          ]
         }
       }
     },
@@ -8054,7 +8068,7 @@
           ]
         },
         "minimalAction": {
-          "description": "Minimal action to be taken on an instance. You can specify either RESTART to restart existing instances or REPLACE to delete and create new instances from the target template. If you specify a RESTART, the Updater will attempt to perform that action only. However, if the Updater determines that the minimal action you specify is not enough to perform the update, it might perform a more disruptive action.",
+          "description": "Minimal action to be taken on an instance. Use this option to minimize disruption as much as possible or to apply a more disruptive action than is necessary. - To limit disruption as much as possible, set the minimal action to REFRESH. If your update requires a more disruptive action, Compute Engine performs the necessary action to execute the update. - To apply a more disruptive action than is strictly necessary, set the minimal action to RESTART or REPLACE. For example, Compute Engine does not need to restart a VM to change its metadata. But if your application reads instance metadata only when a VM is restarted, you can set the minimal action to RESTART in order to pick up metadata changes. ",
           "type": "string",
           "enumDescriptions": [
             "Do not perform any action.",
@@ -10863,7 +10877,7 @@
           ]
         },
         "affinityCookieTtlSec": {
-          "description": "Lifetime of cookies in seconds. This setting is applicable to external and internal HTTP(S) load balancers and Traffic Director and requires GENERATED_COOKIE or HTTP_COOKIE session affinity. If set to 0, the cookie is non-persistent and lasts only until the end of the browser session (or equivalent). The maximum allowed value is one day (86,400). Not supported when the backend service is referenced by a URL map that is bound to target gRPC proxy that has validateForProxyless field set to true.",
+          "description": "Lifetime of cookies in seconds. This setting is applicable to external and internal HTTP(S) load balancers and Traffic Director and requires GENERATED_COOKIE or HTTP_COOKIE session affinity. If set to 0, the cookie is non-persistent and lasts only until the end of the browser session (or equivalent). The maximum allowed value is two weeks (1,209,600). Not supported when the backend service is referenced by a URL map that is bound to target gRPC proxy that has validateForProxyless field set to true.",
           "type": "integer",
           "format": "int32"
         },
@@ -12126,6 +12140,7 @@
             "",
             "",
             "",
+            "",
             ""
           ],
           "enum": [
@@ -12138,6 +12153,7 @@
             "GENERAL_PURPOSE_N2D",
             "GENERAL_PURPOSE_T2D",
             "MEMORY_OPTIMIZED",
+            "MEMORY_OPTIMIZED_M3",
             "TYPE_UNSPECIFIED"
           ]
         },
@@ -24717,12 +24733,12 @@
       "type": "object",
       "properties": {
         "vmCount": {
-          "description": "Number of vms in this placement group",
+          "description": "Number of VMs in this placement group. Google does not recommend that you use this field unless you use a compact policy and you want your policy to work only if it contains this exact number of VMs.",
           "type": "integer",
           "format": "int32"
         },
         "availabilityDomainCount": {
-          "description": "The number of availability domains instances will be spread across. If two instances are in different availability domain, they will not be put in the same low latency network",
+          "description": "The number of availability domains to spread instances across. If two instances are in different availability domain, they are not in the same low latency network.",
           "type": "integer",
           "format": "int32"
         },
@@ -29773,6 +29789,10 @@
             "type": "string"
           }
         },
+        "certificateMap": {
+          "description": "URL of a certificate map that identifies a certificate map associated with the given target proxy. This field can only be set for global target proxies. If set, sslCertificates will be ignored.",
+          "type": "string"
+        },
         "quicOverride": {
           "description": "Specifies the QUIC override policy for this TargetHttpsProxy resource. This setting determines whether the load balancer attempts to negotiate QUIC with clients. You can specify NONE, ENABLE, or DISABLE. - When quic-override is set to NONE, Google manages whether QUIC is used. - When quic-override is set to ENABLE, the load balancer uses QUIC when possible. - When quic-override is set to DISABLE, the load balancer doesn't use QUIC. - If the quic-override flag is not specified, NONE is implied. ",
           "type": "string",
@@ -30049,6 +30069,16 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "TargetHttpsProxiesSetCertificateMapRequest": {
+      "id": "TargetHttpsProxiesSetCertificateMapRequest",
+      "type": "object",
+      "properties": {
+        "certificateMap": {
+          "description": "URL of the Certificate Map to associate with this TargetHttpsProxy.",
+          "type": "string"
         }
       }
     },
@@ -31152,6 +31182,10 @@
             "type": "string"
           }
         },
+        "certificateMap": {
+          "description": "URL of a certificate map that identifies a certificate map associated with the given target proxy. This field can only be set for global target proxies. If set, sslCertificates will be ignored.",
+          "type": "string"
+        },
         "proxyHeader": {
           "description": "Specifies the type of proxy header to append before sending data to the backend, either NONE or PROXY_V1. The default is NONE.",
           "type": "string",
@@ -31190,6 +31224,16 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "TargetSslProxiesSetCertificateMapRequest": {
+      "id": "TargetSslProxiesSetCertificateMapRequest",
+      "type": "object",
+      "properties": {
+        "certificateMap": {
+          "description": "URL of the Certificate Map to associate with this TargetSslProxy.",
+          "type": "string"
         }
       }
     },
@@ -39318,7 +39362,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/compute"
           ],
-          "description": "Sets an instance's scheduling options. You can only call this method on a stopped instance, that is, a VM instance that is in a `TERMINATED` state. See Instance Life Cycle for more information on the possible instance states. For more information about setting scheduling options for a VM, see Set VM availability policies."
+          "description": "Sets an instance's scheduling options. You can only call this method on a stopped instance, that is, a VM instance that is in a `TERMINATED` state. See Instance Life Cycle for more information on the possible instance states. For more information about setting scheduling options for a VM, see Set VM host maintenance policy."
         },
         "getSerialPortOutput": {
           "id": "compute.instances.getSerialPortOutput",
@@ -61620,6 +61664,47 @@
           ],
           "description": "Replaces SslCertificates for TargetHttpsProxy."
         },
+        "setCertificateMap": {
+          "id": "compute.targetHttpsProxies.setCertificateMap",
+          "path": "projects/{project}/global/targetHttpsProxies/{targetHttpsProxy}/setCertificateMap",
+          "flatPath": "projects/{project}/global/targetHttpsProxies/{targetHttpsProxy}/setCertificateMap",
+          "httpMethod": "POST",
+          "parameters": {
+            "project": {
+              "description": "Project ID for this request.",
+              "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "requestId": {
+              "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported ( 00000000-0000-0000-0000-000000000000).",
+              "location": "query",
+              "type": "string"
+            },
+            "targetHttpsProxy": {
+              "description": "Name of the TargetHttpsProxy resource whose CertificateMap is to be set. The name must be 1-63 characters long, and comply with RFC1035.",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "project",
+            "targetHttpsProxy"
+          ],
+          "request": {
+            "$ref": "TargetHttpsProxiesSetCertificateMapRequest"
+          },
+          "response": {
+            "$ref": "Operation"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/compute"
+          ],
+          "description": "Changes the Certificate Map for TargetHttpsProxy."
+        },
         "setSslPolicy": {
           "id": "compute.targetHttpsProxies.setSslPolicy",
           "path": "projects/{project}/global/targetHttpsProxies/{targetHttpsProxy}/setSslPolicy",
@@ -63121,6 +63206,47 @@
             "https://www.googleapis.com/auth/compute"
           ],
           "description": "Changes SslCertificates for TargetSslProxy."
+        },
+        "setCertificateMap": {
+          "id": "compute.targetSslProxies.setCertificateMap",
+          "path": "projects/{project}/global/targetSslProxies/{targetSslProxy}/setCertificateMap",
+          "flatPath": "projects/{project}/global/targetSslProxies/{targetSslProxy}/setCertificateMap",
+          "httpMethod": "POST",
+          "parameters": {
+            "project": {
+              "description": "Project ID for this request.",
+              "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "requestId": {
+              "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported ( 00000000-0000-0000-0000-000000000000).",
+              "location": "query",
+              "type": "string"
+            },
+            "targetSslProxy": {
+              "description": "Name of the TargetSslProxy resource whose CertificateMap is to be set. The name must be 1-63 characters long, and comply with RFC1035.",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "project",
+            "targetSslProxy"
+          ],
+          "request": {
+            "$ref": "TargetSslProxiesSetCertificateMapRequest"
+          },
+          "response": {
+            "$ref": "Operation"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/compute"
+          ],
+          "description": "Changes the Certificate Map for TargetSslProxy."
         },
         "setProxyHeader": {
           "id": "compute.targetSslProxies.setProxyHeader",

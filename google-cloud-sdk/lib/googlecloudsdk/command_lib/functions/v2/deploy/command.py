@@ -566,6 +566,12 @@ def _GetEventTriggerForOther(args, messages):
         for attr, val in args.trigger_event_filters.items()
         if attr != 'type'
     ]
+    if args.trigger_event_filters_path_pattern:
+      operator = 'match-path-pattern'
+      event_filters.extend([
+          messages.EventFilter(attribute=attr, value=val, operator=operator)
+          for attr, val in args.trigger_event_filters_path_pattern.items()
+      ])
 
   trigger_channel = None
   if args.trigger_channel:

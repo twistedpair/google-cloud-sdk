@@ -2617,11 +2617,11 @@ class Operation(_messages.Message):
 
 
 class PatchServiceAccountRequest(_messages.Message):
-  r"""The request for PatchServiceAccount. You can patch only the
-  `display_name` and `description` fields. You must use the `update_mask`
-  field to specify which of these fields you want to patch. Only the fields
-  specified in the request are guaranteed to be returned in the response.
-  Other fields may be empty in the response.
+  r"""The service account patch request. You can patch only the `display_name`
+  and `description` fields. You must use the `update_mask` field to specify
+  which of these fields you want to patch. Only the fields specified in the
+  request are guaranteed to be returned in the response. Other fields may be
+  empty in the response.
 
   Fields:
     serviceAccount: A ServiceAccount attribute.
@@ -3842,6 +3842,10 @@ class WorkloadIdentityPool(_messages.Message):
   name = _messages.StringField(4)
   sessionDuration = _messages.StringField(5)
   state = _messages.EnumField('StateValueValuesEnum', 6)
+
+
+class WorkloadIdentityPoolOperationMetadata(_messages.Message):
+  r"""Metadata for long-running WorkloadIdentityPool operations."""
 
 
 class WorkloadIdentityPoolProvider(_messages.Message):

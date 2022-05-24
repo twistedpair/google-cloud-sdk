@@ -4,7 +4,7 @@
   "id": "compute:beta",
   "name": "compute",
   "version": "beta",
-  "revision": "20220429",
+  "revision": "20220513",
   "title": "Compute Engine API",
   "description": "Creates and runs virtual machines on Google Cloud Platform. ",
   "ownerDomain": "google.com",
@@ -2118,7 +2118,7 @@
           "type": "string"
         },
         "sourceType": {
-          "description": "The type of the image used to create this disk. The default and only value is RAW",
+          "description": "The type of the image used to create this disk. The default and only valid value is RAW.",
           "default": "RAW",
           "type": "string",
           "enumDescriptions": [
@@ -3012,6 +3012,9 @@
         "layer7DdosDefenseConfig": {
           "description": "If set to true, enables Cloud Armor Machine Learning.",
           "$ref": "SecurityPolicyAdaptiveProtectionConfigLayer7DdosDefenseConfig"
+        },
+        "autoDeployConfig": {
+          "$ref": "SecurityPolicyAdaptiveProtectionConfigAutoDeployConfig"
         }
       }
     },
@@ -3035,6 +3038,29 @@
             "PREMIUM",
             "STANDARD"
           ]
+        }
+      }
+    },
+    "SecurityPolicyAdaptiveProtectionConfigAutoDeployConfig": {
+      "id": "SecurityPolicyAdaptiveProtectionConfigAutoDeployConfig",
+      "description": "Configuration options for Adaptive Protection auto-deploy feature.",
+      "type": "object",
+      "properties": {
+        "loadThreshold": {
+          "type": "number",
+          "format": "float"
+        },
+        "confidenceThreshold": {
+          "type": "number",
+          "format": "float"
+        },
+        "impactedBaselineThreshold": {
+          "type": "number",
+          "format": "float"
+        },
+        "expirationSec": {
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -4303,7 +4329,7 @@
       "type": "object",
       "properties": {
         "onHostMaintenance": {
-          "description": "Defines the maintenance behavior for this instance. For standard instances, the default behavior is MIGRATE. For preemptible instances, the default and only possible behavior is TERMINATE. For more information, see Set VM availability policies.",
+          "description": "Defines the maintenance behavior for this instance. For standard instances, the default behavior is MIGRATE. For preemptible instances, the default and only possible behavior is TERMINATE. For more information, see Set VM host maintenance policy.",
           "type": "string",
           "enumDescriptions": [
             "*[Default]* Allows Compute Engine to automatically migrate instances out of the way of maintenance events.",
@@ -8696,7 +8722,7 @@
           ]
         },
         "minimalAction": {
-          "description": "Minimal action to be taken on an instance. You can specify either RESTART to restart existing instances or REPLACE to delete and create new instances from the target template. If you specify a RESTART, the Updater will attempt to perform that action only. However, if the Updater determines that the minimal action you specify is not enough to perform the update, it might perform a more disruptive action.",
+          "description": "Minimal action to be taken on an instance. Use this option to minimize disruption as much as possible or to apply a more disruptive action than is necessary. - To limit disruption as much as possible, set the minimal action to REFRESH. If your update requires a more disruptive action, Compute Engine performs the necessary action to execute the update. - To apply a more disruptive action than is strictly necessary, set the minimal action to RESTART or REPLACE. For example, Compute Engine does not need to restart a VM to change its metadata. But if your application reads instance metadata only when a VM is restarted, you can set the minimal action to RESTART in order to pick up metadata changes. ",
           "type": "string",
           "enumDescriptions": [
             "Do not perform any action.",
@@ -11693,7 +11719,7 @@
           ]
         },
         "affinityCookieTtlSec": {
-          "description": "Lifetime of cookies in seconds. This setting is applicable to external and internal HTTP(S) load balancers and Traffic Director and requires GENERATED_COOKIE or HTTP_COOKIE session affinity. If set to 0, the cookie is non-persistent and lasts only until the end of the browser session (or equivalent). The maximum allowed value is one day (86,400). Not supported when the backend service is referenced by a URL map that is bound to target gRPC proxy that has validateForProxyless field set to true.",
+          "description": "Lifetime of cookies in seconds. This setting is applicable to external and internal HTTP(S) load balancers and Traffic Director and requires GENERATED_COOKIE or HTTP_COOKIE session affinity. If set to 0, the cookie is non-persistent and lasts only until the end of the browser session (or equivalent). The maximum allowed value is two weeks (1,209,600). Not supported when the backend service is referenced by a URL map that is bound to target gRPC proxy that has validateForProxyless field set to true.",
           "type": "integer",
           "format": "int32"
         },
@@ -12985,6 +13011,7 @@
             "",
             "",
             "",
+            "",
             ""
           ],
           "enum": [
@@ -12997,6 +13024,7 @@
             "GENERAL_PURPOSE_N2D",
             "GENERAL_PURPOSE_T2D",
             "MEMORY_OPTIMIZED",
+            "MEMORY_OPTIMIZED_M3",
             "TYPE_UNSPECIFIED"
           ]
         },
@@ -14106,6 +14134,14 @@
         },
         "locationHint": {
           "description": "An opaque location hint used to place the snapshot close to other resources. This field is for use by internal tools that use the public API.",
+          "type": "string"
+        },
+        "sourceSnapshotSchedulePolicy": {
+          "description": "[Output Only] URL of the resource policy which created this scheduled snapshot.",
+          "type": "string"
+        },
+        "sourceSnapshotSchedulePolicyId": {
+          "description": "[Output Only] ID of the resource policy which created this scheduled snapshot.",
           "type": "string"
         },
         "userLicenses": {
@@ -25837,12 +25873,12 @@
       "type": "object",
       "properties": {
         "vmCount": {
-          "description": "Number of vms in this placement group",
+          "description": "Number of VMs in this placement group. Google does not recommend that you use this field unless you use a compact policy and you want your policy to work only if it contains this exact number of VMs.",
           "type": "integer",
           "format": "int32"
         },
         "availabilityDomainCount": {
-          "description": "The number of availability domains instances will be spread across. If two instances are in different availability domain, they will not be put in the same low latency network",
+          "description": "The number of availability domains to spread instances across. If two instances are in different availability domain, they are not in the same low latency network.",
           "type": "integer",
           "format": "int32"
         },
@@ -41576,7 +41612,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/compute"
           ],
-          "description": "Sets an instance's scheduling options. You can only call this method on a stopped instance, that is, a VM instance that is in a `TERMINATED` state. See Instance Life Cycle for more information on the possible instance states. For more information about setting scheduling options for a VM, see Set VM availability policies."
+          "description": "Sets an instance's scheduling options. You can only call this method on a stopped instance, that is, a VM instance that is in a `TERMINATED` state. See Instance Life Cycle for more information on the possible instance states. For more information about setting scheduling options for a VM, see Set VM host maintenance policy."
         },
         "getSerialPortOutput": {
           "id": "compute.instances.getSerialPortOutput",

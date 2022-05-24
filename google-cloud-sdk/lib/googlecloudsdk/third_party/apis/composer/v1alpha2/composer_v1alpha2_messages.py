@@ -2230,6 +2230,22 @@ class TriggerDagRequest(_messages.Message):
   executionDate = _messages.StringField(3)
 
 
+class TriggererResource(_messages.Message):
+  r"""Configuration for resources used by Airflow triggerers.
+
+  Fields:
+    count: Optional. The number of triggerers.
+    cpu: Optional. CPU request and limit for a single Airflow triggerer
+      replica.
+    memoryGb: Optional. Memory (GB) request and limit for a single Airflow
+      triggerer replica.
+  """
+
+  count = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  cpu = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  memoryGb = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+
+
 class WebServerConfig(_messages.Message):
   r"""The configuration settings for the Airflow web server App Engine
   instance. Supported for Cloud Composer environments in versions
@@ -2300,6 +2316,7 @@ class WorkloadsConfig(_messages.Message):
   Fields:
     scheduler: Optional. Resources used by Airflow scheduler.
     schedulerCpu: Optional. CPU request and limit for Airflow scheduler.
+    triggerer: Optional. Resources used by Airflow triggerers.
     webServer: Optional. Resources used by Airflow web server.
     worker: Optional. Resources used by Airflow workers.
     workerCpu: Optional. CPU request and limit for Airflow worker.
@@ -2309,11 +2326,12 @@ class WorkloadsConfig(_messages.Message):
 
   scheduler = _messages.MessageField('SchedulerResource', 1)
   schedulerCpu = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
-  webServer = _messages.MessageField('WebServerResource', 3)
-  worker = _messages.MessageField('WorkerResource', 4)
-  workerCpu = _messages.FloatField(5, variant=_messages.Variant.FLOAT)
-  workerMaxCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  workerMinCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  triggerer = _messages.MessageField('TriggererResource', 3)
+  webServer = _messages.MessageField('WebServerResource', 4)
+  worker = _messages.MessageField('WorkerResource', 5)
+  workerCpu = _messages.FloatField(6, variant=_messages.Variant.FLOAT)
+  workerMaxCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  workerMinCount = _messages.IntegerField(8, variant=_messages.Variant.INT32)
 
 
 encoding.AddCustomJsonFieldMapping(

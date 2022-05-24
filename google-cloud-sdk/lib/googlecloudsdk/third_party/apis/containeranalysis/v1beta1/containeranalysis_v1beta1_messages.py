@@ -432,60 +432,67 @@ class ByProducts(_messages.Message):
 
 
 class CVSS(_messages.Message):
-  r"""Common Vulnerability Scoring System. For details, see
-  https://www.first.org/cvss/specification-document
+  r"""Common Vulnerability Scoring System. This message is compatible with
+  CVSS v2 and v3. For CVSS v2 details, see https://www.first.org/cvss/v2/guide
+  CVSS v2 calculator: https://nvd.nist.gov/vuln-metrics/cvss/v2-calculator For
+  CVSS v3 details, see https://www.first.org/cvss/specification-document CVSS
+  v3 calculator: https://nvd.nist.gov/vuln-metrics/cvss/v3-calculator
 
   Enums:
-    AttackComplexityValueValuesEnum:
+    AttackComplexityValueValuesEnum: Defined in CVSS v3, CVSS v2
     AttackVectorValueValuesEnum: Base Metrics Represents the intrinsic
       characteristics of a vulnerability that are constant over time and
-      across user environments.
-    AuthenticationValueValuesEnum:
-    AvailabilityImpactValueValuesEnum:
-    ConfidentialityImpactValueValuesEnum:
-    IntegrityImpactValueValuesEnum:
-    PrivilegesRequiredValueValuesEnum:
-    ScopeValueValuesEnum:
-    UserInteractionValueValuesEnum:
+      across user environments. Defined in CVSS v3, CVSS v2
+    AuthenticationValueValuesEnum: Defined in CVSS v2
+    AvailabilityImpactValueValuesEnum: Defined in CVSS v3, CVSS v2
+    ConfidentialityImpactValueValuesEnum: Defined in CVSS v3, CVSS v2
+    IntegrityImpactValueValuesEnum: Defined in CVSS v3, CVSS v2
+    PrivilegesRequiredValueValuesEnum: Defined in CVSS v3
+    ScopeValueValuesEnum: Defined in CVSS v3
+    UserInteractionValueValuesEnum: Defined in CVSS v3
 
   Fields:
-    attackComplexity: A AttackComplexityValueValuesEnum attribute.
+    attackComplexity: Defined in CVSS v3, CVSS v2
     attackVector: Base Metrics Represents the intrinsic characteristics of a
       vulnerability that are constant over time and across user environments.
-    authentication: A AuthenticationValueValuesEnum attribute.
-    availabilityImpact: A AvailabilityImpactValueValuesEnum attribute.
+      Defined in CVSS v3, CVSS v2
+    authentication: Defined in CVSS v2
+    availabilityImpact: Defined in CVSS v3, CVSS v2
     baseScore: The base score is a function of the base metric scores.
-    confidentialityImpact: A ConfidentialityImpactValueValuesEnum attribute.
+    confidentialityImpact: Defined in CVSS v3, CVSS v2
     exploitabilityScore: A number attribute.
     impactScore: A number attribute.
-    integrityImpact: A IntegrityImpactValueValuesEnum attribute.
-    privilegesRequired: A PrivilegesRequiredValueValuesEnum attribute.
-    scope: A ScopeValueValuesEnum attribute.
-    userInteraction: A UserInteractionValueValuesEnum attribute.
+    integrityImpact: Defined in CVSS v3, CVSS v2
+    privilegesRequired: Defined in CVSS v3
+    scope: Defined in CVSS v3
+    userInteraction: Defined in CVSS v3
   """
 
   class AttackComplexityValueValuesEnum(_messages.Enum):
-    r"""AttackComplexityValueValuesEnum enum type.
+    r"""Defined in CVSS v3, CVSS v2
 
     Values:
-      ATTACK_COMPLEXITY_UNSPECIFIED: <no description>
-      ATTACK_COMPLEXITY_LOW: <no description>
-      ATTACK_COMPLEXITY_HIGH: <no description>
+      ATTACK_COMPLEXITY_UNSPECIFIED: Defined in CVSS v3, CVSS v2
+      ATTACK_COMPLEXITY_LOW: Defined in CVSS v3, CVSS v2
+      ATTACK_COMPLEXITY_HIGH: Defined in CVSS v3, CVSS v2
+      ATTACK_COMPLEXITY_MEDIUM: Defined in CVSS v2
     """
     ATTACK_COMPLEXITY_UNSPECIFIED = 0
     ATTACK_COMPLEXITY_LOW = 1
     ATTACK_COMPLEXITY_HIGH = 2
+    ATTACK_COMPLEXITY_MEDIUM = 3
 
   class AttackVectorValueValuesEnum(_messages.Enum):
     r"""Base Metrics Represents the intrinsic characteristics of a
     vulnerability that are constant over time and across user environments.
+    Defined in CVSS v3, CVSS v2
 
     Values:
-      ATTACK_VECTOR_UNSPECIFIED: <no description>
-      ATTACK_VECTOR_NETWORK: <no description>
-      ATTACK_VECTOR_ADJACENT: <no description>
-      ATTACK_VECTOR_LOCAL: <no description>
-      ATTACK_VECTOR_PHYSICAL: <no description>
+      ATTACK_VECTOR_UNSPECIFIED: Defined in CVSS v3, CVSS v2
+      ATTACK_VECTOR_NETWORK: Defined in CVSS v3, CVSS v2
+      ATTACK_VECTOR_ADJACENT: Defined in CVSS v3, CVSS v2
+      ATTACK_VECTOR_LOCAL: Defined in CVSS v3, CVSS v2
+      ATTACK_VECTOR_PHYSICAL: Defined in CVSS v3
     """
     ATTACK_VECTOR_UNSPECIFIED = 0
     ATTACK_VECTOR_NETWORK = 1
@@ -494,13 +501,13 @@ class CVSS(_messages.Message):
     ATTACK_VECTOR_PHYSICAL = 4
 
   class AuthenticationValueValuesEnum(_messages.Enum):
-    r"""AuthenticationValueValuesEnum enum type.
+    r"""Defined in CVSS v2
 
     Values:
-      AUTHENTICATION_UNSPECIFIED: <no description>
-      AUTHENTICATION_MULTIPLE: <no description>
-      AUTHENTICATION_SINGLE: <no description>
-      AUTHENTICATION_NONE: <no description>
+      AUTHENTICATION_UNSPECIFIED: Defined in CVSS v2
+      AUTHENTICATION_MULTIPLE: Defined in CVSS v2
+      AUTHENTICATION_SINGLE: Defined in CVSS v2
+      AUTHENTICATION_NONE: Defined in CVSS v2
     """
     AUTHENTICATION_UNSPECIFIED = 0
     AUTHENTICATION_MULTIPLE = 1
@@ -508,55 +515,67 @@ class CVSS(_messages.Message):
     AUTHENTICATION_NONE = 3
 
   class AvailabilityImpactValueValuesEnum(_messages.Enum):
-    r"""AvailabilityImpactValueValuesEnum enum type.
+    r"""Defined in CVSS v3, CVSS v2
 
     Values:
-      IMPACT_UNSPECIFIED: <no description>
-      IMPACT_HIGH: <no description>
-      IMPACT_LOW: <no description>
-      IMPACT_NONE: <no description>
+      IMPACT_UNSPECIFIED: Defined in CVSS v3, CVSS v2
+      IMPACT_HIGH: Defined in CVSS v3
+      IMPACT_LOW: Defined in CVSS v3
+      IMPACT_NONE: Defined in CVSS v3, CVSS v2
+      IMPACT_PARTIAL: Defined in CVSS v2
+      IMPACT_COMPLETE: Defined in CVSS v2
     """
     IMPACT_UNSPECIFIED = 0
     IMPACT_HIGH = 1
     IMPACT_LOW = 2
     IMPACT_NONE = 3
+    IMPACT_PARTIAL = 4
+    IMPACT_COMPLETE = 5
 
   class ConfidentialityImpactValueValuesEnum(_messages.Enum):
-    r"""ConfidentialityImpactValueValuesEnum enum type.
+    r"""Defined in CVSS v3, CVSS v2
 
     Values:
-      IMPACT_UNSPECIFIED: <no description>
-      IMPACT_HIGH: <no description>
-      IMPACT_LOW: <no description>
-      IMPACT_NONE: <no description>
+      IMPACT_UNSPECIFIED: Defined in CVSS v3, CVSS v2
+      IMPACT_HIGH: Defined in CVSS v3
+      IMPACT_LOW: Defined in CVSS v3
+      IMPACT_NONE: Defined in CVSS v3, CVSS v2
+      IMPACT_PARTIAL: Defined in CVSS v2
+      IMPACT_COMPLETE: Defined in CVSS v2
     """
     IMPACT_UNSPECIFIED = 0
     IMPACT_HIGH = 1
     IMPACT_LOW = 2
     IMPACT_NONE = 3
+    IMPACT_PARTIAL = 4
+    IMPACT_COMPLETE = 5
 
   class IntegrityImpactValueValuesEnum(_messages.Enum):
-    r"""IntegrityImpactValueValuesEnum enum type.
+    r"""Defined in CVSS v3, CVSS v2
 
     Values:
-      IMPACT_UNSPECIFIED: <no description>
-      IMPACT_HIGH: <no description>
-      IMPACT_LOW: <no description>
-      IMPACT_NONE: <no description>
+      IMPACT_UNSPECIFIED: Defined in CVSS v3, CVSS v2
+      IMPACT_HIGH: Defined in CVSS v3
+      IMPACT_LOW: Defined in CVSS v3
+      IMPACT_NONE: Defined in CVSS v3, CVSS v2
+      IMPACT_PARTIAL: Defined in CVSS v2
+      IMPACT_COMPLETE: Defined in CVSS v2
     """
     IMPACT_UNSPECIFIED = 0
     IMPACT_HIGH = 1
     IMPACT_LOW = 2
     IMPACT_NONE = 3
+    IMPACT_PARTIAL = 4
+    IMPACT_COMPLETE = 5
 
   class PrivilegesRequiredValueValuesEnum(_messages.Enum):
-    r"""PrivilegesRequiredValueValuesEnum enum type.
+    r"""Defined in CVSS v3
 
     Values:
-      PRIVILEGES_REQUIRED_UNSPECIFIED: <no description>
-      PRIVILEGES_REQUIRED_NONE: <no description>
-      PRIVILEGES_REQUIRED_LOW: <no description>
-      PRIVILEGES_REQUIRED_HIGH: <no description>
+      PRIVILEGES_REQUIRED_UNSPECIFIED: Defined in CVSS v3
+      PRIVILEGES_REQUIRED_NONE: Defined in CVSS v3
+      PRIVILEGES_REQUIRED_LOW: Defined in CVSS v3
+      PRIVILEGES_REQUIRED_HIGH: Defined in CVSS v3
     """
     PRIVILEGES_REQUIRED_UNSPECIFIED = 0
     PRIVILEGES_REQUIRED_NONE = 1
@@ -564,24 +583,24 @@ class CVSS(_messages.Message):
     PRIVILEGES_REQUIRED_HIGH = 3
 
   class ScopeValueValuesEnum(_messages.Enum):
-    r"""ScopeValueValuesEnum enum type.
+    r"""Defined in CVSS v3
 
     Values:
-      SCOPE_UNSPECIFIED: <no description>
-      SCOPE_UNCHANGED: <no description>
-      SCOPE_CHANGED: <no description>
+      SCOPE_UNSPECIFIED: Defined in CVSS v3
+      SCOPE_UNCHANGED: Defined in CVSS v3
+      SCOPE_CHANGED: Defined in CVSS v3
     """
     SCOPE_UNSPECIFIED = 0
     SCOPE_UNCHANGED = 1
     SCOPE_CHANGED = 2
 
   class UserInteractionValueValuesEnum(_messages.Enum):
-    r"""UserInteractionValueValuesEnum enum type.
+    r"""Defined in CVSS v3
 
     Values:
-      USER_INTERACTION_UNSPECIFIED: <no description>
-      USER_INTERACTION_NONE: <no description>
-      USER_INTERACTION_REQUIRED: <no description>
+      USER_INTERACTION_UNSPECIFIED: Defined in CVSS v3
+      USER_INTERACTION_NONE: Defined in CVSS v3
+      USER_INTERACTION_REQUIRED: Defined in CVSS v3
     """
     USER_INTERACTION_UNSPECIFIED = 0
     USER_INTERACTION_NONE = 1

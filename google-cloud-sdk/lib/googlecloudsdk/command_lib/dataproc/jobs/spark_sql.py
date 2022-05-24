@@ -23,6 +23,7 @@ from apitools.base.py import encoding
 
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.dataproc.jobs import base as job_base
+from googlecloudsdk.command_lib.dataproc.jobs import util as job_util
 
 
 class SparkSqlBase(job_base.JobBase):
@@ -61,6 +62,9 @@ class SparkSqlBase(job_base.JobBase):
         metavar='PROPERTY=VALUE',
         help='A list of key value pairs to configure Hive.')
     parser.add_argument(
+        '--properties-file',
+        help=job_util.PROPERTIES_FILE_HELP_TEXT)
+    parser.add_argument(
         '--driver-log-levels',
         type=arg_parsers.ArgDict(),
         metavar='PACKAGE=LEVEL',
@@ -87,8 +91,12 @@ class SparkSqlBase(job_base.JobBase):
     if args.params:
       spark_sql_job.scriptVariables = encoding.DictToAdditionalPropertyMessage(
           args.params, messages.SparkSqlJob.ScriptVariablesValue)
-    if args.properties:
+
+    job_properties = job_util.BuildJobProperties(
+        args.properties, args.properties_file)
+    if job_properties:
+    # Sort properties to ensure tests comparing messages not fail on ordering.
       spark_sql_job.properties = encoding.DictToAdditionalPropertyMessage(
-          args.properties, messages.SparkSqlJob.PropertiesValue)
+          job_properties, messages.SparkSqlJob.PropertiesValue, sort_items=True)
 
     job.sparkSqlJob = spark_sql_job

@@ -6056,7 +6056,7 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetScheduling(self, request, global_params=None):
-      r"""Sets an instance's scheduling options. You can only call this method on a stopped instance, that is, a VM instance that is in a `TERMINATED` state. See Instance Life Cycle for more information on the possible instance states. For more information about setting scheduling options for a VM, see Set VM availability policies.
+      r"""Sets an instance's scheduling options. You can only call this method on a stopped instance, that is, a VM instance that is in a `TERMINATED` state. See Instance Life Cycle for more information on the possible instance states. For more information about setting scheduling options for a VM, see Set VM host maintenance policy.
 
       Args:
         request: (ComputeInstancesSetSchedulingRequest) input message
@@ -16211,6 +16211,32 @@ class ComputeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def SetCertificateMap(self, request, global_params=None):
+      r"""Changes the Certificate Map for TargetHttpsProxy.
+
+      Args:
+        request: (ComputeTargetHttpsProxiesSetCertificateMapRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetCertificateMap')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetCertificateMap.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.targetHttpsProxies.setCertificateMap',
+        ordered_params=['project', 'targetHttpsProxy'],
+        path_params=['project', 'targetHttpsProxy'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/targetHttpsProxies/{targetHttpsProxy}/setCertificateMap',
+        request_field='targetHttpsProxiesSetCertificateMapRequest',
+        request_type_name='ComputeTargetHttpsProxiesSetCertificateMapRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def SetQuicOverride(self, request, global_params=None):
       r"""Sets the QUIC override policy for TargetHttpsProxy.
 
@@ -16887,6 +16913,32 @@ class ComputeV1(base_api.BaseApiClient):
         relative_path='projects/{project}/global/targetSslProxies/{targetSslProxy}/setBackendService',
         request_field='targetSslProxiesSetBackendServiceRequest',
         request_type_name='ComputeTargetSslProxiesSetBackendServiceRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def SetCertificateMap(self, request, global_params=None):
+      r"""Changes the Certificate Map for TargetSslProxy.
+
+      Args:
+        request: (ComputeTargetSslProxiesSetCertificateMapRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetCertificateMap')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetCertificateMap.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.targetSslProxies.setCertificateMap',
+        ordered_params=['project', 'targetSslProxy'],
+        path_params=['project', 'targetSslProxy'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/targetSslProxies/{targetSslProxy}/setCertificateMap',
+        request_field='targetSslProxiesSetCertificateMapRequest',
+        request_type_name='ComputeTargetSslProxiesSetCertificateMapRequest',
         response_type_name='Operation',
         supports_download=False,
     )

@@ -563,17 +563,6 @@
         }
       }
     },
-    "GoogleCloudRecaptchaenterpriseV1RetrieveLegacySecretKeyResponse": {
-      "id": "GoogleCloudRecaptchaenterpriseV1RetrieveLegacySecretKeyResponse",
-      "description": "Secret key used in legacy reCAPTCHA only. Should be used when integrating with a 3rd party which is still using legacy reCAPTCHA.",
-      "type": "object",
-      "properties": {
-        "legacySecretKey": {
-          "description": "The secret key (also known as shared secret) authorizes communication between your application backend and the reCAPTCHA Enterprise server to create an assessment. The secret key needs to be kept safe for security purposes.",
-          "type": "string"
-        }
-      }
-    },
     "GoogleProtobufEmpty": {
       "id": "GoogleProtobufEmpty",
       "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }",
@@ -1046,31 +1035,6 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Returns the list of all keys that belong to a project."
-            },
-            "retrieveLegacySecretKey": {
-              "id": "recaptchaenterprise.projects.keys.retrieveLegacySecretKey",
-              "path": "v1/{+key}:retrieveLegacySecretKey",
-              "flatPath": "v1/projects/{projectsId}/keys/{keysId}:retrieveLegacySecretKey",
-              "httpMethod": "GET",
-              "parameters": {
-                "key": {
-                  "description": "Required. The public key name linked to the requested secret key , in the format \"projects\/{project}\/keys\/{key}\".",
-                  "pattern": "^projects\/[^\/]+\/keys\/[^\/]+$",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "key"
-              ],
-              "response": {
-                "$ref": "GoogleCloudRecaptchaenterpriseV1RetrieveLegacySecretKeyResponse"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
-              "description": "Returns the secret key related to the specified public key. You should use the legacy secret key only if you are integrating with a 3rd party using the legacy reCAPTCHA instead of reCAPTCHA Enterprise."
             },
             "get": {
               "id": "recaptchaenterprise.projects.keys.get",

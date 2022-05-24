@@ -549,6 +549,17 @@ class OrgpolicyOrganizationsCustomConstraintsCreateRequest(_messages.Message):
   validateOnly = _messages.BooleanField(3)
 
 
+class OrgpolicyOrganizationsCustomConstraintsDeleteRequest(_messages.Message):
+  r"""A OrgpolicyOrganizationsCustomConstraintsDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the custom constraint to delete. See
+      `CustomConstraint` for naming rules.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class OrgpolicyOrganizationsCustomConstraintsGetRequest(_messages.Message):
   r"""A OrgpolicyOrganizationsCustomConstraintsGetRequest object.
 

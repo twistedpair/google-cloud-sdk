@@ -65,7 +65,7 @@ def get_upload_strategy(api, object_length):
     return cloud_api.UploadStrategy.SIMPLE
 
 
-def get_content_type(file_resource):
+def get_content_type(source_path, is_pipe):
   """Gets a file's MIME type.
 
   Favors returning the result of `file -b --mime ...` if the command is
@@ -73,34 +73,33 @@ def get_content_type(file_resource):
   file's extension.
 
   Args:
-    file_resource (resource_reference.FileObjectResource): The file to return a
-      type for.
+    source_path (str): Path to file. May differ from file_resource.storage_url
+      if using a temporary file (e.g. for gzipping).
+    is_pipe (bool): If the source file is a pipe (typically FIFO or stdin).
 
   Returns:
     A MIME type (str).
     If a type cannot be guessed, request_config_factory.DEFAULT_CONTENT_TYPE is
     returned.
   """
-  if file_resource.storage_url.is_pipe:
+  if is_pipe:
     return request_config_factory.DEFAULT_CONTENT_TYPE
-
-  path = file_resource.storage_url.object_name
 
   # Some common extensions are not recognized by the mimetypes library and
   # "file" command, so we'll hard-code support for them.
   for extension, content_type in COMMON_EXTENSION_RULES.items():
-    if path.endswith(extension):
+    if source_path.endswith(extension):
       return content_type
 
   if (not platforms.OperatingSystem.IsWindows() and
       properties.VALUES.storage.use_magicfile.GetBool()):
-    output = subprocess.run(['file', '-b', '--mime', path],
+    output = subprocess.run(['file', '-b', '--mime', source_path],
                             check=True,
                             stdout=subprocess.PIPE,
                             universal_newlines=True)
     content_type = output.stdout.strip()
   else:
-    content_type, _ = mimetypes.guess_type(path)
+    content_type, _ = mimetypes.guess_type(source_path)
   if content_type:
     return content_type
   return request_config_factory.DEFAULT_CONTENT_TYPE

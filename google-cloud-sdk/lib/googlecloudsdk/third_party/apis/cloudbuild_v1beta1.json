@@ -1596,69 +1596,6 @@
         }
       }
     },
-    "CreateGitLabConfigOperationMetadata": {
-      "id": "CreateGitLabConfigOperationMetadata",
-      "description": "Metadata for `CreateGitLabConfig` operation.",
-      "type": "object",
-      "properties": {
-        "gitlabConfig": {
-          "description": "The resource name of the GitLabConfig to be created. Format: `projects\/{project}\/locations\/{location}\/gitlabConfigs\/{id}`.",
-          "type": "string"
-        },
-        "createTime": {
-          "description": "Time the operation was created.",
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "completeTime": {
-          "description": "Time the operation was completed.",
-          "type": "string",
-          "format": "google-datetime"
-        }
-      }
-    },
-    "UpdateGitLabConfigOperationMetadata": {
-      "id": "UpdateGitLabConfigOperationMetadata",
-      "description": "Metadata for `UpdateGitLabConfig` operation.",
-      "type": "object",
-      "properties": {
-        "gitlabConfig": {
-          "description": "The resource name of the GitLabConfig to be created. Format: `projects\/{project}\/locations\/{location}\/gitlabConfigs\/{id}`.",
-          "type": "string"
-        },
-        "createTime": {
-          "description": "Time the operation was created.",
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "completeTime": {
-          "description": "Time the operation was completed.",
-          "type": "string",
-          "format": "google-datetime"
-        }
-      }
-    },
-    "DeleteGitLabConfigOperationMetadata": {
-      "id": "DeleteGitLabConfigOperationMetadata",
-      "description": "Metadata for `DeleteGitLabConfig` operation.",
-      "type": "object",
-      "properties": {
-        "gitlabConfig": {
-          "description": "The resource name of the GitLabConfig to be created. Format: `projects\/{project}\/locations\/{location}\/gitlabConfigs\/{id}`.",
-          "type": "string"
-        },
-        "createTime": {
-          "description": "Time the operation was created.",
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "completeTime": {
-          "description": "Time the operation was completed.",
-          "type": "string",
-          "format": "google-datetime"
-        }
-      }
-    },
     "HTTPDelivery": {
       "id": "HTTPDelivery",
       "description": "HTTPDelivery is the delivery configuration for an HTTP notification.",

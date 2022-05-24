@@ -32,12 +32,21 @@ def AddNetworkToParser(parser, positional=False):
   network_data = yaml_data.ResourceYAMLData.FromPath(
       'vmware.networks.vmware_engine_network')
   resource_spec = concepts.ResourceSpec.FromYaml(network_data.GetData())
-  presentation_spec = presentation_specs.ResourcePresentationSpec(
-      name=name,
-      concept_spec=resource_spec,
-      required=True,
-      group_help='vmware_engine_network.'
-      )
+  if positional:
+    presentation_spec = presentation_specs.ResourcePresentationSpec(
+        name=name,
+        concept_spec=resource_spec,
+        required=True,
+        group_help='vmware_engine_network.'
+        )
+  else:
+    presentation_spec = presentation_specs.ResourcePresentationSpec(
+        name=name,
+        concept_spec=resource_spec,
+        required=True,
+        group_help='vmware_engine_network.',
+        flag_name_overrides={'location': '--network-location'}
+        )
   return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
 
 

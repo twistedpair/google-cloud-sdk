@@ -134,7 +134,8 @@ def GetRegionalTarget(client,
                       args,
                       forwarding_rule_ref,
                       include_l7_internal_load_balancing=False,
-                      include_target_service_attachment=False):
+                      include_target_service_attachment=False,
+                      include_regional_tcp_proxy=False):
   """Return the forwarding target for a regionally scoped request."""
   _ValidateRegionalArgs(args)
   region_arg = forwarding_rule_ref.region
@@ -178,7 +179,9 @@ def GetRegionalTarget(client,
     target_ref = flags.TARGET_SSL_PROXY_ARG.ResolveAsResource(args, resources)
     target_region = region_arg
   elif args.target_tcp_proxy:
-    target_ref = flags.TARGET_TCP_PROXY_ARG.ResolveAsResource(args, resources)
+    target_ref = flags.TargetTcpProxyArg(
+        allow_regional=include_regional_tcp_proxy).ResolveAsResource(
+            args, resources, default_scope=compute_scope.ScopeEnum.GLOBAL)
     target_region = region_arg
   elif include_target_service_attachment and args.target_service_attachment:
     target_ref = flags.TargetServiceAttachmentArg().ResolveAsResource(
@@ -196,9 +199,8 @@ For a regional forwarding rule, exactly one of  ``--target-instance``,
 ``--target-pool``, ``--target-http-proxy``, ``--target-https-proxy``,
 ``--target-grpc-proxy``, ``--target-ssl-proxy``, ``--target-tcp-proxy``,
 {} ``--target-vpn-gateway`` or ``--backend-service`` must be specified.
-""".format(
-        '``--target-service-attachment``,' if include_target_service_attachment
-    else None))
+""".format('``--target-service-attachment``,'
+           if include_target_service_attachment else None))
 
   return target_ref, target_region
 

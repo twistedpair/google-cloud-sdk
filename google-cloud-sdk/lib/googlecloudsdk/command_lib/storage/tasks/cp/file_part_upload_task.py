@@ -62,6 +62,7 @@ class FilePartUploadTask(file_part_task.FilePartTask):
   def __init__(self,
                source_resource,
                destination_resource,
+               source_path,
                offset,
                length,
                component_number=None,
@@ -76,6 +77,8 @@ class FilePartUploadTask(file_part_task.FilePartTask):
       destination_resource (resource_reference.ObjectResource|UnknownResource):
         Must contain the full object path. Directories will not be accepted.
         Existing objects at the this location will be overwritten.
+      source_path (str): Path to file to upload. May be the original or a
+        transformed temporary file.
       offset (int): The index of the first byte in the upload range.
       length (int): The number of bytes in the upload range.
       component_number (int|None): If a multipart operation, indicates the
@@ -87,6 +90,7 @@ class FilePartUploadTask(file_part_task.FilePartTask):
     super(FilePartUploadTask,
           self).__init__(source_resource, destination_resource, offset, length,
                          component_number, total_components)
+    self._source_path = source_path
     self._user_request_args = user_request_args
 
   def _get_upload_stream(self, digesters, task_status_queue):
@@ -106,8 +110,7 @@ class FilePartUploadTask(file_part_task.FilePartTask):
     else:
       progress_callback = None
 
-    source_stream = files.BinaryFileReader(
-        self._source_resource.storage_url.object_name)
+    source_stream = files.BinaryFileReader(self._source_path)
     return upload_stream.UploadStream(
         source_stream, self._offset, self._length, digesters=digesters,
         progress_callback=progress_callback)
@@ -160,7 +163,8 @@ class FilePartUploadTask(file_part_task.FilePartTask):
     api = api_factory.get_api(provider)
     request_config = request_config_factory.get_request_config(
         destination_url,
-        content_type=upload_util.get_content_type(self._source_resource),
+        content_type=upload_util.get_content_type(
+            self._source_path, self._source_resource.storage_url.is_pipe),
         md5_hash=self._source_resource.md5_hash,
         size=self._length,
         user_request_args=self._user_request_args)
