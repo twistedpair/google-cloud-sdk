@@ -1,0 +1,2707 @@
+{
+  "kind": "discovery#restDescription",
+  "discoveryVersion": "v1",
+  "id": "gkeonprem:v1",
+  "name": "gkeonprem",
+  "canonicalName": "GKE On-Prem",
+  "version": "v1",
+  "revision": "0",
+  "title": "GKE On-Prem API",
+  "description": "",
+  "ownerDomain": "google.com",
+  "ownerName": "Google",
+  "icons": {
+    "x16": "http://www.google.com/images/icons/product/search-16.gif",
+    "x32": "http://www.google.com/images/icons/product/search-32.gif"
+   },
+  "documentationLink": "https://cloud.google.com/anthos/clusters/docs/on-prem/",
+  "protocol": "rest",
+  "rootUrl": "https://gkeonprem.googleapis.com/",
+  "mtlsRootUrl": "https://gkeonprem.mtls.googleapis.com/",
+  "servicePath": "",
+  "baseUrl": "https://gkeonprem.googleapis.com/",
+  "batchPath": "batch",
+  "version_module": true,
+  "fullyEncodeReservedExpansion": true,
+  "parameters": {
+    "access_token": {
+      "type": "string",
+      "description": "OAuth access token.",
+      "location": "query"
+    },
+    "alt": {
+      "type": "string",
+      "description": "Data format for response.",
+      "default": "json",
+      "enum": [
+        "json",
+        "media",
+        "proto"
+      ],
+      "enumDescriptions": [
+        "Responses with Content-Type of application/json",
+        "Media download with context-dependent Content-Type",
+        "Responses with Content-Type of application/x-protobuf"
+      ],
+      "location": "query"
+    },
+    "callback": {
+      "type": "string",
+      "description": "JSONP",
+      "location": "query"
+    },
+    "fields": {
+      "type": "string",
+      "description": "Selector specifying which fields to include in a partial response.",
+      "location": "query"
+    },
+    "key": {
+      "type": "string",
+      "description": "API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.",
+      "location": "query"
+    },
+    "oauth_token": {
+      "type": "string",
+      "description": "OAuth 2.0 token for the current user.",
+      "location": "query"
+    },
+    "prettyPrint": {
+      "type": "boolean",
+      "description": "Returns response with indentations and line breaks.",
+      "default": "true",
+      "location": "query"
+    },
+    "quotaUser": {
+      "type": "string",
+      "description": "Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.",
+      "location": "query"
+    },
+    "upload_protocol": {
+      "type": "string",
+      "description": "Upload protocol for media (e.g. \"raw\", \"multipart\").",
+      "location": "query"
+    },
+    "uploadType": {
+      "type": "string",
+      "description": "Legacy upload protocol for media (e.g. \"media\", \"multipart\").",
+      "location": "query"
+    },
+    "$.xgafv": {
+      "type": "string",
+      "description": "V1 error format.",
+      "enum": [
+        "1",
+        "2"
+      ],
+      "enumDescriptions": [
+        "v1 error format",
+        "v2 error format"
+      ],
+      "location": "query"
+    }
+  },
+  "auth": {
+    "oauth2": {
+      "scopes": {
+        "https://www.googleapis.com/auth/cloud-platform": {
+          "description": "See, edit, configure, and delete your Google Cloud data and see the email address for your Google Account."
+        }
+      }
+    }
+  },
+  "schemas": {
+    "ListOperationsResponse": {
+      "id": "ListOperationsResponse",
+      "description": "The response message for Operations.ListOperations.",
+      "type": "object",
+      "properties": {
+        "operations": {
+          "description": "A list of operations that matches the specified filter in the request.",
+          "type": "array",
+          "items": {
+            "$ref": "Operation"
+          }
+        },
+        "nextPageToken": {
+          "description": "The standard List next-page token.",
+          "type": "string"
+        }
+      }
+    },
+    "Operation": {
+      "id": "Operation",
+      "description": "This resource represents a long-running operation that is the result of a network API call.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The server-assigned name, which is only unique within the same service that originally returns it. If you use the default HTTP mapping, the `name` should be a resource name ending with `operations\/{unique_id}`.",
+          "type": "string"
+        },
+        "metadata": {
+          "description": "Service-specific metadata associated with the operation. It typically contains progress information and common metadata such as create time. Some services might not provide such metadata. Any method that returns a long-running operation should document the metadata type, if any.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        },
+        "done": {
+          "description": "If the value is `false`, it means the operation is still in progress. If `true`, the operation is completed, and either `error` or `response` is available.",
+          "type": "boolean"
+        },
+        "error": {
+          "description": "The error result of the operation in case of failure or cancellation.",
+          "$ref": "Status"
+        },
+        "response": {
+          "description": "The normal response of the operation in case of success. If the original method returns no data on success, such as `Delete`, the response is `google.protobuf.Empty`. If the original method is standard `Get`\/`Create`\/`Update`, the response should be the resource. For other methods, the response should have the type `XxxResponse`, where `Xxx` is the original method name. For example, if the original method name is `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        }
+      }
+    },
+    "Status": {
+      "id": "Status",
+      "description": "The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https:\/\/github.com\/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https:\/\/cloud.google.com\/apis\/design\/errors).",
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "The status code, which should be an enum value of google.rpc.Code.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "description": "A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the google.rpc.Status.details field, or localized by the client.",
+          "type": "string"
+        },
+        "details": {
+          "description": "A list of messages that carry the error details. There is a common set of message types for APIs to use.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "any",
+              "description": "Properties of the object. Contains field @type with type URL."
+            }
+          }
+        }
+      }
+    },
+    "Empty": {
+      "id": "Empty",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "CancelOperationRequest": {
+      "id": "CancelOperationRequest",
+      "description": "The request message for Operations.CancelOperation.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "EnrollVmwareClusterRequest": {
+      "id": "EnrollVmwareClusterRequest",
+      "description": "Message for enrolling an existing VMware Cluster to the GKE on-prem API.",
+      "type": "object",
+      "properties": {
+        "vmwareClusterId": {
+          "description": "User provided OnePlatform identifier that is used as part of the resource name. This must be unique among all GKE on-prem clusters within a project and location and will return a 409 if the cluster already exists. This value must be up to 40 characters and follow RFC-1123 (https:\/\/tools.ietf.org\/html\/rfc1123) format.",
+          "type": "string"
+        },
+        "localName": {
+          "description": "The object name of the VMware OnPremUserCluster custom resource on the associated admin cluster. This field is used to support conflicting resource names when enrolling existing clusters to the API. When not provided, this field will resolve to the vmware_cluster_id. Otherwise, it must match the object name of the VMware OnPremUserCluster custom resource. It is not modifiable outside \/ beyond the enrollment operation.",
+          "type": "string"
+        },
+        "adminClusterMembership": {
+          "description": "Required. The admin cluster this VMware User Cluster belongs to. This is the full resource name of the admin cluster's hub membership. In the future, references to other resource types might be allowed if admin clusters are modeled as their own resources.",
+          "type": "string"
+        }
+      }
+    },
+    "VmwareCluster": {
+      "id": "VmwareCluster",
+      "description": "Resource that represents a VMware User Cluster. ##",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. The VMware User Cluster resource name.",
+          "type": "string"
+        },
+        "adminClusterMembership": {
+          "description": "Required. The admin cluster this VMware User Cluster belongs to. This is the full resource name of the admin cluster's hub membership. In the future, references to other resource types might be allowed if admin clusters are modeled as their own resources.",
+          "type": "string"
+        },
+        "description": {
+          "description": "A human readable description of this VMware User Cluster.",
+          "type": "string"
+        },
+        "onPremVersion": {
+          "description": "The Anthos clusters on the VMware version for your user cluster. Defaults to the admin cluster version.",
+          "type": "string"
+        },
+        "uid": {
+          "description": "Output only. The unique identifier of the VMware User Cluster.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "state": {
+          "description": "Output only. The current state of VMware User Cluster.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Not set.",
+            "The PROVISIONING state indicates the cluster is being created.",
+            "The RUNNING state indicates the cluster has been created and is fully usable.",
+            "The RECONCILING state indicates that the cluster is being updated. It remains available, but potentially with degraded performance.",
+            "The STOPPING state indicates the cluster is being deleted.",
+            "The ERROR state indicates the cluster is in a broken unrecoverable state.",
+            "The DEGRADED state indicates the cluster requires user action to restore full functionality."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "PROVISIONING",
+            "RUNNING",
+            "RECONCILING",
+            "STOPPING",
+            "ERROR",
+            "DEGRADED"
+          ]
+        },
+        "endpoint": {
+          "description": "Output only. The DNS name of VMware User Cluster's API server.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "reconciling": {
+          "description": "Output only. If set, there are currently changes in flight to the VMware User Cluster.",
+          "readOnly": true,
+          "type": "boolean"
+        },
+        "createTime": {
+          "description": "Output only. The time at which VMware User Cluster was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The time at which VMware User Cluster was last updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "localName": {
+          "description": "Output only. The object name of the VMware OnPremUserCluster custom resource on the associated admin cluster. This field is used to support conflicting names when enrolling existing clusters to the API. When used as a part of cluster enrollment, this field will differ from the ID in the resource name. For new clusters, this field will match the user provided cluster ID and be visible in the last component of the resource name. It is not modifiable. All users should use this name to access their cluster using gkectl or kubectl and should expect to see the local name when viewing admin cluster controller logs.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "etag": {
+          "description": "This checksum is computed by the server based on the value of other fields, and may be sent on update and delete requests to ensure the client has an up-to-date value before proceeding. Allows clients to perform consistent read-modify-writes through optimistic concurrency control.",
+          "type": "string"
+        },
+        "annotations": {
+          "description": "Annotations on the VMware User Cluster. This field has the same restrictions as Kubernetes annotations. The total size of all keys and values combined is limited to 256k. Key can have 2 segments: prefix (optional) and name (required), separated by a slash (\/). Prefix must be a DNS subdomain. Name must be 63 characters or less, begin and end with alphanumerics, with dashes (-), underscores (_), dots (.), and alphanumerics between.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "controlPlaneNode": {
+          "description": "VMware User Cluster control plane nodes must have either 1 or 3 replicas.",
+          "$ref": "VmwareControlPlaneNodeConfig"
+        },
+        "workloadIdentity": {
+          "description": "Authenticate to Google without requiring you to download, manually rotate, and generally manage Google Cloud service account keys. By using Workload Identity, the Connect Agent and other workloads can authenticate using short-lived tokens generated by the cluster.",
+          "$ref": "VmwareWorkloadIdentityConfig"
+        },
+        "antiAffinityGroups": {
+          "description": "AAGConfig specifies whether to spread VMware User Cluster nodes across at least three physical hosts in the datacenter.",
+          "$ref": "VmwareAAGConfig"
+        },
+        "storage": {
+          "description": "Storage configuration.",
+          "$ref": "VmwareStorageConfig"
+        },
+        "networkConfig": {
+          "description": "The VMware User Cluster network configuration.",
+          "$ref": "VmwareNetworkConfig"
+        },
+        "loadBalancer": {
+          "description": "Load Balancer configuration.",
+          "$ref": "VmwareLoadBalancerConfig"
+        },
+        "vcenter": {
+          "description": "Output only. VmwareVCenterConfig specifies vCenter config for the user cluster. Inherited from the admin cluster.",
+          "readOnly": true,
+          "$ref": "VmwareVCenterConfig"
+        },
+        "status": {
+          "description": "Output only. ResourceStatus representing detailed cluster state.",
+          "readOnly": true,
+          "$ref": "ResourceStatus"
+        },
+        "dataplaneV2": {
+          "description": "VmwareDataplaneV2Config specifies configuration for Dataplane V2.",
+          "$ref": "VmwareDataplaneV2Config"
+        },
+        "vmTrackingEnabled": {
+          "description": "Enable VM tracking.",
+          "type": "boolean"
+        },
+        "autoRepairConfig": {
+          "description": "Configuration for auto repairing.",
+          "$ref": "VmwareAutoRepairConfig"
+        },
+        "fleet": {
+          "description": "Output only. Fleet configuration for the cluster.",
+          "readOnly": true,
+          "$ref": "Fleet"
+        },
+        "authorization": {
+          "description": "RBAC policy that will be applied and managed by GKE On-Prem.",
+          "$ref": "Authorization"
+        },
+        "deleteTime": {
+          "description": "Output only. The time at which VMware User Cluster was deleted.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "VmwareControlPlaneNodeConfig": {
+      "id": "VmwareControlPlaneNodeConfig",
+      "description": "VmwareControlPlaneNodeConfig specifies control plane node config for VMware User Cluster.",
+      "type": "object",
+      "properties": {
+        "cpus": {
+          "description": "The number of CPUs for each admin cluster node that serve as control planes for this VMware User Cluster. (default: 4 CPUs)",
+          "type": "string",
+          "format": "int64"
+        },
+        "memory": {
+          "description": "The megabytes of memory for each admin cluster node that serves as a control plane for this VMware User Cluster (default: 8192 MB memory).",
+          "type": "string",
+          "format": "int64"
+        },
+        "replicas": {
+          "description": "The number of control plane nodes for this VMware User Cluster. (default: 1 replica).",
+          "type": "string",
+          "format": "int64"
+        },
+        "autoResizeConfig": {
+          "description": "AutoResizeConfig provides auto resizing configurations.",
+          "$ref": "VmwareAutoResizeConfig"
+        },
+        "vsphereConfig": {
+          "description": "Output only. Vsphere-specific config.",
+          "readOnly": true,
+          "$ref": "VmwareControlPlaneVsphereConfig"
+        }
+      }
+    },
+    "VmwareAutoResizeConfig": {
+      "id": "VmwareAutoResizeConfig",
+      "description": "VmwareAutoResizeConfig provides auto resizing configurations.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Whether to enable master node auto resizing.",
+          "type": "boolean"
+        }
+      }
+    },
+    "VmwareControlPlaneVsphereConfig": {
+      "id": "VmwareControlPlaneVsphereConfig",
+      "description": "VmwareControlPlaneVsphereConfig Control Plane Node config.",
+      "type": "object",
+      "properties": {
+        "datastore": {
+          "description": "The Vsphere datastore used by the Master Node.",
+          "type": "string"
+        }
+      }
+    },
+    "VmwareWorkloadIdentityConfig": {
+      "id": "VmwareWorkloadIdentityConfig",
+      "description": "VmwareWorkloadIdentityConfig for VMware User Cluster.",
+      "type": "object",
+      "properties": {
+        "workloadIdentityDisabled": {
+          "description": "Whether or not workload identity is disabled in the cluster. Workload Identity is enabled by default.",
+          "type": "boolean"
+        }
+      }
+    },
+    "VmwareAAGConfig": {
+      "id": "VmwareAAGConfig",
+      "description": "VmwareAAGConfig specifies anti affinity group config for VMware User Cluster. ",
+      "type": "object",
+      "properties": {
+        "aagConfigDisabled": {
+          "description": "Spread nodes across at least three physical hosts (requires at least three hosts). Enabled by default.",
+          "type": "boolean"
+        }
+      }
+    },
+    "VmwareStorageConfig": {
+      "id": "VmwareStorageConfig",
+      "description": "VmwareStorageConfig specifies whether to deploy vSphere CSI components in the VMware User Cluster.",
+      "type": "object",
+      "properties": {
+        "vsphereCsiDisabled": {
+          "description": "Whether or not to deploy vSphere CSI components in the VMware User Cluster. Enabled by default.",
+          "type": "boolean"
+        }
+      }
+    },
+    "VmwareNetworkConfig": {
+      "id": "VmwareNetworkConfig",
+      "description": "VmwareNetworkConfig for VMware User Cluster.",
+      "type": "object",
+      "properties": {
+        "serviceAddressCidrBlocks": {
+          "description": "Required. All services in the cluster are assigned an RFC1918 IPv4 address from these ranges. Only a single range is supported. This field cannot be changed after creation.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "podAddressCidrBlocks": {
+          "description": "Required. All pods in the cluster are assigned an RFC1918 IPv4 address from these ranges. Only a single range is supported. This field cannot be changed after creation.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "staticIpConfig": {
+          "description": "Configuration settings for a static IP configuration.",
+          "$ref": "VmwareStaticIpConfig"
+        },
+        "dhcpIpConfig": {
+          "description": "Configuration settings for a DHCP IP configuration.",
+          "$ref": "VmwareDhcpIpConfig"
+        },
+        "vcenterNetwork": {
+          "description": "Output only. vcenter_network specifies vCenter network name. Inherited from the admin cluster.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "hostConfig": {
+          "description": "Represents common network settings irrespective of the host's IP address.",
+          "$ref": "VmwareHostConfig"
+        }
+      }
+    },
+    "VmwareStaticIpConfig": {
+      "id": "VmwareStaticIpConfig",
+      "description": "VmwareStaticIpConfig represents the network configuration required for VMware User Clusters with Static IP configurations.",
+      "type": "object",
+      "properties": {
+        "ipBlocks": {
+          "description": "Represents the configuration values for static IP allocation to nodes.",
+          "type": "array",
+          "items": {
+            "$ref": "VmwareIpBlock"
+          }
+        }
+      }
+    },
+    "VmwareIpBlock": {
+      "id": "VmwareIpBlock",
+      "description": "VmwareIpBlock represents a collection of IP addresses to assign to nodes from.",
+      "type": "object",
+      "properties": {
+        "netmask": {
+          "description": "The netmask used by the VMware User Cluster.",
+          "type": "string"
+        },
+        "gateway": {
+          "description": "The network gateway used by the VMware User Cluster.",
+          "type": "string"
+        },
+        "ips": {
+          "description": "The node's network configurations used by the VMware User Cluster.",
+          "type": "array",
+          "items": {
+            "$ref": "VmwareHostIp"
+          }
+        }
+      }
+    },
+    "VmwareHostIp": {
+      "id": "VmwareHostIp",
+      "description": "VmwareHostIp represents a node's network configuration.",
+      "type": "object",
+      "properties": {
+        "ip": {
+          "description": "IP could be an IP address (like 1.2.3.4) or a CIDR (like 1.2.3.0\/24).",
+          "type": "string"
+        },
+        "hostname": {
+          "description": "Hostname of the machine. VM's name will be used if this field is empty.",
+          "type": "string"
+        }
+      }
+    },
+    "VmwareDhcpIpConfig": {
+      "id": "VmwareDhcpIpConfig",
+      "description": "VmwareDhcpIpConfig represents the network configuration required for VMware user clusters with DHCP IP configurations.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "enabled is a flag to mark if DHCP IP allocation is used for VMware user clusters.",
+          "type": "boolean"
+        }
+      }
+    },
+    "VmwareHostConfig": {
+      "id": "VmwareHostConfig",
+      "description": "VmwareHostConfig represents the common parameters for all hosts irrespective of their IP address.",
+      "type": "object",
+      "properties": {
+        "dnsServers": {
+          "description": "DNS servers.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "ntpServers": {
+          "description": "NTP servers.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "dnsSearchDomains": {
+          "description": "DNS search domains.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "VmwareLoadBalancerConfig": {
+      "id": "VmwareLoadBalancerConfig",
+      "description": "VmwareLoadBalancerConfig for VMware User Cluster.",
+      "type": "object",
+      "properties": {
+        "vipConfig": {
+          "description": "The VIPs used by the load balancer.",
+          "$ref": "VmwareVipConfig"
+        },
+        "f5Config": {
+          "description": "Configuration for F5 Big IP typed load balancers.",
+          "$ref": "VmwareF5BigIpConfig"
+        },
+        "manualLbConfig": {
+          "description": "Manually configured load balancers.",
+          "$ref": "VmwareManualLbConfig"
+        },
+        "seesawConfig": {
+          "description": "Configuration for Seesaw typed load balancers.",
+          "$ref": "VmwareSeesawConfig"
+        },
+        "metalLbConfig": {
+          "description": "Configuration for MetalLB typed load balancers.",
+          "$ref": "VmwareMetalLbConfig"
+        }
+      }
+    },
+    "VmwareVipConfig": {
+      "id": "VmwareVipConfig",
+      "description": "VmwareVipConfig for Vmware Load Balancer Config.",
+      "type": "object",
+      "properties": {
+        "controlPlaneVip": {
+          "description": "The VIP which you previously set aside for the Kubernetes API of this cluster.",
+          "type": "string"
+        },
+        "ingressVip": {
+          "description": "The VIP which you previously set aside for ingress traffic into this cluster.",
+          "type": "string"
+        }
+      }
+    },
+    "VmwareF5BigIpConfig": {
+      "id": "VmwareF5BigIpConfig",
+      "description": "VmwareF5BigIpConfig represents configuration parameters for an F5 BIG-IP load balancer.",
+      "type": "object",
+      "properties": {
+        "address": {
+          "description": "The load balancer's IP address.",
+          "type": "string"
+        },
+        "partition": {
+          "description": "The preexisting partition to be used by the load balancer. This partition is usually created for the admin cluster for example: 'my-f5-admin-partition'.",
+          "type": "string"
+        },
+        "snatPool": {
+          "description": "The pool name. Only necessary, if using SNAT.",
+          "type": "string"
+        }
+      }
+    },
+    "VmwareManualLbConfig": {
+      "id": "VmwareManualLbConfig",
+      "type": "object",
+      "properties": {
+        "ingressHttpNodePort": {
+          "description": "NodePort for ingress service's http. The ingress service in the admin cluster is implemented as a Service of type NodePort (ex. 32527).",
+          "type": "integer",
+          "format": "int32"
+        },
+        "ingressHttpsNodePort": {
+          "description": "NodePort for ingress service's https. The ingress service in the admin cluster is implemented as a Service of type NodePort (ex. 30139).",
+          "type": "integer",
+          "format": "int32"
+        },
+        "controlPlaneNodePort": {
+          "description": "NodePort for control plane service. The Kubernetes API server in the admin cluster is implemented as a Service of type NodePort (ex. 30968).",
+          "type": "integer",
+          "format": "int32"
+        },
+        "konnectivityServerNodePort": {
+          "description": "NodePort for konnectivity server service running as a sidecar in each kube-apiserver pod (ex. 30564).",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "VmwareSeesawConfig": {
+      "id": "VmwareSeesawConfig",
+      "type": "object",
+      "properties": {
+        "group": {
+          "description": "Required. In general the following format should be used for the Seesaw group name: seesaw-for-[cluster_name].",
+          "type": "string"
+        },
+        "masterIp": {
+          "description": "Required. MasterIP is the IP announced by the master of Seesaw group.",
+          "type": "string"
+        },
+        "ipBlocks": {
+          "description": "Required. The IP Blocks to be used by the Seesaw load balancer",
+          "type": "array",
+          "items": {
+            "$ref": "VmwareIpBlock"
+          }
+        },
+        "enableHa": {
+          "description": "Enable two load balancer VMs to achieve a highly-available Seesaw load balancer.",
+          "type": "boolean"
+        },
+        "vms": {
+          "description": "Names of the VMs created for this Seesaw group.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "VmwareMetalLbConfig": {
+      "id": "VmwareMetalLbConfig",
+      "description": "VmwareMetalLbConfig represents configuration parameters for a MetalLB load balancer.",
+      "type": "object",
+      "properties": {
+        "addressPools": {
+          "description": "Required. AddressPools is a list of non-overlapping IP pools used by load balancer typed services. All addresses must be routable to load balancer nodes. IngressVIP must be included in the pools.",
+          "type": "array",
+          "items": {
+            "$ref": "VmwareAddressPool"
+          }
+        }
+      }
+    },
+    "VmwareAddressPool": {
+      "id": "VmwareAddressPool",
+      "description": "VmwareAddressPool represents an IP pool used by a load balancer.",
+      "type": "object",
+      "properties": {
+        "pool": {
+          "description": "Required. The name of the address pool.",
+          "type": "string"
+        },
+        "addresses": {
+          "description": "Required. The addresses that are part of this pool. Each address must be either in the CIDR form (1.2.3.0\/24) or range form (1.2.3.1-1.2.3.5).",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "avoidBuggyIps": {
+          "description": "If true, avoid using IPs ending in .0 or .255. This avoids buggy consumer devices mistakenly dropping IPv4 traffic for those special IP addresses.",
+          "type": "boolean"
+        },
+        "manualAssign": {
+          "description": "If true, prevent IP addresses from being automatically assigned.",
+          "type": "boolean"
+        }
+      }
+    },
+    "VmwareVCenterConfig": {
+      "id": "VmwareVCenterConfig",
+      "description": "VmwareVCenterConfig represents configuration for the VMware VCenter for the user cluster.",
+      "type": "object",
+      "properties": {
+        "resourcePool": {
+          "description": "The name of the vCenter resource pool for the user cluster.",
+          "type": "string"
+        },
+        "datastore": {
+          "description": "The name of the vCenter datastore for the user cluster.",
+          "type": "string"
+        },
+        "datacenter": {
+          "description": "The name of the vCenter datacenter for the user cluster.",
+          "type": "string"
+        },
+        "cluster": {
+          "description": "The name of the vCenter cluster for the user cluster.",
+          "type": "string"
+        },
+        "folder": {
+          "description": "The name of the vCenter folder for the user cluster.",
+          "type": "string"
+        },
+        "caCertData": {
+          "description": "Contains the vCenter CA certificate public key for SSL verification.",
+          "type": "string"
+        },
+        "address": {
+          "description": "The vCenter IP address.",
+          "type": "string"
+        }
+      }
+    },
+    "ResourceStatus": {
+      "id": "ResourceStatus",
+      "description": "ResourceStatus describes why a cluster or node pool has a certain status. (e.g., ERROR or DEGRADED).",
+      "type": "object",
+      "properties": {
+        "errorMessage": {
+          "description": "Human-friendly representation of the error message from the user cluster controller. The error message can be temporary as the user cluster controller creates a cluster or node pool. If the error message persists for a longer period of time, it can be used to surface error message to indicate real problems requiring user intervention.",
+          "type": "string"
+        },
+        "conditions": {
+          "description": "ResourceCondition provide a standard mechanism for higher-level status reporting from user cluster controller.",
+          "type": "array",
+          "items": {
+            "$ref": "ResourceCondition"
+          }
+        }
+      }
+    },
+    "ResourceCondition": {
+      "id": "ResourceCondition",
+      "description": "ResourceCondition provides a standard mechanism for higher-level status reporting from user cluster controller.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "Type of the condition. (e.g., ClusterRunning, NodePoolRunning or ServerSidePreflightReady)",
+          "type": "string"
+        },
+        "reason": {
+          "description": "Machine-readable message indicating details about last transition.",
+          "type": "string"
+        },
+        "message": {
+          "description": "Human-readable message indicating details about last transition.",
+          "type": "string"
+        },
+        "lastTransitionTime": {
+          "description": "Last time the condition transit from one status to another.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "state": {
+          "description": "state of the condition.",
+          "type": "string",
+          "enumDescriptions": [
+            "Not set.",
+            "Resource is in the condition.",
+            "Resource is not in the condition.",
+            "Kubernetes controller can't decide if the resource is in the condition or not."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "STATE_TRUE",
+            "STATE_FALSE",
+            "STATE_UNKNOWN"
+          ]
+        }
+      }
+    },
+    "VmwareDataplaneV2Config": {
+      "id": "VmwareDataplaneV2Config",
+      "description": "VmwareDataplaneV2Config contains configurations for Dataplane V2, which is optimized dataplane for Kubernetes networking. For more information, see: https:\/\/cloud.google.com\/kubernetes-engine\/docs\/concepts\/dataplane-v2",
+      "type": "object",
+      "properties": {
+        "dataplaneV2Enabled": {
+          "description": "Enables Dataplane V2.",
+          "type": "boolean"
+        },
+        "windowsDataplaneV2Enabled": {
+          "description": "Enable Dataplane V2 for clusters with Windows nodes.",
+          "type": "boolean"
+        },
+        "advancedNetworking": {
+          "description": "Enable advanced networking which requires dataplane_v2_enabled to be set true.",
+          "type": "boolean"
+        }
+      }
+    },
+    "VmwareAutoRepairConfig": {
+      "id": "VmwareAutoRepairConfig",
+      "description": "VmwareAutoRepairConfig is used to enable\/disable auto repair. The cluster-health-controller is deployed only if Enabled is true.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Whether auto repair is enabled.",
+          "type": "boolean"
+        }
+      }
+    },
+    "Fleet": {
+      "id": "Fleet",
+      "description": "Fleet related configuration. Fleets are a Google Cloud concept for logically organizing clusters, letting you use and manage multi-cluster capabilities and apply consistent policies across your systems. See [Anthos Fleets](https:\/\/cloud.google.com\/anthos\/multicluster-management\/fleets) for more details on Anthos multi-cluster capabilities using Fleets. ##",
+      "type": "object",
+      "properties": {
+        "membership": {
+          "description": "Output only. The name of the managed Hub Membership resource associated to this cluster. Membership names are formatted as `projects\/\/locations\/\/memberships\/`.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "Authorization": {
+      "id": "Authorization",
+      "description": "Authorization defines the On-Prem User Cluster authorization configuration to bootstrap onto the admin cluster.",
+      "type": "object",
+      "properties": {
+        "adminUsers": {
+          "description": "Required. Users that will be granted the cluster-admin role on the cluster, providing full access to the cluster.",
+          "type": "array",
+          "items": {
+            "$ref": "ClusterUser"
+          }
+        }
+      }
+    },
+    "ClusterUser": {
+      "id": "ClusterUser",
+      "description": "ClusterUser configures user principals for an RBAC policy.",
+      "type": "object",
+      "properties": {
+        "username": {
+          "description": "Required. The name of the user, e.g. `my-gcp-id@gmail.com`.",
+          "type": "string"
+        }
+      }
+    },
+    "ListVmwareClustersResponse": {
+      "id": "ListVmwareClustersResponse",
+      "description": "Response message for listing VMware Clusters.",
+      "type": "object",
+      "properties": {
+        "vmwareClusters": {
+          "description": "The list of VMware Cluster.",
+          "type": "array",
+          "items": {
+            "$ref": "VmwareCluster"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token identifying a page of results the server should return. If the token is not empty this means that more results are available and should be retrieved by repeating the request with the provided page token.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "VmwareNodePool": {
+      "id": "VmwareNodePool",
+      "description": "Resource VmwareNodePool represents a Vmware node pool. ##",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. The resource name of this node pool.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The display name for the node pool.",
+          "type": "string"
+        },
+        "uid": {
+          "description": "Output only. The unique identifier of the node pool.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "state": {
+          "description": "Output only. The current state of the node pool.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Not set.",
+            "The PROVISIONING state indicates the node pool is being created.",
+            "The RUNNING state indicates the node pool has been created and is fully usable.",
+            "The RECONCILING state indicates that the node pool is being updated. It remains available, but potentially with degraded performance.",
+            "The STOPPING state indicates the cluster is being deleted",
+            "The ERROR state indicates the node pool is in a broken unrecoverable state.",
+            "The DEGRADED state indicates the node pool requires user action to restore full functionality."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "PROVISIONING",
+            "RUNNING",
+            "RECONCILING",
+            "STOPPING",
+            "ERROR",
+            "DEGRADED"
+          ]
+        },
+        "reconciling": {
+          "description": "Output only. If set, there are currently changes in flight to the node pool.",
+          "readOnly": true,
+          "type": "boolean"
+        },
+        "createTime": {
+          "description": "Output only. The time at which this node pool was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The time at which this node pool was last updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "deleteTime": {
+          "description": "Output only. The time at which this node pool was deleted. If the resource is not deleted, this must be empty",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "etag": {
+          "description": "This checksum is computed by the server based on the value of other fields, and may be sent on update and delete requests to ensure the client has an up-to-date value before proceeding. Allows clients to perform consistent read-modify-writes through optimistic concurrency control.",
+          "type": "string"
+        },
+        "annotations": {
+          "description": "Annotations on the node pool. This field has the same restrictions as Kubernetes annotations. The total size of all keys and values combined is limited to 256k. Key can have 2 segments: prefix (optional) and name (required), separated by a slash (\/). Prefix must be a DNS subdomain. Name must be 63 characters or less, begin and end with alphanumerics, with dashes (-), underscores (_), dots (.), and alphanumerics between.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "nodePoolAutoscaling": {
+          "description": "Node Pool autoscaling config for the Nodepool.",
+          "$ref": "VmwareNodePoolAutoscalingConfig"
+        },
+        "config": {
+          "description": "Required. The node configuration of the node pool.",
+          "$ref": "VmwareNodeConfig"
+        },
+        "status": {
+          "description": "Output only. ResourceStatus representing the detailed VMware Node Pool state.",
+          "readOnly": true,
+          "$ref": "ResourceStatus"
+        }
+      }
+    },
+    "VmwareNodePoolAutoscalingConfig": {
+      "id": "VmwareNodePoolAutoscalingConfig",
+      "description": "NodePoolAutoscaling config for the NodePool to allow for the kubernetes to scale NodePool.",
+      "type": "object",
+      "properties": {
+        "minReplicas": {
+          "description": "Minimum number of replicas in the NodePool.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "maxReplicas": {
+          "description": "Maximum number of replicas in the NodePool.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "VmwareNodeConfig": {
+      "id": "VmwareNodeConfig",
+      "description": "Parameters that describe the configuration of all nodes within a given node pool.",
+      "type": "object",
+      "properties": {
+        "cpus": {
+          "description": "The number of CPUs for each node in the node pool.",
+          "type": "string",
+          "format": "int64"
+        },
+        "memoryMb": {
+          "description": "The megabytes of memory for each node in the node pool.",
+          "type": "string",
+          "format": "int64"
+        },
+        "replicas": {
+          "description": "The number of nodes in the node pool.",
+          "type": "string",
+          "format": "int64"
+        },
+        "imageType": {
+          "description": "Required. The OS image to be used for each node in a node pool. Currently `cos`, `ubuntu`, `ubuntu_containerd` and `windows` are supported.",
+          "type": "string"
+        },
+        "image": {
+          "description": "Output only. The OS image name in vCenter, only valid when using Windows.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "bootDiskSizeGb": {
+          "description": "VMware disk size to be used during creation.",
+          "type": "string",
+          "format": "int64"
+        },
+        "taints": {
+          "description": "The initial taints assigned to nodes of this node pool.",
+          "type": "array",
+          "items": {
+            "$ref": "NodeTaint"
+          }
+        },
+        "labels": {
+          "description": "The map of Kubernetes labels (key\/value pairs) to be applied to each node. These will added in addition to any default label(s) that Kubernetes may apply to the node. In case of conflict in label keys, the applied set may differ depending on the Kubernetes version -- it's best to assume the behavior is undefined and conflicts should be avoided. For more information, including usage and the valid values, see: https:\/\/kubernetes.io\/docs\/concepts\/overview\/working-with-objects\/labels\/",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "vsphereConfig": {
+          "description": "Output only. Specifies the vSphere config for node pool.",
+          "readOnly": true,
+          "$ref": "VmwareVsphereConfig"
+        },
+        "enableLoadBalancer": {
+          "description": "Allow node pool traffic to be load balanced. Only works for clusters with MetalLB load balancers.",
+          "type": "boolean"
+        }
+      }
+    },
+    "NodeTaint": {
+      "id": "NodeTaint",
+      "description": "NodeTaint applied to every Kubernetes node in a node pool. Kubernetes taints can be used together with tolerations to control how workloads are scheduled to your nodes. Node taints are permanent.",
+      "type": "object",
+      "properties": {
+        "key": {
+          "description": "Key associated with the effect.",
+          "type": "string"
+        },
+        "value": {
+          "description": "Value associated with the effect.",
+          "type": "string"
+        },
+        "effect": {
+          "description": "The taint effect.",
+          "type": "string",
+          "enumDescriptions": [
+            "Not set.",
+            "Do not allow new pods to schedule onto the node unless they tolerate the taint, but allow all pods submitted to Kubelet without going through the scheduler to start, and allow all already-running pods to continue running. Enforced by the scheduler.",
+            "Like TaintEffectNoSchedule, but the scheduler tries not to schedule new pods onto the node, rather than prohibiting new pods from scheduling onto the node entirely. Enforced by the scheduler.",
+            "Evict any already-running pods that do not tolerate the taint. Currently enforced by NodeController."
+          ],
+          "enum": [
+            "EFFECT_UNSPECIFIED",
+            "NO_SCHEDULE",
+            "PREFER_NO_SCHEDULE",
+            "NO_EXECUTE"
+          ]
+        }
+      }
+    },
+    "VmwareVsphereConfig": {
+      "id": "VmwareVsphereConfig",
+      "description": "VmwareVsphereConfig represents configuration for the VMware VCenter for node pool.",
+      "type": "object",
+      "properties": {
+        "datastore": {
+          "description": "The name of the vCenter datastore. Inherited from the user cluster.",
+          "type": "string"
+        },
+        "tags": {
+          "description": "Tags to apply to VMs.",
+          "type": "array",
+          "items": {
+            "$ref": "VmwareVsphereTag"
+          }
+        }
+      }
+    },
+    "VmwareVsphereTag": {
+      "id": "VmwareVsphereTag",
+      "description": "VmwareVsphereTag describes a vSphere tag to be placed on VMs in the node pool. For more information, see https:\/\/docs.vmware.com\/en\/VMware-vSphere\/7.0\/com.vmware.vsphere.vcenterhost.doc\/GUID-E8E854DD-AA97-4E0C-8419-CE84F93C4058.html",
+      "type": "object",
+      "properties": {
+        "category": {
+          "description": "The Vsphere tag category.",
+          "type": "string"
+        },
+        "tag": {
+          "description": "The Vsphere tag name.",
+          "type": "string"
+        }
+      }
+    },
+    "ListVmwareNodePoolsResponse": {
+      "id": "ListVmwareNodePoolsResponse",
+      "description": "Response message for listing VMware Node Pools.",
+      "type": "object",
+      "properties": {
+        "vmwareNodePools": {
+          "description": "The node pools from the specified parent resource.",
+          "type": "array",
+          "items": {
+            "$ref": "VmwareNodePool"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ListLocationsResponse": {
+      "id": "ListLocationsResponse",
+      "description": "The response message for Locations.ListLocations.",
+      "type": "object",
+      "properties": {
+        "locations": {
+          "description": "A list of locations that matches the specified filter in the request.",
+          "type": "array",
+          "items": {
+            "$ref": "Location"
+          }
+        },
+        "nextPageToken": {
+          "description": "The standard List next-page token.",
+          "type": "string"
+        }
+      }
+    },
+    "Location": {
+      "id": "Location",
+      "description": "A resource that represents Google Cloud Platform location.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Resource name for the location, which may vary between implementations. For example: `\"projects\/example-project\/locations\/us-east1\"`",
+          "type": "string"
+        },
+        "locationId": {
+          "description": "The canonical id for this location. For example: `\"us-east1\"`.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The friendly name for this location, typically a nearby city name. For example, \"Tokyo\".",
+          "type": "string"
+        },
+        "labels": {
+          "description": "Cross-service attributes for the location. For example {\"cloud.googleapis.com\/region\": \"us-east1\"}",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "metadata": {
+          "description": "Service-specific metadata. For example the available capacity at the given location.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        }
+      }
+    },
+    "SetIamPolicyRequest": {
+      "id": "SetIamPolicyRequest",
+      "description": "Request message for `SetIamPolicy` method.",
+      "type": "object",
+      "properties": {
+        "policy": {
+          "description": "REQUIRED: The complete policy to be applied to the `resource`. The size of the policy is limited to a few 10s of KB. An empty policy is a valid policy but certain Google Cloud services (such as Projects) might reject them.",
+          "$ref": "Policy"
+        }
+      }
+    },
+    "Policy": {
+      "id": "Policy",
+      "description": "An Identity and Access Management (IAM) policy, which specifies access controls for Google Cloud resources. A `Policy` is a collection of `bindings`. A `binding` binds one or more `members`, or principals, to a single `role`. Principals can be user accounts, service accounts, Google groups, and domains (such as G Suite). A `role` is a named list of permissions; each `role` can be an IAM predefined role or a user-created custom role. For some types of Google Cloud resources, a `binding` can also specify a `condition`, which is a logical expression that allows access to a resource only if the expression evaluates to `true`. A condition can add constraints based on attributes of the request, the resource, or both. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies). **JSON example:** { \"bindings\": [ { \"role\": \"roles\/resourcemanager.organizationAdmin\", \"members\": [ \"user:mike@example.com\", \"group:admins@example.com\", \"domain:google.com\", \"serviceAccount:my-project-id@appspot.gserviceaccount.com\" ] }, { \"role\": \"roles\/resourcemanager.organizationViewer\", \"members\": [ \"user:eve@example.com\" ], \"condition\": { \"title\": \"expirable access\", \"description\": \"Does not grant access after Sep 2020\", \"expression\": \"request.time < timestamp('2020-10-01T00:00:00.000Z')\", } } ], \"etag\": \"BwWWja0YfJA=\", \"version\": 3 } **YAML example:** bindings: - members: - user:mike@example.com - group:admins@example.com - domain:google.com - serviceAccount:my-project-id@appspot.gserviceaccount.com role: roles\/resourcemanager.organizationAdmin - members: - user:eve@example.com role: roles\/resourcemanager.organizationViewer condition: title: expirable access description: Does not grant access after Sep 2020 expression: request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA= version: 3 For a description of IAM and its features, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/docs\/).",
+      "type": "object",
+      "properties": {
+        "version": {
+          "description": "Specifies the format of the policy. Valid values are `0`, `1`, and `3`. Requests that specify an invalid value are rejected. Any operation that affects conditional role bindings must specify version `3`. This requirement applies to the following operations: * Getting a policy that includes a conditional role binding * Adding a conditional role binding to a policy * Changing a conditional role binding in a policy * Removing any role binding, with or without a condition, from a policy that includes conditions **Important:** If you use IAM Conditions, you must include the `etag` field whenever you call `setIamPolicy`. If you omit this field, then IAM allows you to overwrite a version `3` policy with a version `1` policy, and all of the conditions in the version `3` policy are lost. If a policy does not include any conditions, operations on that policy may specify any valid version or leave the field unset. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
+          "type": "integer",
+          "format": "int32"
+        },
+        "bindings": {
+          "description": "Associates a list of `members`, or principals, with a `role`. Optionally, may specify a `condition` that determines how and when the `bindings` are applied. Each of the `bindings` must contain at least one principal. The `bindings` in a `Policy` can refer to up to 1,500 principals; up to 250 of these principals can be Google groups. Each occurrence of a principal counts towards these limits. For example, if the `bindings` grant 50 different roles to `user:alice@example.com`, and not to any other principal, then you can add another 1,450 principals to the `bindings` in the `Policy`.",
+          "type": "array",
+          "items": {
+            "$ref": "Binding"
+          }
+        },
+        "etag": {
+          "description": "`etag` is used for optimistic concurrency control as a way to help prevent simultaneous updates of a policy from overwriting each other. It is strongly suggested that systems make use of the `etag` in the read-modify-write cycle to perform policy updates in order to avoid race conditions: An `etag` is returned in the response to `getIamPolicy`, and systems are expected to put that etag in the request to `setIamPolicy` to ensure that their change will be applied to the same version of the policy. **Important:** If you use IAM Conditions, you must include the `etag` field whenever you call `setIamPolicy`. If you omit this field, then IAM allows you to overwrite a version `3` policy with a version `1` policy, and all of the conditions in the version `3` policy are lost.",
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "Binding": {
+      "id": "Binding",
+      "description": "Associates `members`, or principals, with a `role`.",
+      "type": "object",
+      "properties": {
+        "role": {
+          "description": "Role that is assigned to the list of `members`, or principals. For example, `roles\/viewer`, `roles\/editor`, or `roles\/owner`.",
+          "type": "string"
+        },
+        "members": {
+          "description": "Specifies the principals requesting access for a Google Cloud resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "condition": {
+          "description": "The condition that is associated with this binding. If the condition evaluates to `true`, then this binding applies to the current request. If the condition evaluates to `false`, then this binding does not apply to the current request. However, a different role binding might grant the same role to one or more of the principals in this binding. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
+          "$ref": "Expr"
+        }
+      }
+    },
+    "Expr": {
+      "id": "Expr",
+      "description": "Represents a textual expression in the Common Expression Language (CEL) syntax. CEL is a C-like expression language. The syntax and semantics of CEL are documented at https:\/\/github.com\/google\/cel-spec. Example (Comparison): title: \"Summary size limit\" description: \"Determines if a summary is less than 100 chars\" expression: \"document.summary.size() < 100\" Example (Equality): title: \"Requestor is owner\" description: \"Determines if requestor is the document owner\" expression: \"document.owner == request.auth.claims.email\" Example (Logic): title: \"Public documents\" description: \"Determine whether the document should be publicly visible\" expression: \"document.type != 'private' && document.type != 'internal'\" Example (Data Manipulation): title: \"Notification string\" description: \"Create a notification string with a timestamp.\" expression: \"'New message received at ' + string(document.create_time)\" The exact variables and functions that may be referenced within an expression are determined by the service that evaluates it. See the service documentation for additional information.",
+      "type": "object",
+      "properties": {
+        "expression": {
+          "description": "Textual representation of an expression in Common Expression Language syntax.",
+          "type": "string"
+        },
+        "title": {
+          "description": "Optional. Title for the expression, i.e. a short string describing its purpose. This can be used e.g. in UIs which allow to enter the expression.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Optional. Description of the expression. This is a longer text which describes the expression, e.g. when hovered over it in a UI.",
+          "type": "string"
+        },
+        "location": {
+          "description": "Optional. String indicating the location of the expression for error reporting, e.g. a file name and a position in the file.",
+          "type": "string"
+        }
+      }
+    },
+    "TestIamPermissionsRequest": {
+      "id": "TestIamPermissionsRequest",
+      "description": "Request message for `TestIamPermissions` method.",
+      "type": "object",
+      "properties": {
+        "permissions": {
+          "description": "The set of permissions to check for the `resource`. Permissions with wildcards (such as `*` or `storage.*`) are not allowed. For more information see [IAM Overview](https:\/\/cloud.google.com\/iam\/docs\/overview#permissions).",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "TestIamPermissionsResponse": {
+      "id": "TestIamPermissionsResponse",
+      "description": "Response message for `TestIamPermissions` method.",
+      "type": "object",
+      "properties": {
+        "permissions": {
+          "description": "A subset of `TestPermissionsRequest.permissions` that the caller is allowed.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "OperationMetadata": {
+      "id": "OperationMetadata",
+      "description": "Represents the metadata of the long-running operation.",
+      "type": "object",
+      "properties": {
+        "createTime": {
+          "description": "Output only. The time the operation was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "Output only. The time the operation finished running.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "target": {
+          "description": "Output only. Server-defined resource path for the target of the operation.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "verb": {
+          "description": "Output only. Name of the verb executed by the operation.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "statusMessage": {
+          "description": "Output only. Human-readable status of the operation, if any.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "requestedCancellation": {
+          "description": "Output only. Identifies whether the user has requested cancellation of the operation. Operations that have successfully been cancelled have Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.",
+          "readOnly": true,
+          "type": "boolean"
+        },
+        "apiVersion": {
+          "description": "Output only. API version used to start the operation.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    }
+  },
+  "resources": {
+    "projects": {
+      "resources": {
+        "locations": {
+          "methods": {
+            "list": {
+              "id": "gkeonprem.projects.locations.list",
+              "path": "v1/{+name}/locations",
+              "flatPath": "v1/projects/{projectsId}/locations",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "The resource that owns the locations collection, if applicable.",
+                  "pattern": "^projects\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "filter": {
+                  "description": "A filter to narrow down results to a preferred subset. The filtering language accepts strings like `\"displayName=tokyo\"`, and is documented in more detail in [AIP-160](https:\/\/google.aip.dev\/160).",
+                  "location": "query",
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "The maximum number of results to return. If not set, the service selects a default.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "A page token received from the `next_page_token` field in the response. Send that page token to receive the subsequent page.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "ListLocationsResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Lists information about the supported locations for this service."
+            },
+            "get": {
+              "id": "gkeonprem.projects.locations.get",
+              "path": "v1/{+name}",
+              "flatPath": "v1/projects/{projectsId}/locations/{locationsId}",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Resource name for the location.",
+                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "Location"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Gets information about a location."
+            }
+          }
+          ,
+          "resources": {
+            "operations": {
+              "methods": {
+                "list": {
+                  "id": "gkeonprem.projects.locations.operations.list",
+                  "path": "v1/{+name}/operations",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/operations",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation's parent resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "The standard list filter.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The standard list page size.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "The standard list page token.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "ListOperationsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                },
+                "get": {
+                  "id": "gkeonprem.projects.locations.operations.get",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
+                },
+                "delete": {
+                  "id": "gkeonprem.projects.locations.operations.delete",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation resource to be deleted.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Empty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`."
+                },
+                "cancel": {
+                  "id": "gkeonprem.projects.locations.operations.cancel",
+                  "path": "v1/{+name}:cancel",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation resource to be cancelled.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "CancelOperationRequest"
+                  },
+                  "response": {
+                    "$ref": "Empty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`."
+                }
+              }
+            },
+            "vmwareClusters": {
+              "methods": {
+                "enroll": {
+                  "id": "gkeonprem.projects.locations.vmwareClusters.enroll",
+                  "path": "v1/{+parent}/vmwareClusters:enroll",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/vmwareClusters:enroll",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent of the project and location that we are Enrolling this cluster in. Format: \"projects\/{project}\/locations\/{location}\"",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "EnrollVmwareClusterRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Enrolls an existing VMware User Cluster and its Node Pools to the GKE on-prem API within a given project and location. Through enrollment, an existing cluster will become GKE on-prem API managed. The corresponding GCP resources will be created and all future modifications to the cluster and\/or its node pools will be expected to be performed through the API."
+                },
+                "unenroll": {
+                  "id": "gkeonprem.projects.locations.vmwareClusters.unenroll",
+                  "path": "v1/{+name}:unenroll",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/vmwareClusters/{vmwareClustersId}:unenroll",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Name of the VMware User Cluster to be unenrolled. Format: \"projects\/{project}\/locations\/{location}\/vmwareClusters\/{vmware_cluster}\"",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/vmwareClusters\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "etag": {
+                      "description": "The current etag of the VMware Cluster. If an etag is provided and does not match the current etag of the cluster, deletion will be blocked and an ABORTED error will be returned.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "allowMissing": {
+                      "description": "If set to true, and the VMware Cluster is not found, the request will succeed but no action will be taken on the server and return a completed LRO.",
+                      "location": "query",
+                      "type": "boolean"
+                    },
+                    "validateOnly": {
+                      "description": "Validate the request without actually doing any updates.",
+                      "location": "query",
+                      "type": "boolean"
+                    },
+                    "force": {
+                      "description": "This is required if the cluster has any associated node pools. When set, any child node pools will also be unenrolled.",
+                      "location": "query",
+                      "type": "boolean"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Unenrolls an existing VMware User Cluster and its Node Pools from the GKE on-prem API within a given project and location. Unenrollment removes the Cloud reference to the cluster without modifying the underlying OnPrem Resources. Clusters and Node Pools will continue to run; however, they will no longer be accessible through the GKE on-prem API or UI."
+                },
+                "create": {
+                  "id": "gkeonprem.projects.locations.vmwareClusters.create",
+                  "path": "v1/{+parent}/vmwareClusters",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/vmwareClusters",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent of the project and location that we are creating this cluster in. Format: \"projects\/{project}\/locations\/{location}\"",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "vmwareClusterId": {
+                      "description": "User provided identifier that is used as part of the resource name; This value must be up to 40 characters and follow RFC-1123 (https:\/\/tools.ietf.org\/html\/rfc1123) format.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "validateOnly": {
+                      "description": "Validate the request without actually doing any updates.",
+                      "location": "query",
+                      "type": "boolean"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "VmwareCluster"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a new VMware Cluster in a given project and location."
+                },
+                "delete": {
+                  "id": "gkeonprem.projects.locations.vmwareClusters.delete",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/vmwareClusters/{vmwareClustersId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Name of the VMware User Cluster to be deleted. Format: \"projects\/{project}\/locations\/{location}\/vmwareClusters\/{vmware_cluster}\"",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/vmwareClusters\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "etag": {
+                      "description": "The current etag of the VMware Cluster. If an etag is provided and does not match the current etag of the cluster, deletion will be blocked and an ABORTED error will be returned.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "allowMissing": {
+                      "description": "If set to true, and the VMware Cluster is not found, the request will succeed but no action will be taken on the server and return a completed LRO.",
+                      "location": "query",
+                      "type": "boolean"
+                    },
+                    "validateOnly": {
+                      "description": "Validate the request without actually doing any updates.",
+                      "location": "query",
+                      "type": "boolean"
+                    },
+                    "force": {
+                      "description": "If set to true, any node pools from the cluster will also be deleted.",
+                      "location": "query",
+                      "type": "boolean"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a single VMware Cluster."
+                },
+                "get": {
+                  "id": "gkeonprem.projects.locations.vmwareClusters.get",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/vmwareClusters/{vmwareClustersId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Name of the VMware User Cluster to be returned. Format: \"projects\/{project}\/locations\/{location}\/vmwareClusters\/{vmware_cluster}\"",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/vmwareClusters\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "VmwareCluster"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets details of a single VMware Cluster."
+                },
+                "list": {
+                  "id": "gkeonprem.projects.locations.vmwareClusters.list",
+                  "path": "v1/{+parent}/vmwareClusters",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/vmwareClusters",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent of the project and location that we are listing existing VMware clusters in. Format: \"projects\/{project}\/locations\/{location}\"",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Requested page size. Server may return fewer items than requested. If unspecified, at most 50 clusters will be returned. The maximum value is 1000; values above 1000 will be coerced to 1000.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "A token identifying a page of results the server should return.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "showDeleted": {
+                      "description": "If true, shows deleted VMware Clusters.",
+                      "location": "query",
+                      "type": "boolean"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListVmwareClustersResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists VMware Clusters in a given project and location."
+                },
+                "patch": {
+                  "id": "gkeonprem.projects.locations.vmwareClusters.patch",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/vmwareClusters/{vmwareClustersId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The VMware User Cluster resource name.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/vmwareClusters\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Required. Field mask is used to specify the fields to be overwritten in the VMwareCluster resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all populated fields in the VmwareCluster message will be updated. Empty fields will be ignored unless a field mask is used.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    },
+                    "allowMissing": {
+                      "description": "If set to true, and the VMware Cluster is not found, the request will create a new VMware Cluster with the provided configuration. The user must have both create and update permission to call Update with allow_missing set to true.",
+                      "location": "query",
+                      "type": "boolean"
+                    },
+                    "validateOnly": {
+                      "description": "Validate the request without actually doing any updates.",
+                      "location": "query",
+                      "type": "boolean"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "VmwareCluster"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Updates the parameters of a single VMware Cluster."
+                },
+                "setIamPolicy": {
+                  "id": "gkeonprem.projects.locations.vmwareClusters.setIamPolicy",
+                  "path": "v1/{+resource}:setIamPolicy",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/vmwareClusters/{vmwareClustersId}:setIamPolicy",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy is being specified. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/vmwareClusters\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "request": {
+                    "$ref": "SetIamPolicyRequest"
+                  },
+                  "response": {
+                    "$ref": "Policy"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors."
+                },
+                "getIamPolicy": {
+                  "id": "gkeonprem.projects.locations.vmwareClusters.getIamPolicy",
+                  "path": "v1/{+resource}:getIamPolicy",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/vmwareClusters/{vmwareClustersId}:getIamPolicy",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy is being requested. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/vmwareClusters\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "options.requestedPolicyVersion": {
+                      "description": "Optional. The maximum policy version that will be used to format the policy. Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected. Requests for policies with any conditional role bindings must specify version 3. Policies with no conditional role bindings may specify any valid value or leave the field unset. The policy in the response might use the policy version that you specified, or it might use a lower policy version. For example, if you specify version 3, but the policy has no conditional role bindings, the response uses version 1. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "response": {
+                    "$ref": "Policy"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set."
+                },
+                "testIamPermissions": {
+                  "id": "gkeonprem.projects.locations.vmwareClusters.testIamPermissions",
+                  "path": "v1/{+resource}:testIamPermissions",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/vmwareClusters/{vmwareClustersId}:testIamPermissions",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy detail is being requested. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/vmwareClusters\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "request": {
+                    "$ref": "TestIamPermissionsRequest"
+                  },
+                  "response": {
+                    "$ref": "TestIamPermissionsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
+                }
+              }
+              ,
+              "resources": {
+                "operations": {
+                  "methods": {
+                    "list": {
+                      "id": "gkeonprem.projects.locations.vmwareClusters.operations.list",
+                      "path": "v1/{+name}/operations",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/vmwareClusters/{vmwareClustersId}/operations",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation's parent resource.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/vmwareClusters\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "filter": {
+                          "description": "The standard list filter.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "The standard list page size.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "The standard list page token.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "ListOperationsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                    },
+                    "get": {
+                      "id": "gkeonprem.projects.locations.vmwareClusters.operations.get",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/vmwareClusters/{vmwareClustersId}/operations/{operationsId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation resource.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/vmwareClusters\/[^\/]+\/operations\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
+                    }
+                  }
+                },
+                "vmwareNodePools": {
+                  "methods": {
+                    "create": {
+                      "id": "gkeonprem.projects.locations.vmwareClusters.vmwareNodePools.create",
+                      "path": "v1/{+parent}/vmwareNodePools",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/vmwareClusters/{vmwareClustersId}/vmwareNodePools",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The parent resource where this node pool will be created. projects\/{project}\/locations\/{location}\/vmwareClusters\/{cluster}",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/vmwareClusters\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "vmwareNodePoolId": {
+                          "description": "The ID to use for the node pool, which will become the final component of the node pool's resource name. This value must be up to 40 characters and follow RFC-1123 (https:\/\/tools.ietf.org\/html\/rfc1123) format. The value must not be permitted to be a UUID (or UUID-like: anything matching \/^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$\/i).",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "validateOnly": {
+                          "description": "If set, only validate the request, but do not actually create the node pool.",
+                          "location": "query",
+                          "type": "boolean"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "VmwareNodePool"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Creates a new VMware Node Pool in a given project, location and VMWare Cluster."
+                    },
+                    "delete": {
+                      "id": "gkeonprem.projects.locations.vmwareClusters.vmwareNodePools.delete",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/vmwareClusters/{vmwareClustersId}/vmwareNodePools/{vmwareNodePoolsId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The name of the node pool to delete. Format: projects\/{project}\/locations\/{location}\/vmwareClusters\/{cluster}\/vmwareNodePools\/{nodepool}",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/vmwareClusters\/[^\/]+\/vmwareNodePools\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "etag": {
+                          "description": "The current etag of the VmwareNodePool. If an etag is provided and does not match the current etag of the node pool, deletion will be blocked and an ABORTED error will be returned.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "allowMissing": {
+                          "description": "If set to true, and the Vmware Node Pool is not found, the request will succeed but no action will be taken on the server and return a completed LRO.",
+                          "location": "query",
+                          "type": "boolean"
+                        },
+                        "validateOnly": {
+                          "description": "If set, only validate the request, but do not actually delete the node pool.",
+                          "location": "query",
+                          "type": "boolean"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Deletes a single VMware Node Pool."
+                    },
+                    "get": {
+                      "id": "gkeonprem.projects.locations.vmwareClusters.vmwareNodePools.get",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/vmwareClusters/{vmwareClustersId}/vmwareNodePools/{vmwareNodePoolsId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The name of the node pool to retrieve. projects\/{project}\/locations\/{location}\/vmwareClusters\/{cluster}\/vmwareNodePools\/{nodepool}",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/vmwareClusters\/[^\/]+\/vmwareNodePools\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "VmwareNodePool"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets details of a single VMware Node Pool."
+                    },
+                    "list": {
+                      "id": "gkeonprem.projects.locations.vmwareClusters.vmwareNodePools.list",
+                      "path": "v1/{+parent}/vmwareNodePools",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/vmwareClusters/{vmwareClustersId}/vmwareNodePools",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The parent, which owns this collection of node pools. Format: projects\/{project}\/locations\/{location}\/vmwareClusters\/{vmwareCluster}",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/vmwareClusters\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "The maximum number of node pools to return. The service may return fewer than this value. If unspecified, at most 50 node pools will be returned. The maximum value is 1000; values above 1000 will be coerced to 1000.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "A page token, received from a previous `ListVmwareNodePools` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListVmwareNodePools` must match the call that provided the page token.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "showDeleted": {
+                          "description": "If true, shows deleted VMware Node Pools.",
+                          "location": "query",
+                          "type": "boolean"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListVmwareNodePoolsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Lists VMware Node Pools in a given project, location and VMWare Cluster."
+                    },
+                    "patch": {
+                      "id": "gkeonprem.projects.locations.vmwareClusters.vmwareNodePools.patch",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/vmwareClusters/{vmwareClustersId}/vmwareNodePools/{vmwareNodePoolsId}",
+                      "httpMethod": "PATCH",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The resource name of this node pool.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/vmwareClusters\/[^\/]+\/vmwareNodePools\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "updateMask": {
+                          "description": "Required. Field mask is used to specify the fields to be overwritten in the VMwareNodePool resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all populated fields in the VMwareNodePool message will be updated. Empty fields will be ignored unless a field mask is used.",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-fieldmask"
+                        },
+                        "allowMissing": {
+                          "description": "If set to true, and the VMware Node Pool is not found, the request will create a new VMware Node Pool with the provided configuration. The user must have both create and update permission to call Update with allow_missing set to true.",
+                          "location": "query",
+                          "type": "boolean"
+                        },
+                        "validateOnly": {
+                          "description": "Validate the request without actually doing any updates.",
+                          "location": "query",
+                          "type": "boolean"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "VmwareNodePool"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Updates the parameters of a single VMware Node Pool."
+                    },
+                    "setIamPolicy": {
+                      "id": "gkeonprem.projects.locations.vmwareClusters.vmwareNodePools.setIamPolicy",
+                      "path": "v1/{+resource}:setIamPolicy",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/vmwareClusters/{vmwareClustersId}/vmwareNodePools/{vmwareNodePoolsId}:setIamPolicy",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "resource": {
+                          "description": "REQUIRED: The resource for which the policy is being specified. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/vmwareClusters\/[^\/]+\/vmwareNodePools\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "resource"
+                      ],
+                      "request": {
+                        "$ref": "SetIamPolicyRequest"
+                      },
+                      "response": {
+                        "$ref": "Policy"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors."
+                    },
+                    "getIamPolicy": {
+                      "id": "gkeonprem.projects.locations.vmwareClusters.vmwareNodePools.getIamPolicy",
+                      "path": "v1/{+resource}:getIamPolicy",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/vmwareClusters/{vmwareClustersId}/vmwareNodePools/{vmwareNodePoolsId}:getIamPolicy",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "resource": {
+                          "description": "REQUIRED: The resource for which the policy is being requested. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/vmwareClusters\/[^\/]+\/vmwareNodePools\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "options.requestedPolicyVersion": {
+                          "description": "Optional. The maximum policy version that will be used to format the policy. Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected. Requests for policies with any conditional role bindings must specify version 3. Policies with no conditional role bindings may specify any valid value or leave the field unset. The policy in the response might use the policy version that you specified, or it might use a lower policy version. For example, if you specify version 3, but the policy has no conditional role bindings, the response uses version 1. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        }
+                      },
+                      "parameterOrder": [
+                        "resource"
+                      ],
+                      "response": {
+                        "$ref": "Policy"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set."
+                    },
+                    "testIamPermissions": {
+                      "id": "gkeonprem.projects.locations.vmwareClusters.vmwareNodePools.testIamPermissions",
+                      "path": "v1/{+resource}:testIamPermissions",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/vmwareClusters/{vmwareClustersId}/vmwareNodePools/{vmwareNodePoolsId}:testIamPermissions",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "resource": {
+                          "description": "REQUIRED: The resource for which the policy detail is being requested. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/vmwareClusters\/[^\/]+\/vmwareNodePools\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "resource"
+                      ],
+                      "request": {
+                        "$ref": "TestIamPermissionsRequest"
+                      },
+                      "response": {
+                        "$ref": "TestIamPermissionsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
+                    }
+                  }
+                  ,
+                  "resources": {
+                    "operations": {
+                      "methods": {
+                        "list": {
+                          "id": "gkeonprem.projects.locations.vmwareClusters.vmwareNodePools.operations.list",
+                          "path": "v1/{+name}/operations",
+                          "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/vmwareClusters/{vmwareClustersId}/vmwareNodePools/{vmwareNodePoolsId}/operations",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "name": {
+                              "description": "The name of the operation's parent resource.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/vmwareClusters\/[^\/]+\/vmwareNodePools\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            },
+                            "filter": {
+                              "description": "The standard list filter.",
+                              "location": "query",
+                              "type": "string"
+                            },
+                            "pageSize": {
+                              "description": "The standard list page size.",
+                              "location": "query",
+                              "type": "integer",
+                              "format": "int32"
+                            },
+                            "pageToken": {
+                              "description": "The standard list page token.",
+                              "location": "query",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "response": {
+                            "$ref": "ListOperationsResponse"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                        },
+                        "get": {
+                          "id": "gkeonprem.projects.locations.vmwareClusters.vmwareNodePools.operations.get",
+                          "path": "v1/{+name}",
+                          "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/vmwareClusters/{vmwareClustersId}/vmwareNodePools/{vmwareNodePoolsId}/operations/{operationsId}",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "name": {
+                              "description": "The name of the operation resource.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/vmwareClusters\/[^\/]+\/vmwareNodePools\/[^\/]+\/operations\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "response": {
+                            "$ref": "Operation"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "bareMetalClusters": {
+              "methods": {
+                "setIamPolicy": {
+                  "id": "gkeonprem.projects.locations.bareMetalClusters.setIamPolicy",
+                  "path": "v1/{+resource}:setIamPolicy",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/bareMetalClusters/{bareMetalClustersId}:setIamPolicy",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy is being specified. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/bareMetalClusters\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "request": {
+                    "$ref": "SetIamPolicyRequest"
+                  },
+                  "response": {
+                    "$ref": "Policy"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors."
+                },
+                "getIamPolicy": {
+                  "id": "gkeonprem.projects.locations.bareMetalClusters.getIamPolicy",
+                  "path": "v1/{+resource}:getIamPolicy",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/bareMetalClusters/{bareMetalClustersId}:getIamPolicy",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy is being requested. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/bareMetalClusters\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "options.requestedPolicyVersion": {
+                      "description": "Optional. The maximum policy version that will be used to format the policy. Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected. Requests for policies with any conditional role bindings must specify version 3. Policies with no conditional role bindings may specify any valid value or leave the field unset. The policy in the response might use the policy version that you specified, or it might use a lower policy version. For example, if you specify version 3, but the policy has no conditional role bindings, the response uses version 1. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "response": {
+                    "$ref": "Policy"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set."
+                },
+                "testIamPermissions": {
+                  "id": "gkeonprem.projects.locations.bareMetalClusters.testIamPermissions",
+                  "path": "v1/{+resource}:testIamPermissions",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/bareMetalClusters/{bareMetalClustersId}:testIamPermissions",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy detail is being requested. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/bareMetalClusters\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "request": {
+                    "$ref": "TestIamPermissionsRequest"
+                  },
+                  "response": {
+                    "$ref": "TestIamPermissionsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
+                }
+              }
+              ,
+              "resources": {
+                "operations": {
+                  "methods": {
+                    "list": {
+                      "id": "gkeonprem.projects.locations.bareMetalClusters.operations.list",
+                      "path": "v1/{+name}/operations",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/bareMetalClusters/{bareMetalClustersId}/operations",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation's parent resource.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/bareMetalClusters\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "filter": {
+                          "description": "The standard list filter.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "The standard list page size.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "The standard list page token.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "ListOperationsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                    },
+                    "get": {
+                      "id": "gkeonprem.projects.locations.bareMetalClusters.operations.get",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/bareMetalClusters/{bareMetalClustersId}/operations/{operationsId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation resource.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/bareMetalClusters\/[^\/]+\/operations\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
+                    }
+                  }
+                },
+                "bareMetalNodePools": {
+                  "methods": {
+                    "setIamPolicy": {
+                      "id": "gkeonprem.projects.locations.bareMetalClusters.bareMetalNodePools.setIamPolicy",
+                      "path": "v1/{+resource}:setIamPolicy",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/bareMetalClusters/{bareMetalClustersId}/bareMetalNodePools/{bareMetalNodePoolsId}:setIamPolicy",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "resource": {
+                          "description": "REQUIRED: The resource for which the policy is being specified. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/bareMetalClusters\/[^\/]+\/bareMetalNodePools\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "resource"
+                      ],
+                      "request": {
+                        "$ref": "SetIamPolicyRequest"
+                      },
+                      "response": {
+                        "$ref": "Policy"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors."
+                    },
+                    "getIamPolicy": {
+                      "id": "gkeonprem.projects.locations.bareMetalClusters.bareMetalNodePools.getIamPolicy",
+                      "path": "v1/{+resource}:getIamPolicy",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/bareMetalClusters/{bareMetalClustersId}/bareMetalNodePools/{bareMetalNodePoolsId}:getIamPolicy",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "resource": {
+                          "description": "REQUIRED: The resource for which the policy is being requested. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/bareMetalClusters\/[^\/]+\/bareMetalNodePools\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "options.requestedPolicyVersion": {
+                          "description": "Optional. The maximum policy version that will be used to format the policy. Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected. Requests for policies with any conditional role bindings must specify version 3. Policies with no conditional role bindings may specify any valid value or leave the field unset. The policy in the response might use the policy version that you specified, or it might use a lower policy version. For example, if you specify version 3, but the policy has no conditional role bindings, the response uses version 1. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        }
+                      },
+                      "parameterOrder": [
+                        "resource"
+                      ],
+                      "response": {
+                        "$ref": "Policy"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set."
+                    },
+                    "testIamPermissions": {
+                      "id": "gkeonprem.projects.locations.bareMetalClusters.bareMetalNodePools.testIamPermissions",
+                      "path": "v1/{+resource}:testIamPermissions",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/bareMetalClusters/{bareMetalClustersId}/bareMetalNodePools/{bareMetalNodePoolsId}:testIamPermissions",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "resource": {
+                          "description": "REQUIRED: The resource for which the policy detail is being requested. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/bareMetalClusters\/[^\/]+\/bareMetalNodePools\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "resource"
+                      ],
+                      "request": {
+                        "$ref": "TestIamPermissionsRequest"
+                      },
+                      "response": {
+                        "$ref": "TestIamPermissionsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
+                    }
+                  }
+                  ,
+                  "resources": {
+                    "operations": {
+                      "methods": {
+                        "list": {
+                          "id": "gkeonprem.projects.locations.bareMetalClusters.bareMetalNodePools.operations.list",
+                          "path": "v1/{+name}/operations",
+                          "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/bareMetalClusters/{bareMetalClustersId}/bareMetalNodePools/{bareMetalNodePoolsId}/operations",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "name": {
+                              "description": "The name of the operation's parent resource.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/bareMetalClusters\/[^\/]+\/bareMetalNodePools\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            },
+                            "filter": {
+                              "description": "The standard list filter.",
+                              "location": "query",
+                              "type": "string"
+                            },
+                            "pageSize": {
+                              "description": "The standard list page size.",
+                              "location": "query",
+                              "type": "integer",
+                              "format": "int32"
+                            },
+                            "pageToken": {
+                              "description": "The standard list page token.",
+                              "location": "query",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "response": {
+                            "$ref": "ListOperationsResponse"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                        },
+                        "get": {
+                          "id": "gkeonprem.projects.locations.bareMetalClusters.bareMetalNodePools.operations.get",
+                          "path": "v1/{+name}",
+                          "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/bareMetalClusters/{bareMetalClustersId}/bareMetalNodePools/{bareMetalNodePoolsId}/operations/{operationsId}",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "name": {
+                              "description": "The name of the operation resource.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/bareMetalClusters\/[^\/]+\/bareMetalNodePools\/[^\/]+\/operations\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "response": {
+                            "$ref": "Operation"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "basePath": ""
+}

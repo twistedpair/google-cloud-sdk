@@ -123,7 +123,6 @@ def AddNetworkFirewallPolicyEnforcementOrderArg(parser):
       '--network-firewall-policy-enforcement-order',
       choices=_NETWORK_FIREWALL_POLICY_ENFORCEMENT_ORDER_CHOICES,
       metavar='NETWORK_FIREWALL_POLICY_ENFORCEMENT_ORDER',
-      hidden=True,
       help="""The Network Firewall Policy enforcement order of this network. If
               not specified, defaults to AFTER_CLASSIC_FIREWALL.""")
 
@@ -161,12 +160,13 @@ def AddUpdateArgs(parser):
   AddInternalIpv6RangeArg(parser)
   AddEnableUlaInternalIpv6Arg(parser)
 
+  AddNetworkFirewallPolicyEnforcementOrderArg(parser)
+
 
 def AddUpdateArgsAlpha(parser):
   """Adds alpha arguments for updating a network."""
 
   AddUpdateArgs(parser)
-  AddNetworkFirewallPolicyEnforcementOrderArg(parser)
 
 
 def CheckRangeLegacyModeOrRaise(args):

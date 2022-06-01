@@ -333,7 +333,7 @@ class BaremetalsolutionProjectsLocationsNetworksPatchRequest(_messages.Message):
       `projects/{project}/locations/{location}/networks/{network}`
     network: A Network resource to be passed as the request body.
     updateMask: The list of fields to update. The only currently supported
-      fields are: `labels`
+      fields are: `labels`, `reservations`
   """
 
   name = _messages.StringField(1, required=True)
@@ -596,6 +596,20 @@ class BaremetalsolutionProjectsLocationsVolumesAllocateLunsRequest(_messages.Mes
   parent = _messages.StringField(2, required=True)
 
 
+class BaremetalsolutionProjectsLocationsVolumesCreateAndAttachRequest(_messages.Message):
+  r"""A BaremetalsolutionProjectsLocationsVolumesCreateAndAttachRequest
+  object.
+
+  Fields:
+    createAndAttachVolumeRequest: A CreateAndAttachVolumeRequest resource to
+      be passed as the request body.
+    parent: Required. The parent project and location.
+  """
+
+  createAndAttachVolumeRequest = _messages.MessageField('CreateAndAttachVolumeRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
 class BaremetalsolutionProjectsLocationsVolumesCreateRequest(_messages.Message):
   r"""A BaremetalsolutionProjectsLocationsVolumesCreateRequest object.
 
@@ -690,14 +704,27 @@ class BaremetalsolutionProjectsLocationsVolumesPatchRequest(_messages.Message):
       `projects/{project}/locations/{location}/volumes/{volume}`
     updateMask: The list of fields to update. The only currently supported
       fields are: `snapshot_auto_delete_behavior`
-      `snapshot_schedule_policy_name` 'labels' 'requested_size_gib'
-      'snapshot_enabled' 'snapshot_reservation_detail.reserved_space_percent'
+      `snapshot_schedule_policy_name` 'labels' 'snapshot_enabled'
+      'snapshot_reservation_detail.reserved_space_percent'
     volume: A Volume resource to be passed as the request body.
   """
 
   name = _messages.StringField(1, required=True)
   updateMask = _messages.StringField(2)
   volume = _messages.MessageField('Volume', 3)
+
+
+class BaremetalsolutionProjectsLocationsVolumesResizeRequest(_messages.Message):
+  r"""A BaremetalsolutionProjectsLocationsVolumesResizeRequest object.
+
+  Fields:
+    resizeVolumeRequest: A ResizeVolumeRequest resource to be passed as the
+      request body.
+    volume: Required. Volume to resize.
+  """
+
+  resizeVolumeRequest = _messages.MessageField('ResizeVolumeRequest', 1)
+  volume = _messages.StringField(2, required=True)
 
 
 class BaremetalsolutionProjectsLocationsVolumesSnapshotsCreateRequest(_messages.Message):
@@ -764,6 +791,24 @@ class BaremetalsolutionProjectsLocationsVolumesSnapshotsRestoreVolumeSnapshotReq
   volumeSnapshot = _messages.StringField(2, required=True)
 
 
+class CreateAndAttachVolumeRequest(_messages.Message):
+  r"""Message for creating a volume with immediate Luns allocation and their
+  attachment to instances.
+
+  Fields:
+    instances: List of instance to attach this volume to. If defined, will
+      attach all LUNs of this Volume to specified instances. Makes sense only
+      when lun_ranges are defined.
+    lunRanges: LUN ranges to be allocated. If defined, will immediately
+      allocate LUNs.
+    volume: Required. The volume to create.
+  """
+
+  instances = _messages.StringField(1, repeated=True)
+  lunRanges = _messages.MessageField('VolumeLunRange', 2, repeated=True)
+  volume = _messages.MessageField('Volume', 3)
+
+
 class DetachLunRequest(_messages.Message):
   r"""Message for detach specific LUN from an Instance.
 
@@ -812,6 +857,57 @@ class FetchInstanceProvisioningSettingsResponse(_messages.Message):
   images = _messages.MessageField('OSImage', 1, repeated=True)
 
 
+class GoogleCloudBaremetalsolutionV2LogicalInterface(_messages.Message):
+  r"""Each logical interface represents a logical abstraction of the
+  underlying physical interface (for eg. bond, nic) of the instance. Each
+  logical interface can effectively map to multiple network-IP pairs and still
+  be mapped to one underlying physical interface.
+
+  Fields:
+    interfaceIndex: The index of the logical interface mapping to the index of
+      the hardware bond or nic on the chosen network template.
+    logicalNetworkInterfaces: List of logical network interfaces within a
+      logical interface.
+    name: Interface name. This is of syntax or and forms part of the network
+      template name.
+  """
+
+  interfaceIndex = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  logicalNetworkInterfaces = _messages.MessageField('LogicalNetworkInterface', 2, repeated=True)
+  name = _messages.StringField(3)
+
+
+class GoogleCloudBaremetalsolutionV2ServerNetworkTemplateLogicalInterface(_messages.Message):
+  r"""Logical interface.
+
+  Enums:
+    TypeValueValuesEnum: Interface type.
+
+  Fields:
+    name: Interface name. This is not a globally unique identifier. Name is
+      unique only inside the ServerNetworkTemplate. This is of syntax or and
+      forms part of the network template name.
+    required: If true, interface must have network connected.
+    type: Interface type.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Interface type.
+
+    Values:
+      INTERFACE_TYPE_UNSPECIFIED: Unspecified value.
+      BOND: Bond interface type.
+      NIC: NIC interface type.
+    """
+    INTERFACE_TYPE_UNSPECIFIED = 0
+    BOND = 1
+    NIC = 2
+
+  name = _messages.StringField(1)
+  required = _messages.BooleanField(2)
+  type = _messages.EnumField('TypeValueValuesEnum', 3)
+
+
 class Instance(_messages.Message):
   r"""A server.
 
@@ -830,6 +926,14 @@ class Instance(_messages.Message):
       feature is enabled for the instance, false otherwise. The default value
       is false.
     labels: Labels as key value pairs.
+    logicalInterfaces: List of logical interfaces for the instance. The number
+      of logical interfaces will be the same as number of hardware bond/nic on
+      the chosen network template. For the non-multivlan configurations (for
+      eg, existing servers) that use existing default network template
+      (bondaa-bondaa), both the Instance.networks field and the
+      Instance.logical_interfaces fields will be filled to ensure backward
+      compatibility. For the others, only Instance.logical_interfaces will be
+      filled.
     luns: List of LUNs associated with this server.
     machineType: The server type. [Available server
       types](https://cloud.google.com/bare-metal/docs/bms-
@@ -838,6 +942,9 @@ class Instance(_messages.Message):
       are schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. Format:
       `projects/{project}/locations/{location}/instances/{instance}`
+    networkTemplate: Instance network template name. For eg, bondaa-bondaa,
+      bondab-nic, etc. Generally, the template name follows the syntax of
+      "bond" or "nic".
     networks: List of networks associated with this server.
     osImage: The OS image currently installed on the server.
     pod: Immutable. Pod name. Pod is an independent part of infrastructure.
@@ -890,23 +997,30 @@ class Instance(_messages.Message):
   id = _messages.StringField(3)
   interactiveSerialConsoleEnabled = _messages.BooleanField(4)
   labels = _messages.MessageField('LabelsValue', 5)
-  luns = _messages.MessageField('Lun', 6, repeated=True)
-  machineType = _messages.StringField(7)
-  name = _messages.StringField(8)
-  networks = _messages.MessageField('Network', 9, repeated=True)
-  osImage = _messages.StringField(10)
-  pod = _messages.StringField(11)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
-  updateTime = _messages.StringField(13)
+  logicalInterfaces = _messages.MessageField('GoogleCloudBaremetalsolutionV2LogicalInterface', 6, repeated=True)
+  luns = _messages.MessageField('Lun', 7, repeated=True)
+  machineType = _messages.StringField(8)
+  name = _messages.StringField(9)
+  networkTemplate = _messages.StringField(10)
+  networks = _messages.MessageField('Network', 11, repeated=True)
+  osImage = _messages.StringField(12)
+  pod = _messages.StringField(13)
+  state = _messages.EnumField('StateValueValuesEnum', 14)
+  updateTime = _messages.StringField(15)
 
 
 class InstanceConfig(_messages.Message):
   r"""Configuration parameters for a new instance.
 
+  Enums:
+    NetworkConfigValueValuesEnum: The type of network configuration on the
+      instance.
+
   Fields:
     accountNetworksEnabled: If true networks can be from different projects of
       the same vendor account.
-    clientNetwork: Client network address.
+    clientNetwork: Client network address. Filled if
+      InstanceConfig.multivlan_config is false.
     hyperthreading: Whether the instance should be provisioned with
       Hyperthreading enabled.
     id: A transient unique identifier to idenfity an instance within an
@@ -914,24 +1028,49 @@ class InstanceConfig(_messages.Message):
     instanceType: Instance type. [Available
       types](https://cloud.google.com/bare-metal/docs/bms-
       planning#server_configurations)
+    logicalInterfaces: List of logical interfaces for the instance. The number
+      of logical interfaces will be the same as number of hardware bond/nic on
+      the chosen network template. Filled if InstanceConfig.multivlan_config
+      is true.
     name: Output only. The name of the instance config.
+    networkConfig: The type of network configuration on the instance.
+    networkTemplate: Server network template name. Filled if
+      InstanceConfig.multivlan_config is true.
     osImage: OS image to initialize the instance. [Available
       images](https://cloud.google.com/bare-metal/docs/bms-
       planning#server_configurations)
-    privateNetwork: Private network address, if any.
+    privateNetwork: Private network address, if any. Filled if
+      InstanceConfig.multivlan_config is false.
     userNote: User note field, it can be used by customers to add additional
       information for the BMS Ops team .
   """
+
+  class NetworkConfigValueValuesEnum(_messages.Enum):
+    r"""The type of network configuration on the instance.
+
+    Values:
+      NETWORKCONFIG_UNSPECIFIED: The unspecified network configuration.
+      SINGLE_VLAN: Instance part of single client network and single private
+        network.
+      MULTI_VLAN: Instance part of multiple (or single) client networks and
+        private networks.
+    """
+    NETWORKCONFIG_UNSPECIFIED = 0
+    SINGLE_VLAN = 1
+    MULTI_VLAN = 2
 
   accountNetworksEnabled = _messages.BooleanField(1)
   clientNetwork = _messages.MessageField('NetworkAddress', 2)
   hyperthreading = _messages.BooleanField(3)
   id = _messages.StringField(4)
   instanceType = _messages.StringField(5)
-  name = _messages.StringField(6)
-  osImage = _messages.StringField(7)
-  privateNetwork = _messages.MessageField('NetworkAddress', 8)
-  userNote = _messages.StringField(9)
+  logicalInterfaces = _messages.MessageField('GoogleCloudBaremetalsolutionV2LogicalInterface', 6, repeated=True)
+  name = _messages.StringField(7)
+  networkConfig = _messages.EnumField('NetworkConfigValueValuesEnum', 8)
+  networkTemplate = _messages.StringField(9)
+  osImage = _messages.StringField(10)
+  privateNetwork = _messages.MessageField('NetworkAddress', 11)
+  userNote = _messages.StringField(12)
 
 
 class InstanceQuota(_messages.Message):
@@ -1190,34 +1329,40 @@ class Location(_messages.Message):
   name = _messages.StringField(5)
 
 
-class LogicalInterface(_messages.Message):
-  r"""Logical interface.
+class LogicalNetworkInterface(_messages.Message):
+  r"""Each logical network interface is effectively a network and IP pair.
 
   Enums:
-    TypeValueValuesEnum: Interface type.
+    NetworkTypeValueValuesEnum: Type of network.
 
   Fields:
-    name: Interface name. This is not a globally unique identifier. Name is
-      unique only inside the ServerNetworkTemplate.
-    required: If true, interface must have network connected.
-    type: Interface type.
+    defaultGateway: Whether this interface is the default gateway for the
+      instance. Only one interface can be the default gateway for the
+      instance.
+    id: An identifier for the `Network`, generated by the backend.
+    ipAddress: IP address in the network
+    network: Name of the network
+    networkType: Type of network.
   """
 
-  class TypeValueValuesEnum(_messages.Enum):
-    r"""Interface type.
+  class NetworkTypeValueValuesEnum(_messages.Enum):
+    r"""Type of network.
 
     Values:
-      INTERFACE_TYPE_UNSPECIFIED: Unspecified value.
-      BOND: Bond interface type.
-      NIC: NIC interface ytpe.
+      TYPE_UNSPECIFIED: Unspecified value.
+      CLIENT: Client network, a network peered to a Google Cloud VPC.
+      PRIVATE: Private network, a network local to the Bare Metal Solution
+        environment.
     """
-    INTERFACE_TYPE_UNSPECIFIED = 0
-    BOND = 1
-    NIC = 2
+    TYPE_UNSPECIFIED = 0
+    CLIENT = 1
+    PRIVATE = 2
 
-  name = _messages.StringField(1)
-  required = _messages.BooleanField(2)
-  type = _messages.EnumField('TypeValueValuesEnum', 3)
+  defaultGateway = _messages.BooleanField(1)
+  id = _messages.StringField(2)
+  ipAddress = _messages.StringField(3)
+  network = _messages.StringField(4)
+  networkType = _messages.EnumField('NetworkTypeValueValuesEnum', 5)
 
 
 class Lun(_messages.Message):
@@ -1453,7 +1598,7 @@ class NetworkConfig(_messages.Message):
     serviceCidr: Service CIDR, if any.
     type: The type of this network, either Client or Private.
     userNote: User note field, it can be used by customers to add additional
-      information for the BMS Ops team (b/194021617).
+      information for the BMS Ops team .
     vlanAttachments: List of VLAN attachments. As of now there are always 2
       attachments, but it is going to change in the future (multi vlan).
     vlanSameProject: Whether the VLAN attachment pair is located in the same
@@ -1777,7 +1922,7 @@ class ProvisioningConfig(_messages.Message):
     name: Output only. The name of the provisioning config.
     networks: Networks to be created.
     state: Output only. State of ProvisioningConfig.
-    ticketId: A generated buganizer id to track provisioning request.
+    ticketId: A generated ticket id to track provisioning request.
     updateTime: Output only. Last update timestamp.
     volumes: Volumes to be created.
   """
@@ -1877,6 +2022,16 @@ class ResetInstanceRequest(_messages.Message):
   r"""Message requesting to reset a server."""
 
 
+class ResizeVolumeRequest(_messages.Message):
+  r"""Request for emergency resize Volume.
+
+  Fields:
+    sizeGib: New Volume size, in GiB.
+  """
+
+  sizeGib = _messages.IntegerField(1)
+
+
 class RestoreVolumeSnapshotRequest(_messages.Message):
   r"""Message for restoring a volume snapshot."""
 
@@ -1918,11 +2073,14 @@ class ServerNetworkTemplate(_messages.Message):
   Fields:
     applicableInstanceTypes: Instance types this template is applicable to.
     logicalInterfaces: Logical interfaces.
-    name: Output only. Template's unique name.
+    name: Output only. Template's unique name. The full resource name follows
+      the pattern: `projects/{project}/locations/{location}/serverNetworkTempl
+      ate/{server_network_template}` Generally, the {server_network_template}
+      follows the syntax of "bond" or "nic".
   """
 
   applicableInstanceTypes = _messages.StringField(1, repeated=True)
-  logicalInterfaces = _messages.MessageField('LogicalInterface', 2, repeated=True)
+  logicalInterfaces = _messages.MessageField('GoogleCloudBaremetalsolutionV2ServerNetworkTemplateLogicalInterface', 2, repeated=True)
   name = _messages.StringField(3)
 
 
@@ -2352,7 +2510,7 @@ class VolumeConfig(_messages.Message):
     snapshotsEnabled: Whether snapshots should be enabled.
     type: The type of this Volume.
     userNote: User note field, it can be used by customers to add additional
-      information for the BMS Ops team (b/194021617).
+      information for the BMS Ops team .
   """
 
   class ProtocolValueValuesEnum(_messages.Enum):
@@ -2390,6 +2548,18 @@ class VolumeConfig(_messages.Message):
   snapshotsEnabled = _messages.BooleanField(9)
   type = _messages.EnumField('TypeValueValuesEnum', 10)
   userNote = _messages.StringField(11)
+
+
+class VolumeLunRange(_messages.Message):
+  r"""A LUN(Logical Unit Number) range.
+
+  Fields:
+    quantity: Number of LUNs to create.
+    sizeGb: The requested size of each LUN, in GB.
+  """
+
+  quantity = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  sizeGb = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class VolumeSnapshot(_messages.Message):

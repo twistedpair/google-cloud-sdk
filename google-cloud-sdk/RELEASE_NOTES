@@ -5,6 +5,95 @@ Copyright 2014-2022 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 388.0.0 (2022-06-01)
+
+### Google Cloud CLI
+
+* Added Cloud SQL OAuth scope to Application Default Credential.
+
+### AI
+
+* Fixed issue where unspecified `--network` and `--service-account` flags of `gcloud ai hp-tuning-jobs create` mistakenly overrode the corresponding values set via `--config` flag.
+
+### Apigee
+
+*   Promoted `gcloud apigee operations` to beta.
+
+### Bare Metal Solution
+
+*   Updated `gcloud bms instances list` to also return the IP addresses of
+    instances that do not use the default network template.
+
+### Cloud Bigtable
+
+* Removed `NAME` column output from `bigtable hot-tablets list`.
+
+### Cloud Datastore Emulator
+
+* Release Cloud Datastore Emulator version 2.2.1
+  * Fixes `--firestore_in_datastore_mode` flag parsing.
+
+### Cloud Deploy
+
+* Fixed issue where `gcloud deploy targets rollback` redeployed to the current release instead of
+  rolling back to the previous release. This occurred in cases where the name of the release
+  to rollback to was not provided.
+
+### Cloud Functions
+
+*   Added `--gen2` support for `--set-secrets`, `--update-secrets`,
+    `--remove-secrets` and `--clear-secrets` flags of `gcloud functions deploy`
+    to beta, alpha.
+
+### Cloud On Demand Scanning
+
+*   Fixed issue where scanning for Maven vulnerabilities would occasionally
+    fail.
+
+### Compute Engine
+
+* Promoted `network-firewall-policies` command group to GA.
+
+### Config Connector
+
+* Updated Google Cloud Config Connector to version 1.86.0.
+  See Config Connector Overview for more details [https://cloud.google.com/config-connector/docs/overview](https://cloud.google.com/config-connector/docs/overview).
+
+### Database Migration
+
+* Added `--sync-` flag to `gcloud database-migrate migration-jobs create` command to wait for the migration job creation operation to be completed before proceeding.
+
+### Kubernetes Engine
+
+* Added `podPidLimits` kubelet config option which controls per pod pid limits to `gcloud container clusters create`, `gcloud container node-pools create`, and `gcloud container node-pools update`.
+* Updated the following GA commands to support IAM Conditions:
+  * `gcloud beta attestors get-iam-policy` outputs conditions associated with each binding.
+  * `gcloud beta attestors set-iam-policy` accepts policies with conditional bindings.
+  * `gcloud beta attestors <add|remove>-iam-policy-binding` accepts conditional bindings via new `--condition` and `--condition-from-file` flags.
+  * `gcloud beta policy get-iam-policy` outputs conditions associated with each binding.
+  * `gcloud beta policy set-iam-policy` accepts policies with conditional bindings.
+  * `gcloud beta policy <add|remove>-iam-policy-binding` accepts conditional bindings via new `--condition` and `--condition-from-file` flags.
+
+### Terraform
+
+*   Added support for the following resources in CAI-based policies:
+    *   `google_access_context_manager_access_policy_iam_binding`
+    *   `google_access_context_manager_access_policy_iam_member`
+    *   `google_access_context_manager_access_policy_iam_policy`
+    *   `google_endpoints_service_consumers_iam_binding`
+    *   `google_endpoints_service_consumers_iam_member`
+    *   `google_endpoints_service_consumers_iam_policy`
+    *   `google_privateca_certificate_template_iam_binding`
+    *   `google_privateca_certificate_template_iam_member`
+    *   `google_privateca_certificate_template_iam_policy`
+*   TF -> CAI resource conversion compiled against
+    [`google` provider version 4.20.0](https://github.com/hashicorp/terraform-provider-google/releases/tag/v4.20.0).
+*   Added output of logs based on configuration of log level.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 387.0.0 (2022-05-24)
 
 ### Anthos Multi-Cloud

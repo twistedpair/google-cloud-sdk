@@ -65,6 +65,70 @@ class InvalidCommandError(exceptions.Error):
     super(InvalidCommandError, self).__init__(
         '{cmd}: command not found'.format(cmd=cmd))
 
+try:
+  # pylint:disable=invalid-name
+  TIMEOUT_EXPIRED_ERR = subprocess.TimeoutExpired
+
+# subprocess.TimeoutExpired and subprocess.Popen.wait are only available in
+# py3.3, use our own TimeoutExpired and SubprocessTimeoutWrapper classes in
+# earlier versions. Callers that need to wait for subprocesses should catch
+# TIMEOUT_EXPIRED_ERR instead of the underlying version-specific errors.
+except AttributeError:
+
+  class TimeoutExpired(exceptions.Error):
+    """Simulate subprocess.TimeoutExpired on old (<3.3) versions of Python."""
+
+  # pylint:disable=invalid-name
+  TIMEOUT_EXPIRED_ERR = TimeoutExpired
+
+  class SubprocessTimeoutWrapper:
+    """Forwarding wrapper for subprocess.Popen, adds timeout arg to wait.
+
+    subprocess.Popen.wait doesn't provide a timeout in versions < 3.3. This
+    class wraps subprocess.Popen, adds a backported wait that includes the
+    timeout arg, and forwards other calls to the underlying subprocess.Popen.
+
+    Callers generally shouldn't use this class directly: Subprocess will
+    return either a subprocess.Popen or SubprocessTimeoutWrapper as
+    appropriate based on the available version of subprocesses.
+
+    See
+    https://docs.python.org/3/library/subprocess.html#subprocess.Popen.wait.
+    """
+
+    def __init__(self, proc):
+      self.proc = proc
+
+    # pylint:disable=invalid-name
+    def wait(self, timeout=None):
+      """Busy-wait for wrapped process to have a return code.
+
+      Args:
+        timeout: int, Seconds to wait before raising TimeoutExpired.
+
+      Returns:
+        int, The subprocess return code.
+
+      Raises:
+        TimeoutExpired: if subprocess doesn't finish before the given timeout.
+      """
+      if timeout is None:
+        return self.proc.wait()
+
+      now = time.time()
+      later = now + timeout
+      delay = 0.01  # 10ms
+      ret = self.proc.poll()
+      while ret is None:
+        if time.time() > later:
+          raise TimeoutExpired()
+        time.sleep(delay)
+        ret = self.proc.poll()
+      return ret
+
+    def __getattr__(self, name):
+      return getattr(self.proc, name)
+
 
 # Doesn't work in par or stub files.
 def GetPythonExecutable():
@@ -391,6 +455,52 @@ def Exec(args,
   if no_exit and process_holder.signum is None:
     return ret_val
   sys.exit(ret_val)
+
+
+def Subprocess(args, env=None, **extra_popen_kwargs):
+  """Run subprocess.Popen with optional timeout and custom env.
+
+  Returns a running subprocess. Depending on the available version of the
+  subprocess library, this will return either a subprocess.Popen or a
+  SubprocessTimeoutWrapper (which forwards calls to a subprocess.Popen).
+  Callers should catch TIMEOUT_EXPIRED_ERR instead of
+  subprocess.TimeoutExpired to be compatible with both classes.
+
+  Args:
+    args: [str], The arguments to execute.  The first argument is the command.
+    env: {str: str}, An optional environment for the child process.
+    **extra_popen_kwargs: Any additional kwargs will be passed through directly
+      to subprocess.Popen
+
+  Returns:
+    subprocess.Popen or SubprocessTimeoutWrapper, The running subprocess.
+
+  Raises:
+    PermissionError: if user does not have execute permission for cloud sdk bin
+    files.
+    InvalidCommandError: if the command entered cannot be found.
+  """
+  # Handle unicode-encoded args, see _Exec.
+  try:
+    if args and isinstance(args, list):
+      args = [encoding.Encode(a) for a in args]
+    p = subprocess.Popen(args, env=_GetToolEnv(env=env), **extra_popen_kwargs)
+  except OSError as err:
+    if err.errno == errno.EACCES:
+      raise PermissionError(err.strerror)
+    elif err.errno == errno.ENOENT:
+      raise InvalidCommandError(args[0])
+    raise
+  process_holder = _ProcessHolder()
+  process_holder.process = p
+  if process_holder.signum is not None:
+    if p.poll() is None:
+      p.terminate()
+
+  try:
+    return SubprocessTimeoutWrapper(p)
+  except NameError:
+    return p
 
 
 def _ProcessStreamHandler(proc, err=False, handler=log.Print):

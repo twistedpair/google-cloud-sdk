@@ -28,6 +28,13 @@ class ApiType(enum.Enum):
   UPDATE = 'update'
 
 
+def AddAsyncFlag(parser):
+  """Adds a --sync flag to the given parser."""
+  help_text = ('Waits for the operation in progress to complete before '
+               'returning.')
+  parser.add_argument('--sync', action='store_true', help=help_text)
+
+
 def AddDisplayNameFlag(parser):
   """Adds a --display-name flag to the given parser."""
   help_text = 'Friendly name for the migration job.'
@@ -73,22 +80,15 @@ def AddConnectivityGroupFlag(parser, api_type, required=False):
   reverse_ssh_group = connectivity_group.add_group(
       'Parameters for the reverse-SSH tunnel connectivity method.')
   reverse_ssh_group.add_argument(
-      '--vm-ip',
-      help='Bastion Virtual Machine IP.',
-      required=required
-  )
+      '--vm-ip', help='Bastion Virtual Machine IP.', required=required)
   reverse_ssh_group.add_argument(
       '--vm-port',
       help='Forwarding port for the SSH tunnel.',
       type=int,
-      required=required
-  )
+      required=required)
   reverse_ssh_group.add_argument(
-      '--vm',
-      help='Name of VM that will host the SSH tunnel bastion.'
-  )
+      '--vm', help='Name of VM that will host the SSH tunnel bastion.')
   reverse_ssh_group.add_argument(
       '--vpc',
       help='Name of the VPC network where the VM is hosted.',
-      required=required
-  )
+      required=required)

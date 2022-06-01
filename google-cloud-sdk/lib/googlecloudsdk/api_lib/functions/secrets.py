@@ -127,23 +127,28 @@ def SecretEnvVarsToMessages(secret_env_vars_dict, messages):
   return secret_environment_variables
 
 
-def SecretVolumesToMessages(secret_volumes_dict, messages):
+def SecretVolumesToMessages(secret_volumes, messages, normalize_for_v2=False):
+  # type: (dict[str, str], ) -> (list[messages.SecretVolume])
   """Converts secrets from dict to cloud function SecretVolume message list.
 
   Args:
-    secret_volumes_dict: Secrets volumes configuration dict. Prefers a sorted
+    secret_volumes: Secrets volumes configuration dict. Prefers a sorted
       ordered dict for consistency.
     messages: The GCF messages module to use.
+    normalize_for_v2: If set, normalizes the SecretVolumes to the format the
+      GCFv2 API expects.
 
   Returns:
-    A list of cloud function SecretVolume message.
+    A list of Cloud Function SecretVolume messages.
   """
   secret_volumes_messages = []
   mount_path_to_secrets = collections.defaultdict(list)
-  for secret_volume_key, secret_volume_value in six.iteritems(
-      secret_volumes_dict):
-    mount_path = secret_volume_key.split(':')[0]
-    secret_file_path = secret_volume_key.split(':')[1]
+  for secret_volume_key, secret_volume_value in secret_volumes.items():
+    mount_path, secret_file_path = secret_volume_key.split(':', 1)
+    if normalize_for_v2:
+      # GCFv2 API doesn't accept a leading / in the secret file path.
+      secret_file_path = re.sub(r'^/', '', secret_file_path)
+
     secret_ref = _ParseSecretRef(secret_volume_value)
     mount_path_to_secrets[mount_path].append({
         'path': secret_file_path,
@@ -151,21 +156,19 @@ def SecretVolumesToMessages(secret_volumes_dict, messages):
         'secret': secret_ref['secret'],
         'version': secret_ref['version']
     })
-  mount_path_to_secrets = collections.OrderedDict(
-      sorted(six.iteritems(mount_path_to_secrets)))
-  for mount_path, secret_path_values in six.iteritems(mount_path_to_secrets):
-    project = secret_path_values[0]['project']
-    secret = secret_path_values[0]['secret']
-    secret_version_messages = []
-    for secret_path_value in secret_path_values:
-      secret_version_messages.append(
-          messages.SecretVersion(
-              path=secret_path_value['path'],
-              version=secret_path_value['version']))
+
+  for mount_path, secrets in sorted(six.iteritems(mount_path_to_secrets)):
+    project = secrets[0]['project']
+    secret_value = secrets[0]['secret']
+    versions = [
+        messages.SecretVersion(path=secret['path'], version=secret['version'])
+        for secret in secrets
+    ]
     secret_volumes_messages.append(
         messages.SecretVolume(
             mountPath=mount_path,
             projectId=project,
-            secret=secret,
-            versions=secret_version_messages))
+            secret=secret_value,
+            versions=versions))
+
   return secret_volumes_messages

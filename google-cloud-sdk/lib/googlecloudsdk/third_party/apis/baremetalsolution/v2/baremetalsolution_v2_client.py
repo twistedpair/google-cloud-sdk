@@ -1297,6 +1297,33 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def CreateAndAttach(self, request, global_params=None):
+      r"""Create a volume, allocate Luns and attach them to instances.
+
+      Args:
+        request: (BaremetalsolutionProjectsLocationsVolumesCreateAndAttachRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('CreateAndAttach')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CreateAndAttach.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/volumes:createAndAttach',
+        http_method='POST',
+        method_id='baremetalsolution.projects.locations.volumes.createAndAttach',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2/{+parent}/volumes:createAndAttach',
+        request_field='createAndAttachVolumeRequest',
+        request_type_name='BaremetalsolutionProjectsLocationsVolumesCreateAndAttachRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       r"""Delete a volume. Volume shouldn't have any Luns.
 
@@ -1401,6 +1428,33 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
         relative_path='v2/{+name}',
         request_field='volume',
         request_type_name='BaremetalsolutionProjectsLocationsVolumesPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Resize(self, request, global_params=None):
+      r"""Emergency Volume resize.
+
+      Args:
+        request: (BaremetalsolutionProjectsLocationsVolumesResizeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Resize')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Resize.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}:resize',
+        http_method='POST',
+        method_id='baremetalsolution.projects.locations.volumes.resize',
+        ordered_params=['volume'],
+        path_params=['volume'],
+        query_params=[],
+        relative_path='v2/{+volume}:resize',
+        request_field='resizeVolumeRequest',
+        request_type_name='BaremetalsolutionProjectsLocationsVolumesResizeRequest',
         response_type_name='Operation',
         supports_download=False,
     )

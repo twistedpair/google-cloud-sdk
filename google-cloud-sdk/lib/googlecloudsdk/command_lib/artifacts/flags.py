@@ -142,6 +142,15 @@ def GetRepoFlag():
       required=False)
 
 
+def GetRequiredRepoFlag():
+  return concept_parsers.ConceptParser.ForResource(
+      '--repository',
+      GetRepoResourceSpec(),
+      ('The Artifact Registry repository. If not specified, '
+       'the current artifacts/repository is used.'),
+      required=True)
+
+
 def GetLocationFlag():
   return concept_parsers.ConceptParser.ForResource(
       '--location',

@@ -92,6 +92,7 @@ NC_KUBELET_CONFIG = 'kubeletConfig'
 NC_CPU_MANAGER_POLICY = 'cpuManagerPolicy'
 NC_CPU_CFS_QUOTA = 'cpuCFSQuota'
 NC_CPU_CFS_QUOTA_PERIOD = 'cpuCFSQuotaPeriod'
+NC_POD_PIDS_LIMIT = 'podPidsLimit'
 NC_LINUX_CONFIG = 'linuxConfig'
 NC_SYSCTL = 'sysctl'
 
@@ -551,6 +552,7 @@ def LoadSystemConfigFromYAML(node_config, content, messages):
             NC_CPU_MANAGER_POLICY: str,
             NC_CPU_CFS_QUOTA: bool,
             NC_CPU_CFS_QUOTA_PERIOD: str,
+            NC_POD_PIDS_LIMIT: int,
         })
     node_config.kubeletConfig = messages.NodeKubeletConfig()
     node_config.kubeletConfig.cpuManagerPolicy = kubelet_config_opts.get(
@@ -559,6 +561,8 @@ def LoadSystemConfigFromYAML(node_config, content, messages):
         NC_CPU_CFS_QUOTA)
     node_config.kubeletConfig.cpuCfsQuotaPeriod = kubelet_config_opts.get(
         NC_CPU_CFS_QUOTA_PERIOD)
+    node_config.kubeletConfig.podPidsLimit = kubelet_config_opts.get(
+        NC_POD_PIDS_LIMIT)
 
   # Parse Linux config options.
   linux_config_opts = opts.get(NC_LINUX_CONFIG)

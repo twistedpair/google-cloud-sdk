@@ -32,7 +32,7 @@ def GetService(release_track=base.ReleaseTrack.GA):
       release_track).projects_locations_environments
 
 
-class CreateEnvironmentFlags():
+class CreateEnvironmentFlags:
   """Container holding environment creation flag values.
 
   Attributes:
@@ -128,10 +128,18 @@ class CreateEnvironmentFlags():
     enable_master_authorized_networks: bool or None, whether master authorized
       networks should be enabled
     master_authorized_networks: list(str), master authorized networks
+    airflow_database_retention_days: Optional[int], the number of retention
+      days for airflow database data retention mechanism. Infinite retention
+      will be applied in case `0` or no integer is provided.
     release_track: base.ReleaseTrack, the release track of command. Will dictate
       which Composer client library will be used.
   """
 
+  # TODO(b/154131605): This a type that is an immutable data object. Can't use
+  # attrs because it's not part of googlecloudsdk and can't use namedtuple
+  # because it's not efficient on python 2 (it generates code, which needs
+  # to be parsed and interpretted). Remove this code when we get support
+  # for attrs or another dumb data object in gcloud.
   def __init__(self,
                node_count=None,
                environment_size=None,
@@ -185,6 +193,7 @@ class CreateEnvironmentFlags():
                maintenance_window_recurrence=None,
                enable_master_authorized_networks=None,
                master_authorized_networks=None,
+               airflow_database_retention_days=None,
                release_track=base.ReleaseTrack.GA):
     self.node_count = node_count
     self.environment_size = environment_size
@@ -238,6 +247,7 @@ class CreateEnvironmentFlags():
     self.maintenance_window_recurrence = maintenance_window_recurrence
     self.enable_master_authorized_networks = enable_master_authorized_networks
     self.master_authorized_networks = master_authorized_networks
+    self.airflow_database_retention_days = airflow_database_retention_days
     self.release_track = release_track
 
 
@@ -296,7 +306,7 @@ def _CreateConfig(messages, flags, is_composer_v1):
           flags.web_server_memory_gb or flags.scheduler_storage_gb or
           flags.worker_storage_gb or flags.web_server_storage_gb or
           flags.environment_size or flags.min_workers or flags.max_workers or
-          flags.scheduler_count):
+          flags.scheduler_count or flags.airflow_database_retention_days):
     return None
 
   config = messages.EnvironmentConfig()
@@ -347,6 +357,9 @@ def _CreateConfig(messages, flags, is_composer_v1):
         startTime=flags.maintenance_window_start.isoformat(),
         endTime=flags.maintenance_window_end.isoformat(),
         recurrence=flags.maintenance_window_recurrence)
+  if flags.airflow_database_retention_days:
+    config.dataRetentionConfig = messages.DataRetentionConfig(
+        airflowDatabaseRetentionDays=flags.airflow_database_retention_days)
 
   if flags.private_environment:
     # Adds a PrivateClusterConfig, if necessary.

@@ -354,17 +354,6 @@
         }
       }
     },
-    "V2CloneKeyRequest": {
-      "id": "V2CloneKeyRequest",
-      "description": "Request message for `CloneKey` method.",
-      "type": "object",
-      "properties": {
-        "keyId": {
-          "description": "User specified key id (optional). If specified, it will become the final component of the key resource name. The id must be unique within the project, must conform with RFC-1034, is restricted to lower-cased letters, and has a maximum length of 63 characters. In another word, the id must match the regular expression: `[a-z]([a-z0-9-]{0,61}[a-z0-9])?`. The id must NOT be a UUID-like string.",
-          "type": "string"
-        }
-      }
-    },
     "V2ListKeysResponse": {
       "id": "V2ListKeysResponse",
       "description": "Response message for `ListKeys` method.",
@@ -487,34 +476,6 @@
                   ],
                   "description": "Creates a new API key. NOTE: Key is a global resource; hence the only supported value for location is `global`."
                 },
-                "clone": {
-                  "id": "apikeys.projects.locations.keys.clone",
-                  "path": "v2/{+name}:clone",
-                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/keys/{keysId}:clone",
-                  "httpMethod": "POST",
-                  "parameters": {
-                    "name": {
-                      "description": "Required. The resource name of the API key to be cloned in the same project.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keys\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "request": {
-                    "$ref": "V2CloneKeyRequest"
-                  },
-                  "response": {
-                    "$ref": "Operation"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "DEPRECATED: API customers can call `GetKey` and then `CreateKey` methods to create a copy of an existing key. Retire `CloneKey` method to eliminate the unnessary method from API Keys API. Clones the existing key's restriction and display name to a new API key. The service account must have the `apikeys.keys.get` and `apikeys.keys.create` permissions in the project. NOTE: Key is a global resource; hence the only supported value for location is `global`."
-                },
                 "list": {
                   "id": "apikeys.projects.locations.keys.list",
                   "path": "v2/{+parent}/keys",
@@ -539,13 +500,8 @@
                       "location": "query",
                       "type": "string"
                     },
-                    "filter": {
-                      "description": "Optional. Deprecated: Use `show_deleted` instead. Only list keys that conform to the specified filter. The allowed filter strings are `state:ACTIVE` and `state:DELETED`. By default, ListKeys returns only active keys.",
-                      "location": "query",
-                      "type": "string"
-                    },
                     "showDeleted": {
-                      "description": "Optional. Indicate that keys are marked as deleted within 30 days should also be returned. Normally only active keys are returned.",
+                      "description": "Optional. Indicate that keys deleted in the past 30 days should also be returned.",
                       "location": "query",
                       "type": "boolean"
                     }
@@ -628,7 +584,7 @@
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "The field mask specifies which fields to be updated as part of this request. All other fields are ignored. Mutable fields are: `display_name` and `restrictions`. If an update mask is not provided, the service treats it as an implied mask equivalent to all allowed fields that are set on the wire. If the field mask has a special value \"*\", the service treats it equivalent to replace all allowed mutable fields.",
+                      "description": "The field mask specifies which fields to be updated as part of this request. All other fields are ignored. Mutable fields are: `display_name`,`restrictions` and `annotations`. If an update mask is not provided, the service treats it as an implied mask equivalent to all allowed fields that are set on the wire. If the field mask has a special value \"*\", the service treats it equivalent to replace all allowed mutable fields.",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"

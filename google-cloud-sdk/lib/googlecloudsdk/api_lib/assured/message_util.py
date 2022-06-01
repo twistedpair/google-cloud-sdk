@@ -108,6 +108,11 @@ def CreateAssuredWorkload(display_name=None,
   return workload
 
 
+def CreateAssuredWorkloadsParent(organization_id, location, workload_id):
+  return 'organizations/{}/locations/{}/workloads/{}'.format(
+      organization_id, location, workload_id)
+
+
 def CreateLabels(labels, workload_message):
   workload_labels = []
   for key, value in labels.items():

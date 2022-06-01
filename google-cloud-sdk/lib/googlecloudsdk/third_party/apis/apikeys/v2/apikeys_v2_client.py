@@ -128,33 +128,6 @@ class ApikeysV2(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
-    def Clone(self, request, global_params=None):
-      r"""DEPRECATED: API customers can call `GetKey` and then `CreateKey` methods to create a copy of an existing key. Retire `CloneKey` method to eliminate the unnessary method from API Keys API. Clones the existing key's restriction and display name to a new API key. The service account must have the `apikeys.keys.get` and `apikeys.keys.create` permissions in the project. NOTE: Key is a global resource; hence the only supported value for location is `global`.
-
-      Args:
-        request: (ApikeysProjectsLocationsKeysCloneRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Clone')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Clone.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/projects/{projectsId}/locations/{locationsId}/keys/{keysId}:clone',
-        http_method='POST',
-        method_id='apikeys.projects.locations.keys.clone',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v2/{+name}:clone',
-        request_field='v2CloneKeyRequest',
-        request_type_name='ApikeysProjectsLocationsKeysCloneRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
     def Create(self, request, global_params=None):
       r"""Creates a new API key. NOTE: Key is a global resource; hence the only supported value for location is `global`.
 
@@ -282,7 +255,7 @@ class ApikeysV2(base_api.BaseApiClient):
         method_id='apikeys.projects.locations.keys.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['filter', 'pageSize', 'pageToken', 'showDeleted'],
+        query_params=['pageSize', 'pageToken', 'showDeleted'],
         relative_path='v2/{+parent}/keys',
         request_field='',
         request_type_name='ApikeysProjectsLocationsKeysListRequest',

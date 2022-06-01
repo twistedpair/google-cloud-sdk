@@ -458,13 +458,22 @@ MAP = {
                 mtls_endpoint_override=''),
     },
     'batch': {
+        'v1':
+            APIDef(
+                ApitoolsClientDef(
+                    class_path='googlecloudsdk.third_party.apis.batch.v1',
+                    client_classpath='batch_v1_client.BatchV1',
+                    messages_modulepath='batch_v1_messages'),
+                default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
         'v1alpha1':
             APIDef(
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.third_party.apis.batch.v1alpha1',
                     client_classpath='batch_v1alpha1_client.BatchV1alpha1',
                     messages_modulepath='batch_v1alpha1_messages'),
-                default_version=True,
+                default_version=False,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },
@@ -1714,6 +1723,17 @@ MAP = {
                     class_path='googlecloudsdk.third_party.apis.gkemulticloud.v1',
                     client_classpath='gkemulticloud_v1_client.GkemulticloudV1',
                     messages_modulepath='gkemulticloud_v1_messages'),
+                default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+    },
+    'gkeonprem': {
+        'v1':
+            APIDef(
+                ApitoolsClientDef(
+                    class_path='googlecloudsdk.third_party.apis.gkeonprem.v1',
+                    client_classpath='gkeonprem_v1_client.GkeonpremV1',
+                    messages_modulepath='gkeonprem_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
                 mtls_endpoint_override=''),

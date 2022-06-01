@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.network_connectivity import networkconnectivity_util
 from googlecloudsdk.calliope import base
 
@@ -33,26 +34,52 @@ class SpokesClient(object):
     self.operation_service = self.client.projects_locations_operations
 
   def Activate(self, spoke_ref):
-    activate_req_type = (
-        self.messages.NetworkconnectivityProjectsLocationsSpokesActivateRequest)
-    activate_req = activate_req_type(name=spoke_ref.RelativeName())
+    """Call API to activate an existing spoke."""
+    activate_req = (
+        self.messages.NetworkconnectivityProjectsLocationsSpokesActivateRequest(
+            name=spoke_ref.RelativeName()))
     return self.spoke_service.Activate(activate_req)
 
   def Deactivate(self, spoke_ref):
-    deactivate_req_type = (
+    """Call API to deactivate an existing spoke."""
+    deactivate_req = (
         self.messages
-        .NetworkconnectivityProjectsLocationsSpokesDeactivateRequest)
-    deactivate_req = deactivate_req_type(name=spoke_ref.RelativeName())
+        .NetworkconnectivityProjectsLocationsSpokesDeactivateRequest(
+            name=spoke_ref.RelativeName()))
     return self.spoke_service.Deactivate(deactivate_req)
 
   def Delete(self, spoke_ref):
-    delete_req_type = (
-        self.messages.NetworkconnectivityProjectsLocationsSpokesDeleteRequest)
-    delete_req = delete_req_type(name=spoke_ref.RelativeName())
+    """Call API to delete an existing spoke."""
+    delete_req = (
+        self.messages.NetworkconnectivityProjectsLocationsSpokesDeleteRequest(
+            name=spoke_ref.RelativeName()))
     return self.spoke_service.Delete(delete_req)
 
   def Get(self, spoke_ref):
-    get_req_type = (
-        self.messages.NetworkconnectivityProjectsLocationsSpokesGetRequest)
-    get_req = get_req_type(name=spoke_ref.RelativeName())
+    """Call API to get an existing spoke."""
+    get_req = (
+        self.messages.NetworkconnectivityProjectsLocationsSpokesGetRequest(
+            name=spoke_ref.RelativeName()))
     return self.spoke_service.Get(get_req)
+
+  def List(self,
+           region_ref,
+           limit=None,
+           filter_expression=None,
+           order_by='',
+           page_size=None,
+           page_token=None):
+    """Call API to list spokes."""
+    list_req = (
+        self.messages.NetworkconnectivityProjectsLocationsSpokesListRequest(
+            parent=region_ref.RelativeName(),
+            filter=filter_expression,
+            orderBy=order_by,
+            pageSize=page_size,
+            pageToken=page_token))
+    return list_pager.YieldFromList(
+        self.spoke_service,
+        list_req,
+        field='spokes',
+        limit=limit,
+        batch_size_attribute='pageSize')

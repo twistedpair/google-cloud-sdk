@@ -27,6 +27,27 @@ from googlecloudsdk.core import log
 import six
 
 
+def _ConstructAirflowDatabaseRetentionDaysPatch(airflow_database_retention_days,
+                                                release_track):
+  """Constructs an environment patch for Airflow Database Retention feature.
+
+  Args:
+    airflow_database_retention_days: int or None, the number of retention days
+      for airflow database data retention mechanism
+    release_track: base.ReleaseTrack, the release track of command. It dictates
+      which Composer client library is used.
+
+  Returns:
+    (str, Environment), the field mask and environment to use for update.
+  """
+  messages = api_util.GetMessagesModule(release_track=release_track)
+  config = messages.EnvironmentConfig()
+  config.dataRetentionConfig = messages.DataRetentionConfig(
+      airflowDatabaseRetentionDays=airflow_database_retention_days)
+  return ('config.data_retention_configuration.airflow_database_retention_days',
+          messages.Environment(config=config))
+
+
 def Patch(env_resource,
           field_mask,
           patch,
@@ -116,6 +137,7 @@ def ConstructPatch(is_composer_v1,
                    environment_size=None,
                    master_authorized_networks_enabled=None,
                    master_authorized_networks=None,
+                   airflow_database_retention_days=None,
                    release_track=base.ReleaseTrack.GA):
   """Constructs an environment patch.
 
@@ -189,6 +211,9 @@ def ConstructPatch(is_composer_v1,
       be enabled
     master_authorized_networks: iterable(string) or None, iterable of master
       authorized networks.
+    airflow_database_retention_days: Optional[int], the number of retention
+      days for airflow database data retention mechanism. Infinite retention
+      will be applied in case `0` or no integer is provided.
     release_track: base.ReleaseTrack, the release track of command. Will dictate
       which Composer client library will be used.
 
@@ -247,6 +272,9 @@ def ConstructPatch(is_composer_v1,
     return _ConstructMasterAuthorizedNetworksTypePatch(
         master_authorized_networks_enabled, master_authorized_networks,
         release_track)
+  if airflow_database_retention_days is not None:
+    return _ConstructAirflowDatabaseRetentionDaysPatch(
+        airflow_database_retention_days, release_track)
   if is_composer_v1 and scheduler_count:
     return _ConstructSoftwareConfigurationSchedulerCountPatch(
         scheduler_count=scheduler_count, release_track=release_track)

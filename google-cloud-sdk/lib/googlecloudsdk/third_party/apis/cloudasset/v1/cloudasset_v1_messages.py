@@ -102,6 +102,94 @@ class AnalyzeMoveResponse(_messages.Message):
   moveAnalysis = _messages.MessageField('MoveAnalysis', 1, repeated=True)
 
 
+class AnalyzeOrgPoliciesResponse(_messages.Message):
+  r"""The response message for AssetService.AnalyzeOrgPolicies.
+
+  Fields:
+    constraint: The definition of the constraint in the request.
+    nextPageToken: The page token to fetch the next page for
+      AnalyzeOrgPolicyResponse.org_policy_results.
+    orgPolicyResults: The organization policies under the
+      AnalyzeOrgPoliciesRequest.scope with the
+      AnalyzeOrgPoliciesRequest.constraint.
+  """
+
+  constraint = _messages.MessageField('AnalyzerOrgPolicyConstraint', 1)
+  nextPageToken = _messages.StringField(2)
+  orgPolicyResults = _messages.MessageField('OrgPolicyResult', 3, repeated=True)
+
+
+class AnalyzeOrgPolicyGovernedContainersResponse(_messages.Message):
+  r"""The response message for
+  AssetService.AnalyzeOrgPolicyGovernedContainers.
+
+  Fields:
+    constraint: The definition of the constraint in the request.
+    governedContainers: The list of the analyzed governed containers.
+    nextPageToken: The page token to fetch the next page for
+      AnalyzeOrgPolicyResponse.governed_containers.
+  """
+
+  constraint = _messages.MessageField('AnalyzerOrgPolicyConstraint', 1)
+  governedContainers = _messages.MessageField('GoogleCloudAssetV1GovernedContainer', 2, repeated=True)
+  nextPageToken = _messages.StringField(3)
+
+
+class AnalyzeOrgPolicyGovernedResourcesResponse(_messages.Message):
+  r"""The response message for AssetService.AnalyzeOrgPolicyGovernedResources.
+
+  Fields:
+    constraint: The definition of the constraint in the request.
+    governedResources: The list of the analyzed governed resources.
+    nextPageToken: The page token to fetch the next page for
+      AnalyzeOrgPolicyResponse.governed_resources.
+  """
+
+  constraint = _messages.MessageField('AnalyzerOrgPolicyConstraint', 1)
+  governedResources = _messages.MessageField('GoogleCloudAssetV1GovernedResource', 2, repeated=True)
+  nextPageToken = _messages.StringField(3)
+
+
+class AnalyzerOrgPolicy(_messages.Message):
+  r"""This organization policy message is a modified version of the one
+  defined in the OrgPolicy system. This message contains several fields
+  defined in the original organization policy with some new fields for
+  analysis purpose.
+
+  Fields:
+    attachedResource: The [full resource name]
+      (https://cloud.google.com/asset-inventory/docs/resource-name-format) of
+      an organization/folder/project resource where this organization policy
+      is set.
+    name: The full resource name of this org policy. See [Cloud Asset
+      Inventory Resource Name Format](https://cloud.google.com/asset-
+      inventory/docs/resource-name-format) for more information.
+    versionedResources: Versioned resource representations of this org policy.
+      This is repeated because there could be multiple versions of resource
+      representations during version migration.
+  """
+
+  attachedResource = _messages.StringField(1)
+  name = _messages.StringField(2)
+  versionedResources = _messages.MessageField('VersionedResource', 3, repeated=True)
+
+
+class AnalyzerOrgPolicyConstraint(_messages.Message):
+  r"""The organization policy constraint definition.
+
+  Fields:
+    name: The full resource name of this constraint. See [Cloud Asset
+      Inventory Resource Name Format](https://cloud.google.com/asset-
+      inventory/docs/resource-name-format) for more information.
+    versionedResources: Versioned resource representations of this constraint.
+      This is repeated because there could be multiple versions of resource
+      representations during version migration.
+  """
+
+  name = _messages.StringField(1)
+  versionedResources = _messages.MessageField('VersionedResource', 2, repeated=True)
+
+
 class Asset(_messages.Message):
   r"""An asset in Google Cloud. An asset can be any resource in the Google
   Cloud [resource hierarchy](https://cloud.google.com/resource-
@@ -136,8 +224,8 @@ class Asset(_messages.Message):
       hierarchy. Therefore, the effectively policy is the union of both the
       policy set on this resource and each policy set on all of the resource's
       ancestry resource levels in the hierarchy. See [this
-      topic](https://cloud.google.com/iam/docs/policies#inheritance) for more
-      information.
+      topic](https://cloud.google.com/iam/help/allow-policies/inheritance) for
+      more information.
     name: The full name of the asset. Example: `//compute.googleapis.com/proje
       cts/my_project_123/zones/zone1/instances/instance1` See [Resource names]
       (https://cloud.google.com/apis/design/resource_names#full_resource_name)
@@ -599,6 +687,96 @@ class CloudassetAnalyzeMoveRequest(_messages.Message):
   view = _messages.EnumField('ViewValueValuesEnum', 3)
 
 
+class CloudassetAnalyzeOrgPoliciesRequest(_messages.Message):
+  r"""A CloudassetAnalyzeOrgPoliciesRequest object.
+
+  Fields:
+    constraint: Required. The name of the constraint to analyze organization
+      policies for. The response only contains analyzed organization policies
+      for the provided constraint. (e.g. "cloudbuild.allowedWorkerPools").
+    filter: The expression to filter the consolidated organization policies in
+      result.
+    pageSize: The maximum number of items to return per page. If unspecified,
+      AnalyzeOrgPolicyResponse.defined_org_policies will contain 20 items with
+      a maximum of 200.
+    pageToken: The pagination token to retrieve the next page.
+    scope: Required. The project/folder/organization to scope the request.
+      Only resources and organization policies within the scope will be
+      analyzed. * projects/{PROJECT_NUMBER} (e.g., "projects/12345678") *
+      projects/{PROJECT_ID} (e.g., "projects/test-project") *
+      folders/{FOLDER_NUMBER} (e.g., "folders/1234567") *
+      organizations/{ORGANIZATION_NUMBER} (e.g., "organizations/123456")
+  """
+
+  constraint = _messages.StringField(1)
+  filter = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  scope = _messages.StringField(5, required=True)
+
+
+class CloudassetAnalyzeOrgPolicyGovernedContainersRequest(_messages.Message):
+  r"""A CloudassetAnalyzeOrgPolicyGovernedContainersRequest object.
+
+  Fields:
+    constraint: Required. The name of the constraint to analyze governed
+      containers for. The analysis only contains organization policies for the
+      provided constraint. (e.g. "cloudbuild.allowedWorkerPools").
+    filter: The expression to filter the governed containers in result. The
+      only supported comparison operator is `=`, and supported field is
+      `parent`. Example:
+      parent="//cloudresourcemanager.googleapis.com/folders/001" will return
+      all containers under "folders/001".
+    pageSize: The maximum number of items to return per page. If unspecified,
+      AnalyzeOrgPolicyResponse.governed_containers will contain 100 items with
+      a maximum of 200.
+    pageToken: The pagination token to retrieve the next page.
+    scope: Required. The project/folder/organization to scope the request.
+      Only resources within the scope will be analyzed. *
+      projects/{PROJECT_NUMBER} (e.g., "projects/12345678") *
+      projects/{PROJECT_ID} (e.g., "projects/test-project") *
+      folders/{FOLDER_NUMBER} (e.g., "folders/1234567") *
+      organizations/{ORGANIZATION_NUMBER} (e.g., "organizations/123456")
+  """
+
+  constraint = _messages.StringField(1)
+  filter = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  scope = _messages.StringField(5, required=True)
+
+
+class CloudassetAnalyzeOrgPolicyGovernedResourcesRequest(_messages.Message):
+  r"""A CloudassetAnalyzeOrgPolicyGovernedResourcesRequest object.
+
+  Fields:
+    constraint: Required. The name of the constraint to analyze governed
+      resources for. The analysis only contains analyzed organization policies
+      for the provided constraint. (e.g. "cloudbuild.allowedWorkerPools").
+    filter: The expression to filter the governed resources in result. The
+      only supported comparison operator is `=`, and supported field is
+      `project`, `folders` and `organization`. Example:
+      project="project/12345678" filter will return all governed resources
+      under project/12345678 including the project ifself, if applicable.
+    pageSize: The maximum number of items to return per page. If unspecified,
+      AnalyzeOrgPolicyResponse.governed_resources will contain 100 items with
+      a maximum of 200.
+    pageToken: The pagination token to retrieve the next page.
+    scope: Required. The project/folder/organization to scope the request.
+      Only organization policies and resources within the scope will be
+      analyzed. * projects/{PROJECT_NUMBER} (e.g., "projects/12345678") *
+      projects/{PROJECT_ID} (e.g., "projects/test-project") *
+      folders/{FOLDER_NUMBER} (e.g., "folders/1234567") *
+      organizations/{ORGANIZATION_NUMBER} (e.g., "organizations/123456")
+  """
+
+  constraint = _messages.StringField(1)
+  filter = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  scope = _messages.StringField(5, required=True)
+
+
 class CloudassetAssetsListRequest(_messages.Message):
   r"""A CloudassetAssetsListRequest object.
 
@@ -1022,14 +1200,15 @@ class CloudassetSearchAllIamPoliciesRequest(_messages.Message):
       Cloud IAM policy binding, including its principals, roles, and Cloud IAM
       conditions. The returned Cloud IAM policies will only contain the
       bindings that match your query. To learn more about the IAM policy
-      structure, see [IAM policy
-      doc](https://cloud.google.com/iam/docs/policies#structure). Examples: *
-      `policy:amy@gmail.com` to find IAM policy bindings that specify user
-      "amy@gmail.com". * `policy:roles/compute.admin` to find IAM policy
-      bindings that specify the Compute Admin role. * `policy:comp*` to find
-      IAM policy bindings that contain "comp" as a prefix of any word in the
-      binding. * `policy.role.permissions:storage.buckets.update` to find IAM
-      policy bindings that specify a role containing "storage.buckets.update"
+      structure, see the [IAM policy
+      documentation](https://cloud.google.com/iam/help/allow-
+      policies/structure). Examples: * `policy:amy@gmail.com` to find IAM
+      policy bindings that specify user "amy@gmail.com". *
+      `policy:roles/compute.admin` to find IAM policy bindings that specify
+      the Compute Admin role. * `policy:comp*` to find IAM policy bindings
+      that contain "comp" as a prefix of any word in the binding. *
+      `policy.role.permissions:storage.buckets.update` to find IAM policy
+      bindings that specify a role containing "storage.buckets.update"
       permission. Note that if callers don't have `iam.roles.get` access to a
       role's included permissions, policy bindings that specify this role will
       be dropped from the search results. * `policy.role.permissions:upd*` to
@@ -1706,6 +1885,74 @@ class GoogleCloudAssetV1GcsDestination(_messages.Message):
   uri = _messages.StringField(1)
 
 
+class GoogleCloudAssetV1GovernedContainer(_messages.Message):
+  r"""The organization/folder/project resource governed by organization
+  policies of AnalyzeOrgPolicyGovernedContainersRequest.constraint.
+
+  Fields:
+    consolidatedPolicy: The consolidated organization policy for the analyzed
+      resource. The consolidated organization policy is computed by merging
+      and evaluating AnalyzeOrgPolicyGovernedContainersResponse.GovernedContai
+      ner.policy_bundle. The evaluation will respect the organization policy
+      [hierarchy rules](https://cloud.google.com/resource-
+      manager/docs/organization-policy/understanding-hierarchy).
+    fullResourceName: The [full resource name]
+      (https://cloud.google.com/asset-inventory/docs/resource-name-format) of
+      an organization/folder/project resource.
+    parent: The [full resource name] (https://cloud.google.com/asset-
+      inventory/docs/resource-name-format) of the parent of AnalyzeOrgPolicyGo
+      vernedContainersResponse.GovernedContainer.full_resource_name.
+    policyBundle: The ordered list of all organization policies impacting this
+      resource from the scope to the target resource. Default organization
+      policies are also included.
+  """
+
+  consolidatedPolicy = _messages.MessageField('AnalyzerOrgPolicy', 1)
+  fullResourceName = _messages.StringField(2)
+  parent = _messages.StringField(3)
+  policyBundle = _messages.MessageField('AnalyzerOrgPolicy', 4, repeated=True)
+
+
+class GoogleCloudAssetV1GovernedResource(_messages.Message):
+  r"""The GCP resources governed by the organization policies of the
+  AnalyzeOrgPolicyGovernedResourcesRequest.constraint.
+
+  Fields:
+    consolidatedPolicy: The consolidated policy for the analyzed resource. The
+      consolidated policy is computed by merging and evaluating AnalyzeOrgPoli
+      cyGovernedResourcesResponse.GovernedResource.policy_bundle. The
+      evaluation will respect the organization policy [hierarchy
+      rules](https://cloud.google.com/resource-manager/docs/organization-
+      policy/understanding-hierarchy).
+    folders: The folder(s) that this resource belongs to, in the form of
+      folders/{FOLDER_NUMBER}. This field is available when the resource
+      belongs(directly or cascadingly) to one or more folders.
+    fullResourceName: The [full resource name]
+      (https://cloud.google.com/asset-inventory/docs/resource-name-format) of
+      the GCP resource.
+    organization: The organization that this resource belongs to, in the form
+      of organizations/{ORGANIZATION_NUMBER}. This field is available when the
+      resource belongs(directly or cascadingly) to an organization.
+    parent: The [full resource name] (https://cloud.google.com/asset-
+      inventory/docs/resource-name-format) of the parent of AnalyzeOrgPolicyGo
+      vernedContainersResponse.GovernedContainer.full_resource_name.
+    policyBundle: The ordered list of all organization policies impacting this
+      resource from the scope to the target resource. Default organization
+      policies are also included.
+    project: The project that this resource belongs to, in the form of
+      projects/{PROJECT_NUMBER}. This field is available when the resource
+      belongs to a project.
+  """
+
+  consolidatedPolicy = _messages.MessageField('AnalyzerOrgPolicy', 1)
+  folders = _messages.StringField(2, repeated=True)
+  fullResourceName = _messages.StringField(3)
+  organization = _messages.StringField(4)
+  parent = _messages.StringField(5)
+  policyBundle = _messages.MessageField('AnalyzerOrgPolicy', 6, repeated=True)
+  project = _messages.StringField(7)
+
+
 class GoogleCloudAssetV1Identity(_messages.Message):
   r"""An identity under analysis.
 
@@ -1788,8 +2035,8 @@ class GoogleCloudAssetV1p7beta1Asset(_messages.Message):
       hierarchy. Therefore, the effectively policy is the union of both the
       policy set on this resource and each policy set on all of the resource's
       ancestry resource levels in the hierarchy. See [this
-      topic](https://cloud.google.com/iam/docs/policies#inheritance) for more
-      information.
+      topic](https://cloud.google.com/iam/help/allow-policies/inheritance) for
+      more information.
     name: The full name of the asset. Example: `//compute.googleapis.com/proje
       cts/my_project_123/zones/zone1/instances/instance1` See [Resource names]
       (https://cloud.google.com/apis/design/resource_names#full_resource_name)
@@ -3472,6 +3719,25 @@ class Options(_messages.Message):
   outputResourceEdges = _messages.BooleanField(6)
 
 
+class OrgPolicyResult(_messages.Message):
+  r"""The organization policy result to the query.
+
+  Fields:
+    consolidatedPolicy: The consolidated organization policy for the analyzed
+      resource. The consolidated organization policy is computed by merging
+      and evaluating AnalyzeOrgPoliciesResponse.policy_bundle. The evaluation
+      will respect the organization policy [hierarchy
+      rules](https://cloud.google.com/resource-manager/docs/organization-
+      policy/understanding-hierarchy).
+    policyBundle: The ordered list of all organization policies from the scope
+      to the AnalyzeOrgPoliciesResponse.OrgPolicyResult.consolidated_policy.at
+      tached_resource. Default organization policies are also included.
+  """
+
+  consolidatedPolicy = _messages.MessageField('AnalyzerOrgPolicy', 1)
+  policyBundle = _messages.MessageField('AnalyzerOrgPolicy', 2, repeated=True)
+
+
 class OsInfo(_messages.Message):
   r"""Operating system information for the VM.
 
@@ -3669,8 +3935,10 @@ class QueryAssetsRequest(_messages.Message):
     pageSize: Optional. The maximum number of rows to return in the results.
       Responses are limited to 10 MB and 1000 rows. By default, the maximum
       row count is 1000. When the byte or row count limit is reached, the rest
-      of the query results will be paginated.
+      of the query results will be paginated. The field will be ignored when
+      [output_config] is specified.
     pageToken: Optional. A page token received from previous `QueryAssets`.
+      The field will be ignored when [output_config] is specified.
     statement: Optional. A SQL statement that's compatible with [BigQuery
       Standard SQL](http://cloud/bigquery/docs/reference/standard-
       sql/enabling-standard-sql).
@@ -3682,7 +3950,8 @@ class QueryAssetsRequest(_messages.Message):
       le.com/bigquery/docs/reference/rest/v2/jobs/query#queryrequest) The call
       is not guaranteed to wait for the specified timeout; it typically
       returns after around 200 seconds (200,000 milliseconds), even if the
-      query is not complete.
+      query is not complete. The field will be ignored when [output_config] is
+      specified.
   """
 
   jobReference = _messages.StringField(1)
@@ -3697,9 +3966,9 @@ class QueryAssetsResponse(_messages.Message):
 
   Fields:
     done: The query response, which can be either an `error` or a valid
-      `response`. If `done` == `false`, neither `error` nor `query_result` is
-      set. If `done` == `true`, exactly one of `error` or `query_result` is
-      set.
+      `response`. If `done` == `false` and the query result is being saved in
+      a output, the output_config field will be set. If `done` == `true`,
+      exactly one of `error`, `query_result` or `output_config` will be set.
     error: Error status.
     jobReference: Reference to a query job.
     queryResult: Result of the query.

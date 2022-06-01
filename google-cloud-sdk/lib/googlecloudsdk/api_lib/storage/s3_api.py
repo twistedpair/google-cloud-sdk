@@ -570,7 +570,7 @@ class S3Api(cloud_api.CloudApi):
     """See super class."""
     del serialization_data, source_resource, tracker_callback  # Unused.
 
-    if upload_strategy != cloud_api.UploadStrategy.SIMPLE:
+    if upload_strategy == cloud_api.UploadStrategy.RESUMABLE:
       raise command_errors.Error(
           'Invalid upload strategy: {}.'.format(upload_strategy.value))
 
@@ -582,24 +582,30 @@ class S3Api(cloud_api.CloudApi):
     md5_hash = getattr(request_config.resource_args, 'md5_hash', None)
     if md5_hash:
       # The upload_fileobj method can perform multipart uploads, so it cannot
-      # validate with user-provided MD5 hashes. Hence we use the put_object API
-      # method if MD5 validation is requested.
-      if request_config.resource_args.size > MAX_PUT_OBJECT_SIZE:
-        log.debug('The MD5 hash %s will be ignored', md5_hash)
-        log.warning(
-            'S3 does not support MD5 validation for the entire object if'
-            ' size > %d bytes. File size: %d', MAX_PUT_OBJECT_SIZE,
-            request_config.resource_args.size)
+      # validate with user-provided MD5 hashes. Streaming uploads must use the
+      # managed file transfer utility for retries in-flight.
+      if upload_strategy is cloud_api.UploadStrategy.STREAMING:
+        log.warning('S3 does not support MD5 validation for streaming uploads.')
 
-        # ContentMD5 might get populated for extra_args during request_config
-        # translation. Remove it since upload_fileobj
-        # does not accept ContentMD5.
-        extra_args.pop('ContentMD5')
-      else:
-        if request_config.resource_args.size is not None:
-          extra_args['ContentLength'] = request_config.resource_args.size
-        return self._upload_using_put_object(
-            source_stream, destination_resource, extra_args)
+      # Simple uploads can use the put_object API method if MD5 validation is
+      # requested.
+      elif upload_strategy is cloud_api.UploadStrategy.SIMPLE:
+        if request_config.resource_args.size > MAX_PUT_OBJECT_SIZE:
+          log.debug('The MD5 hash %s will be ignored', md5_hash)
+          log.warning(
+              'S3 does not support MD5 validation for the entire object if'
+              ' size > %d bytes. File size: %d', MAX_PUT_OBJECT_SIZE,
+              request_config.resource_args.size)
+        else:
+          if request_config.resource_args.size is not None:
+            extra_args['ContentLength'] = request_config.resource_args.size
+          return self._upload_using_put_object(source_stream,
+                                               destination_resource, extra_args)
+
+      # ContentMD5 might get populated for extra_args during request_config
+      # translation. Remove it since upload_fileobj
+      # does not accept ContentMD5.
+      extra_args.pop('ContentMD5')
 
     # We default to calling the upload_fileobj method provided by boto3 which
     # is a managed-transfer utility that can perform multipart uploads

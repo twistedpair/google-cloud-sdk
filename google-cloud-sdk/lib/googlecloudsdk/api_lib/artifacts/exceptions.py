@@ -31,3 +31,7 @@ class UnsupportedLocationError(exceptions.Error):
 
 class ArtifactRegistryError(exceptions.Error):
   """Generic Artifact Registry error."""
+
+
+class InvalidGoModuleError(exceptions.Error):
+  """Raised when the Go module source code cannot be packaged into a go.zip."""

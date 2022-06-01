@@ -4005,6 +4005,7 @@ KEY               | VALUE
 cpuManagerPolicy  | either 'static' or 'none'
 cpuCFSQuota       | true or false (enabled by default)
 cpuCFSQuotaPeriod | interval (e.g., '100ms')
+podPidsLimit      | integer (The value must be greater than or equal to 1024 and less than 4194304.)
 
 List of supported sysctls in 'linuxConfig'.
 

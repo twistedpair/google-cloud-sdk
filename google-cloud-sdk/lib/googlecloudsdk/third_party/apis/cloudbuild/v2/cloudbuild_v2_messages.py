@@ -2400,6 +2400,22 @@ class RepoSource(_messages.Message):
   tagName = _messages.StringField(8)
 
 
+class Resource(_messages.Message):
+  r"""Resource referenceable within a workflow.
+
+  Fields:
+    repo: Resource name of v2 GCB repo.
+    secret: Secret Manager Secret.
+    topic: Resource name of PubSub topic.
+    url: SCM Repo URL.
+  """
+
+  repo = _messages.StringField(1)
+  secret = _messages.MessageField('GoogleDevtoolsCloudbuildV2SecretManagerSecret', 2)
+  topic = _messages.StringField(3)
+  url = _messages.StringField(4)
+
+
 class ResourceRequirements(_messages.Message):
   r"""Compute resource requirements.
 
@@ -2647,6 +2663,17 @@ class SecretManagerSecret(_messages.Message):
 
   env = _messages.StringField(1)
   versionName = _messages.StringField(2)
+
+
+class SecretVolumeSource(_messages.Message):
+  r"""Secret Volume Source.
+
+  Fields:
+    secretName: Resource name of the SecretVersion. In format:
+      projects/*/secrets/*/versions/*
+  """
+
+  secretName = _messages.StringField(1)
 
 
 class Secrets(_messages.Message):
@@ -3489,6 +3516,7 @@ class Workflow(_messages.Message):
     AnnotationsValue: User annotations. See
       https://google.aip.dev/128#annotations
     LabelsValue: Map of key-value pairs of user-defined labels.
+    ResourcesValue: Resources referenceable within a workflow.
 
   Fields:
     annotations: User annotations. See https://google.aip.dev/128#annotations
@@ -3507,6 +3535,7 @@ class Workflow(_messages.Message):
     params: List of parameters.
     pipelineSpec: Fields from both the Workflow and the PipelineSpec will be
       used to form the full PipelineRun.
+    resources: Resources referenceable within a workflow.
     secrets: Pairs a secret environment variable with a SecretVersion in
       Secret Manager.
     serviceAccount: If omitted, the default Cloud Build Service Account is
@@ -3568,6 +3597,30 @@ class Workflow(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ResourcesValue(_messages.Message):
+    r"""Resources referenceable within a workflow.
+
+    Messages:
+      AdditionalProperty: An additional property for a ResourcesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ResourcesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ResourcesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A Resource attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('Resource', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   annotations = _messages.MessageField('AnnotationsValue', 1)
   bundle = _messages.StringField(2)
   createTime = _messages.StringField(3)
@@ -3578,11 +3631,12 @@ class Workflow(_messages.Message):
   options = _messages.MessageField('WorkflowOptions', 8)
   params = _messages.MessageField('ParamSpec', 9, repeated=True)
   pipelineSpec = _messages.MessageField('PipelineSpec', 10)
-  secrets = _messages.MessageField('GoogleDevtoolsCloudbuildV2SecretManagerSecret', 11, repeated=True)
-  serviceAccount = _messages.StringField(12)
-  uid = _messages.StringField(13)
-  updateTime = _messages.StringField(14)
-  workspaces = _messages.MessageField('WorkspaceBinding', 15, repeated=True)
+  resources = _messages.MessageField('ResourcesValue', 11)
+  secrets = _messages.MessageField('GoogleDevtoolsCloudbuildV2SecretManagerSecret', 12, repeated=True)
+  serviceAccount = _messages.StringField(13)
+  uid = _messages.StringField(14)
+  updateTime = _messages.StringField(15)
+  workspaces = _messages.MessageField('WorkspaceBinding', 16, repeated=True)
 
 
 class WorkflowOptions(_messages.Message):
@@ -3619,13 +3673,15 @@ class WorkspaceBinding(_messages.Message):
     emptyDir: EmptyDir represents a temporary directory that shares a Task's
       lifetime.
     name: Name of the workspace.
+    secret: Secret Volume Source.
     volumeClaimTemplate: Template for a claim that will be created in the same
       namespace.
   """
 
   emptyDir = _messages.MessageField('EmptyDir', 1)
   name = _messages.StringField(2)
-  volumeClaimTemplate = _messages.MessageField('PersistentVolumeClaim', 3)
+  secret = _messages.MessageField('SecretVolumeSource', 3)
+  volumeClaimTemplate = _messages.MessageField('PersistentVolumeClaim', 4)
 
 
 class WorkspaceDeclaration(_messages.Message):

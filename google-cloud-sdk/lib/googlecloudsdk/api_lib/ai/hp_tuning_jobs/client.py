@@ -114,8 +114,12 @@ class HpTuningJobsClient(object):
 
     job_spec.maxTrialCount = max_trial_count
     job_spec.parallelTrialCount = parallel_trial_count
-    job_spec.trialJobSpec.network = network
-    job_spec.trialJobSpec.serviceAccount = service_account
+
+    if network:
+      job_spec.trialJobSpec.network = network
+
+    if service_account:
+      job_spec.trialJobSpec.serviceAccount = service_account
 
     if enable_web_access:
       job_spec.trialJobSpec.enableWebAccess = enable_web_access

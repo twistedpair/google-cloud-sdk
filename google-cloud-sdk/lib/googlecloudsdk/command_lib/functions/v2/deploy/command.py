@@ -26,6 +26,7 @@ import string
 from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import http_wrapper
 from apitools.base.py import transfer
+from googlecloudsdk.api_lib.functions import secrets as secrets_util
 from googlecloudsdk.api_lib.functions.v1 import util as api_util_v1
 from googlecloudsdk.api_lib.functions.v2 import client as api_client_v2
 from googlecloudsdk.api_lib.functions.v2 import exceptions
@@ -34,13 +35,17 @@ from googlecloudsdk.api_lib.run import global_methods
 from googlecloudsdk.api_lib.storage import storage_api
 from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
+from googlecloudsdk.calliope.arg_parsers import ArgumentTypeError
 from googlecloudsdk.command_lib.functions import flags
 from googlecloudsdk.command_lib.functions import labels_util
+from googlecloudsdk.command_lib.functions import secrets_config
+from googlecloudsdk.command_lib.projects import util as projects_util
 from googlecloudsdk.command_lib.run import connection_context
 from googlecloudsdk.command_lib.run import serverless_operations
 from googlecloudsdk.command_lib.util import gcloudignore
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.args import map_util
+from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
@@ -49,7 +54,6 @@ from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.util import archive
 from googlecloudsdk.core.util import files as file_utils
-
 import six
 
 _SIGNED_URL_UPLOAD_ERROR_MESSSAGE = (
@@ -94,15 +98,6 @@ _LEGACY_V1_FLAGS = [
     ('security_level', '--security-level'),
 ]
 _LEGACY_V1_FLAG_ERROR = '`%s` is only supported in Cloud Functions V1.'
-
-_UNSUPPORTED_V2_FLAGS = [
-    # TODO(b/192480007): Add support for secrets.
-    ('set_secrets', '--set-secrets'),
-    ('update_secrets', '--update-secrets'),
-    ('remove_secrets', '--remove-secrets'),
-    ('clear_secrets', '--clear-secrets'),
-]
-_UNSUPPORTED_V2_FLAG_ERROR = '`%s` is not yet supported in Cloud Functions V2.'
 
 _CLOUD_RUN_SERVICE_COLLECTION_K8S = 'run.namespaces.services'
 _CLOUD_RUN_SERVICE_COLLECTION_ONE_PLATFORM = 'run.projects.locations.services'
@@ -356,6 +351,27 @@ def _GetServiceConfig(args, messages, existing_function):
   env_var_flags = map_util.GetMapFlagsFromArgs('env-vars', args)
   env_vars = map_util.ApplyMapFlags(old_env_vars, **env_var_flags)
 
+  old_secrets = {}
+  new_secrets = {}
+  if existing_function and existing_function.serviceConfig:
+    old_secrets = secrets_util.GetSecretsAsDict(
+        existing_function.serviceConfig.secretEnvironmentVariables,
+        existing_function.serviceConfig.secretVolumes)
+
+  if secrets_config.IsArgsSpecified(args):
+    try:
+      project = properties.VALUES.core.project.GetOrFail()
+      new_secrets = secrets_config.ApplyFlags(
+          old_secrets, args, project, projects_util.GetProjectNumber(project))
+    except ArgumentTypeError as error:
+      core_exceptions.reraise(exceptions.FunctionsError(error))
+  else:
+    new_secrets = old_secrets
+
+  old_secret_env_vars, old_secret_volumes = secrets_config.SplitSecretsDict(
+      old_secrets)
+  secret_env_vars, secret_volumes = secrets_config.SplitSecretsDict(new_secrets)
+
   vpc_connector, vpc_egress_settings, vpc_updated_fields = (
       _GetVpcAndVpcEgressSettings(args, messages, existing_function))
 
@@ -378,6 +394,10 @@ def _GetServiceConfig(args, messages, existing_function):
     updated_fields.add('service_config.timeout_seconds')
   if env_vars != old_env_vars:
     updated_fields.add('service_config.environment_variables')
+  if secret_env_vars != old_secret_env_vars:
+    updated_fields.add('service_config.secret_environment_variables')
+  if secret_volumes != old_secret_volumes:
+    updated_fields.add('service_config.secret_volumes')
 
   service_updated_fields = frozenset.union(vpc_updated_fields,
                                            ingress_updated_fields,
@@ -392,14 +412,19 @@ def _GetServiceConfig(args, messages, existing_function):
       ingressSettings=ingress_settings,
       vpcConnector=vpc_connector,
       vpcConnectorEgressSettings=vpc_egress_settings,
-      allTrafficOnLatestRevision=(args.serve_all_traffic_latest_revision
-                                  or None),
+      allTrafficOnLatestRevision=(args.serve_all_traffic_latest_revision or
+                                  None),
       environmentVariables=messages.ServiceConfig.EnvironmentVariablesValue(
           additionalProperties=[
               messages.ServiceConfig.EnvironmentVariablesValue
               .AdditionalProperty(key=key, value=value)
               for key, value in sorted(env_vars.items())
-          ])), service_updated_fields
+          ]),
+      secretEnvironmentVariables=secrets_util.SecretEnvVarsToMessages(
+          secret_env_vars, messages),
+      secretVolumes=secrets_util.SecretVolumesToMessages(
+          secret_volumes, messages,
+          normalize_for_v2=True)), service_updated_fields
 
 
 def _ParseMemoryStrToK8sMemory(memory):
@@ -762,12 +787,6 @@ def _ValidateLegacyV1Flags(args):
       raise exceptions.FunctionsError(_LEGACY_V1_FLAG_ERROR % flag_name)
 
 
-def _ValidateUnsupportedV2Flags(args):
-  for flag_variable, flag_name in _UNSUPPORTED_V2_FLAGS:
-    if args.IsSpecified(flag_variable):
-      raise exceptions.FunctionsError(_UNSUPPORTED_V2_FLAG_ERROR % flag_name)
-
-
 def _GetLabels(args, messages, existing_function):
   """Constructs labels from command-line arguments.
 
@@ -943,7 +962,6 @@ def Run(args, release_track):
   function_ref = args.CONCEPTS.name.Parse()
 
   _ValidateLegacyV1Flags(args)
-  _ValidateUnsupportedV2Flags(args)
 
   existing_function = _GetFunction(client, messages, function_ref)
 

@@ -36,6 +36,7 @@ from apitools.base.py import transfer as apitools_transfer
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.api_lib.storage import errors as cloud_errors
 from googlecloudsdk.api_lib.storage import gcs_download
+from googlecloudsdk.api_lib.storage import gcs_error_util
 from googlecloudsdk.api_lib.storage import gcs_metadata_util
 from googlecloudsdk.api_lib.storage import gcs_upload
 from googlecloudsdk.api_lib.storage import patch_gcs_messages
@@ -57,6 +58,8 @@ from googlecloudsdk.core.credentials import transports
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import scaled_integer
 
+import six
+
 
 # TODO(b/171296237): Remove this when fixes are submitted in apitools.
 patch_gcs_messages.patch()
@@ -70,26 +73,10 @@ MINIMUM_PROGRESS_CALLBACK_THRESHOLD = 512 * KB
 # https://cloud.google.com/storage/docs/json_api/v1/objects/compose
 MAX_OBJECTS_PER_COMPOSE_CALL = 32
 
-_ERROR_TRANSLATION = [
-    (apitools_exceptions.HttpNotFoundError, cloud_errors.GcsNotFoundError),
-    (apitools_exceptions.HttpError, cloud_errors.GcsApiError),
-]
-
-
-def _catch_http_error_raise_gcs_api_error(format_str=None):
-  """Decorator catches HttpError and returns GcsApiError with custom message.
-
-  Args:
-    format_str (str): A googlecloudsdk.api_lib.util.exceptions.HttpErrorPayload
-      format string. Note that any properties that are accessed here are on the
-      HttpErrorPayload object, not the object returned from the server.
-
-  Returns:
-    A decorator that catches apitools.HttpError and returns GcsApiError with a
-      customizable error message.
-  """
-  return cloud_errors.catch_error_raise_cloud_api_error(
-      _ERROR_TRANSLATION, format_str=format_str)
+_NOTIFICATION_PAYLOAD_FORMAT_KEY_TO_API_CONSTANT = {
+    cloud_api.NotificationPayloadFormat.JSON: 'JSON_API_V1',
+    cloud_api.NotificationPayloadFormat.NONE: 'NONE',
+}
 
 
 def get_download_serialization_data(object_resource, progress):
@@ -268,7 +255,7 @@ class GcsApi(cloud_api.CloudApi):
       return projection_enum.full
     return projection_enum.noAcl
 
-  @_catch_http_error_raise_gcs_api_error()
+  @gcs_error_util.catch_http_error_raise_gcs_api_error()
   def create_bucket(self,
                     bucket_resource,
                     request_config,
@@ -291,7 +278,7 @@ class GcsApi(cloud_api.CloudApi):
     return gcs_metadata_util.get_bucket_resource_from_metadata(
         created_bucket_metadata)
 
-  @_catch_http_error_raise_gcs_api_error()
+  @gcs_error_util.catch_http_error_raise_gcs_api_error()
   def delete_bucket(self, bucket_name, request_config):
     """See super class."""
     request = self.messages.StorageBucketsDeleteRequest(
@@ -301,7 +288,7 @@ class GcsApi(cloud_api.CloudApi):
     # https://cloud.google.com/storage/docs/json_api/v1/buckets/delete
     self.client.buckets.Delete(request)
 
-  @_catch_http_error_raise_gcs_api_error()
+  @gcs_error_util.catch_http_error_raise_gcs_api_error()
   def get_bucket(self, bucket_name, fields_scope=cloud_api.FieldsScope.NO_ACL):
     """See super class."""
     projection = self._get_projection(fields_scope,
@@ -354,7 +341,7 @@ class GcsApi(cloud_api.CloudApi):
     update_request_metadata.labels = self.messages.Bucket.LabelsValue(
         additionalProperties=new_labels)
 
-  @_catch_http_error_raise_gcs_api_error()
+  @gcs_error_util.catch_http_error_raise_gcs_api_error()
   def patch_bucket(self,
                    bucket_resource,
                    request_config,
@@ -429,7 +416,7 @@ class GcsApi(cloud_api.CloudApi):
         yield gcs_metadata_util.get_bucket_resource_from_metadata(bucket)
     except apitools_exceptions.HttpError as e:
       core_exceptions.reraise(
-          cloud_errors.translate_error(e, _ERROR_TRANSLATION))
+          cloud_errors.translate_error(e, gcs_error_util.ERROR_TRANSLATION))
 
   def list_objects(self,
                    bucket_name,
@@ -462,7 +449,7 @@ class GcsApi(cloud_api.CloudApi):
             apitools_request, global_params=global_params)
       except apitools_exceptions.HttpError as e:
         core_exceptions.reraise(
-            cloud_errors.translate_error(e, _ERROR_TRANSLATION))
+            cloud_errors.translate_error(e, gcs_error_util.ERROR_TRANSLATION))
 
       # Yield objects.
       # TODO(b/160238394) Decrypt metadata fields if necessary.
@@ -484,7 +471,7 @@ class GcsApi(cloud_api.CloudApi):
       if not object_list.nextPageToken:
         break
 
-  @_catch_http_error_raise_gcs_api_error()
+  @gcs_error_util.catch_http_error_raise_gcs_api_error()
   def delete_object(self, object_url, request_config):
     """See super class."""
     # S3 requires a string, but GCS uses an int for generation.
@@ -503,7 +490,7 @@ class GcsApi(cloud_api.CloudApi):
     # https://cloud.google.com/storage/docs/json_api/v1/objects/delete
     self.client.objects.Delete(request)
 
-  @_catch_http_error_raise_gcs_api_error()
+  @gcs_error_util.catch_http_error_raise_gcs_api_error()
   def get_object_metadata(self,
                           bucket_name,
                           object_name,
@@ -530,7 +517,7 @@ class GcsApi(cloud_api.CloudApi):
               projection=projection))
     return gcs_metadata_util.get_object_resource_from_metadata(object_metadata)
 
-  @_catch_http_error_raise_gcs_api_error()
+  @gcs_error_util.catch_http_error_raise_gcs_api_error()
   def patch_object_metadata(self,
                             bucket_name,
                             object_name,
@@ -572,7 +559,7 @@ class GcsApi(cloud_api.CloudApi):
     updated_metadata = self.client.objects.Patch(request)
     return gcs_metadata_util.get_object_resource_from_metadata(updated_metadata)
 
-  @_catch_http_error_raise_gcs_api_error()
+  @gcs_error_util.catch_http_error_raise_gcs_api_error()
   def copy_object(self,
                   source_resource,
                   destination_resource,
@@ -672,7 +659,7 @@ class GcsApi(cloud_api.CloudApi):
     return gcs_metadata_util.get_object_resource_from_metadata(
         rewrite_response.resource)
 
-  @_catch_http_error_raise_gcs_api_error()
+  @gcs_error_util.catch_http_error_raise_gcs_api_error()
   def download_object(self,
                       cloud_resource,
                       download_stream,
@@ -754,7 +741,7 @@ class GcsApi(cloud_api.CloudApi):
         posix_attributes=posix_attributes_to_set,
         server_reported_encoding=server_reported_encoding)
 
-  @_catch_http_error_raise_gcs_api_error()
+  @gcs_error_util.catch_http_error_raise_gcs_api_error()
   def upload_object(self,
                     source_stream,
                     destination_resource,
@@ -791,9 +778,14 @@ class GcsApi(cloud_api.CloudApi):
                                           should_gzip_in_flight, request_config,
                                           source_resource, serialization_data,
                                           tracker_callback)
+    elif upload_strategy == cloud_api.UploadStrategy.STREAMING:
+      upload = gcs_upload.StreamingUpload(self, self._upload_http_client,
+                                          source_stream, destination_resource,
+                                          should_gzip_in_flight, request_config,
+                                          source_resource)
     else:
-      raise command_errors.Error(
-          'Invalid upload strategy: {}.'.format(upload_strategy.value))
+      raise command_errors.Error('Invalid upload strategy: {}.'.format(
+          upload_strategy.value))
 
     encryption_key = getattr(request_config.resource_args, 'encryption_key',
                              None)
@@ -813,7 +805,7 @@ class GcsApi(cloud_api.CloudApi):
 
     return gcs_metadata_util.get_object_resource_from_metadata(metadata)
 
-  @_catch_http_error_raise_gcs_api_error()
+  @gcs_error_util.catch_http_error_raise_gcs_api_error()
   def compose_objects(self,
                       source_resources,
                       destination_resource,
@@ -878,9 +870,94 @@ class GcsApi(cloud_api.CloudApi):
       return gcs_metadata_util.get_object_resource_from_metadata(
           self.client.objects.Compose(compose_request))
 
-  @_catch_http_error_raise_gcs_api_error()
-  def get_service_agent(self):
+  @gcs_error_util.catch_http_error_raise_gcs_api_error()
+  def get_service_agent(self, project_id=None, project_number=None):
     """See CloudApi class for doc strings."""
+    if project_id:
+      project_identifier = project_id
+    elif project_number:
+      project_identifier = six.text_type(project_number)
+    else:
+      project_identifier = properties.VALUES.core.project.GetOrFail()
     return self.client.projects_serviceAccount.Get(
         self.messages.StorageProjectsServiceAccountGetRequest(
-            projectId=properties.VALUES.core.project.GetOrFail())).email_address
+            projectId=project_identifier)).email_address
+
+  @gcs_error_util.catch_http_error_raise_gcs_api_error()
+  def create_notification_configuration(
+      self,
+      url,
+      pubsub_topic,
+      custom_attributes=None,
+      event_types=None,
+      object_name_prefix=None,
+      payload_format=cloud_api.NotificationPayloadFormat.JSON):
+    """See CloudApi class for doc strings."""
+    if not url.is_bucket():
+      raise ValueError(
+          'Create notification configuration endpoint accepts only bucket URLs.'
+      )
+    notification_configuration = self.messages.Notification(
+        topic=pubsub_topic,
+        payload_format=_NOTIFICATION_PAYLOAD_FORMAT_KEY_TO_API_CONSTANT[
+            payload_format])
+    if custom_attributes:
+      additional_properties = []
+      for key, value in custom_attributes.items():
+        additional_properties.append((
+            self.messages.Notification.CustomAttributesValue.AdditionalProperty(
+                key=key, value=value)))
+      notification_configuration.custom_attributes = (
+          self.messages.Notification.CustomAttributesValue(
+              additionalProperties=additional_properties))
+    if event_types:
+      notification_configuration.event_types = [
+          event_type.value for event_type in event_types
+      ]
+    if object_name_prefix:
+      notification_configuration.object_name_prefix = object_name_prefix
+
+    return self.client.notifications.Insert(
+        self.messages.StorageNotificationsInsertRequest(
+            bucket=url.bucket_name,
+            notification=notification_configuration,
+            userProject=properties.VALUES.core.project.GetOrFail()))
+
+  @gcs_error_util.catch_http_error_raise_gcs_api_error()
+  def get_notification_configuration(self, url, notification_id):
+    """See CloudApi class for doc strings."""
+    if not url.is_bucket():
+      raise ValueError(
+          'Get notification configuration endpoint accepts only bucket URLs.')
+    return self.client.notifications.Get(
+        self.messages.StorageNotificationsGetRequest(
+            bucket=url.bucket_name,
+            notification=notification_id,
+            userProject=properties.VALUES.core.project.GetOrFail()))
+
+  @gcs_error_util.catch_http_error_raise_gcs_api_error()
+  def delete_notification_configuration(self, url, notification_id):
+    """See CloudApi class for doc strings."""
+    if not url.is_bucket():
+      raise ValueError(
+          'Delete notification configuration endpoint accepts only bucket URLs.'
+      )
+    self.client.notifications.Delete(
+        self.messages.StorageNotificationsDeleteRequest(
+            bucket=url.bucket_name,
+            notification=notification_id,
+            userProject=properties.VALUES.core.project.GetOrFail()))
+
+  @gcs_error_util.catch_http_error_raise_gcs_api_error()
+  def list_notification_configurations(self, url):
+    """See CloudApi class for function doc strings."""
+    if not url.is_bucket():
+      raise ValueError(
+          'List notification configurations endpoint accepts only bucket URLs.')
+
+    response = self.client.notifications.List(
+        self.messages.StorageNotificationsListRequest(
+            bucket=url.bucket_name,
+            userProject=properties.VALUES.core.project.GetOrFail()))
+    for notification_configuration in response.items:
+      yield notification_configuration

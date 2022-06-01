@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import collections
 import io
 import re
 
@@ -36,6 +37,9 @@ _V1_API_VERSION = 'v1'
 _GLOBAL_REGION = 'global'
 _REGIONAL_IAM_REGEX = re.compile(
     "PERMISSION_DENIED: Permission (.+) denied on 'projects/(.+?)/.*")
+
+IpRangeReservation = collections.namedtuple(
+    'IpRangeReservation', ['start_address', 'end_address', 'note'])
 
 
 def _ParseError(error):
@@ -203,14 +207,20 @@ class BmsClient(object):
         'instances',
         limit=limit)
 
-  def UpdateInstance(self, instance_resource, labels):
+  def UpdateInstance(self, instance_resource, labels, os_image,
+                     enable_hyperthreading):
     """Update an existing instance resource."""
     updated_fields = []
     if labels is not None:
       updated_fields.append('labels')
+    if os_image is not None:
+      updated_fields.append('os_image')
+    if enable_hyperthreading is not None:
+      updated_fields.append('hyperthreading_enabled')
 
     instance_msg = self.messages.Instance(
-        name=instance_resource.RelativeName(), labels=labels)
+        name=instance_resource.RelativeName(), labels=labels, osImage=os_image,
+        hyperthreadingEnabled=enable_hyperthreading)
 
     request = self.messages.BaremetalsolutionProjectsLocationsInstancesPatchRequest(
         name=instance_resource.RelativeName(),
@@ -392,14 +402,24 @@ class BmsClient(object):
         name=resource.RelativeName())
     return self.networks_service.Get(request)
 
-  def UpdateNetwork(self, network_resource, labels):
+  def UpdateNetwork(self, network_resource, labels, ip_reservations):
     """Update an existing network resource."""
     updated_fields = []
+    ip_reservations_messages = []
     if labels is not None:
       updated_fields.append('labels')
+    if ip_reservations is not None:
+      updated_fields.append('reservations')
+      for ip_reservation in ip_reservations:
+        ip_reservations_messages.append(self.messages.NetworkAddressReservation(
+            startAddress=ip_reservation.start_address,
+            endAddress=ip_reservation.end_address,
+            note=ip_reservation.note,
+            ))
 
     network_msg = self.messages.Network(
-        name=network_resource.RelativeName(), labels=labels)
+        name=network_resource.RelativeName(), labels=labels,
+        reservations=ip_reservations_messages)
 
     request = self.messages.BaremetalsolutionProjectsLocationsNetworksPatchRequest(
         name=network_resource.RelativeName(),
@@ -413,6 +433,12 @@ class BmsClient(object):
 
   def IsPrivateNetwork(self, network):
     return network.type == self.messages.Network.TypeValueValuesEnum.PRIVATE
+
+  def IsClientLogicalNetworkInterface(self, logical_network_interface):
+    return logical_network_interface.networkType == self.messages.LogicalNetworkInterface.NetworkTypeValueValuesEnum.CLIENT
+
+  def IsPrivateLogicalNetworkInterface(self, logical_network_interface):
+    return logical_network_interface.networkType == self.messages.LogicalNetworkInterface.NetworkTypeValueValuesEnum.PRIVATE
 
   def ListLUNsForVolume(self, volume_resource, limit=None,
                         page_size=None):

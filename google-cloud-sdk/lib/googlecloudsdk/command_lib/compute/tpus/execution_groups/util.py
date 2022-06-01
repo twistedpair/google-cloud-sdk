@@ -645,7 +645,8 @@ class SSH(object):
         public_key,
         None,
         self.release_track,
-        username_requested=False)
+        username_requested=False,
+        messages=self.client.messages)
     user = oslogin_state.user
 
     remote = ssh.Remote(external_nat, user)

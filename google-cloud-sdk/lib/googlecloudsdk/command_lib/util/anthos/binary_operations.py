@@ -97,8 +97,9 @@ class ExecutionError(BinaryOperationError):
   """Raised if there is an error executing the executable."""
 
   def __init__(self, command, error):
-    super(ExecutionError, self).__init__(
-        'Error executing command on [{}]: [{}]'.format(command, error))
+    super(ExecutionError,
+          self).__init__('Error executing command on [{}]: [{}]'.format(
+              command, error))
 
 
 class InvalidWorkingDirectoryError(BinaryOperationError):
@@ -155,6 +156,7 @@ def DefaultStreamOutHandler(result_holder, capture_output=False):
       if not result_holder.stdout:
         result_holder.stdout = []
       result_holder.stdout.append(line)
+
   return HandleStdOut
 
 
@@ -168,6 +170,7 @@ def DefaultStreamErrHandler(result_holder, capture_output=False):
       if not result_holder.stderr:
         result_holder.stderr = []
       result_holder.stderr.append(line)
+
   return HandleStdErr
 
 
@@ -204,7 +207,6 @@ def _LogStructuredStdOut(line):
   Args:
     line: string, line of output read from stdout.
 
-
   Returns:
     Tuple: (str, object): Tuple of parsed OutputMessage body and
        processed resources or None.
@@ -228,8 +230,10 @@ def _LogStructuredStdOut(line):
   return (msg.body, resources)
 
 
-def _CaptureStdOut(result_holder, output_message=None,
-                   resource_output=None, raw_output=None):
+def _CaptureStdOut(result_holder,
+                   output_message=None,
+                   resource_output=None,
+                   raw_output=None):
   """Update OperationResult from OutputMessage or plain text."""
   if not result_holder.stdout:
     result_holder.stdout = []
@@ -254,9 +258,8 @@ def DefaultStreamStructuredOutHandler(result_holder,
       try:
         msg, resources = _LogStructuredStdOut(msg_rec)
         if capture_output:
-          _CaptureStdOut(result_holder,
-                         output_message=msg,
-                         resource_output=resources)
+          _CaptureStdOut(
+              result_holder, output_message=msg, resource_output=resources)
       except StructuredOutputError as sme:
         if warn_if_not_stuctured:
           log.warning(_STRUCTURED_TEXT_EXPECTED_ERROR.format(sme))
@@ -281,9 +284,9 @@ def ProcessStructuredOut(result_holder):
     StructuredOutputError if result_holder can not be processed.
   """
   if result_holder.stdout:
-    all_msg = (result_holder.stdout if
-               yaml.list_like(result_holder.stdout) else
-               result_holder.stdout.strip().split('\n'))
+    all_msg = (
+        result_holder.stdout if yaml.list_like(result_holder.stdout) else
+        result_holder.stdout.strip().split('\n'))
     msgs = []
     resources = []
     for msg_rec in all_msg:
@@ -330,7 +333,14 @@ def DefaultStreamStructuredErrHandler(result_holder,
       try:
         msg = ReadStructuredOutput(line)
         if msg.IsError():
-          log.error(msg.error_details.Format())
+          if msg.level == 'info':
+            log.info(msg.error_details.Format())
+          elif msg.level == 'error':
+            log.error(msg.error_details.Format())
+          elif msg.level == 'warning':
+            log.warning(msg.error_details.Format())
+          elif msg.level == 'debug':
+            log.debug(msg.error_details.Format())
         else:
           log.status.Print(msg.body)
         if capture_output:
@@ -353,6 +363,7 @@ def ProcessStructuredErr(result_holder):
 
   Args:
     result_holder:  OperationResult
+
   Returns:
     ([status messages], [errors]), Tuple of status messages and errors.
   Raises:
@@ -360,8 +371,7 @@ def ProcessStructuredErr(result_holder):
   """
   if result_holder.stderr:
     all_msg = (
-        result_holder.stderr
-        if yaml.list_like(result_holder.stderr) else
+        result_holder.stderr if yaml.list_like(result_holder.stderr) else
         result_holder.stderr.strip().split('\n'))
     messages = []
     errors = []
@@ -422,10 +432,10 @@ def CheckForInstalledBinary(binary_name,
   Args:
     binary_name: str, name of binary to search for.
     check_hidden: bool, whether to check hidden components for the binary.
-    custom_message: str, custom message to used by
-      MissingExecutableException if thrown.
-    install_if_missing: bool, if true will prompt user to install binary if
-      not found.
+    custom_message: str, custom message to used by MissingExecutableException if
+      thrown.
+    install_if_missing: bool, if true will prompt user to install binary if not
+      found.
 
   Returns:
     Path to executable if found on path or installed component.
@@ -503,11 +513,9 @@ class BinaryBackedOperation(six.with_metaclass(abc.ABCMeta, object)):
     def __eq__(self, other):
       if isinstance(other, BinaryBackedOperation.OperationResult):
         return (self.executed_command == other.executed_command and
-                self.stdout == other.stdout and
-                self.stderr == other.stderr and
+                self.stdout == other.stdout and self.stderr == other.stderr and
                 self.exit_code == other.exit_code and
-                self.failed == other.failed and
-                self.context == other.context)
+                self.failed == other.failed and self.context == other.context)
       return False
 
     def __repr__(self):
@@ -707,10 +715,10 @@ class StreamingBinaryBackedOperation(
     result_holder = self.OperationResult(
         command_str=cmd, execution_context=op_context)
 
-    std_out_handler = self.std_out_handler(result_holder=result_holder,
-                                           capture_output=self.capture_output)
-    std_err_handler = self.std_err_handler(result_holder=result_holder,
-                                           capture_output=self.capture_output)
+    std_out_handler = self.std_out_handler(
+        result_holder=result_holder, capture_output=self.capture_output)
+    std_err_handler = self.std_err_handler(
+        result_holder=result_holder, capture_output=self.capture_output)
     short_cmd_name = os.path.basename(cmd[0])  # useful for error messages
 
     try:

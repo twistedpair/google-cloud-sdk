@@ -1328,3 +1328,20 @@ def AddActiveDirectoryDomain(parser):
       'Managed Service for Microsoft Active Directory domain this instance is '
       'joined to. Only available for SQL Server instances.')
   parser.add_argument('--active-directory-domain', help=help_text)
+
+
+def AddDeletionProtection(parser):
+  """Adds the '--deletion-protection' flag to the parser for instances patch action.
+
+  Args:
+    parser: The current argparse parser to add this to.
+  """
+  help_text = (
+      'Enable deletion protection on a Cloud SQL instance. Use '
+      '--deletion-protection to enable deletion protection on an instance and '
+      '--no-deletion-protection to disable it.')
+  parser.add_argument(
+      '--deletion-protection',
+      action=arg_parsers.StoreTrueFalseAction,
+      hidden=True,
+      help=help_text)

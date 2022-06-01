@@ -228,3 +228,13 @@ def AddWorkloadResourceArgToParser(parser, verb):
       resource_args.GetWorkloadResourceSpec(),
       ('The Assured Workloads environment resource to {}.'.format(verb)),
       required=True).AddToParser(parser)
+
+
+def AddListViolationsFlags(parser):
+  """Method to add list violations flags."""
+  AddListWorkloadsFlags(parser)
+  parser.add_argument(
+      '--workload',
+      required=True,
+      help=('The parent workload of the Assured Workloads violations, '
+            'provided as workload ID.'))

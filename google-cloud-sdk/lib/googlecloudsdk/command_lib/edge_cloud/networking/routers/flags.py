@@ -66,6 +66,13 @@ def AddInterfaceArgs(parser, for_update=False):
       help='The subnet mask for the link-local IP range of the interface. '
       'The interface IP address and BGP peer IP address must be selected from '
       'the subnet defined by this link-local range.')
+  loopback_interface_group = interface_group.add_argument_group(
+      help='The argument group for adding loopback interfaces to edge router.')
+  loopback_interface_group.add_argument(
+      '--loopback-ip-addresses',
+      type=arg_parsers.ArgList(),
+      metavar='LOOPBACK_IP_ADDRESSES',
+      help='The list of ip ranges for the loopback interface.')
 
 
 def AddBgpPeerArgs(parser, for_update=False):
@@ -94,4 +101,3 @@ def AddBgpPeerArgs(parser, for_update=False):
       '--peer-ipv4-range',
       required=not for_update,
       help='The link-local address range of the peer router.')
-

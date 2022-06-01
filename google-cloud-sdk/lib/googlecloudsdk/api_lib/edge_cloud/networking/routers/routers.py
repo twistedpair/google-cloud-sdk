@@ -45,14 +45,6 @@ class RoutersClient(object):
     replacement = encoding.CopyProtoMessage(existing)
     new_interface = self._messages.Interface(name=args.interface_name)
 
-    if args.interconnect_attachment is None and args.subnetwork is None:
-      raise parser_errors.ArgumentException(
-          'One of Subnet and Interconnect attachment must be set')
-
-    if args.interconnect_attachment is not None and args.subnetwork is not None:
-      raise parser_errors.ArgumentException(
-          'Subnet and Interconnect attachment cannot coexist')
-
     if args.interconnect_attachment is not None:
       attachment_ref = self._resource_parser.Create(
           'edgenetwork.projects.locations.zones.interconnectAttachments',
@@ -77,6 +69,9 @@ class RoutersClient(object):
           locationsId=router_ref.locationsId,
           zonesId=router_ref.zonesId)
       new_interface.subnetwork = subnet_ref.RelativeName()
+
+    if args.loopback_ip_addresses is not None:
+      new_interface.loopbackIpAddresses = args.loopback_ip_addresses
 
     replacement.interface.append(new_interface)
     return replacement

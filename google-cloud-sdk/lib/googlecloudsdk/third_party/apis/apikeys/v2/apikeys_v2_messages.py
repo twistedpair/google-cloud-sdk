@@ -34,20 +34,6 @@ class ApikeysOperationsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
-class ApikeysProjectsLocationsKeysCloneRequest(_messages.Message):
-  r"""A ApikeysProjectsLocationsKeysCloneRequest object.
-
-  Fields:
-    name: Required. The resource name of the API key to be cloned in the same
-      project.
-    v2CloneKeyRequest: A V2CloneKeyRequest resource to be passed as the
-      request body.
-  """
-
-  name = _messages.StringField(1, required=True)
-  v2CloneKeyRequest = _messages.MessageField('V2CloneKeyRequest', 2)
-
-
 class ApikeysProjectsLocationsKeysCreateRequest(_messages.Message):
   r"""A ApikeysProjectsLocationsKeysCreateRequest object.
 
@@ -104,23 +90,18 @@ class ApikeysProjectsLocationsKeysListRequest(_messages.Message):
   r"""A ApikeysProjectsLocationsKeysListRequest object.
 
   Fields:
-    filter: Optional. Deprecated: Use `show_deleted` instead. Only list keys
-      that conform to the specified filter. The allowed filter strings are
-      `state:ACTIVE` and `state:DELETED`. By default, ListKeys returns only
-      active keys.
     pageSize: Optional. Specifies the maximum number of results to be returned
       at a time.
     pageToken: Optional. Requests a specific page of results.
     parent: Required. Lists all API keys associated with this project.
-    showDeleted: Optional. Indicate that keys are marked as deleted within 30
-      days should also be returned. Normally only active keys are returned.
+    showDeleted: Optional. Indicate that keys deleted in the past 30 days
+      should also be returned.
   """
 
-  filter = _messages.StringField(1)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
-  parent = _messages.StringField(4, required=True)
-  showDeleted = _messages.BooleanField(5)
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  showDeleted = _messages.BooleanField(4)
 
 
 class ApikeysProjectsLocationsKeysPatchRequest(_messages.Message):
@@ -134,11 +115,11 @@ class ApikeysProjectsLocationsKeysPatchRequest(_messages.Message):
       `global`.
     updateMask: The field mask specifies which fields to be updated as part of
       this request. All other fields are ignored. Mutable fields are:
-      `display_name` and `restrictions`. If an update mask is not provided,
-      the service treats it as an implied mask equivalent to all allowed
-      fields that are set on the wire. If the field mask has a special value
-      "*", the service treats it equivalent to replace all allowed mutable
-      fields.
+      `display_name`,`restrictions` and `annotations`. If an update mask is
+      not provided, the service treats it as an implied mask equivalent to all
+      allowed fields that are set on the wire. If the field mask has a special
+      value "*", the service treats it equivalent to replace all allowed
+      mutable fields.
     v2Key: A V2Key resource to be passed as the request body.
   """
 
@@ -437,21 +418,6 @@ class V2BrowserKeyRestrictions(_messages.Message):
   """
 
   allowedReferrers = _messages.StringField(1, repeated=True)
-
-
-class V2CloneKeyRequest(_messages.Message):
-  r"""Request message for `CloneKey` method.
-
-  Fields:
-    keyId: User specified key id (optional). If specified, it will become the
-      final component of the key resource name. The id must be unique within
-      the project, must conform with RFC-1034, is restricted to lower-cased
-      letters, and has a maximum length of 63 characters. In another word, the
-      id must match the regular expression: `[a-z]([a-z0-9-]{0,61}[a-z0-9])?`.
-      The id must NOT be a UUID-like string.
-  """
-
-  keyId = _messages.StringField(1)
 
 
 class V2GetKeyStringResponse(_messages.Message):

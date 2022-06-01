@@ -27,7 +27,7 @@ def ParseSingleRule(rule):
   """Parses GC rules from a rule string.
 
   Args:
-    rule: A string representing a GC rule, e.g. 'maxage=10d'
+    rule: A string representing a GC rule, e.g. `maxage=10d`
 
   Returns:
     A GcRule object.
@@ -42,9 +42,8 @@ def ParseSingleRule(rule):
         'Invalid union or intersection rule: {0}'.format(rule))
 
   if rule_parts[0] == 'maxage':
-    # Make sure the input is a valid duration
-    unused_duration = times.ParseDuration(rule_parts[1])
-    return util.GetAdminMessages().GcRule(maxAge=rule_parts[1])
+    return util.GetAdminMessages().GcRule(
+        maxAge=ConvertDurationToSeconds(rule_parts[1]))
   elif rule_parts[0] == 'maxversions':
     return util.GetAdminMessages().GcRule(maxNumVersions=int(rule_parts[1]))
   else:
@@ -83,7 +82,7 @@ def ParseExpr(expr):
 
   Args:
     expr: A string express contains family name and optional GC rules in the
-    format of 'family_name[:gc_rule]', such as 'my_family:maxage=10d'.
+    format of `family_name[:gc_rule]`, such as `my_family:maxage=10d`.
 
   Returns:
     A family name and a GcRule object defined in the Bigtable admin API.
@@ -135,15 +134,18 @@ def ParseExpr(expr):
 
 
 def UpdateRequestWithInput(original_ref, args, req):
-  """Parse argument and construct create table request."""
-  req.initialSplits = args.splits
+  """Parse argument and construct create table request.
 
-  req.table.columnFamilies = args.column_families
+  Args:
+    original_ref: the gcloud resource.
+    args: input arguments.
+    req: the real request to be sent to backend service.
 
-  if original_ref.table.HasField('changeStreamConfig'):
-    req.table.changeStreamConfig = original_ref.table.changeStreamConfig
-
-  req.tableId = original_ref.tableId
+  Returns:
+    req: the real request to be sent to backend service.
+  """
+  req.createTableRequest.tableId = args.table
+  req.parent = original_ref.Parent().RelativeName()
 
   return req
 
@@ -164,13 +166,35 @@ def MakeSplits(split_list):
   return results
 
 
+def ConvertDurationToSeconds(duration):
+  """Convert a string of duration in any form to seconds.
+
+  Args:
+    duration: A string of any valid form of duration, such as `10d`, `1w`, `36h`
+
+  Returns:
+    A string of duration counted in seconds, such as `1000s`
+
+  Raises:
+    BadArgumentExpection: the input duration is mal-formatted.
+  """
+  try:
+    return times.FormatDurationForJson(times.ParseDuration(duration))
+  except times.DurationSyntaxError as duration_error:
+    raise exceptions.BadArgumentException(
+        '--column-families/change-stream-retention-period', str(duration_error))
+  except times.DurationValueError as duration_error:
+    raise exceptions.BadArgumentException(
+        '--column-families/change-stream-retention-period', str(duration_error))
+
+
 def ParseColumnFamilies(family_list):
   """Parses column families value object from the string list.
 
   Args:
-    family_list: A list that contains one or more strings representing
-    family name and optional GC rules in the format of 'family_name[:gc_rule]',
-    such as 'my_family_1,my_family_2:maxage=10d'.
+    family_list: A list that contains one or more strings representing family
+      name and optional GC rules in the format of `family_name[:gc_rule]`, such
+      as `my_family_1,my_family_2:maxage=10d`.
 
   Returns:
     A column families value object.

@@ -895,11 +895,27 @@ class OsloginState(object):
                     self.security_keys))
 
 
-def GetOsloginState(instance, project, requested_user, public_key,
-                    expiration_time, release_track,
+def _IsInstanceWindows(instance, messages=None):
+  if not instance or not instance.disks or not messages:
+    return False
+
+  boot_disk = next(iter(filter(lambda disk: disk.boot, instance.disks)), None)
+  guest_os_features = boot_disk.guestOsFeatures if boot_disk else []
+  features = [feature.type for feature in guest_os_features or []]
+  return (features and
+          messages.GuestOsFeature.TypeValueValuesEnum.WINDOWS in features)
+
+
+def GetOsloginState(instance,
+                    project,
+                    requested_user,
+                    public_key,
+                    expiration_time,
+                    release_track,
                     username_requested=False,
                     instance_enable_oslogin=False,
-                    instance_enable_security_keys=False):
+                    instance_enable_security_keys=False,
+                    messages=None):
   """Check instance/project metadata for oslogin and return updated username.
 
   Check to see if OS Login is enabled in metadata and if it is, return
@@ -924,22 +940,31 @@ def GetOsloginState(instance, project, requested_user, public_key,
     instance_enable_security_keys: bool, True if the instance's metadata
       indicates that OS Login is enabled. Used when the instance cannot be
       passed through the instance object.
+    messages: API messages class, The compute API messages.
 
   Returns:
     object, An object containing the OS Login state, with values indicating
       whether OS Login is enabled, Security Keys are enabled, the username to
       connect as and a list of security keys.
   """
-
   oslogin_state = OsloginState(user=requested_user)
 
-  oslogin_state.oslogin_enabled = FeatureEnabledInMetadata(
-      instance, project, OSLOGIN_ENABLE_METADATA_KEY,
+  oslogin_enabled = FeatureEnabledInMetadata(
+      instance,
+      project,
+      OSLOGIN_ENABLE_METADATA_KEY,
       instance_override=instance_enable_oslogin)
 
-  if not oslogin_state.oslogin_enabled:
+  if not oslogin_enabled:
+    # OS Login is disabled by default.
     return oslogin_state
 
+  if _IsInstanceWindows(instance, messages=messages):
+    log.status.Print(
+        'OS Login is not available on Windows VMs.\nUsing ssh metadata.')
+    return oslogin_state
+
+  oslogin_state.oslogin_enabled = oslogin_enabled
   oslogin_state.security_keys_enabled = FeatureEnabledInMetadata(
       instance, project, OSLOGIN_ENABLE_SK_METADATA_KEY,
       instance_override=instance_enable_security_keys)
@@ -1728,7 +1753,7 @@ class SSHPoller(object):
     """
     self.ssh_command = SSHCommand(
         remote, port=port, identity_file=identity_file, options=options,
-        extra_flags=extra_flags, remote_command=['true'], tty=False,
+        extra_flags=extra_flags, remote_command=[':'], tty=False,
         iap_tunnel_args=iap_tunnel_args)
     self._sleep_ms = sleep_ms
     self._retryer = retry.Retryer(max_wait_ms=max_wait_ms, jitter_ms=0)

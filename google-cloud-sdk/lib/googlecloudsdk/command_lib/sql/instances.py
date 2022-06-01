@@ -413,6 +413,8 @@ class _BaseInstances(object):
       settings.sqlServerAuditConfig = reducers.SqlServerAuditConfig(
           sql_messages, args.audit_bucket_path, args.audit_retention_interval,
           args.audit_upload_interval)
+      if args.deletion_protection is not None:
+        settings.deletionProtectionEnabled = args.deletion_protection
 
     return settings
 
@@ -545,6 +547,8 @@ class _BaseInstances(object):
           bucket=args.audit_bucket_path,
           retention_interval=args.audit_retention_interval,
           upload_interval=args.audit_upload_interval)
+      if args.deletion_protection is not None:
+        settings.deletionProtectionEnabled = args.deletion_protection
 
     return settings
 

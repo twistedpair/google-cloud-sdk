@@ -59,6 +59,11 @@ def _WorkflowTransform(workflow):
   for workspace_binding in workflow.get("workspaces", []):
     _WorkspaceBindingTransform(workspace_binding)
 
+  if "options" in workflow:
+    if "status" in workflow["options"]:
+      popped_status = workflow["options"].pop("status")
+      workflow["options"]["statusUpdateOptions"] = popped_status
+
 
 def _PipelineSpecTransform(pipeline_spec):
   """Transform pipeline spec message."""

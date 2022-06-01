@@ -41,20 +41,24 @@ def GetVpcId(args):
   return getattr(args, 'vpc_id', None)
 
 
-def AddIamInstanceProfile(parser):
+def AddIamInstanceProfile(parser, kind='cluster'):
+  """Adds the --iam-instance-profile flag."""
   parser.add_argument(
       '--iam-instance-profile',
       required=True,
-      # TODO(b/209617878): Update help text when ARN is supported.
-      help='Name of the IAM instance profile associated with the cluster.')
+      help='Name or ARN of the IAM instance profile associated with the {}.'
+      .format(kind))
 
 
 def GetIamInstanceProfile(args):
   return getattr(args, 'iam_instance_profile', None)
 
 
-def AddInstanceType(parser):
-  parser.add_argument('--instance-type', help='AWS EC2 instance type.')
+def AddInstanceType(parser, kind='control plane'):
+  """Adds the --instance-type flag."""
+  parser.add_argument(
+      '--instance-type',
+      help='AWS EC2 instance type for the {}\'s nodes.'.format(kind))
 
 
 def GetInstanceType(args):
@@ -65,7 +69,7 @@ def AddSshEC2KeyPair(parser, kind='control plane'):
   """Adds the --ssh-ec2-key-pair flag."""
   parser.add_argument(
       '--ssh-ec2-key-pair',
-      help='Name of the EC2 key pair authorized to login to the {} nodes.'
+      help='Name of the EC2 key pair authorized to login to the {}\'s nodes.'
       .format(kind))
 
 
@@ -79,7 +83,8 @@ def AddClearSshEc2KeyPair(parser, kind):
       '--clear-ssh-ec2-key-pair',
       action='store_true',
       default=None,
-      help='Clear the EC2 key pair to log in into the {} nodes.'.format(kind))
+      help='Clear the EC2 key pair authorized to login to the {}\'s nodes.'
+      .format(kind))
 
 
 def AddSshEC2KeyPairForUpdate(parser, kind='control plane'):
@@ -110,12 +115,14 @@ def GetRoleSessionName(args):
   return getattr(args, 'role_session_name', None)
 
 
-def AddSecurityGroupIds(parser, noun):
+def AddSecurityGroupIds(parser, kind='control plane'):
+  """Adds the --security-group-ids flag."""
   parser.add_argument(
       '--security-group-ids',
       type=arg_parsers.ArgList(),
       metavar='SECURITY_GROUP_ID',
-      help='IDs of additional security groups to add to {}.'.format(noun))
+      help='IDs of additional security groups to add to the {}\'s nodes.'
+      .format(kind))
 
 
 def GetSecurityGroupIds(args):
@@ -135,7 +142,8 @@ def AddClearSecurityGroupIds(parser, noun):
       action='store_true',
       default=None,
       help='Clear any additional security groups associated with the '
-      '{}. This does not remove the default security groups.'.format(noun))
+      '{}\'s nodes. This does not remove the default security groups.'.format(
+          noun))
 
 
 def AddSecurityGroupFlagsForUpdate(parser, noun):
@@ -273,8 +281,7 @@ def AddClearProxyConfig(parser, noun):
       '--clear-proxy-config',
       action='store_true',
       default=None,
-      help='Clear the proxy configuration, if any, associated with the '
-      '{}.'.format(noun))
+      help='Clear the proxy configuration associated with the {}.'.format(noun))
 
 
 def AddProxySecretArn(parser, required=False):

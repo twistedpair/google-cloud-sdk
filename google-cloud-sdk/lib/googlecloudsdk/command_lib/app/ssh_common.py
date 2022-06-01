@@ -148,7 +148,14 @@ def PopulatePublicKey(api_client, service_id, version_id, instance_id,
   user = ssh.GetDefaultSshUsername()
   project = _GetComputeProject(release_track)
   oslogin_state = ssh.GetOsloginState(
-      None, project, user, public_key.ToEntry(), None, release_track)
+      None,
+      project,
+      user,
+      public_key.ToEntry(),
+      None,
+      release_track,
+      messages=compute_base_classes.ComputeApiHolder(
+          release_track).client.messages)
   user = oslogin_state.user
   remote = ssh.Remote(instance.vmIp, user=user)
   if not oslogin_state.oslogin_enabled:

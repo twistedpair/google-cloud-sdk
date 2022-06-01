@@ -1571,6 +1571,33 @@ class AiplatformProjectsLocationsFeaturestoresEntityTypesFeaturesPatchRequest(_m
   updateMask = _messages.StringField(3)
 
 
+class AiplatformProjectsLocationsFeaturestoresEntityTypesGetIamPolicyRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsFeaturestoresEntityTypesGetIamPolicyRequest
+  object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
 class AiplatformProjectsLocationsFeaturestoresEntityTypesGetRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsFeaturestoresEntityTypesGetRequest object.
 
@@ -1769,6 +1796,23 @@ class AiplatformProjectsLocationsFeaturestoresEntityTypesReadFeatureValuesReques
   googleCloudAiplatformV1beta1ReadFeatureValuesRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1ReadFeatureValuesRequest', 2)
 
 
+class AiplatformProjectsLocationsFeaturestoresEntityTypesSetIamPolicyRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsFeaturestoresEntityTypesSetIamPolicyRequest
+  object.
+
+  Fields:
+    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
+      to be passed as the request body.
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
 class AiplatformProjectsLocationsFeaturestoresEntityTypesStreamingReadFeatureValuesRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsFeaturestoresEntityTypesStreamingReadFeatur
   eValuesRequest object.
@@ -1786,6 +1830,42 @@ class AiplatformProjectsLocationsFeaturestoresEntityTypesStreamingReadFeatureVal
 
   entityType = _messages.StringField(1, required=True)
   googleCloudAiplatformV1beta1StreamingReadFeatureValuesRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1StreamingReadFeatureValuesRequest', 2)
+
+
+class AiplatformProjectsLocationsFeaturestoresEntityTypesTestIamPermissionsRequest(_messages.Message):
+  r"""A
+  AiplatformProjectsLocationsFeaturestoresEntityTypesTestIamPermissionsRequest
+  object.
+
+  Fields:
+    permissions: The set of permissions to check for the `resource`.
+      Permissions with wildcards (such as `*` or `storage.*`) are not allowed.
+      For more information see [IAM
+      Overview](https://cloud.google.com/iam/docs/overview#permissions).
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  permissions = _messages.StringField(1, repeated=True)
+  resource = _messages.StringField(2, required=True)
+
+
+class AiplatformProjectsLocationsFeaturestoresGetIamPolicyRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsFeaturestoresGetIamPolicyRequest object.
+
+  Fields:
+    googleIamV1GetIamPolicyRequest: A GoogleIamV1GetIamPolicyRequest resource
+      to be passed as the request body.
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  googleIamV1GetIamPolicyRequest = _messages.MessageField('GoogleIamV1GetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
 
 
 class AiplatformProjectsLocationsFeaturestoresGetRequest(_messages.Message):
@@ -1979,6 +2059,40 @@ class AiplatformProjectsLocationsFeaturestoresSearchFeaturesRequest(_messages.Me
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   query = _messages.StringField(4)
+
+
+class AiplatformProjectsLocationsFeaturestoresSetIamPolicyRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsFeaturestoresSetIamPolicyRequest object.
+
+  Fields:
+    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
+      to be passed as the request body.
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class AiplatformProjectsLocationsFeaturestoresTestIamPermissionsRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsFeaturestoresTestIamPermissionsRequest
+  object.
+
+  Fields:
+    googleIamV1TestIamPermissionsRequest: A
+      GoogleIamV1TestIamPermissionsRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
+  resource = _messages.StringField(2, required=True)
 
 
 class AiplatformProjectsLocationsGetRequest(_messages.Message):
@@ -2480,6 +2594,36 @@ class AiplatformProjectsLocationsIndexesPatchRequest(_messages.Message):
   googleCloudAiplatformV1beta1Index = _messages.MessageField('GoogleCloudAiplatformV1beta1Index', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
+
+
+class AiplatformProjectsLocationsIndexesRemoveDatapointsRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsIndexesRemoveDatapointsRequest object.
+
+  Fields:
+    googleCloudAiplatformV1beta1RemoveDatapointsRequest: A
+      GoogleCloudAiplatformV1beta1RemoveDatapointsRequest resource to be
+      passed as the request body.
+    index: Required. The name of the Index resource to be updated. Format:
+      `projects/{project}/locations/{location}/indexes/{index}`
+  """
+
+  googleCloudAiplatformV1beta1RemoveDatapointsRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1RemoveDatapointsRequest', 1)
+  index = _messages.StringField(2, required=True)
+
+
+class AiplatformProjectsLocationsIndexesUpsertDatapointsRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsIndexesUpsertDatapointsRequest object.
+
+  Fields:
+    googleCloudAiplatformV1beta1UpsertDatapointsRequest: A
+      GoogleCloudAiplatformV1beta1UpsertDatapointsRequest resource to be
+      passed as the request body.
+    index: Required. The name of the Index resource to be updated. Format:
+      `projects/{project}/locations/{location}/indexes/{index}`
+  """
+
+  googleCloudAiplatformV1beta1UpsertDatapointsRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1UpsertDatapointsRequest', 1)
+  index = _messages.StringField(2, required=True)
 
 
 class AiplatformProjectsLocationsListRequest(_messages.Message):
@@ -3670,8 +3814,8 @@ class AiplatformProjectsLocationsModelsGetRequest(_messages.Message):
       `projects/{project}/locations/{location}/models/{model}` In order to
       retrieve a specific version of the model, also provide the version ID or
       version alias. Example:
-      projects/{project}/locations/{location}/models/{model}@2 or
-      projects/{project}/locations/{location}/models/{model}@golden If no
+      `projects/{project}/locations/{location}/models/{model}@2` or
+      `projects/{project}/locations/{location}/models/{model}@golden` If no
       version ID or alias is specified, the "default" version will be
       returned. The "default" version alias is created for the first version
       of the model, and can be moved to other versions later on. There will be
@@ -3825,6 +3969,22 @@ class AiplatformProjectsLocationsModelsPatchRequest(_messages.Message):
   googleCloudAiplatformV1beta1Model = _messages.MessageField('GoogleCloudAiplatformV1beta1Model', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
+
+
+class AiplatformProjectsLocationsModelsUpdateExplanationDatasetRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsModelsUpdateExplanationDatasetRequest
+  object.
+
+  Fields:
+    googleCloudAiplatformV1beta1UpdateExplanationDatasetRequest: A
+      GoogleCloudAiplatformV1beta1UpdateExplanationDatasetRequest resource to
+      be passed as the request body.
+    model: Required. The resource name of the Model to update. Format:
+      `projects/{project}/locations/{location}/models/{model}`
+  """
+
+  googleCloudAiplatformV1beta1UpdateExplanationDatasetRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1UpdateExplanationDatasetRequest', 1)
+  model = _messages.StringField(2, required=True)
 
 
 class AiplatformProjectsLocationsModelsUploadRequest(_messages.Message):
@@ -5970,10 +6130,6 @@ class GoogleCloudAiplatformInternalDedicatedResources(_messages.Message):
   minReplicaCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
-class GoogleCloudAiplatformInternalDeleteFeatureValuesResponse(_messages.Message):
-  r"""Response message for FeaturestoreService.DeleteFeatureValues."""
-
-
 class GoogleCloudAiplatformInternalDeleteMetadataStoreOperationMetadata(_messages.Message):
   r"""Details of operations that perform MetadataService.DeleteMetadataStore.
 
@@ -6191,11 +6347,14 @@ class GoogleCloudAiplatformInternalExamples(_messages.Message):
       the semantics are the same as metadata and should match
       NearestNeighborSearchConfig.
     neighborCount: The number of neighbors to return.
+    presets: Preset config based on the desired query speed-precision trade-
+      off and modality
   """
 
   gcsSource = _messages.MessageField('GoogleCloudAiplatformInternalGcsSource', 1)
   nearestNeighborSearchConfig = _messages.MessageField('extra_types.JsonValue', 2)
   neighborCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  presets = _messages.MessageField('GoogleCloudAiplatformInternalPresets', 4)
 
 
 class GoogleCloudAiplatformInternalExplanationMetadata(_messages.Message):
@@ -7693,6 +7852,52 @@ class GoogleCloudAiplatformInternalPipeliningAndAuditConfig(_messages.Message):
   pipeliningProbability = _messages.FloatField(3)
 
 
+class GoogleCloudAiplatformInternalPresets(_messages.Message):
+  r"""Preset configuration for example-based explanations
+
+  Enums:
+    ModalityValueValuesEnum: Preset option controlling parameters for
+      different modalities
+    QueryValueValuesEnum: Preset option controlling parameters for query
+      speed-precision trade-off
+
+  Fields:
+    modality: Preset option controlling parameters for different modalities
+    query: Preset option controlling parameters for query speed-precision
+      trade-off
+  """
+
+  class ModalityValueValuesEnum(_messages.Enum):
+    r"""Preset option controlling parameters for different modalities
+
+    Values:
+      MODALITY_UNSPECIFIED: Should not be set. Added as a recommended best
+        practice for enums
+      IMAGE: IMAGE modality
+      TEXT: TEXT modality
+      TABULAR: TABULAR modality
+    """
+    MODALITY_UNSPECIFIED = 0
+    IMAGE = 1
+    TEXT = 2
+    TABULAR = 3
+
+  class QueryValueValuesEnum(_messages.Enum):
+    r"""Preset option controlling parameters for query speed-precision trade-
+    off
+
+    Values:
+      PRECISE: More precise neighbors as a trade-off against slower response.
+        This is also the default value (field-number 0).
+      FAST: Faster response as a trade-off against less precise neighbors.
+    """
+    PRECISE = 0
+    FAST = 1
+
+  modality = _messages.EnumField('ModalityValueValuesEnum', 1)
+  query = _messages.EnumField('QueryValueValuesEnum', 2)
+
+
 class GoogleCloudAiplatformInternalPurgeArtifactsMetadata(_messages.Message):
   r"""Details of operations that perform MetadataService.PurgeArtifacts.
 
@@ -7828,7 +8033,11 @@ class GoogleCloudAiplatformInternalSendHumanInTheLoopEntryResponse(_messages.Mes
       dataset.
     exportedRedactionFiles: Output only. All of the de-identification files
       that are exported from export dataset.
+    questionIds: Output only. Question Ids associated with the human in the
+      loop entry.
     state: Output only. State of the sent entries.
+    taskQueueName: Output only. Name of the task queue the sent human in the
+      loop entry belongs to.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -7858,7 +8067,9 @@ class GoogleCloudAiplatformInternalSendHumanInTheLoopEntryResponse(_messages.Mes
   dataItemCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   exportedFiles = _messages.StringField(4, repeated=True)
   exportedRedactionFiles = _messages.StringField(5, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
+  questionIds = _messages.StringField(6, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  taskQueueName = _messages.StringField(8)
 
 
 class GoogleCloudAiplatformInternalSmoothGradConfig(_messages.Message):
@@ -7966,6 +8177,16 @@ class GoogleCloudAiplatformInternalUpdateDeploymentResourcePoolOperationMetadata
 
   Fields:
     genericMetadata: The operation generic information.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformInternalGenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformInternalUpdateExplanationDatasetOperationMetadata(_messages.Message):
+  r"""Runtime operation information for ModelService.UpdateExplanationDataset.
+
+  Fields:
+    genericMetadata: The common part of the operation metadata.
   """
 
   genericMetadata = _messages.MessageField('GoogleCloudAiplatformInternalGenericOperationMetadata', 1)
@@ -8393,6 +8614,27 @@ class GoogleCloudAiplatformUiCheckTrialEarlyStoppingStateResponse(_messages.Mess
   shouldStop = _messages.BooleanField(1)
 
 
+class GoogleCloudAiplatformUiCopyModelOperationMetadata(_messages.Message):
+  r"""Details of ModelService.CopyModel operation.
+
+  Fields:
+    genericMetadata: The common part of the operation metadata.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformUiGenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformUiCopyModelResponse(_messages.Message):
+  r"""Response message of ModelService.CopyModel operation.
+
+  Fields:
+    model: The name of the copied Model resource. Format:
+      `projects/{project}/locations/{location}/models/{model}`
+  """
+
+  model = _messages.StringField(1)
+
+
 class GoogleCloudAiplatformUiCreateDatasetOperationMetadata(_messages.Message):
   r"""Runtime operation information for DatasetService.CreateDataset.
 
@@ -8607,10 +8849,6 @@ class GoogleCloudAiplatformUiDedicatedResources(_messages.Message):
   machineSpec = _messages.MessageField('GoogleCloudAiplatformUiMachineSpec', 2)
   maxReplicaCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   minReplicaCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-
-
-class GoogleCloudAiplatformUiDeleteFeatureValuesResponse(_messages.Message):
-  r"""Response message for FeaturestoreService.DeleteFeatureValues."""
 
 
 class GoogleCloudAiplatformUiDeleteOperationMetadata(_messages.Message):
@@ -8930,11 +9168,14 @@ class GoogleCloudAiplatformUiExamples(_messages.Message):
       the semantics are the same as metadata and should match
       NearestNeighborSearchConfig.
     neighborCount: The number of neighbors to return.
+    presets: Preset config based on the desired query speed-precision trade-
+      off and modality
   """
 
   gcsSource = _messages.MessageField('GoogleCloudAiplatformUiGcsSource', 1)
   nearestNeighborSearchConfig = _messages.MessageField('extra_types.JsonValue', 2)
   neighborCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  presets = _messages.MessageField('GoogleCloudAiplatformUiPresets', 4)
 
 
 class GoogleCloudAiplatformUiExplanationMetadata(_messages.Message):
@@ -10692,7 +10933,10 @@ class GoogleCloudAiplatformUiModelMonitoringObjectiveConfigTrainingDataset(_mess
   Fields:
     bigquerySource: The BigQuery table of the unmanaged Dataset used to train
       this Model.
-    dataFormat: "jsonl" The source file is a JSONL file.
+    dataFormat: Data format of the dataset, only applicable if the input is
+      from Google Cloud Storage. The possible formats are: "tf-record" The
+      source file is a TFRecord file. "csv" The source file is a CSV file.
+      "jsonl" The source file is a JSONL file.
     dataset: The resource name of the Dataset used to train this Model.
     gcsSource: The Google Cloud Storage uri of the unmanaged Dataset used to
       train this Model.
@@ -10951,6 +11195,52 @@ class GoogleCloudAiplatformUiNumericStatsHistogramBucket(_messages.Message):
   count = _messages.IntegerField(1)
   max = _messages.FloatField(2)
   min = _messages.FloatField(3)
+
+
+class GoogleCloudAiplatformUiPresets(_messages.Message):
+  r"""Preset configuration for example-based explanations
+
+  Enums:
+    ModalityValueValuesEnum: Preset option controlling parameters for
+      different modalities
+    QueryValueValuesEnum: Preset option controlling parameters for query
+      speed-precision trade-off
+
+  Fields:
+    modality: Preset option controlling parameters for different modalities
+    query: Preset option controlling parameters for query speed-precision
+      trade-off
+  """
+
+  class ModalityValueValuesEnum(_messages.Enum):
+    r"""Preset option controlling parameters for different modalities
+
+    Values:
+      MODALITY_UNSPECIFIED: Should not be set. Added as a recommended best
+        practice for enums
+      IMAGE: IMAGE modality
+      TEXT: TEXT modality
+      TABULAR: TABULAR modality
+    """
+    MODALITY_UNSPECIFIED = 0
+    IMAGE = 1
+    TEXT = 2
+    TABULAR = 3
+
+  class QueryValueValuesEnum(_messages.Enum):
+    r"""Preset option controlling parameters for query speed-precision trade-
+    off
+
+    Values:
+      PRECISE: More precise neighbors as a trade-off against slower response.
+        This is also the default value (field-number 0).
+      FAST: Faster response as a trade-off against less precise neighbors.
+    """
+    PRECISE = 0
+    FAST = 1
+
+  modality = _messages.EnumField('ModalityValueValuesEnum', 1)
+  query = _messages.EnumField('QueryValueValuesEnum', 2)
 
 
 class GoogleCloudAiplatformUiPrivateEndpoints(_messages.Message):
@@ -12105,6 +12395,16 @@ class GoogleCloudAiplatformUiUndeployModelResponse(_messages.Message):
   r"""Response message for EndpointService.UndeployModel."""
 
 
+class GoogleCloudAiplatformUiUpdateExplanationDatasetOperationMetadata(_messages.Message):
+  r"""Runtime operation information for ModelService.UpdateExplanationDataset.
+
+  Fields:
+    genericMetadata: The common part of the operation metadata.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformUiGenericOperationMetadata', 1)
+
+
 class GoogleCloudAiplatformUiUpdateFeaturestoreOperationMetadata(_messages.Message):
   r"""Details of operations that perform update Featurestore.
 
@@ -12406,6 +12706,27 @@ class GoogleCloudAiplatformV1ContainerSpec(_messages.Message):
   command = _messages.StringField(2, repeated=True)
   env = _messages.MessageField('GoogleCloudAiplatformV1EnvVar', 3, repeated=True)
   imageUri = _messages.StringField(4)
+
+
+class GoogleCloudAiplatformV1CopyModelOperationMetadata(_messages.Message):
+  r"""Details of ModelService.CopyModel operation.
+
+  Fields:
+    genericMetadata: The common part of the operation metadata.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1GenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformV1CopyModelResponse(_messages.Message):
+  r"""Response message of ModelService.CopyModel operation.
+
+  Fields:
+    model: The name of the copied Model resource. Format:
+      `projects/{project}/locations/{location}/models/{model}`
+  """
+
+  model = _messages.StringField(1)
 
 
 class GoogleCloudAiplatformV1CreateDatasetOperationMetadata(_messages.Message):
@@ -16640,21 +16961,21 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionHierarchyConfig(_message
       'region' for a hierarchy of stores or 'department' for a hierarchy of
       products. If multiple columns are specified, time series will be grouped
       by their combined values, ex. ('blue', 'large') for 'color' and 'size',
-      up to 5 columns are accepted.
-    groupLossWeight: The weight of the loss for predictions aggregated over
-      time series in the same hierarchy group, or all time series if no group
-      columns are defined.
-    timeLossWeight: The weight of the loss for predictions aggregated over the
-      horizon for a single time series.
-    totalLossWeight: The weight of the loss for predictions aggregated over
-      both the horizon and time series in the same hierarchy group, or all
-      time series if no group columns are defined.
+      up to 5 columns are accepted. If no group columns are specified, all
+      time series are considered to be part of the same group.
+    groupTemporalTotalWeight: The weight of the loss for predictions
+      aggregated over both the horizon and time series in the same hierarchy
+      group.
+    groupTotalWeight: The weight of the loss for predictions aggregated over
+      time series in the same group.
+    temporalTotalWeight: The weight of the loss for predictions aggregated
+      over the horizon for a single time series.
   """
 
   groupColumns = _messages.StringField(1, repeated=True)
-  groupLossWeight = _messages.FloatField(2)
-  timeLossWeight = _messages.FloatField(3)
-  totalLossWeight = _messages.FloatField(4)
+  groupTemporalTotalWeight = _messages.FloatField(2)
+  groupTotalWeight = _messages.FloatField(3)
+  temporalTotalWeight = _messages.FloatField(4)
 
 
 class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionHyperparameterTuningJobMetadata(_messages.Message):
@@ -17981,11 +18302,14 @@ class GoogleCloudAiplatformV1alpha1Examples(_messages.Message):
       the semantics are the same as metadata and should match
       NearestNeighborSearchConfig.
     neighborCount: The number of neighbors to return.
+    presets: Preset config based on the desired query speed-precision trade-
+      off and modality
   """
 
   gcsSource = _messages.MessageField('GoogleCloudAiplatformV1alpha1GcsSource', 1)
   nearestNeighborSearchConfig = _messages.MessageField('extra_types.JsonValue', 2)
   neighborCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  presets = _messages.MessageField('GoogleCloudAiplatformV1alpha1Presets', 4)
 
 
 class GoogleCloudAiplatformV1alpha1ExplanationMetadata(_messages.Message):
@@ -18781,6 +19105,52 @@ class GoogleCloudAiplatformV1alpha1NearestNeighborSearchOperationMetadataRecordE
   errorType = _messages.EnumField('ErrorTypeValueValuesEnum', 3)
   rawRecord = _messages.StringField(4)
   sourceGcsUri = _messages.StringField(5)
+
+
+class GoogleCloudAiplatformV1alpha1Presets(_messages.Message):
+  r"""Preset configuration for example-based explanations
+
+  Enums:
+    ModalityValueValuesEnum: Preset option controlling parameters for
+      different modalities
+    QueryValueValuesEnum: Preset option controlling parameters for query
+      speed-precision trade-off
+
+  Fields:
+    modality: Preset option controlling parameters for different modalities
+    query: Preset option controlling parameters for query speed-precision
+      trade-off
+  """
+
+  class ModalityValueValuesEnum(_messages.Enum):
+    r"""Preset option controlling parameters for different modalities
+
+    Values:
+      MODALITY_UNSPECIFIED: Should not be set. Added as a recommended best
+        practice for enums
+      IMAGE: IMAGE modality
+      TEXT: TEXT modality
+      TABULAR: TABULAR modality
+    """
+    MODALITY_UNSPECIFIED = 0
+    IMAGE = 1
+    TEXT = 2
+    TABULAR = 3
+
+  class QueryValueValuesEnum(_messages.Enum):
+    r"""Preset option controlling parameters for query speed-precision trade-
+    off
+
+    Values:
+      PRECISE: More precise neighbors as a trade-off against slower response.
+        This is also the default value (field-number 0).
+      FAST: Faster response as a trade-off against less precise neighbors.
+    """
+    PRECISE = 0
+    FAST = 1
+
+  modality = _messages.EnumField('ModalityValueValuesEnum', 1)
+  query = _messages.EnumField('QueryValueValuesEnum', 2)
 
 
 class GoogleCloudAiplatformV1alpha1SampledShapleyAttribution(_messages.Message):
@@ -20745,11 +21115,15 @@ class GoogleCloudAiplatformV1beta1CompletionStats(_messages.Message):
       number could be collected).
     successfulCount: Output only. The number of entities that had been
       processed successfully.
+    successfulForecastPointCount: Output only. The number of the successful
+      forecast points that are generated by the forecasting model. This is
+      ONLY used by the forecasting batch prediction.
   """
 
   failedCount = _messages.IntegerField(1)
   incompleteCount = _messages.IntegerField(2)
   successfulCount = _messages.IntegerField(3)
+  successfulForecastPointCount = _messages.IntegerField(4)
 
 
 class GoogleCloudAiplatformV1beta1ContainerRegistryDestination(_messages.Message):
@@ -20891,6 +21265,16 @@ class GoogleCloudAiplatformV1beta1Context(_messages.Message):
   updateTime = _messages.StringField(11)
 
 
+class GoogleCloudAiplatformV1beta1CopyModelOperationMetadata(_messages.Message):
+  r"""Details of ModelService.CopyModel operation.
+
+  Fields:
+    genericMetadata: The common part of the operation metadata.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)
+
+
 class GoogleCloudAiplatformV1beta1CopyModelRequest(_messages.Message):
   r"""Request message for ModelService.CopyModel.
 
@@ -20904,6 +21288,17 @@ class GoogleCloudAiplatformV1beta1CopyModelRequest(_messages.Message):
 
   encryptionSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1EncryptionSpec', 1)
   model = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1beta1CopyModelResponse(_messages.Message):
+  r"""Response message of ModelService.CopyModel operation.
+
+  Fields:
+    model: The name of the copied Model resource. Format:
+      `projects/{project}/locations/{location}/models/{model}`
+  """
+
+  model = _messages.StringField(1)
 
 
 class GoogleCloudAiplatformV1beta1CreateDatasetOperationMetadata(_messages.Message):
@@ -21463,7 +21858,6 @@ class GoogleCloudAiplatformV1beta1DataLabelingJob(_messages.Message):
     labelingProgress: Output only. Current labeling job progress percentage
       scaled in interval [0, 100], indicating the percentage of DataItems that
       has been finished.
-    labelingTimeLimit: Maximum duration for operators to answer a question.
     labels: The labels with user-defined metadata to organize your
       DataLabelingJobs. Label keys and values can be no longer than 64
       characters (Unicode codepoints), can only contain lowercase letters,
@@ -21594,12 +21988,11 @@ class GoogleCloudAiplatformV1beta1DataLabelingJob(_messages.Message):
   instructionUri = _messages.StringField(11)
   labelerCount = _messages.IntegerField(12, variant=_messages.Variant.INT32)
   labelingProgress = _messages.IntegerField(13, variant=_messages.Variant.INT32)
-  labelingTimeLimit = _messages.StringField(14)
-  labels = _messages.MessageField('LabelsValue', 15)
-  name = _messages.StringField(16)
-  specialistPools = _messages.StringField(17, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 18)
-  updateTime = _messages.StringField(19)
+  labels = _messages.MessageField('LabelsValue', 14)
+  name = _messages.StringField(15)
+  specialistPools = _messages.StringField(16, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 17)
+  updateTime = _messages.StringField(18)
 
 
 class GoogleCloudAiplatformV1beta1Dataset(_messages.Message):
@@ -21739,10 +22132,6 @@ class GoogleCloudAiplatformV1beta1DedicatedResources(_messages.Message):
   machineSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1MachineSpec', 2)
   maxReplicaCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   minReplicaCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-
-
-class GoogleCloudAiplatformV1beta1DeleteFeatureValuesResponse(_messages.Message):
-  r"""Response message for FeaturestoreService.DeleteFeatureValues."""
 
 
 class GoogleCloudAiplatformV1beta1DeleteMetadataStoreOperationMetadata(_messages.Message):
@@ -22470,11 +22859,64 @@ class GoogleCloudAiplatformV1beta1Examples(_messages.Message):
       the semantics are the same as metadata and should match
       NearestNeighborSearchConfig.
     neighborCount: The number of neighbors to return.
+    presets: Preset config based on the desired query speed-precision trade-
+      off and modality
   """
 
   gcsSource = _messages.MessageField('GoogleCloudAiplatformV1beta1GcsSource', 1)
   nearestNeighborSearchConfig = _messages.MessageField('extra_types.JsonValue', 2)
   neighborCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  presets = _messages.MessageField('GoogleCloudAiplatformV1beta1Presets', 4)
+
+
+class GoogleCloudAiplatformV1beta1ExamplesOverride(_messages.Message):
+  r"""Overrides for example-based explanations.
+
+  Enums:
+    DataFormatValueValuesEnum: The format of the data being provided with each
+      call.
+
+  Fields:
+    crowdingCount: The number of neighbors to return that have the same
+      crowding tag.
+    dataFormat: The format of the data being provided with each call.
+    neighborCount: The number of neighbors to return.
+    restrictions: Restrict the resulting nearest neighbors to respect these
+      constraints.
+    returnEmbeddings: If true, return the embeddings instead of neighbors.
+  """
+
+  class DataFormatValueValuesEnum(_messages.Enum):
+    r"""The format of the data being provided with each call.
+
+    Values:
+      DATA_FORMAT_UNSPECIFIED: Unspecified format. Must not be used.
+      INSTANCES: Provided data is a set of model inputs.
+      EMBEDDINGS: Provided data is a set of embeddings.
+    """
+    DATA_FORMAT_UNSPECIFIED = 0
+    INSTANCES = 1
+    EMBEDDINGS = 2
+
+  crowdingCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  dataFormat = _messages.EnumField('DataFormatValueValuesEnum', 2)
+  neighborCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  restrictions = _messages.MessageField('GoogleCloudAiplatformV1beta1ExamplesRestrictionsNamespace', 4, repeated=True)
+  returnEmbeddings = _messages.BooleanField(5)
+
+
+class GoogleCloudAiplatformV1beta1ExamplesRestrictionsNamespace(_messages.Message):
+  r"""Restrictions namespace for example-based explanations overrides.
+
+  Fields:
+    allow: The list of allowed tags.
+    deny: The list of deny tags.
+    namespaceName: The namespace name.
+  """
+
+  allow = _messages.StringField(1, repeated=True)
+  deny = _messages.StringField(2, repeated=True)
+  namespaceName = _messages.StringField(3)
 
 
 class GoogleCloudAiplatformV1beta1Execution(_messages.Message):
@@ -22681,9 +23123,14 @@ class GoogleCloudAiplatformV1beta1Explanation(_messages.Message):
       ExplanationParameters.output_indices is specified, the attributions are
       stored by Attribution.output_index in the same order as they appear in
       the output_indices.
+    neighbors: Output only. List of the nearest neighbors for example-based
+      explanations. For models deployed with the examples explanations feature
+      enabled, the attributions field is empty and instead the neighbors field
+      is populated.
   """
 
   attributions = _messages.MessageField('GoogleCloudAiplatformV1beta1Attribution', 1, repeated=True)
+  neighbors = _messages.MessageField('GoogleCloudAiplatformV1beta1Neighbor', 2, repeated=True)
 
 
 class GoogleCloudAiplatformV1beta1ExplanationMetadata(_messages.Message):
@@ -23221,14 +23668,16 @@ class GoogleCloudAiplatformV1beta1ExplanationSpecOverride(_messages.Message):
   time.
 
   Fields:
+    examplesOverride: The example-based explanations parameter overrides.
     metadata: The metadata to be overridden. If not specified, no metadata is
       overridden.
     parameters: The parameters to be overridden. Note that the method cannot
       be changed. If not specified, no parameter is overridden.
   """
 
-  metadata = _messages.MessageField('GoogleCloudAiplatformV1beta1ExplanationMetadataOverride', 1)
-  parameters = _messages.MessageField('GoogleCloudAiplatformV1beta1ExplanationParameters', 2)
+  examplesOverride = _messages.MessageField('GoogleCloudAiplatformV1beta1ExamplesOverride', 1)
+  metadata = _messages.MessageField('GoogleCloudAiplatformV1beta1ExplanationMetadataOverride', 2)
+  parameters = _messages.MessageField('GoogleCloudAiplatformV1beta1ExplanationParameters', 3)
 
 
 class GoogleCloudAiplatformV1beta1ExportDataConfig(_messages.Message):
@@ -24651,6 +25100,58 @@ class GoogleCloudAiplatformV1beta1Index(_messages.Message):
   metadataSchemaUri = _messages.StringField(8)
   name = _messages.StringField(9)
   updateTime = _messages.StringField(10)
+
+
+class GoogleCloudAiplatformV1beta1IndexDatapoint(_messages.Message):
+  r"""A datapoint of Index.
+
+  Fields:
+    crowdingTag: Optional. CrowdingTag of the datapoint, the number of
+      neighbors to return in each crowding can be configured during query.
+    datapointId: Required. Unique identifier of the datapoint.
+    featureVector: Required. Feature embedding vector. An array of numbers
+      with the length of [NearestNeighborSearchConfig.dimensions].
+    restricts: Optional. List of Restrict of the datapoint, used to perform
+      "restricted searches" where boolean rule are used to filter the subset
+      of the database eligible for matching. See:
+      https://cloud.google.com/vertex-ai/docs/matching-engine/filtering
+  """
+
+  crowdingTag = _messages.MessageField('GoogleCloudAiplatformV1beta1IndexDatapointCrowdingTag', 1)
+  datapointId = _messages.StringField(2)
+  featureVector = _messages.FloatField(3, repeated=True, variant=_messages.Variant.FLOAT)
+  restricts = _messages.MessageField('GoogleCloudAiplatformV1beta1IndexDatapointRestriction', 4, repeated=True)
+
+
+class GoogleCloudAiplatformV1beta1IndexDatapointCrowdingTag(_messages.Message):
+  r"""Crowding tag is a constraint on a neighbor list produced by nearest
+  neighbor search requiring that no more than some value k' of the k neighbors
+  returned have the same value of crowding_attribute.
+
+  Fields:
+    crowdingAttribute: The attribute value used for crowding. The maximum
+      number of neighbors to return per crowding attribute value
+      (per_crowding_attribute_num_neighbors) is configured per-query. This
+      field is ignored if per_crowding_attribute_num_neighbors is larger than
+      the total number of neighbors to return for a given query.
+  """
+
+  crowdingAttribute = _messages.StringField(1)
+
+
+class GoogleCloudAiplatformV1beta1IndexDatapointRestriction(_messages.Message):
+  r"""Restriction of a datapoint which describe its attributes(tokens) from
+  each of several attribute categories(namespaces).
+
+  Fields:
+    allowList: The attributes to allow in this namespace. eg: 'red'
+    denyList: The attributes to deny in this namespace. eg: 'blue'
+    namespace: The namespace of this restriction. eg: color.
+  """
+
+  allowList = _messages.StringField(1, repeated=True)
+  denyList = _messages.StringField(2, repeated=True)
+  namespace = _messages.StringField(3)
 
 
 class GoogleCloudAiplatformV1beta1IndexEndpoint(_messages.Message):
@@ -26760,7 +27261,10 @@ class GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigTrainingDataset(
   Fields:
     bigquerySource: The BigQuery table of the unmanaged Dataset used to train
       this Model.
-    dataFormat: "jsonl" The source file is a JSONL file.
+    dataFormat: Data format of the dataset, only applicable if the input is
+      from Google Cloud Storage. The possible formats are: "tf-record" The
+      source file is a TFRecord file. "csv" The source file is a CSV file.
+      "jsonl" The source file is a JSONL file.
     dataset: The resource name of the Dataset used to train this Model.
     gcsSource: The Google Cloud Storage uri of the unmanaged Dataset used to
       train this Model.
@@ -27043,6 +27547,18 @@ class GoogleCloudAiplatformV1beta1NearestNeighborSearchOperationMetadataRecordEr
   errorType = _messages.EnumField('ErrorTypeValueValuesEnum', 3)
   rawRecord = _messages.StringField(4)
   sourceGcsUri = _messages.StringField(5)
+
+
+class GoogleCloudAiplatformV1beta1Neighbor(_messages.Message):
+  r"""Neighbors for example-based explanations.
+
+  Fields:
+    neighborDistance: Output only. The neighbor distance.
+    neighborId: Output only. The neighbor id.
+  """
+
+  neighborDistance = _messages.FloatField(1)
+  neighborId = _messages.StringField(2)
 
 
 class GoogleCloudAiplatformV1beta1NfsMount(_messages.Message):
@@ -27711,6 +28227,52 @@ class GoogleCloudAiplatformV1beta1PredictSchemata(_messages.Message):
   predictionSchemaUri = _messages.StringField(3)
 
 
+class GoogleCloudAiplatformV1beta1Presets(_messages.Message):
+  r"""Preset configuration for example-based explanations
+
+  Enums:
+    ModalityValueValuesEnum: Preset option controlling parameters for
+      different modalities
+    QueryValueValuesEnum: Preset option controlling parameters for query
+      speed-precision trade-off
+
+  Fields:
+    modality: Preset option controlling parameters for different modalities
+    query: Preset option controlling parameters for query speed-precision
+      trade-off
+  """
+
+  class ModalityValueValuesEnum(_messages.Enum):
+    r"""Preset option controlling parameters for different modalities
+
+    Values:
+      MODALITY_UNSPECIFIED: Should not be set. Added as a recommended best
+        practice for enums
+      IMAGE: IMAGE modality
+      TEXT: TEXT modality
+      TABULAR: TABULAR modality
+    """
+    MODALITY_UNSPECIFIED = 0
+    IMAGE = 1
+    TEXT = 2
+    TABULAR = 3
+
+  class QueryValueValuesEnum(_messages.Enum):
+    r"""Preset option controlling parameters for query speed-precision trade-
+    off
+
+    Values:
+      PRECISE: More precise neighbors as a trade-off against slower response.
+        This is also the default value (field-number 0).
+      FAST: Faster response as a trade-off against less precise neighbors.
+    """
+    PRECISE = 0
+    FAST = 1
+
+  modality = _messages.EnumField('ModalityValueValuesEnum', 1)
+  query = _messages.EnumField('QueryValueValuesEnum', 2)
+
+
 class GoogleCloudAiplatformV1beta1PrivateEndpoints(_messages.Message):
   r"""PrivateEndpoints proto is used to provide paths for users to send
   requests privately. To send request via private service access, use
@@ -28001,6 +28563,20 @@ class GoogleCloudAiplatformV1beta1ReadTensorboardTimeSeriesDataResponse(_message
   """
 
   timeSeriesData = _messages.MessageField('GoogleCloudAiplatformV1beta1TimeSeriesData', 1)
+
+
+class GoogleCloudAiplatformV1beta1RemoveDatapointsRequest(_messages.Message):
+  r"""Request message for IndexService.RemoveDatapoints
+
+  Fields:
+    datapointIds: A list of datapoint ids to be deleted.
+  """
+
+  datapointIds = _messages.StringField(1, repeated=True)
+
+
+class GoogleCloudAiplatformV1beta1RemoveDatapointsResponse(_messages.Message):
+  r"""Response message for IndexService.RemoveDatapoints"""
 
 
 class GoogleCloudAiplatformV1beta1ResourcesConsumed(_messages.Message):
@@ -30382,21 +30958,21 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionHierarchyConfig(_me
       'region' for a hierarchy of stores or 'department' for a hierarchy of
       products. If multiple columns are specified, time series will be grouped
       by their combined values, ex. ('blue', 'large') for 'color' and 'size',
-      up to 5 columns are accepted.
-    groupLossWeight: The weight of the loss for predictions aggregated over
-      time series in the same hierarchy group, or all time series if no group
-      columns are defined.
-    timeLossWeight: The weight of the loss for predictions aggregated over the
-      horizon for a single time series.
-    totalLossWeight: The weight of the loss for predictions aggregated over
-      both the horizon and time series in the same hierarchy group, or all
-      time series if no group columns are defined.
+      up to 5 columns are accepted. If no group columns are specified, all
+      time series are considered to be part of the same group.
+    groupTemporalTotalWeight: The weight of the loss for predictions
+      aggregated over both the horizon and time series in the same hierarchy
+      group.
+    groupTotalWeight: The weight of the loss for predictions aggregated over
+      time series in the same group.
+    temporalTotalWeight: The weight of the loss for predictions aggregated
+      over the horizon for a single time series.
   """
 
   groupColumns = _messages.StringField(1, repeated=True)
-  groupLossWeight = _messages.FloatField(2)
-  timeLossWeight = _messages.FloatField(3)
-  totalLossWeight = _messages.FloatField(4)
+  groupTemporalTotalWeight = _messages.FloatField(2)
+  groupTotalWeight = _messages.FloatField(3)
+  temporalTotalWeight = _messages.FloatField(4)
 
 
 class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionHyperparameterTuningJobMetadata(_messages.Message):
@@ -32306,6 +32882,30 @@ class GoogleCloudAiplatformV1beta1UpdateDeploymentResourcePoolOperationMetadata(
   genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)
 
 
+class GoogleCloudAiplatformV1beta1UpdateExplanationDatasetOperationMetadata(_messages.Message):
+  r"""Runtime operation information for ModelService.UpdateExplanationDataset.
+
+  Fields:
+    genericMetadata: The common part of the operation metadata.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformV1beta1UpdateExplanationDatasetRequest(_messages.Message):
+  r"""Request message for ModelService.UpdateExplanationDataset.
+
+  Fields:
+    examples: The example config containing the location of the dataset.
+  """
+
+  examples = _messages.MessageField('GoogleCloudAiplatformV1beta1Examples', 1)
+
+
+class GoogleCloudAiplatformV1beta1UpdateExplanationDatasetResponse(_messages.Message):
+  r"""Response message of ModelService.UpdateExplanationDataset operation."""
+
+
 class GoogleCloudAiplatformV1beta1UpdateFeaturestoreOperationMetadata(_messages.Message):
   r"""Details of operations that perform update Featurestore.
 
@@ -32404,6 +33004,20 @@ class GoogleCloudAiplatformV1beta1UploadModelResponse(_messages.Message):
 
   model = _messages.StringField(1)
   modelVersionId = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1beta1UpsertDatapointsRequest(_messages.Message):
+  r"""Request message for IndexService.UpsertDatapoints
+
+  Fields:
+    datapoints: A list of datapoints to be created/updated.
+  """
+
+  datapoints = _messages.MessageField('GoogleCloudAiplatformV1beta1IndexDatapoint', 1, repeated=True)
+
+
+class GoogleCloudAiplatformV1beta1UpsertDatapointsResponse(_messages.Message):
+  r"""Response message for IndexService.UpsertDatapoints"""
 
 
 class GoogleCloudAiplatformV1beta1UserActionReference(_messages.Message):
@@ -32618,6 +33232,203 @@ class GoogleCloudLocationLocation(_messages.Message):
   locationId = _messages.StringField(3)
   metadata = _messages.MessageField('MetadataValue', 4)
   name = _messages.StringField(5)
+
+
+class GoogleIamV1Binding(_messages.Message):
+  r"""Associates `members`, or principals, with a `role`.
+
+  Fields:
+    condition: The condition that is associated with this binding. If the
+      condition evaluates to `true`, then this binding applies to the current
+      request. If the condition evaluates to `false`, then this binding does
+      not apply to the current request. However, a different role binding
+      might grant the same role to one or more of the principals in this
+      binding. To learn which resources support conditions in their IAM
+      policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    members: Specifies the principals requesting access for a Google Cloud
+      resource. `members` can have the following values: * `allUsers`: A
+      special identifier that represents anyone who is on the internet; with
+      or without a Google account. * `allAuthenticatedUsers`: A special
+      identifier that represents anyone who is authenticated with a Google
+      account or a service account. * `user:{emailid}`: An email address that
+      represents a specific Google account. For example, `alice@example.com` .
+      * `serviceAccount:{emailid}`: An email address that represents a service
+      account. For example, `my-other-app@appspot.gserviceaccount.com`. *
+      `group:{emailid}`: An email address that represents a Google group. For
+      example, `admins@example.com`. *
+      `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
+      identifier) representing a user that has been recently deleted. For
+      example, `alice@example.com?uid=123456789012345678901`. If the user is
+      recovered, this value reverts to `user:{emailid}` and the recovered user
+      retains the role in the binding. *
+      `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
+      (plus unique identifier) representing a service account that has been
+      recently deleted. For example, `my-other-
+      app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the
+      service account is undeleted, this value reverts to
+      `serviceAccount:{emailid}` and the undeleted service account retains the
+      role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An
+      email address (plus unique identifier) representing a Google group that
+      has been recently deleted. For example,
+      `admins@example.com?uid=123456789012345678901`. If the group is
+      recovered, this value reverts to `group:{emailid}` and the recovered
+      group retains the role in the binding. * `domain:{domain}`: The G Suite
+      domain (primary) that represents all the users of that domain. For
+      example, `google.com` or `example.com`.
+    role: Role that is assigned to the list of `members`, or principals. For
+      example, `roles/viewer`, `roles/editor`, or `roles/owner`.
+  """
+
+  condition = _messages.MessageField('GoogleTypeExpr', 1)
+  members = _messages.StringField(2, repeated=True)
+  role = _messages.StringField(3)
+
+
+class GoogleIamV1GetIamPolicyRequest(_messages.Message):
+  r"""Request message for `GetIamPolicy` method.
+
+  Fields:
+    options: OPTIONAL: A `GetPolicyOptions` object for specifying options to
+      `GetIamPolicy`.
+  """
+
+  options = _messages.MessageField('GoogleIamV1GetPolicyOptions', 1)
+
+
+class GoogleIamV1GetPolicyOptions(_messages.Message):
+  r"""Encapsulates settings provided to GetIamPolicy.
+
+  Fields:
+    requestedPolicyVersion: Optional. The maximum policy version that will be
+      used to format the policy. Valid values are 0, 1, and 3. Requests
+      specifying an invalid value will be rejected. Requests for policies with
+      any conditional role bindings must specify version 3. Policies with no
+      conditional role bindings may specify any valid value or leave the field
+      unset. The policy in the response might use the policy version that you
+      specified, or it might use a lower policy version. For example, if you
+      specify version 3, but the policy has no conditional role bindings, the
+      response uses version 1. To learn which resources support conditions in
+      their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+  """
+
+  requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
+class GoogleIamV1Policy(_messages.Message):
+  r"""An Identity and Access Management (IAM) policy, which specifies access
+  controls for Google Cloud resources. A `Policy` is a collection of
+  `bindings`. A `binding` binds one or more `members`, or principals, to a
+  single `role`. Principals can be user accounts, service accounts, Google
+  groups, and domains (such as G Suite). A `role` is a named list of
+  permissions; each `role` can be an IAM predefined role or a user-created
+  custom role. For some types of Google Cloud resources, a `binding` can also
+  specify a `condition`, which is a logical expression that allows access to a
+  resource only if the expression evaluates to `true`. A condition can add
+  constraints based on attributes of the request, the resource, or both. To
+  learn which resources support conditions in their IAM policies, see the [IAM
+  documentation](https://cloud.google.com/iam/help/conditions/resource-
+  policies). **JSON example:** { "bindings": [ { "role":
+  "roles/resourcemanager.organizationAdmin", "members": [
+  "user:mike@example.com", "group:admins@example.com", "domain:google.com",
+  "serviceAccount:my-project-id@appspot.gserviceaccount.com" ] }, { "role":
+  "roles/resourcemanager.organizationViewer", "members": [
+  "user:eve@example.com" ], "condition": { "title": "expirable access",
+  "description": "Does not grant access after Sep 2020", "expression":
+  "request.time < timestamp('2020-10-01T00:00:00.000Z')", } } ], "etag":
+  "BwWWja0YfJA=", "version": 3 } **YAML example:** bindings: - members: -
+  user:mike@example.com - group:admins@example.com - domain:google.com -
+  serviceAccount:my-project-id@appspot.gserviceaccount.com role:
+  roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
+  role: roles/resourcemanager.organizationViewer condition: title: expirable
+  access description: Does not grant access after Sep 2020 expression:
+  request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA=
+  version: 3 For a description of IAM and its features, see the [IAM
+  documentation](https://cloud.google.com/iam/docs/).
+
+  Fields:
+    bindings: Associates a list of `members`, or principals, with a `role`.
+      Optionally, may specify a `condition` that determines how and when the
+      `bindings` are applied. Each of the `bindings` must contain at least one
+      principal. The `bindings` in a `Policy` can refer to up to 1,500
+      principals; up to 250 of these principals can be Google groups. Each
+      occurrence of a principal counts towards these limits. For example, if
+      the `bindings` grant 50 different roles to `user:alice@example.com`, and
+      not to any other principal, then you can add another 1,450 principals to
+      the `bindings` in the `Policy`.
+    etag: `etag` is used for optimistic concurrency control as a way to help
+      prevent simultaneous updates of a policy from overwriting each other. It
+      is strongly suggested that systems make use of the `etag` in the read-
+      modify-write cycle to perform policy updates in order to avoid race
+      conditions: An `etag` is returned in the response to `getIamPolicy`, and
+      systems are expected to put that etag in the request to `setIamPolicy`
+      to ensure that their change will be applied to the same version of the
+      policy. **Important:** If you use IAM Conditions, you must include the
+      `etag` field whenever you call `setIamPolicy`. If you omit this field,
+      then IAM allows you to overwrite a version `3` policy with a version `1`
+      policy, and all of the conditions in the version `3` policy are lost.
+    version: Specifies the format of the policy. Valid values are `0`, `1`,
+      and `3`. Requests that specify an invalid value are rejected. Any
+      operation that affects conditional role bindings must specify version
+      `3`. This requirement applies to the following operations: * Getting a
+      policy that includes a conditional role binding * Adding a conditional
+      role binding to a policy * Changing a conditional role binding in a
+      policy * Removing any role binding, with or without a condition, from a
+      policy that includes conditions **Important:** If you use IAM
+      Conditions, you must include the `etag` field whenever you call
+      `setIamPolicy`. If you omit this field, then IAM allows you to overwrite
+      a version `3` policy with a version `1` policy, and all of the
+      conditions in the version `3` policy are lost. If a policy does not
+      include any conditions, operations on that policy may specify any valid
+      version or leave the field unset. To learn which resources support
+      conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+  """
+
+  bindings = _messages.MessageField('GoogleIamV1Binding', 1, repeated=True)
+  etag = _messages.BytesField(2)
+  version = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
+class GoogleIamV1SetIamPolicyRequest(_messages.Message):
+  r"""Request message for `SetIamPolicy` method.
+
+  Fields:
+    policy: REQUIRED: The complete policy to be applied to the `resource`. The
+      size of the policy is limited to a few 10s of KB. An empty policy is a
+      valid policy but certain Google Cloud services (such as Projects) might
+      reject them.
+  """
+
+  policy = _messages.MessageField('GoogleIamV1Policy', 1)
+
+
+class GoogleIamV1TestIamPermissionsRequest(_messages.Message):
+  r"""Request message for `TestIamPermissions` method.
+
+  Fields:
+    permissions: The set of permissions to check for the `resource`.
+      Permissions with wildcards (such as `*` or `storage.*`) are not allowed.
+      For more information see [IAM
+      Overview](https://cloud.google.com/iam/docs/overview#permissions).
+  """
+
+  permissions = _messages.StringField(1, repeated=True)
+
+
+class GoogleIamV1TestIamPermissionsResponse(_messages.Message):
+  r"""Response message for `TestIamPermissions` method.
+
+  Fields:
+    permissions: A subset of `TestPermissionsRequest.permissions` that the
+      caller is allowed.
+  """
+
+  permissions = _messages.StringField(1, repeated=True)
 
 
 class GoogleLongrunningListOperationsResponse(_messages.Message):
@@ -32941,6 +33752,42 @@ class GoogleTypeColor(_messages.Message):
   blue = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
   green = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
   red = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
+
+
+class GoogleTypeExpr(_messages.Message):
+  r"""Represents a textual expression in the Common Expression Language (CEL)
+  syntax. CEL is a C-like expression language. The syntax and semantics of CEL
+  are documented at https://github.com/google/cel-spec. Example (Comparison):
+  title: "Summary size limit" description: "Determines if a summary is less
+  than 100 chars" expression: "document.summary.size() < 100" Example
+  (Equality): title: "Requestor is owner" description: "Determines if
+  requestor is the document owner" expression: "document.owner ==
+  request.auth.claims.email" Example (Logic): title: "Public documents"
+  description: "Determine whether the document should be publicly visible"
+  expression: "document.type != 'private' && document.type != 'internal'"
+  Example (Data Manipulation): title: "Notification string" description:
+  "Create a notification string with a timestamp." expression: "'New message
+  received at ' + string(document.create_time)" The exact variables and
+  functions that may be referenced within an expression are determined by the
+  service that evaluates it. See the service documentation for additional
+  information.
+
+  Fields:
+    description: Optional. Description of the expression. This is a longer
+      text which describes the expression, e.g. when hovered over it in a UI.
+    expression: Textual representation of an expression in Common Expression
+      Language syntax.
+    location: Optional. String indicating the location of the expression for
+      error reporting, e.g. a file name and a position in the file.
+    title: Optional. Title for the expression, i.e. a short string describing
+      its purpose. This can be used e.g. in UIs which allow to enter the
+      expression.
+  """
+
+  description = _messages.StringField(1)
+  expression = _messages.StringField(2)
+  location = _messages.StringField(3)
+  title = _messages.StringField(4)
 
 
 class GoogleTypeMoney(_messages.Message):

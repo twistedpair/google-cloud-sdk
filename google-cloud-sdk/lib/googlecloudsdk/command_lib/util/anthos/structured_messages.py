@@ -128,7 +128,7 @@ class OutputMessage(object):
   class ErrorDetails(object):
     """Data class for ErrorDetail sub-messages."""
 
-    _DEFAULT_ERROR_FORMAT = '{level}: [{error}].'
+    _DEFAULT_ERROR_FORMAT = '[{error}].'
     _DEFAULT_CONTEXT_FORMAT = ' Additional details: [{context}]'
 
     def __init__(self, error_msg, context=None, as_json=False, level='error'):

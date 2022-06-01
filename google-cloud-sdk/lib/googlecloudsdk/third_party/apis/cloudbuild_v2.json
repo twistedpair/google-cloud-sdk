@@ -208,6 +208,13 @@
             "$ref": "GoogleDevtoolsCloudbuildV2SecretManagerSecret"
           }
         },
+        "resources": {
+          "description": "Resources referenceable within a workflow.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "Resource"
+          }
+        },
         "pipelineSpec": {
           "description": "Fields from both the Workflow and the PipelineSpec will be used to form the full PipelineRun.",
           "$ref": "PipelineSpec"
@@ -287,6 +294,29 @@
         },
         "env": {
           "description": "Environment variable name to associate with the secret.",
+          "type": "string"
+        }
+      }
+    },
+    "Resource": {
+      "id": "Resource",
+      "description": "Resource referenceable within a workflow.",
+      "type": "object",
+      "properties": {
+        "secret": {
+          "description": "Secret Manager Secret.",
+          "$ref": "GoogleDevtoolsCloudbuildV2SecretManagerSecret"
+        },
+        "url": {
+          "description": "SCM Repo URL.",
+          "type": "string"
+        },
+        "repo": {
+          "description": "Resource name of v2 GCB repo.",
+          "type": "string"
+        },
+        "topic": {
+          "description": "Resource name of PubSub topic.",
           "type": "string"
         }
       }
@@ -946,6 +976,10 @@
         "volumeClaimTemplate": {
           "description": "Template for a claim that will be created in the same namespace.",
           "$ref": "PersistentVolumeClaim"
+        },
+        "secret": {
+          "description": "Secret Volume Source.",
+          "$ref": "SecretVolumeSource"
         }
       }
     },
@@ -1015,6 +1049,17 @@
           "additionalProperties": {
             "type": "string"
           }
+        }
+      }
+    },
+    "SecretVolumeSource": {
+      "id": "SecretVolumeSource",
+      "description": "Secret Volume Source.",
+      "type": "object",
+      "properties": {
+        "secretName": {
+          "description": "Resource name of the SecretVersion. In format: projects\/*\/secrets\/*\/versions\/*",
+          "type": "string"
         }
       }
     },

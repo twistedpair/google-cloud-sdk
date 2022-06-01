@@ -70,6 +70,21 @@ class UploadStrategy(enum.Enum):
   """Enum class for specifying upload strategy."""
   SIMPLE = 'simple'
   RESUMABLE = 'resumable'
+  STREAMING = 'streaming'
+
+
+class NotificationEventType(enum.Enum):
+  """Used to filter what events a notification configuration notifies on."""
+  OBJECT_ARCHIVE = 'OBJECT_ARCHIVE'
+  OBJECT_DELETE = 'OBJECT_DELETE'
+  OBJECT_FINALIZE = 'OBJECT_FINALIZE'
+  OBJECT_METADATA_UPDATE = 'OBJECT_METADATA_UPDATE'
+
+
+class NotificationPayloadFormat(enum.Enum):
+  """Used to format the body of notifications."""
+  JSON = 'json'
+  NONE = 'none'
 
 
 class FieldsScope(enum.Enum):
@@ -430,10 +445,106 @@ class CloudApi(object):
     """
     raise NotImplementedError('compose_object must be overridden.')
 
-  def get_service_agent(self):
+  def get_service_agent(self, project_id=None, project_number=None):
     """Returns the email address (str) used to identify the service agent.
 
     For some providers, the service agent is responsible for encrypting and
-    decrypting objects using CMEKs.
+    decrypting objects using CMEKs. project_number is useful because it may be
+    in bucket metadata when project ID is not.
+
+    If neither project_id or project_number are available, uses the
+      default project configured in gcloud.
+
+
+    Args:
+      project_id (str|None): Project to get service account for. Takes
+        precedence over project_number.
+      project_number (int|None): Project to get service account for.
+
+    Returns:
+      Email of service account (str).
     """
     raise NotImplementedError('get_service_agent must be overridden.')
+
+  def create_notification_configuration(
+      self,
+      url,
+      pubsub_topic,
+      custom_attributes=None,
+      event_types=None,
+      object_name_prefix=None,
+      payload_format=NotificationPayloadFormat.JSON):
+    """Creates a new notification on a bucket with the specified parameters.
+
+    Args:
+      url (storage_url.CloudUrl): Bucket URL.
+      pubsub_topic (str): Cloud Pub/Sub topic to publish to.
+      custom_attributes (dict[str, str]|None): Dictionary of custom attributes
+        to apply to all notifications sent by the new configuration.
+      event_types (list[NotificationEventType]|None): Event type filters, e.g.
+        'OBJECT_FINALIZE'.
+      object_name_prefix (str|None): Filter on object name.
+      payload_format (NotificationPayloadFormat): Format of body of
+        notifications sent by the new configuration.
+
+    Raises:
+      CloudApiError: API returned an error.
+      NotImplementedError: This function was not implemented by a class using
+        this interface.
+      ValueError: Received a non-bucket URL.
+
+    Returns:
+      Apitools Notification object for the new notification configuration.
+    """
+    raise NotImplementedError(
+        'create_notification_configuration must be overridden.')
+
+  def get_notification_configuration(self, url, notification_id):
+    """Gets a notification configuration on a bucket.
+
+    Args:
+      url (storage_url.CloudUrl): Bucket URL.
+      notification_id (str): Name of the notification configuration.
+
+    Raises:
+      CloudApiError: API returned an error.
+      NotImplementedError: This function was not implemented by a class using
+        this interface.
+      ValueError: Received a non-bucket URL.
+    """
+    raise NotImplementedError(
+        'get_notification_configuration must be overridden.')
+
+  def delete_notification_configuration(self, url, notification_id):
+    """Deletes a notification configuration on a bucket.
+
+    Args:
+      url (storage_url.CloudUrl): Bucket URL.
+      notification_id (str): Name of the notification configuration.
+
+    Raises:
+      CloudApiError: API returned an error.
+      NotImplementedError: This function was not implemented by a class using
+        this interface.
+      ValueError: Received a non-bucket URL.
+    """
+    raise NotImplementedError(
+        'delete_notification_configuration must be overridden.')
+
+  def list_notification_configurations(self, url):
+    """Lists notification configurations on a bucket.
+
+    Args:
+      url (storage_url.CloudUrl): Bucket URL.
+
+    Raises:
+      CloudApiError: API returned an error.
+      NotImplementedError: This function was not implemented by a class using
+        this interface.
+      ValueError: Received a non-bucket URL.
+
+    Yields:
+      List of  apitools Notification objects.
+    """
+    raise NotImplementedError(
+        'list_notification_configurations must be overridden.')

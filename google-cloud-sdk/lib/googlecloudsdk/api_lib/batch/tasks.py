@@ -19,24 +19,15 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from googlecloudsdk.api_lib.util import apis
-
-
-def GetClientInstance(version='v1alpha1', no_http=False):
-  return apis.GetClientInstance('batch', version, no_http=no_http)
-
-
-def GetMessagesModule(client=None):
-  client = client or GetClientInstance()
-  return client.MESSAGES_MODULE
+from googlecloudsdk.api_lib.batch import util as batch_api_util
 
 
 class TasksClient(object):
   """Client for tasks service in the Cloud Batch API."""
 
-  def __init__(self, client=None, messages=None):
-    self.client = client or GetClientInstance()
-    self.messages = messages or GetMessagesModule(client)
+  def __init__(self, release_track, client=None, messages=None):
+    self.client = client or batch_api_util.GetClientInstance(release_track)
+    self.messages = messages or self.client.MESSAGES_MODULE
     self.service = self.client.projects_locations_jobs_taskGroups_tasks
 
   def Get(self, task_ref):

@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 import collections
 
+from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import plurality_checkable_iterator
 from googlecloudsdk.command_lib.storage import storage_url
@@ -42,6 +43,7 @@ class NameExpansionIterator:
   def __init__(self,
                urls,
                all_versions=False,
+               fields_scope=cloud_api.FieldsScope.NO_ACL,
                ignore_symlinks=False,
                include_buckets=False,
                recursion_requested=False):
@@ -51,6 +53,8 @@ class NameExpansionIterator:
       urls (Iterable[str]): The URLs to expand.
       all_versions (bool): True if all versions of objects should be fetched,
         else False.
+      fields_scope (cloud_api.FieldsScope): Determines amount of metadata
+        returned by API.
       ignore_symlinks (bool): Skip over symlinks instead of following them.
       include_buckets (bool): True if buckets should be fetched.
       recursion_requested (bool): True if recursion is requested, else False.
@@ -58,6 +62,7 @@ class NameExpansionIterator:
     self.all_versions = all_versions
 
     self._urls = urls
+    self._fields_scope = fields_scope
     self._ignore_symlinks = ignore_symlinks
     self._include_buckets = include_buckets
     self._recursion_requested = recursion_requested
@@ -66,6 +71,14 @@ class NameExpansionIterator:
         plurality_checkable_iterator.PluralityCheckableIterator(
             self._get_top_level_iterator()))
     self._has_multiple_top_level_resources = None
+
+  def _get_wildcard_iterator(self, url):
+    """Returns get_wildcard_iterator with instance variables as args."""
+    return wildcard_iterator.get_wildcard_iterator(
+        url,
+        all_versions=self.all_versions,
+        fields_scope=self._fields_scope,
+        ignore_symlinks=self._ignore_symlinks)
 
   @property
   def has_multiple_top_level_resources(self):
@@ -85,10 +98,7 @@ class NameExpansionIterator:
 
   def _get_top_level_iterator(self):
     for url in self._urls:
-      for resource in wildcard_iterator.get_wildcard_iterator(
-          url,
-          all_versions=self.all_versions,
-          ignore_symlinks=self._ignore_symlinks):
+      for resource in self._get_wildcard_iterator(url):
         original_storage_url = storage_url.storage_url_from_string(url)
         yield url, self._get_name_expansion_result(resource,
                                                    resource.storage_url,
@@ -97,10 +107,7 @@ class NameExpansionIterator:
   def _get_nested_objects_iterator(self, parent_name_expansion_result):
     new_storage_url = parent_name_expansion_result.resource.storage_url.join(
         '**')
-    child_resources = wildcard_iterator.get_wildcard_iterator(
-        new_storage_url.url_string,
-        all_versions=self.all_versions,
-        ignore_symlinks=self._ignore_symlinks)
+    child_resources = self._get_wildcard_iterator(new_storage_url.url_string)
     for child_resource in child_resources:
       yield self._get_name_expansion_result(
           child_resource, parent_name_expansion_result.resource.storage_url,

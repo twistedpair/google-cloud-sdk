@@ -147,8 +147,14 @@ class BaseScpHelper(ssh_utils.BaseSSHCLIHelper):
       else:
         public_key = self.keys.GetPublicKey().ToEntry(include_comment=True)
         oslogin_state = ssh.GetOsloginState(
-            instance, project, remote.user, public_key, expiration_micros,
-            release_track, username_requested=username_requested)
+            instance,
+            project,
+            remote.user,
+            public_key,
+            expiration_micros,
+            release_track,
+            username_requested=username_requested,
+            messages=compute_holder.client.messages)
         remote.user = oslogin_state.user
 
       # identity_file_list will be None if security keys are not enabled.

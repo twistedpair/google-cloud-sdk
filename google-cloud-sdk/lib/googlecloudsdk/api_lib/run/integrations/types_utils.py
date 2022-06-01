@@ -32,7 +32,7 @@ _INTEGRATION_TYPES = frozenset([
             'Configure a custom domain for Cloud Run services with Google Cloud '
             'Load Balancer.',
         'example_command':
-            '$ gcloud run integration types create --service=[SERVICE] '
+            '$ gcloud run integrations create --service=[SERVICE] '
             '--type=custom-domain --parameters=domain=example.com',
         'parameters':
             frozendict({
@@ -68,7 +68,7 @@ _INTEGRATION_TYPES = frozenset([
             'Configure a Redis instance (Cloud Memorystore) and connect it '
             'to a Cloud Run Service.',
         'example_command':
-            '$ gcloud run integration types create --service=[SERVICE] '
+            '$ gcloud run integrations create --service=[SERVICE] '
             '--type=redis --parameters=memory-size-gb=2',
         'parameters':
             frozendict({

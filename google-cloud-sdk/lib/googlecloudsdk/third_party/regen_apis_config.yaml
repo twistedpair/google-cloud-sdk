@@ -160,6 +160,8 @@ apis:
   batch:
     v1alpha1:
       discovery_doc: batch_v1alpha1.json
+    v1:
+      discovery_doc: batch_v1.json
       default: true
   bigtableadmin:
     v2:
@@ -696,6 +698,9 @@ apis:
   gkemulticloud:
     v1:
       discovery_doc: gkemulticloud_v1.json
+  gkeonprem:
+    v1:
+      discovery_doc: gkeonprem_v1.json
   gsuiteaddons:
     v1:
       discovery_doc: gsuiteaddons_v1.json

@@ -79,6 +79,17 @@ ASYNC_FLAG_DEFAULT_TRUE = base.Argument(
     Return immediately, without waiting for the operation in progress to
     complete.""")
 
+IP_RESERVATION_SPEC = {
+    'start-address': str,
+    'end-address': str,
+    'note': str
+}
+
+IP_RESERVATION_KEY_SPEC = {
+    'start-address': str,
+    'end-address': str,
+}
+
 
 def AddInstanceArgToParser(parser, positional=False):
   """Sets up an argument for the instance resource."""
@@ -269,3 +280,59 @@ def AddSerialConsoleSshKeyArgToParser(parser, positional=False, name=None):
       flag_name_overrides={'region': ''},
       group_help='serial_console_ssh_key.')
   return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
+
+
+def AddInstanceOsImageToParser(parser, hidden):
+  parser.add_argument(
+      '--os-image',
+      type=str,
+      help="""OS image to install on the server.""",
+      hidden=hidden)
+
+
+def AddInstanceEnableHyperthreadingToParser(parser, hidden):
+  parser.add_argument(
+      '--enable-hyperthreading',
+      action=arg_parsers.StoreTrueFalseAction,
+      help="""Enable hyperthreading for the server.""",
+      hidden=hidden)
+
+
+def AddNetworkIpReservationToParser(parser, hidden):
+  """Adds the flags for network IP range reservation to parser."""
+  group_arg = parser.add_mutually_exclusive_group(required=False)
+  group_arg.add_argument(
+      '--add-ip-range-reservation',
+      type=arg_parsers.ArgDict(spec=IP_RESERVATION_SPEC),
+      metavar='PROPERTY=VALUE',
+      help="""
+              Add a reservation of a range of IP addresses in the network.
+
+              *start_address*::: The first address of this reservation block.
+              Must be specified as a single IPv4 address, e.g. `10.1.2.2`.
+
+              *end_address*::: The last address of this reservation block,
+              inclusive. I.e., for cases when reservations are only single
+              addresses, end_address and start_address will be the same.
+              Must be specified as a single IPv4 address, e.g. `10.1.2.2`.
+
+              *note*::: A note about this reservation, intended for human consumption.
+            """,
+      hidden=hidden)
+  group_arg.add_argument(
+      '--remove-ip-range-reservation',
+      type=arg_parsers.ArgDict(spec=IP_RESERVATION_KEY_SPEC),
+      metavar='PROPERTY=VALUE',
+      help="""
+              Remove a reservation of a range of IP addresses in the network.
+
+              *start_address*::: The first address of the reservation block to remove.
+
+              *end_address*::: The last address of the reservation block to remove.
+            """,
+      hidden=hidden)
+  group_arg.add_argument(
+      '--clear-ip-range-reservations',
+      action='store_true',
+      help="""Removes all IP range reservations in the network.""",
+      hidden=hidden)

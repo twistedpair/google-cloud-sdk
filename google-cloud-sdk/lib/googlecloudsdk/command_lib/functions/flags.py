@@ -138,13 +138,13 @@ def AddFunctionMemoryFlag(parser, track=None):
   deploying an update to an existing function, the function keeps its old
   memory limit unless you specify this flag."""
 
-  alpha_help_text = """\
+  nonga_help_text = """\
   Limit on the amount of memory the function can use.
 
   Allowed values for v1 are: 128MB, 256MB, 512MB, 1024MB, 2048MB, 4096MB,
   and 8192MB.
 
-  Allowed values for v2 are in the format: <number><unit> with allowed units
+  Allowed values for GCF 2nd gen are in the format: <number><unit> with allowed units
   of "k", "M", "G", "Ki", "Mi", "Gi". Ending 'b' or 'B' is allowed.
 
   Examples: 100000k, 128M, 10Mb, 1024Mi, 750K, 4Gi.
@@ -154,7 +154,7 @@ def AddFunctionMemoryFlag(parser, track=None):
   memory limit unless you specify this flag."""
 
   help_text = (
-      ga_help_text if track is not base.ReleaseTrack.ALPHA else alpha_help_text)
+      ga_help_text if track is base.ReleaseTrack.GA else nonga_help_text)
 
   parser.add_argument('--memory', type=str, help=help_text)
 
@@ -199,20 +199,20 @@ def AddFunctionTimeoutFlag(parser, track=None):
       Cannot be more than 540s.
       See $ gcloud topic datetimes for information on duration formats."""
 
-  alpha_help_text = """\
+  nonga_help_text = """\
       The function execution timeout, e.g. 30s for 30 seconds. Defaults to
       original value for existing function or 60 seconds for new functions.
 
-      For GCF first generation functions, cannot be more than 540s.
+      For GCF 1st gen functions, cannot be more than 540s.
 
-      For GCF second generation functions, cannot be more than 3600s.
+      For GCF 2nd gen functions, cannot be more than 3600s.
 
       See $ gcloud topic datetimes for information on duration formats."""
 
   parser.add_argument(
       '--timeout',
       help=ga_help_text
-      if track is not base.ReleaseTrack.ALPHA else alpha_help_text,
+      if track is base.ReleaseTrack.GA else nonga_help_text,
       type=arg_parsers.Duration(lower_bound='1s'))
 
 

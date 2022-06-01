@@ -42,6 +42,7 @@ import six
 DEFAULT_CREDENTIALS_DEFAULT_CLIENT_ID = '764086051850-6qr4p6gpi6hn506pt8ejuq83di341hur.apps.googleusercontent.com'
 DEFAULT_CREDENTIALS_DEFAULT_CLIENT_SECRET = 'd-FL95Q19q7MQmFpd7hHD0Ty'
 CLOUD_PLATFORM_SCOPE = 'https://www.googleapis.com/auth/cloud-platform'
+SQL_LOGIN_SCOPE = 'https://www.googleapis.com/auth/sqlservice.login'
 GOOGLE_DRIVE_SCOPE = 'https://www.googleapis.com/auth/drive'
 USER_EMAIL_SCOPE = 'https://www.googleapis.com/auth/userinfo.email'
 OPENID = 'openid'
@@ -49,7 +50,8 @@ OPENID = 'openid'
 DEFAULT_SCOPES = [
     OPENID,
     USER_EMAIL_SCOPE,
-    CLOUD_PLATFORM_SCOPE
+    CLOUD_PLATFORM_SCOPE,
+    SQL_LOGIN_SCOPE
 ]
 
 CLIENT_SECRET_INSTALLED_TYPE = 'installed'

@@ -348,7 +348,7 @@
           "$ref": "Resource"
         },
         "iamPolicy": {
-          "description": "A representation of the Cloud IAM policy set on a Google Cloud resource. There can be a maximum of one Cloud IAM policy set on any given resource. In addition, Cloud IAM policies inherit their granted access scope from any policies set on parent resources in the resource hierarchy. Therefore, the effectively policy is the union of both the policy set on this resource and each policy set on all of the resource's ancestry resource levels in the hierarchy. See [this topic](https:\/\/cloud.google.com\/iam\/docs\/policies#inheritance) for more information.",
+          "description": "A representation of the Cloud IAM policy set on a Google Cloud resource. There can be a maximum of one Cloud IAM policy set on any given resource. In addition, Cloud IAM policies inherit their granted access scope from any policies set on parent resources in the resource hierarchy. Therefore, the effectively policy is the union of both the policy set on this resource and each policy set on all of the resource's ancestry resource levels in the hierarchy. See [this topic](https:\/\/cloud.google.com\/iam\/help\/allow-policies\/inheritance) for more information.",
           "$ref": "Policy"
         },
         "orgPolicy": {
@@ -2655,16 +2655,16 @@
           "type": "string"
         },
         "pageSize": {
-          "description": "Optional. The maximum number of rows to return in the results. Responses are limited to 10 MB and 1000 rows. By default, the maximum row count is 1000. When the byte or row count limit is reached, the rest of the query results will be paginated.",
+          "description": "Optional. The maximum number of rows to return in the results. Responses are limited to 10 MB and 1000 rows. By default, the maximum row count is 1000. When the byte or row count limit is reached, the rest of the query results will be paginated. The field will be ignored when [output_config] is specified.",
           "type": "integer",
           "format": "int32"
         },
         "pageToken": {
-          "description": "Optional. A page token received from previous `QueryAssets`.",
+          "description": "Optional. A page token received from previous `QueryAssets`. The field will be ignored when [output_config] is specified.",
           "type": "string"
         },
         "timeout": {
-          "description": "Optional. Specifies the maximum amount of time that the client is willing to wait for the query to complete. By default, this limit is 5 min for the first query, and 1 minute for the following queries. If the query is complete, the `done` field in the `QueryAssetsResponse` is true, otherwise false. Like BigQuery [jobs.query API](https:\/\/cloud.google.com\/bigquery\/docs\/reference\/rest\/v2\/jobs\/query#queryrequest) The call is not guaranteed to wait for the specified timeout; it typically returns after around 200 seconds (200,000 milliseconds), even if the query is not complete.",
+          "description": "Optional. Specifies the maximum amount of time that the client is willing to wait for the query to complete. By default, this limit is 5 min for the first query, and 1 minute for the following queries. If the query is complete, the `done` field in the `QueryAssetsResponse` is true, otherwise false. Like BigQuery [jobs.query API](https:\/\/cloud.google.com\/bigquery\/docs\/reference\/rest\/v2\/jobs\/query#queryrequest) The call is not guaranteed to wait for the specified timeout; it typically returns after around 200 seconds (200,000 milliseconds), even if the query is not complete. The field will be ignored when [output_config] is specified.",
           "type": "string",
           "format": "google-duration"
         }
@@ -2680,7 +2680,7 @@
           "type": "string"
         },
         "done": {
-          "description": "The query response, which can be either an `error` or a valid `response`. If `done` == `false`, neither `error` nor `query_result` is set. If `done` == `true`, exactly one of `error` or `query_result` is set.",
+          "description": "The query response, which can be either an `error` or a valid `response`. If `done` == `false` and the query result is being saved in a output, the output_config field will be set. If `done` == `true`, exactly one of `error`, `query_result` or `output_config` will be set.",
           "type": "boolean"
         },
         "error": {
@@ -2888,6 +2888,197 @@
         }
       }
     },
+    "AnalyzeOrgPoliciesResponse": {
+      "id": "AnalyzeOrgPoliciesResponse",
+      "description": "The response message for AssetService.AnalyzeOrgPolicies.",
+      "type": "object",
+      "properties": {
+        "orgPolicyResults": {
+          "description": "The organization policies under the AnalyzeOrgPoliciesRequest.scope with the AnalyzeOrgPoliciesRequest.constraint.",
+          "type": "array",
+          "items": {
+            "$ref": "OrgPolicyResult"
+          }
+        },
+        "constraint": {
+          "description": "The definition of the constraint in the request.",
+          "$ref": "AnalyzerOrgPolicyConstraint"
+        },
+        "nextPageToken": {
+          "description": "The page token to fetch the next page for AnalyzeOrgPolicyResponse.org_policy_results.",
+          "type": "string"
+        }
+      }
+    },
+    "OrgPolicyResult": {
+      "id": "OrgPolicyResult",
+      "description": "The organization policy result to the query.",
+      "type": "object",
+      "properties": {
+        "consolidatedPolicy": {
+          "description": "The consolidated organization policy for the analyzed resource. The consolidated organization policy is computed by merging and evaluating AnalyzeOrgPoliciesResponse.policy_bundle. The evaluation will respect the organization policy [hierarchy rules](https:\/\/cloud.google.com\/resource-manager\/docs\/organization-policy\/understanding-hierarchy).",
+          "$ref": "AnalyzerOrgPolicy"
+        },
+        "policyBundle": {
+          "description": "The ordered list of all organization policies from the scope to the AnalyzeOrgPoliciesResponse.OrgPolicyResult.consolidated_policy.attached_resource. Default organization policies are also included.",
+          "type": "array",
+          "items": {
+            "$ref": "AnalyzerOrgPolicy"
+          }
+        }
+      }
+    },
+    "AnalyzerOrgPolicy": {
+      "id": "AnalyzerOrgPolicy",
+      "description": "This organization policy message is a modified version of the one defined in the OrgPolicy system. This message contains several fields defined in the original organization policy with some new fields for analysis purpose.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The full resource name of this org policy. See [Cloud Asset Inventory Resource Name Format](https:\/\/cloud.google.com\/asset-inventory\/docs\/resource-name-format) for more information.",
+          "type": "string"
+        },
+        "attachedResource": {
+          "description": "The [full resource name] (https:\/\/cloud.google.com\/asset-inventory\/docs\/resource-name-format) of an organization\/folder\/project resource where this organization policy is set.",
+          "type": "string"
+        },
+        "versionedResources": {
+          "description": "Versioned resource representations of this org policy. This is repeated because there could be multiple versions of resource representations during version migration.",
+          "type": "array",
+          "items": {
+            "$ref": "VersionedResource"
+          }
+        }
+      }
+    },
+    "AnalyzerOrgPolicyConstraint": {
+      "id": "AnalyzerOrgPolicyConstraint",
+      "description": "The organization policy constraint definition.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The full resource name of this constraint. See [Cloud Asset Inventory Resource Name Format](https:\/\/cloud.google.com\/asset-inventory\/docs\/resource-name-format) for more information.",
+          "type": "string"
+        },
+        "versionedResources": {
+          "description": "Versioned resource representations of this constraint. This is repeated because there could be multiple versions of resource representations during version migration.",
+          "type": "array",
+          "items": {
+            "$ref": "VersionedResource"
+          }
+        }
+      }
+    },
+    "AnalyzeOrgPolicyGovernedContainersResponse": {
+      "id": "AnalyzeOrgPolicyGovernedContainersResponse",
+      "description": "The response message for AssetService.AnalyzeOrgPolicyGovernedContainers.",
+      "type": "object",
+      "properties": {
+        "governedContainers": {
+          "description": "The list of the analyzed governed containers.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAssetV1GovernedContainer"
+          }
+        },
+        "constraint": {
+          "description": "The definition of the constraint in the request.",
+          "$ref": "AnalyzerOrgPolicyConstraint"
+        },
+        "nextPageToken": {
+          "description": "The page token to fetch the next page for AnalyzeOrgPolicyResponse.governed_containers.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAssetV1GovernedContainer": {
+      "id": "GoogleCloudAssetV1GovernedContainer",
+      "description": "The organization\/folder\/project resource governed by organization policies of AnalyzeOrgPolicyGovernedContainersRequest.constraint.",
+      "type": "object",
+      "properties": {
+        "fullResourceName": {
+          "description": "The [full resource name] (https:\/\/cloud.google.com\/asset-inventory\/docs\/resource-name-format) of an organization\/folder\/project resource.",
+          "type": "string"
+        },
+        "parent": {
+          "description": "The [full resource name] (https:\/\/cloud.google.com\/asset-inventory\/docs\/resource-name-format) of the parent of AnalyzeOrgPolicyGovernedContainersResponse.GovernedContainer.full_resource_name.",
+          "type": "string"
+        },
+        "consolidatedPolicy": {
+          "description": "The consolidated organization policy for the analyzed resource. The consolidated organization policy is computed by merging and evaluating AnalyzeOrgPolicyGovernedContainersResponse.GovernedContainer.policy_bundle. The evaluation will respect the organization policy [hierarchy rules](https:\/\/cloud.google.com\/resource-manager\/docs\/organization-policy\/understanding-hierarchy).",
+          "$ref": "AnalyzerOrgPolicy"
+        },
+        "policyBundle": {
+          "description": "The ordered list of all organization policies impacting this resource from the scope to the target resource. Default organization policies are also included.",
+          "type": "array",
+          "items": {
+            "$ref": "AnalyzerOrgPolicy"
+          }
+        }
+      }
+    },
+    "AnalyzeOrgPolicyGovernedResourcesResponse": {
+      "id": "AnalyzeOrgPolicyGovernedResourcesResponse",
+      "description": "The response message for AssetService.AnalyzeOrgPolicyGovernedResources.",
+      "type": "object",
+      "properties": {
+        "governedResources": {
+          "description": "The list of the analyzed governed resources.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAssetV1GovernedResource"
+          }
+        },
+        "constraint": {
+          "description": "The definition of the constraint in the request.",
+          "$ref": "AnalyzerOrgPolicyConstraint"
+        },
+        "nextPageToken": {
+          "description": "The page token to fetch the next page for AnalyzeOrgPolicyResponse.governed_resources.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAssetV1GovernedResource": {
+      "id": "GoogleCloudAssetV1GovernedResource",
+      "description": "The GCP resources governed by the organization policies of the AnalyzeOrgPolicyGovernedResourcesRequest.constraint.",
+      "type": "object",
+      "properties": {
+        "fullResourceName": {
+          "description": "The [full resource name] (https:\/\/cloud.google.com\/asset-inventory\/docs\/resource-name-format) of the GCP resource.",
+          "type": "string"
+        },
+        "parent": {
+          "description": "The [full resource name] (https:\/\/cloud.google.com\/asset-inventory\/docs\/resource-name-format) of the parent of AnalyzeOrgPolicyGovernedContainersResponse.GovernedContainer.full_resource_name.",
+          "type": "string"
+        },
+        "consolidatedPolicy": {
+          "description": "The consolidated policy for the analyzed resource. The consolidated policy is computed by merging and evaluating AnalyzeOrgPolicyGovernedResourcesResponse.GovernedResource.policy_bundle. The evaluation will respect the organization policy [hierarchy rules](https:\/\/cloud.google.com\/resource-manager\/docs\/organization-policy\/understanding-hierarchy).",
+          "$ref": "AnalyzerOrgPolicy"
+        },
+        "policyBundle": {
+          "description": "The ordered list of all organization policies impacting this resource from the scope to the target resource. Default organization policies are also included.",
+          "type": "array",
+          "items": {
+            "$ref": "AnalyzerOrgPolicy"
+          }
+        },
+        "project": {
+          "description": "The project that this resource belongs to, in the form of projects\/{PROJECT_NUMBER}. This field is available when the resource belongs to a project.",
+          "type": "string"
+        },
+        "folders": {
+          "description": "The folder(s) that this resource belongs to, in the form of folders\/{FOLDER_NUMBER}. This field is available when the resource belongs(directly or cascadingly) to one or more folders.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "organization": {
+          "description": "The organization that this resource belongs to, in the form of organizations\/{ORGANIZATION_NUMBER}. This field is available when the resource belongs(directly or cascadingly) to an organization.",
+          "type": "string"
+        }
+      }
+    },
     "GoogleCloudAssetV1p7beta1Asset": {
       "id": "GoogleCloudAssetV1p7beta1Asset",
       "description": "An asset in Google Cloud. An asset can be any resource in the Google Cloud [resource hierarchy](https:\/\/cloud.google.com\/resource-manager\/docs\/cloud-platform-resource-hierarchy), a resource outside the Google Cloud resource hierarchy (such as Google Kubernetes Engine clusters and objects), or a policy (e.g. Cloud IAM policy). See [Supported asset types](https:\/\/cloud.google.com\/asset-inventory\/docs\/supported-asset-types) for more information.",
@@ -2911,7 +3102,7 @@
           "$ref": "GoogleCloudAssetV1p7beta1Resource"
         },
         "iamPolicy": {
-          "description": "A representation of the Cloud IAM policy set on a Google Cloud resource. There can be a maximum of one Cloud IAM policy set on any given resource. In addition, Cloud IAM policies inherit their granted access scope from any policies set on parent resources in the resource hierarchy. Therefore, the effectively policy is the union of both the policy set on this resource and each policy set on all of the resource's ancestry resource levels in the hierarchy. See [this topic](https:\/\/cloud.google.com\/iam\/docs\/policies#inheritance) for more information.",
+          "description": "A representation of the Cloud IAM policy set on a Google Cloud resource. There can be a maximum of one Cloud IAM policy set on any given resource. In addition, Cloud IAM policies inherit their granted access scope from any policies set on parent resources in the resource hierarchy. Therefore, the effectively policy is the union of both the policy set on this resource and each policy set on all of the resource's ancestry resource levels in the hierarchy. See [this topic](https:\/\/cloud.google.com\/iam\/help\/allow-policies\/inheritance) for more information.",
           "$ref": "Policy"
         },
         "orgPolicy": {
@@ -3273,7 +3464,7 @@
               "type": "string"
             },
             "query": {
-              "description": "Optional. The query statement. See [how to construct a query](https:\/\/cloud.google.com\/asset-inventory\/docs\/searching-iam-policies#how_to_construct_a_query) for more information. If not specified or empty, it will search all the IAM policies within the specified `scope`. Note that the query string is compared against each Cloud IAM policy binding, including its principals, roles, and Cloud IAM conditions. The returned Cloud IAM policies will only contain the bindings that match your query. To learn more about the IAM policy structure, see [IAM policy doc](https:\/\/cloud.google.com\/iam\/docs\/policies#structure). Examples: * `policy:amy@gmail.com` to find IAM policy bindings that specify user \"amy@gmail.com\". * `policy:roles\/compute.admin` to find IAM policy bindings that specify the Compute Admin role. * `policy:comp*` to find IAM policy bindings that contain \"comp\" as a prefix of any word in the binding. * `policy.role.permissions:storage.buckets.update` to find IAM policy bindings that specify a role containing \"storage.buckets.update\" permission. Note that if callers don't have `iam.roles.get` access to a role's included permissions, policy bindings that specify this role will be dropped from the search results. * `policy.role.permissions:upd*` to find IAM policy bindings that specify a role containing \"upd\" as a prefix of any word in the role permission. Note that if callers don't have `iam.roles.get` access to a role's included permissions, policy bindings that specify this role will be dropped from the search results. * `resource:organizations\/123456` to find IAM policy bindings that are set on \"organizations\/123456\". * `resource=\/\/cloudresourcemanager.googleapis.com\/projects\/myproject` to find IAM policy bindings that are set on the project named \"myproject\". * `Important` to find IAM policy bindings that contain \"Important\" as a word in any of the searchable fields (except for the included permissions). * `resource:(instance1 OR instance2) policy:amy` to find IAM policy bindings that are set on resources \"instance1\" or \"instance2\" and also specify user \"amy\". * `roles:roles\/compute.admin` to find IAM policy bindings that specify the Compute Admin role. * `memberTypes:user` to find IAM policy bindings that contain the principal type \"user\".",
+              "description": "Optional. The query statement. See [how to construct a query](https:\/\/cloud.google.com\/asset-inventory\/docs\/searching-iam-policies#how_to_construct_a_query) for more information. If not specified or empty, it will search all the IAM policies within the specified `scope`. Note that the query string is compared against each Cloud IAM policy binding, including its principals, roles, and Cloud IAM conditions. The returned Cloud IAM policies will only contain the bindings that match your query. To learn more about the IAM policy structure, see the [IAM policy documentation](https:\/\/cloud.google.com\/iam\/help\/allow-policies\/structure). Examples: * `policy:amy@gmail.com` to find IAM policy bindings that specify user \"amy@gmail.com\". * `policy:roles\/compute.admin` to find IAM policy bindings that specify the Compute Admin role. * `policy:comp*` to find IAM policy bindings that contain \"comp\" as a prefix of any word in the binding. * `policy.role.permissions:storage.buckets.update` to find IAM policy bindings that specify a role containing \"storage.buckets.update\" permission. Note that if callers don't have `iam.roles.get` access to a role's included permissions, policy bindings that specify this role will be dropped from the search results. * `policy.role.permissions:upd*` to find IAM policy bindings that specify a role containing \"upd\" as a prefix of any word in the role permission. Note that if callers don't have `iam.roles.get` access to a role's included permissions, policy bindings that specify this role will be dropped from the search results. * `resource:organizations\/123456` to find IAM policy bindings that are set on \"organizations\/123456\". * `resource=\/\/cloudresourcemanager.googleapis.com\/projects\/myproject` to find IAM policy bindings that are set on the project named \"myproject\". * `Important` to find IAM policy bindings that contain \"Important\" as a word in any of the searchable fields (except for the included permissions). * `resource:(instance1 OR instance2) policy:amy` to find IAM policy bindings that are set on resources \"instance1\" or \"instance2\" and also specify user \"amy\". * `roles:roles\/compute.admin` to find IAM policy bindings that specify the Compute Admin role. * `memberTypes:user` to find IAM policy bindings that contain the principal type \"user\".",
               "location": "query",
               "type": "string"
             },
@@ -3505,6 +3696,144 @@
             "https://www.googleapis.com/auth/cloud-platform"
           ],
           "description": "Issue a job that queries assets using a SQL statement compatible with [BigQuery Standard SQL](http:\/\/cloud\/bigquery\/docs\/reference\/standard-sql\/enabling-standard-sql). If the query execution finishes within timeout and there's no pagination, the full query results will be returned in the `QueryAssetsResponse`. Otherwise, full query results can be obtained by issuing extra requests with the `job_reference` from the a previous `QueryAssets` call. Note, the query result has approximately 10 GB limitation enforced by BigQuery https:\/\/cloud.google.com\/bigquery\/docs\/best-practices-performance-output, queries return larger results will result in errors."
+        },
+        "analyzeOrgPolicies": {
+          "id": "cloudasset.analyzeOrgPolicies",
+          "path": "v1/{+scope}:analyzeOrgPolicies",
+          "flatPath": "v1/{v1Id}/{v1Id1}:analyzeOrgPolicies",
+          "httpMethod": "GET",
+          "parameters": {
+            "scope": {
+              "description": "Required. The project\/folder\/organization to scope the request. Only resources and organization policies within the scope will be analyzed. * projects\/{PROJECT_NUMBER} (e.g., \"projects\/12345678\") * projects\/{PROJECT_ID} (e.g., \"projects\/test-project\") * folders\/{FOLDER_NUMBER} (e.g., \"folders\/1234567\") * organizations\/{ORGANIZATION_NUMBER} (e.g., \"organizations\/123456\")",
+              "pattern": "^[^\/]+\/[^\/]+$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "constraint": {
+              "description": "Required. The name of the constraint to analyze organization policies for. The response only contains analyzed organization policies for the provided constraint. (e.g. \"cloudbuild.allowedWorkerPools\").",
+              "location": "query",
+              "type": "string"
+            },
+            "filter": {
+              "description": "The expression to filter the consolidated organization policies in result.",
+              "location": "query",
+              "type": "string"
+            },
+            "pageSize": {
+              "description": "The maximum number of items to return per page. If unspecified, AnalyzeOrgPolicyResponse.defined_org_policies will contain 20 items with a maximum of 200.",
+              "location": "query",
+              "type": "integer",
+              "format": "int32"
+            },
+            "pageToken": {
+              "description": "The pagination token to retrieve the next page.",
+              "location": "query",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "scope"
+          ],
+          "response": {
+            "$ref": "AnalyzeOrgPoliciesResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Analyzes organization policies under a scope."
+        },
+        "analyzeOrgPolicyGovernedContainers": {
+          "id": "cloudasset.analyzeOrgPolicyGovernedContainers",
+          "path": "v1/{+scope}:analyzeOrgPolicyGovernedContainers",
+          "flatPath": "v1/{v1Id}/{v1Id1}:analyzeOrgPolicyGovernedContainers",
+          "httpMethod": "GET",
+          "parameters": {
+            "scope": {
+              "description": "Required. The project\/folder\/organization to scope the request. Only resources within the scope will be analyzed. * projects\/{PROJECT_NUMBER} (e.g., \"projects\/12345678\") * projects\/{PROJECT_ID} (e.g., \"projects\/test-project\") * folders\/{FOLDER_NUMBER} (e.g., \"folders\/1234567\") * organizations\/{ORGANIZATION_NUMBER} (e.g., \"organizations\/123456\")",
+              "pattern": "^[^\/]+\/[^\/]+$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "constraint": {
+              "description": "Required. The name of the constraint to analyze governed containers for. The analysis only contains organization policies for the provided constraint. (e.g. \"cloudbuild.allowedWorkerPools\").",
+              "location": "query",
+              "type": "string"
+            },
+            "filter": {
+              "description": "The expression to filter the governed containers in result. The only supported comparison operator is `=`, and supported field is `parent`. Example: parent=\"\/\/cloudresourcemanager.googleapis.com\/folders\/001\" will return all containers under \"folders\/001\".",
+              "location": "query",
+              "type": "string"
+            },
+            "pageSize": {
+              "description": "The maximum number of items to return per page. If unspecified, AnalyzeOrgPolicyResponse.governed_containers will contain 100 items with a maximum of 200.",
+              "location": "query",
+              "type": "integer",
+              "format": "int32"
+            },
+            "pageToken": {
+              "description": "The pagination token to retrieve the next page.",
+              "location": "query",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "scope"
+          ],
+          "response": {
+            "$ref": "AnalyzeOrgPolicyGovernedContainersResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Analyzes organization policies governed containers (projects, folders or organization) under a scope."
+        },
+        "analyzeOrgPolicyGovernedResources": {
+          "id": "cloudasset.analyzeOrgPolicyGovernedResources",
+          "path": "v1/{+scope}:analyzeOrgPolicyGovernedResources",
+          "flatPath": "v1/{v1Id}/{v1Id1}:analyzeOrgPolicyGovernedResources",
+          "httpMethod": "GET",
+          "parameters": {
+            "scope": {
+              "description": "Required. The project\/folder\/organization to scope the request. Only organization policies and resources within the scope will be analyzed. * projects\/{PROJECT_NUMBER} (e.g., \"projects\/12345678\") * projects\/{PROJECT_ID} (e.g., \"projects\/test-project\") * folders\/{FOLDER_NUMBER} (e.g., \"folders\/1234567\") * organizations\/{ORGANIZATION_NUMBER} (e.g., \"organizations\/123456\")",
+              "pattern": "^[^\/]+\/[^\/]+$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "constraint": {
+              "description": "Required. The name of the constraint to analyze governed resources for. The analysis only contains analyzed organization policies for the provided constraint. (e.g. \"cloudbuild.allowedWorkerPools\").",
+              "location": "query",
+              "type": "string"
+            },
+            "filter": {
+              "description": "The expression to filter the governed resources in result. The only supported comparison operator is `=`, and supported field is `project`, `folders` and `organization`. Example: project=\"project\/12345678\" filter will return all governed resources under project\/12345678 including the project ifself, if applicable.",
+              "location": "query",
+              "type": "string"
+            },
+            "pageSize": {
+              "description": "The maximum number of items to return per page. If unspecified, AnalyzeOrgPolicyResponse.governed_resources will contain 100 items with a maximum of 200.",
+              "location": "query",
+              "type": "integer",
+              "format": "int32"
+            },
+            "pageToken": {
+              "description": "The pagination token to retrieve the next page.",
+              "location": "query",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "scope"
+          ],
+          "response": {
+            "$ref": "AnalyzeOrgPolicyGovernedResourcesResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Analyzes organization policies governed resources under a scope."
         }
       }
     },

@@ -52,12 +52,11 @@ def AddsRunFlags(parser):
   parser.add_argument('RUN_ID', help='The ID of the PipelineRun/TaskRun/Build.')
   parser.add_argument(
       '--type',
-      required=True,
       choices=[
           'pipelinerun',
           'taskrun',
           'build',
       ],
-      default='none',
+      default='pipelinerun',
       help='Type of Run.')
   AddsRegionResourceArg(parser)

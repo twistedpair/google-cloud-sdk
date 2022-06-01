@@ -65,7 +65,9 @@ def CreateNetworkResourceFromArgs(messages, network_ref, network_args,
   if hasattr(network_args, 'mtu') and network_args.mtu is not None:
     network.mtu = network_args.mtu
 
-  if support_firewall_order and network_args.network_firewall_policy_enforcement_order:
+  if support_firewall_order and hasattr(
+      network_args, 'network_firewall_policy_enforcement_order'
+  ) and network_args.network_firewall_policy_enforcement_order:
     network.networkFirewallPolicyEnforcementOrder = (
         messages.Network.NetworkFirewallPolicyEnforcementOrderValueValuesEnum(
             network_args.network_firewall_policy_enforcement_order))

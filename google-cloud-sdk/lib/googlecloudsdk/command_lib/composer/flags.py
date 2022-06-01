@@ -637,6 +637,15 @@ ENVIRONMENT_SIZE_ALPHA = arg_utils.ChoiceEnumMapper(
     .EnvironmentSizeValueValuesEnum,
     custom_mappings=_ENVIRONMENT_SIZE_MAPPING)
 
+AIRFLOW_DATABASE_RETENTION_DAYS = base.Argument(
+    '--airflow-database-retention-days',
+    type=int,
+    default=None,
+    help="""\
+    The number of retention
+      days for airflow database retention mechanism.
+    """)
+
 
 def _IsValidIpv4CidrBlock(ipv4_cidr_block):
   """Validates that IPV4 CIDR block arg has valid format.

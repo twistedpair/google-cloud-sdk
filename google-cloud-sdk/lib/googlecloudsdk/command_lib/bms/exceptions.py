@@ -23,3 +23,12 @@ from googlecloudsdk.core import exceptions
 
 class NoConfigurationChangeError(exceptions.Error):
   """No configuration changes were requested."""
+
+
+class MissingPropertyError(exceptions.Error):
+  """Indicates a missing property in an ArgDict flag."""
+
+  def __init__(self, flag_name, property_name):
+    message = 'Flag [--{}] is missing the required property [{}]'.format(
+        flag_name, property_name)
+    super(MissingPropertyError, self).__init__(message)
