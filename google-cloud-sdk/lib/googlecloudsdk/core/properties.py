@@ -1267,7 +1267,7 @@ class _SectionApp(_Section):
         'promote_by_default',
         help_text='If True, when deploying a new version of a service, that '
         'version will be promoted to receive all traffic for the service. '
-        'This property can be overridden via the `--promote-by-default` or '
+        'This property can be overridden with the `--promote-by-default` or '
         '`--no-promote-by-default` flags.',
         default=True)
     self.stop_previous_version = self._AddBool(
@@ -1399,32 +1399,32 @@ class _SectionAuth(_Section):
         'information.')
     self.impersonate_service_account = self._Add(
         'impersonate_service_account',
-        help_text="""\
+        help_text=textwrap.dedent("""\
         While set, all API requests will be
         made as the given service account or target service account in an
         impersonation delegation chain instead of the currently selected
         account. You can specify either a single service account as the
         impersonator, or a comma-separated list of service accounts to
         create an impersonation delegation chain. This is done without
-        needing to create, download, and activate a key for the service
+        needing to create, download, or activate a key for the service
         account or accounts.
-
+        +
         In order to make API requests as a service account, your
         currently selected account must have an IAM role that includes
         the `iam.serviceAccounts.getAccessToken` permission for the
         service account or accounts.
-
+        +
         The `roles/iam.serviceAccountTokenCreator` role has
         the `iam.serviceAccounts.getAccessToken permission`. You can
         also create a custom role.
-
+        +
         You can specify a list of service accounts, separated with
         commas. This creates an impersonation delegation chain in which
         each service account delegates its permissions to the next
         service account in the chain. Each service account in the list
         must have the `roles/iam.serviceAccountTokenCreator` role on the
         next service account in the list. For example, when the property is set
-        via `gcloud config set auth/impersonate-service-account=`
+        through `gcloud config set auth/impersonate_service_account=`
         ``SERVICE_ACCOUNT_1'',``SERVICE_ACCOUNT_2'',
         the active account must have the
         `roles/iam.serviceAccountTokenCreator` role on
@@ -1433,8 +1433,7 @@ class _SectionAuth(_Section):
         ``SERVICE_ACCOUNT_2''.
         ``SERVICE_ACCOUNT_1'' is the impersonated service
         account and ``SERVICE_ACCOUNT_2'' is the delegate.
-        """,
-    )
+        """))
     self.disable_code_verifier = self._AddBool(
         'disable_code_verifier',
         default=False,

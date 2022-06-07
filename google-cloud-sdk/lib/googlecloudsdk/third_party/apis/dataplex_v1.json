@@ -5377,6 +5377,93 @@
                       ],
                       "description": "Get a content resource."
                     },
+                    "getIamPolicy": {
+                      "id": "dataplex.projects.locations.lakes.contentitems.getIamPolicy",
+                      "path": "v1/{+resource}:getIamPolicy",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/contentitems/{contentitemsId}:getIamPolicy",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "resource": {
+                          "description": "REQUIRED: The resource for which the policy is being requested. See Resource names (https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/lakes\/[^\/]+\/contentitems\/.*$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "options.requestedPolicyVersion": {
+                          "description": "Optional. The maximum policy version that will be used to format the policy.Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected.Requests for policies with any conditional role bindings must specify version 3. Policies with no conditional role bindings may specify any valid value or leave the field unset.The policy in the response might use the policy version that you specified, or it might use a lower policy version. For example, if you specify version 3, but the policy has no conditional role bindings, the response uses version 1.To learn which resources support conditions in their IAM policies, see the IAM documentation (https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        }
+                      },
+                      "parameterOrder": [
+                        "resource"
+                      ],
+                      "response": {
+                        "$ref": "GoogleIamV1Policy"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets the access control policy for a contentitem resource. A NOT_FOUND error is returned if the resource does not exist. An empty policy is returned if the resource exists but does not have a policy set on it.Caller must have Google IAM dataplex.content.getIamPolicy permission on the resource."
+                    },
+                    "setIamPolicy": {
+                      "id": "dataplex.projects.locations.lakes.contentitems.setIamPolicy",
+                      "path": "v1/{+resource}:setIamPolicy",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/contentitems/{contentitemsId}:setIamPolicy",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "resource": {
+                          "description": "REQUIRED: The resource for which the policy is being specified. See Resource names (https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/lakes\/[^\/]+\/contentitems\/.*$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "resource"
+                      ],
+                      "request": {
+                        "$ref": "GoogleIamV1SetIamPolicyRequest"
+                      },
+                      "response": {
+                        "$ref": "GoogleIamV1Policy"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Sets the access control policy on the specified contentitem resource. Replaces any existing policy.Caller must have Google IAM dataplex.content.setIamPolicy permission on the resource."
+                    },
+                    "testIamPermissions": {
+                      "id": "dataplex.projects.locations.lakes.contentitems.testIamPermissions",
+                      "path": "v1/{+resource}:testIamPermissions",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/contentitems/{contentitemsId}:testIamPermissions",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "resource": {
+                          "description": "REQUIRED: The resource for which the policy detail is being requested. See Resource names (https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/lakes\/[^\/]+\/contentitems\/.*$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "resource"
+                      ],
+                      "request": {
+                        "$ref": "GoogleIamV1TestIamPermissionsRequest"
+                      },
+                      "response": {
+                        "$ref": "GoogleIamV1TestIamPermissionsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Returns the caller's permissions on a resource. If the resource does not exist, an empty set of permissions is returned (a NOT_FOUND error is not returned).A caller is not required to have Google IAM permission to make this request.Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
+                    },
                     "list": {
                       "id": "dataplex.projects.locations.lakes.contentitems.list",
                       "path": "v1/{+parent}/contentitems",

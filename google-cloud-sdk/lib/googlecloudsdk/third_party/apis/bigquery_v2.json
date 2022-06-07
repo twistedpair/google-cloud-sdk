@@ -4,7 +4,7 @@
  "id": "bigquery:v2",
  "name": "bigquery",
  "version": "v2",
- "revision": "20220513",
+ "revision": "20220527",
  "title": "BigQuery API",
  "description": "A data platform for customers to create, manage, share and query data.",
  "ownerDomain": "google.com",
@@ -4001,6 +4001,23 @@
        "description": "Table ID of the requested table",
        "required": true,
        "location": "path"
+      },
+      "view": {
+       "type": "string",
+       "description": "Specifies the view that determines which table information is returned. By default, basic table information and storage statistics (STORAGE_STATS) are returned.",
+       "enum": [
+        "BASIC",
+        "FULL",
+        "STORAGE_STATS",
+        "TABLE_METADATA_VIEW_UNSPECIFIED"
+       ],
+       "enumDescriptions": [
+        "Includes basic table information including schema and partitioning specification. This view does not include storage statistics such as numRows or numBytes. This view is significantly more efficient and should be used to support high query rates.",
+        "Includes all table information, including storage statistics. It returns same information as STORAGE_STATS view, but may contain additional information in the future.",
+        "Includes all information in the BASIC view as well as storage statistics (numBytes, numLongTermBytes, numRows and lastModifiedTime).",
+        "The default value. Default to the STORAGE_STATS view."
+       ],
+       "location": "query"
       }
      },
      "parameterOrder": [

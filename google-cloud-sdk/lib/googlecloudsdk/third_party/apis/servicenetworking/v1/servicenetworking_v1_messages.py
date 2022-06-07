@@ -126,6 +126,16 @@ class AddSubnetworkRequest(_messages.Message):
     checkServiceNetworkingUsePermission: Optional. The IAM permission check
       determines whether the consumer project has
       'servicenetworking.services.use' permission or not.
+    computeIdempotencyWindow: Optional. Specifies a custom time bucket for
+      Arcus subnetwork request idempotency. If two equivalent concurrent
+      requests are made, Arcus will know to ignore the request if it has
+      already been completed or is in progress. Only requests with matching
+      compute_idempotency_window have guaranteed idempotency. Changing this
+      time window between requests results in undefined behavior. Zero (or
+      empty) value with custom_compute_idempotency_window=true specifies no
+      idempotency (i.e. no request ID is provided to Arcus). Maximum value of
+      14 days (enforced by Arcus limit). For more information on how to use,
+      see: go/revisit-sn-idempotency-window
     consumer: Required. A resource that represents the service consumer, such
       as `projects/123456`. The project number can be different from the value
       in the consumer network parameter. For example, the network might be
@@ -173,23 +183,31 @@ class AddSubnetworkRequest(_messages.Message):
       [subnetwork](/compute/docs/reference/rest/v1/subnetworks) in the Compute
       API documentation.
     subnetworkUsers: A list of members that are granted the
-      `compute.networkUser` role on the subnet.
+      `roles/servicenetworking.subnetworkAdmin` role on the subnet.
+    useCustomComputeIdempotencyWindow: Optional. Specifies if Service
+      Networking should use a custom time bucket for Arcus idempotency. If
+      false, Service Networking uses a 300 second (5 minute) Arcus idempotency
+      window. If true, Service Networking uses a custom idempotency window
+      provided by the user in field compute_idempotency_window. For more
+      information on how to use, see: go/revisit-sn-idempotency-window
   """
 
   checkServiceNetworkingUsePermission = _messages.BooleanField(1)
-  consumer = _messages.StringField(2)
-  consumerNetwork = _messages.StringField(3)
-  description = _messages.StringField(4)
-  ipPrefixLength = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  outsideAllocationPublicIpRange = _messages.StringField(6)
-  privateIpv6GoogleAccess = _messages.StringField(7)
-  purpose = _messages.StringField(8)
-  region = _messages.StringField(9)
-  requestedAddress = _messages.StringField(10)
-  requestedRanges = _messages.StringField(11, repeated=True)
-  secondaryIpRangeSpecs = _messages.MessageField('SecondaryIpRangeSpec', 12, repeated=True)
-  subnetwork = _messages.StringField(13)
-  subnetworkUsers = _messages.StringField(14, repeated=True)
+  computeIdempotencyWindow = _messages.StringField(2)
+  consumer = _messages.StringField(3)
+  consumerNetwork = _messages.StringField(4)
+  description = _messages.StringField(5)
+  ipPrefixLength = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  outsideAllocationPublicIpRange = _messages.StringField(7)
+  privateIpv6GoogleAccess = _messages.StringField(8)
+  purpose = _messages.StringField(9)
+  region = _messages.StringField(10)
+  requestedAddress = _messages.StringField(11)
+  requestedRanges = _messages.StringField(12, repeated=True)
+  secondaryIpRangeSpecs = _messages.MessageField('SecondaryIpRangeSpec', 13, repeated=True)
+  subnetwork = _messages.StringField(14)
+  subnetworkUsers = _messages.StringField(15, repeated=True)
+  useCustomComputeIdempotencyWindow = _messages.BooleanField(16)
 
 
 class Api(_messages.Message):

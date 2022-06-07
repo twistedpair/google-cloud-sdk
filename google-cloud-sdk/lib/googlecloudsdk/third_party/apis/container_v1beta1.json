@@ -298,6 +298,10 @@
           "description": "Configuration for direct-path (via ALTS) with workload identity.",
           "$ref": "WorkloadALTSConfig"
         },
+        "costManagementConfig": {
+          "description": "Configuration for the fine-grained cost management feature.",
+          "$ref": "CostManagementConfig"
+        },
         "clusterTelemetry": {
           "description": "Telemetry integration for the cluster.",
           "$ref": "ClusterTelemetry"
@@ -1630,17 +1634,19 @@
           "type": "string",
           "enumDescriptions": [
             "Default value.",
-            "Rolling update is the traditional way of updating node pool. max_surge and max_unavailable determines the level of update parallelism.",
-            "Blue\/green update."
+            "ROLLING is the synonymous with SURGE. Deprecate this value and use SURGE instead.",
+            "Blue-green update.",
+            "SURGE is the traditional way of updating node pool. max_surge and max_unavailable determines the level of update parallelism."
           ],
           "enum": [
             "NODE_POOL_UPDATE_STRATEGY_UNSPECIFIED",
             "ROLLING",
-            "BLUE_GREEN"
+            "BLUE_GREEN",
+            "SURGE"
           ]
         },
         "blueGreenSettings": {
-          "description": "Settings for blue\/green update strategy.",
+          "description": "Settings for blue-green update strategy.",
           "$ref": "BlueGreenSettings"
         },
         "rollingSettings": {
@@ -1651,11 +1657,11 @@
     },
     "BlueGreenSettings": {
       "id": "BlueGreenSettings",
-      "description": "Settings for blue\/green update.",
+      "description": "Settings for blue-green update.",
       "type": "object",
       "properties": {
         "standardRolloutPolicy": {
-          "description": "Standard policy for the blue\/green update.",
+          "description": "Standard policy for the blue-green update.",
           "$ref": "StandardRolloutPolicy"
         },
         "nodePoolSoakDuration": {
@@ -1667,7 +1673,7 @@
     },
     "StandardRolloutPolicy": {
       "id": "StandardRolloutPolicy",
-      "description": "Standard rollout policy is the default policy for blue\/green.",
+      "description": "Standard rollout policy is the default policy for blue-green.",
       "type": "object",
       "properties": {
         "batchPercentage": {
@@ -1729,22 +1735,22 @@
       "type": "object",
       "properties": {
         "blueGreenInfo": {
-          "description": "Information of a blue\/green update.",
+          "description": "Information of a blue-green update.",
           "$ref": "BlueGreenInfo"
         }
       }
     },
     "BlueGreenInfo": {
       "id": "BlueGreenInfo",
-      "description": "Information relevant to blue\/green update.",
+      "description": "Information relevant to blue-green update.",
       "type": "object",
       "properties": {
         "phase": {
-          "description": "Current blue\/green update phase.",
+          "description": "Current blue-green update phase.",
           "type": "string",
           "enumDescriptions": [
             "Unspecified phase.",
-            "Blue\/green update has been initiated.",
+            "Blue-green update has been initiated.",
             "Start creating green pool nodes.",
             "Start cordoning blue pool nodes.",
             "Start draining blue pool nodes.",
@@ -1778,7 +1784,7 @@
           }
         },
         "bluePoolDeletionStartTime": {
-          "description": "Time to start deleting blue pool to complete blue\/green update, in [RFC3339](https:\/\/www.ietf.org\/rfc\/rfc3339.txt) text format.",
+          "description": "Time to start deleting blue pool to complete blue-green update, in [RFC3339](https:\/\/www.ietf.org\/rfc\/rfc3339.txt) text format.",
           "type": "string"
         },
         "greenPoolVersion": {
@@ -2129,9 +2135,9 @@
           "description": "Mode of operation for binauthz policy evaluation. Currently the only options are equivalent to enable\/disable. If unspecified, defaults to DISABLED.",
           "type": "string",
           "enumDescriptions": [
-            "Default value, equivalent to DISABLED.",
+            "Default value",
             "Disable BinaryAuthorization",
-            "If enabled, enforce Kubernetes admission requests with BinAuthz using the project's singleton policy. Equivalent to bool enabled=true."
+            "Enforce Kubernetes admission requests with BinaryAuthorization using the project's singleton policy. This is equivalent to setting the enabled boolean to true."
           ],
           "enum": [
             "EVALUATION_MODE_UNSPECIFIED",
@@ -2669,6 +2675,16 @@
         "issuingCertificateAuthority": {
           "description": "DEPRECATED: Use enable_certificates instead issuing_certificate_authority controls issuance of workload mTLS certificates. If non-empty, it must be a Private CA resource URL of the form \"\/\/privateca.googleapis.com\/projects\/{project}\/locations\/{location}\/certificateAuthorities\/{name}\". If non-empty, Workload Identity (standard or Hub) must be active (workload_pool must be non-empty).",
           "type": "string"
+        },
+        "tuneGkeMetadataServerMemory": {
+          "description": "If non-zero, set the memory requests and limits of gke-metadata-server to this value in bytes. If zero, gke-metadata-server will use default values.",
+          "type": "string",
+          "format": "int64"
+        },
+        "tuneGkeMetadataServerCpu": {
+          "description": "If non-zero, set the cpu requests and limits of gke-metadata-server to this value in millicores. If zero, gke-metadata-server will use default values.",
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -2701,6 +2717,17 @@
       "properties": {
         "enableAlts": {
           "description": "enable_alts controls whether the alts handshaker should be enabled or not for direct-path. Requires Workload Identity (workload_pool must be non-empty).",
+          "type": "boolean"
+        }
+      }
+    },
+    "CostManagementConfig": {
+      "id": "CostManagementConfig",
+      "description": "Configuration for fine-grained cost management feature.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Whether the feature is enabled or not.",
           "type": "boolean"
         }
       }
@@ -3622,6 +3649,10 @@
         "desiredShieldedNodes": {
           "description": "Configuration for Shielded Nodes.",
           "$ref": "ShieldedNodes"
+        },
+        "desiredCostManagementConfig": {
+          "description": "The desired configuration for the fine-grained cost management feature.",
+          "$ref": "CostManagementConfig"
         },
         "desiredMaster": {
           "description": "Configuration for master components.",
@@ -4815,6 +4846,65 @@
         }
       }
     },
+    "CheckAutopilotCompatibilityResponse": {
+      "id": "CheckAutopilotCompatibilityResponse",
+      "description": "CheckAutopilotCompatibilityResponse has a list of compatibility issues.",
+      "type": "object",
+      "properties": {
+        "issues": {
+          "description": "The list of issues for the given operation.",
+          "type": "array",
+          "items": {
+            "$ref": "AutopilotCompatibilityIssue"
+          }
+        }
+      }
+    },
+    "AutopilotCompatibilityIssue": {
+      "id": "AutopilotCompatibilityIssue",
+      "description": "AutopilotCompatibilityIssue contains information about a specific compatibility issue with Autopilot mode.",
+      "type": "object",
+      "properties": {
+        "lastObservation": {
+          "description": "The last time when this issue was observed.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "issueId": {
+          "description": "A string to uniquely identify of the issue.",
+          "type": "string"
+        },
+        "type": {
+          "description": "The type of this issue.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value, should not be used.",
+            "Indicates that the issue is referring to an incompatibility between the cluster and Autopilot mode.",
+            "Indicates the issue is not an incompatibility, but depending on the workloads business logic, there is a potential that they won't work on Autopilot."
+          ],
+          "enum": [
+            "UNSPECIFIED",
+            "INCOMPATIBILITY",
+            "WARNING"
+          ]
+        },
+        "subjects": {
+          "description": "The name of the resources which are subject to this issue.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "documentationUrl": {
+          "description": "A URL to a public documnetation, which addresses resolving this issue.",
+          "type": "string"
+        },
+        "description": {
+          "description": "The description of the issue.",
+          "type": "string"
+        }
+      }
+    },
     "ListLocationsResponse": {
       "id": "ListLocationsResponse",
       "description": "ListLocationsResponse returns the list of all GKE locations and their recommendation state.",
@@ -5596,6 +5686,31 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Sets the maintenance policy for a cluster."
+                },
+                "checkAutopilotCompatibility": {
+                  "id": "container.projects.locations.clusters.checkAutopilotCompatibility",
+                  "path": "v1beta1/{+name}:checkAutopilotCompatibility",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:checkAutopilotCompatibility",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "The name (project, location, cluster) of the cluster to retrieve. Specified in the format `projects\/*\/locations\/*\/clusters\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "CheckAutopilotCompatibilityResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Checks the cluster compatibility with Autopilot mode, and returns a list of compatibility issues."
                 }
               }
               ,

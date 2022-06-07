@@ -2622,6 +2622,37 @@ class ApigeeOrganizationsEnvironmentsSecurityReportsListRequest(_messages.Messag
   to = _messages.StringField(8)
 
 
+class ApigeeOrganizationsEnvironmentsSecurityStatsQueryTabularStatsRequest(_messages.Message):
+  r"""A ApigeeOrganizationsEnvironmentsSecurityStatsQueryTabularStatsRequest
+  object.
+
+  Fields:
+    googleCloudApigeeV1QueryTabularStatsRequest: A
+      GoogleCloudApigeeV1QueryTabularStatsRequest resource to be passed as the
+      request body.
+    orgenv: Required. Should be of the form organizations//environments/.
+  """
+
+  googleCloudApigeeV1QueryTabularStatsRequest = _messages.MessageField('GoogleCloudApigeeV1QueryTabularStatsRequest', 1)
+  orgenv = _messages.StringField(2, required=True)
+
+
+class ApigeeOrganizationsEnvironmentsSecurityStatsQueryTimeSeriesStatsRequest(_messages.Message):
+  r"""A
+  ApigeeOrganizationsEnvironmentsSecurityStatsQueryTimeSeriesStatsRequest
+  object.
+
+  Fields:
+    googleCloudApigeeV1QueryTimeSeriesStatsRequest: A
+      GoogleCloudApigeeV1QueryTimeSeriesStatsRequest resource to be passed as
+      the request body.
+    orgenv: Required. Should be of the form organizations//environments/.
+  """
+
+  googleCloudApigeeV1QueryTimeSeriesStatsRequest = _messages.MessageField('GoogleCloudApigeeV1QueryTimeSeriesStatsRequest', 1)
+  orgenv = _messages.StringField(2, required=True)
+
+
 class ApigeeOrganizationsEnvironmentsSetIamPolicyRequest(_messages.Message):
   r"""A ApigeeOrganizationsEnvironmentsSetIamPolicyRequest object.
 
@@ -7437,6 +7468,61 @@ class GoogleCloudApigeeV1Metric(_messages.Message):
   values = _messages.MessageField('extra_types.JsonValue', 2, repeated=True)
 
 
+class GoogleCloudApigeeV1MetricAggregation(_messages.Message):
+  r"""The optionally aggregated metric to query with its ordering.
+
+  Enums:
+    AggregationValueValuesEnum: Aggregation function associated with the
+      metric.
+    OrderValueValuesEnum: Ordering for this aggregation in the result. For
+      time series this is ignored since the ordering of points depends only on
+      the timestamp, not the values.
+
+  Fields:
+    aggregation: Aggregation function associated with the metric.
+    name: Name of the metric
+    order: Ordering for this aggregation in the result. For time series this
+      is ignored since the ordering of points depends only on the timestamp,
+      not the values.
+  """
+
+  class AggregationValueValuesEnum(_messages.Enum):
+    r"""Aggregation function associated with the metric.
+
+    Values:
+      AGGREGATION_FUNCTION_UNSPECIFIED: Unspecified Aggregation function.
+      AVG: Average.
+      SUM: Summation.
+      MIN: Min.
+      MAX: Max.
+      COUNT_DISTINCT: Count distinct
+    """
+    AGGREGATION_FUNCTION_UNSPECIFIED = 0
+    AVG = 1
+    SUM = 2
+    MIN = 3
+    MAX = 4
+    COUNT_DISTINCT = 5
+
+  class OrderValueValuesEnum(_messages.Enum):
+    r"""Ordering for this aggregation in the result. For time series this is
+    ignored since the ordering of points depends only on the timestamp, not
+    the values.
+
+    Values:
+      ORDER_UNSPECIFIED: Unspecified order. Default is Descending.
+      ASCENDING: Ascending sort order.
+      DESCENDING: Descending sort order.
+    """
+    ORDER_UNSPECIFIED = 0
+    ASCENDING = 1
+    DESCENDING = 2
+
+  aggregation = _messages.EnumField('AggregationValueValuesEnum', 1)
+  name = _messages.StringField(2)
+  order = _messages.EnumField('OrderValueValuesEnum', 3)
+
+
 class GoogleCloudApigeeV1MonetizationConfig(_messages.Message):
   r"""Configuration for the Monetization add-on.
 
@@ -8195,6 +8281,171 @@ class GoogleCloudApigeeV1QueryMetric(_messages.Message):
   name = _messages.StringField(3)
   operator = _messages.StringField(4)
   value = _messages.StringField(5)
+
+
+class GoogleCloudApigeeV1QueryTabularStatsRequest(_messages.Message):
+  r"""Request payload representing the query to be run for fetching security
+  statistics as rows.
+
+  Fields:
+    dimensions: Required. List of dimension names to group the aggregations
+      by.
+    filter: Filter further on specific dimension values. Follows the same
+      grammar as custom report's filter expressions. Example, apiproxy eq
+      'foobar'. https://cloud.google.com/apigee/docs/api-
+      platform/analytics/analytics-reference#filters
+    metrics: Required. List of metrics and their aggregations.
+    pageSize: Page size represents the number of rows.
+    pageToken: Identifies a sequence of rows.
+    timeRange: Time range for the stats.
+  """
+
+  dimensions = _messages.StringField(1, repeated=True)
+  filter = _messages.StringField(2)
+  metrics = _messages.MessageField('GoogleCloudApigeeV1MetricAggregation', 3, repeated=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
+  timeRange = _messages.MessageField('GoogleTypeInterval', 6)
+
+
+class GoogleCloudApigeeV1QueryTabularStatsResponse(_messages.Message):
+  r"""Encapsulates two kinds of stats that are results of the dimensions and
+  aggregations requested. - Tabular rows. - Time series data. Example of
+  tabular rows, Represents security stats results as a row of flat values.
+
+  Messages:
+    ValuesValueListEntry: Single entry in a ValuesValue.
+
+  Fields:
+    columns: Column names corresponding to the same order as the inner values
+      in the stats field.
+    nextPageToken: Next page token.
+    values: Resultant rows from the executed query.
+  """
+
+  class ValuesValueListEntry(_messages.Message):
+    r"""Single entry in a ValuesValue.
+
+    Fields:
+      entry: A extra_types.JsonValue attribute.
+    """
+
+    entry = _messages.MessageField('extra_types.JsonValue', 1, repeated=True)
+
+  columns = _messages.StringField(1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  values = _messages.MessageField('ValuesValueListEntry', 3, repeated=True)
+
+
+class GoogleCloudApigeeV1QueryTimeSeriesStatsRequest(_messages.Message):
+  r"""QueryTimeSeriesStatsRequest represents a query that returns a collection
+  of time series sequences grouped by their values.
+
+  Enums:
+    TimestampOrderValueValuesEnum: Order the sequences in increasing or
+      decreasing order of timestamps. Default is descending order of
+      timestamps (latest first).
+
+  Fields:
+    dimensions: List of dimension names to group the aggregations by. If no
+      dimensions are passed, a single trend line representing the requested
+      metric aggregations grouped by environment is returned.
+    filter: Filter further on specific dimension values. Follows the same
+      grammar as custom report's filter expressions. Example, apiproxy eq
+      'foobar'. https://cloud.google.com/apigee/docs/api-
+      platform/analytics/analytics-reference#filters
+    metrics: Required. List of metrics and their aggregations.
+    pageSize: Page size represents the number of time series sequences, one
+      per unique set of dimensions and their values.
+    pageToken: Page token stands for a specific collection of time series
+      sequences.
+    timeRange: Required. Time range for the stats.
+    timestampOrder: Order the sequences in increasing or decreasing order of
+      timestamps. Default is descending order of timestamps (latest first).
+    windowSize: Required. Time buckets to group the stats by. Example, 1d, 2h,
+      24h, etc. Sequence of decimal numbers with a time unit suffix. Valid
+      units include `m` (minute), `h` (hour)
+  """
+
+  class TimestampOrderValueValuesEnum(_messages.Enum):
+    r"""Order the sequences in increasing or decreasing order of timestamps.
+    Default is descending order of timestamps (latest first).
+
+    Values:
+      ORDER_UNSPECIFIED: Unspecified order. Default is Descending.
+      ASCENDING: Ascending sort order.
+      DESCENDING: Descending sort order.
+    """
+    ORDER_UNSPECIFIED = 0
+    ASCENDING = 1
+    DESCENDING = 2
+
+  dimensions = _messages.StringField(1, repeated=True)
+  filter = _messages.StringField(2)
+  metrics = _messages.MessageField('GoogleCloudApigeeV1MetricAggregation', 3, repeated=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
+  timeRange = _messages.MessageField('GoogleTypeInterval', 6)
+  timestampOrder = _messages.EnumField('TimestampOrderValueValuesEnum', 7)
+  windowSize = _messages.StringField(8)
+
+
+class GoogleCloudApigeeV1QueryTimeSeriesStatsResponse(_messages.Message):
+  r"""Represents security stats result as a collection of time series
+  sequences.
+
+  Fields:
+    columns: Column names corresponding to the same order as the inner values
+      in the stats field.
+    nextPageToken: Next page token.
+    values: Results of the query returned as a JSON array.
+  """
+
+  columns = _messages.StringField(1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  values = _messages.MessageField('GoogleCloudApigeeV1QueryTimeSeriesStatsResponseSequence', 3, repeated=True)
+
+
+class GoogleCloudApigeeV1QueryTimeSeriesStatsResponseSequence(_messages.Message):
+  r"""A sequence of time series.
+
+  Messages:
+    DimensionsValue: Map of dimensions and their values that uniquely
+      identifies a time series sequence.
+
+  Fields:
+    dimensions: Map of dimensions and their values that uniquely identifies a
+      time series sequence.
+    points: List of points. First value of each inner list is a timestamp.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DimensionsValue(_messages.Message):
+    r"""Map of dimensions and their values that uniquely identifies a time
+    series sequence.
+
+    Messages:
+      AdditionalProperty: An additional property for a DimensionsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type DimensionsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DimensionsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  dimensions = _messages.MessageField('DimensionsValue', 1)
+  points = _messages.MessageField('extra_types.JsonValue', 2, repeated=True)
 
 
 class GoogleCloudApigeeV1Quota(_messages.Message):

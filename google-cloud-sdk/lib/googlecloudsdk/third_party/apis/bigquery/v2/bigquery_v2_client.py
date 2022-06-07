@@ -567,7 +567,7 @@ class BigqueryV2(base_api.BaseApiClient):
         method_id='bigquery.tables.get',
         ordered_params=['projectId', 'datasetId', 'tableId'],
         path_params=['datasetId', 'projectId', 'tableId'],
-        query_params=['selectedFields'],
+        query_params=['selectedFields', 'view'],
         relative_path='projects/{projectId}/datasets/{datasetId}/tables/{tableId}',
         request_field='',
         request_type_name='BigqueryTablesGetRequest',

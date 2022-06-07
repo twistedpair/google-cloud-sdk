@@ -1399,10 +1399,14 @@ class GoogleFirestoreAdminV1Field(_messages.Message):
       is: `projects/{project_id}/databases/{database_id}/collectionGroups/__de
       fault__/fields/*` Indexes defined on this `Field` will be applied to all
       fields which do not have their own `Field` index configuration.
+    ttlConfig: The TTL configuration for this `Field`. Setting or unsetting
+      this will enable or disable the TTL for documents that have this
+      `Field`.
   """
 
   indexConfig = _messages.MessageField('GoogleFirestoreAdminV1IndexConfig', 1)
   name = _messages.StringField(2)
+  ttlConfig = _messages.MessageField('GoogleFirestoreAdminV1TtlConfig', 3)
 
 
 class GoogleFirestoreAdminV1FieldOperationMetadata(_messages.Message):
@@ -1424,6 +1428,7 @@ class GoogleFirestoreAdminV1FieldOperationMetadata(_messages.Message):
     progressDocuments: The progress, in documents, of this operation.
     startTime: The time this operation started.
     state: The state of the operation.
+    ttlConfigDelta: Describes the deltas of TTL configuration.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -1457,6 +1462,7 @@ class GoogleFirestoreAdminV1FieldOperationMetadata(_messages.Message):
   progressDocuments = _messages.MessageField('GoogleFirestoreAdminV1Progress', 5)
   startTime = _messages.StringField(6)
   state = _messages.EnumField('StateValueValuesEnum', 7)
+  ttlConfigDelta = _messages.MessageField('GoogleFirestoreAdminV1TtlConfigDelta', 8)
 
 
 class GoogleFirestoreAdminV1ImportDocumentsMetadata(_messages.Message):
@@ -1817,6 +1823,70 @@ class GoogleFirestoreAdminV1Progress(_messages.Message):
 
   completedWork = _messages.IntegerField(1)
   estimatedWork = _messages.IntegerField(2)
+
+
+class GoogleFirestoreAdminV1TtlConfig(_messages.Message):
+  r"""The TTL (time-to-live) configuration for documents that have this
+  `Field` set. Storing a timestamp value into a TTL-enabled field will be
+  treated as the document's absolute expiration time. Using any other data
+  type or leaving the field absent will disable the TTL for the individual
+  document.
+
+  Enums:
+    StateValueValuesEnum: Output only. The state of the TTL configuration.
+
+  Fields:
+    state: Output only. The state of the TTL configuration.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the TTL configuration.
+
+    Values:
+      STATE_UNSPECIFIED: The state is unspecified or unknown.
+      CREATING: The TTL is being applied. There is an active long-running
+        operation to track the change. Newly written documents will have TTLs
+        applied as requested. Requested TTLs on existing documents are still
+        being processed. When TTLs on all existing documents have been
+        processed, the state will move to 'ACTIVE'.
+      ACTIVE: The TTL is active for all documents.
+      NEEDS_REPAIR: The TTL configuration could not be enabled for all
+        existing documents. Newly written documents will continue to have
+        their TTL applied. The LRO returned when last attempting to enable TTL
+        for this `Field` has failed, and may have more details.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    ACTIVE = 2
+    NEEDS_REPAIR = 3
+
+  state = _messages.EnumField('StateValueValuesEnum', 1)
+
+
+class GoogleFirestoreAdminV1TtlConfigDelta(_messages.Message):
+  r"""Information about an TTL configuration change.
+
+  Enums:
+    ChangeTypeValueValuesEnum: Specifies how the TTL configuration is
+      changing.
+
+  Fields:
+    changeType: Specifies how the TTL configuration is changing.
+  """
+
+  class ChangeTypeValueValuesEnum(_messages.Enum):
+    r"""Specifies how the TTL configuration is changing.
+
+    Values:
+      CHANGE_TYPE_UNSPECIFIED: The type of change is not specified or known.
+      ADD: The TTL config is being added.
+      REMOVE: The TTL config is being removed.
+    """
+    CHANGE_TYPE_UNSPECIFIED = 0
+    ADD = 1
+    REMOVE = 2
+
+  changeType = _messages.EnumField('ChangeTypeValueValuesEnum', 1)
 
 
 class GoogleFirestoreAdminV1UpdateDatabaseMetadata(_messages.Message):

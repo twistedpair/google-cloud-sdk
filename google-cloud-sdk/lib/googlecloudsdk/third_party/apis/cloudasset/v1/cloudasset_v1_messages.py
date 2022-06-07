@@ -161,33 +161,33 @@ class AnalyzerOrgPolicy(_messages.Message):
       (https://cloud.google.com/asset-inventory/docs/resource-name-format) of
       an organization/folder/project resource where this organization policy
       is set.
-    name: The full resource name of this org policy. See [Cloud Asset
-      Inventory Resource Name Format](https://cloud.google.com/asset-
-      inventory/docs/resource-name-format) for more information.
-    versionedResources: Versioned resource representations of this org policy.
-      This is repeated because there could be multiple versions of resource
-      representations during version migration.
+    inheritFromParent: If `inherit_from_parent` is true, Rules set higher up
+      in the hierarchy (up to the closest root) are inherited and present in
+      the effective policy. If it is false, then no rules are inherited, and
+      this policy becomes the effective root for evaluation.
+    reset: Ignores policies set above this resource and restores the default
+      behavior of the constraint at this resource. This field can be set in
+      policies for either list or boolean constraints. If set, `rules` must be
+      empty and `inherit_from_parent` must be set to false.
+    rules: List of rules for this organization policy.
   """
 
   attachedResource = _messages.StringField(1)
-  name = _messages.StringField(2)
-  versionedResources = _messages.MessageField('VersionedResource', 3, repeated=True)
+  inheritFromParent = _messages.BooleanField(2)
+  reset = _messages.BooleanField(3)
+  rules = _messages.MessageField('GoogleCloudAssetV1Rule', 4, repeated=True)
 
 
 class AnalyzerOrgPolicyConstraint(_messages.Message):
   r"""The organization policy constraint definition.
 
   Fields:
-    name: The full resource name of this constraint. See [Cloud Asset
-      Inventory Resource Name Format](https://cloud.google.com/asset-
-      inventory/docs/resource-name-format) for more information.
-    versionedResources: Versioned resource representations of this constraint.
-      This is repeated because there could be multiple versions of resource
-      representations during version migration.
+    constraint: The definition of the constraint.
+    customConstraint: The definition of the custom constraint.
   """
 
-  name = _messages.StringField(1)
-  versionedResources = _messages.MessageField('VersionedResource', 2, repeated=True)
+  constraint = _messages.MessageField('GoogleCloudAssetV1Constraint', 1)
+  customConstraint = _messages.MessageField('GoogleCloudAssetV1CustomConstraint', 2)
 
 
 class Asset(_messages.Message):
@@ -1854,6 +1854,118 @@ class GoogleCloudAssetV1BigQueryDestination(_messages.Message):
   writeDisposition = _messages.StringField(4)
 
 
+class GoogleCloudAssetV1BooleanConstraint(_messages.Message):
+  r"""A `Constraint` that is either enforced or not. For example a constraint
+  `constraints/compute.disableSerialPortAccess`. If it is enforced on a VM
+  instance, serial port connections will not be opened to that instance.
+  """
+
+
+
+class GoogleCloudAssetV1Constraint(_messages.Message):
+  r"""The definition of a constraint.
+
+  Enums:
+    ConstraintDefaultValueValuesEnum: The evaluation behavior of this
+      constraint in the absence of 'Policy'.
+
+  Fields:
+    booleanConstraint: Defines this constraint as being a BooleanConstraint.
+    constraintDefault: The evaluation behavior of this constraint in the
+      absence of 'Policy'.
+    description: Detailed description of what this `Constraint` controls as
+      well as how and where it is enforced.
+    displayName: The human readable name.
+    listConstraint: Defines this constraint as being a ListConstraint.
+    name: The resource name of the Constraint. Must be in one of the following
+      forms: * `projects/{project_number}/constraints/{constraint_name}` *
+      `folders/{folder_id}/constraints/{constraint_name}` *
+      `organizations/{organization_id}/constraints/{constraint_name}` For
+      example, "/projects/123/constraints/compute.disableSerialPortAccess".
+  """
+
+  class ConstraintDefaultValueValuesEnum(_messages.Enum):
+    r"""The evaluation behavior of this constraint in the absence of 'Policy'.
+
+    Values:
+      CONSTRAINT_DEFAULT_UNSPECIFIED: This is only used for distinguishing
+        unset values and should never be used.
+      ALLOW: Indicate that all values are allowed for list constraints.
+        Indicate that enforcement is off for boolean constraints.
+      DENY: Indicate that all values are denied for list constraints. Indicate
+        that enforcement is on for boolean constraints.
+    """
+    CONSTRAINT_DEFAULT_UNSPECIFIED = 0
+    ALLOW = 1
+    DENY = 2
+
+  booleanConstraint = _messages.MessageField('GoogleCloudAssetV1BooleanConstraint', 1)
+  constraintDefault = _messages.EnumField('ConstraintDefaultValueValuesEnum', 2)
+  description = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  listConstraint = _messages.MessageField('GoogleCloudAssetV1ListConstraint', 5)
+  name = _messages.StringField(6)
+
+
+class GoogleCloudAssetV1CustomConstraint(_messages.Message):
+  r"""The definition of a custom constraint.
+
+  Enums:
+    ActionTypeValueValuesEnum: Allow or deny type.
+    MethodTypesValueListEntryValuesEnum:
+
+  Fields:
+    actionType: Allow or deny type.
+    condition: Organization policy condition/expression. For example:
+      `resource.instanceName.matches("[production|test]_.*_(\d)+")'` or,
+      `resource.management.auto_upgrade == true`
+    description: Detailed information about this custom policy constraint.
+    displayName: One line display name for the UI.
+    methodTypes: All the operations being applied for this constraint.
+    name: Name of the constraint. This is unique within the organization.
+      Format of the name should be * `organizations/{organization_id}/customCo
+      nstraints/{custom_constraint_id}` Example :
+      "organizations/123/customConstraints/custom.createOnlyE2TypeVms"
+    resourceTypes: The Resource Instance type on which this policy applies to.
+      Format will be of the form : "/" Example: *
+      `compute.googleapis.com/Instance`.
+  """
+
+  class ActionTypeValueValuesEnum(_messages.Enum):
+    r"""Allow or deny type.
+
+    Values:
+      ACTION_TYPE_UNSPECIFIED: Unspecified. Will results in user error.
+      ALLOW: Allowed action type.
+      DENY: Deny action type.
+    """
+    ACTION_TYPE_UNSPECIFIED = 0
+    ALLOW = 1
+    DENY = 2
+
+  class MethodTypesValueListEntryValuesEnum(_messages.Enum):
+    r"""MethodTypesValueListEntryValuesEnum enum type.
+
+    Values:
+      METHOD_TYPE_UNSPECIFIED: Unspecified. Will results in user error.
+      CREATE: Constraint applied when creating the resource.
+      UPDATE: Constraint applied when updating the resource.
+      DELETE: Constraint applied when deleting the resource.
+    """
+    METHOD_TYPE_UNSPECIFIED = 0
+    CREATE = 1
+    UPDATE = 2
+    DELETE = 3
+
+  actionType = _messages.EnumField('ActionTypeValueValuesEnum', 1)
+  condition = _messages.StringField(2)
+  description = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  methodTypes = _messages.EnumField('MethodTypesValueListEntryValuesEnum', 5, repeated=True)
+  name = _messages.StringField(6)
+  resourceTypes = _messages.StringField(7, repeated=True)
+
+
 class GoogleCloudAssetV1Edge(_messages.Message):
   r"""A directional edge.
 
@@ -1989,6 +2101,24 @@ class GoogleCloudAssetV1IdentityList(_messages.Message):
   identities = _messages.MessageField('GoogleCloudAssetV1Identity', 2, repeated=True)
 
 
+class GoogleCloudAssetV1ListConstraint(_messages.Message):
+  r"""A `Constraint` that allows or disallows a list of string values, which
+  are configured by an Organization's policy administrator with a `Policy`.
+
+  Fields:
+    supportsIn: Indicates whether values grouped into categories can be used
+      in `Policy.allowed_values` and `Policy.denied_values`. For example,
+      `"in:Python"` would match any value in the 'Python' group.
+    supportsUnder: Indicates whether subtrees of Cloud Resource Manager
+      resource hierarchy can be used in `Policy.allowed_values` and
+      `Policy.denied_values`. For example, `"under:folders/123"` would match
+      any resource under the 'folders/123' folder.
+  """
+
+  supportsIn = _messages.BooleanField(1)
+  supportsUnder = _messages.BooleanField(2)
+
+
 class GoogleCloudAssetV1Resource(_messages.Message):
   r"""A Google Cloud resource under analysis.
 
@@ -2000,6 +2130,41 @@ class GoogleCloudAssetV1Resource(_messages.Message):
 
   analysisState = _messages.MessageField('IamPolicyAnalysisState', 1)
   fullResourceName = _messages.StringField(2)
+
+
+class GoogleCloudAssetV1Rule(_messages.Message):
+  r"""Represents a rule defined in an organization policy
+
+  Fields:
+    allowAll: Setting this to true means that all values are allowed. This
+      field can be set only in Policies for list constraints.
+    condition: The evaluating condition for this rule.
+    denyAll: Setting this to true means that all values are denied. This field
+      can be set only in Policies for list constraints.
+    enforce: If `true`, then the `Policy` is enforced. If `false`, then any
+      configuration is acceptable. This field can be set only in Policies for
+      boolean constraints.
+    values: List of values to be used for this PolicyRule. This field can be
+      set only in Policies for list constraints.
+  """
+
+  allowAll = _messages.BooleanField(1)
+  condition = _messages.MessageField('Expr', 2)
+  denyAll = _messages.BooleanField(3)
+  enforce = _messages.BooleanField(4)
+  values = _messages.MessageField('GoogleCloudAssetV1StringValues', 5)
+
+
+class GoogleCloudAssetV1StringValues(_messages.Message):
+  r"""The string values for the list constraints.
+
+  Fields:
+    allowedValues: List of values allowed at this resource.
+    deniedValues: List of values denied at this resource.
+  """
+
+  allowedValues = _messages.StringField(1, repeated=True)
+  deniedValues = _messages.StringField(2, repeated=True)
 
 
 class GoogleCloudAssetV1p7beta1Asset(_messages.Message):
@@ -2733,6 +2898,9 @@ class GoogleIdentityAccesscontextmanagerV1EgressTo(_messages.Message):
   to be allowed egress out of the perimeter.
 
   Fields:
+    externalResources: A list of external resources that are allowed to be
+      accessed. A request matches if it contains an external resource in this
+      list (Example: s3://bucket/path). Currently '*' is not allowed.
     operations: A list of ApiOperations allowed to be performed by the sources
       specified in the corresponding EgressFrom. A request matches if it uses
       an operation/service in this list.
@@ -2743,8 +2911,9 @@ class GoogleIdentityAccesscontextmanagerV1EgressTo(_messages.Message):
       will authorize access to all resources outside the perimeter.
   """
 
-  operations = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ApiOperation', 1, repeated=True)
-  resources = _messages.StringField(2, repeated=True)
+  externalResources = _messages.StringField(1, repeated=True)
+  operations = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ApiOperation', 2, repeated=True)
+  resources = _messages.StringField(3, repeated=True)
 
 
 class GoogleIdentityAccesscontextmanagerV1IngressFrom(_messages.Message):

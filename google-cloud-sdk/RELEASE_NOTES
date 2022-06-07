@@ -5,6 +5,92 @@ Copyright 2014-2022 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 389.0.0 (2022-06-07)
+
+### Anthos Multi-Cloud
+
+*   Added `--instance-type` flag to `gcloud container aws node-pools update` to
+    update the EC2 instance type of node pool nodes.
+
+### Artifact Registry
+
+* Added new command `gcloud artifacts files list` to list files in a specific repository.
+
+### Cloud Composer
+
+* Added `--enable-master-authorized-networks` and `--master-authorized-networks` flags to `gcloud composer environments create` command.
+* Added `--enable-master-authorized-networks` and `--disable-master-authorized-networks` and `--master-authorized-networks` to `gcloud composer environments update` command.
+* Added `--enable-ip-masq-agent` flag to `gcloud composer environments create` command to enable IP address masquerading in the GKE cluster.
+
+### Cloud DNS
+
+* Add setIamPolicy and getIamPolicy commands in beta.
+
+### Cloud Filestore
+
+*   Add support for Filestore's multi-share instances to `gcloud beta filestore instances list`.
+    CAPACITY_GB will show the instance's capacity for multi-share instances instead of an empty string.
+    FILE_SHARE_NAME will show "N/A" for multi-share instances instead of an empty string.
+
+### Cloud Identity-Aware Proxy
+
+*   Promoted `gcloud iap tcp dest-groups` command group to beta.
+
+### Cloud Run
+
+* Promoted `--session-affinity` of `gcloud run` to beta.
+
+### Cloud SQL
+
+* Add command `gcloud sql generate-login-token` to generate down-scoped OAuth2 access tokens for IAM database authentication.
+
+### Compute Engine
+
+* Modified `--ssl-certificates` flag to be optional in `gcloud compute target-https-proxies create`.
+* Updated the documentation for `--mtu` flag of `compute networks create|update`.
+* Updated the validation for `--enable-logging` and `--logging-sample-rate` flags of `beta compute backend-services create|update`.
+* Updated the documentation for `--logging-sample-rate` flag of `compute backend-services create|update`.
+
+### Config Connector
+
+* Updated Google Cloud Config Connector to version 1.87.0.
+  See Config Connector Overview for more details [https://cloud.google.com/config-connector/docs/overview](https://cloud.google.com/config-connector/docs/overview).
+
+### Database Migration
+
+* Renamed `--sync` flag to `--no-async` flag to `gcloud database-migrate migration-jobs create` command to wait for the migration job creation operation to be completed before proceeding.
+* Added `--no-async` flag to `gcloud database-migrate migration-jobs update` command to wait for the migration job updation operation to be completed before proceeding.
+* Updated `gcloud database-migration connection-profiles create cloudsql` to support the flag root-password.
+* Added `--no-async` flag to `gcloud database-migrate migration-jobs create` command to wait for the connection profile creation operation to be completed before proceeding.
+
+### Kpt
+
+* Updated kpt from v1.0.0-beta.13 to v1.0.0-beta.15. See <https://github.com/GoogleContainerTools/kpt/releases/tag/v1.0.0-beta.15> for more details.
+* The kpt fn commands now includes Kptfile and functionConfig in the function input by default. Previously this behavior was controlled using `--enable-meta-resources` command-line flag. -`-enable-meta-resources` flag is also deprecated. If this disrupts any of your config workflow, you can use exclude functionality to exclude resources from function inputs. This functionality was added in this release to minimize the disruption.
+* The kpt website is overhauled to reflect the new scope of kpt project. New components package orchestrator, Configuration as Data UI and Config Sync are added to the project.
+* Added package orchestrator (a.k.a. `porch`) CLI interface under alpha subgroup (`kpt alpha rpkg`, `kpt alpha repo`, `kpt alpha sync`).
+* Added command-line flag `--save` to `kpt fn eval` to save evaluated function to package's Kptfile.
+* Added capability to select resources using `labelSelector` and `annotationSelector` in `kpt fn eval` and `kpt fn render`.
+* Added capability to exclude resources in `kpt fn eval` and `kpt fn render`.
+* Added support for variant constructor pattern in `kpt pkg init` and `kpt pkg get`.
+* Added capability to execute functions in a kubernetes cluster using porch.
+
+### Kubernetes Engine
+
+* Added `podPidLimits` kubelet config option which controls per pod pid limits to `gcloud container clusters create`, `gcloud container node-pools create`, and `gcloud container node-pools update`.
+* Updates default kubectl from 1.21 to 1.22.
+* Additional kubectl versions:
+  * kubectl.1.19 (1.19.16)
+  * kubectl.1.20 (1.20.15)
+  * kubectl.1.21 (1.21.13)
+  * kubectl.1.22 (1.22.9)
+  * kubectl.1.23 (1.23.6)
+  * kubectl.1.24 (1.24.0)
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 388.0.0 (2022-06-01)
 
 ### Google Cloud CLI

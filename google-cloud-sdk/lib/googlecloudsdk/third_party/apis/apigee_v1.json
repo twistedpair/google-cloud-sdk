@@ -5486,6 +5486,236 @@
         }
       }
     },
+    "GoogleCloudApigeeV1QueryTabularStatsRequest": {
+      "id": "GoogleCloudApigeeV1QueryTabularStatsRequest",
+      "description": "Request payload representing the query to be run for fetching security statistics as rows.",
+      "type": "object",
+      "properties": {
+        "dimensions": {
+          "description": "Required. List of dimension names to group the aggregations by.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "metrics": {
+          "description": "Required. List of metrics and their aggregations.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudApigeeV1MetricAggregation"
+          }
+        },
+        "filter": {
+          "description": "Filter further on specific dimension values. Follows the same grammar as custom report's filter expressions. Example, apiproxy eq 'foobar'. https:\/\/cloud.google.com\/apigee\/docs\/api-platform\/analytics\/analytics-reference#filters",
+          "type": "string"
+        },
+        "timeRange": {
+          "description": "Time range for the stats.",
+          "$ref": "GoogleTypeInterval"
+        },
+        "pageSize": {
+          "description": "Page size represents the number of rows.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "pageToken": {
+          "description": "Identifies a sequence of rows.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudApigeeV1MetricAggregation": {
+      "id": "GoogleCloudApigeeV1MetricAggregation",
+      "description": "The optionally aggregated metric to query with its ordering.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Name of the metric",
+          "type": "string"
+        },
+        "aggregation": {
+          "description": "Aggregation function associated with the metric.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified Aggregation function.",
+            "Average.",
+            "Summation.",
+            "Min.",
+            "Max.",
+            "Count distinct"
+          ],
+          "enum": [
+            "AGGREGATION_FUNCTION_UNSPECIFIED",
+            "AVG",
+            "SUM",
+            "MIN",
+            "MAX",
+            "COUNT_DISTINCT"
+          ]
+        },
+        "order": {
+          "description": "Ordering for this aggregation in the result. For time series this is ignored since the ordering of points depends only on the timestamp, not the values.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified order. Default is Descending.",
+            "Ascending sort order.",
+            "Descending sort order."
+          ],
+          "enum": [
+            "ORDER_UNSPECIFIED",
+            "ASCENDING",
+            "DESCENDING"
+          ]
+        }
+      }
+    },
+    "GoogleTypeInterval": {
+      "id": "GoogleTypeInterval",
+      "description": "Represents a time interval, encoded as a Timestamp start (inclusive) and a Timestamp end (exclusive). The start must be less than or equal to the end. When the start equals the end, the interval is empty (matches no time). When both start and end are unspecified, the interval matches any time.",
+      "type": "object",
+      "properties": {
+        "startTime": {
+          "description": "Optional. Inclusive start of the interval. If specified, a Timestamp matching this interval will have to be the same or after the start.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "Optional. Exclusive end of the interval. If specified, a Timestamp matching this interval will have to be before the end.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "GoogleCloudApigeeV1QueryTabularStatsResponse": {
+      "id": "GoogleCloudApigeeV1QueryTabularStatsResponse",
+      "description": "Encapsulates two kinds of stats that are results of the dimensions and aggregations requested. - Tabular rows. - Time series data. Example of tabular rows, Represents security stats results as a row of flat values.",
+      "type": "object",
+      "properties": {
+        "values": {
+          "description": "Resultant rows from the executed query.",
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "any"
+            }
+          }
+        },
+        "columns": {
+          "description": "Column names corresponding to the same order as the inner values in the stats field.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "nextPageToken": {
+          "description": "Next page token.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudApigeeV1QueryTimeSeriesStatsRequest": {
+      "id": "GoogleCloudApigeeV1QueryTimeSeriesStatsRequest",
+      "description": "QueryTimeSeriesStatsRequest represents a query that returns a collection of time series sequences grouped by their values.",
+      "type": "object",
+      "properties": {
+        "dimensions": {
+          "description": "List of dimension names to group the aggregations by. If no dimensions are passed, a single trend line representing the requested metric aggregations grouped by environment is returned.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "metrics": {
+          "description": "Required. List of metrics and their aggregations.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudApigeeV1MetricAggregation"
+          }
+        },
+        "filter": {
+          "description": "Filter further on specific dimension values. Follows the same grammar as custom report's filter expressions. Example, apiproxy eq 'foobar'. https:\/\/cloud.google.com\/apigee\/docs\/api-platform\/analytics\/analytics-reference#filters",
+          "type": "string"
+        },
+        "windowSize": {
+          "description": "Required. Time buckets to group the stats by. Example, 1d, 2h, 24h, etc. Sequence of decimal numbers with a time unit suffix. Valid units include `m` (minute), `h` (hour)",
+          "type": "string"
+        },
+        "timeRange": {
+          "description": "Required. Time range for the stats.",
+          "$ref": "GoogleTypeInterval"
+        },
+        "timestampOrder": {
+          "description": "Order the sequences in increasing or decreasing order of timestamps. Default is descending order of timestamps (latest first).",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified order. Default is Descending.",
+            "Ascending sort order.",
+            "Descending sort order."
+          ],
+          "enum": [
+            "ORDER_UNSPECIFIED",
+            "ASCENDING",
+            "DESCENDING"
+          ]
+        },
+        "pageSize": {
+          "description": "Page size represents the number of time series sequences, one per unique set of dimensions and their values.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "pageToken": {
+          "description": "Page token stands for a specific collection of time series sequences.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudApigeeV1QueryTimeSeriesStatsResponse": {
+      "id": "GoogleCloudApigeeV1QueryTimeSeriesStatsResponse",
+      "description": "Represents security stats result as a collection of time series sequences.",
+      "type": "object",
+      "properties": {
+        "values": {
+          "description": "Results of the query returned as a JSON array.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudApigeeV1QueryTimeSeriesStatsResponseSequence"
+          }
+        },
+        "columns": {
+          "description": "Column names corresponding to the same order as the inner values in the stats field.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "nextPageToken": {
+          "description": "Next page token.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudApigeeV1QueryTimeSeriesStatsResponseSequence": {
+      "id": "GoogleCloudApigeeV1QueryTimeSeriesStatsResponseSequence",
+      "description": "A sequence of time series.",
+      "type": "object",
+      "properties": {
+        "dimensions": {
+          "description": "Map of dimensions and their values that uniquely identifies a time series sequence.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "points": {
+          "description": "List of points. First value of each inner list is a timestamp.",
+          "type": "array",
+          "items": {
+            "type": "any"
+          }
+        }
+      }
+    },
     "GoogleCloudApigeeV1SecurityProfile": {
       "id": "GoogleCloudApigeeV1SecurityProfile",
       "description": "Represents a SecurityProfile resource.",
@@ -5670,23 +5900,6 @@
         "pageToken": {
           "description": "Optional. A token that can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
           "type": "string"
-        }
-      }
-    },
-    "GoogleTypeInterval": {
-      "id": "GoogleTypeInterval",
-      "description": "Represents a time interval, encoded as a Timestamp start (inclusive) and a Timestamp end (exclusive). The start must be less than or equal to the end. When the start equals the end, the interval is empty (matches no time). When both start and end are unspecified, the interval matches any time.",
-      "type": "object",
-      "properties": {
-        "startTime": {
-          "description": "Optional. Inclusive start of the interval. If specified, a Timestamp matching this interval will have to be the same or after the start.",
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "endTime": {
-          "description": "Optional. Exclusive end of the interval. If specified, a Timestamp matching this interval will have to be before the end.",
-          "type": "string",
-          "format": "google-datetime"
         }
       }
     },
@@ -10820,6 +11033,66 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Return a list of Security Reports"
+                }
+              }
+            },
+            "securityStats": {
+              "methods": {
+                "queryTabularStats": {
+                  "id": "apigee.organizations.environments.securityStats.queryTabularStats",
+                  "path": "v1/{+orgenv}/securityStats:queryTabularStats",
+                  "flatPath": "v1/organizations/{organizationsId}/environments/{environmentsId}/securityStats:queryTabularStats",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "orgenv": {
+                      "description": "Required. Should be of the form organizations\/\/environments\/.",
+                      "pattern": "^organizations\/[^\/]+\/environments\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "orgenv"
+                  ],
+                  "request": {
+                    "$ref": "GoogleCloudApigeeV1QueryTabularStatsRequest"
+                  },
+                  "response": {
+                    "$ref": "GoogleCloudApigeeV1QueryTabularStatsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Retrieve security statistics as tabular rows."
+                },
+                "queryTimeSeriesStats": {
+                  "id": "apigee.organizations.environments.securityStats.queryTimeSeriesStats",
+                  "path": "v1/{+orgenv}/securityStats:queryTimeSeriesStats",
+                  "flatPath": "v1/organizations/{organizationsId}/environments/{environmentsId}/securityStats:queryTimeSeriesStats",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "orgenv": {
+                      "description": "Required. Should be of the form organizations\/\/environments\/.",
+                      "pattern": "^organizations\/[^\/]+\/environments\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "orgenv"
+                  ],
+                  "request": {
+                    "$ref": "GoogleCloudApigeeV1QueryTimeSeriesStatsRequest"
+                  },
+                  "response": {
+                    "$ref": "GoogleCloudApigeeV1QueryTimeSeriesStatsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Retrieve security statistics as a collection of time series."
                 }
               }
             },

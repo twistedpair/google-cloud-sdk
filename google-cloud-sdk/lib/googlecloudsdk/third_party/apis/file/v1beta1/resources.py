@@ -63,6 +63,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_INSTANCES_SHARES = (
+      'projects.locations.instances.shares',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/instances/'
+              '{instancesId}/shares/{sharesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_INSTANCES_SNAPSHOTS = (
       'projects.locations.instances.snapshots',
       '{+name}',

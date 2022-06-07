@@ -17,8 +17,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from googlecloudsdk.calliope import actions
-
 
 def AddAccountArg(parser):
   parser.add_argument(
@@ -158,10 +156,4 @@ def AddNoLaunchBrowserFlag(parser):
       help='Launch a browser for authorization. If not enabled or if it '
       'is not possible to launch a browser, prints a URL to standard output '
       'to be copied.',
-      action=actions.DeprecationAction(
-          '--launch-browser',
-          warn='The --[no-]launch-browser flags are deprecated and will be '
-          'removed on June 7th 2022 (Release 389.0.0). '
-          'Use --no-browser to replace --no-launch-browser.\n',
-          removed=False,
-          action='store_true'))
+      action='store_true')

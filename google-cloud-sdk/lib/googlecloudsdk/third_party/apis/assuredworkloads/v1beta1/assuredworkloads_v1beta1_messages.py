@@ -646,18 +646,6 @@ class GoogleCloudAssuredworkloadsV1beta1CreateWorkloadOperationMetadata(_message
   resourceSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadResourceSettings', 5, repeated=True)
 
 
-class GoogleCloudAssuredworkloadsV1beta1ListWorkloadsResponse(_messages.Message):
-  r"""Response of ListWorkloads endpoint.
-
-  Fields:
-    nextPageToken: The next page token. Return empty if reached the last page.
-    workloads: List of Workloads under a given parent.
-  """
-
-  nextPageToken = _messages.StringField(1)
-  workloads = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1Workload', 2, repeated=True)
-
-
 class GoogleCloudAssuredworkloadsV1beta1RestrictAllowedServicesRequest(_messages.Message):
   r"""Request for restricting list of available services in Workload
   environment.
@@ -1062,6 +1050,18 @@ class GoogleCloudAssuredworkloadsVersioningV1beta1ListViolationsResponse(_messag
 
   nextPageToken = _messages.StringField(1)
   violations = _messages.MessageField('GoogleCloudAssuredworkloadsVersioningV1beta1Violation', 2, repeated=True)
+
+
+class GoogleCloudAssuredworkloadsVersioningV1beta1ListWorkloadsResponse(_messages.Message):
+  r"""Response of ListWorkloads endpoint.
+
+  Fields:
+    nextPageToken: The next page token. Return empty if reached the last page.
+    workloads: List of Workloads under a given parent.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  workloads = _messages.MessageField('GoogleCloudAssuredworkloadsVersioningV1beta1Workload', 2, repeated=True)
 
 
 class GoogleCloudAssuredworkloadsVersioningV1beta1Violation(_messages.Message):

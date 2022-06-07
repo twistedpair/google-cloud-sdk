@@ -28,11 +28,11 @@ class ApiType(enum.Enum):
   UPDATE = 'update'
 
 
-def AddAsyncFlag(parser):
-  """Adds a --sync flag to the given parser."""
+def AddNoAsyncFlag(parser):
+  """Adds a --no-async flag to the given parser."""
   help_text = ('Waits for the operation in progress to complete before '
                'returning.')
-  parser.add_argument('--sync', action='store_true', help=help_text)
+  parser.add_argument('--no-async', action='store_true', help=help_text)
 
 
 def AddDisplayNameFlag(parser):

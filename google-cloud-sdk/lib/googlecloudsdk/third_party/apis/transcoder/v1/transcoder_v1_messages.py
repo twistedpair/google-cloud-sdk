@@ -626,7 +626,8 @@ class JobConfig(_messages.Message):
     output: Output configuration.
     overlays: List of overlays on the output video, in descending Z-order.
     pubsubDestination: Destination on Pub/Sub.
-    spriteSheets: List of output sprite sheets.
+    spriteSheets: List of output sprite sheets. Spritesheets require at least
+      one VideoStream in the Jobconfig.
   """
 
   adBreaks = _messages.MessageField('AdBreak', 1, repeated=True)

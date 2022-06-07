@@ -7,7 +7,7 @@
   "version": "v1alpha1",
   "revision": "0",
   "title": "Cloud Commerce Consumer Procurement API",
-  "description": "Enables consumers to procure products served by Cloud CommerceMarketplace platform",
+  "description": "Enables consumers to procure products served by Cloud Marketplace platform",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {
@@ -296,7 +296,7 @@
           "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1PlaceQuoteOrderRequest"
         },
         "lineItemInfo": {
-          "description": "Optional. Places order for offer. Required when offer based order is being placed.",
+          "description": "Optional. Places order for offer. Required when an offer-based order is being placed.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1LineItemInfo"
@@ -354,7 +354,7 @@
           "type": "string"
         },
         "offer": {
-          "description": "Optional. The name of the offer is accepted in either of these formats: 'billingAccounts\/{billing_account}\/offers\/{offer}', or 'services\/{service}\/standardOffers\/{offer}'.",
+          "description": "Optional. The name of the offer can have either of these formats: 'billingAccounts\/{billing_account}\/offers\/{offer}', or 'services\/{service}\/standardOffers\/{offer}'.",
           "type": "string"
         },
         "quoteExternalName": {
@@ -378,7 +378,7 @@
           "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1CustomPricing"
         },
         "parameters": {
-          "description": "Optional. User provided parameters.",
+          "description": "Optional. User-provided parameters.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1Parameter"
@@ -443,7 +443,7 @@
     },
     "GoogleCloudCommerceConsumerProcurementV1alpha1Parameter": {
       "id": "GoogleCloudCommerceConsumerProcurementV1alpha1Parameter",
-      "description": "User provided Parameters.",
+      "description": "User-provided Parameters.",
       "type": "object",
       "properties": {
         "name": {
@@ -521,11 +521,11 @@
     },
     "GoogleCloudCommerceConsumerProcurementV1alpha1Order": {
       "id": "GoogleCloudCommerceConsumerProcurementV1alpha1Order",
-      "description": "Order represents a purchase made by a customer on the Cloud Commerce Platform. Creation of an order programs both the Google backend systems as well as external service provider's systems (if needed) to allow use of purchased products and to ensure the appropriate billing events occur. An Order can be made against one Product with multiple add-ons (optional) or one Quote which could potentially references multiple products. Customers typically choose a price plan for each Product purchased when creating an order and can change their plan later, if the product allows.",
+      "description": "Represents a purchase made by a customer on Cloud Marketplace. Creating an order makes sure that both the Google backend systems as well as external service provider's systems (if needed) allow use of purchased products and ensures the appropriate billing events occur. An Order can be made against one Product with multiple add-ons (optional) or one Quote which might reference multiple products. Customers typically choose a price plan for each Product purchased when they create an order and can change their plan later, if the product allows.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. The resource name of the order. Order names have the form `billingAccounts\/{billing_account}\/orders\/{order}`.",
+          "description": "Output only. The resource name of the order. Has the form `billingAccounts\/{billing_account}\/orders\/{order}`.",
           "readOnly": true,
           "type": "string"
         },
@@ -618,7 +618,7 @@
           "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1LineItemChange"
         },
         "changeHistory": {
-          "description": "Output only. Changes made on the item that are not pending anymore, e.g. it was effective at some point, or the change was reverted by the customer, or the change was rejected by partner. No more operations are allowed on these changes.",
+          "description": "Output only. Changes made on the item that are not pending anymore which might be because they already took effect, were reverted by the customer, or were rejected by the partner. No more operations are allowed on these changes.",
           "readOnly": true,
           "type": "array",
           "items": {
@@ -671,11 +671,11 @@
           "enumDescriptions": [
             "Sentinel value. Do not use.",
             "Change is in this state when a change is initiated and waiting for partner approval.",
-            "Change is in this state, if the change was approved by partner or auto-approved but is pending to be effective. The change can be overwritten or cancelled depending on the new line item info property (pending Private Offer change cannot be cancelled and can only be overwritten by another Private Offer).",
-            "Change is in this state, if the change was activated and completed successfully.",
-            "Change is in this state, if the change was rejected by partner.",
-            "Change is in this state, if it was abandoned by user.",
-            "Change is in this state, if it is going through downstream provision, the change cannot be overwritten or cancelled in this state."
+            "Change is in this state after it's approved by the partner or auto-approved but before it takes effect. The change can be overwritten or cancelled depending on the new line item info property (pending Private Offer change cannot be cancelled and can only be overwritten by another Private Offer).",
+            "Change is in this state after it's been activated.",
+            "Change is in this state if it was rejected by the partner.",
+            "Change is in this state if it was abandoned by the user.",
+            "Change is in this state if it's currently being provisioned downstream. The change can't be overwritten or cancelled when it's in this state."
           ],
           "enum": [
             "LINE_ITEM_CHANGE_STATE_UNSPECIFIED",
@@ -688,19 +688,19 @@
           ]
         },
         "stateReason": {
-          "description": "Output only. Provider supplied message explanation for the LineItemChange's state. Mainly used to communicate progress and ETA for provisioning in the case of `PENDING_APPROVAL`, and to explain why the change request was denied or canceled in the case of `REJECTED` and `CANCELED` states.",
+          "description": "Output only. Provider-supplied message explaining the LineItemChange's state. Mainly used to communicate progress and ETA for provisioning in the case of `PENDING_APPROVAL`, and to explain why the change request was denied or canceled in the case of `REJECTED` and `CANCELED` states.",
           "readOnly": true,
           "type": "string"
         },
         "changeStateReasonType": {
-          "description": "Output only. Predefined enum types for why this line item change is in current state. For example, cancellation line item change could be completed because of expired at the end of term, user explicit immediate cancellation or system triggered cancellation.",
+          "description": "Output only. Predefined enum types for why this line item change is in current state. For example, a line item change's state could be `LINE_ITEM_CHANGE_STATE_COMPLETED` because of end-of-term expiration, immediate cancellation initiated by the user, or system-initiated cancellation.",
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
-            "Default value, indicating there is no predefined type for change state reason.",
+            "Default value, indicating there's no predefined type for change state reason.",
             "Change is in current state due to term expiration.",
-            "Change is in current state due to user explicit cancellation.",
-            "Change is in current state due to system cancellation."
+            "Change is in current state due to user-initiated cancellation.",
+            "Change is in current state due to system-initiated cancellation."
           ],
           "enum": [
             "LINE_ITEM_CHANGE_STATE_REASON_TYPE_UNSPECIFIED",
@@ -1786,7 +1786,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
-                  "description": "Required. The resource name of the parent resource. This field is of the form `billingAccounts\/{billing-account-id}`.",
+                  "description": "Required. The resource name of the parent resource. This field has the form `billingAccounts\/{billing-account-id}`.",
                   "pattern": "^billingAccounts\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -1805,7 +1805,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Creates a new Order. The returned long-running operation will be in-progress until the backend can complete the creation of the resource. Once completed, the order will be in OrderState.ORDER_STATE_ACTIVE. In case of failure, the order resource will be removed."
+              "description": "Creates a new Order. The returned long-running operation is in-progress until the backend completes the creation of the resource. Once completed, the order is in OrderState.ORDER_STATE_ACTIVE. In case of failure, the order resource will be removed."
             },
             "get": {
               "id": "cloudcommerceconsumerprocurement.billingAccounts.orders.get",
@@ -1839,14 +1839,14 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "Required. The parent resource to query for orders. This field is of the form `billingAccounts\/{billing-account-id}`.",
+                  "description": "Required. The parent resource to query for orders. This field has the form `billingAccounts\/{billing-account-id}`.",
                   "pattern": "^billingAccounts\/[^\/]+$",
                   "location": "path",
                   "required": true,
                   "type": "string"
                 },
                 "pageSize": {
-                  "description": "The maximum number of entries that are requested. The default page size is 25 and the maximum page size is 200.",
+                  "description": "The maximum number of entries requested. The default page size is 25 and the maximum page size is 200.",
                   "location": "query",
                   "type": "integer",
                   "format": "int32"
@@ -1857,7 +1857,7 @@
                   "type": "string"
                 },
                 "filter": {
-                  "description": "The filter that can be used to limit the list request. The filter is a query string that can match a selected set of attributes with string values. For example `display_name=abc`. Supported query attributes are * `display_name` If the query contains some special characters other than letters, underscore, or digits, the phrase must be quoted with double quotes. For example, `display_name=\"foo:bar\"`, where the display name needs to be quoted because it contains special character colon. Queries can be combined with `OR`, and `NOT` to form more complex queries. They can also be grouped to force a desired evaluation order. For example, `display_name=abc OR display_name=def`.",
+                  "description": "Filter that you can use to limit the list request. A query string that can match a selected set of attributes with string values. For example, `display_name=abc`. Supported query attributes are * `display_name` If the query contains special characters other than letters, underscore, or digits, the phrase must be quoted with double quotes. For example, `display_name=\"foo:bar\"`, where the display name needs to be quoted because it contains special character colon. Queries can be combined with `OR`, and `NOT` to form more complex queries. You can also group them to force a desired evaluation order. For example, `display_name=abc OR display_name=def`.",
                   "location": "query",
                   "type": "string"
                 }
@@ -1871,7 +1871,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Lists Order resources that the user have access to, within the scope of the parent resource."
+              "description": "Lists Order resources that the user has access to, within the scope of the parent resource."
             },
             "listMigratable": {
               "id": "cloudcommerceconsumerprocurement.billingAccounts.orders.listMigratable",
@@ -1912,7 +1912,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Lists migratable Order resources that the user have access to, within the scope of the parent resource."
+              "description": "Lists migratable Order resources that the user has access to, within the scope of the parent resource."
             },
             "modify": {
               "id": "cloudcommerceconsumerprocurement.billingAccounts.orders.modify",
@@ -2465,7 +2465,7 @@
                   "type": "string"
                 },
                 "pageSize": {
-                  "description": "The maximum number of entries that are requested. The default page size is 25 and the maximum page size is 200.",
+                  "description": "The maximum number of entries requested. The default page size is 25 and the maximum page size is 200.",
                   "location": "query",
                   "type": "integer",
                   "format": "int32"
@@ -2476,7 +2476,7 @@
                   "type": "string"
                 },
                 "filter": {
-                  "description": "The filter that can be used to limit the list request. The filter is a query string that can match a selected set of attributes with string values. For example `product_external_name=abc`. Supported query attributes are * `product_external_name` * `provider` If the query contains some special characters other than letters, underscore, or digits, the phrase must be quoted with double quotes. For example, `product_external_name=\"foo:bar\"`, where the product external name needs to be quoted because it contains special character colon. Queries can be combined with `OR`, and `NOT` to form more complex queries. They can also be grouped to force a desired evaluation order. For example, `product_external_name=abc OR product_external_name=def`.",
+                  "description": "Filter that can be used to limit the list request. A query string that can match a selected set of attributes with string values. For example `product_external_name=abc`. Supported query attributes are * `product_external_name` * `provider` If the query contains special characters other than letters, underscore, or digits, the phrase must be quoted with double quotes. For example, `product_external_name=\"foo:bar\"`, where the product external name needs to be quoted because it contains special character colon. Queries can be combined with `OR`, and `NOT` to form more complex queries. You can also group them to force a desired evaluation order. For example, `product_external_name=abc OR product_external_name=def`.",
                   "location": "query",
                   "type": "string"
                 }
@@ -2574,7 +2574,7 @@
                   "type": "string"
                 },
                 "filter": {
-                  "description": "The filter that can be used to limit the list request. The filter is a query string that can match a selected set of attributes with string values. For example `product_external_name=1234-5678-ABCD-EFG`. Supported query attributes are * `product_external_name` * `provider` If the query contains some special characters other than letters, underscore, or digits, the phrase must be quoted with double quotes. For example, `product_external_name=\"foo:bar\"`, where the product name needs to be quoted because it contains special character colon. Queries can be combined with `AND`, `OR`, and `NOT` to form more complex queries. They can also be grouped to force a desired evaluation order. For example, `provider=providers\/E-1234 OR provider=providers\/5678 AND NOT (product_external_name=foo-product)`. Connective `AND` can be omitted between two predicates. For example `provider=providers\/E-1234 product_external_name=foo` is equivalent to `provider=providers\/E-1234 AND product_external_name=foo`.",
+                  "description": "The filter that can be used to limit the list request. The filter is a query string that can match a selected set of attributes with string values. For example `product_external_name=1234-5678-ABCD-EFG`. Supported query attributes are * `product_external_name` * `provider` If the query contains special characters other than letters, underscore, or digits, the phrase must be quoted with double quotes. For example, `product_external_name=\"foo:bar\"`, where the product name needs to be quoted because it contains special character colon. Queries can be combined with `AND`, `OR`, and `NOT` to form more complex queries. They can also be grouped to force a desired evaluation order. For example, `provider=providers\/E-1234 OR provider=providers\/5678 AND NOT (product_external_name=foo-product)`. Connective `AND` can be omitted between two predicates. For example `provider=providers\/E-1234 product_external_name=foo` is equivalent to `provider=providers\/E-1234 AND product_external_name=foo`.",
                   "location": "query",
                   "type": "string"
                 }

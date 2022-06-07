@@ -446,6 +446,18 @@
         "environment": {
           "description": "Environment variables for this Runnable (overrides variables set for the whole Task or TaskGroup.",
           "$ref": "Environment"
+        },
+        "timeout": {
+          "description": "Timeout for this Runnable.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "labels": {
+          "description": "Labels for this Runnable.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },

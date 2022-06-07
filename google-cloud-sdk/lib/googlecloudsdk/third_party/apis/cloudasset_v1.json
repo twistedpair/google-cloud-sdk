@@ -1182,6 +1182,13 @@
           "items": {
             "$ref": "GoogleIdentityAccesscontextmanagerV1ApiOperation"
           }
+        },
+        "externalResources": {
+          "description": "A list of external resources that are allowed to be accessed. A request matches if it contains an external resource in this list (Example: s3:\/\/bucket\/path). Currently '*' is not allowed.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -2933,19 +2940,71 @@
       "description": "This organization policy message is a modified version of the one defined in the OrgPolicy system. This message contains several fields defined in the original organization policy with some new fields for analysis purpose.",
       "type": "object",
       "properties": {
-        "name": {
-          "description": "The full resource name of this org policy. See [Cloud Asset Inventory Resource Name Format](https:\/\/cloud.google.com\/asset-inventory\/docs\/resource-name-format) for more information.",
-          "type": "string"
-        },
         "attachedResource": {
           "description": "The [full resource name] (https:\/\/cloud.google.com\/asset-inventory\/docs\/resource-name-format) of an organization\/folder\/project resource where this organization policy is set.",
           "type": "string"
         },
-        "versionedResources": {
-          "description": "Versioned resource representations of this org policy. This is repeated because there could be multiple versions of resource representations during version migration.",
+        "rules": {
+          "description": "List of rules for this organization policy.",
           "type": "array",
           "items": {
-            "$ref": "VersionedResource"
+            "$ref": "GoogleCloudAssetV1Rule"
+          }
+        },
+        "inheritFromParent": {
+          "description": "If `inherit_from_parent` is true, Rules set higher up in the hierarchy (up to the closest root) are inherited and present in the effective policy. If it is false, then no rules are inherited, and this policy becomes the effective root for evaluation.",
+          "type": "boolean"
+        },
+        "reset": {
+          "description": "Ignores policies set above this resource and restores the default behavior of the constraint at this resource. This field can be set in policies for either list or boolean constraints. If set, `rules` must be empty and `inherit_from_parent` must be set to false.",
+          "type": "boolean"
+        }
+      }
+    },
+    "GoogleCloudAssetV1Rule": {
+      "id": "GoogleCloudAssetV1Rule",
+      "description": "Represents a rule defined in an organization policy",
+      "type": "object",
+      "properties": {
+        "values": {
+          "description": "List of values to be used for this PolicyRule. This field can be set only in Policies for list constraints.",
+          "$ref": "GoogleCloudAssetV1StringValues"
+        },
+        "allowAll": {
+          "description": "Setting this to true means that all values are allowed. This field can be set only in Policies for list constraints.",
+          "type": "boolean"
+        },
+        "denyAll": {
+          "description": "Setting this to true means that all values are denied. This field can be set only in Policies for list constraints.",
+          "type": "boolean"
+        },
+        "enforce": {
+          "description": "If `true`, then the `Policy` is enforced. If `false`, then any configuration is acceptable. This field can be set only in Policies for boolean constraints.",
+          "type": "boolean"
+        },
+        "condition": {
+          "description": "The evaluating condition for this rule.",
+          "$ref": "Expr"
+        }
+      }
+    },
+    "GoogleCloudAssetV1StringValues": {
+      "id": "GoogleCloudAssetV1StringValues",
+      "description": "The string values for the list constraints.",
+      "type": "object",
+      "properties": {
+        "allowedValues": {
+          "description": "List of values allowed at this resource.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "deniedValues": {
+          "description": "List of values denied at this resource.",
+          "type": "array",
+          "items": {
+            "type": "string"
           }
         }
       }
@@ -2955,16 +3014,139 @@
       "description": "The organization policy constraint definition.",
       "type": "object",
       "properties": {
+        "constraint": {
+          "description": "The definition of the constraint.",
+          "$ref": "GoogleCloudAssetV1Constraint"
+        },
+        "customConstraint": {
+          "description": "The definition of the custom constraint.",
+          "$ref": "GoogleCloudAssetV1CustomConstraint"
+        }
+      }
+    },
+    "GoogleCloudAssetV1Constraint": {
+      "id": "GoogleCloudAssetV1Constraint",
+      "description": "The definition of a constraint.",
+      "type": "object",
+      "properties": {
         "name": {
-          "description": "The full resource name of this constraint. See [Cloud Asset Inventory Resource Name Format](https:\/\/cloud.google.com\/asset-inventory\/docs\/resource-name-format) for more information.",
+          "description": "The resource name of the Constraint. Must be in one of the following forms: * `projects\/{project_number}\/constraints\/{constraint_name}` * `folders\/{folder_id}\/constraints\/{constraint_name}` * `organizations\/{organization_id}\/constraints\/{constraint_name}` For example, \"\/projects\/123\/constraints\/compute.disableSerialPortAccess\".",
           "type": "string"
         },
-        "versionedResources": {
-          "description": "Versioned resource representations of this constraint. This is repeated because there could be multiple versions of resource representations during version migration.",
+        "displayName": {
+          "description": "The human readable name.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Detailed description of what this `Constraint` controls as well as how and where it is enforced.",
+          "type": "string"
+        },
+        "constraintDefault": {
+          "description": "The evaluation behavior of this constraint in the absence of 'Policy'.",
+          "type": "string",
+          "enumDescriptions": [
+            "This is only used for distinguishing unset values and should never be used.",
+            "Indicate that all values are allowed for list constraints. Indicate that enforcement is off for boolean constraints.",
+            "Indicate that all values are denied for list constraints. Indicate that enforcement is on for boolean constraints."
+          ],
+          "enum": [
+            "CONSTRAINT_DEFAULT_UNSPECIFIED",
+            "ALLOW",
+            "DENY"
+          ]
+        },
+        "listConstraint": {
+          "description": "Defines this constraint as being a ListConstraint.",
+          "$ref": "GoogleCloudAssetV1ListConstraint"
+        },
+        "booleanConstraint": {
+          "description": "Defines this constraint as being a BooleanConstraint.",
+          "$ref": "GoogleCloudAssetV1BooleanConstraint"
+        }
+      }
+    },
+    "GoogleCloudAssetV1ListConstraint": {
+      "id": "GoogleCloudAssetV1ListConstraint",
+      "description": "A `Constraint` that allows or disallows a list of string values, which are configured by an Organization's policy administrator with a `Policy`.",
+      "type": "object",
+      "properties": {
+        "supportsIn": {
+          "description": "Indicates whether values grouped into categories can be used in `Policy.allowed_values` and `Policy.denied_values`. For example, `\"in:Python\"` would match any value in the 'Python' group.",
+          "type": "boolean"
+        },
+        "supportsUnder": {
+          "description": "Indicates whether subtrees of Cloud Resource Manager resource hierarchy can be used in `Policy.allowed_values` and `Policy.denied_values`. For example, `\"under:folders\/123\"` would match any resource under the 'folders\/123' folder.",
+          "type": "boolean"
+        }
+      }
+    },
+    "GoogleCloudAssetV1BooleanConstraint": {
+      "id": "GoogleCloudAssetV1BooleanConstraint",
+      "description": "A `Constraint` that is either enforced or not. For example a constraint `constraints\/compute.disableSerialPortAccess`. If it is enforced on a VM instance, serial port connections will not be opened to that instance.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudAssetV1CustomConstraint": {
+      "id": "GoogleCloudAssetV1CustomConstraint",
+      "description": "The definition of a custom constraint.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Name of the constraint. This is unique within the organization. Format of the name should be * `organizations\/{organization_id}\/customConstraints\/{custom_constraint_id}` Example : \"organizations\/123\/customConstraints\/custom.createOnlyE2TypeVms\"",
+          "type": "string"
+        },
+        "resourceTypes": {
+          "description": "The Resource Instance type on which this policy applies to. Format will be of the form : \"\/\" Example: * `compute.googleapis.com\/Instance`.",
           "type": "array",
           "items": {
-            "$ref": "VersionedResource"
+            "type": "string"
           }
+        },
+        "methodTypes": {
+          "description": "All the operations being applied for this constraint.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enumDescriptions": [
+              "Unspecified. Will results in user error.",
+              "Constraint applied when creating the resource.",
+              "Constraint applied when updating the resource.",
+              "Constraint applied when deleting the resource."
+            ],
+            "enum": [
+              "METHOD_TYPE_UNSPECIFIED",
+              "CREATE",
+              "UPDATE",
+              "DELETE"
+            ]
+          }
+        },
+        "condition": {
+          "description": "Organization policy condition\/expression. For example: `resource.instanceName.matches(\"[production|test]_.*_(\\d)+\")'` or, `resource.management.auto_upgrade == true`",
+          "type": "string"
+        },
+        "actionType": {
+          "description": "Allow or deny type.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified. Will results in user error.",
+            "Allowed action type.",
+            "Deny action type."
+          ],
+          "enum": [
+            "ACTION_TYPE_UNSPECIFIED",
+            "ALLOW",
+            "DENY"
+          ]
+        },
+        "displayName": {
+          "description": "One line display name for the UI.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Detailed information about this custom policy constraint.",
+          "type": "string"
         }
       }
     },

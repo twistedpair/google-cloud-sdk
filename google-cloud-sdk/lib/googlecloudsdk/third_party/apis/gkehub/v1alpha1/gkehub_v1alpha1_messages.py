@@ -659,6 +659,7 @@ class ConfigSync(_messages.Message):
       ConfigSync resources will be managed depends on the presence of git
       field.
     git: Git repo configuration for the cluster.
+    oci: OCI repo configuration for the cluster
     preventDrift: Set to true to enable the Config Sync admission webhook to
       prevent drifts. Defaults to false which disables the Config Sync
       admission webhook and does not prevent drifts.
@@ -668,8 +669,9 @@ class ConfigSync(_messages.Message):
 
   enabled = _messages.BooleanField(1)
   git = _messages.MessageField('GitConfig', 2)
-  preventDrift = _messages.BooleanField(3)
-  sourceFormat = _messages.StringField(4)
+  oci = _messages.MessageField('OciConfig', 3)
+  preventDrift = _messages.BooleanField(4)
+  sourceFormat = _messages.StringField(5)
 
 
 class ConfigSyncDeploymentState(_messages.Message):
@@ -1110,6 +1112,8 @@ class Feature(_messages.Message):
       Cluster Service Discovery.
     name: Output only. The full, unique name of this Feature resource in the
       format `projects/*/locations/global/features/*`.
+    rbacrolebindingactuationFeatureSpec: The specification for RBAC Role
+      Binding Actuation.
     servicedirectoryFeatureSpec: The specification for Service Directory.
     servicemeshFeatureSpec: The specification for the Service Mesh Feature.
     updateTime: Output only. When the Feature was last updated.
@@ -1160,10 +1164,11 @@ class Feature(_messages.Message):
   multiclusteringressFeatureSpec = _messages.MessageField('MultiClusterIngressFeatureSpec', 17)
   multiclusterservicediscoveryFeatureSpec = _messages.MessageField('MultiClusterServiceDiscoveryFeatureSpec', 18)
   name = _messages.StringField(19)
-  servicedirectoryFeatureSpec = _messages.MessageField('ServiceDirectoryFeatureSpec', 20)
-  servicemeshFeatureSpec = _messages.MessageField('ServiceMeshFeatureSpec', 21)
-  updateTime = _messages.StringField(22)
-  workloadcertificateFeatureSpec = _messages.MessageField('WorkloadCertificateFeatureSpec', 23)
+  rbacrolebindingactuationFeatureSpec = _messages.MessageField('RBACRoleBindingActuationFeatureSpec', 20)
+  servicedirectoryFeatureSpec = _messages.MessageField('ServiceDirectoryFeatureSpec', 21)
+  servicemeshFeatureSpec = _messages.MessageField('ServiceMeshFeatureSpec', 22)
+  updateTime = _messages.StringField(23)
+  workloadcertificateFeatureSpec = _messages.MessageField('WorkloadCertificateFeatureSpec', 24)
 
 
 class FeatureState(_messages.Message):
@@ -1271,6 +1276,8 @@ class FeatureStateDetails(_messages.Message):
     multiclusterservicediscoveryFeatureState: State for the Multi-cluster
       Service Discovery Feature.
     policycontrollerFeatureState: State for the Policy Controller Feature.
+    rbacrolebindingactuationFeatureState: State for RBAC Role Binding
+      Actuation.
     servicedirectoryFeatureState: State for the Service Directory Feature.
     servicemeshFeatureState: State for the Service Mesh Feature.
     updateTime: The last update time of this status by the controllers
@@ -1314,10 +1321,11 @@ class FeatureStateDetails(_messages.Message):
   multiclusteringressFeatureState = _messages.MessageField('MultiClusterIngressFeatureState', 13)
   multiclusterservicediscoveryFeatureState = _messages.MessageField('MultiClusterServiceDiscoveryFeatureState', 14)
   policycontrollerFeatureState = _messages.MessageField('PolicyControllerFeatureState', 15)
-  servicedirectoryFeatureState = _messages.MessageField('ServiceDirectoryFeatureState', 16)
-  servicemeshFeatureState = _messages.MessageField('ServiceMeshFeatureState', 17)
-  updateTime = _messages.StringField(18)
-  workloadcertificateFeatureState = _messages.MessageField('WorkloadCertificateFeatureState', 19)
+  rbacrolebindingactuationFeatureState = _messages.MessageField('RBACRoleBindingActuationFeatureState', 16)
+  servicedirectoryFeatureState = _messages.MessageField('ServiceDirectoryFeatureState', 17)
+  servicemeshFeatureState = _messages.MessageField('ServiceMeshFeatureState', 18)
+  updateTime = _messages.StringField(19)
+  workloadcertificateFeatureState = _messages.MessageField('WorkloadCertificateFeatureState', 20)
 
 
 class FeatureTest(_messages.Message):
@@ -2289,6 +2297,27 @@ class MultiClusterServiceDiscoveryFeatureState(_messages.Message):
 
 
 
+class OciConfig(_messages.Message):
+  r"""OCI repo configuration for a single cluster
+
+  Fields:
+    gcpServiceAccountEmail: The GCP Service Account Email used for auth when
+      secret_type is gcpServiceAccount.
+    policyDir: The absolute path of the directory that contains the local
+      resources. Default: the root directory of the image.
+    secretType: Type of secret configured for access to the Git repo.
+    syncRepo: The OCI image repository URL for the package to sync from. e.g.
+      `LOCATION-docker.pkg.dev/PROJECT_ID/REPOSITORY_NAME/PACKAGE_NAME`.
+    syncWaitSecs: Period in seconds between consecutive syncs. Default: 15.
+  """
+
+  gcpServiceAccountEmail = _messages.StringField(1)
+  policyDir = _messages.StringField(2)
+  secretType = _messages.StringField(3)
+  syncRepo = _messages.StringField(4)
+  syncWaitSecs = _messages.IntegerField(5)
+
+
 class OidcConfig(_messages.Message):
   r"""Configuration for OIDC Auth flow.
 
@@ -2586,6 +2615,7 @@ class PolicyController(_messages.Message):
       Controller checks. Namespaces do not need to currently exist on the
       cluster.
     logDeniesEnabled: Logs all denies and dry run failures.
+    monitoring: Monitoring specifies the configuration of monitoring.
     mutationEnabled: Enable users to try out mutation for PolicyController.
     referentialRulesEnabled: Enables the ability to use Constraint Templates
       that reference to objects other than the object currently being
@@ -2598,9 +2628,10 @@ class PolicyController(_messages.Message):
   enabled = _messages.BooleanField(2)
   exemptableNamespaces = _messages.StringField(3, repeated=True)
   logDeniesEnabled = _messages.BooleanField(4)
-  mutationEnabled = _messages.BooleanField(5)
-  referentialRulesEnabled = _messages.BooleanField(6)
-  templateLibraryInstalled = _messages.BooleanField(7)
+  monitoring = _messages.MessageField('PolicyControllerMonitoring', 5)
+  mutationEnabled = _messages.BooleanField(6)
+  referentialRulesEnabled = _messages.BooleanField(7)
+  templateLibraryInstalled = _messages.BooleanField(8)
 
 
 class PolicyControllerFeatureState(_messages.Message):
@@ -2751,6 +2782,35 @@ class PolicyControllerMembershipSpec(_messages.Message):
   version = _messages.StringField(2)
 
 
+class PolicyControllerMonitoring(_messages.Message):
+  r"""PolicyControllerMonitoring specifies the backends Policy Controller
+  should export metrics to. For example, to specify metrics should be exported
+  to Cloud Monitoring and Prometheus, specify backends: ["cloudmonitoring",
+  "prometheus"]
+
+  Enums:
+    BackendsValueListEntryValuesEnum:
+
+  Fields:
+    backends: Specifies the list of backends Policy Controller will export to.
+      An empty list would effectively disable metrics export.
+  """
+
+  class BackendsValueListEntryValuesEnum(_messages.Enum):
+    r"""BackendsValueListEntryValuesEnum enum type.
+
+    Values:
+      MONITORING_BACKEND_UNSPECIFIED: Backend cannot be determined
+      PROMETHEUS: Prometheus backend for monitoring
+      CLOUD_MONITORING: Stackdriver/Cloud Monitoring backend for monitoring
+    """
+    MONITORING_BACKEND_UNSPECIFIED = 0
+    PROMETHEUS = 1
+    CLOUD_MONITORING = 2
+
+  backends = _messages.EnumField('BackendsValueListEntryValuesEnum', 1, repeated=True)
+
+
 class PolicyControllerState(_messages.Message):
   r"""State for PolicyControllerState.
 
@@ -2772,6 +2832,24 @@ class PolicyControllerVersion(_messages.Message):
   """
 
   version = _messages.StringField(1)
+
+
+class RBACRoleBindingActuationFeatureSpec(_messages.Message):
+  r"""**RBAC RoleBinding Actuation**: The Hub-wide input for the
+  RBACRoleBindingActuation feature.
+
+  Fields:
+    actuationDisabled: A boolean attribute.
+  """
+
+  actuationDisabled = _messages.BooleanField(1)
+
+
+class RBACRoleBindingActuationFeatureState(_messages.Message):
+  r"""**RBAC RoleBinding Actuation**: An empty state left as an example Hub-
+  wide Feature state.
+  """
+
 
 
 class ServiceDirectoryFeatureSpec(_messages.Message):
@@ -2973,12 +3051,14 @@ class ServiceMeshMembershipSpec(_messages.Message):
     DataPlaneValueValuesEnum: Enables automatic data plane management.
     DefaultChannelValueValuesEnum: Determines which release channel to use for
       default injection and service mesh APIs.
+    ManagementValueValuesEnum: Enables automatic Service Mesh management.
 
   Fields:
     controlPlane: Enables automatic control plane management.
     dataPlane: Enables automatic data plane management.
     defaultChannel: Determines which release channel to use for default
       injection and service mesh APIs.
+    management: Enables automatic Service Mesh management.
   """
 
   class ControlPlaneValueValuesEnum(_messages.Enum):
@@ -3030,9 +3110,29 @@ class ServiceMeshMembershipSpec(_messages.Message):
     REGULAR = 2
     STABLE = 3
 
+  class ManagementValueValuesEnum(_messages.Enum):
+    r"""Enables automatic Service Mesh management.
+
+    Values:
+      MANAGEMENT_UNSPECIFIED: Unspecified
+      MANAGEMENT_AUTOMATIC: Google should manage my Service Mesh for the
+        cluster. This will ensure that a control plane revision is available
+        to the cluster. Google will enroll this revision in a release channel
+        and keep it up to date. Enables a Google-managed data plane that
+        provides L7 service mesh capabilities. Data plane management is
+        enabled at the cluster level. Users can exclude individual workloads
+        or namespaces.
+      MANAGEMENT_MANUAL: User will manually configure their service mesh
+        components.
+    """
+    MANAGEMENT_UNSPECIFIED = 0
+    MANAGEMENT_AUTOMATIC = 1
+    MANAGEMENT_MANUAL = 2
+
   controlPlane = _messages.EnumField('ControlPlaneValueValuesEnum', 1)
   dataPlane = _messages.EnumField('DataPlaneValueValuesEnum', 2)
   defaultChannel = _messages.EnumField('DefaultChannelValueValuesEnum', 3)
+  management = _messages.EnumField('ManagementValueValuesEnum', 4)
 
 
 class ServiceMeshSpec(_messages.Message):

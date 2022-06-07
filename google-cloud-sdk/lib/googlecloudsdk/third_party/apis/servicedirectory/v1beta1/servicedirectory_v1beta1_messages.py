@@ -253,14 +253,15 @@ class Condition(_messages.Message):
         (go/security-realms). When used with IN, the condition indicates "any
         of the request's realms match one of the given values; with NOT_IN,
         "none of the realms match any of the given values". Note that a value
-        can be: - 'self' (i.e., allow connections from clients that are in the
-        same security realm, which is currently but not guaranteed to be
-        campus-sized) - 'self:metro' (i.e., clients that are in the same
-        metro) - 'self:cloud-region' (i.e., allow connections from clients
-        that are in the same cloud region) - 'self:prod-region' (i.e., allow
-        connections from clients that are in the same prod region) -
-        'guardians' (i.e., allow connections from its guardian realms. See
-        go/security-realms-glossary#guardian for more information.) - a realm
+        can be: - 'self:campus' (i.e., clients that are in the same campus) -
+        'self:metro' (i.e., clients that are in the same metro) - 'self:cloud-
+        region' (i.e., allow connections from clients that are in the same
+        cloud region) - 'self:prod-region' (i.e., allow connections from
+        clients that are in the same prod region) - 'guardians' (i.e., allow
+        connections from its guardian realms. See go/security-realms-
+        glossary#guardian for more information.) - 'self' [DEPRECATED] (i.e.,
+        allow connections from clients that are in the same security realm,
+        which is currently but not guaranteed to be campus-sized) - a realm
         (e.g., 'campus-abc') - a realm group (e.g., 'realms-for-borg-cell-xx',
         see: go/realm-groups) A match is determined by a realm group
         membership check performed by a RealmAclRep object (go/realm-acl-
@@ -1021,12 +1022,15 @@ class ResolveServiceRequest(_messages.Message):
       project/locations/us-east1/namespaces/my-namespace/services/my-
       service/endpoints/endpoint-c` returns endpoints that have name that is
       alphabetically later than the string, so "endpoint-e" is returned but
-      "endpoint-a" is not * `metadata.owner!=sd AND metadata.foo=bar` returns
-      endpoints that have `owner` in annotation key but value is not `sd` AND
-      have key/value `foo=bar` * `doesnotexist.foo=bar` returns an empty list.
-      Note that endpoint doesn't have a field called "doesnotexist". Since the
-      filter does not match any endpoint, it returns no results For more
-      information about filtering, see [API Filtering](https://aip.dev/160).
+      "endpoint-a" is not * `name=projects/my-project/locations/us-
+      central1/namespaces/my-namespace/services/my-service/endpoints/ep-1`
+      returns the endpoint that has an endpoint_id equal to `ep-1` *
+      `metadata.owner!=sd AND metadata.foo=bar` returns endpoints that have
+      `owner` in annotation key but value is not `sd` AND have key/value
+      `foo=bar` * `doesnotexist.foo=bar` returns an empty list. Note that
+      endpoint doesn't have a field called "doesnotexist". Since the filter
+      does not match any endpoint, it returns no results For more information
+      about filtering, see [API Filtering](https://aip.dev/160).
     maxEndpoints: Optional. The maximum number of endpoints to return.
       Defaults to 25. Maximum is 100. If a value less than one is specified,
       the Default is used. If a value greater than the Maximum is specified,
@@ -1494,11 +1498,31 @@ class ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsDeleteRequest(_
   ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsDeleteRequest
   object.
 
+  Enums:
+    ManagerTypeValueValuesEnum: Stores extra information about what Google
+      resource is directly responsible for a given Service Workload resource.
+
   Fields:
+    managerType: Stores extra information about what Google resource is
+      directly responsible for a given Service Workload resource.
     name: Required. The name of the service workload to delete.
   """
 
-  name = _messages.StringField(1, required=True)
+  class ManagerTypeValueValuesEnum(_messages.Enum):
+    r"""Stores extra information about what Google resource is directly
+    responsible for a given Service Workload resource.
+
+    Values:
+      TYPE_UNSPECIFIED: Default. Should not be used.
+      GKE_HUB: Resource managed by GKE Hub.
+      BACKEND_SERVICE: Resource managed by Arcus, Backend Service
+    """
+    TYPE_UNSPECIFIED = 0
+    GKE_HUB = 1
+    BACKEND_SERVICE = 2
+
+  managerType = _messages.EnumField('ManagerTypeValueValuesEnum', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsGetRequest(_messages.Message):
@@ -1666,25 +1690,28 @@ class ServicedirectoryProjectsLocationsNamespacesServicesEndpointsListRequest(_m
 
   Fields:
     filter: Optional. The filter to list results by. General `filter` string
-      syntax: ` ()` * `` can be `name`, `address`, `port`, or `metadata.` for
-      map field * `` can be `<`, `>`, `<=`, `>=`, `!=`, `=`, `:`. Of which `:`
-      means `HAS`, and is roughly the same as `=` * `` must be the same data
-      type as field * `` can be `AND`, `OR`, `NOT` Examples of valid filters:
-      * `metadata.owner` returns endpoints that have a metadata with the key
-      `owner`, this is the same as `metadata:owner` * `metadata.protocol=gRPC`
-      returns endpoints that have key/value `protocol=gRPC` *
-      `address=192.108.1.105` returns endpoints that have this address *
-      `port>8080` returns endpoints that have port number larger than 8080 *
-      `name>projects/my-project/locations/us-east1/namespaces/my-
-      namespace/services/my-service/endpoints/endpoint-c` returns endpoints
-      that have name that is alphabetically later than the string, so
-      "endpoint-e" is returned but "endpoint-a" is not * `metadata.owner!=sd
-      AND metadata.foo=bar` returns endpoints that have `owner` in metadata
-      key but value is not `sd` AND have key/value `foo=bar` *
-      `doesnotexist.foo=bar` returns an empty list. Note that endpoint doesn't
-      have a field called "doesnotexist". Since the filter does not match any
-      endpoints, it returns no results For more information about filtering,
-      see [API Filtering](https://aip.dev/160).
+      syntax: ` ()` * `` can be `name`, `address`, `port`, `metadata.` for map
+      field, or `attributes.` for attributes field * `` can be `<`, `>`, `<=`,
+      `>=`, `!=`, `=`, `:`. Of which `:` means `HAS`, and is roughly the same
+      as `=` * `` must be the same data type as field * `` can be `AND`, `OR`,
+      `NOT` Examples of valid filters: * `metadata.owner` returns endpoints
+      that have a metadata with the key `owner`, this is the same as
+      `metadata:owner` * `metadata.protocol=gRPC` returns endpoints that have
+      key/value `protocol=gRPC` * `address=192.108.1.105` returns endpoints
+      that have this address * `port>8080` returns endpoints that have port
+      number larger than 8080 * `name>projects/my-project/locations/us-
+      east1/namespaces/my-namespace/services/my-service/endpoints/endpoint-c`
+      returns endpoints that have name that is alphabetically later than the
+      string, so "endpoint-e" is returned but "endpoint-a" is not *
+      `metadata.owner!=sd AND metadata.foo=bar` returns endpoints that have
+      `owner` in metadata key but value is not `sd` AND have key/value
+      `foo=bar` * `doesnotexist.foo=bar` returns an empty list. Note that
+      endpoint doesn't have a field called "doesnotexist". Since the filter
+      does not match any endpoints, it returns no results *
+      `attributes.kubernetes_resource_type=KUBERNETES_RESOURCE_TYPE_CLUSTER_
+      IP` returns endpoints with the corresponding kubernetes_resource_type
+      For more information about filtering, see [API
+      Filtering](https://aip.dev/160).
     orderBy: Optional. The order to list results by. General `order_by` string
       syntax: ` () (,)` * `` allows values: `name`, `address`, `port` * ``
       ascending or descending order by ``. If this is left blank, `asc` is

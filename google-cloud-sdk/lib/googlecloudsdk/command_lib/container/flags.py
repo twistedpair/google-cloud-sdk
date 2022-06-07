@@ -345,6 +345,26 @@ Minimum number of nodes per zone to which the node pool specified by --node-pool
 --enable-autoscaling is also specified.""",
       hidden=hidden,
       type=int)
+  group.add_argument(
+      '--total-max-nodes',
+      help="""\
+Maximum number of all nodes in the node pool.
+
+Maximum number of all nodes to which the node pool specified by --node-pool
+(or default node pool if unspecified) can scale. Ignored unless
+--enable-autoscaling is also specified.""",
+      hidden=True,
+      type=int)
+  group.add_argument(
+      '--total-min-nodes',
+      help="""\
+Minimum number of all nodes in the node pool.
+
+Minimum number of all nodes to which the node pool specified by --node-pool
+(or default node pool if unspecified) can scale. Ignored unless
+--enable-autoscaling is also specified.""",
+      hidden=True,
+      type=int)
   if location_policy_present:
     group.add_argument(
         '--location-policy',
@@ -2237,7 +2257,7 @@ def AddDiskTypeFlag(parser):
     parser: A given parser.
   """
   help_text = """\
-Type of the node VM boot disk. Defaults to pd-standard.
+Type of the node VM boot disk. For version 1.24.0+, defaults to pd-balanced. Before version 1.24.0, defaults to pd-standard.
 """
   parser.add_argument(
       '--disk-type',

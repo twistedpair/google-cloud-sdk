@@ -279,8 +279,8 @@ class ConnectionProfilesClient(object):
         dataDiskType=self._GetDataDiskType(cp_type, args.data_disk_type),
         dataDiskSizeGb=args.data_disk_size,
         zone=args.zone,
-        sourceId=source_id
-    )
+        rootPassword=args.root_password,
+        sourceId=source_id)
 
   def _GetCloudSqlConnectionProfile(self, args):
     settings = self._GetCloudSqlSettings(args)

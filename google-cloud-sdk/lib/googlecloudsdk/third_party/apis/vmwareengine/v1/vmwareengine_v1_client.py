@@ -39,7 +39,6 @@ class VmwareengineV1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
-    self.projects_locations_global_networkPeerings_peeringRoutes = self.ProjectsLocationsGlobalNetworkPeeringsPeeringRoutesService(self)
     self.projects_locations_global_networkPeerings = self.ProjectsLocationsGlobalNetworkPeeringsService(self)
     self.projects_locations_global = self.ProjectsLocationsGlobalService(self)
     self.projects_locations_networkPolicies_externalAccessRules = self.ProjectsLocationsNetworkPoliciesExternalAccessRulesService(self)
@@ -53,43 +52,6 @@ class VmwareengineV1(base_api.BaseApiClient):
     self.projects_locations_vmwareEngineNetworks = self.ProjectsLocationsVmwareEngineNetworksService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
-
-  class ProjectsLocationsGlobalNetworkPeeringsPeeringRoutesService(base_api.BaseApiService):
-    """Service class for the projects_locations_global_networkPeerings_peeringRoutes resource."""
-
-    _NAME = 'projects_locations_global_networkPeerings_peeringRoutes'
-
-    def __init__(self, client):
-      super(VmwareengineV1.ProjectsLocationsGlobalNetworkPeeringsPeeringRoutesService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def List(self, request, global_params=None):
-      r"""Lists the VPC network peering routes exchanged over a peering connection.
-
-      Args:
-        request: (VmwareengineProjectsLocationsGlobalNetworkPeeringsPeeringRoutesListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListPeeringRoutesResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/global/networkPeerings/{networkPeeringsId}/peeringRoutes',
-        http_method='GET',
-        method_id='vmwareengine.projects.locations.global.networkPeerings.peeringRoutes.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
-        relative_path='v1/{+parent}/peeringRoutes',
-        request_field='',
-        request_type_name='VmwareengineProjectsLocationsGlobalNetworkPeeringsPeeringRoutesListRequest',
-        response_type_name='ListPeeringRoutesResponse',
-        supports_download=False,
-    )
 
   class ProjectsLocationsGlobalNetworkPeeringsService(base_api.BaseApiService):
     """Service class for the projects_locations_global_networkPeerings resource."""
@@ -155,6 +117,33 @@ class VmwareengineV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def FetchRoutes(self, request, global_params=None):
+      r"""Lists the VPC network peering routes exchanged over a peering connection.
+
+      Args:
+        request: (VmwareengineProjectsLocationsGlobalNetworkPeeringsFetchRoutesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (FetchPeeringRoutesResponse) The response message.
+      """
+      config = self.GetMethodConfig('FetchRoutes')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    FetchRoutes.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/global/networkPeerings/{networkPeeringsId}:fetchRoutes',
+        http_method='GET',
+        method_id='vmwareengine.projects.locations.global.networkPeerings.fetchRoutes',
+        ordered_params=['networkPeering'],
+        path_params=['networkPeering'],
+        query_params=['direction', 'pageSize', 'pageToken'],
+        relative_path='v1/{+networkPeering}:fetchRoutes',
+        request_field='',
+        request_type_name='VmwareengineProjectsLocationsGlobalNetworkPeeringsFetchRoutesRequest',
+        response_type_name='FetchPeeringRoutesResponse',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Retrieves a `NetworkPeering` resource by its resource name. The resource contains details of the VPC network peering, such as peered VPC networks, import and export custom route configurations, and peering state.
 
@@ -179,6 +168,33 @@ class VmwareengineV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='VmwareengineProjectsLocationsGlobalNetworkPeeringsGetRequest',
         response_type_name='NetworkPeering',
+        supports_download=False,
+    )
+
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
+
+      Args:
+        request: (VmwareengineProjectsLocationsGlobalNetworkPeeringsGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/global/networkPeerings/{networkPeeringsId}:getIamPolicy',
+        http_method='GET',
+        method_id='vmwareengine.projects.locations.global.networkPeerings.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1/{+resource}:getIamPolicy',
+        request_field='',
+        request_type_name='VmwareengineProjectsLocationsGlobalNetworkPeeringsGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -233,6 +249,60 @@ class VmwareengineV1(base_api.BaseApiClient):
         request_field='networkPeering',
         request_type_name='VmwareengineProjectsLocationsGlobalNetworkPeeringsPatchRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
+
+      Args:
+        request: (VmwareengineProjectsLocationsGlobalNetworkPeeringsSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/global/networkPeerings/{networkPeeringsId}:setIamPolicy',
+        http_method='POST',
+        method_id='vmwareengine.projects.locations.global.networkPeerings.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='VmwareengineProjectsLocationsGlobalNetworkPeeringsSetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
+
+      Args:
+        request: (VmwareengineProjectsLocationsGlobalNetworkPeeringsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/global/networkPeerings/{networkPeeringsId}:testIamPermissions',
+        http_method='POST',
+        method_id='vmwareengine.projects.locations.global.networkPeerings.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='VmwareengineProjectsLocationsGlobalNetworkPeeringsTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
@@ -337,6 +407,33 @@ class VmwareengineV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
+
+      Args:
+        request: (VmwareengineProjectsLocationsNetworkPoliciesExternalAccessRulesGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/networkPolicies/{networkPoliciesId}/externalAccessRules/{externalAccessRulesId}:getIamPolicy',
+        http_method='GET',
+        method_id='vmwareengine.projects.locations.networkPolicies.externalAccessRules.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1/{+resource}:getIamPolicy',
+        request_field='',
+        request_type_name='VmwareengineProjectsLocationsNetworkPoliciesExternalAccessRulesGetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists `ExternalAccessRule` resources in the specified network policy.
 
@@ -388,6 +485,60 @@ class VmwareengineV1(base_api.BaseApiClient):
         request_field='externalAccessRule',
         request_type_name='VmwareengineProjectsLocationsNetworkPoliciesExternalAccessRulesPatchRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
+
+      Args:
+        request: (VmwareengineProjectsLocationsNetworkPoliciesExternalAccessRulesSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/networkPolicies/{networkPoliciesId}/externalAccessRules/{externalAccessRulesId}:setIamPolicy',
+        http_method='POST',
+        method_id='vmwareengine.projects.locations.networkPolicies.externalAccessRules.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='VmwareengineProjectsLocationsNetworkPoliciesExternalAccessRulesSetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
+
+      Args:
+        request: (VmwareengineProjectsLocationsNetworkPoliciesExternalAccessRulesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/networkPolicies/{networkPoliciesId}/externalAccessRules/{externalAccessRulesId}:testIamPermissions',
+        http_method='POST',
+        method_id='vmwareengine.projects.locations.networkPolicies.externalAccessRules.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='VmwareengineProjectsLocationsNetworkPoliciesExternalAccessRulesTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 

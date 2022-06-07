@@ -755,6 +755,199 @@ class GrafeasV1FileLocation(_messages.Message):
   filePath = _messages.StringField(1)
 
 
+class GrafeasV1SlsaProvenanceZeroTwoSlsaBuilder(_messages.Message):
+  r"""Identifies the entity that executed the recipe, which is trusted to have
+  correctly performed the operation and populated this provenance.
+
+  Fields:
+    id: A string attribute.
+  """
+
+  id = _messages.StringField(1)
+
+
+class GrafeasV1SlsaProvenanceZeroTwoSlsaCompleteness(_messages.Message):
+  r"""Indicates that the builder claims certain fields in this message to be
+  complete.
+
+  Fields:
+    environment: A boolean attribute.
+    materials: A boolean attribute.
+    parameters: A boolean attribute.
+  """
+
+  environment = _messages.BooleanField(1)
+  materials = _messages.BooleanField(2)
+  parameters = _messages.BooleanField(3)
+
+
+class GrafeasV1SlsaProvenanceZeroTwoSlsaConfigSource(_messages.Message):
+  r"""Describes where the config file that kicked off the build came from.
+  This is effectively a pointer to the source where buildConfig came from.
+
+  Messages:
+    DigestValue: A DigestValue object.
+
+  Fields:
+    digest: A DigestValue attribute.
+    entryPoint: A string attribute.
+    uri: A string attribute.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DigestValue(_messages.Message):
+    r"""A DigestValue object.
+
+    Messages:
+      AdditionalProperty: An additional property for a DigestValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type DigestValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DigestValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  digest = _messages.MessageField('DigestValue', 1)
+  entryPoint = _messages.StringField(2)
+  uri = _messages.StringField(3)
+
+
+class GrafeasV1SlsaProvenanceZeroTwoSlsaInvocation(_messages.Message):
+  r"""Identifies the event that kicked off the build.
+
+  Messages:
+    EnvironmentValue: A EnvironmentValue object.
+    ParametersValue: A ParametersValue object.
+
+  Fields:
+    configSource: A GrafeasV1SlsaProvenanceZeroTwoSlsaConfigSource attribute.
+    environment: A EnvironmentValue attribute.
+    parameters: A ParametersValue attribute.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class EnvironmentValue(_messages.Message):
+    r"""A EnvironmentValue object.
+
+    Messages:
+      AdditionalProperty: An additional property for a EnvironmentValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a EnvironmentValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ParametersValue(_messages.Message):
+    r"""A ParametersValue object.
+
+    Messages:
+      AdditionalProperty: An additional property for a ParametersValue object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ParametersValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  configSource = _messages.MessageField('GrafeasV1SlsaProvenanceZeroTwoSlsaConfigSource', 1)
+  environment = _messages.MessageField('EnvironmentValue', 2)
+  parameters = _messages.MessageField('ParametersValue', 3)
+
+
+class GrafeasV1SlsaProvenanceZeroTwoSlsaMaterial(_messages.Message):
+  r"""The collection of artifacts that influenced the build including sources,
+  dependencies, build tools, base images, and so on.
+
+  Messages:
+    DigestValue: A DigestValue object.
+
+  Fields:
+    digest: A DigestValue attribute.
+    uri: A string attribute.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DigestValue(_messages.Message):
+    r"""A DigestValue object.
+
+    Messages:
+      AdditionalProperty: An additional property for a DigestValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type DigestValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DigestValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  digest = _messages.MessageField('DigestValue', 1)
+  uri = _messages.StringField(2)
+
+
+class GrafeasV1SlsaProvenanceZeroTwoSlsaMetadata(_messages.Message):
+  r"""Other properties of the build.
+
+  Fields:
+    buildFinishedOn: A string attribute.
+    buildInvocationId: A string attribute.
+    buildStartedOn: A string attribute.
+    completeness: A GrafeasV1SlsaProvenanceZeroTwoSlsaCompleteness attribute.
+    reproducible: A boolean attribute.
+  """
+
+  buildFinishedOn = _messages.StringField(1)
+  buildInvocationId = _messages.StringField(2)
+  buildStartedOn = _messages.StringField(3)
+  completeness = _messages.MessageField('GrafeasV1SlsaProvenanceZeroTwoSlsaCompleteness', 4)
+  reproducible = _messages.BooleanField(5)
+
+
 class Hash(_messages.Message):
   r"""Container message for hash values.
 
@@ -833,6 +1026,7 @@ class InTotoStatement(_messages.Message):
     predicateType: `https://slsa.dev/provenance/v0.1` for SlsaProvenance.
     provenance: A InTotoProvenance attribute.
     slsaProvenance: A SlsaProvenance attribute.
+    slsaProvenanceZeroTwo: A SlsaProvenanceZeroTwo attribute.
     subject: A Subject attribute.
   """
 
@@ -840,7 +1034,8 @@ class InTotoStatement(_messages.Message):
   predicateType = _messages.StringField(2)
   provenance = _messages.MessageField('InTotoProvenance', 3)
   slsaProvenance = _messages.MessageField('SlsaProvenance', 4)
-  subject = _messages.MessageField('Subject', 5, repeated=True)
+  slsaProvenanceZeroTwo = _messages.MessageField('SlsaProvenanceZeroTwo', 5)
+  subject = _messages.MessageField('Subject', 6, repeated=True)
 
 
 class Jwt(_messages.Message):
@@ -1317,6 +1512,8 @@ class PackageData(_messages.Message):
       information is in cpe_uri
     package: The package being analysed for vulnerabilities
     packageType: The type of package: os, maven, go, etc.
+    patchedCve: CVEs that this package is no longer vulnerable to go/drydock-
+      dd-custom-binary-scanning
     unused: A string attribute.
     version: The version of the package being analysed
   """
@@ -1344,8 +1541,9 @@ class PackageData(_messages.Message):
   osVersion = _messages.StringField(5)
   package = _messages.StringField(6)
   packageType = _messages.EnumField('PackageTypeValueValuesEnum', 7)
-  unused = _messages.StringField(8)
-  version = _messages.StringField(9)
+  patchedCve = _messages.StringField(8, repeated=True)
+  unused = _messages.StringField(9)
+  version = _messages.StringField(10)
 
 
 class PackageIssue(_messages.Message):
@@ -1707,6 +1905,54 @@ class SlsaProvenance(_messages.Message):
   materials = _messages.MessageField('Material', 2, repeated=True)
   metadata = _messages.MessageField('SlsaMetadata', 3)
   recipe = _messages.MessageField('SlsaRecipe', 4)
+
+
+class SlsaProvenanceZeroTwo(_messages.Message):
+  r"""See full explanation of fields at slsa.dev/provenance/v0.2.
+
+  Messages:
+    BuildConfigValue: A BuildConfigValue object.
+
+  Fields:
+    buildConfig: A BuildConfigValue attribute.
+    buildType: A string attribute.
+    builder: A GrafeasV1SlsaProvenanceZeroTwoSlsaBuilder attribute.
+    invocation: A GrafeasV1SlsaProvenanceZeroTwoSlsaInvocation attribute.
+    materials: A GrafeasV1SlsaProvenanceZeroTwoSlsaMaterial attribute.
+    metadata: A GrafeasV1SlsaProvenanceZeroTwoSlsaMetadata attribute.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class BuildConfigValue(_messages.Message):
+    r"""A BuildConfigValue object.
+
+    Messages:
+      AdditionalProperty: An additional property for a BuildConfigValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a BuildConfigValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  buildConfig = _messages.MessageField('BuildConfigValue', 1)
+  buildType = _messages.StringField(2)
+  builder = _messages.MessageField('GrafeasV1SlsaProvenanceZeroTwoSlsaBuilder', 3)
+  invocation = _messages.MessageField('GrafeasV1SlsaProvenanceZeroTwoSlsaInvocation', 4)
+  materials = _messages.MessageField('GrafeasV1SlsaProvenanceZeroTwoSlsaMaterial', 5, repeated=True)
+  metadata = _messages.MessageField('GrafeasV1SlsaProvenanceZeroTwoSlsaMetadata', 6)
 
 
 class SlsaRecipe(_messages.Message):

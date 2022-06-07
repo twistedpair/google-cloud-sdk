@@ -39,10 +39,129 @@ class RedisV1alpha1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.projects_locations_clusters = self.ProjectsLocationsClustersService(self)
     self.projects_locations_instances = self.ProjectsLocationsInstancesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class ProjectsLocationsClustersService(base_api.BaseApiService):
+    """Service class for the projects_locations_clusters resource."""
+
+    _NAME = 'projects_locations_clusters'
+
+    def __init__(self, client):
+      super(RedisV1alpha1.ProjectsLocationsClustersService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a Redis cluster based on the specified tier and memory size. The creation is executed asynchronously and callers may check the returned operation to track its progress. Once the operation is completed the Redis cluster will be fully functional. The completed longrunning.Operation will contain the new cluster object in the response field. The returned operation is automatically deleted after a few hours, so there is no need to call DeleteOperation.
+
+      Args:
+        request: (RedisProjectsLocationsClustersCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters',
+        http_method='POST',
+        method_id='redis.projects.locations.clusters.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['clusterId'],
+        relative_path='v1alpha1/{+parent}/clusters',
+        request_field='cluster',
+        request_type_name='RedisProjectsLocationsClustersCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a specific Redis cluster. Cluster stops serving and data is deleted.
+
+      Args:
+        request: (RedisProjectsLocationsClustersDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}',
+        http_method='DELETE',
+        method_id='redis.projects.locations.clusters.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='RedisProjectsLocationsClustersDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the details of a specific Redis cluster.
+
+      Args:
+        request: (RedisProjectsLocationsClustersGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Cluster) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}',
+        http_method='GET',
+        method_id='redis.projects.locations.clusters.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='RedisProjectsLocationsClustersGetRequest',
+        response_type_name='Cluster',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all Redis clusters owned by a project in either the specified location (region) or all locations. The location should have the following format: * `projects/{project_id}/locations/{location_id}` If `location_id` is specified as `-` (wildcard), then all regions available to the project are queried, and the results are aggregated.
+
+      Args:
+        request: (RedisProjectsLocationsClustersListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListClustersResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters',
+        http_method='GET',
+        method_id='redis.projects.locations.clusters.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/clusters',
+        request_field='',
+        request_type_name='RedisProjectsLocationsClustersListRequest',
+        response_type_name='ListClustersResponse',
+        supports_download=False,
+    )
 
   class ProjectsLocationsInstancesService(base_api.BaseApiService):
     """Service class for the projects_locations_instances resource."""

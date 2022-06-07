@@ -5975,7 +5975,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def ListInstances(self, request, global_params=None):
-      r"""Lists the instances in the specified instance group. The orderBy query parameter is not supported.
+      r"""Lists the instances in the specified instance group. The orderBy query parameter is not supported. The filter query parameter is supported, but only for expressions that use `eq` (equal) or `ne` (not equal) operators.
 
       Args:
         request: (ComputeInstanceGroupsListInstancesRequest) input message

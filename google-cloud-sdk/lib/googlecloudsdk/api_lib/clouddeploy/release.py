@@ -93,3 +93,16 @@ class ReleaseClient(object):
         filter=TARGET_FILTER_TEMPLATE.format(
             target_ref_project_number.RelativeName()))
     return self._service.List(request).releases
+
+  def Abandon(self, name):
+    """Abandons a release.
+
+    Args:
+      name: release resource name.
+
+    Returns:
+      AbandonReleaseResponse message.
+    """
+    request = self.messages.ClouddeployProjectsLocationsDeliveryPipelinesReleasesAbandonRequest(
+        name=name)
+    return self._service.Abandon(request)

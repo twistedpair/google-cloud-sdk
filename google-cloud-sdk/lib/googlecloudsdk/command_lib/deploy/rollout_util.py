@@ -39,6 +39,19 @@ SUCCEED_ROLLOUT_ORDERBY = 'DeployEndTime desc'
 PENDING_ROLLOUT_ORDERBY = 'CreateTime desc'
 
 
+def RolloutReferenceFromName(rollout_name):
+  """Returns a rollout reference object from a rollout message.
+
+  Args:
+    rollout_name: str, full canonical resource name of the rollout
+
+  Returns:
+    Rollout reference object
+  """
+  return resources.REGISTRY.ParseRelativeName(
+      rollout_name, collection=_ROLLOUT_COLLECTION)
+
+
 def RolloutId(rollout_name_or_id):
   """Returns rollout ID.
 

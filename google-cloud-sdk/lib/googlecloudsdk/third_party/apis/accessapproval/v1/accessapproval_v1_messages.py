@@ -192,6 +192,19 @@ class AccessapprovalFoldersApprovalRequestsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class AccessapprovalFoldersApprovalRequestsInvalidateRequest(_messages.Message):
+  r"""A AccessapprovalFoldersApprovalRequestsInvalidateRequest object.
+
+  Fields:
+    invalidateApprovalRequestMessage: A InvalidateApprovalRequestMessage
+      resource to be passed as the request body.
+    name: Name of the ApprovalRequest to invalidate.
+  """
+
+  invalidateApprovalRequestMessage = _messages.MessageField('InvalidateApprovalRequestMessage', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class AccessapprovalFoldersApprovalRequestsListRequest(_messages.Message):
   r"""A AccessapprovalFoldersApprovalRequestsListRequest object.
 
@@ -309,6 +322,19 @@ class AccessapprovalOrganizationsApprovalRequestsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class AccessapprovalOrganizationsApprovalRequestsInvalidateRequest(_messages.Message):
+  r"""A AccessapprovalOrganizationsApprovalRequestsInvalidateRequest object.
+
+  Fields:
+    invalidateApprovalRequestMessage: A InvalidateApprovalRequestMessage
+      resource to be passed as the request body.
+    name: Name of the ApprovalRequest to invalidate.
+  """
+
+  invalidateApprovalRequestMessage = _messages.MessageField('InvalidateApprovalRequestMessage', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class AccessapprovalOrganizationsApprovalRequestsListRequest(_messages.Message):
   r"""A AccessapprovalOrganizationsApprovalRequestsListRequest object.
 
@@ -424,6 +450,19 @@ class AccessapprovalProjectsApprovalRequestsGetRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class AccessapprovalProjectsApprovalRequestsInvalidateRequest(_messages.Message):
+  r"""A AccessapprovalProjectsApprovalRequestsInvalidateRequest object.
+
+  Fields:
+    invalidateApprovalRequestMessage: A InvalidateApprovalRequestMessage
+      resource to be passed as the request body.
+    name: Name of the ApprovalRequest to invalidate.
+  """
+
+  invalidateApprovalRequestMessage = _messages.MessageField('InvalidateApprovalRequestMessage', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class AccessapprovalProjectsApprovalRequestsListRequest(_messages.Message):
@@ -559,6 +598,8 @@ class ApproveDecision(_messages.Message):
     approveTime: The time at which approval was granted.
     autoApproved: True when the request has been auto-approved.
     expireTime: The time at which the approval expires.
+    invalidateTime: If set, denotes the timestamp at which the approval is
+      invalidated.
     signatureInfo: The signature for the ApprovalRequest and details on how it
       was signed.
   """
@@ -566,7 +607,8 @@ class ApproveDecision(_messages.Message):
   approveTime = _messages.StringField(1)
   autoApproved = _messages.BooleanField(2)
   expireTime = _messages.StringField(3)
-  signatureInfo = _messages.MessageField('SignatureInfo', 4)
+  invalidateTime = _messages.StringField(4)
+  signatureInfo = _messages.MessageField('SignatureInfo', 5)
 
 
 class DismissApprovalRequestMessage(_messages.Message):
@@ -642,6 +684,10 @@ class EnrolledService(_messages.Message):
 
   cloudProduct = _messages.StringField(1)
   enrollmentLevel = _messages.EnumField('EnrollmentLevelValueValuesEnum', 2)
+
+
+class InvalidateApprovalRequestMessage(_messages.Message):
+  r"""Request to invalidate an existing approval."""
 
 
 class ListApprovalRequestsResponse(_messages.Message):

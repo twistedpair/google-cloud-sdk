@@ -129,6 +129,16 @@ class Binding(_messages.Message):
   role = _messages.StringField(3)
 
 
+class CommitSchemaRequest(_messages.Message):
+  r"""Request for CommitSchema method.
+
+  Fields:
+    schema: Required. The schema revision to commit.
+  """
+
+  schema = _messages.MessageField('Schema', 1)
+
+
 class CreateSnapshotRequest(_messages.Message):
   r"""Request for the `CreateSnapshot` method.
 
@@ -267,6 +277,19 @@ class Expr(_messages.Message):
   expression = _messages.StringField(2)
   location = _messages.StringField(3)
   title = _messages.StringField(4)
+
+
+class ListSchemaRevisionsResponse(_messages.Message):
+  r"""Response for the `ListSchemaRevisions` method.
+
+  Fields:
+    nextPageToken: A token that can be sent as `page_token` to retrieve the
+      next page. If this field is empty, there are no subsequent pages.
+    schemas: The revisions of the schema.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  schemas = _messages.MessageField('Schema', 2, repeated=True)
 
 
 class ListSchemasResponse(_messages.Message):
@@ -596,6 +619,20 @@ class PubsubMessage(_messages.Message):
   publishTime = _messages.StringField(5)
 
 
+class PubsubProjectsSchemasCommitRequest(_messages.Message):
+  r"""A PubsubProjectsSchemasCommitRequest object.
+
+  Fields:
+    commitSchemaRequest: A CommitSchemaRequest resource to be passed as the
+      request body.
+    name: Required. The name of the schema we are revising. Format is
+      `projects/{project}/schemas/{schema}`.
+  """
+
+  commitSchemaRequest = _messages.MessageField('CommitSchemaRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class PubsubProjectsSchemasCreateRequest(_messages.Message):
   r"""A PubsubProjectsSchemasCreateRequest object.
 
@@ -725,6 +762,58 @@ class PubsubProjectsSchemasListRequest(_messages.Message):
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
   view = _messages.EnumField('ViewValueValuesEnum', 4)
+
+
+class PubsubProjectsSchemasListRevisionsRequest(_messages.Message):
+  r"""A PubsubProjectsSchemasListRevisionsRequest object.
+
+  Enums:
+    ViewValueValuesEnum: The set of Schema fields to return in the response.
+      If not set, returns Schemas with `name` and `type`, but not
+      `definition`. Set to `FULL` to retrieve all fields.
+
+  Fields:
+    name: Required. The name of the schema to list revisions for.
+    pageSize: The maximum number of revisions to return per page.
+    pageToken: The page token, received from a previous ListSchemaRevisions
+      call. Provide this to retrieve the subsequent page.
+    view: The set of Schema fields to return in the response. If not set,
+      returns Schemas with `name` and `type`, but not `definition`. Set to
+      `FULL` to retrieve all fields.
+  """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""The set of Schema fields to return in the response. If not set,
+    returns Schemas with `name` and `type`, but not `definition`. Set to
+    `FULL` to retrieve all fields.
+
+    Values:
+      SCHEMA_VIEW_UNSPECIFIED: The default / unset value. The API will default
+        to the BASIC view.
+      BASIC: Include the name and type of the schema, but not the definition.
+      FULL: Include all Schema object fields.
+    """
+    SCHEMA_VIEW_UNSPECIFIED = 0
+    BASIC = 1
+    FULL = 2
+
+  name = _messages.StringField(1, required=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  view = _messages.EnumField('ViewValueValuesEnum', 4)
+
+
+class PubsubProjectsSchemasRollbackRequest(_messages.Message):
+  r"""A PubsubProjectsSchemasRollbackRequest object.
+
+  Fields:
+    name: Required. The schema being rolled back with revision id.
+    rollbackSchemaRequest: A RollbackSchemaRequest resource to be passed as
+      the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  rollbackSchemaRequest = _messages.MessageField('RollbackSchemaRequest', 2)
 
 
 class PubsubProjectsSchemasSetIamPolicyRequest(_messages.Message):
@@ -1435,6 +1524,17 @@ class RetryPolicy(_messages.Message):
   minimumBackoff = _messages.StringField(2)
 
 
+class RollbackSchemaRequest(_messages.Message):
+  r"""Request for the `RollbackSchema` method.
+
+  Fields:
+    revisionId: Required. The revision ID to roll back to. It must be a
+      revision of the same schema. Example: c7cfa2a8
+  """
+
+  revisionId = _messages.StringField(1)
+
+
 class Schema(_messages.Message):
   r"""A schema resource.
 
@@ -1481,6 +1581,12 @@ class SchemaSettings(_messages.Message):
 
   Fields:
     encoding: The encoding of messages validated against `schema`.
+    firstRevisionId: The minimum (inclusive) revision allowed for validating
+      messages. If empty or not present, allow any revision to be validated
+      against last_revision or any revision created before.
+    lastRevisionId: The maximum (inclusive) revision allowed for validating
+      messages. If empty or not present, allow any revision to be validated
+      against first_revision or any revision created after.
     schema: Required. The name of the schema that messages published should be
       validated against. Format is `projects/{project}/schemas/{schema}`. The
       value of this field will be `_deleted-schema_` if the schema has been
@@ -1501,7 +1607,9 @@ class SchemaSettings(_messages.Message):
     BINARY = 2
 
   encoding = _messages.EnumField('EncodingValueValuesEnum', 1)
-  schema = _messages.StringField(2)
+  firstRevisionId = _messages.StringField(2)
+  lastRevisionId = _messages.StringField(3)
+  schema = _messages.StringField(4)
 
 
 class SeekRequest(_messages.Message):
@@ -1696,9 +1804,9 @@ class Subscription(_messages.Message):
       endpoint. If the subscriber never acknowledges the message, the Pub/Sub
       system will eventually redeliver the message.
     bigqueryConfig: If delivery to BigQuery is used with this subscription,
-      this field is used to configure it. At most one of `pushConfig` and
-      `bigQueryConfig` can be set. If both are empty, then the subscriber will
-      pull and ack messages using API methods.
+      this field is used to configure it. Either `pushConfig` or
+      `bigQueryConfig` can be set, but not both. If both are empty, then the
+      subscriber will pull and ack messages using API methods.
     deadLetterPolicy: A policy that specifies the conditions for dead
       lettering messages in this subscription. If dead_letter_policy is not
       set, dead lettering is disabled. The Cloud Pub/Sub service account
@@ -1750,9 +1858,9 @@ class Subscription(_messages.Message):
       plus (`+`) or percent signs (`%`). It must be between 3 and 255
       characters in length, and it must not start with `"goog"`.
     pushConfig: If push delivery is used with this subscription, this field is
-      used to configure it. At most one of `pushConfig` and `bigQueryConfig`
-      can be set. If both are empty, then the subscriber will pull and ack
-      messages using API methods.
+      used to configure it. Either `pushConfig` or `bigQueryConfig` can be
+      set, but not both. If both are empty, then the subscriber will pull and
+      ack messages using API methods.
     retainAckedMessages: Indicates whether to retain acknowledged messages. If
       true, then messages are not expunged from the subscription's backlog,
       even if they are acknowledged, until they fall out of the

@@ -136,7 +136,8 @@ class GkemulticloudProjectsLocationsAwsClustersAwsNodePoolsPatchRequest(_message
       `config.root_volume.size_gib`. * `config.proxy_config`. *
       `config.proxy_config.secret_arn`. *
       `config.proxy_config.secret_version`. * `config.ssh_config`. *
-      `config.ssh_config.ec2_key_pair`.
+      `config.ssh_config.ec2_key_pair`. * `config.instance_placement.tenancy`.
+      * `config.instance_type`. * `config.iam_instance_profile`.
     validateOnly: If set, only validate the request, but don't actually update
       the node pool.
   """
@@ -287,7 +288,8 @@ class GkemulticloudProjectsLocationsAwsClustersPatchRequest(_messages.Message):
       `control_plane.root_volume.volume_type`. *
       `control_plane.root_volume.size_gib`. * `control_plane.ssh_config`. *
       `control_plane.ssh_config.ec2_key_pair`. *
-      `control_plane.instance_placement.tenancy`. * `logging_config`.
+      `control_plane.instance_placement.tenancy`. * `logging_config`. *
+      `control_plane.iam_instance_profile`.
     validateOnly: If set, only validate the request, but do not actually
       update the cluster.
   """
@@ -645,9 +647,10 @@ class GkemulticloudProjectsLocationsAzureClustersPatchRequest(_messages.Message)
     updateMask: Required. Mask of fields to update. At least one path must be
       supplied in this field. The elements of the repeated paths field can
       only include these fields from AzureCluster: * `description`. *
-      `annotations`. * `azureClient`. * `control_plane.version`. *
-      `control_plane.vm_size`. * `authorization.admin_users`. *
-      `control_plane.root_volume.size_gib`. * `logging_config`
+      `annotations`. * `azureClient`. * `authorization.admin_users`. *
+      `control_plane.version`. * `control_plane.vm_size`. *
+      `control_plane.root_volume.size_gib`. * `control_plane.ssh_config`. *
+      `control_plane.ssh_config.authorized_key`. * `logging_config`
     validateOnly: If set, only validate the request, but do not actually
       update the cluster.
   """

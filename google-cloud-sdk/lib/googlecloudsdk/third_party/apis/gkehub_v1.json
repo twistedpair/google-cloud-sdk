@@ -912,6 +912,10 @@
         "preventDrift": {
           "description": "Set to true to enable the Config Sync admission webhook to prevent drifts. If set to `false`, disables the Config Sync admission webhook and does not prevent drifts.",
           "type": "boolean"
+        },
+        "oci": {
+          "description": "OCI repo configuration for the cluster",
+          "$ref": "ConfigManagementOciConfig"
         }
       }
     },
@@ -955,6 +959,34 @@
         }
       }
     },
+    "ConfigManagementOciConfig": {
+      "id": "ConfigManagementOciConfig",
+      "description": "OCI repo configuration for a single cluster",
+      "type": "object",
+      "properties": {
+        "syncRepo": {
+          "description": "The OCI image repository URL for the package to sync from. e.g. `LOCATION-docker.pkg.dev\/PROJECT_ID\/REPOSITORY_NAME\/PACKAGE_NAME`.",
+          "type": "string"
+        },
+        "policyDir": {
+          "description": "The absolute path of the directory that contains the local resources. Default: the root directory of the image.",
+          "type": "string"
+        },
+        "syncWaitSecs": {
+          "description": "Period in seconds between consecutive syncs. Default: 15.",
+          "type": "string",
+          "format": "int64"
+        },
+        "secretType": {
+          "description": "Type of secret configured for access to the Git repo.",
+          "type": "string"
+        },
+        "gcpServiceAccountEmail": {
+          "description": "The GCP Service Account Email used for auth when secret_type is gcpServiceAccount.",
+          "type": "string"
+        }
+      }
+    },
     "ConfigManagementPolicyController": {
       "id": "ConfigManagementPolicyController",
       "description": "Configuration for Policy Controller",
@@ -987,6 +1019,34 @@
         "logDeniesEnabled": {
           "description": "Logs all denies and dry run failures.",
           "type": "boolean"
+        },
+        "monitoring": {
+          "description": "Monitoring specifies the configuration of monitoring.",
+          "$ref": "ConfigManagementPolicyControllerMonitoring"
+        }
+      }
+    },
+    "ConfigManagementPolicyControllerMonitoring": {
+      "id": "ConfigManagementPolicyControllerMonitoring",
+      "description": "PolicyControllerMonitoring specifies the backends Policy Controller should export metrics to. For example, to specify metrics should be exported to Cloud Monitoring and Prometheus, specify backends: [\"cloudmonitoring\", \"prometheus\"]",
+      "type": "object",
+      "properties": {
+        "backends": {
+          "description": "Specifies the list of backends Policy Controller will export to. An empty list would effectively disable metrics export.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enumDescriptions": [
+              "Backend cannot be determined",
+              "Prometheus backend for monitoring",
+              "Stackdriver\/Cloud Monitoring backend for monitoring"
+            ],
+            "enum": [
+              "MONITORING_BACKEND_UNSPECIFIED",
+              "PROMETHEUS",
+              "CLOUD_MONITORING"
+            ]
+          }
         }
       }
     },

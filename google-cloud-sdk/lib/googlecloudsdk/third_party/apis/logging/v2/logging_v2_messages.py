@@ -510,14 +510,15 @@ class Link(_messages.Message):
       8000 characters.
     lifecycleState: Output only. The resource lifecycle state.
     name: The resource name of the link. The name can have up to 1,024
-      characters. A valid name must only have alphanumeric characters and
-      underscores within it. "projects/[PROJECT_ID]/locations/[LOCATION_ID]/bu
-      ckets/[BUCKET_ID]/links/[LINK_ID]" "organizations/[ORGANIZATION_ID]/loca
-      tions/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]" "billingAccount
-      s/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/links
-      /[LINK_ID]" "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET
-      _ID]/links/[LINK_ID]" For example:`projects/my-
-      project/locations/global/buckets/my-bucket/links/my_link
+      characters. A valid link id (at the end of the link name) must only have
+      alphanumeric characters and underscores within it. "projects/[PROJECT_ID
+      ]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]" "organiza
+      tions/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/link
+      s/[LINK_ID]" "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_I
+      D]/buckets/[BUCKET_ID]/links/[LINK_ID]" "folders/[FOLDER_ID]/locations/[
+      LOCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]" For
+      example:`projects/my-project/locations/global/buckets/my-
+      bucket/links/my_link
   """
 
   class LifecycleStateValueValuesEnum(_messages.Enum):
@@ -903,6 +904,10 @@ class LogBucket(_messages.Message):
     analyticsEnabled: Whether advanced log analytics is enabled for this
       bucket.This field may only be set at bucket creation and cannot be
       changed later.
+    analyticsUpgradeTime: Output only. The time that the bucket was upgraded
+      to enable analytics. This will eventually be deprecated once there is
+      not a need to upgrade existing buckets (i.e. when analytics becomes
+      default-enabled).
     cmekSettings: The CMEK settings of the log bucket. If present, new log
       entries written to this log bucket are encrypted using the CMEK key
       provided in this configuration. If a log bucket has CMEK settings, the
@@ -999,19 +1004,20 @@ class LogBucket(_messages.Message):
     NOT_LOCKED = 7
 
   analyticsEnabled = _messages.BooleanField(1)
-  cmekSettings = _messages.MessageField('CmekSettings', 2)
-  createTime = _messages.StringField(3)
-  description = _messages.StringField(4)
-  indexConfigs = _messages.MessageField('IndexConfig', 5, repeated=True)
-  lifecycleState = _messages.EnumField('LifecycleStateValueValuesEnum', 6)
-  linkedBigqueryDataset = _messages.StringField(7)
-  locked = _messages.BooleanField(8)
-  logLink = _messages.MessageField('LogLink', 9)
-  name = _messages.StringField(10)
-  restrictedFields = _messages.StringField(11, repeated=True)
-  retentionDays = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  unmetAnalyticsUpgradeRequirements = _messages.EnumField('UnmetAnalyticsUpgradeRequirementsValueListEntryValuesEnum', 13, repeated=True)
-  updateTime = _messages.StringField(14)
+  analyticsUpgradeTime = _messages.StringField(2)
+  cmekSettings = _messages.MessageField('CmekSettings', 3)
+  createTime = _messages.StringField(4)
+  description = _messages.StringField(5)
+  indexConfigs = _messages.MessageField('IndexConfig', 6, repeated=True)
+  lifecycleState = _messages.EnumField('LifecycleStateValueValuesEnum', 7)
+  linkedBigqueryDataset = _messages.StringField(8)
+  locked = _messages.BooleanField(9)
+  logLink = _messages.MessageField('LogLink', 10)
+  name = _messages.StringField(11)
+  restrictedFields = _messages.StringField(12, repeated=True)
+  retentionDays = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  unmetAnalyticsUpgradeRequirements = _messages.EnumField('UnmetAnalyticsUpgradeRequirementsValueListEntryValuesEnum', 14, repeated=True)
+  updateTime = _messages.StringField(15)
 
 
 class LogEntry(_messages.Message):
@@ -1441,9 +1447,10 @@ class LogMetric(_messages.Message):
 
   Fields:
     bucketName: Optional. The resource name of the Log Bucket that owns the
-      Log Metric. Only Log Buckets in projects are supported.For
-      example:projects/my-project/locations/global/buckets/my-bucketIf empty,
-      then the Log Metric is considered a non-Bucket Log Metric.
+      Log Metric. Only Log Buckets in projects are supported. The bucket has
+      to be in the same project as the metric.For example:projects/my-
+      project/locations/global/buckets/my-bucketIf empty, then the Log Metric
+      is considered a non-Bucket Log Metric.
     bucketOptions: Optional. The bucket_options are required when the logs-
       based metric is using a DISTRIBUTION value type and it describes the
       bucket boundaries used to create a histogram of the extracted values.

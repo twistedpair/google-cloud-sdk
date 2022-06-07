@@ -548,6 +548,33 @@ class ManagedidentitiesV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def EnableMigration(self, request, global_params=None):
+      r"""Enable Domain Migration.
+
+      Args:
+        request: (ManagedidentitiesProjectsLocationsGlobalDomainsEnableMigrationRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('EnableMigration')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    EnableMigration.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/global/domains/{domainsId}:enableMigration',
+        http_method='POST',
+        method_id='managedidentities.projects.locations.global.domains.enableMigration',
+        ordered_params=['domain'],
+        path_params=['domain'],
+        query_params=[],
+        relative_path='v1alpha1/{+domain}:enableMigration',
+        request_field='enableMigrationRequest',
+        request_type_name='ManagedidentitiesProjectsLocationsGlobalDomainsEnableMigrationRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def ExtendSchema(self, request, global_params=None):
       r"""Extend Schema for Domain.
 

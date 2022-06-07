@@ -3127,6 +3127,216 @@ class GoogleDevtoolsContaineranalysisV1alpha1RepoId(_messages.Message):
   uid = _messages.StringField(2)
 
 
+class GoogleDevtoolsContaineranalysisV1alpha1SlsaProvenanceZeroTwoSlsaBuilder(_messages.Message):
+  r"""Identifies the entity that executed the recipe, which is trusted to have
+  correctly performed the operation and populated this provenance.
+
+  Fields:
+    id: URI indicating the builder's identity.
+  """
+
+  id = _messages.StringField(1)
+
+
+class GoogleDevtoolsContaineranalysisV1alpha1SlsaProvenanceZeroTwoSlsaCompleteness(_messages.Message):
+  r"""Indicates that the builder claims certain fields in this message to be
+  complete.
+
+  Fields:
+    environment: If true, the builder claims that invocation.environment is
+      complete.
+    materials: If true, the builder claims that materials is complete.
+    parameters: If true, the builder claims that invocation.parameters is
+      complete.
+  """
+
+  environment = _messages.BooleanField(1)
+  materials = _messages.BooleanField(2)
+  parameters = _messages.BooleanField(3)
+
+
+class GoogleDevtoolsContaineranalysisV1alpha1SlsaProvenanceZeroTwoSlsaConfigSource(_messages.Message):
+  r"""Describes where the config file that kicked off the build came from.
+  This is effectively a pointer to the source where buildConfig came from.
+
+  Messages:
+    DigestValue: Collection of cryptographic digests for the contents of the
+      artifact specified by invocation.configSource.uri.
+
+  Fields:
+    digest: Collection of cryptographic digests for the contents of the
+      artifact specified by invocation.configSource.uri.
+    entryPoint: String identifying the entry point into the build.
+    uri: URI indicating the identity of the source of the config.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DigestValue(_messages.Message):
+    r"""Collection of cryptographic digests for the contents of the artifact
+    specified by invocation.configSource.uri.
+
+    Messages:
+      AdditionalProperty: An additional property for a DigestValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type DigestValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DigestValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  digest = _messages.MessageField('DigestValue', 1)
+  entryPoint = _messages.StringField(2)
+  uri = _messages.StringField(3)
+
+
+class GoogleDevtoolsContaineranalysisV1alpha1SlsaProvenanceZeroTwoSlsaInvocation(_messages.Message):
+  r"""Identifies the event that kicked off the build.
+
+  Messages:
+    EnvironmentValue: Any other builder-controlled inputs necessary for
+      correctly evaluating the build.
+    ParametersValue: Collection of all external inputs that influenced the
+      build on top of invocation.configSource.
+
+  Fields:
+    configSource: Describes where the config file that kicked off the build
+      came from.
+    environment: Any other builder-controlled inputs necessary for correctly
+      evaluating the build.
+    parameters: Collection of all external inputs that influenced the build on
+      top of invocation.configSource.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class EnvironmentValue(_messages.Message):
+    r"""Any other builder-controlled inputs necessary for correctly evaluating
+    the build.
+
+    Messages:
+      AdditionalProperty: An additional property for a EnvironmentValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a EnvironmentValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ParametersValue(_messages.Message):
+    r"""Collection of all external inputs that influenced the build on top of
+    invocation.configSource.
+
+    Messages:
+      AdditionalProperty: An additional property for a ParametersValue object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ParametersValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  configSource = _messages.MessageField('GoogleDevtoolsContaineranalysisV1alpha1SlsaProvenanceZeroTwoSlsaConfigSource', 1)
+  environment = _messages.MessageField('EnvironmentValue', 2)
+  parameters = _messages.MessageField('ParametersValue', 3)
+
+
+class GoogleDevtoolsContaineranalysisV1alpha1SlsaProvenanceZeroTwoSlsaMaterial(_messages.Message):
+  r"""The collection of artifacts that influenced the build including sources,
+  dependencies, build tools, base images, and so on.
+
+  Messages:
+    DigestValue: Collection of cryptographic digests for the contents of this
+      artifact.
+
+  Fields:
+    digest: Collection of cryptographic digests for the contents of this
+      artifact.
+    uri: The method by which this artifact was referenced during the build.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DigestValue(_messages.Message):
+    r"""Collection of cryptographic digests for the contents of this artifact.
+
+    Messages:
+      AdditionalProperty: An additional property for a DigestValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type DigestValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DigestValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  digest = _messages.MessageField('DigestValue', 1)
+  uri = _messages.StringField(2)
+
+
+class GoogleDevtoolsContaineranalysisV1alpha1SlsaProvenanceZeroTwoSlsaMetadata(_messages.Message):
+  r"""Other properties of the build.
+
+  Fields:
+    buildFinishedOn: The timestamp of when the build completed.
+    buildInvocationId: Identifies this particular build invocation, which can
+      be useful for finding associated logs or other ad-hoc analysis.
+    buildStartedOn: The timestamp of when the build started.
+    completeness: Indicates that the builder claims certain fields in this
+      message to be complete.
+    reproducible: If true, the builder claims that running invocation on
+      materials will produce bit-for-bit identical output.
+  """
+
+  buildFinishedOn = _messages.StringField(1)
+  buildInvocationId = _messages.StringField(2)
+  buildStartedOn = _messages.StringField(3)
+  completeness = _messages.MessageField('GoogleDevtoolsContaineranalysisV1alpha1SlsaProvenanceZeroTwoSlsaCompleteness', 4)
+  reproducible = _messages.BooleanField(5)
+
+
 class GoogleDevtoolsContaineranalysisV1alpha1SourceContext(_messages.Message):
   r"""A SourceContext is a reference to a tree of files. A SourceContext
   together with a path point to a unique revision of a single file or
@@ -3229,8 +3439,9 @@ class InTotoStatement(_messages.Message):
   Fields:
     _type: Always "https://in-toto.io/Statement/v0.1".
     predicateType: "https://slsa.dev/provenance/v0.1" for SlsaProvenance.
-    provenance: provenance is a predicate of type intotoprovenance
-    slsaProvenance: slsa_provenance is a predicate of type slsaProvenance
+    provenance: Generic Grafeas provenance.
+    slsaProvenance: SLSA 0.1 provenance.
+    slsaProvenanceZeroTwo: SLSA 0.2 provenance.
     subject: subject is the subjects of the intoto statement
   """
 
@@ -3238,7 +3449,8 @@ class InTotoStatement(_messages.Message):
   predicateType = _messages.StringField(2)
   provenance = _messages.MessageField('InTotoProvenance', 3)
   slsaProvenance = _messages.MessageField('SlsaProvenance', 4)
-  subject = _messages.MessageField('Subject', 5, repeated=True)
+  slsaProvenanceZeroTwo = _messages.MessageField('SlsaProvenanceZeroTwo', 5)
+  subject = _messages.MessageField('Subject', 6, repeated=True)
 
 
 class Installation(_messages.Message):
@@ -4754,6 +4966,57 @@ class SlsaProvenance(_messages.Message):
   materials = _messages.MessageField('Material', 2, repeated=True)
   metadata = _messages.MessageField('SlsaMetadata', 3)
   recipe = _messages.MessageField('SlsaRecipe', 4)
+
+
+class SlsaProvenanceZeroTwo(_messages.Message):
+  r"""SlsaProvenanceZeroTwo is the slsa provenance as defined by the slsa
+  spec. See full explanation of fields at slsa.dev/provenance/v0.2.
+
+  Messages:
+    BuildConfigValue: Lists the steps in the build.
+
+  Fields:
+    buildConfig: Lists the steps in the build.
+    buildType: URI indicating what type of build was performed.
+    builder: Identifies the entity that executed the recipe, which is trusted
+      to have correctly performed the operation and populated this provenance.
+    invocation: Identifies the event that kicked off the build.
+    materials: The collection of artifacts that influenced the build including
+      sources, dependencies, build tools, base images, and so on.
+    metadata: Other properties of the build.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class BuildConfigValue(_messages.Message):
+    r"""Lists the steps in the build.
+
+    Messages:
+      AdditionalProperty: An additional property for a BuildConfigValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a BuildConfigValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  buildConfig = _messages.MessageField('BuildConfigValue', 1)
+  buildType = _messages.StringField(2)
+  builder = _messages.MessageField('GoogleDevtoolsContaineranalysisV1alpha1SlsaProvenanceZeroTwoSlsaBuilder', 3)
+  invocation = _messages.MessageField('GoogleDevtoolsContaineranalysisV1alpha1SlsaProvenanceZeroTwoSlsaInvocation', 4)
+  materials = _messages.MessageField('GoogleDevtoolsContaineranalysisV1alpha1SlsaProvenanceZeroTwoSlsaMaterial', 5, repeated=True)
+  metadata = _messages.MessageField('GoogleDevtoolsContaineranalysisV1alpha1SlsaProvenanceZeroTwoSlsaMetadata', 6)
 
 
 class SlsaRecipe(_messages.Message):

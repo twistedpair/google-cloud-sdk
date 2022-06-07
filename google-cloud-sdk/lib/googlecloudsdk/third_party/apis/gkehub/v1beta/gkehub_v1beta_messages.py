@@ -347,6 +347,7 @@ class ConfigManagementConfigSync(_messages.Message):
       ConfigSync resources will be managed depends on the presence of git
       field.
     git: Git repo configuration for the cluster.
+    oci: OCI repo configuration for the cluster
     preventDrift: Set to true to enable the Config Sync admission webhook to
       prevent drifts. If set to `false`, disables the Config Sync admission
       webhook and does not prevent drifts.
@@ -356,8 +357,9 @@ class ConfigManagementConfigSync(_messages.Message):
 
   enabled = _messages.BooleanField(1)
   git = _messages.MessageField('ConfigManagementGitConfig', 2)
-  preventDrift = _messages.BooleanField(3)
-  sourceFormat = _messages.StringField(4)
+  oci = _messages.MessageField('ConfigManagementOciConfig', 3)
+  preventDrift = _messages.BooleanField(4)
+  sourceFormat = _messages.StringField(5)
 
 
 class ConfigManagementConfigSyncDeploymentState(_messages.Message):
@@ -778,6 +780,27 @@ class ConfigManagementMembershipState(_messages.Message):
   policyControllerState = _messages.MessageField('ConfigManagementPolicyControllerState', 7)
 
 
+class ConfigManagementOciConfig(_messages.Message):
+  r"""OCI repo configuration for a single cluster
+
+  Fields:
+    gcpServiceAccountEmail: The GCP Service Account Email used for auth when
+      secret_type is gcpServiceAccount.
+    policyDir: The absolute path of the directory that contains the local
+      resources. Default: the root directory of the image.
+    secretType: Type of secret configured for access to the Git repo.
+    syncRepo: The OCI image repository URL for the package to sync from. e.g.
+      `LOCATION-docker.pkg.dev/PROJECT_ID/REPOSITORY_NAME/PACKAGE_NAME`.
+    syncWaitSecs: Period in seconds between consecutive syncs. Default: 15.
+  """
+
+  gcpServiceAccountEmail = _messages.StringField(1)
+  policyDir = _messages.StringField(2)
+  secretType = _messages.StringField(3)
+  syncRepo = _messages.StringField(4)
+  syncWaitSecs = _messages.IntegerField(5)
+
+
 class ConfigManagementOperatorState(_messages.Message):
   r"""State information for an ACM's Operator
 
@@ -822,6 +845,7 @@ class ConfigManagementPolicyController(_messages.Message):
       Controller checks. Namespaces do not need to currently exist on the
       cluster.
     logDeniesEnabled: Logs all denies and dry run failures.
+    monitoring: Monitoring specifies the configuration of monitoring.
     referentialRulesEnabled: Enables the ability to use Constraint Templates
       that reference to objects other than the object currently being
       evaluated.
@@ -833,8 +857,38 @@ class ConfigManagementPolicyController(_messages.Message):
   enabled = _messages.BooleanField(2)
   exemptableNamespaces = _messages.StringField(3, repeated=True)
   logDeniesEnabled = _messages.BooleanField(4)
-  referentialRulesEnabled = _messages.BooleanField(5)
-  templateLibraryInstalled = _messages.BooleanField(6)
+  monitoring = _messages.MessageField('ConfigManagementPolicyControllerMonitoring', 5)
+  referentialRulesEnabled = _messages.BooleanField(6)
+  templateLibraryInstalled = _messages.BooleanField(7)
+
+
+class ConfigManagementPolicyControllerMonitoring(_messages.Message):
+  r"""PolicyControllerMonitoring specifies the backends Policy Controller
+  should export metrics to. For example, to specify metrics should be exported
+  to Cloud Monitoring and Prometheus, specify backends: ["cloudmonitoring",
+  "prometheus"]
+
+  Enums:
+    BackendsValueListEntryValuesEnum:
+
+  Fields:
+    backends: Specifies the list of backends Policy Controller will export to.
+      An empty list would effectively disable metrics export.
+  """
+
+  class BackendsValueListEntryValuesEnum(_messages.Enum):
+    r"""BackendsValueListEntryValuesEnum enum type.
+
+    Values:
+      MONITORING_BACKEND_UNSPECIFIED: Backend cannot be determined
+      PROMETHEUS: Prometheus backend for monitoring
+      CLOUD_MONITORING: Stackdriver/Cloud Monitoring backend for monitoring
+    """
+    MONITORING_BACKEND_UNSPECIFIED = 0
+    PROMETHEUS = 1
+    CLOUD_MONITORING = 2
+
+  backends = _messages.EnumField('BackendsValueListEntryValuesEnum', 1, repeated=True)
 
 
 class ConfigManagementPolicyControllerState(_messages.Message):

@@ -613,6 +613,31 @@
         }
       }
     },
+    "ListMembershipsForNamespaceResponse": {
+      "id": "ListMembershipsForNamespaceResponse",
+      "description": "Response message for the `GkeHub.ListMemberships` method.",
+      "type": "object",
+      "properties": {
+        "resources": {
+          "description": "The list of matching Memberships.",
+          "type": "array",
+          "items": {
+            "$ref": "Membership"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token to request the next page of resources from the `ListMemberships` method. The value of an empty string means that there are no more resources to return.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "List of locations that could not be reached while fetching this list.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "ListFeaturesResponse": {
       "id": "ListFeaturesResponse",
       "description": "Response message for the `GkeHub.ListFeatures` method.",
@@ -752,6 +777,10 @@
         "anthosobservability": {
           "description": "Anthos Observability spec",
           "$ref": "AnthosObservabilityFeatureSpec"
+        },
+        "rbacrolebindingactuation": {
+          "description": "RBAC Role Binding Actuation feature spec",
+          "$ref": "RBACRoleBindingActuationFeatureSpec"
         }
       }
     },
@@ -968,6 +997,16 @@
         }
       }
     },
+    "RBACRoleBindingActuationFeatureSpec": {
+      "id": "RBACRoleBindingActuationFeatureSpec",
+      "description": "**RBAC RoleBinding Actuation**: The Hub-wide input for the RBACRoleBindingActuation feature.",
+      "type": "object",
+      "properties": {
+        "actuationDisabled": {
+          "type": "boolean"
+        }
+      }
+    },
     "MembershipFeatureSpec": {
       "id": "MembershipFeatureSpec",
       "description": "MembershipFeatureSpec contains configuration information for a single Membership.",
@@ -1012,6 +1051,10 @@
         "anthosvm": {
           "description": "AnthosVM spec.",
           "$ref": "AnthosVMMembershipSpec"
+        },
+        "rbacrolebindingactuation": {
+          "description": "RBAC Role Binding Actuation membership spec",
+          "$ref": "RBACRoleBindingActuationMembershipSpec"
         }
       }
     },
@@ -1077,6 +1120,10 @@
         "preventDrift": {
           "description": "Set to true to enable the Config Sync admission webhook to prevent drifts. If set to `false`, disables the Config Sync admission webhook and does not prevent drifts.",
           "type": "boolean"
+        },
+        "oci": {
+          "description": "OCI repo configuration for the cluster",
+          "$ref": "ConfigManagementOciConfig"
         }
       }
     },
@@ -1112,6 +1159,34 @@
         },
         "httpsProxy": {
           "description": "URL for the HTTPS proxy to be used when communicating with the Git repo.",
+          "type": "string"
+        },
+        "gcpServiceAccountEmail": {
+          "description": "The GCP Service Account Email used for auth when secret_type is gcpServiceAccount.",
+          "type": "string"
+        }
+      }
+    },
+    "ConfigManagementOciConfig": {
+      "id": "ConfigManagementOciConfig",
+      "description": "OCI repo configuration for a single cluster",
+      "type": "object",
+      "properties": {
+        "syncRepo": {
+          "description": "The OCI image repository URL for the package to sync from. e.g. `LOCATION-docker.pkg.dev\/PROJECT_ID\/REPOSITORY_NAME\/PACKAGE_NAME`.",
+          "type": "string"
+        },
+        "policyDir": {
+          "description": "The absolute path of the directory that contains the local resources. Default: the root directory of the image.",
+          "type": "string"
+        },
+        "syncWaitSecs": {
+          "description": "Period in seconds between consecutive syncs. Default: 15.",
+          "type": "string",
+          "format": "int64"
+        },
+        "secretType": {
+          "description": "Type of secret configured for access to the Git repo.",
           "type": "string"
         },
         "gcpServiceAccountEmail": {
@@ -1156,6 +1231,34 @@
         "mutationEnabled": {
           "description": "Enable users to try out mutation for PolicyController.",
           "type": "boolean"
+        },
+        "monitoring": {
+          "description": "Monitoring specifies the configuration of monitoring.",
+          "$ref": "ConfigManagementPolicyControllerMonitoring"
+        }
+      }
+    },
+    "ConfigManagementPolicyControllerMonitoring": {
+      "id": "ConfigManagementPolicyControllerMonitoring",
+      "description": "PolicyControllerMonitoring specifies the backends Policy Controller should export metrics to. For example, to specify metrics should be exported to Cloud Monitoring and Prometheus, specify backends: [\"cloudmonitoring\", \"prometheus\"]",
+      "type": "object",
+      "properties": {
+        "backends": {
+          "description": "Specifies the list of backends Policy Controller will export to. An empty list would effectively disable metrics export.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enumDescriptions": [
+              "Backend cannot be determined",
+              "Prometheus backend for monitoring",
+              "Stackdriver\/Cloud Monitoring backend for monitoring"
+            ],
+            "enum": [
+              "MONITORING_BACKEND_UNSPECIFIED",
+              "PROMETHEUS",
+              "CLOUD_MONITORING"
+            ]
+          }
         }
       }
     },
@@ -1378,6 +1481,20 @@
             "DATA_PLANE_MANAGEMENT_AUTOMATIC",
             "DATA_PLANE_MANAGEMENT_MANUAL"
           ]
+        },
+        "management": {
+          "description": "Enables automatic Service Mesh management.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified",
+            "Google should manage my Service Mesh for the cluster. This will ensure that a control plane revision is available to the cluster. Google will enroll this revision in a release channel and keep it up to date. Enables a Google-managed data plane that provides L7 service mesh capabilities. Data plane management is enabled at the cluster level. Users can exclude individual workloads or namespaces.",
+            "User will manually configure their service mesh components."
+          ],
+          "enum": [
+            "MANAGEMENT_UNSPECIFIED",
+            "MANAGEMENT_AUTOMATIC",
+            "MANAGEMENT_MANUAL"
+          ]
         }
       }
     },
@@ -1505,6 +1622,16 @@
       "properties": {
       }
     },
+    "RBACRoleBindingActuationMembershipSpec": {
+      "id": "RBACRoleBindingActuationMembershipSpec",
+      "description": "**RBAC RoleBinding Actuation**: The membership-specific input for RBACRoleBindingActuation feature.",
+      "type": "object",
+      "properties": {
+        "actuationDisabled": {
+          "type": "boolean"
+        }
+      }
+    },
     "CommonFeatureState": {
       "id": "CommonFeatureState",
       "description": "CommonFeatureState contains Hub-wide Feature status information.",
@@ -1521,6 +1648,10 @@
         "appdevexperience": {
           "description": "Appdevexperience specific state.",
           "$ref": "AppDevExperienceFeatureState"
+        },
+        "rbacrolebindingactuation": {
+          "description": "RBAC Role Binding Actuation feature state",
+          "$ref": "RBACRoleBindingActuationFeatureState"
         },
         "state": {
           "description": "Output only. The \"running state\" of the Feature in this Hub.",
@@ -1665,6 +1796,13 @@
         }
       }
     },
+    "RBACRoleBindingActuationFeatureState": {
+      "id": "RBACRoleBindingActuationFeatureState",
+      "description": "**RBAC RoleBinding Actuation**: An empty state left as an example Hub-wide Feature state.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "FeatureState": {
       "id": "FeatureState",
       "description": "FeatureState describes the high-level state of a Feature. It may be used to describe a Feature's state at the environ-level, or per-membershop, depending on the context.",
@@ -1733,6 +1871,10 @@
         "anthosvm": {
           "description": "AnthosVM state.",
           "$ref": "AnthosVMMembershipState"
+        },
+        "rbacrolebindingactuation": {
+          "description": "RBAC Role Binding Actuation membership state",
+          "$ref": "RBACRoleBindingActuationMembershipState"
         },
         "state": {
           "description": "The high-level state of this Feature for a single membership.",
@@ -2765,6 +2907,29 @@
       "properties": {
       }
     },
+    "RBACRoleBindingActuationMembershipState": {
+      "id": "RBACRoleBindingActuationMembershipState",
+      "description": "**RBAC RoleBinding Actuation**: An empty state left as an example membership-specific Feature state.",
+      "type": "object",
+      "properties": {
+        "lifecycleState": {
+          "type": "string",
+          "enumDescriptions": [
+            "The lifecycle state is unspecified.",
+            "",
+            ""
+          ],
+          "enum": [
+            "LIFECYCLE_STATE_UNSPECIFIED",
+            "ACTIVE",
+            "ERROR"
+          ]
+        },
+        "stateDetails": {
+          "type": "string"
+        }
+      }
+    },
     "GenerateConnectManifestResponse": {
       "id": "GenerateConnectManifestResponse",
       "description": "GenerateConnectManifestResponse contains manifest information for installing\/upgrading a Connect agent.",
@@ -2967,6 +3132,128 @@
         },
         "nextPageToken": {
           "description": "A token to request the next page of resources from the `ListNamespaces` method. The value of an empty string means that there are no more resources to return.",
+          "type": "string"
+        }
+      }
+    },
+    "ListNamespacesForMembershipResponse": {
+      "id": "ListNamespacesForMembershipResponse",
+      "description": "List of fleet namespaces.",
+      "type": "object",
+      "properties": {
+        "namespaces": {
+          "description": "The list of fleet namespaces",
+          "type": "array",
+          "items": {
+            "$ref": "Namespace"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token to request the next page of resources from the `ListNamespaces` method. The value of an empty string means that there are no more resources to return.",
+          "type": "string"
+        }
+      }
+    },
+    "RBACRoleBinding": {
+      "id": "RBACRoleBinding",
+      "description": "RBACRoleBinding represents a rbacrolebinding across the Fleet",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The resource name for the rbacrolebinding `projects\/{project}\/locations\/{location}\/namespaces\/{namespace}\/rbacrolebindings\/{rbacrolebinding}`",
+          "type": "string"
+        },
+        "uid": {
+          "description": "Output only. Google-generated UUID for this resource. This is unique across all rbacrolebinding resources. If a rbacrolebinding resource is deleted and another resource with the same name is created, it gets a different uid.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. When the rbacrolebinding was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. When the rbacrolebinding was last updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "deleteTime": {
+          "description": "Output only. When the rbacrolebinding was deleted.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "ListRBACRoleBindingsResponse": {
+      "id": "ListRBACRoleBindingsResponse",
+      "description": "List of RBACRoleBindings.",
+      "type": "object",
+      "properties": {
+        "rbacrolebindings": {
+          "description": "The list of RBACRoleBindings",
+          "type": "array",
+          "items": {
+            "$ref": "RBACRoleBinding"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token to request the next page of resources from the `ListRBACRoleBindings` method. The value of an empty string means that there are no more resources to return.",
+          "type": "string"
+        }
+      }
+    },
+    "NamespaceBinding": {
+      "id": "NamespaceBinding",
+      "description": "NamespaceBinding represents a namespacebinding across the Fleet",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The resource name for the namespacebinding `projects\/{project}\/locations\/{location}\/memberships\/{membership}\/namespacebindings\/{namespacebinding}`",
+          "type": "string"
+        },
+        "uid": {
+          "description": "Output only. Google-generated UUID for this resource. This is unique across all namespacebinding resources. If a namespacebinding resource is deleted and another resource with the same name is created, it gets a different uid.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. When the namespacebinding was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. When the namespacebinding was last updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "deleteTime": {
+          "description": "Output only. When the namespacebinding was deleted.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "ListNamespaceBindingsResponse": {
+      "id": "ListNamespaceBindingsResponse",
+      "description": "List of NamespaceBindings.",
+      "type": "object",
+      "properties": {
+        "namespacebindings": {
+          "description": "The list of NamespaceBindings",
+          "type": "array",
+          "items": {
+            "$ref": "NamespaceBinding"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token to request the next page of resources from the `ListNamespaceBindings` method. The value of an empty string means that there are no more resources to return.",
           "type": "string"
         }
       }
@@ -3527,6 +3814,52 @@
                   ],
                   "description": "Lists Memberships of admin clusters in a given project and location. **This method is only used internally**."
                 },
+                "listPermitted": {
+                  "id": "gkehub.projects.locations.memberships.listPermitted",
+                  "path": "v1alpha/{+parent}/memberships:listPermitted",
+                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/memberships:listPermitted",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent (project and location) where the Memberships will be listed. Specified in the format `projects\/*\/locations\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Optional. When requesting a 'page' of resources, `page_size` specifies number of resources to return. If unspecified or set to 0, all resources will be returned.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "Optional. Token returned by previous call to `ListMemberships` which specifies the position in the list from where to continue listing the resources.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "Optional. Lists Memberships that match the filter expression, following the syntax outlined in https:\/\/google.aip.dev\/160. Examples: - Name is `bar` in project `foo-proj` and location `global`: name = \"projects\/foo-proj\/locations\/global\/membership\/bar\" - Memberships that have a label called `foo`: labels.foo:* - Memberships that have a label called `foo` whose value is `bar`: labels.foo = bar - Memberships in the CREATING state: state = CREATING",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "orderBy": {
+                      "description": "Optional. One or more fields to compare and use to sort the output. See https:\/\/google.aip.dev\/132#ordering.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListMembershipsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists Memberships that the user is permitted to access in IAM"
+                },
                 "get": {
                   "id": "gkehub.projects.locations.memberships.get",
                   "path": "v1alpha/{+name}",
@@ -3716,6 +4049,42 @@
                   ],
                   "description": "Generates the manifest for deployment of the GKE connect agent. **This method is used internally by Google-provided libraries.** Most clients should not need to call this method directly."
                 },
+                "listNamespaces": {
+                  "id": "gkehub.projects.locations.memberships.listNamespaces",
+                  "path": "v1alpha/{+name}:listNamespaces",
+                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/memberships/{membershipsId}:listNamespaces",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The parent (project and location) where the Features will be listed. Specified in the format `projects\/*\/locations\/*\/memberships\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/memberships\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Optional. When requesting a 'page' of resources, `page_size` specifies number of resources to return. If unspecified or set to 0, all resources will be returned.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "Optional. Token returned by previous call to `ListFeatures` which specifies the position in the list from where to continue listing the resources.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "ListNamespacesForMembershipResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists fleet namespaces of a given membership"
+                },
                 "setIamPolicy": {
                   "id": "gkehub.projects.locations.memberships.setIamPolicy",
                   "path": "v1alpha/{+resource}:setIamPolicy",
@@ -3802,6 +4171,555 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
+                }
+              }
+              ,
+              "resources": {
+                "namespacebindings": {
+                  "methods": {
+                    "get": {
+                      "id": "gkehub.projects.locations.memberships.namespacebindings.get",
+                      "path": "v1alpha/{+name}",
+                      "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/memberships/{membershipsId}/namespacebindings/{namespacebindingsId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The NamespaceBinding resource name in the format `projects\/*\/locations\/*\/memberships\/*\/namespacebindings\/*`.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/memberships\/[^\/]+\/namespacebindings\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "NamespaceBinding"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Returns the details of a NamespaceBinding."
+                    },
+                    "create": {
+                      "id": "gkehub.projects.locations.memberships.namespacebindings.create",
+                      "path": "v1alpha/{+parent}/namespacebindings",
+                      "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/memberships/{membershipsId}/namespacebindings",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The parent (project and location) where the NamespaceBinding will be created. Specified in the format `projects\/*\/locations\/*\/memberships\/*`.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/memberships\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "namespacebindingId": {
+                          "description": "Required. Client chosen ID for the NamespaceBinding. `namespacebinding_id` must be a valid RFC 1123 compliant DNS label: 1. At most 63 characters in length 2. It must consist of lower case alphanumeric characters or `-` 3. It must start and end with an alphanumeric character Which can be expressed as the regex: `[a-z0-9]([-a-z0-9]*[a-z0-9])?`, with a maximum length of 63 characters.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "NamespaceBinding"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Creates a NamespaceBinding."
+                    },
+                    "patch": {
+                      "id": "gkehub.projects.locations.memberships.namespacebindings.patch",
+                      "path": "v1alpha/{+name}",
+                      "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/memberships/{membershipsId}/namespacebindings/{namespacebindingsId}",
+                      "httpMethod": "PATCH",
+                      "parameters": {
+                        "name": {
+                          "description": "The resource name for the namespacebinding `projects\/{project}\/locations\/{location}\/memberships\/{membership}\/namespacebindings\/{namespacebinding}`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/memberships\/[^\/]+\/namespacebindings\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "updateMask": {
+                          "description": "Required. The fields to be updated.",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-fieldmask"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "NamespaceBinding"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Updates a NamespaceBinding."
+                    },
+                    "delete": {
+                      "id": "gkehub.projects.locations.memberships.namespacebindings.delete",
+                      "path": "v1alpha/{+name}",
+                      "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/memberships/{membershipsId}/namespacebindings/{namespacebindingsId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The NamespaceBinding resource name in the format `projects\/*\/locations\/*\/memberships\/*\/namespacebindings\/*`.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/memberships\/[^\/]+\/namespacebindings\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Deletes a NamespaceBinding."
+                    },
+                    "list": {
+                      "id": "gkehub.projects.locations.memberships.namespacebindings.list",
+                      "path": "v1alpha/{+parent}/namespacebindings",
+                      "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/memberships/{membershipsId}/namespacebindings",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The parent (project and location) where the Features will be listed. Specified in the format `projects\/*\/locations\/*\/memberships\/*`.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/memberships\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "Optional. When requesting a 'page' of resources, `page_size` specifies number of resources to return. If unspecified or set to 0, all resources will be returned.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "Optional. Token returned by previous call to `ListNamespaceBindings` which specifies the position in the list from where to continue listing the resources.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListNamespaceBindingsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Lists NamespaceBinding."
+                    }
+                  }
+                }
+              }
+            },
+            "namespaces": {
+              "methods": {
+                "listMemberships": {
+                  "id": "gkehub.projects.locations.namespaces.listMemberships",
+                  "path": "v1alpha/{+name}:listMemberships",
+                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}:listMemberships",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The parent (project and location) where the Memberships will be listed. Specified in the format `projects\/*\/locations\/*\/namespaces\/`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Optional. When requesting a 'page' of resources, `page_size` specifies number of resources to return. If unspecified or set to 0, all resources will be returned.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "Optional. Token returned by previous call to `ListMemberships` which specifies the position in the list from where to continue listing the resources.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "ListMembershipsForNamespaceResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists Memberships that are bound to a Fleet Namespace."
+                },
+                "get": {
+                  "id": "gkehub.projects.locations.namespaces.get",
+                  "path": "v1alpha/{+name}",
+                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The Namespace resource name in the format `projects\/*\/locations\/*\/namespaces\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Namespace"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Returns the details of a fleet namespace."
+                },
+                "create": {
+                  "id": "gkehub.projects.locations.namespaces.create",
+                  "path": "v1alpha/{+parent}/namespaces",
+                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/namespaces",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent (project and location) where the Namespace will be created. Specified in the format `projects\/*\/locations\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "namespaceId": {
+                      "description": "Required. Client chosen ID for the Namespace. `namespace_id` must be a valid RFC 1123 compliant DNS label: 1. At most 63 characters in length 2. It must consist of lower case alphanumeric characters or `-` 3. It must start and end with an alphanumeric character Which can be expressed as the regex: `[a-z0-9]([-a-z0-9]*[a-z0-9])?`, with a maximum length of 63 characters.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "Namespace"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a fleet namespace."
+                },
+                "patch": {
+                  "id": "gkehub.projects.locations.namespaces.patch",
+                  "path": "v1alpha/{+name}",
+                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "The resource name for the namespace `projects\/{project}\/locations\/{location}\/namespaces\/{namespace}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Required. The fields to be updated.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "Namespace"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Updates a fleet namespace."
+                },
+                "delete": {
+                  "id": "gkehub.projects.locations.namespaces.delete",
+                  "path": "v1alpha/{+name}",
+                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The Namespace resource name in the format `projects\/*\/locations\/*\/namespaces\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a fleet namespace."
+                },
+                "list": {
+                  "id": "gkehub.projects.locations.namespaces.list",
+                  "path": "v1alpha/{+parent}/namespaces",
+                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/namespaces",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent (project and location) where the Features will be listed. Specified in the format `projects\/*\/locations\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Optional. When requesting a 'page' of resources, `page_size` specifies number of resources to return. If unspecified or set to 0, all resources will be returned.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "Optional. Token returned by previous call to `ListFeatures` which specifies the position in the list from where to continue listing the resources.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListNamespacesResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists fleet namespaces."
+                },
+                "listPermitted": {
+                  "id": "gkehub.projects.locations.namespaces.listPermitted",
+                  "path": "v1alpha/{+parent}/namespaces:listPermitted",
+                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/namespaces:listPermitted",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent (project and location) where the Features will be listed. Specified in the format `projects\/*\/locations\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Optional. When requesting a 'page' of resources, `page_size` specifies number of resources to return. If unspecified or set to 0, all resources will be returned.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "Optional. Token returned by previous call to `ListFeatures` which specifies the position in the list from where to continue listing the resources.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListNamespacesResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists fleet namespaces that the caller is permitted to access in IAM"
+                }
+              }
+              ,
+              "resources": {
+                "rbacrolebindings": {
+                  "methods": {
+                    "get": {
+                      "id": "gkehub.projects.locations.namespaces.rbacrolebindings.get",
+                      "path": "v1alpha/{+name}",
+                      "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/rbacrolebindings/{rbacrolebindingsId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The RBACRoleBinding resource name in the format `projects\/*\/locations\/*\/namespaces\/*\/rbacrolebindings\/*`.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+\/rbacrolebindings\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "RBACRoleBinding"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Returns the details of a RBACRoleBinding."
+                    },
+                    "create": {
+                      "id": "gkehub.projects.locations.namespaces.rbacrolebindings.create",
+                      "path": "v1alpha/{+parent}/rbacrolebindings",
+                      "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/rbacrolebindings",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The parent (project and location) where the RBACRoleBinding will be created. Specified in the format `projects\/*\/locations\/*\/namespaces\/*`.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "rbacrolebindingId": {
+                          "description": "Required. Client chosen ID for the RBACRoleBinding. `rbacrolebinding_id` must be a valid RFC 1123 compliant DNS label: 1. At most 63 characters in length 2. It must consist of lower case alphanumeric characters or `-` 3. It must start and end with an alphanumeric character Which can be expressed as the regex: `[a-z0-9]([-a-z0-9]*[a-z0-9])?`, with a maximum length of 63 characters.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "RBACRoleBinding"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Creates a RBACRoleBinding."
+                    },
+                    "patch": {
+                      "id": "gkehub.projects.locations.namespaces.rbacrolebindings.patch",
+                      "path": "v1alpha/{+name}",
+                      "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/rbacrolebindings/{rbacrolebindingsId}",
+                      "httpMethod": "PATCH",
+                      "parameters": {
+                        "name": {
+                          "description": "The resource name for the rbacrolebinding `projects\/{project}\/locations\/{location}\/namespaces\/{namespace}\/rbacrolebindings\/{rbacrolebinding}`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+\/rbacrolebindings\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "updateMask": {
+                          "description": "Required. The fields to be updated.",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-fieldmask"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "RBACRoleBinding"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Updates a RBACRoleBinding."
+                    },
+                    "delete": {
+                      "id": "gkehub.projects.locations.namespaces.rbacrolebindings.delete",
+                      "path": "v1alpha/{+name}",
+                      "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/rbacrolebindings/{rbacrolebindingsId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The RBACRoleBinding resource name in the format `projects\/*\/locations\/*\/namespaces\/*\/rbacrolebindings\/*`.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+\/rbacrolebindings\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Deletes a RBACRoleBinding."
+                    },
+                    "list": {
+                      "id": "gkehub.projects.locations.namespaces.rbacrolebindings.list",
+                      "path": "v1alpha/{+parent}/rbacrolebindings",
+                      "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/rbacrolebindings",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The parent (project and location) where the Features will be listed. Specified in the format `projects\/*\/locations\/*\/namespaces\/*`.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "Optional. When requesting a 'page' of resources, `page_size` specifies number of resources to return. If unspecified or set to 0, all resources will be returned.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "Optional. Token returned by previous call to `ListRBACRoleBindings` which specifies the position in the list from where to continue listing the resources.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListRBACRoleBindingsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Lists RBACRoleBinding."
+                    }
+                  }
                 }
               }
             },
@@ -4228,163 +5146,6 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Returns all fleets within an organization or a project that the caller has access to."
-                }
-              }
-            },
-            "namespaces": {
-              "methods": {
-                "get": {
-                  "id": "gkehub.projects.locations.namespaces.get",
-                  "path": "v1alpha/{+name}",
-                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "name": {
-                      "description": "Required. The Namespace resource name in the format `projects\/*\/locations\/*\/namespaces\/*`.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "response": {
-                    "$ref": "Namespace"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Returns the details of a fleet namespace."
-                },
-                "create": {
-                  "id": "gkehub.projects.locations.namespaces.create",
-                  "path": "v1alpha/{+parent}/namespaces",
-                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/namespaces",
-                  "httpMethod": "POST",
-                  "parameters": {
-                    "parent": {
-                      "description": "Required. The parent (project and location) where the Namespace will be created. Specified in the format `projects\/*\/locations\/*`.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "namespaceId": {
-                      "description": "Required. Client chosen ID for the Namespace. `namespace_id` must be a valid RFC 1123 compliant DNS label: 1. At most 63 characters in length 2. It must consist of lower case alphanumeric characters or `-` 3. It must start and end with an alphanumeric character Which can be expressed as the regex: `[a-z0-9]([-a-z0-9]*[a-z0-9])?`, with a maximum length of 63 characters.",
-                      "location": "query",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "parent"
-                  ],
-                  "request": {
-                    "$ref": "Namespace"
-                  },
-                  "response": {
-                    "$ref": "Operation"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Creates a fleet namespace."
-                },
-                "patch": {
-                  "id": "gkehub.projects.locations.namespaces.patch",
-                  "path": "v1alpha/{+name}",
-                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}",
-                  "httpMethod": "PATCH",
-                  "parameters": {
-                    "name": {
-                      "description": "The resource name for the namespace `projects\/{project}\/locations\/{location}\/namespaces\/{namespace}`",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "updateMask": {
-                      "description": "Required. The fields to be updated.",
-                      "location": "query",
-                      "type": "string",
-                      "format": "google-fieldmask"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "request": {
-                    "$ref": "Namespace"
-                  },
-                  "response": {
-                    "$ref": "Operation"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Updates a fleet namespace."
-                },
-                "delete": {
-                  "id": "gkehub.projects.locations.namespaces.delete",
-                  "path": "v1alpha/{+name}",
-                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}",
-                  "httpMethod": "DELETE",
-                  "parameters": {
-                    "name": {
-                      "description": "Required. The Namespace resource name in the format `projects\/*\/locations\/*\/namespaces\/*`.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "response": {
-                    "$ref": "Operation"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Deletes a fleet namespace."
-                },
-                "list": {
-                  "id": "gkehub.projects.locations.namespaces.list",
-                  "path": "v1alpha/{+parent}/namespaces",
-                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/namespaces",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "parent": {
-                      "description": "Required. The parent (project and location) where the Features will be listed. Specified in the format `projects\/*\/locations\/*`.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "pageSize": {
-                      "description": "Optional. When requesting a 'page' of resources, `page_size` specifies number of resources to return. If unspecified or set to 0, all resources will be returned.",
-                      "location": "query",
-                      "type": "integer",
-                      "format": "int32"
-                    },
-                    "pageToken": {
-                      "description": "Optional. Token returned by previous call to `ListFeatures` which specifies the position in the list from where to continue listing the resources.",
-                      "location": "query",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "parent"
-                  ],
-                  "response": {
-                    "$ref": "ListNamespacesResponse"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Lists fleet namespaces."
                 }
               }
             }

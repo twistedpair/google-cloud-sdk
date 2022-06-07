@@ -528,6 +528,10 @@
           "description": "Output only. The activation token for the channel. The token must be used by the provider to register the channel for publishing.",
           "readOnly": true,
           "type": "string"
+        },
+        "cryptoKeyName": {
+          "description": "Optional. Resource name of a KMS crypto key (managed by the user) used to encrypt\/decrypt their event data. It must match the pattern `projects\/*\/locations\/*\/keyRings\/*\/cryptoKeys\/*`.",
+          "type": "string"
         }
       }
     },
@@ -721,6 +725,27 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "GoogleChannelConfig": {
+      "id": "GoogleChannelConfig",
+      "description": "A GoogleChannelConfig is a resource that stores the custom settings respected by Eventarc first-party triggers in the matching region. Once configured, first-party event data will be protected using the specified custom managed encryption key instead of Google-managed encryption keys.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. The resource name of the config. Must be in the format of, `projects\/{project}\/locations\/{location}\/googleChannelConfig`.",
+          "type": "string"
+        },
+        "updateTime": {
+          "description": "Output only. The last-modified time.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "cryptoKeyName": {
+          "description": "Optional. Resource name of a KMS crypto key (managed by the user) used to encrypt\/decrypt their event data. It must match the pattern `projects\/*\/locations\/*\/keyRings\/*\/cryptoKeys\/*`.",
+          "type": "string"
         }
       }
     },
@@ -994,6 +1019,65 @@
       "resources": {
         "locations": {
           "methods": {
+            "getGoogleChannelConfig": {
+              "id": "eventarc.projects.locations.getGoogleChannelConfig",
+              "path": "v1/{+name}",
+              "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/googleChannelConfig",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Required. The name of the config to get.",
+                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/googleChannelConfig$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "GoogleChannelConfig"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Get a GoogleChannelConfig"
+            },
+            "updateGoogleChannelConfig": {
+              "id": "eventarc.projects.locations.updateGoogleChannelConfig",
+              "path": "v1/{+name}",
+              "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/googleChannelConfig",
+              "httpMethod": "PATCH",
+              "parameters": {
+                "name": {
+                  "description": "Required. The resource name of the config. Must be in the format of, `projects\/{project}\/locations\/{location}\/googleChannelConfig`.",
+                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/googleChannelConfig$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "updateMask": {
+                  "description": "The fields to be updated; only fields explicitly provided are updated. If no field mask is provided, all provided fields in the request are updated. To update all fields, provide a field mask of \"*\".",
+                  "location": "query",
+                  "type": "string",
+                  "format": "google-fieldmask"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "GoogleChannelConfig"
+              },
+              "response": {
+                "$ref": "GoogleChannelConfig"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Update a single GoogleChannelConfig"
+            },
             "list": {
               "id": "eventarc.projects.locations.list",
               "path": "v1/{+name}/locations",

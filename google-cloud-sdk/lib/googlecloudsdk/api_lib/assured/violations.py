@@ -63,3 +63,19 @@ class ViolationsClient(object):
         batch_size=page_size,
         limit=limit,
         batch_size_attribute=None)
+
+  def Describe(self, name):
+    """Describe an existing Assured Workloads Compliance Violation.
+
+    Args:
+      name: str, the name for the Assured Workloads Violation being described
+        in the form:
+        organizations/{ORG_ID}/locations/{LOCATION}/workloads/{WORKLOAD_ID}/violations/{VIOLATION_ID}.
+
+    Returns:
+      Specified Assured Workloads Violation.
+    """
+    describe_req = self.messages.AssuredworkloadsOrganizationsLocationsWorkloadsViolationsGetRequest(
+        name=name)
+    return self.client.organizations_locations_workloads_violations.Get(
+        describe_req)

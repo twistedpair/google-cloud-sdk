@@ -39,6 +39,21 @@ class Access(_messages.Message):
   userAgentFamily = _messages.StringField(6)
 
 
+class Compliance(_messages.Message):
+  r"""Contains compliance information about a security standard indicating
+  unmet recommendations.
+
+  Fields:
+    ids: e.g. A.12.4.1
+    standard: e.g. "cis", "pci", "owasp", etc.
+    version: e.g. 1.1
+  """
+
+  ids = _messages.StringField(1, repeated=True)
+  standard = _messages.StringField(2)
+  version = _messages.StringField(3)
+
+
 class Config(_messages.Message):
   r"""Configuration of a module.
 
@@ -142,6 +157,26 @@ class Connection(_messages.Message):
   protocol = _messages.EnumField('ProtocolValueValuesEnum', 3)
   sourceIp = _messages.StringField(4)
   sourcePort = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+
+
+class Contact(_messages.Message):
+  r"""Representa a single contact's email address
+
+  Fields:
+    email: An email address e.g. "person123@company.com"
+  """
+
+  email = _messages.StringField(1)
+
+
+class ContactDetails(_messages.Message):
+  r"""The details pertaining to specific contacts
+
+  Fields:
+    contacts: A list of contacts
+  """
+
+  contacts = _messages.MessageField('Contact', 1, repeated=True)
 
 
 class ContainerThreatDetectionSettings(_messages.Message):
@@ -490,6 +525,19 @@ class Details(_messages.Message):
   type = _messages.EnumField('TypeValueValuesEnum', 3)
 
 
+class EnvironmentVariable(_messages.Message):
+  r"""EnvironmentVariable is a name-value pair to store env variables for
+  Process.
+
+  Fields:
+    name: Environment variable name as a JSON encoded string.
+    val: Environment variable value as a JSON encoded string.
+  """
+
+  name = _messages.StringField(1)
+  val = _messages.StringField(2)
+
+
 class EventThreatDetectionSettings(_messages.Message):
   r"""Resource capturing the settings for the Event Threat Detection service.
 
@@ -565,6 +613,64 @@ class EventThreatDetectionSettings(_messages.Message):
   updateTime = _messages.StringField(4)
 
 
+class ExfilResource(_messages.Message):
+  r"""Resource that has been exfiltrated or exfiltrated_to.
+
+  Fields:
+    components: Subcomponents of the asset that is exfiltrated - these could
+      be URIs used during exfiltration, table names, databases, filenames,
+      etc. For example, multiple tables may be exfiltrated from the same
+      CloudSQL instance, or multiple files from the same Cloud Storage bucket.
+    name: Resource's URI (https://google.aip.dev/122#full-resource-names)
+  """
+
+  components = _messages.StringField(1, repeated=True)
+  name = _messages.StringField(2)
+
+
+class Exfiltration(_messages.Message):
+  r"""Exfiltration represents a data exfiltration attempt of one or more
+  source(s) to one or more target(s). Source(s) represent the source of data
+  that is exfiltrated, and Target(s) represents the destination the data was
+  copied to.
+
+  Fields:
+    sources: If there are multiple sources, then the data is considered
+      "joined" between them. For instance, BigQuery can join multiple tables,
+      and each table would be considered a source.
+    targets: If there are multiple targets, each target would get a complete
+      copy of the "joined" source data.
+  """
+
+  sources = _messages.MessageField('ExfilResource', 1, repeated=True)
+  targets = _messages.MessageField('ExfilResource', 2, repeated=True)
+
+
+class File(_messages.Message):
+  r"""File information about the related binary/library used by an executable,
+  or the script used by a script interpreter
+
+  Fields:
+    contents: Prefix of the file contents as a JSON encoded string. (Currently
+      only populated for Malicious Script Executed findings.)
+    hashedSize: The length in bytes of the file prefix that was hashed. If
+      hashed_size == size, any hashes reported represent the entire file.
+    partiallyHashed: True when the hash covers only a prefix of the file.
+    path: Absolute path of the file as a JSON encoded string.
+    sha256: SHA256 hash of the first hashed_size bytes of the file encoded as
+      a hex string. If hashed_size == size, hash_sha256 represents the SHA256
+      hash of the entire file.
+    size: Size of the file in bytes.
+  """
+
+  contents = _messages.StringField(1)
+  hashedSize = _messages.IntegerField(2)
+  partiallyHashed = _messages.BooleanField(3)
+  path = _messages.StringField(4)
+  sha256 = _messages.StringField(5)
+  size = _messages.IntegerField(6)
+
+
 class Finding(_messages.Message):
   r"""Security Command Center finding. A finding is a record of assessment
   data like security, risk, health, or privacy, that is ingested into Security
@@ -582,6 +688,12 @@ class Finding(_messages.Message):
     StateValueValuesEnum: The state of the finding.
 
   Messages:
+    ContactsValue: Output only. Map containing the point of contacts for the
+      given finding. The key represents the type of contact, while the value
+      contains a list of all the contacts that pertain. Please refer to:
+      https://cloud.google.com/resource-manager/docs/managing-notification-
+      contacts#notification-categories { "security": {contact: {email:
+      "person1@company.com"} contact: {email: "person2@company.com"} }
     ExternalSystemsValue: Output only. Third party SIEM/SOAR fields within
       SCC, contains external system information and external system finding
       fields.
@@ -603,8 +715,16 @@ class Finding(_messages.Message):
     category: The additional taxonomy group within findings from a given
       source. This field is immutable after creation time. Example:
       "XSS_FLASH_INJECTION"
+    compliances: Contains compliance information for security standards
+      associated to the finding.
     connections: Contains information about the IP connection associated with
       the finding.
+    contacts: Output only. Map containing the point of contacts for the given
+      finding. The key represents the type of contact, while the value
+      contains a list of all the contacts that pertain. Please refer to:
+      https://cloud.google.com/resource-manager/docs/managing-notification-
+      contacts#notification-categories { "security": {contact: {email:
+      "person1@company.com"} contact: {email: "person2@company.com"} }
     createTime: The time at which the finding was created in Security Command
       Center.
     description: Contains more detail about the finding.
@@ -615,6 +735,7 @@ class Finding(_messages.Message):
       determined by the detector. If the finding is later resolved, then this
       time reflects when the finding was resolved. This must not be set to a
       value greater than the current timestamp.
+    exfiltration: Represents exfiltrations associated with the Finding.
     externalSystems: Output only. Third party SIEM/SOAR fields within SCC,
       contains external system information and external system finding fields.
     externalUri: The URI that, if available, points to a web page outside of
@@ -648,6 +769,8 @@ class Finding(_messages.Message):
       See: https://cloud.google.com/apis/design/resource_names#relative_resour
       ce_name This field is immutable after creation time. For example:
       "organizations/{organization_id}/sources/{source_id}"
+    processes: Represents operating system processes associated with the
+      Finding.
     resourceName: For findings on Google Cloud resources, the full resource
       name of the Google Cloud resource this finding is for. See:
       https://cloud.google.com/apis/design/resource_names#full_resource_name
@@ -770,6 +893,35 @@ class Finding(_messages.Message):
     INACTIVE = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
+  class ContactsValue(_messages.Message):
+    r"""Output only. Map containing the point of contacts for the given
+    finding. The key represents the type of contact, while the value contains
+    a list of all the contacts that pertain. Please refer to:
+    https://cloud.google.com/resource-manager/docs/managing-notification-
+    contacts#notification-categories { "security": {contact: {email:
+    "person1@company.com"} contact: {email: "person2@company.com"} }
+
+    Messages:
+      AdditionalProperty: An additional property for a ContactsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ContactsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ContactsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A ContactDetails attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('ContactDetails', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
   class ExternalSystemsValue(_messages.Message):
     r"""Output only. Third party SIEM/SOAR fields within SCC, contains
     external system information and external system finding fields.
@@ -827,28 +979,32 @@ class Finding(_messages.Message):
   access = _messages.MessageField('Access', 1)
   canonicalName = _messages.StringField(2)
   category = _messages.StringField(3)
-  connections = _messages.MessageField('Connection', 4, repeated=True)
-  createTime = _messages.StringField(5)
-  description = _messages.StringField(6)
-  eventTime = _messages.StringField(7)
-  externalSystems = _messages.MessageField('ExternalSystemsValue', 8)
-  externalUri = _messages.StringField(9)
-  findingClass = _messages.EnumField('FindingClassValueValuesEnum', 10)
-  iamBindings = _messages.MessageField('IamBinding', 11, repeated=True)
-  indicator = _messages.MessageField('Indicator', 12)
-  mitreAttack = _messages.MessageField('MitreAttack', 13)
-  mute = _messages.EnumField('MuteValueValuesEnum', 14)
-  muteInitiator = _messages.StringField(15)
-  muteUpdateTime = _messages.StringField(16)
-  name = _messages.StringField(17)
-  nextSteps = _messages.StringField(18)
-  parent = _messages.StringField(19)
-  resourceName = _messages.StringField(20)
-  securityMarks = _messages.MessageField('SecurityMarks', 21)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 22)
-  sourceProperties = _messages.MessageField('SourcePropertiesValue', 23)
-  state = _messages.EnumField('StateValueValuesEnum', 24)
-  vulnerability = _messages.MessageField('Vulnerability', 25)
+  compliances = _messages.MessageField('Compliance', 4, repeated=True)
+  connections = _messages.MessageField('Connection', 5, repeated=True)
+  contacts = _messages.MessageField('ContactsValue', 6)
+  createTime = _messages.StringField(7)
+  description = _messages.StringField(8)
+  eventTime = _messages.StringField(9)
+  exfiltration = _messages.MessageField('Exfiltration', 10)
+  externalSystems = _messages.MessageField('ExternalSystemsValue', 11)
+  externalUri = _messages.StringField(12)
+  findingClass = _messages.EnumField('FindingClassValueValuesEnum', 13)
+  iamBindings = _messages.MessageField('IamBinding', 14, repeated=True)
+  indicator = _messages.MessageField('Indicator', 15)
+  mitreAttack = _messages.MessageField('MitreAttack', 16)
+  mute = _messages.EnumField('MuteValueValuesEnum', 17)
+  muteInitiator = _messages.StringField(18)
+  muteUpdateTime = _messages.StringField(19)
+  name = _messages.StringField(20)
+  nextSteps = _messages.StringField(21)
+  parent = _messages.StringField(22)
+  processes = _messages.MessageField('Process', 23, repeated=True)
+  resourceName = _messages.StringField(24)
+  securityMarks = _messages.MessageField('SecurityMarks', 25)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 26)
+  sourceProperties = _messages.MessageField('SourcePropertiesValue', 27)
+  state = _messages.EnumField('StateValueValuesEnum', 28)
+  vulnerability = _messages.MessageField('Vulnerability', 29)
 
 
 class Folder(_messages.Message):
@@ -1731,6 +1887,34 @@ class OnboardingState(_messages.Message):
 
   name = _messages.StringField(1)
   onboardingLevel = _messages.EnumField('OnboardingLevelValueValuesEnum', 2)
+
+
+class Process(_messages.Message):
+  r"""Represents an operating system process.
+
+  Fields:
+    args: Process arguments as JSON encoded strings.
+    argumentsTruncated: True if arguments is incomplete.
+    binary: File information for the process executable.
+    envVariables: Process environment variables.
+    envVariablesTruncated: True if env_variables is incomplete.
+    libraries: File information for libraries loaded by the process.
+    parentPid: The parent process id.
+    pid: The process id.
+    script: When the process represents the invocation of a script, binary
+      provides information about the interpreter while script provides
+      information about the script file provided to the interpreter.
+  """
+
+  args = _messages.StringField(1, repeated=True)
+  argumentsTruncated = _messages.BooleanField(2)
+  binary = _messages.MessageField('File', 3)
+  envVariables = _messages.MessageField('EnvironmentVariable', 4, repeated=True)
+  envVariablesTruncated = _messages.BooleanField(5)
+  libraries = _messages.MessageField('File', 6, repeated=True)
+  parentPid = _messages.IntegerField(7)
+  pid = _messages.IntegerField(8)
+  script = _messages.MessageField('File', 9)
 
 
 class Reference(_messages.Message):

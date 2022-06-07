@@ -43,6 +43,8 @@ def _VersionCheck(data):
 def _WorkflowTransform(workflow):
   """Transform workflow message."""
 
+  _ResourcesTransform(workflow)
+
   for param_spec in workflow.get("params", []):
     input_util.ParamSpecTransform(param_spec)
 
@@ -63,6 +65,25 @@ def _WorkflowTransform(workflow):
     if "status" in workflow["options"]:
       popped_status = workflow["options"].pop("status")
       workflow["options"]["statusUpdateOptions"] = popped_status
+
+
+def _ResourcesTransform(workflow):
+  """Transform resources message."""
+
+  resources_map = {}
+  has_resources = False
+  for resource in workflow.get("resources", []):
+    has_resources = True
+
+    if "ref" in resource and "kind" in resource and resource[
+        "kind"] == "cloudbuild.googleapis.com/SecretManagerSecret":
+      resource.pop("kind")
+      resource["secret"] = {}
+      resource["secret"]["secretVersion"] = resource.pop("ref")
+      resources_map[resource.pop("name")] = resource
+
+  if has_resources:
+    workflow["resources"] = resources_map
 
 
 def _PipelineSpecTransform(pipeline_spec):
@@ -107,29 +128,35 @@ def _WhenExpressionTransform(when_expression):
 def _WorkspaceBindingTransform(workspace_binding):
   """Transform workspace binding message."""
 
-  # Empty Workspace.
-  if ("storage" not in workspace_binding) and ("accessMode"
-                                               not in workspace_binding):
+  if "secretName" in workspace_binding:
+    popped_secret = workspace_binding.pop("secretName")
+    workspace_binding["secret"] = {}
+    workspace_binding["secret"]["secretName"] = popped_secret
+
+  elif "volume" in workspace_binding:
+    # Volume Claim Template.
+    workspace_binding["volumeClaimTemplate"] = {"spec": {}}
+
+    if "accessMode" in workspace_binding["volume"]:
+      access_modes = []
+      for access_mode in workspace_binding["volume"].pop("accessMode").split(
+          " | "):
+        if access_mode == "read":
+          access_modes.append("READ_ONLY_MANY")
+        if access_mode == "read-write":
+          access_modes.append("READ_WRITE_ONCE")
+      workspace_binding["volumeClaimTemplate"]["spec"][
+          "accessModes"] = access_modes
+
+    if "storage" in workspace_binding["volume"]:
+      storage = workspace_binding["volume"].pop("storage")
+      workspace_binding["volumeClaimTemplate"]["spec"]["resources"] = {}
+      workspace_binding["volumeClaimTemplate"]["spec"]["resources"][
+          "requests"] = {
+              "storage": storage
+          }
+
+  else:
+    # Empty Workspace.
     workspace_binding["emptyDir"] = {}
     return
-
-  # Volume Claim Template.
-  workspace_binding["volumeClaimTemplate"] = {"spec": {}}
-
-  if "accessMode" in workspace_binding:
-    access_modes = []
-    for access_mode in workspace_binding.pop("accessMode").split(" | "):
-      if access_mode == "read":
-        access_modes.append("READ_ONLY_MANY")
-      if access_mode == "read-write":
-        access_modes.append("READ_WRITE_ONCE")
-    workspace_binding["volumeClaimTemplate"]["spec"][
-        "accessModes"] = access_modes
-
-  if "storage" in workspace_binding:
-    storage = workspace_binding.pop("storage")
-    workspace_binding["volumeClaimTemplate"]["spec"]["resources"] = {}
-    workspace_binding["volumeClaimTemplate"]["spec"]["resources"][
-        "requests"] = {
-            "storage": storage
-        }

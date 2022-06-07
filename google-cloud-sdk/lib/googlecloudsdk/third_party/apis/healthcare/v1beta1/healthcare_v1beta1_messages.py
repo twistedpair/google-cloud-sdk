@@ -1837,6 +1837,15 @@ class FhirStore(_messages.Message):
   r"""Represents a FHIR store.
 
   Enums:
+    ComplexDataTypeReferenceParsingValueValuesEnum: Enable parsing of
+      references within complex FHIR data types such as Extensions. If this
+      value is set to ENABLED, then features like referential integrity and
+      Bundle reference rewriting apply to all references. If this flag has not
+      been specified the behavior of the FHIR store will not change,
+      references in complex data types will not be parsed. New stores will
+      have this value set to ENABLED after a notification period. Warning:
+      turning on this flag causes processing existing resources to fail if
+      they contain references to non-existent resources.
     VersionValueValuesEnum: Immutable. The FHIR specification version that
       this FHIR store supports natively. This field is immutable after store
       creation. Requests are rejected if they contain FHIR resources of a
@@ -1853,6 +1862,15 @@ class FhirStore(_messages.Message):
       with a given store.
 
   Fields:
+    complexDataTypeReferenceParsing: Enable parsing of references within
+      complex FHIR data types such as Extensions. If this value is set to
+      ENABLED, then features like referential integrity and Bundle reference
+      rewriting apply to all references. If this flag has not been specified
+      the behavior of the FHIR store will not change, references in complex
+      data types will not be parsed. New stores will have this value set to
+      ENABLED after a notification period. Warning: turning on this flag
+      causes processing existing resources to fail if they contain references
+      to non-existent resources.
     defaultSearchHandlingStrict: If true, overrides the default search
       behavior for this FHIR store to `handling=strict` which returns an error
       for unrecognized search parameters. If false, uses the FHIR
@@ -1926,6 +1944,27 @@ class FhirStore(_messages.Message):
       version. Version is required for every FHIR store.
   """
 
+  class ComplexDataTypeReferenceParsingValueValuesEnum(_messages.Enum):
+    r"""Enable parsing of references within complex FHIR data types such as
+    Extensions. If this value is set to ENABLED, then features like
+    referential integrity and Bundle reference rewriting apply to all
+    references. If this flag has not been specified the behavior of the FHIR
+    store will not change, references in complex data types will not be
+    parsed. New stores will have this value set to ENABLED after a
+    notification period. Warning: turning on this flag causes processing
+    existing resources to fail if they contain references to non-existent
+    resources.
+
+    Values:
+      COMPLEX_DATA_TYPE_REFERENCE_PARSING_UNSPECIFIED: No parsing behavior
+        specified. This is the same as DISABLED for backwards compatibility.
+      DISABLED: References in complex data types are ignored.
+      ENABLED: References in complex data types are parsed.
+    """
+    COMPLEX_DATA_TYPE_REFERENCE_PARSING_UNSPECIFIED = 0
+    DISABLED = 1
+    ENABLED = 2
+
   class VersionValueValuesEnum(_messages.Enum):
     r"""Immutable. The FHIR specification version that this FHIR store
     supports natively. This field is immutable after store creation. Requests
@@ -1976,18 +2015,19 @@ class FhirStore(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  defaultSearchHandlingStrict = _messages.BooleanField(1)
-  disableReferentialIntegrity = _messages.BooleanField(2)
-  disableResourceVersioning = _messages.BooleanField(3)
-  enableUpdateCreate = _messages.BooleanField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  notificationConfig = _messages.MessageField('NotificationConfig', 7)
-  notificationConfigs = _messages.MessageField('FhirNotificationConfig', 8, repeated=True)
-  searchConfig = _messages.MessageField('SearchConfig', 9)
-  streamConfigs = _messages.MessageField('StreamConfig', 10, repeated=True)
-  validationConfig = _messages.MessageField('ValidationConfig', 11)
-  version = _messages.EnumField('VersionValueValuesEnum', 12)
+  complexDataTypeReferenceParsing = _messages.EnumField('ComplexDataTypeReferenceParsingValueValuesEnum', 1)
+  defaultSearchHandlingStrict = _messages.BooleanField(2)
+  disableReferentialIntegrity = _messages.BooleanField(3)
+  disableResourceVersioning = _messages.BooleanField(4)
+  enableUpdateCreate = _messages.BooleanField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  notificationConfig = _messages.MessageField('NotificationConfig', 8)
+  notificationConfigs = _messages.MessageField('FhirNotificationConfig', 9, repeated=True)
+  searchConfig = _messages.MessageField('SearchConfig', 10)
+  streamConfigs = _messages.MessageField('StreamConfig', 11, repeated=True)
+  validationConfig = _messages.MessageField('ValidationConfig', 12)
+  version = _messages.EnumField('VersionValueValuesEnum', 13)
 
 
 class Field(_messages.Message):
@@ -5176,9 +5216,9 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresMessagesPatchRequest(_messag
 
   Fields:
     message: A Message resource to be passed as the request body.
-    name: Resource name of the Message, of the form `projects/{project_id}/dat
-      asets/{dataset_id}/hl7V2Stores/{hl7_v2_store_id}/messages/{message_id}`.
-      Assigned by the server.
+    name: Resource name of the Message, of the form `projects/{project_id}/loc
+      ations/{location_id}/datasets/{dataset_id}/hl7V2Stores/{hl7_v2_store_id}
+      /messages/{message_id}`. Assigned by the server.
     updateMask: The update mask applies to the resource. For the `FieldMask`
       definition, see https://developers.google.com/protocol-
       buffers/docs/reference/google.protobuf#fieldmask
@@ -5195,7 +5235,8 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresPatchRequest(_messages.Messa
   Fields:
     hl7V2Store: A Hl7V2Store resource to be passed as the request body.
     name: Resource name of the HL7v2 store, of the form `projects/{project_id}
-      /datasets/{dataset_id}/hl7V2Stores/{hl7v2_store_id}`.
+      /locations/{location_id}/datasets/{dataset_id}/hl7V2Stores/{hl7v2_store_
+      id}`.
     updateMask: The update mask applies to the resource. For the `FieldMask`
       definition, see https://developers.google.com/protocol-
       buffers/docs/reference/google.protobuf#fieldmask
@@ -5540,7 +5581,8 @@ class Hl7V2Store(_messages.Message):
       [\p{Ll}\p{Lo}\p{N}_-]{0,63} No more than 64 labels can be associated
       with a given store.
     name: Resource name of the HL7v2 store, of the form `projects/{project_id}
-      /datasets/{dataset_id}/hl7V2Stores/{hl7v2_store_id}`.
+      /locations/{location_id}/datasets/{dataset_id}/hl7V2Stores/{hl7v2_store_
+      id}`.
     notificationConfig: The notification destination all messages (both Ingest
       & Create) are published on. Only the message name is sent as part of the
       notification. If this is unset, no notifications are sent. Supplied by
@@ -5714,7 +5756,9 @@ class ImageConfig(_messages.Message):
       TEXT_REDACTION_MODE_UNSPECIFIED: No text redaction specified. Same as
         REDACT_NO_TEXT.
       REDACT_ALL_TEXT: Redact all text.
-      REDACT_SENSITIVE_TEXT: Redact sensitive text.
+      REDACT_SENSITIVE_TEXT: Redact sensitive text. Uses the set of [Default
+        DICOM InfoTypes](https://cloud.google.com/healthcare-api/docs/how-
+        tos/dicom-deidentify#default_dicom_infotypes).
       REDACT_NO_TEXT: Do not redact text.
     """
     TEXT_REDACTION_MODE_UNSPECIFIED = 0
@@ -5915,7 +5959,8 @@ class KmsWrappedCryptoKey(_messages.Message):
 
   Fields:
     cryptoKey: Required. The resource name of the KMS CryptoKey to use for
-      unwrapping.
+      unwrapping. For example, `projects/{project_id}/locations/{location_id}/
+      keyRings/{keyring}/cryptoKeys/{key}`.
     wrappedKey: Required. The wrapped data crypto key.
   """
 
@@ -6259,9 +6304,9 @@ class Message(_messages.Message):
       [\p{Ll}\p{Lo}\p{N}_-]{0,63} No more than 64 labels can be associated
       with a given store.
     messageType: The message type for this message. MSH-9.1.
-    name: Resource name of the Message, of the form `projects/{project_id}/dat
-      asets/{dataset_id}/hl7V2Stores/{hl7_v2_store_id}/messages/{message_id}`.
-      Assigned by the server.
+    name: Resource name of the Message, of the form `projects/{project_id}/loc
+      ations/{location_id}/datasets/{dataset_id}/hl7V2Stores/{hl7_v2_store_id}
+      /messages/{message_id}`. Assigned by the server.
     parsedData: Output only. The parsed version of the raw message data.
     patientIds: All patient IDs listed in the PID-2, PID-3, and PID-4 segments
       of this message.

@@ -4546,6 +4546,7 @@ class GoogleCloudDialogflowCxV3Environment(_messages.Message):
     versionConfigs: Required. A list of configurations for flow versions. You
       should include version configs for all flows that are reachable from
       `Start Flow` in the agent. Otherwise, an error will be returned.
+    webhookConfig: The webhook configuration for this environment.
   """
 
   description = _messages.StringField(1)
@@ -4554,6 +4555,7 @@ class GoogleCloudDialogflowCxV3Environment(_messages.Message):
   testCasesConfig = _messages.MessageField('GoogleCloudDialogflowCxV3EnvironmentTestCasesConfig', 4)
   updateTime = _messages.StringField(5)
   versionConfigs = _messages.MessageField('GoogleCloudDialogflowCxV3EnvironmentVersionConfig', 6, repeated=True)
+  webhookConfig = _messages.MessageField('GoogleCloudDialogflowCxV3EnvironmentWebhookConfig', 7)
 
 
 class GoogleCloudDialogflowCxV3EnvironmentTestCasesConfig(_messages.Message):
@@ -4584,6 +4586,18 @@ class GoogleCloudDialogflowCxV3EnvironmentVersionConfig(_messages.Message):
   """
 
   version = _messages.StringField(1)
+
+
+class GoogleCloudDialogflowCxV3EnvironmentWebhookConfig(_messages.Message):
+  r"""Configuration for webhooks.
+
+  Fields:
+    webhookOverrides: The list of webhooks to override for the agent
+      environment. The webhook must exist in the agent. You can override
+      fields in `generic_web_service` and `service_directory`.
+  """
+
+  webhookOverrides = _messages.MessageField('GoogleCloudDialogflowCxV3Webhook', 1, repeated=True)
 
 
 class GoogleCloudDialogflowCxV3EventHandler(_messages.Message):
@@ -5978,6 +5992,93 @@ class GoogleCloudDialogflowCxV3UpdateDocumentOperationMetadata(_messages.Message
   genericMetadata = _messages.MessageField('GoogleCloudDialogflowCxV3GenericKnowledgeOperationMetadata', 1)
 
 
+class GoogleCloudDialogflowCxV3Webhook(_messages.Message):
+  r"""Webhooks host the developer's business logic. During a session, webhooks
+  allow the developer to use the data extracted by Dialogflow's natural
+  language processing to generate dynamic responses, validate collected data,
+  or trigger actions on the backend.
+
+  Fields:
+    disabled: Indicates whether the webhook is disabled.
+    displayName: Required. The human-readable name of the webhook, unique
+      within the agent.
+    genericWebService: Configuration for a generic web service.
+    name: The unique identifier of the webhook. Required for the
+      Webhooks.UpdateWebhook method. Webhooks.CreateWebhook populates the name
+      automatically. Format: `projects//locations//agents//webhooks/`.
+    serviceDirectory: Configuration for a [Service
+      Directory](https://cloud.google.com/service-directory) service.
+    timeout: Webhook execution timeout. Execution is considered failed if
+      Dialogflow doesn't receive a response from webhook at the end of the
+      timeout period. Defaults to 5 seconds, maximum allowed timeout is 30
+      seconds.
+  """
+
+  disabled = _messages.BooleanField(1)
+  displayName = _messages.StringField(2)
+  genericWebService = _messages.MessageField('GoogleCloudDialogflowCxV3WebhookGenericWebService', 3)
+  name = _messages.StringField(4)
+  serviceDirectory = _messages.MessageField('GoogleCloudDialogflowCxV3WebhookServiceDirectoryConfig', 5)
+  timeout = _messages.StringField(6)
+
+
+class GoogleCloudDialogflowCxV3WebhookGenericWebService(_messages.Message):
+  r"""Represents configuration for a generic web service.
+
+  Messages:
+    RequestHeadersValue: The HTTP request headers to send together with
+      webhook requests.
+
+  Fields:
+    allowedCaCerts: Optional. Specifies a list of allowed custom CA
+      certificates (in DER format) for HTTPS verification. This overrides the
+      default SSL trust store. If this is empty or unspecified, Dialogflow
+      will use Google's default trust store to verify certificates. N.B. Make
+      sure the HTTPS server certificates are signed with "subject alt name".
+      For instance a certificate can be self-signed using the following
+      command, ``` openssl x509 -req -days 200 -in example.com.csr \ -signkey
+      example.com.key \ -out example.com.crt \ -extfile <(printf
+      "\nsubjectAltName='DNS:www.example.com'") ```
+    password: The password for HTTP Basic authentication.
+    requestHeaders: The HTTP request headers to send together with webhook
+      requests.
+    uri: Required. The webhook URI for receiving POST requests. It must use
+      https protocol.
+    username: The user name for HTTP Basic authentication.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class RequestHeadersValue(_messages.Message):
+    r"""The HTTP request headers to send together with webhook requests.
+
+    Messages:
+      AdditionalProperty: An additional property for a RequestHeadersValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type RequestHeadersValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a RequestHeadersValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  allowedCaCerts = _messages.BytesField(1, repeated=True)
+  password = _messages.StringField(2)
+  requestHeaders = _messages.MessageField('RequestHeadersValue', 3)
+  uri = _messages.StringField(4)
+  username = _messages.StringField(5)
+
+
 class GoogleCloudDialogflowCxV3WebhookRequest(_messages.Message):
   r"""The request message for a webhook call. The request is sent as a JSON
   object and the field names will be presented in camel cases.
@@ -6230,6 +6331,22 @@ class GoogleCloudDialogflowCxV3WebhookResponseFulfillmentResponse(_messages.Mess
 
   mergeBehavior = _messages.EnumField('MergeBehaviorValueValuesEnum', 1)
   messages = _messages.MessageField('GoogleCloudDialogflowCxV3ResponseMessage', 2, repeated=True)
+
+
+class GoogleCloudDialogflowCxV3WebhookServiceDirectoryConfig(_messages.Message):
+  r"""Represents configuration for a [Service
+  Directory](https://cloud.google.com/service-directory) service.
+
+  Fields:
+    genericWebService: Generic Service configuration of this webhook.
+    service: Required. The name of [Service
+      Directory](https://cloud.google.com/service-directory) service. Format:
+      `projects//locations//namespaces//services/`. `Location ID` of the
+      service directory must be the same as the location of the agent.
+  """
+
+  genericWebService = _messages.MessageField('GoogleCloudDialogflowCxV3WebhookGenericWebService', 1)
+  service = _messages.StringField(2)
 
 
 class GoogleCloudDialogflowCxV3beta1AudioInput(_messages.Message):
@@ -6547,6 +6664,7 @@ class GoogleCloudDialogflowCxV3beta1Environment(_messages.Message):
     versionConfigs: Required. A list of configurations for flow versions. You
       should include version configs for all flows that are reachable from
       `Start Flow` in the agent. Otherwise, an error will be returned.
+    webhookConfig: The webhook configuration for this environment.
   """
 
   description = _messages.StringField(1)
@@ -6555,6 +6673,7 @@ class GoogleCloudDialogflowCxV3beta1Environment(_messages.Message):
   testCasesConfig = _messages.MessageField('GoogleCloudDialogflowCxV3beta1EnvironmentTestCasesConfig', 4)
   updateTime = _messages.StringField(5)
   versionConfigs = _messages.MessageField('GoogleCloudDialogflowCxV3beta1EnvironmentVersionConfig', 6, repeated=True)
+  webhookConfig = _messages.MessageField('GoogleCloudDialogflowCxV3beta1EnvironmentWebhookConfig', 7)
 
 
 class GoogleCloudDialogflowCxV3beta1EnvironmentTestCasesConfig(_messages.Message):
@@ -6585,6 +6704,18 @@ class GoogleCloudDialogflowCxV3beta1EnvironmentVersionConfig(_messages.Message):
   """
 
   version = _messages.StringField(1)
+
+
+class GoogleCloudDialogflowCxV3beta1EnvironmentWebhookConfig(_messages.Message):
+  r"""Configuration for webhooks.
+
+  Fields:
+    webhookOverrides: The list of webhooks to override for the agent
+      environment. The webhook must exist in the agent. You can override
+      fields in `generic_web_service` and `service_directory`.
+  """
+
+  webhookOverrides = _messages.MessageField('GoogleCloudDialogflowCxV3beta1Webhook', 1, repeated=True)
 
 
 class GoogleCloudDialogflowCxV3beta1EventHandler(_messages.Message):
@@ -7979,6 +8110,93 @@ class GoogleCloudDialogflowCxV3beta1UpdateDocumentOperationMetadata(_messages.Me
   genericMetadata = _messages.MessageField('GoogleCloudDialogflowCxV3beta1GenericKnowledgeOperationMetadata', 1)
 
 
+class GoogleCloudDialogflowCxV3beta1Webhook(_messages.Message):
+  r"""Webhooks host the developer's business logic. During a session, webhooks
+  allow the developer to use the data extracted by Dialogflow's natural
+  language processing to generate dynamic responses, validate collected data,
+  or trigger actions on the backend.
+
+  Fields:
+    disabled: Indicates whether the webhook is disabled.
+    displayName: Required. The human-readable name of the webhook, unique
+      within the agent.
+    genericWebService: Configuration for a generic web service.
+    name: The unique identifier of the webhook. Required for the
+      Webhooks.UpdateWebhook method. Webhooks.CreateWebhook populates the name
+      automatically. Format: `projects//locations//agents//webhooks/`.
+    serviceDirectory: Configuration for a [Service
+      Directory](https://cloud.google.com/service-directory) service.
+    timeout: Webhook execution timeout. Execution is considered failed if
+      Dialogflow doesn't receive a response from webhook at the end of the
+      timeout period. Defaults to 5 seconds, maximum allowed timeout is 30
+      seconds.
+  """
+
+  disabled = _messages.BooleanField(1)
+  displayName = _messages.StringField(2)
+  genericWebService = _messages.MessageField('GoogleCloudDialogflowCxV3beta1WebhookGenericWebService', 3)
+  name = _messages.StringField(4)
+  serviceDirectory = _messages.MessageField('GoogleCloudDialogflowCxV3beta1WebhookServiceDirectoryConfig', 5)
+  timeout = _messages.StringField(6)
+
+
+class GoogleCloudDialogflowCxV3beta1WebhookGenericWebService(_messages.Message):
+  r"""Represents configuration for a generic web service.
+
+  Messages:
+    RequestHeadersValue: The HTTP request headers to send together with
+      webhook requests.
+
+  Fields:
+    allowedCaCerts: Optional. Specifies a list of allowed custom CA
+      certificates (in DER format) for HTTPS verification. This overrides the
+      default SSL trust store. If this is empty or unspecified, Dialogflow
+      will use Google's default trust store to verify certificates. N.B. Make
+      sure the HTTPS server certificates are signed with "subject alt name".
+      For instance a certificate can be self-signed using the following
+      command, ``` openssl x509 -req -days 200 -in example.com.csr \ -signkey
+      example.com.key \ -out example.com.crt \ -extfile <(printf
+      "\nsubjectAltName='DNS:www.example.com'") ```
+    password: The password for HTTP Basic authentication.
+    requestHeaders: The HTTP request headers to send together with webhook
+      requests.
+    uri: Required. The webhook URI for receiving POST requests. It must use
+      https protocol.
+    username: The user name for HTTP Basic authentication.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class RequestHeadersValue(_messages.Message):
+    r"""The HTTP request headers to send together with webhook requests.
+
+    Messages:
+      AdditionalProperty: An additional property for a RequestHeadersValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type RequestHeadersValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a RequestHeadersValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  allowedCaCerts = _messages.BytesField(1, repeated=True)
+  password = _messages.StringField(2)
+  requestHeaders = _messages.MessageField('RequestHeadersValue', 3)
+  uri = _messages.StringField(4)
+  username = _messages.StringField(5)
+
+
 class GoogleCloudDialogflowCxV3beta1WebhookRequest(_messages.Message):
   r"""The request message for a webhook call. The request is sent as a JSON
   object and the field names will be presented in camel cases.
@@ -8230,6 +8448,22 @@ class GoogleCloudDialogflowCxV3beta1WebhookResponseFulfillmentResponse(_messages
 
   mergeBehavior = _messages.EnumField('MergeBehaviorValueValuesEnum', 1)
   messages = _messages.MessageField('GoogleCloudDialogflowCxV3beta1ResponseMessage', 2, repeated=True)
+
+
+class GoogleCloudDialogflowCxV3beta1WebhookServiceDirectoryConfig(_messages.Message):
+  r"""Represents configuration for a [Service
+  Directory](https://cloud.google.com/service-directory) service.
+
+  Fields:
+    genericWebService: Generic Service configuration of this webhook.
+    service: Required. The name of [Service
+      Directory](https://cloud.google.com/service-directory) service. Format:
+      `projects//locations//namespaces//services/`. `Location ID` of the
+      service directory must be the same as the location of the agent.
+  """
+
+  genericWebService = _messages.MessageField('GoogleCloudDialogflowCxV3beta1WebhookGenericWebService', 1)
+  service = _messages.StringField(2)
 
 
 class GoogleCloudDialogflowV2Agent(_messages.Message):
@@ -10479,7 +10713,8 @@ class GoogleCloudDialogflowV2HumanAgentAssistantConfig(_messages.Message):
 
 class GoogleCloudDialogflowV2HumanAgentAssistantConfigConversationModelConfig(_messages.Message):
   r"""Custom conversation models used in agent assist feature. Supported
-  feature: ARTICLE_SUGGESTION, SMART_COMPOSE, SMART_REPLY.
+  feature: ARTICLE_SUGGESTION, SMART_COMPOSE, SMART_REPLY,
+  CONVERSATION_SUMMARIZATION.
 
   Fields:
     model: Conversation model resource name. Format:

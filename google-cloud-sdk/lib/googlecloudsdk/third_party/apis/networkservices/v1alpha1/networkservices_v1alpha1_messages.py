@@ -4315,6 +4315,33 @@ class NetworkservicesProjectsLocationsServiceLbPoliciesDeleteRequest(_messages.M
   name = _messages.StringField(1, required=True)
 
 
+class NetworkservicesProjectsLocationsServiceLbPoliciesGetIamPolicyRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsServiceLbPoliciesGetIamPolicyRequest
+  object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
 class NetworkservicesProjectsLocationsServiceLbPoliciesGetRequest(_messages.Message):
   r"""A NetworkservicesProjectsLocationsServiceLbPoliciesGetRequest object.
 
@@ -4363,6 +4390,41 @@ class NetworkservicesProjectsLocationsServiceLbPoliciesPatchRequest(_messages.Me
   name = _messages.StringField(1, required=True)
   serviceLbPolicy = _messages.MessageField('ServiceLbPolicy', 2)
   updateMask = _messages.StringField(3)
+
+
+class NetworkservicesProjectsLocationsServiceLbPoliciesSetIamPolicyRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsServiceLbPoliciesSetIamPolicyRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class NetworkservicesProjectsLocationsServiceLbPoliciesTestIamPermissionsRequest(_messages.Message):
+  r"""A
+  NetworkservicesProjectsLocationsServiceLbPoliciesTestIamPermissionsRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class NetworkservicesProjectsLocationsTcpRoutesCreateRequest(_messages.Message):
@@ -5092,9 +5154,9 @@ class ServiceLbPolicy(_messages.Message):
   configuration that can be applied to a BackendService.
 
   Enums:
-    LoadBalancingAlgorithmValueValuesEnum: Required. The type of load
-      balancing algorithm to be used. Setting the value to
-      LOAD_BALANCING_ALGORITHM_UNSPECIFIED is not allowed.
+    LoadBalancingAlgorithmValueValuesEnum: Optional. The type of load
+      balancing algorithm to be used. The default behavior is
+      BALANCE_OVER_REGION.
 
   Messages:
     LabelsValue: Optional. Set of label tags associated with the
@@ -5108,9 +5170,8 @@ class ServiceLbPolicy(_messages.Message):
       1024 characters.
     labels: Optional. Set of label tags associated with the ServiceLbPolicy
       resource.
-    loadBalancingAlgorithm: Required. The type of load balancing algorithm to
-      be used. Setting the value to LOAD_BALANCING_ALGORITHM_UNSPECIFIED is
-      not allowed.
+    loadBalancingAlgorithm: Optional. The type of load balancing algorithm to
+      be used. The default behavior is BALANCE_OVER_REGION.
     name: Required. Name of the ServiceLbPolicy resource. It matches pattern `
       projects/{project}/locations/{location}/serviceLbPolicies/{service_lb_po
       licy_name}`.
@@ -5129,8 +5190,8 @@ class ServiceLbPolicy(_messages.Message):
   """
 
   class LoadBalancingAlgorithmValueValuesEnum(_messages.Enum):
-    r"""Required. The type of load balancing algorithm to be used. Setting the
-    value to LOAD_BALANCING_ALGORITHM_UNSPECIFIED is not allowed.
+    r"""Optional. The type of load balancing algorithm to be used. The default
+    behavior is BALANCE_OVER_REGION.
 
     Values:
       LOAD_BALANCING_ALGORITHM_UNSPECIFIED: The type of the loadbalancing

@@ -41,6 +41,26 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_BAREMETALADMINCLUSTERS = (
+      'projects.locations.bareMetalAdminClusters',
+      'projects/{projectsId}/locations/{locationsId}/bareMetalAdminClusters/'
+      '{bareMetalAdminClustersId}',
+      {},
+      ['projectsId', 'locationsId', 'bareMetalAdminClustersId'],
+      True
+  )
+  PROJECTS_LOCATIONS_BAREMETALADMINCLUSTERS_OPERATIONS = (
+      'projects.locations.bareMetalAdminClusters.operations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'bareMetalAdminClusters/{bareMetalAdminClustersId}/operations/'
+              '{operationsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_BAREMETALCLUSTERS = (
       'projects.locations.bareMetalClusters',
       'projects/{projectsId}/locations/{locationsId}/bareMetalClusters/'
@@ -87,6 +107,26 @@ class Collections(enum.Enum):
       {
           '':
               'projects/{projectsId}/locations/{locationsId}/operations/'
+              '{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_VMWAREADMINCLUSTERS = (
+      'projects.locations.vmwareAdminClusters',
+      'projects/{projectsId}/locations/{locationsId}/vmwareAdminClusters/'
+      '{vmwareAdminClustersId}',
+      {},
+      ['projectsId', 'locationsId', 'vmwareAdminClustersId'],
+      True
+  )
+  PROJECTS_LOCATIONS_VMWAREADMINCLUSTERS_OPERATIONS = (
+      'projects.locations.vmwareAdminClusters.operations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'vmwareAdminClusters/{vmwareAdminClustersId}/operations/'
               '{operationsId}',
       },
       ['name'],

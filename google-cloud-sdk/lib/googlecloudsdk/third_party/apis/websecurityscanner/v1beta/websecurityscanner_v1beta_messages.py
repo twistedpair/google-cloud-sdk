@@ -378,11 +378,13 @@ class ScanConfig(_messages.Message):
       APP_ENGINE: Google App Engine service.
       COMPUTE: Google Compute Engine service.
       CLOUD_RUN: Google Cloud Run service.
+      CLOUD_FUNCTIONS: Google Cloud Function service.
     """
     TARGET_PLATFORM_UNSPECIFIED = 0
     APP_ENGINE = 1
     COMPUTE = 2
     CLOUD_RUN = 3
+    CLOUD_FUNCTIONS = 4
 
   class UserAgentValueValuesEnum(_messages.Enum):
     r"""The user agent used during scanning.

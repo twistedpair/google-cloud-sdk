@@ -630,6 +630,25 @@ class SingleRepoStatus:
     return self.commit
 
 
+def _GetErrorFromSourceRef(obj, error_source_refs):
+  """Helper function to get the actual error from the errorSourceRefs field.
+
+  Args:
+    obj: The RepoSync|RootSync object.
+    error_source_refs: The errorSourceRefs value
+
+  Returns:
+    A list containing error values from the errorSourceRefs
+  """
+  errs = []
+  for ref in error_source_refs:
+    path = ref.split('.')
+    err = _GetPathValue(obj, path)
+    if err:
+      errs.extend(err)
+  return errs
+
+
 def _GetStatusForRepo(obj):
   """Get the status for a repo.
 
@@ -649,8 +668,10 @@ def _GetStatusForRepo(obj):
   # Config Sync with version >= 1.10.0
   syncing = _GetConditionForType(obj, 'Syncing')
   if syncing:
-    errs = _GetPathValue(syncing, ['errors'], [])
-    commit = syncing['commit']
+    error_source_refs = _GetPathValue(syncing, ['errorSourceRefs'], [])
+    errs = _GetErrorFromSourceRef(obj, error_source_refs)
+    errs.extend(_GetPathValue(syncing, ['errors'], []))
+    commit = _GetPathValue(syncing, ['commit'], '')
     if errs:
       return SingleRepoStatus('ERROR', _GetErrorMessages(errs), commit)
     if syncing['status'] == 'True':

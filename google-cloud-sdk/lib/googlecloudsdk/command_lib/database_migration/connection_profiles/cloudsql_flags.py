@@ -20,7 +20,6 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import arg_parsers
 
-
 _IP_ADDRESS_PART = r'(25[0-5]|2[0-4][0-9]|1?[0-9]{1,2})'  # Match decimal 0-255
 _CIDR_PREFIX_PART = r'([0-9]|[1-2][0-9]|3[0-2])'  # Match decimal 0-32
 # Matches either IPv4 range in CIDR notation or a naked IPv4 address.
@@ -31,12 +30,11 @@ _CIDR_REGEX = r'{addr_part}(\.{addr_part}){{3}}(\/{prefix_part})?$'.format(
 def AddDatabaseVersionFlag(parser):
   """Adds a --database-version flag to the given parser."""
   help_text = """\
-    Database engine type and version (MYSQL_5_7, MYSQL_5_6, MYSQL_8_0,
-    POSTGRES_9_6, POSTGRES_10, POSTGRES_11, POSTGRES_12, POSTGRES_13).
+    Database engine type and version.
     """
   choices = [
       'MYSQL_5_7', 'MYSQL_5_6', 'MYSQL_8_0', 'POSTGRES_9_6', 'POSTGRES_10',
-      'POSTGRES_11', 'POSTGRES_12', 'POSTGRES_13'
+      'POSTGRES_11', 'POSTGRES_12', 'POSTGRES_13', 'POSTGRES_14'
   ]
 
   parser.add_argument(
@@ -50,17 +48,18 @@ def AddUserLabelsFlag(parser):
     underlying resources such as Compute Engine VMs. An object containing a list
     of "key": "value" pairs.
     """
-  parser.add_argument('--user-labels',
-                      metavar='KEY=VALUE',
-                      type=arg_parsers.ArgDict(),
-                      help=help_text)
+  parser.add_argument(
+      '--user-labels',
+      metavar='KEY=VALUE',
+      type=arg_parsers.ArgDict(),
+      help=help_text)
 
 
 def AddTierFlag(parser):
   """Adds a --tier flag to the given parser."""
   help_text = """\
     Tier (or machine type) for this instance, for example: ``db-n1-standard-1''
-    (MySQL instances) of ``db-custom-1-3840'' (PostgreSQL instances). For more
+    (MySQL instances) or ``db-custom-1-3840'' (PostgreSQL instances). For more
     information, see
     [Cloud SQL Instance Settings](https://cloud.google.com/sql/docs/mysql/instance-settings).
     """
@@ -131,9 +130,9 @@ def AddAuthorizedNetworksFlag(parser):
       _CIDR_REGEX, ('Must be specified in CIDR notation, also known as '
                     '\'slash\' notation (e.g. 192.168.100.0/24).'))
   help_text = """\
-    List of external networks that are allowed to connect to the instance using
-    the IP. See https://en.wikipedia.org/wiki/CIDR_notation#CIDR_notation, also
-    known as 'slash' notation (e.g.192.168.100.0/24).
+    List of external networks that are allowed to connect to the instance.
+    Specify values in CIDR notation, also known as 'slash' notation
+    (e.g.192.168.100.0/24).
     """
   parser.add_argument(
       '--authorized-networks',
@@ -150,7 +149,7 @@ def AddAutoStorageIncreaseFlag(parser):
     30 seconds. If the available storage falls below a threshold size, Cloud
     SQL automatically adds additional storage capacity. If the available
     storage repeatedly falls below the threshold size, Cloud SQL continues to
-    add storage until it reaches the maximum of 30 TB. Default: ON.
+    add storage until it reaches the maximum of 64 TB. Default: ON.
     """
   parser.add_argument(
       '--auto-storage-increase',
@@ -163,19 +162,23 @@ def AddAutoStorageIncreaseFlag(parser):
 def AddDatabaseFlagsFlag(parser):
   """Adds a --database-flags flag to the given parser."""
   help_text = """\
-    Database flags passed to the Cloud SQL instance at startup. An object
-    containing a list of "key": value pairs. Example: { "name": "wrench",
-    "mass": "1.3kg", "count": "3" }.
+    Comma-separated list of database flags to set on the instance. Use an equals
+    sign to separate the flag name and value. Flags without values, like
+    skip_grant_tables, can be written out without a value, e.g.,
+    `skip_grant_tables=`. Use on/off values for booleans. View the Instance
+    Resource API for allowed flags. (e.g., `--database-flags max_allowed_packet=55555
+    skip_grant_tables=,log_output=1`).
   """
-  parser.add_argument('--database-flags',
-                      type=arg_parsers.ArgDict(),
-                      metavar='KEY=VALUE',
-                      help=help_text)
+  parser.add_argument(
+      '--database-flags',
+      type=arg_parsers.ArgDict(),
+      metavar='FLAG=VALUE',
+      help=help_text)
 
 
 def AddDataDiskTypeFlag(parser):
   """Adds a --data-disk-type flag to the given parser."""
-  help_text = 'Type of storage: PD_SSD (default) or PD_HDD.'
+  help_text = 'Type of storage.'
   choices = ['PD_SSD', 'PD_HDD']
   parser.add_argument('--data-disk-type', help=help_text, choices=choices)
 
@@ -196,3 +199,11 @@ def AddZoneFlag(parser):
     located.
   """
   parser.add_argument('--zone', help=help_text)
+
+
+def AddRootPassword(parser):
+  """Add the root password field to the parser."""
+  parser.add_argument(
+      '--root-password',
+      required=False,
+      help="Root Cloud SQL user's password.")

@@ -51,9 +51,13 @@ class ApiWarning(_messages.Message):
         Cloud SQL API.
       REGION_UNREACHABLE: Warning when one or more regions are not reachable.
         The returned result set may be incomplete.
+      MAX_RESULTS_EXCEEDS_LIMIT: Warning when user provided maxResults
+        parameter exceeds the limit. The returned result set may be
+        incomplete.
     """
     SQL_API_WARNING_CODE_UNSPECIFIED = 0
     REGION_UNREACHABLE = 1
+    MAX_RESULTS_EXCEEDS_LIMIT = 2
 
   code = _messages.EnumField('CodeValueValuesEnum', 1)
   message = _messages.StringField(2)
@@ -2819,7 +2823,9 @@ class SqlInstancesListRequest(_messages.Message):
       space-separated. For example. 'state:RUNNABLE
       instanceType:CLOUD_SQL_INSTANCE'. By default, each expression is an AND
       expression. However, you can include AND and OR expressions explicitly.
-    maxResults: The maximum number of results to return per response.
+    maxResults: The maximum number of instances to return. The service may
+      return fewer than this value. The maximum value is 1000; values above
+      1000 are coerced to 1000.
     pageToken: A previously-returned page token representing part of the
       larger set of results to view.
     project: Project ID of the project for which to list Cloud SQL instances.

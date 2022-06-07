@@ -39,6 +39,7 @@ class Backup(_messages.Message):
 
   Fields:
     createTime: Output only. The time the backups was created.
+    description: Optional. A short description of the backup.
     labels: Optional. Resource labels to represent user provided metadata.
     name: Output only. The unique name of the Backup in the form of projects/{
       project_id}/locations/global/domains/{domain_name}/backups/{name}
@@ -105,12 +106,13 @@ class Backup(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  labels = _messages.MessageField('LabelsValue', 2)
-  name = _messages.StringField(3)
-  state = _messages.EnumField('StateValueValuesEnum', 4)
-  statusMessage = _messages.StringField(5)
-  type = _messages.EnumField('TypeValueValuesEnum', 6)
-  updateTime = _messages.StringField(7)
+  description = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+  statusMessage = _messages.StringField(6)
+  type = _messages.EnumField('TypeValueValuesEnum', 7)
+  updateTime = _messages.StringField(8)
 
 
 class Binding(_messages.Message):

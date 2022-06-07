@@ -130,6 +130,22 @@ class JobNonceChange(ConfigChanger):
     return resource
 
 
+class ReplaceJobChange(ConfigChanger):
+  """Represents the user intent to replace the job."""
+
+  def __init__(self, new_job):
+    super(ReplaceJobChange, self).__init__(adjusts_template=False)
+    self._job = new_job
+
+  def Adjust(self, resource):
+    """Returns a replacement for resource.
+
+    Args:
+      resource: job.Job, The job to adjust.
+    """
+    return self._job
+
+
 class ReplaceServiceChange(ConfigChanger):
   """Represents the user intent to replace the service."""
 

@@ -4996,7 +4996,7 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def ListInstances(self, request, global_params=None):
-      r"""Lists the instances in the specified instance group. The orderBy query parameter is not supported.
+      r"""Lists the instances in the specified instance group. The orderBy query parameter is not supported. The filter query parameter is supported, but only for expressions that use `eq` (equal) or `ne` (not equal) operators.
 
       Args:
         request: (ComputeInstanceGroupsListInstancesRequest) input message
@@ -14355,7 +14355,7 @@ class ComputeV1(base_api.BaseApiClient):
         method_id='compute.securityPolicies.addRule',
         ordered_params=['project', 'securityPolicy'],
         path_params=['project', 'securityPolicy'],
-        query_params=[],
+        query_params=['validateOnly'],
         relative_path='projects/{project}/global/securityPolicies/{securityPolicy}/addRule',
         request_field='securityPolicyRule',
         request_type_name='ComputeSecurityPoliciesAddRuleRequest',
@@ -14485,7 +14485,7 @@ class ComputeV1(base_api.BaseApiClient):
         method_id='compute.securityPolicies.insert',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['requestId'],
+        query_params=['requestId', 'validateOnly'],
         relative_path='projects/{project}/global/securityPolicies',
         request_field='securityPolicy',
         request_type_name='ComputeSecurityPoliciesInsertRequest',
@@ -14589,7 +14589,7 @@ class ComputeV1(base_api.BaseApiClient):
         method_id='compute.securityPolicies.patchRule',
         ordered_params=['project', 'securityPolicy'],
         path_params=['project', 'securityPolicy'],
-        query_params=['priority'],
+        query_params=['priority', 'validateOnly'],
         relative_path='projects/{project}/global/securityPolicies/{securityPolicy}/patchRule',
         request_field='securityPolicyRule',
         request_type_name='ComputeSecurityPoliciesPatchRuleRequest',

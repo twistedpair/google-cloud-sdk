@@ -224,7 +224,7 @@
     },
     "Instance": {
       "id": "Instance",
-      "description": "A Memorystore for Redis instance. next id = 43",
+      "description": "A Memorystore for Redis instance. next id = 44",
       "type": "object",
       "properties": {
         "name": {
@@ -464,6 +464,13 @@
         "maintenanceVersion": {
           "description": "Optional. The self service update maintenance version. The version is date based such as \"20210712_00_00\".",
           "type": "string"
+        },
+        "availableMaintenanceVersions": {
+          "description": "Optional. The available maintenance versions that an instance could update to.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -990,6 +997,189 @@
         }
       }
     },
+    "ListClustersResponse": {
+      "id": "ListClustersResponse",
+      "description": "Response for ListClusters.",
+      "type": "object",
+      "properties": {
+        "clusters": {
+          "description": "A list of Redis clusters in the project in the specified location, or across all locations. If the `location_id` in the parent field of the request is \"-\", all regions available to the project are queried, and the results aggregated. If in such an aggregated query a location is unavailable, a placeholder Redis entry is included in the response with the `name` field set to a value of the form `projects\/{project_id}\/locations\/{location_id}\/clusters\/`- and the `status` field set to ERROR and `status_message` field set to \"location not available for ListClusters\".",
+          "type": "array",
+          "items": {
+            "$ref": "Cluster"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results, or empty if there are no more results in the list.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Cluster": {
+      "id": "Cluster",
+      "description": "A cluster instance.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. Unique name of the resource in this scope including project and location using the form: `projects\/{project_id}\/locations\/{location_id}\/clusters\/{cluster_id}`",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "Optional. An arbitrary and optional user-provided name for the cluster.",
+          "type": "string"
+        },
+        "endpoints": {
+          "description": "Output only. Hostname or IP address and port pairs used to connect to the cluster.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "Endpoint"
+          }
+        },
+        "createTime": {
+          "description": "Output only. The timestamp associated with the cluster creation request.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "state": {
+          "description": "Output only. The current state of this cluster. Can be CREATING, READY, UPDATING, DELETING and SUSPENDED",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Not set.",
+            "Redis cluster is being created.",
+            "Redis cluster has been created and is fully usable.",
+            "Redis cluster configuration is being updated.",
+            "Redis cluster is being deleted.",
+            "Redis instance is being repaired and may be unusable."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "CREATING",
+            "ACTIVE",
+            "UPDATING",
+            "DELETING",
+            "REPAIRING"
+          ]
+        },
+        "redisConfigs": {
+          "description": "Optional. Redis configuration parameters, according to http:\/\/redis.io\/topics\/config. Currently, the only supported parameters are: Redis version 6.x and newer: * lfu-decay-time * lfu-log-factor * maxmemory-policy",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "clusterUid": {
+          "description": "Output only. UID of the cluster for use by Pantheon for analytics.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "totalMemorySizeGb": {
+          "description": "Optional. Redis memory size in GiB for the entire cluster. Defaults to 48 for Dense tier and 12 for Performance tier.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "defaultReplicaCount": {
+          "description": "Optional. Input only. The number of replica nodes per shard. Valid range is [0-2] and defaults to 0. This field is INPUT only.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "slots": {
+          "description": "Output only. The slots making up the cluster. Read-only. In future versions this will be writable to allow for heterogeneous clusters.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "ClusterSlots"
+          }
+        },
+        "customerManagedKey": {
+          "description": "Input only. The KMS key reference that the customer provides when trying to create the instance.",
+          "type": "string"
+        },
+        "tier": {
+          "description": "Required. Redis tier. This field is hiden from customers in private preview.",
+          "type": "string",
+          "enumDescriptions": [
+            "",
+            "dense tier"
+          ],
+          "enum": [
+            "TIER_NOT_SPECIFIED",
+            "DENSE"
+          ]
+        },
+        "redisVersion": {
+          "description": "Output only. Redis version. This is an output only field and currently only Redis 6 is supported.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "",
+            "`REDIS_6_X` for Redis 6.x compatibility This is the default and only supported version in Flex for now."
+          ],
+          "enum": [
+            "REDIS_VERSION_UNSPECIFIED",
+            "REDIS_6_X"
+          ]
+        }
+      }
+    },
+    "Endpoint": {
+      "id": "Endpoint",
+      "description": "An endpoint exposed by a cluster. In the future we will add an enum to identify whether this endpoint is read\/write or read-only when the feature is ready.",
+      "type": "object",
+      "properties": {
+        "host": {
+          "description": "Output only. Hostname or IP address of the exposed Redis endpoint used by clients to connect to the service.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "port": {
+          "description": "Output only. The port number of the exposed Redis endpoint.",
+          "readOnly": true,
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "ClusterSlots": {
+      "id": "ClusterSlots",
+      "description": "A series of slots belonging to a cluster.",
+      "type": "object",
+      "properties": {
+        "startSlotsInclusive": {
+          "description": "Output only. The start of the slots that make up this series.",
+          "readOnly": true,
+          "type": "integer",
+          "format": "int32"
+        },
+        "endSlotsExclusive": {
+          "description": "Output only. The end of the slots that make up this series.",
+          "readOnly": true,
+          "type": "integer",
+          "format": "int32"
+        },
+        "memorySizeGb": {
+          "description": "Output only. The total size of keyspace this series has.",
+          "readOnly": true,
+          "type": "integer",
+          "format": "int32"
+        },
+        "replicaCount": {
+          "description": "Output only. The number of replicas this series has.",
+          "readOnly": true,
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
     "GoogleCloudCommonOperationMetadata": {
       "id": "GoogleCloudCommonOperationMetadata",
       "description": "Represents the metadata of the long-running operation.",
@@ -1054,6 +1244,43 @@
       "description": "Defines specific information for a particular zone. Currently empty and reserved for future use only.",
       "type": "object",
       "properties": {
+      }
+    },
+    "OperationMetadata": {
+      "id": "OperationMetadata",
+      "description": "Pre-defined metadata fields.",
+      "type": "object",
+      "properties": {
+        "createTime": {
+          "description": "Output only. The time the operation was created.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "Output only. The time the operation finished running.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "target": {
+          "description": "Output only. Server-defined resource path for the target of the operation.",
+          "type": "string"
+        },
+        "verb": {
+          "description": "Output only. Name of the verb executed by the operation.",
+          "type": "string"
+        },
+        "statusMessage": {
+          "description": "Output only. Human-readable status of the operation, if any.",
+          "type": "string"
+        },
+        "requestedCancellation": {
+          "description": "Output only. Identifies whether the user has requested cancellation of the operation. Operations that have successfully been cancelled have Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.",
+          "type": "boolean"
+        },
+        "apiVersion": {
+          "description": "Output only. API version used to start the operation.",
+          "type": "string"
+        }
       }
     }
   },
@@ -1618,6 +1845,129 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Reschedule maintenance for a given instance in a given project and location."
+                }
+              }
+            },
+            "clusters": {
+              "methods": {
+                "list": {
+                  "id": "redis.projects.locations.clusters.list",
+                  "path": "v1alpha1/{+parent}/clusters",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The resource name of the cluster location using the form: `projects\/{project_id}\/locations\/{location_id}` where `location_id` refers to a GCP region.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The maximum number of items to return. If not specified, a default value of 1000 will be used by the service. Regardless of the page_size value, the response may include a partial list and a caller should only rely on response's `next_page_token` to determine if there are more clusters left to be queried.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "The `next_page_token` value returned from a previous ListClusters request, if any.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListClustersResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists all Redis clusters owned by a project in either the specified location (region) or all locations. The location should have the following format: * `projects\/{project_id}\/locations\/{location_id}` If `location_id` is specified as `-` (wildcard), then all regions available to the project are queried, and the results are aggregated."
+                },
+                "get": {
+                  "id": "redis.projects.locations.clusters.get",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Redis cluster resource name using the form: `projects\/{project_id}\/locations\/{location_id}\/clusters\/{cluster_id}` where `location_id` refers to a GCP region.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Cluster"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets the details of a specific Redis cluster."
+                },
+                "delete": {
+                  "id": "redis.projects.locations.clusters.delete",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Redis cluster resource name using the form: `projects\/{project_id}\/locations\/{location_id}\/clusters\/{cluster_id}` where `location_id` refers to a GCP region.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a specific Redis cluster. Cluster stops serving and data is deleted."
+                },
+                "create": {
+                  "id": "redis.projects.locations.clusters.create",
+                  "path": "v1alpha1/{+parent}/clusters",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The resource name of the cluster location using the form: `projects\/{project_id}\/locations\/{location_id}` where `location_id` refers to a GCP region.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "clusterId": {
+                      "description": "Required. The logical name of the Redis cluster in the customer project with the following restrictions: * Must contain only lowercase letters, numbers, and hyphens. * Must start with a letter. * Must be between 1-40 characters. * Must end with a number or a letter. * Must be unique within the customer project \/ location",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "Cluster"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a Redis cluster based on the specified tier and memory size. The creation is executed asynchronously and callers may check the returned operation to track its progress. Once the operation is completed the Redis cluster will be fully functional. The completed longrunning.Operation will contain the new cluster object in the response field. The returned operation is automatically deleted after a few hours, so there is no need to call DeleteOperation."
                 }
               }
             }

@@ -96,8 +96,6 @@ apis:
         projects.locations.indexEndpoints.operations:
           path: projects/{projectsId}/locations/{locationsId}/indexEndpoints/{indexEndpointsId}/operations/{operationsId}
   alloydb:
-    v1alpha1:
-      discovery_doc: alloydb_v1alpha1.json
     v1alpha:
       discovery_doc: alloydb_v1alpha.json
     v1beta:

@@ -1776,6 +1776,9 @@ class Runnable(_messages.Message):
   r"""Runnable describes instructions for executing a specific script or
   container as part of a Task.
 
+  Messages:
+    LabelsValue: Labels for this Runnable.
+
   Fields:
     alwaysRun: By default, after a Runnable fails, no further Runnable are
       executed. This flag indicates that this Runnable must be run even if the
@@ -1794,8 +1797,34 @@ class Runnable(_messages.Message):
       set for the whole Task or TaskGroup.
     ignoreExitStatus: Normally, a non-zero exit status causes the Task to
       fail. This flag allows execution of other Runnables to continue instead.
+    labels: Labels for this Runnable.
     script: Script runnable.
+    timeout: Timeout for this Runnable.
   """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Labels for this Runnable.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   alwaysRun = _messages.BooleanField(1)
   background = _messages.BooleanField(2)
@@ -1803,7 +1832,9 @@ class Runnable(_messages.Message):
   container = _messages.MessageField('Container', 4)
   environment = _messages.MessageField('Environment', 5)
   ignoreExitStatus = _messages.BooleanField(6)
-  script = _messages.MessageField('Script', 7)
+  labels = _messages.MessageField('LabelsValue', 7)
+  script = _messages.MessageField('Script', 8)
+  timeout = _messages.StringField(9)
 
 
 class Script(_messages.Message):

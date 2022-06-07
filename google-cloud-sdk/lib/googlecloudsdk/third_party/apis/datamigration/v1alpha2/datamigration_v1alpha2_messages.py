@@ -1417,6 +1417,8 @@ class MigrationJobVerificationError(_messages.Message):
       UNSUPPORTED_DEFINER: The definer is not supported.
       CANT_RESTART_RUNNING_MIGRATION: Migration is already running at the time
         of restart request.
+      TABLES_WITH_LIMITED_SUPPORT: The source has tables with limited support.
+        E.g. PostgreSQL tables without primary keys.
     """
     ERROR_CODE_UNSPECIFIED = 0
     CONNECTION_FAILURE = 1
@@ -1427,6 +1429,7 @@ class MigrationJobVerificationError(_messages.Message):
     UNSUPPORTED_GTID_MODE = 6
     UNSUPPORTED_DEFINER = 7
     CANT_RESTART_RUNNING_MIGRATION = 8
+    TABLES_WITH_LIMITED_SUPPORT = 9
 
   errorCode = _messages.EnumField('ErrorCodeValueValuesEnum', 1)
   errorDetailMessage = _messages.StringField(2)

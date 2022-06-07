@@ -14,6 +14,38 @@ from apitools.base.py import extra_types
 package = 'cloudbuild'
 
 
+class AccessReadTokenRequest(_messages.Message):
+  r"""Message for getting SCM read token."""
+
+
+class AccessReadTokenResponse(_messages.Message):
+  r"""Message for responding to get read token.
+
+  Fields:
+    expirationTime: Expiration timestamp. Can be empty if unknown.
+    token: The token content.
+  """
+
+  expirationTime = _messages.StringField(1)
+  token = _messages.BytesField(2)
+
+
+class AccessReadWriteTokenRequest(_messages.Message):
+  r"""Message for getting SCM read/write token."""
+
+
+class AccessReadWriteTokenResponse(_messages.Message):
+  r"""Message for responding to get read/write token.
+
+  Fields:
+    expirationTime: Expiration timestamp. Can be empty if unknown.
+    token: The token content.
+  """
+
+  expirationTime = _messages.StringField(1)
+  token = _messages.BytesField(2)
+
+
 class ApprovalConfig(_messages.Message):
   r"""ApprovalConfig describes configuration for manual approval of a build.
 
@@ -732,6 +764,198 @@ class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
 
+class CloudbuildProjectsLocationsConnectionsAccessReadTokenRequest(_messages.Message):
+  r"""A CloudbuildProjectsLocationsConnectionsAccessReadTokenRequest object.
+
+  Fields:
+    accessReadTokenRequest: A AccessReadTokenRequest resource to be passed as
+      the request body.
+    connection: Required. The resource name of the connection in the format
+      `projects/*/locations/*/connections/*`.
+  """
+
+  accessReadTokenRequest = _messages.MessageField('AccessReadTokenRequest', 1)
+  connection = _messages.StringField(2, required=True)
+
+
+class CloudbuildProjectsLocationsConnectionsAccessReadWriteTokenRequest(_messages.Message):
+  r"""A CloudbuildProjectsLocationsConnectionsAccessReadWriteTokenRequest
+  object.
+
+  Fields:
+    accessReadWriteTokenRequest: A AccessReadWriteTokenRequest resource to be
+      passed as the request body.
+    connection: Required. The resource name of the connection in the format
+      `projects/*/locations/*/connections/*`.
+  """
+
+  accessReadWriteTokenRequest = _messages.MessageField('AccessReadWriteTokenRequest', 1)
+  connection = _messages.StringField(2, required=True)
+
+
+class CloudbuildProjectsLocationsConnectionsCreateRequest(_messages.Message):
+  r"""A CloudbuildProjectsLocationsConnectionsCreateRequest object.
+
+  Fields:
+    connection: A Connection resource to be passed as the request body.
+    connectionId: Required. The ID to use for the Connection, which will
+      become the final component of the Connection's resource name. Names must
+      be unique per-project per-location. This value should be 4-63
+      characters, start with a lowercase letter, contain only lowercase
+      letters, digits and dashes, and end with a lowercase letter or a digit.
+      Regex: `^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$`.
+    parent: Required. Project and location where the connection will be
+      created. Format: `projects/*/locations/*`.
+  """
+
+  connection = _messages.MessageField('Connection', 1)
+  connectionId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class CloudbuildProjectsLocationsConnectionsDeleteRequest(_messages.Message):
+  r"""A CloudbuildProjectsLocationsConnectionsDeleteRequest object.
+
+  Fields:
+    etag: The current etag of the connection. If an etag is provided and does
+      not match the current etag of the connection, deletion will be blocked
+      and an ABORTED error will be returned.
+    name: Required. The name of the Connection to delete. Format:
+      `projects/*/locations/*/connections/*`.
+    validateOnly: If set, validate the request, but do not actually post it.
+  """
+
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  validateOnly = _messages.BooleanField(3)
+
+
+class CloudbuildProjectsLocationsConnectionsGetRequest(_messages.Message):
+  r"""A CloudbuildProjectsLocationsConnectionsGetRequest object.
+
+  Fields:
+    name: Required. The name of the Connection to retrieve. Format:
+      `projects/*/locations/*/connections/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class CloudbuildProjectsLocationsConnectionsListRequest(_messages.Message):
+  r"""A CloudbuildProjectsLocationsConnectionsListRequest object.
+
+  Fields:
+    pageSize: Number of results to return in the list.
+    pageToken: Page start.
+    parent: Required. The parent, which owns this collection of Connections.
+      Format: `projects/*/locations/*`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class CloudbuildProjectsLocationsConnectionsPatchRequest(_messages.Message):
+  r"""A CloudbuildProjectsLocationsConnectionsPatchRequest object.
+
+  Fields:
+    allowMissing: If set to true, and the connection is not found a new
+      connection will be created. In this situation `update_mask` is ignored.
+      The creation will succeed only if the input connection has all the
+      necessary information (e.g a github_config with both user_oauth_token
+      and installation_id properties).
+    connection: A Connection resource to be passed as the request body.
+    etag: The current etag of the connection. If an etag is provided and does
+      not match the current etag of the connection, update will be blocked and
+      an ABORTED error will be returned.
+    name: Immutable. The resource name of the connection, in the format
+      `projects/{project}/locations/{location}/connections/{connection_id}`.
+    updateMask: The list of fields to be updated.
+  """
+
+  allowMissing = _messages.BooleanField(1)
+  connection = _messages.MessageField('Connection', 2)
+  etag = _messages.StringField(3)
+  name = _messages.StringField(4, required=True)
+  updateMask = _messages.StringField(5)
+
+
+class CloudbuildProjectsLocationsConnectionsProcessWebhookRequest(_messages.Message):
+  r"""A CloudbuildProjectsLocationsConnectionsProcessWebhookRequest object.
+
+  Fields:
+    httpBody: A HttpBody resource to be passed as the request body.
+    parent: Required. Project and location where the webhook will be received.
+      Format: `projects/*/locations/*`.
+  """
+
+  httpBody = _messages.MessageField('HttpBody', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class CloudbuildProjectsLocationsConnectionsRepositoriesCreateRequest(_messages.Message):
+  r"""A CloudbuildProjectsLocationsConnectionsRepositoriesCreateRequest
+  object.
+
+  Fields:
+    parent: Required. The connection to contain the repository. If the request
+      is part of a BatchCreateRepositoriesRequest, this field should be empty
+      or match the parent specified there.
+    repository: A Repository resource to be passed as the request body.
+    repositoryId: Required. The ID to use for the repository, which will
+      become the final component of the repository's resource name.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  repository = _messages.MessageField('Repository', 2)
+  repositoryId = _messages.StringField(3)
+
+
+class CloudbuildProjectsLocationsConnectionsRepositoriesDeleteRequest(_messages.Message):
+  r"""A CloudbuildProjectsLocationsConnectionsRepositoriesDeleteRequest
+  object.
+
+  Fields:
+    etag: The current etag of the repository. If an etag is provided and does
+      not match the current etag of the repository, deletion will be blocked
+      and an ABORTED error will be returned.
+    name: Required. The name of the Repository to delete. Format:
+      `projects/*/locations/*/connections/*/repositories/*`.
+    validateOnly: If set, validate the request, but do not actually post it.
+  """
+
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  validateOnly = _messages.BooleanField(3)
+
+
+class CloudbuildProjectsLocationsConnectionsRepositoriesGetRequest(_messages.Message):
+  r"""A CloudbuildProjectsLocationsConnectionsRepositoriesGetRequest object.
+
+  Fields:
+    name: Required. The name of the Repository to retrieve. Format:
+      `projects/*/locations/*/connections/*/repositories/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class CloudbuildProjectsLocationsConnectionsRepositoriesListRequest(_messages.Message):
+  r"""A CloudbuildProjectsLocationsConnectionsRepositoriesListRequest object.
+
+  Fields:
+    pageSize: Number of results to return in the list.
+    pageToken: Page start.
+    parent: Required. The parent, which owns this collection of Repositories.
+      Format: `projects/*/locations/*/connections/*`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class CloudbuildProjectsLocationsOperationsCancelRequest(_messages.Message):
   r"""A CloudbuildProjectsLocationsOperationsCancelRequest object.
 
@@ -1099,6 +1323,72 @@ class Condition(_messages.Message):
   type = _messages.StringField(6)
 
 
+class Connection(_messages.Message):
+  r"""A connection to a SCM like GitHub, GitHub Enterprise, Bitbucket Server
+  or GitLab.
+
+  Messages:
+    AnnotationsValue: Allows clients to store small amounts of arbitrary data.
+
+  Fields:
+    annotations: Allows clients to store small amounts of arbitrary data.
+    createTime: Output only. Server assigned timestamp for when the connection
+      was created.
+    disabled: If disabled is set to true, functionality is disabled for this
+      connection. Repository based API methods and webhooks processing for
+      repositories in this connection will be disabled.
+    etag: This checksum is computed by the server based on the value of other
+      fields, and may be sent on update and delete requests to ensure the
+      client has an up-to-date value before proceeding.
+    githubConfig: Configuration for connections to github.com.
+    githubEnterpriseConfig: Configuration for connections to an instance of
+      GitHub Enterprise.
+    installationState: Output only. Installation state of the Connection.
+    name: Immutable. The resource name of the connection, in the format
+      `projects/{project}/locations/{location}/connections/{connection_id}`.
+    reconciling: Output only. Set to true when the connection is being set up
+      or updated in the background.
+    updateTime: Output only. Server assigned timestamp for when the connection
+      was updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""Allows clients to store small amounts of arbitrary data.
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  createTime = _messages.StringField(2)
+  disabled = _messages.BooleanField(3)
+  etag = _messages.StringField(4)
+  githubConfig = _messages.MessageField('GitHubConfig', 5)
+  githubEnterpriseConfig = _messages.MessageField('GitHubEnterpriseConfig', 6)
+  installationState = _messages.MessageField('InstallationState', 7)
+  name = _messages.StringField(8)
+  reconciling = _messages.BooleanField(9)
+  updateTime = _messages.StringField(10)
+
+
 class ContainerStateRunning(_messages.Message):
   r"""ContainerStateWaiting is a running state of a container.
 
@@ -1171,21 +1461,6 @@ class CreateGitHubEnterpriseConfigOperationMetadata(_messages.Message):
   githubEnterpriseConfig = _messages.StringField(3)
 
 
-class CreateGitLabConfigOperationMetadata(_messages.Message):
-  r"""Metadata for `CreateGitLabConfig` operation.
-
-  Fields:
-    completeTime: Time the operation was completed.
-    createTime: Time the operation was created.
-    gitlabConfig: The resource name of the GitLabConfig to be created. Format:
-      `projects/{project}/locations/{location}/gitlabConfigs/{id}`.
-  """
-
-  completeTime = _messages.StringField(1)
-  createTime = _messages.StringField(2)
-  gitlabConfig = _messages.StringField(3)
-
-
 class CreateWorkerPoolOperationMetadata(_messages.Message):
   r"""Metadata for the `CreateWorkerPool` operation.
 
@@ -1231,21 +1506,6 @@ class DeleteGitHubEnterpriseConfigOperationMetadata(_messages.Message):
   completeTime = _messages.StringField(1)
   createTime = _messages.StringField(2)
   githubEnterpriseConfig = _messages.StringField(3)
-
-
-class DeleteGitLabConfigOperationMetadata(_messages.Message):
-  r"""Metadata for `DeleteGitLabConfig` operation.
-
-  Fields:
-    completeTime: Time the operation was completed.
-    createTime: Time the operation was created.
-    gitlabConfig: The resource name of the GitLabConfig to be created. Format:
-      `projects/{project}/locations/{location}/gitlabConfigs/{id}`.
-  """
-
-  completeTime = _messages.StringField(1)
-  createTime = _messages.StringField(2)
-  gitlabConfig = _messages.StringField(3)
 
 
 class DeleteWorkerPoolOperationMetadata(_messages.Message):
@@ -1437,6 +1697,66 @@ class GCEPersistentDiskVolumeSource(_messages.Message):
   readOnly = _messages.BooleanField(4)
 
 
+class GitHubConfig(_messages.Message):
+  r"""Configuration for connections to github.com.
+
+  Fields:
+    appInstallationId: GitHub App installation id.
+    authorizerCredential: OAuth credential of the account that authorized the
+      Cloud Build GitHub App. It is recommended to use a robot account instead
+      of a human user account. The OAuth token must be tied to the Cloud Build
+      GitHub App.
+  """
+
+  appInstallationId = _messages.IntegerField(1)
+  authorizerCredential = _messages.MessageField('OAuthCredential', 2)
+
+
+class GitHubEnterpriseConfig(_messages.Message):
+  r"""Configuration for connections to an instance of GitHub Enterprise.
+
+  Fields:
+    apiKey: Required. API Key used for authentication of webhook events.
+    appId: Id of the GitHub App created from the manifest.
+    appInstallationId: ID of the installation of the GitHub App.
+    authorizerCredential: OAuth credential of the account that authorized the
+      Cloud Build GitHub App. It is recommended to use a robot account instead
+      of a human user account The OAuth token must be tied to the Cloud Build
+      GitHub App.
+    hostUri: Required. The URI of the GitHub Enterprise host this connection
+      is for.
+    oauthClientIdSecretVersion: SecretManager resource containing the OAuth
+      client_id of the GitHub App, formatted as
+      `projects/*/secrets/*/versions/*`.
+    oauthSecretSecretVersion: SecretManager resource containing the OAuth
+      secret of the GitHub App, formatted as
+      `projects/*/secrets/*/versions/*`.
+    privateKeySecretVersion: SecretManager resource containing the private key
+      of the GitHub App, formatted as `projects/*/secrets/*/versions/*`.
+    serviceDirectoryConfig: Configuration for using Service Directory to
+      privately connect to a GitHub Enterprise server. This should only be set
+      if the GitHub Enterprise server is hosted on-premises and not reachable
+      by public internet. If this field is left empty, calls to the GitHub
+      Enterprise server will be made over the public internet.
+    sslCa: SSL certificate to use for requests to GitHub Enterprise.
+    webhookSecretSecretVersion: SecretManager resource containing the webhook
+      secret of the GitHub App, formatted as
+      `projects/*/secrets/*/versions/*`.
+  """
+
+  apiKey = _messages.StringField(1)
+  appId = _messages.IntegerField(2)
+  appInstallationId = _messages.IntegerField(3)
+  authorizerCredential = _messages.MessageField('OAuthCredential', 4)
+  hostUri = _messages.StringField(5)
+  oauthClientIdSecretVersion = _messages.StringField(6)
+  oauthSecretSecretVersion = _messages.StringField(7)
+  privateKeySecretVersion = _messages.StringField(8)
+  serviceDirectoryConfig = _messages.MessageField('ServiceDirectoryConfig', 9)
+  sslCa = _messages.StringField(10)
+  webhookSecretSecretVersion = _messages.StringField(11)
+
+
 class GoogleDevtoolsCloudbuildV2OperationMetadata(_messages.Message):
   r"""Represents the metadata of the long-running operation.
 
@@ -1515,6 +1835,67 @@ class Hash(_messages.Message):
   value = _messages.BytesField(2)
 
 
+class HttpBody(_messages.Message):
+  r"""Message that represents an arbitrary HTTP body. It should only be used
+  for payload formats that can't be represented as JSON, such as raw binary or
+  an HTML page. This message can be used both in streaming and non-streaming
+  API methods in the request as well as the response. It can be used as a top-
+  level request field, which is convenient if one wants to extract parameters
+  from either the URL or HTTP template into the request fields and also want
+  access to the raw HTTP body. Example: message GetResourceRequest { // A
+  unique request id. string request_id = 1; // The raw HTTP body is bound to
+  this field. google.api.HttpBody http_body = 2; } service ResourceService {
+  rpc GetResource(GetResourceRequest) returns (google.api.HttpBody); rpc
+  UpdateResource(google.api.HttpBody) returns (google.protobuf.Empty); }
+  Example with streaming methods: service CaldavService { rpc
+  GetCalendar(stream google.api.HttpBody) returns (stream
+  google.api.HttpBody); rpc UpdateCalendar(stream google.api.HttpBody) returns
+  (stream google.api.HttpBody); } Use of this type only changes how the
+  request and response bodies are handled, all other features will continue to
+  work unchanged.
+
+  Messages:
+    ExtensionsValueListEntry: A ExtensionsValueListEntry object.
+
+  Fields:
+    contentType: The HTTP Content-Type header value specifying the content
+      type of the body.
+    data: The HTTP request/response body as raw binary.
+    extensions: Application specific response metadata. Must be set in the
+      first response for streaming APIs.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ExtensionsValueListEntry(_messages.Message):
+    r"""A ExtensionsValueListEntry object.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        ExtensionsValueListEntry object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ExtensionsValueListEntry object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  contentType = _messages.StringField(1)
+  data = _messages.BytesField(2)
+  extensions = _messages.MessageField('ExtensionsValueListEntry', 3, repeated=True)
+
+
 class InlineSecret(_messages.Message):
   r"""Pairs a set of secret environment variables mapped to encrypted values
   with the Cloud KMS key to use to decrypt the value.
@@ -1568,6 +1949,48 @@ class InlineSecret(_messages.Message):
   kmsKeyName = _messages.StringField(2)
 
 
+class InstallationState(_messages.Message):
+  r"""Describes stage and necessary actions to be taken by the user to
+  complete the installation. Used for GitHub and GitHub Enterprise based
+  connections.
+
+  Enums:
+    StageValueValuesEnum: Output only. Current step of the installation
+      process.
+
+  Fields:
+    actionUri: Output only. Link to follow for next action. Empty string if
+      the installation is already complete.
+    message: Output only. Message of what the user should do next to continue
+      the installation. Empty string if the installation is already complete.
+    stage: Output only. Current step of the installation process.
+  """
+
+  class StageValueValuesEnum(_messages.Enum):
+    r"""Output only. Current step of the installation process.
+
+    Values:
+      STAGE_UNSPECIFIED: No stage specified.
+      PENDING_CREATE_APP: Only for GitHub Enterprise. An App creation has been
+        requested. The user needs to confirm the creation in their GitHub
+        enterprise host.
+      PENDING_USER_OAUTH: User needs to authorize the GitHub (or Enterprise)
+        App via OAuth.
+      PENDING_INSTALL_APP: User needs to follow the link to install the GitHub
+        (or Enterprise) App.
+      COMPLETE: Installation process has been completed.
+    """
+    STAGE_UNSPECIFIED = 0
+    PENDING_CREATE_APP = 1
+    PENDING_USER_OAUTH = 2
+    PENDING_INSTALL_APP = 3
+    COMPLETE = 4
+
+  actionUri = _messages.StringField(1)
+  message = _messages.StringField(2)
+  stage = _messages.EnumField('StageValueValuesEnum', 3)
+
+
 class JsonAny(_messages.Message):
   r"""JSON serialized data.
 
@@ -1579,6 +2002,19 @@ class JsonAny(_messages.Message):
 
   type = _messages.StringField(1)
   value = _messages.BytesField(2)
+
+
+class ListConnectionsResponse(_messages.Message):
+  r"""Message for response to listing Connections.
+
+  Fields:
+    connections: The list of Connections.
+    nextPageToken: A token identifying a page of results the server should
+      return.
+  """
+
+  connections = _messages.MessageField('Connection', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
 class ListPipelineRunsResponse(_messages.Message):
@@ -1605,6 +2041,19 @@ class ListRecordsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   records = _messages.MessageField('Record', 2, repeated=True)
+
+
+class ListRepositoriesResponse(_messages.Message):
+  r"""Message for response to listing Repositories.
+
+  Fields:
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    repositories: The list of Repositories.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  repositories = _messages.MessageField('Repository', 2, repeated=True)
 
 
 class ListResultsResponse(_messages.Message):
@@ -1768,6 +2217,21 @@ class NotifierSpec(_messages.Message):
 
   notification = _messages.MessageField('Notification', 1)
   secrets = _messages.MessageField('NotifierSecret', 2, repeated=True)
+
+
+class OAuthCredential(_messages.Message):
+  r"""Represents an OAuth token of the account that authorized the Connection,
+  and associated metadata.
+
+  Fields:
+    oauthTokenSecretVersion: A SecretManager resource containing the OAuth
+      token that authorizes the Cloud Build connection. Format:
+      `projects/*/secrets/*/versions/*`.
+    username: The username associated to this token.
+  """
+
+  oauthTokenSecretVersion = _messages.StringField(1)
+  username = _messages.StringField(2)
 
 
 class Operation(_messages.Message):
@@ -2400,6 +2864,59 @@ class RepoSource(_messages.Message):
   tagName = _messages.StringField(8)
 
 
+class Repository(_messages.Message):
+  r"""A repository associated to a parent connection.
+
+  Messages:
+    AnnotationsValue: Allows clients to store small amounts of arbitrary data.
+
+  Fields:
+    annotations: Allows clients to store small amounts of arbitrary data.
+    createTime: Output only. Server assigned timestamp for when the connection
+      was created.
+    etag: This checksum is computed by the server based on the value of other
+      fields, and may be sent on update and delete requests to ensure the
+      client has an up-to-date value before proceeding.
+    name: Immutable. Resource name of the repository, in the format
+      `projects/*/locations/*/connections/*/repositories/*`.
+    remoteUri: Required. Git Clone HTTPS URI.
+    updateTime: Output only. Server assigned timestamp for when the connection
+      was updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""Allows clients to store small amounts of arbitrary data.
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  createTime = _messages.StringField(2)
+  etag = _messages.StringField(3)
+  name = _messages.StringField(4)
+  remoteUri = _messages.StringField(5)
+  updateTime = _messages.StringField(6)
+
+
 class Resource(_messages.Message):
   r"""Resource referenceable within a workflow.
 
@@ -2669,11 +3186,13 @@ class SecretVolumeSource(_messages.Message):
   r"""Secret Volume Source.
 
   Fields:
-    secretName: Resource name of the SecretVersion. In format:
+    secretName: Name of the secret referenced by the WorkspaceBinding.
+    secretVersion: Output only. Resource name of the SecretVersion. In format:
       projects/*/secrets/*/versions/*
   """
 
   secretName = _messages.StringField(1)
+  secretVersion = _messages.StringField(2)
 
 
 class Secrets(_messages.Message):
@@ -2698,6 +3217,18 @@ class SecurityContext(_messages.Message):
   """
 
   privileged = _messages.BooleanField(1)
+
+
+class ServiceDirectoryConfig(_messages.Message):
+  r"""ServiceDirectoryConfig represents Service Directory configuration for a
+  connection.
+
+  Fields:
+    service: Required. The Service Directory service name. Format: projects/{p
+      roject}/locations/{location}/namespaces/{namespace}/services/{service}.
+  """
+
+  service = _messages.StringField(1)
 
 
 class Sidecar(_messages.Message):
@@ -3343,21 +3874,6 @@ class UpdateGitHubEnterpriseConfigOperationMetadata(_messages.Message):
   completeTime = _messages.StringField(1)
   createTime = _messages.StringField(2)
   githubEnterpriseConfig = _messages.StringField(3)
-
-
-class UpdateGitLabConfigOperationMetadata(_messages.Message):
-  r"""Metadata for `UpdateGitLabConfig` operation.
-
-  Fields:
-    completeTime: Time the operation was completed.
-    createTime: Time the operation was created.
-    gitlabConfig: The resource name of the GitLabConfig to be created. Format:
-      `projects/{project}/locations/{location}/gitlabConfigs/{id}`.
-  """
-
-  completeTime = _messages.StringField(1)
-  createTime = _messages.StringField(2)
-  gitlabConfig = _messages.StringField(3)
 
 
 class UpdateWorkerPoolOperationMetadata(_messages.Message):

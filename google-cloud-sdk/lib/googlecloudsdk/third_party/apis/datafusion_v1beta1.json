@@ -474,6 +474,10 @@
               "KMS_KEY_ISSUE"
             ]
           }
+        },
+        "eventPublishConfig": {
+          "description": "Option to enable and pass metadata for event publishing.",
+          "$ref": "EventPublishConfig"
         }
       }
     },
@@ -520,6 +524,21 @@
       "properties": {
         "keyReference": {
           "description": "The name of the key which is used to encrypt\/decrypt customer data. For key in Cloud KMS, the key should be in the format of `projects\/*\/locations\/*\/keyRings\/*\/cryptoKeys\/*`.",
+          "type": "string"
+        }
+      }
+    },
+    "EventPublishConfig": {
+      "id": "EventPublishConfig",
+      "description": "Confirguration of PubSubEventWriter.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Required. Option to enable Event Publishing.",
+          "type": "boolean"
+        },
+        "topic": {
+          "description": "Required. The resource name of the Pub\/Sub topic. Format: projects\/{project_id}\/topics\/{topic_id}",
           "type": "string"
         }
       }

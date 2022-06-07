@@ -19,6 +19,8 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.container import api_adapter as container_api_adapter
+from googlecloudsdk.api_lib.krmapihosting import util
+from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.core import log
@@ -44,7 +46,8 @@ def LocationAttributeConfig():
       help_text=("The name of the Config Controller instance location. "
                  "Currently, only ``us-central1'', ``us-east1'', "
                  "``northamerica-northeast1'', ``northamerica-northeast2'', "
-                 "``europe-north1'', ``australia-southeast1'', "
+                 "``europe-north1'', ``europe-west1'', ``europe-west3'', "
+                 "``australia-southeast1'', ``australia-southeast2'', "
                  "``asia-northeast1'', and ``asia-northeast2'' are supported."))
 
 
@@ -82,3 +85,49 @@ def GetGKECluster(name, location):
     log.warning(NOT_RUNNING_MSG.format(cluster_ref.clusterId))
 
   return cluster, cluster_ref
+
+
+def AsyncLog(operation):
+  """Print log messages for async commands."""
+  log.status.Print(
+      """
+      Check operation [{}] for status.
+      To describe the operation, run:
+
+        $ gcloud anthos config operations describe {}"""
+      .format(operation.name, operation.name))
+  return operation
+
+
+def PatchRequest(args):
+  """Construct a patch request based on the args."""
+  instance = args.CONCEPTS.name.Parse()
+  messages = apis.GetMessagesModule('krmapihosting',
+                                    instance.GetCollectionInfo().api_version)
+
+  # Get the current instance to determine whether full management config is
+  # used.
+  current = util.GetKrmApiHost(instance.RelativeName())
+
+  # Construct the patch instance and the update mask.
+  update_masks = []
+  management_config = messages.ManagementConfig()
+  if current.managementConfig.fullManagementConfig:
+    full_management_config = messages.FullManagementConfig()
+    if args.man_block:
+      full_management_config.manBlock = args.man_block
+      update_masks.append('management_config.full_management_config.man_block')
+    management_config.fullManagementConfig = full_management_config
+  else:
+    standard_management_config = messages.StandardManagementConfig()
+    if args.man_block:
+      standard_management_config.manBlock = args.man_block
+      update_masks.append(
+          'management_config.standard_management_config.man_block')
+    management_config.standardManagementConfig = standard_management_config
+
+  patch = messages.KrmApiHost(managementConfig=management_config)
+  return messages.KrmapihostingProjectsLocationsKrmApiHostsPatchRequest(
+      krmApiHost=patch,
+      name=instance.RelativeName(),
+      updateMask=','.join(update_masks))

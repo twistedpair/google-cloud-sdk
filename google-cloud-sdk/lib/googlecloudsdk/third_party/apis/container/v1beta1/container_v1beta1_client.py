@@ -426,6 +426,33 @@ class ContainerV1beta1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def CheckAutopilotCompatibility(self, request, global_params=None):
+      r"""Checks the cluster compatibility with Autopilot mode, and returns a list of compatibility issues.
+
+      Args:
+        request: (ContainerProjectsLocationsClustersCheckAutopilotCompatibilityRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CheckAutopilotCompatibilityResponse) The response message.
+      """
+      config = self.GetMethodConfig('CheckAutopilotCompatibility')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CheckAutopilotCompatibility.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:checkAutopilotCompatibility',
+        http_method='GET',
+        method_id='container.projects.locations.clusters.checkAutopilotCompatibility',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}:checkAutopilotCompatibility',
+        request_field='',
+        request_type_name='ContainerProjectsLocationsClustersCheckAutopilotCompatibilityRequest',
+        response_type_name='CheckAutopilotCompatibilityResponse',
+        supports_download=False,
+    )
+
     def CompleteIpRotation(self, request, global_params=None):
       r"""Completes master IP rotation.
 

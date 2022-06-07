@@ -917,6 +917,33 @@ class EventarcV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetGoogleChannelConfig(self, request, global_params=None):
+      r"""Get a GoogleChannelConfig.
+
+      Args:
+        request: (EventarcProjectsLocationsGetGoogleChannelConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleChannelConfig) The response message.
+      """
+      config = self.GetMethodConfig('GetGoogleChannelConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetGoogleChannelConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/googleChannelConfig',
+        http_method='GET',
+        method_id='eventarc.projects.locations.getGoogleChannelConfig',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='EventarcProjectsLocationsGetGoogleChannelConfigRequest',
+        response_type_name='GoogleChannelConfig',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists information about the supported locations for this service.
 
@@ -941,6 +968,33 @@ class EventarcV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='EventarcProjectsLocationsListRequest',
         response_type_name='ListLocationsResponse',
+        supports_download=False,
+    )
+
+    def UpdateGoogleChannelConfig(self, request, global_params=None):
+      r"""Update a single GoogleChannelConfig.
+
+      Args:
+        request: (EventarcProjectsLocationsUpdateGoogleChannelConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleChannelConfig) The response message.
+      """
+      config = self.GetMethodConfig('UpdateGoogleChannelConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateGoogleChannelConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/googleChannelConfig',
+        http_method='PATCH',
+        method_id='eventarc.projects.locations.updateGoogleChannelConfig',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='googleChannelConfig',
+        request_type_name='EventarcProjectsLocationsUpdateGoogleChannelConfigRequest',
+        response_type_name='GoogleChannelConfig',
         supports_download=False,
     )
 

@@ -468,6 +468,10 @@ class Cluster(_messages.Message):
   r"""Describes the identifying information, config, and status of a Dataproc
   cluster
 
+  Enums:
+    DriverLocationValueValuesEnum: Output only. The cluster driver location
+      type.
+
   Messages:
     LabelsValue: Optional. The labels to associate with this cluster. Label
       keys must contain 1 to 63 characters, and must conform to RFC 1035
@@ -477,14 +481,19 @@ class Cluster(_messages.Message):
       be associated with a cluster.
 
   Fields:
-    clusterName: Required. The cluster name. Cluster names within a project
-      must be unique. Names of deleted clusters can be reused.
+    auxiliaryGceNodePoolConfigs: Input only. The Compute Engine configuration
+      settings for cluster node pools.
+    clusterName: Required. The cluster name, which must be unique within a
+      project. The name must start with a lowercase letter, and can contain up
+      to 51 lowercase letters, numbers, and hyphens. It cannot end with a
+      hyphen. The name of a deleted cluster can be reused.
     clusterUuid: Output only. A cluster UUID (Unique Universal Identifier).
       Dataproc generates this value when it creates the cluster.
     config: Optional. The cluster config for a cluster of Compute Engine
       Instances. Note that Dataproc may set default values, and values may
       change when clusters are updated.Exactly one of ClusterConfig or
       VirtualClusterConfig must be specified.
+    driverLocation: Output only. The cluster driver location type.
     labels: Optional. The labels to associate with this cluster. Label keys
       must contain 1 to 63 characters, and must conform to RFC 1035
       (https://www.ietf.org/rfc/rfc1035.txt). Label values may be empty, but,
@@ -507,6 +516,17 @@ class Cluster(_messages.Message):
       updated. Exactly one of config or virtual_cluster_config must be
       specified.
   """
+
+  class DriverLocationValueValuesEnum(_messages.Enum):
+    r"""Output only. The cluster driver location type.
+
+    Values:
+      UNSPECIFIED: If unspecified, the default behavior applies: drivers run
+        on the master.
+      DRIVER_POOL: Drivers run on driver pools.
+    """
+    UNSPECIFIED = 0
+    DRIVER_POOL = 1
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -537,15 +557,17 @@ class Cluster(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  clusterName = _messages.StringField(1)
-  clusterUuid = _messages.StringField(2)
-  config = _messages.MessageField('ClusterConfig', 3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  metrics = _messages.MessageField('ClusterMetrics', 5)
-  projectId = _messages.StringField(6)
-  status = _messages.MessageField('ClusterStatus', 7)
-  statusHistory = _messages.MessageField('ClusterStatus', 8, repeated=True)
-  virtualClusterConfig = _messages.MessageField('VirtualClusterConfig', 9)
+  auxiliaryGceNodePoolConfigs = _messages.MessageField('GceNodePool', 1, repeated=True)
+  clusterName = _messages.StringField(2)
+  clusterUuid = _messages.StringField(3)
+  config = _messages.MessageField('ClusterConfig', 4)
+  driverLocation = _messages.EnumField('DriverLocationValueValuesEnum', 5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  metrics = _messages.MessageField('ClusterMetrics', 7)
+  projectId = _messages.StringField(8)
+  status = _messages.MessageField('ClusterStatus', 9)
+  statusHistory = _messages.MessageField('ClusterStatus', 10, repeated=True)
+  virtualClusterConfig = _messages.MessageField('VirtualClusterConfig', 11)
 
 
 class ClusterConfig(_messages.Message):
@@ -2765,6 +2787,80 @@ class GceClusterConfig(_messages.Message):
   zoneUri = _messages.StringField(13)
 
 
+class GceNodePool(_messages.Message):
+  r"""Dataproc Compute Engine node pool identification and configuration
+  information.
+
+  Enums:
+    RolesValueListEntryValuesEnum:
+
+  Messages:
+    LabelsValue: Optional. Compute Engine node pool labels. Label keys must
+      consist of 1 to 63 characters and conform to RFC 1035
+      (https://www.ietf.org/rfc/rfc1035.txt). Label values can be empty. If
+      specified, they must consist of 1 to 63 characters and conform to RFC
+      1035 (https://www.ietf.org/rfc/rfc1035.txt). The Compute Engine node
+      pool can have no more than 32 labels.
+
+  Fields:
+    labels: Optional. Compute Engine node pool labels. Label keys must consist
+      of 1 to 63 characters and conform to RFC 1035
+      (https://www.ietf.org/rfc/rfc1035.txt). Label values can be empty. If
+      specified, they must consist of 1 to 63 characters and conform to RFC
+      1035 (https://www.ietf.org/rfc/rfc1035.txt). The Compute Engine node
+      pool can have no more than 32 labels.
+    name: Required. The Compute Engine node pool resource name
+      (https://aip.dev/122).
+    nodePoolConfig: Optional. The Compute Engine node pool instance group
+      configuration.
+    roles: Required. Compute Engine node pool roles.
+  """
+
+  class RolesValueListEntryValuesEnum(_messages.Enum):
+    r"""RolesValueListEntryValuesEnum enum type.
+
+    Values:
+      ROLE_UNSPECIFIED: Required unspecified role.
+      DRIVER: Job drivers will run on the node pool.
+    """
+    ROLE_UNSPECIFIED = 0
+    DRIVER = 1
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Compute Engine node pool labels. Label keys must consist of
+    1 to 63 characters and conform to RFC 1035
+    (https://www.ietf.org/rfc/rfc1035.txt). Label values can be empty. If
+    specified, they must consist of 1 to 63 characters and conform to RFC 1035
+    (https://www.ietf.org/rfc/rfc1035.txt). The Compute Engine node pool can
+    have no more than 32 labels.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  labels = _messages.MessageField('LabelsValue', 1)
+  name = _messages.StringField(2)
+  nodePoolConfig = _messages.MessageField('InstanceGroupConfig', 3)
+  roles = _messages.EnumField('RolesValueListEntryValuesEnum', 4, repeated=True)
+
+
 class GetIamPolicyRequest(_messages.Message):
   r"""Request message for GetIamPolicy method.
 
@@ -2825,6 +2921,12 @@ class GkeNodeConfig(_messages.Message):
   Fields:
     accelerators: Optional. A list of hardware accelerators
       (https://cloud.google.com/compute/docs/gpus) to attach to each node.
+    bootDiskKmsKey: Optional. The Customer Managed Encryption Key (CMEK)
+      (https://cloud.google.com/compute/docs/disks/customer-managed-
+      encryption) used to encrypt the boot disk attached to each node in the
+      node pool. Specify the key using the following format:
+      projects/KEY_PROJECT_ID
+      /locations/LOCATION/keyRings/RING_NAME/cryptoKeys/KEY_NAME.
     localSsdCount: Optional. The number of local SSD disks to attach to the
       node, which is limited by the maximum number of disks allowable per zone
       (see Adding Local SSDs
@@ -2846,11 +2948,12 @@ class GkeNodeConfig(_messages.Message):
   """
 
   accelerators = _messages.MessageField('GkeNodePoolAcceleratorConfig', 1, repeated=True)
-  localSsdCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  machineType = _messages.StringField(3)
-  minCpuPlatform = _messages.StringField(4)
-  preemptible = _messages.BooleanField(5)
-  spot = _messages.BooleanField(6)
+  bootDiskKmsKey = _messages.StringField(2)
+  localSsdCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  machineType = _messages.StringField(4)
+  minCpuPlatform = _messages.StringField(5)
+  preemptible = _messages.BooleanField(6)
+  spot = _messages.BooleanField(7)
 
 
 class GkeNodePoolAcceleratorConfig(_messages.Message):
@@ -4293,9 +4396,15 @@ class NodePoolConfig(_messages.Message):
     Values:
       ROLE_UNSPECIFIED: Required unspecified role.
       DRIVER: The node pool will have job drivers run on it.
+      MASTER: Master nodes
+      PRIMARY_WORKER: Primary workers
+      SECONDARY_WORKER: Secondary workers
     """
     ROLE_UNSPECIFIED = 0
     DRIVER = 1
+    MASTER = 2
+    PRIMARY_WORKER = 3
+    SECONDARY_WORKER = 4
 
   nodePoolConfig = _messages.MessageField('InstanceGroupConfig', 1)
   nodePoolId = _messages.StringField(2)

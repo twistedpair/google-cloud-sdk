@@ -335,7 +335,7 @@ class AssuredworkloadsV1beta1(base_api.BaseApiClient):
         request: (AssuredworkloadsOrganizationsLocationsWorkloadsListRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (GoogleCloudAssuredworkloadsV1beta1ListWorkloadsResponse) The response message.
+        (GoogleCloudAssuredworkloadsVersioningV1beta1ListWorkloadsResponse) The response message.
       """
       config = self.GetMethodConfig('List')
       return self._RunMethod(
@@ -351,7 +351,7 @@ class AssuredworkloadsV1beta1(base_api.BaseApiClient):
         relative_path='v1beta1/{+parent}/workloads',
         request_field='',
         request_type_name='AssuredworkloadsOrganizationsLocationsWorkloadsListRequest',
-        response_type_name='GoogleCloudAssuredworkloadsV1beta1ListWorkloadsResponse',
+        response_type_name='GoogleCloudAssuredworkloadsVersioningV1beta1ListWorkloadsResponse',
         supports_download=False,
     )
 

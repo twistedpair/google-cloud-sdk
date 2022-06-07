@@ -202,7 +202,7 @@ def _PurgeAlphaInstaller(kube_client, namespace, project_id):
 def _GetConnectAgentOptions(args, upgrade, namespace, image_pull_secret_data,
                             membership_ref):
   return gkehub_api_adapter.ConnectAgentOption(
-      name=args.CLUSTER_NAME,
+      name=args.MEMBERSHIP_NAME,
       proxy=args.proxy or '',
       namespace=namespace,
       is_upgrade=upgrade,
@@ -322,12 +322,12 @@ def DeployConnectAgent(kube_client, args,
     raise exceptions.Error(
         'Multiple namespaces [{}] containing the Connect Agent found in'
         'cluster [{}]. Cannot deploy a new Connect Agent'.format(
-            namespaces, args.CLUSTER_NAME))
+            namespaces, args.MEMBERSHIP_NAME))
   namespace = namespaces[0]
 
   log.status.Print(
       'Deploying the Connect Agent on cluster [{}] in namespace [{}]...'
-      .format(args.CLUSTER_NAME, namespace))
+      .format(args.MEMBERSHIP_NAME, namespace))
   # Delete the ns if necessary
   kube_util.DeleteNamespace(kube_client, namespace)
 
@@ -341,7 +341,7 @@ def DeployConnectAgent(kube_client, args,
   # TODO(b/131925085): Check connect agent health status.
   log.status.Print(
       'Deployed the Connect Agent on cluster [{}] in namespace [{}].'
-      .format(args.CLUSTER_NAME, namespace))
+      .format(args.MEMBERSHIP_NAME, namespace))
 
 
 def DeleteConnectNamespace(kube_client, args):
@@ -365,7 +365,7 @@ def DeleteConnectNamespace(kube_client, args):
         'gcloud will not remove any namespaces containing the Connect Agent since'
         ' it was found running in multiple namespaces on cluster: [{}].'
         ' Please delete these namespaces [{}] maually in your cluster'
-        .format(args.CLUSTER_NAME, namespaces))
+        .format(args.MEMBERSHIP_NAME, namespaces))
     return
 
   namespace = namespaces[0]

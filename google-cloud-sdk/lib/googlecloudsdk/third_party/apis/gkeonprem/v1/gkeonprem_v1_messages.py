@@ -100,6 +100,32 @@ class Empty(_messages.Message):
 
 
 
+class EnrollVmwareAdminClusterRequest(_messages.Message):
+  r"""Message for enrolling an existing VMware Admin Cluster to the GKE on-
+  prem API.
+
+  Fields:
+    localName: The object name of the VMware OnPremAdminCluster custom
+      resource on the associated admin cluster. This field is used to support
+      conflicting resource names when enrolling existing clusters to the API.
+      When not provided, this field will resolve to the
+      vmware_admin_cluster_id. Otherwise, it must match the object name of the
+      VMware OnPremAdminCluster custom resource. It is not modifiable outside
+      / beyond the enrollment operation.
+    membership: Required. This is the full resource name of this admin
+      cluster's hub membership.
+    vmwareAdminClusterId: User provided OnePlatform identifier that is used as
+      part of the resource name. This must be unique among all GKE on-prem
+      clusters within a project and location and will return a 409 if the
+      cluster already exists. This value must be up to 40 characters and
+      follow RFC-1123 (https://tools.ietf.org/html/rfc1123) format.
+  """
+
+  localName = _messages.StringField(1)
+  membership = _messages.StringField(2)
+  vmwareAdminClusterId = _messages.StringField(3)
+
+
 class EnrollVmwareClusterRequest(_messages.Message):
   r"""Message for enrolling an existing VMware Cluster to the GKE on-prem API.
 
@@ -178,6 +204,96 @@ class Fleet(_messages.Message):
   """
 
   membership = _messages.StringField(1)
+
+
+class GkeonpremProjectsLocationsBareMetalAdminClustersGetIamPolicyRequest(_messages.Message):
+  r"""A GkeonpremProjectsLocationsBareMetalAdminClustersGetIamPolicyRequest
+  object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class GkeonpremProjectsLocationsBareMetalAdminClustersOperationsGetRequest(_messages.Message):
+  r"""A GkeonpremProjectsLocationsBareMetalAdminClustersOperationsGetRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class GkeonpremProjectsLocationsBareMetalAdminClustersOperationsListRequest(_messages.Message):
+  r"""A GkeonpremProjectsLocationsBareMetalAdminClustersOperationsListRequest
+  object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
+class GkeonpremProjectsLocationsBareMetalAdminClustersSetIamPolicyRequest(_messages.Message):
+  r"""A GkeonpremProjectsLocationsBareMetalAdminClustersSetIamPolicyRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class GkeonpremProjectsLocationsBareMetalAdminClustersTestIamPermissionsRequest(_messages.Message):
+  r"""A
+  GkeonpremProjectsLocationsBareMetalAdminClustersTestIamPermissionsRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class GkeonpremProjectsLocationsBareMetalClustersBareMetalNodePoolsGetIamPolicyRequest(_messages.Message):
@@ -433,6 +549,110 @@ class GkeonpremProjectsLocationsOperationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class GkeonpremProjectsLocationsVmwareAdminClustersEnrollRequest(_messages.Message):
+  r"""A GkeonpremProjectsLocationsVmwareAdminClustersEnrollRequest object.
+
+  Fields:
+    enrollVmwareAdminClusterRequest: A EnrollVmwareAdminClusterRequest
+      resource to be passed as the request body.
+    parent: Required. The parent of the project and location that we are
+      Enrolling this cluster in. Format:
+      "projects/{project}/locations/{location}"
+  """
+
+  enrollVmwareAdminClusterRequest = _messages.MessageField('EnrollVmwareAdminClusterRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class GkeonpremProjectsLocationsVmwareAdminClustersGetIamPolicyRequest(_messages.Message):
+  r"""A GkeonpremProjectsLocationsVmwareAdminClustersGetIamPolicyRequest
+  object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class GkeonpremProjectsLocationsVmwareAdminClustersOperationsGetRequest(_messages.Message):
+  r"""A GkeonpremProjectsLocationsVmwareAdminClustersOperationsGetRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class GkeonpremProjectsLocationsVmwareAdminClustersOperationsListRequest(_messages.Message):
+  r"""A GkeonpremProjectsLocationsVmwareAdminClustersOperationsListRequest
+  object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
+class GkeonpremProjectsLocationsVmwareAdminClustersSetIamPolicyRequest(_messages.Message):
+  r"""A GkeonpremProjectsLocationsVmwareAdminClustersSetIamPolicyRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class GkeonpremProjectsLocationsVmwareAdminClustersTestIamPermissionsRequest(_messages.Message):
+  r"""A GkeonpremProjectsLocationsVmwareAdminClustersTestIamPermissionsRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class GkeonpremProjectsLocationsVmwareClustersCreateRequest(_messages.Message):

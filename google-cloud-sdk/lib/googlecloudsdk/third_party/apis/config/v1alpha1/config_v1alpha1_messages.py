@@ -55,18 +55,12 @@ class ApplyResults(_messages.Message):
   Fields:
     artifacts: Location of kpt artifacts in Google Cloud Storage. Format:
       `gs://{bucket}/{object}`
-    build: Corresponding Cloud Build run. Format:
-      `projects/{project}/locations/{location}/builds/{build}`
     content: Location of generated manifests in Google Cloud Storage. Format:
-      `gs://{bucket}/{object}`
-    logs: Location of logs in Google Cloud Storage. Format:
       `gs://{bucket}/{object}`
   """
 
   artifacts = _messages.StringField(1)
-  build = _messages.StringField(2)
-  content = _messages.StringField(3)
-  logs = _messages.StringField(4)
+  content = _messages.StringField(2)
 
 
 class AuditConfig(_messages.Message):
@@ -280,8 +274,9 @@ class ConfigProjectsLocationsDeploymentsGetIamPolicyRequest(_messages.Message):
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -401,8 +396,9 @@ class ConfigProjectsLocationsDeploymentsSetIamPolicyRequest(_messages.Message):
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
@@ -416,8 +412,9 @@ class ConfigProjectsLocationsDeploymentsTestIamPermissionsRequest(_messages.Mess
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """
@@ -1174,18 +1171,12 @@ class PipelineResults(_messages.Message):
   Fields:
     artifacts: Location of kpt artifacts in Google Cloud Storage. Format:
       `gs://{bucket}/{object}`
-    build: Corresponding Cloud Build run. Format:
-      `projects/{project}/locations/{location}/builds/{build}`
     content: Location of generated manifests in Google Cloud Storage. Format:
-      `gs://{bucket}/{object}`
-    logs: Location of Cloud Build logs in Google Cloud Storage. Format:
       `gs://{bucket}/{object}`
   """
 
   artifacts = _messages.StringField(1)
-  build = _messages.StringField(2)
-  content = _messages.StringField(3)
-  logs = _messages.StringField(4)
+  content = _messages.StringField(2)
 
 
 class Policy(_messages.Message):
@@ -1362,20 +1353,12 @@ class PreviewResults(_messages.Message):
   Fields:
     artifacts: Location of kpt artifacts in Google Cloud Storage. Format:
       `gs://{bucket}/{object}`
-    build: Name of the corresponding Cloud Build run. Format:
-      `projects/{project}/locations/{location}/builds/{build}` See https://clo
-      ud.google.com/build/docs/api/reference/rest/v1/projects.builds/get#query
-      -parameters for how to get build details.
     content: Location of generated preview data in Google Cloud Storage.
       Format: `gs://{bucket}/{object}`
-    logs: Location of logs in Google Cloud Storage. Format:
-      `gs://{bucket}/{object}`
   """
 
   artifacts = _messages.StringField(1)
-  build = _messages.StringField(2)
-  content = _messages.StringField(3)
-  logs = _messages.StringField(4)
+  content = _messages.StringField(2)
 
 
 class Revision(_messages.Message):

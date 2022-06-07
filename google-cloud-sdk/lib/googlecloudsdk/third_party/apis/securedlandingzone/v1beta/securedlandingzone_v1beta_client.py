@@ -119,7 +119,7 @@ class SecuredlandingzoneV1beta(base_api.BaseApiClient):
     )
 
     def Create(self, request, global_params=None):
-      r"""Create a new overwatch resource. Operation.
+      r"""Create a new overwatch resource.
 
       Args:
         request: (SecuredlandingzoneOrganizationsLocationsOverwatchesCreateRequest) input message
@@ -146,7 +146,7 @@ class SecuredlandingzoneV1beta(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Delete an overwatch resource. Operation.
+      r"""Delete an overwatch resource.
 
       Args:
         request: (SecuredlandingzoneOrganizationsLocationsOverwatchesDeleteRequest) input message
@@ -227,7 +227,7 @@ class SecuredlandingzoneV1beta(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Update blueprint of an overwatch resource. Operation.
+      r"""Update the blueprint deployed resources of an overwatch resource.
 
       Args:
         request: (SecuredlandingzoneOrganizationsLocationsOverwatchesPatchRequest) input message
@@ -291,7 +291,7 @@ class SecuredlandingzoneV1beta(base_api.BaseApiClient):
           }
 
     def EnableOverwatch(self, request, global_params=None):
-      r"""Enables the overwatch service for an organization in a region. This creates a service account, which is returned in the response. The purpose of this RPC is to create the Service account and allow the user to give additional permissions that Overwatch needs to operate.
+      r"""Enables the Secured Landing Zone Overwatch service for an organization in a region.
 
       Args:
         request: (SecuredlandingzoneOrganizationsLocationsEnableOverwatchRequest) input message

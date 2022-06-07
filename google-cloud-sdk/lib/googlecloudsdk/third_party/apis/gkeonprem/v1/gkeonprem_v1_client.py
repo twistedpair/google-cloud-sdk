@@ -39,17 +39,176 @@ class GkeonpremV1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.projects_locations_bareMetalAdminClusters_operations = self.ProjectsLocationsBareMetalAdminClustersOperationsService(self)
+    self.projects_locations_bareMetalAdminClusters = self.ProjectsLocationsBareMetalAdminClustersService(self)
     self.projects_locations_bareMetalClusters_bareMetalNodePools_operations = self.ProjectsLocationsBareMetalClustersBareMetalNodePoolsOperationsService(self)
     self.projects_locations_bareMetalClusters_bareMetalNodePools = self.ProjectsLocationsBareMetalClustersBareMetalNodePoolsService(self)
     self.projects_locations_bareMetalClusters_operations = self.ProjectsLocationsBareMetalClustersOperationsService(self)
     self.projects_locations_bareMetalClusters = self.ProjectsLocationsBareMetalClustersService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
+    self.projects_locations_vmwareAdminClusters_operations = self.ProjectsLocationsVmwareAdminClustersOperationsService(self)
+    self.projects_locations_vmwareAdminClusters = self.ProjectsLocationsVmwareAdminClustersService(self)
     self.projects_locations_vmwareClusters_operations = self.ProjectsLocationsVmwareClustersOperationsService(self)
     self.projects_locations_vmwareClusters_vmwareNodePools_operations = self.ProjectsLocationsVmwareClustersVmwareNodePoolsOperationsService(self)
     self.projects_locations_vmwareClusters_vmwareNodePools = self.ProjectsLocationsVmwareClustersVmwareNodePoolsService(self)
     self.projects_locations_vmwareClusters = self.ProjectsLocationsVmwareClustersService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class ProjectsLocationsBareMetalAdminClustersOperationsService(base_api.BaseApiService):
+    """Service class for the projects_locations_bareMetalAdminClusters_operations resource."""
+
+    _NAME = 'projects_locations_bareMetalAdminClusters_operations'
+
+    def __init__(self, client):
+      super(GkeonpremV1.ProjectsLocationsBareMetalAdminClustersOperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
+
+      Args:
+        request: (GkeonpremProjectsLocationsBareMetalAdminClustersOperationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/bareMetalAdminClusters/{bareMetalAdminClustersId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='gkeonprem.projects.locations.bareMetalAdminClusters.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='GkeonpremProjectsLocationsBareMetalAdminClustersOperationsGetRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users/*/operations`. To override the binding, API services can add a binding such as `"/v1/{name=users/*}/operations"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id.
+
+      Args:
+        request: (GkeonpremProjectsLocationsBareMetalAdminClustersOperationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListOperationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/bareMetalAdminClusters/{bareMetalAdminClustersId}/operations',
+        http_method='GET',
+        method_id='gkeonprem.projects.locations.bareMetalAdminClusters.operations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+name}/operations',
+        request_field='',
+        request_type_name='GkeonpremProjectsLocationsBareMetalAdminClustersOperationsListRequest',
+        response_type_name='ListOperationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsBareMetalAdminClustersService(base_api.BaseApiService):
+    """Service class for the projects_locations_bareMetalAdminClusters resource."""
+
+    _NAME = 'projects_locations_bareMetalAdminClusters'
+
+    def __init__(self, client):
+      super(GkeonpremV1.ProjectsLocationsBareMetalAdminClustersService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
+
+      Args:
+        request: (GkeonpremProjectsLocationsBareMetalAdminClustersGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/bareMetalAdminClusters/{bareMetalAdminClustersId}:getIamPolicy',
+        http_method='GET',
+        method_id='gkeonprem.projects.locations.bareMetalAdminClusters.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1/{+resource}:getIamPolicy',
+        request_field='',
+        request_type_name='GkeonpremProjectsLocationsBareMetalAdminClustersGetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
+
+      Args:
+        request: (GkeonpremProjectsLocationsBareMetalAdminClustersSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/bareMetalAdminClusters/{bareMetalAdminClustersId}:setIamPolicy',
+        http_method='POST',
+        method_id='gkeonprem.projects.locations.bareMetalAdminClusters.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='GkeonpremProjectsLocationsBareMetalAdminClustersSetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
+
+      Args:
+        request: (GkeonpremProjectsLocationsBareMetalAdminClustersTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/bareMetalAdminClusters/{bareMetalAdminClustersId}:testIamPermissions',
+        http_method='POST',
+        method_id='gkeonprem.projects.locations.bareMetalAdminClusters.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='GkeonpremProjectsLocationsBareMetalAdminClustersTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
+        supports_download=False,
+    )
 
   class ProjectsLocationsBareMetalClustersBareMetalNodePoolsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_bareMetalClusters_bareMetalNodePools_operations resource."""
@@ -476,6 +635,188 @@ class GkeonpremV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='GkeonpremProjectsLocationsOperationsListRequest',
         response_type_name='ListOperationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsVmwareAdminClustersOperationsService(base_api.BaseApiService):
+    """Service class for the projects_locations_vmwareAdminClusters_operations resource."""
+
+    _NAME = 'projects_locations_vmwareAdminClusters_operations'
+
+    def __init__(self, client):
+      super(GkeonpremV1.ProjectsLocationsVmwareAdminClustersOperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
+
+      Args:
+        request: (GkeonpremProjectsLocationsVmwareAdminClustersOperationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/vmwareAdminClusters/{vmwareAdminClustersId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='gkeonprem.projects.locations.vmwareAdminClusters.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='GkeonpremProjectsLocationsVmwareAdminClustersOperationsGetRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users/*/operations`. To override the binding, API services can add a binding such as `"/v1/{name=users/*}/operations"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id.
+
+      Args:
+        request: (GkeonpremProjectsLocationsVmwareAdminClustersOperationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListOperationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/vmwareAdminClusters/{vmwareAdminClustersId}/operations',
+        http_method='GET',
+        method_id='gkeonprem.projects.locations.vmwareAdminClusters.operations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+name}/operations',
+        request_field='',
+        request_type_name='GkeonpremProjectsLocationsVmwareAdminClustersOperationsListRequest',
+        response_type_name='ListOperationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsVmwareAdminClustersService(base_api.BaseApiService):
+    """Service class for the projects_locations_vmwareAdminClusters resource."""
+
+    _NAME = 'projects_locations_vmwareAdminClusters'
+
+    def __init__(self, client):
+      super(GkeonpremV1.ProjectsLocationsVmwareAdminClustersService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Enroll(self, request, global_params=None):
+      r"""Enrolls an existing VMware Admin Cluster to the GKE on-prem API within a given project and location. Through enrollment, an existing admin cluster will become GKE on-prem API managed. The corresponding GCP resources will be created and all future modifications to the cluster will be expected to be performed through the API.
+
+      Args:
+        request: (GkeonpremProjectsLocationsVmwareAdminClustersEnrollRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Enroll')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Enroll.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/vmwareAdminClusters:enroll',
+        http_method='POST',
+        method_id='gkeonprem.projects.locations.vmwareAdminClusters.enroll',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/vmwareAdminClusters:enroll',
+        request_field='enrollVmwareAdminClusterRequest',
+        request_type_name='GkeonpremProjectsLocationsVmwareAdminClustersEnrollRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
+
+      Args:
+        request: (GkeonpremProjectsLocationsVmwareAdminClustersGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/vmwareAdminClusters/{vmwareAdminClustersId}:getIamPolicy',
+        http_method='GET',
+        method_id='gkeonprem.projects.locations.vmwareAdminClusters.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1/{+resource}:getIamPolicy',
+        request_field='',
+        request_type_name='GkeonpremProjectsLocationsVmwareAdminClustersGetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
+
+      Args:
+        request: (GkeonpremProjectsLocationsVmwareAdminClustersSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/vmwareAdminClusters/{vmwareAdminClustersId}:setIamPolicy',
+        http_method='POST',
+        method_id='gkeonprem.projects.locations.vmwareAdminClusters.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='GkeonpremProjectsLocationsVmwareAdminClustersSetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
+
+      Args:
+        request: (GkeonpremProjectsLocationsVmwareAdminClustersTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/vmwareAdminClusters/{vmwareAdminClustersId}:testIamPermissions',
+        http_method='POST',
+        method_id='gkeonprem.projects.locations.vmwareAdminClusters.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='GkeonpremProjectsLocationsVmwareAdminClustersTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 

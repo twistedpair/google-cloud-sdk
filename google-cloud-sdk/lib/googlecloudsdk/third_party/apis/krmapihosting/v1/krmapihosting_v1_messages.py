@@ -281,6 +281,7 @@ class KrmApiHost(_messages.Message):
       SUSPENDED: KrmApiHost is suspended, set on specific wipeout events
       READ_ONLY: KrmApiHost is read only, set on specific abuse & billing
         events
+      UPDATING: KrmApiHost is being updated
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -288,6 +289,7 @@ class KrmApiHost(_messages.Message):
     DELETING = 3
     SUSPENDED = 4
     READ_ONLY = 5
+    UPDATING = 6
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -460,8 +462,9 @@ class KrmapihostingProjectsLocationsKrmApiHostsPatchRequest(_messages.Message):
     updateMask: Optional. Field mask is used to specify the fields to be
       overwritten in the KrmApiHost resource by the update. The fields
       specified in the update_mask are relative to the resource, not the full
-      request. A field will be overwritten if it is in the mask. If the user
-      does not provide a mask then all fields will be overwritten.
+      request. A field will be overwritten if it is in the mask. A request
+      must specify at least one path in the field mask. Supported field mask
+      values are: - `management_config.standard_management_config.man_block`
   """
 
   krmApiHost = _messages.MessageField('KrmApiHost', 1)

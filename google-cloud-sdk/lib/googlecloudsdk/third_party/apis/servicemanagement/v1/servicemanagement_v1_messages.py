@@ -3945,7 +3945,7 @@ class ServicemanagementServicesListRequest(_messages.Message):
       project_settings is expanded, then this field controls which project
       project_settings is populated for.
     pageSize: The max number of items to include in the response list. Page
-      size is 50 if not specified. Maximum value is 100.
+      size is 50 if not specified. Maximum value is 500.
     pageToken: Token identifying which result to start with; returned by a
       previous list call.
     producerProjectId: Include services produced by the specified project.

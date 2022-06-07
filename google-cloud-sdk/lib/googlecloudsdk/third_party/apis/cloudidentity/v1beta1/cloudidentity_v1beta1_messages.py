@@ -1638,19 +1638,6 @@ class ExpiryDetail(_messages.Message):
   expireTime = _messages.StringField(1)
 
 
-class FirstAdminInvitationInfo(_messages.Message):
-  r"""Message containing first admin invitation info for customers
-
-  Fields:
-    isFirstAdmin: Optional. To enable First Admin Invitation for Domained
-      Customer
-    primaryDomain: Optional. Domain information of first admin invited
-  """
-
-  isFirstAdmin = _messages.BooleanField(1)
-  primaryDomain = _messages.StringField(2)
-
-
 class GetMembershipGraphResponse(_messages.Message):
   r"""The response message for MembershipsService.GetMembershipGraph.
 
@@ -3089,13 +3076,8 @@ class SecuritySettings(_messages.Message):
 class SendUserInvitationRequest(_messages.Message):
   r"""A request to send email for inviting target user corresponding to the
   UserInvitation.
-
-  Fields:
-    firstAdminInvitationInfo: Optional. First admin invitation info for
-      customers
   """
 
-  firstAdminInvitationInfo = _messages.MessageField('FirstAdminInvitationInfo', 1)
 
 
 class StandardQueryParameters(_messages.Message):

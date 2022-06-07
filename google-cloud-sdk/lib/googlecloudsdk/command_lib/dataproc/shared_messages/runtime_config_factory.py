@@ -12,7 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Factory for RuntimeConfig message."""
 
 from __future__ import absolute_import
@@ -104,10 +103,8 @@ def AddArguments(parser, use_config_property=False):
         type=arg_parsers.ArgDict(),
         metavar='PROPERTY=VALUE',
         help="""\
-        Specifies configuration properties for the batch job. Properties are
-        mapped to configuration files for the batch job. See
-        [Dataproc Serverless for Spark job capabilities]
-        (https://cloud.google.com/dataproc-serverless/docs/overview#for_spark_job_capabilities)
+        Specifies configuration properties for the workload. See
+        [Dataproc Serverless for Spark documentation](https://cloud.google.com/dataproc-serverless/docs/concepts/properties)
         for the list of supported properties.""")
 
   parser.add_argument(

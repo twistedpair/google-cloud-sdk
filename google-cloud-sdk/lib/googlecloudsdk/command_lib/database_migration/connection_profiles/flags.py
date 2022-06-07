@@ -21,10 +21,18 @@ from __future__ import unicode_literals
 from googlecloudsdk.api_lib.database_migration import api_util
 
 
+def AddNoAsyncFlag(parser):
+  """Adds a --no-async flag to the given parser."""
+  help_text = ('Waits for the operation in progress to complete before '
+               'returning.')
+  parser.add_argument('--no-async', action='store_true', help=help_text)
+
+
 def AddDisplayNameFlag(parser):
   """Adds a --display-name flag to the given parser."""
   help_text = """\
-    Friendly name for the connection profile.
+    A user-friendly name for the connection profile. The display name can
+    include letters, numbers, spaces, and hyphens, and must start with a letter.
     """
   parser.add_argument('--display-name', help=help_text)
 
@@ -32,8 +40,8 @@ def AddDisplayNameFlag(parser):
 def AddUsernameFlag(parser, required=False):
   """Adds a --username flag to the given parser."""
   help_text = """\
-    Username that Database Migration Service will use to connect to the
-    database. The value is encrypted when stored in Database Migration Service.
+    Username that Database Migration Service uses to connect to the
+    database. Database Migration Service encrypts the value when storing it.
     """
   parser.add_argument('--username', help=help_text, required=required)
 
@@ -45,16 +53,14 @@ def AddPasswordFlagGroup(parser, required=False):
   password_group.add_argument(
       '--password',
       help="""\
-          Password for the user that Database Migration Service will be using to
-          connect to the database. This field is not returned on request, and
-          the value is encrypted when stored in Database Migration Service.
-          """
-  )
+          Password for the user that Database Migration Service uses to
+          connect to the source database. Database Migration Service encrypts
+          the value when storing it, and the field is not returned on request.
+          """)
   password_group.add_argument(
       '--prompt-for-password',
       action='store_true',
-      help='Prompt for the password used to connect to the database.'
-  )
+      help='Prompt for the password used to connect to the database.')
 
 
 def AddHostFlag(parser, required=False):
@@ -90,7 +96,8 @@ def AddCaCertificateFlag(parser, required=False):
   help_text = """\
     x509 PEM-encoded certificate of the CA that signed the source database
     server's certificate. The replica will use this certificate to verify
-    it's connecting to the right host.
+    it's connecting to the correct host. Database Migration Service encrypts the
+    value when storing it.
   """
   parser.add_argument('--ca-certificate', help=help_text, required=required)
 
@@ -108,7 +115,8 @@ def AddClientCertificateFlag(parser, required=False):
   """Adds --client-certificate flag to the given parser."""
   help_text = """\
     x509 PEM-encoded certificate that will be used by the replica to
-    authenticate against the source database server.
+    authenticate against the source database server. Database Migration Service
+    encrypts the value when storing it.
   """
   parser.add_argument('--client-certificate', help=help_text, required=required)
 
@@ -117,7 +125,8 @@ def AddPrivateKeyFlag(parser, required=False):
   """Adds --private-key flag to the given parser."""
   help_text = """\
     Unencrypted PKCS#1 or PKCS#8 PEM-encoded private key associated with
-    the Client Certificate.
+    the Client Certificate. Database Migration Service encrypts the value when
+    storing it.
   """
   parser.add_argument('--private-key', help=help_text, required=required)
 
@@ -143,7 +152,7 @@ def AddCloudSQLInstanceFlag(parser, required=False):
 def AddProviderFlag(parser):
   """Adds --provider flag to the given parser."""
   help_text = """\
-    Database provider (CLOUDSQL or RDS).
+    Database provider, for managed databases.
   """
   choices = ['RDS', 'CLOUDSQL']
   parser.add_argument('--provider', help=help_text, choices=choices)

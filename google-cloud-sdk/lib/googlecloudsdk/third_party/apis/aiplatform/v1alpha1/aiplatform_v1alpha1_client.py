@@ -3768,6 +3768,60 @@ class AiplatformV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def RemoveDatapoints(self, request, global_params=None):
+      r"""Remove Datapoints from an Index.
+
+      Args:
+        request: (AiplatformProjectsLocationsIndexesRemoveDatapointsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1alpha1RemoveDatapointsResponse) The response message.
+      """
+      config = self.GetMethodConfig('RemoveDatapoints')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RemoveDatapoints.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/indexes/{indexesId}:removeDatapoints',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.indexes.removeDatapoints',
+        ordered_params=['index'],
+        path_params=['index'],
+        query_params=[],
+        relative_path='v1alpha1/{+index}:removeDatapoints',
+        request_field='googleCloudAiplatformV1alpha1RemoveDatapointsRequest',
+        request_type_name='AiplatformProjectsLocationsIndexesRemoveDatapointsRequest',
+        response_type_name='GoogleCloudAiplatformV1alpha1RemoveDatapointsResponse',
+        supports_download=False,
+    )
+
+    def UpsertDatapoints(self, request, global_params=None):
+      r"""Add/update Datapoints into an Index.
+
+      Args:
+        request: (AiplatformProjectsLocationsIndexesUpsertDatapointsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1alpha1UpsertDatapointsResponse) The response message.
+      """
+      config = self.GetMethodConfig('UpsertDatapoints')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpsertDatapoints.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/indexes/{indexesId}:upsertDatapoints',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.indexes.upsertDatapoints',
+        ordered_params=['index'],
+        path_params=['index'],
+        query_params=[],
+        relative_path='v1alpha1/{+index}:upsertDatapoints',
+        request_field='googleCloudAiplatformV1alpha1UpsertDatapointsRequest',
+        request_type_name='AiplatformProjectsLocationsIndexesUpsertDatapointsRequest',
+        response_type_name='GoogleCloudAiplatformV1alpha1UpsertDatapointsResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsMetadataStoresArtifactsService(base_api.BaseApiService):
     """Service class for the projects_locations_metadataStores_artifacts resource."""
 

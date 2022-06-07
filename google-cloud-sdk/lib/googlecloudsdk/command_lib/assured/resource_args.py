@@ -37,6 +37,11 @@ def WorkloadAttributeConfig():
       name='workload', help_text='The workload for the {resource}.')
 
 
+def ViolationAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='violation', help_text='The violation for the {resource}.')
+
+
 def OperationAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='operation', help_text='The operation for the {resource}.')
@@ -46,6 +51,17 @@ def GetWorkloadResourceSpec():
   return concepts.ResourceSpec(
       'assuredworkloads.organizations.locations.workloads',
       resource_name='workload',
+      workloadsId=WorkloadAttributeConfig(),
+      locationsId=LocationAttributeConfig(),
+      organizationsId=OrganizationAttributeConfig())
+
+
+def GetViolationResourceSpec():
+  return concepts.ResourceSpec(
+      'assuredworkloads.organizations.locations.workloads.violations',
+      api_version='v1beta1',
+      resource_name='violation',
+      violationsId=ViolationAttributeConfig(),
       workloadsId=WorkloadAttributeConfig(),
       locationsId=LocationAttributeConfig(),
       organizationsId=OrganizationAttributeConfig())

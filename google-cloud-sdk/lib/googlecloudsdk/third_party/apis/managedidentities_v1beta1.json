@@ -866,6 +866,10 @@
           "description": "Output only. Additional information about the current status of this backup, if available.",
           "readOnly": true,
           "type": "string"
+        },
+        "description": {
+          "description": "Optional. A short description of the backup.",
+          "type": "string"
         }
       }
     },

@@ -34,16 +34,43 @@ def AddAsyncFlag(parser):
   base.ASYNC_FLAG.AddToParser(parser)
 
 
-def AddGlobalFlag(parser):
+def AddHubFlag(parser):
+  """Adds the --hub argument to the given parser."""
+  # TODO(b/233653552) Parse this with a resouce argument.
+  parser.add_argument(
+      '--hub',
+      required=True,
+      help='Hub that the spoke will attach to. The hub must already exist.')
+
+
+def AddVPCNetworkFlag(parser):
+  """Adds the --vpc-network argument to the given parser."""
+  # TODO(b/233653552) Parse this with a resource argument.
+  parser.add_argument(
+      '--vpc-network',
+      required=True,
+      help="""VPC network that the spoke provides connectivity to.
+      The resource must already exist.""")
+
+
+def AddDescriptionFlag(parser, help_text):
+  """Adds the --description flag to the given parser."""
+  parser.add_argument(
+      '--description',
+      required=False,
+      help=help_text)
+
+
+def AddGlobalFlag(parser, hidden):
   """Add the --global argument to the given parser."""
   parser.add_argument(
       GLOBAL_ARGUMENT,
-      help='Specify if a resource is global.',
-      hidden=True,
+      help='Indicates that the spoke is global.',
+      hidden=hidden,
       action=util.StoreGlobalAction)
 
 
-def AddRegionFlag(parser, supports_region_wildcard):
+def AddRegionFlag(parser, supports_region_wildcard, hidden):
   """Add the --region argument to the given parser."""
   region_help_text = """ \
         A Google Cloud region. To see the names of regions, see [Viewing a list of available regions](https://cloud.google.com/compute/docs/regions-zones/viewing-regions-zones#viewing_a_list_of_available_regions)."""  # pylint: disable=line-too-long
@@ -51,14 +78,18 @@ def AddRegionFlag(parser, supports_region_wildcard):
     region_help_text += ' Use ``-`` to specify all regions.'
   parser.add_argument(
       REGION_ARGUMENT,
+      hidden=hidden,
       help=region_help_text)
 
 
-def AddRegionGroup(parser, supports_region_wildcard=False):
+def AddRegionGroup(parser,
+                   supports_region_wildcard=False,
+                   hide_global_arg=False,
+                   hide_region_arg=False):
   """Add a group which contains the global and region arguments to the given parser."""
   region_group = parser.add_group(required=False, mutex=True)
-  AddGlobalFlag(region_group)
-  AddRegionFlag(region_group, supports_region_wildcard)
+  AddGlobalFlag(region_group, hide_global_arg)
+  AddRegionFlag(region_group, supports_region_wildcard, hide_region_arg)
 
 
 def SpokeAttributeConfig():

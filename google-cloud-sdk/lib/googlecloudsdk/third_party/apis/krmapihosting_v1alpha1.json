@@ -317,7 +317,8 @@
             "KrmApiHost is running",
             "KrmApiHost is being deleted",
             "KrmApiHost is suspended, set on specific wipeout events",
-            "KrmApiHost is read only, set on specific abuse & billing events"
+            "KrmApiHost is read only, set on specific abuse & billing events",
+            "KrmApiHost is being updated"
           ],
           "enum": [
             "STATE_UNSPECIFIED",
@@ -325,7 +326,8 @@
             "RUNNING",
             "DELETING",
             "SUSPENDED",
-            "READ_ONLY"
+            "READ_ONLY",
+            "UPDATING"
           ]
         },
         "managementConfig": {
@@ -1056,7 +1058,7 @@
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "Optional. Field mask is used to specify the fields to be overwritten in the KrmApiHost resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
+                      "description": "Optional. Field mask is used to specify the fields to be overwritten in the KrmApiHost resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. A request must specify at least one path in the field mask. Supported field mask values are: - `management_config.standard_management_config.man_block`",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"

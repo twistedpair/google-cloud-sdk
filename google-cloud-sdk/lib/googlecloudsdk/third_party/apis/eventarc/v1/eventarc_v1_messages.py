@@ -143,6 +143,9 @@ class Channel(_messages.Message):
       token must be used by the provider to register the channel for
       publishing.
     createTime: Output only. The creation time.
+    cryptoKeyName: Optional. Resource name of a KMS crypto key (managed by the
+      user) used to encrypt/decrypt their event data. It must match the
+      pattern `projects/*/locations/*/keyRings/*/cryptoKeys/*`.
     name: Required. The resource name of the channel. Must be unique within
       the location on the project and must be in
       `projects/{project}/locations/{location}/channels/{channel_id}` format.
@@ -186,12 +189,13 @@ class Channel(_messages.Message):
 
   activationToken = _messages.StringField(1)
   createTime = _messages.StringField(2)
-  name = _messages.StringField(3)
-  provider = _messages.StringField(4)
-  pubsubTopic = _messages.StringField(5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
-  uid = _messages.StringField(7)
-  updateTime = _messages.StringField(8)
+  cryptoKeyName = _messages.StringField(3)
+  name = _messages.StringField(4)
+  provider = _messages.StringField(5)
+  pubsubTopic = _messages.StringField(6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  uid = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
 
 
 class ChannelConnection(_messages.Message):
@@ -581,6 +585,16 @@ class EventarcProjectsLocationsChannelsTestIamPermissionsRequest(_messages.Messa
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
+class EventarcProjectsLocationsGetGoogleChannelConfigRequest(_messages.Message):
+  r"""A EventarcProjectsLocationsGetGoogleChannelConfigRequest object.
+
+  Fields:
+    name: Required. The name of the config to get.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class EventarcProjectsLocationsGetRequest(_messages.Message):
   r"""A EventarcProjectsLocationsGetRequest object.
 
@@ -851,6 +865,24 @@ class EventarcProjectsLocationsTriggersTestIamPermissionsRequest(_messages.Messa
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
+class EventarcProjectsLocationsUpdateGoogleChannelConfigRequest(_messages.Message):
+  r"""A EventarcProjectsLocationsUpdateGoogleChannelConfigRequest object.
+
+  Fields:
+    googleChannelConfig: A GoogleChannelConfig resource to be passed as the
+      request body.
+    name: Required. The resource name of the config. Must be in the format of,
+      `projects/{project}/locations/{location}/googleChannelConfig`.
+    updateMask: The fields to be updated; only fields explicitly provided are
+      updated. If no field mask is provided, all provided fields in the
+      request are updated. To update all fields, provide a field mask of "*".
+  """
+
+  googleChannelConfig = _messages.MessageField('GoogleChannelConfig', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
 class Expr(_messages.Message):
   r"""Represents a textual expression in the Common Expression Language (CEL)
   syntax. CEL is a C-like expression language. The syntax and semantics of CEL
@@ -930,6 +962,26 @@ class GKE(_messages.Message):
   namespace = _messages.StringField(3)
   path = _messages.StringField(4)
   service = _messages.StringField(5)
+
+
+class GoogleChannelConfig(_messages.Message):
+  r"""A GoogleChannelConfig is a resource that stores the custom settings
+  respected by Eventarc first-party triggers in the matching region. Once
+  configured, first-party event data will be protected using the specified
+  custom managed encryption key instead of Google-managed encryption keys.
+
+  Fields:
+    cryptoKeyName: Optional. Resource name of a KMS crypto key (managed by the
+      user) used to encrypt/decrypt their event data. It must match the
+      pattern `projects/*/locations/*/keyRings/*/cryptoKeys/*`.
+    name: Required. The resource name of the config. Must be in the format of,
+      `projects/{project}/locations/{location}/googleChannelConfig`.
+    updateTime: Output only. The last-modified time.
+  """
+
+  cryptoKeyName = _messages.StringField(1)
+  name = _messages.StringField(2)
+  updateTime = _messages.StringField(3)
 
 
 class GoogleLongrunningCancelOperationRequest(_messages.Message):

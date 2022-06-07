@@ -39,6 +39,7 @@ class Backup(_messages.Message):
 
   Fields:
     createTime: Output only. The time the backups was created.
+    description: Optional. A short description of the backup.
     labels: Optional. Resource labels to represent user provided metadata.
     name: Output only. The unique name of the Backup in the form of projects/{
       project_id}/locations/global/domains/{domain_name}/backups/{name}
@@ -105,12 +106,13 @@ class Backup(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  labels = _messages.MessageField('LabelsValue', 2)
-  name = _messages.StringField(3)
-  state = _messages.EnumField('StateValueValuesEnum', 4)
-  statusMessage = _messages.StringField(5)
-  type = _messages.EnumField('TypeValueValuesEnum', 6)
-  updateTime = _messages.StringField(7)
+  description = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+  statusMessage = _messages.StringField(6)
+  type = _messages.EnumField('TypeValueValuesEnum', 7)
+  updateTime = _messages.StringField(8)
 
 
 class Binding(_messages.Message):
@@ -377,6 +379,19 @@ class Empty(_messages.Message):
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
 
+
+
+class EnableMigrationRequest(_messages.Message):
+  r"""EnableMigrationRequest is the request message for EnableMigration
+  method.
+
+  Fields:
+    description: Required. Description for Domain Migration Change.
+    migratingDomains: Required. List of the on-prem domains to be migrated.
+  """
+
+  description = _messages.StringField(1)
+  migratingDomains = _messages.MessageField('OnPremDomainDetails', 2, repeated=True)
 
 
 class Expr(_messages.Message):
@@ -1611,6 +1626,21 @@ class ManagedidentitiesProjectsLocationsGlobalDomainsDetachTrustRequest(_message
   name = _messages.StringField(2, required=True)
 
 
+class ManagedidentitiesProjectsLocationsGlobalDomainsEnableMigrationRequest(_messages.Message):
+  r"""A ManagedidentitiesProjectsLocationsGlobalDomainsEnableMigrationRequest
+  object.
+
+  Fields:
+    domain: Required. The domain resource name using the form:
+      `projects/{project_id}/locations/global/domains/{domain_name}`
+    enableMigrationRequest: A EnableMigrationRequest resource to be passed as
+      the request body.
+  """
+
+  domain = _messages.StringField(1, required=True)
+  enableMigrationRequest = _messages.MessageField('EnableMigrationRequest', 2)
+
+
 class ManagedidentitiesProjectsLocationsGlobalDomainsExtendSchemaRequest(_messages.Message):
   r"""A ManagedidentitiesProjectsLocationsGlobalDomainsExtendSchemaRequest
   object.
@@ -2153,6 +2183,19 @@ class ManagedidentitiesProjectsLocationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class OnPremDomainDetails(_messages.Message):
+  r"""OnPremDomainDetails is the message which contains details of on-prem
+  domain which is trusted and needs to be migrated.
+
+  Fields:
+    disableSidFiltering: Optional. Option to disable SID filtering.
+    domainName: Required. FQDN of the on-prem domain being migrated.
+  """
+
+  disableSidFiltering = _messages.BooleanField(1)
+  domainName = _messages.StringField(2)
 
 
 class Operation(_messages.Message):

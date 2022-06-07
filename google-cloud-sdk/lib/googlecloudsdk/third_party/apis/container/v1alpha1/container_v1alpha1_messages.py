@@ -158,6 +158,46 @@ class Autopilot(_messages.Message):
   enabled = _messages.BooleanField(1)
 
 
+class AutopilotCompatibilityIssue(_messages.Message):
+  r"""AutopilotCompatibilityIssue contains information about a specific
+  compatibility issue with Autopilot mode.
+
+  Enums:
+    TypeValueValuesEnum: The type of this issue.
+
+  Fields:
+    description: The description of the issue.
+    documentationUrl: A URL to a public documnetation, which addresses
+      resolving this issue.
+    issueId: A string to uniquely identify of the issue.
+    lastObservation: The last time when this issue was observed.
+    subjects: The name of the resources which are subject to this issue.
+    type: The type of this issue.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""The type of this issue.
+
+    Values:
+      UNSPECIFIED: Default value, should not be used.
+      INCOMPATIBILITY: Indicates that the issue is referring to an
+        incompatibility between the cluster and Autopilot mode.
+      WARNING: Indicates the issue is not an incompatibility, but depending on
+        the workloads business logic, there is a potential that they won't
+        work on Autopilot.
+    """
+    UNSPECIFIED = 0
+    INCOMPATIBILITY = 1
+    WARNING = 2
+
+  description = _messages.StringField(1)
+  documentationUrl = _messages.StringField(2)
+  issueId = _messages.StringField(3)
+  lastObservation = _messages.StringField(4)
+  subjects = _messages.StringField(5, repeated=True)
+  type = _messages.EnumField('TypeValueValuesEnum', 6)
+
+
 class AutoprovisioningNodePoolDefaults(_messages.Message):
   r"""AutoprovisioningNodePoolDefaults contains defaults for a node pool
   created by NAP.
@@ -269,11 +309,11 @@ class BinaryAuthorization(_messages.Message):
     DISABLED.
 
     Values:
-      EVALUATION_MODE_UNSPECIFIED: Default value, equivalent to DISABLED.
+      EVALUATION_MODE_UNSPECIFIED: Default value
       DISABLED: Disable BinaryAuthorization
-      PROJECT_SINGLETON_POLICY_ENFORCE: If enabled, enforce Kubernetes
-        admission requests with BinAuthz using the project's singleton policy.
-        Equivalent to bool enabled=true.
+      PROJECT_SINGLETON_POLICY_ENFORCE: Enforce Kubernetes admission requests
+        with BinaryAuthorization using the project's singleton policy. This is
+        equivalent to setting the enabled boolean to true.
     """
     EVALUATION_MODE_UNSPECIFIED = 0
     DISABLED = 1
@@ -285,31 +325,31 @@ class BinaryAuthorization(_messages.Message):
 
 
 class BlueGreenInfo(_messages.Message):
-  r"""Information relevant to blue/green update.
+  r"""Information relevant to blue-green update.
 
   Enums:
-    PhaseValueValuesEnum: Current blue/green update phase.
+    PhaseValueValuesEnum: Current blue-green update phase.
 
   Fields:
     blueInstanceGroupUrls: The resource URLs of the [managed instance groups]
       (/compute/docs/instance-groups/creating-groups-of-managed-instances)
       associated with blue pool.
     bluePoolDeletionStartTime: Time to start deleting blue pool to complete
-      blue/green update, in [RFC3339](https://www.ietf.org/rfc/rfc3339.txt)
+      blue-green update, in [RFC3339](https://www.ietf.org/rfc/rfc3339.txt)
       text format.
     greenInstanceGroupUrls: The resource URLs of the [managed instance groups]
       (/compute/docs/instance-groups/creating-groups-of-managed-instances)
       associated with green pool.
     greenPoolVersion: Version of green pool.
-    phase: Current blue/green update phase.
+    phase: Current blue-green update phase.
   """
 
   class PhaseValueValuesEnum(_messages.Enum):
-    r"""Current blue/green update phase.
+    r"""Current blue-green update phase.
 
     Values:
       PHASE_UNSPECIFIED: Unspecified phase.
-      UPDATE_STARTED: Blue/green update has been initiated.
+      UPDATE_STARTED: Blue-green update has been initiated.
       CREATING_GREEN_POOL: Start creating green pool nodes.
       CORDONING_BLUE_POOL: Start cordoning blue pool nodes.
       DRAINING_BLUE_POOL: Start draining blue pool nodes.
@@ -334,12 +374,12 @@ class BlueGreenInfo(_messages.Message):
 
 
 class BlueGreenSettings(_messages.Message):
-  r"""Settings for blue/green update.
+  r"""Settings for blue-green update.
 
   Fields:
     nodePoolSoakDuration: Time needed after draining entire blue pool. After
       this period, blue pool will be cleaned up.
-    standardRolloutPolicy: Standard policy for the blue/green update.
+    standardRolloutPolicy: Standard policy for the blue-green update.
   """
 
   nodePoolSoakDuration = _messages.StringField(1)
@@ -367,6 +407,16 @@ class CancelOperationRequest(_messages.Message):
   operationId = _messages.StringField(2)
   projectId = _messages.StringField(3)
   zone = _messages.StringField(4)
+
+
+class CheckAutopilotCompatibilityResponse(_messages.Message):
+  r"""CheckAutopilotCompatibilityResponse has a list of compatibility issues.
+
+  Fields:
+    issues: The list of issues for the given operation.
+  """
+
+  issues = _messages.MessageField('AutopilotCompatibilityIssue', 1, repeated=True)
 
 
 class CidrBlock(_messages.Message):
@@ -1252,6 +1302,18 @@ class ContainerProjectsAggregatedUsableSubnetworksListRequest(_messages.Message)
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
+
+
+class ContainerProjectsLocationsClustersCheckAutopilotCompatibilityRequest(_messages.Message):
+  r"""A ContainerProjectsLocationsClustersCheckAutopilotCompatibilityRequest
+  object.
+
+  Fields:
+    name: The name (project, location, cluster) of the cluster to retrieve.
+      Specified in the format `projects/*/locations/*/clusters/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class ContainerProjectsLocationsClustersDeleteRequest(_messages.Message):
@@ -5189,7 +5251,7 @@ class StandardQueryParameters(_messages.Message):
 
 
 class StandardRolloutPolicy(_messages.Message):
-  r"""Standard rollout policy is the default policy for blue/green.
+  r"""Standard rollout policy is the default policy for blue-green.
 
   Fields:
     batchNodeCount: Number of blue nodes to drain in a batch.
@@ -5498,7 +5560,7 @@ class UpdateInfo(_messages.Message):
   intermediate information relevant to a node pool update.
 
   Fields:
-    blueGreenInfo: Information of a blue/green update.
+    blueGreenInfo: Information of a blue-green update.
   """
 
   blueGreenInfo = _messages.MessageField('BlueGreenInfo', 1)
@@ -5637,7 +5699,7 @@ class UpgradeSettings(_messages.Message):
     StrategyValueValuesEnum: Update strategy of the node pool.
 
   Fields:
-    blueGreenSettings: Settings for blue/green update strategy.
+    blueGreenSettings: Settings for blue-green update strategy.
     maxSurge: The maximum number of nodes that can be created beyond the
       current size of the node pool during the upgrade process.
     maxUnavailable: The maximum number of nodes that can be simultaneously
@@ -5652,14 +5714,16 @@ class UpgradeSettings(_messages.Message):
 
     Values:
       NODE_POOL_UPDATE_STRATEGY_UNSPECIFIED: Default value.
-      ROLLING: Rolling update is the traditional way of updating node pool.
-        max_surge and max_unavailable determines the level of update
-        parallelism.
-      BLUE_GREEN: Blue/green update.
+      ROLLING: ROLLING is the synonymous with SURGE. Deprecate this value and
+        use SURGE instead.
+      BLUE_GREEN: Blue-green update.
+      SURGE: SURGE is the traditional way of updating node pool. max_surge and
+        max_unavailable determines the level of update parallelism.
     """
     NODE_POOL_UPDATE_STRATEGY_UNSPECIFIED = 0
     ROLLING = 1
     BLUE_GREEN = 2
+    SURGE = 3
 
   blueGreenSettings = _messages.MessageField('BlueGreenSettings', 1)
   maxSurge = _messages.IntegerField(2, variant=_messages.Variant.INT32)
@@ -5888,6 +5952,12 @@ class WorkloadIdentityConfig(_messages.Message):
       form "//privateca.googleapis.com/projects/{project}/locations/{location}
       /certificateAuthorities/{name}". If non-empty, Workload Identity
       (standard or Hub) must be active (workload_pool must be non-empty).
+    tuneGkeMetadataServerCpu: If non-zero, set the cpu requests and limits of
+      gke-metadata-server to this value in millicores. If zero, gke-metadata-
+      server will use default values.
+    tuneGkeMetadataServerMemory: If non-zero, set the memory requests and
+      limits of gke-metadata-server to this value in bytes. If zero, gke-
+      metadata-server will use default values.
     workloadPool: The workload pool to attach all Kubernetes service accounts
       to.
   """
@@ -5895,7 +5965,9 @@ class WorkloadIdentityConfig(_messages.Message):
   identityNamespace = _messages.StringField(1)
   identityProvider = _messages.StringField(2)
   issuingCertificateAuthority = _messages.StringField(3)
-  workloadPool = _messages.StringField(4)
+  tuneGkeMetadataServerCpu = _messages.IntegerField(4)
+  tuneGkeMetadataServerMemory = _messages.IntegerField(5)
+  workloadPool = _messages.StringField(6)
 
 
 class WorkloadMetadataConfig(_messages.Message):

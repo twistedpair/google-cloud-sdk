@@ -33,6 +33,7 @@ class Backup(_messages.Message):
       Requests with longer descriptions will be rejected.
     downloadBytes: Output only. Amount of bytes that will be downloaded if the
       backup is restored
+    kmsKeyName: Immutable. KMS key name used for data encryption.
     labels: Resource labels to represent user provided metadata.
     name: Output only. The resource name of the backup, in the format
       `projects/{project_id}/locations/{location_id}/backups/{backup_id}`.
@@ -124,14 +125,15 @@ class Backup(_messages.Message):
   createTime = _messages.StringField(2)
   description = _messages.StringField(3)
   downloadBytes = _messages.IntegerField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  satisfiesPzs = _messages.BooleanField(7)
-  sourceFileShare = _messages.StringField(8)
-  sourceInstance = _messages.StringField(9)
-  sourceInstanceTier = _messages.EnumField('SourceInstanceTierValueValuesEnum', 10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  storageBytes = _messages.IntegerField(12)
+  kmsKeyName = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  satisfiesPzs = _messages.BooleanField(8)
+  sourceFileShare = _messages.StringField(9)
+  sourceInstance = _messages.StringField(10)
+  sourceInstanceTier = _messages.EnumField('SourceInstanceTierValueValuesEnum', 11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  storageBytes = _messages.IntegerField(13)
 
 
 class CancelOperationRequest(_messages.Message):
@@ -412,6 +414,88 @@ class FileProjectsLocationsInstancesRevertRequest(_messages.Message):
 
   name = _messages.StringField(1, required=True)
   revertInstanceRequest = _messages.MessageField('RevertInstanceRequest', 2)
+
+
+class FileProjectsLocationsInstancesSharesCreateRequest(_messages.Message):
+  r"""A FileProjectsLocationsInstancesSharesCreateRequest object.
+
+  Fields:
+    parent: Required. The Filestore Instance to create the share for, in the
+      format
+      `projects/{project_id}/locations/{location}/instances/{instance_id}`
+    share: A Share resource to be passed as the request body.
+    shareId: Required. The ID to use for the share. The ID must be unique
+      within the specified instance. This value must start with a lowercase
+      letter followed by up to 62 lowercase letters, numbers, or hyphens, and
+      cannot end with a hyphen.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  share = _messages.MessageField('Share', 2)
+  shareId = _messages.StringField(3)
+
+
+class FileProjectsLocationsInstancesSharesDeleteRequest(_messages.Message):
+  r"""A FileProjectsLocationsInstancesSharesDeleteRequest object.
+
+  Fields:
+    name: Required. The share resource name, in the format `projects/{project_
+      id}/locations/{location}/instances/{instance_id}/share/{share_id}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class FileProjectsLocationsInstancesSharesGetRequest(_messages.Message):
+  r"""A FileProjectsLocationsInstancesSharesGetRequest object.
+
+  Fields:
+    name: Required. The share resource name, in the format `projects/{project_
+      id}/locations/{location}/instances/{instance_id}/shares/{share_id}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class FileProjectsLocationsInstancesSharesListRequest(_messages.Message):
+  r"""A FileProjectsLocationsInstancesSharesListRequest object.
+
+  Fields:
+    filter: List filter.
+    orderBy: Sort results. Supported values are "name", "name desc" or ""
+      (unsorted).
+    pageSize: The maximum number of items to return.
+    pageToken: The next_page_token value to use if there are additional
+      results to retrieve for this list request.
+    parent: Required. The instance for which to retrieve share information, in
+      the format
+      `projects/{project_id}/locations/{location}/instances/{instance_id}`.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class FileProjectsLocationsInstancesSharesPatchRequest(_messages.Message):
+  r"""A FileProjectsLocationsInstancesSharesPatchRequest object.
+
+  Fields:
+    name: Output only. The resource name of the share, in the format `projects
+      /{project_id}/locations/{location_id}/instances/{instance_id}/shares/{sh
+      are_id}`.
+    share: A Share resource to be passed as the request body.
+    updateMask: Required. Mask of fields to update. At least one path must be
+      supplied in this field. The elements of the repeated paths field may
+      only include these fields: * "description" * "capacity_gb" * "labels" *
+      "nfs_export_options"
+  """
+
+  name = _messages.StringField(1, required=True)
+  share = _messages.MessageField('Share', 2)
+  updateMask = _messages.StringField(3)
 
 
 class FileProjectsLocationsInstancesSnapshotsCreateRequest(_messages.Message):
@@ -1150,6 +1234,10 @@ class Instance(_messages.Message):
     LabelsValue: Resource labels to represent user provided metadata.
 
   Fields:
+    capacityGb: The storage capacity of the instance in gigabytes (GB = 1024^3
+      bytes). This capacity can be increased up to `max_capacity_gb` GB in
+      multipliers of `capacity_step_size_gb` GB.
+    capacityStepSizeGb: Output only. The increase/decrease capacity step size.
     createTime: Output only. The time when the instance was created.
     description: The description of the instance (2048 characters or less).
     etag: Server-specified ETag for the instance resource to prevent
@@ -1158,6 +1246,12 @@ class Instance(_messages.Message):
       single file share is supported.
     kmsKeyName: KMS key name used for data encryption.
     labels: Resource labels to represent user provided metadata.
+    maxCapacityGb: Output only. The max capacity of the instance.
+    maxShareCount: Output only. The max number of shares allowed.
+    multiShareEnabled: Indicates whether this instance uses a multi-share
+      configuration with which it can have more than one file-share or none at
+      all. File-shares are added, updated and removed through the separate
+      file-share APIs.
     name: Output only. The resource name of the instance, in the format
       `projects/{project_id}/locations/{location_id}/instances/{instance_id}`.
     networks: VPC networks to which the instance is connected. For this
@@ -1261,19 +1355,24 @@ class Instance(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  description = _messages.StringField(2)
-  etag = _messages.StringField(3)
-  fileShares = _messages.MessageField('FileShareConfig', 4, repeated=True)
-  kmsKeyName = _messages.StringField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  name = _messages.StringField(7)
-  networks = _messages.MessageField('NetworkConfig', 8, repeated=True)
-  satisfiesPzs = _messages.BooleanField(9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  statusMessage = _messages.StringField(11)
-  suspensionReasons = _messages.EnumField('SuspensionReasonsValueListEntryValuesEnum', 12, repeated=True)
-  tier = _messages.EnumField('TierValueValuesEnum', 13)
+  capacityGb = _messages.IntegerField(1)
+  capacityStepSizeGb = _messages.IntegerField(2)
+  createTime = _messages.StringField(3)
+  description = _messages.StringField(4)
+  etag = _messages.StringField(5)
+  fileShares = _messages.MessageField('FileShareConfig', 6, repeated=True)
+  kmsKeyName = _messages.StringField(7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  maxCapacityGb = _messages.IntegerField(9)
+  maxShareCount = _messages.IntegerField(10)
+  multiShareEnabled = _messages.BooleanField(11)
+  name = _messages.StringField(12)
+  networks = _messages.MessageField('NetworkConfig', 13, repeated=True)
+  satisfiesPzs = _messages.BooleanField(14)
+  state = _messages.EnumField('StateValueValuesEnum', 15)
+  statusMessage = _messages.StringField(16)
+  suspensionReasons = _messages.EnumField('SuspensionReasonsValueListEntryValuesEnum', 17, repeated=True)
+  tier = _messages.EnumField('TierValueValuesEnum', 18)
 
 
 class ListBackupsResponse(_messages.Message):
@@ -1340,6 +1439,21 @@ class ListOperationsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+
+
+class ListSharesResponse(_messages.Message):
+  r"""ListSharesResponse is the result of ListSharesRequest.
+
+  Fields:
+    nextPageToken: The token you can use to retrieve the next page of results.
+      Not returned if there are no more results in the list.
+    shares: A list of shares in the project for the specified instance.
+    unreachable: Locations that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  shares = _messages.MessageField('Share', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListSnapshotsResponse(_messages.Message):
@@ -1868,6 +1982,80 @@ class Schedule(_messages.Message):
   day = _messages.EnumField('DayValueValuesEnum', 1)
   duration = _messages.StringField(2)
   startTime = _messages.MessageField('TimeOfDay', 3)
+
+
+class Share(_messages.Message):
+  r"""A Cloud Filestore share.
+
+  Enums:
+    StateValueValuesEnum: Output only. The share state.
+
+  Messages:
+    LabelsValue: Resource labels to represent user provided metadata.
+
+  Fields:
+    capacityGb: File share capacity in gigabytes (GB). Cloud Filestore defines
+      1 GB as 1024^3 bytes. Must be greater than 0.
+    createTime: Output only. The time when the share was created.
+    description: A description of the share with 2048 characters or less.
+      Requests with longer descriptions will be rejected.
+    labels: Resource labels to represent user provided metadata.
+    mountName: The mount name of the share. Must be 63 characters or less and
+      consist of uppercase or lowercase letters, numbers, and underscores.
+    name: Output only. The resource name of the share, in the format `projects
+      /{project_id}/locations/{location_id}/instances/{instance_id}/shares/{sh
+      are_id}`.
+    nfsExportOptions: Nfs Export Options. There is a limit of 10 export
+      options per file share.
+    state: Output only. The share state.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The share state.
+
+    Values:
+      STATE_UNSPECIFIED: State not set.
+      CREATING: Share is being created.
+      READY: Share is ready for use.
+      DELETING: Share is being deleted.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    READY = 2
+    DELETING = 3
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Resource labels to represent user provided metadata.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  capacityGb = _messages.IntegerField(1)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  mountName = _messages.StringField(5)
+  name = _messages.StringField(6)
+  nfsExportOptions = _messages.MessageField('NfsExportOptions', 7, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
 
 
 class Snapshot(_messages.Message):

@@ -1402,8 +1402,8 @@ class GoogleCloudDatacatalogV1DatabaseTableSpec(_messages.Message):
     TypeValueValuesEnum: Type of this table.
 
   Fields:
-    dataplexTable: Fields specific to a Dataplex table and present only in the
-      Dataplex table entries.
+    dataplexTable: Output only. Fields specific to a Dataplex table and
+      present only in the Dataplex table entries.
     type: Type of this table.
   """
 
@@ -1533,13 +1533,13 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
       have unmodifiable labels that come from the source system.
 
   Fields:
-    bigqueryDateShardedSpec: Specification for a group of BigQuery tables with
-      the `[prefix]YYYYMMDD` name pattern. For more information, see
-      [Introduction to partitioned tables]
+    bigqueryDateShardedSpec: Output only. Specification for a group of
+      BigQuery tables with the `[prefix]YYYYMMDD` name pattern. For more
+      information, see [Introduction to partitioned tables]
       (https://cloud.google.com/bigquery/docs/partitioned-
       tables#partitioning_versus_sharding).
-    bigqueryTableSpec: Specification that applies to a BigQuery table. Valid
-      only for entries with the `TABLE` type.
+    bigqueryTableSpec: Output only. Specification that applies to a BigQuery
+      table. Valid only for entries with the `TABLE` type.
     businessContext: Business Context of the entry. Not supported for BigQuery
       datasets
     clusterSpec: Additional specification of a cluster. Present only on the
@@ -1649,8 +1649,8 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
 
     Values:
       ENTRY_TYPE_UNSPECIFIED: Default unknown type.
-      TABLE: Output only. The entry type that has a GoogleSQL schema,
-        including logical views.
+      TABLE: The entry type that has a GoogleSQL schema, including logical
+        views.
       MODEL: Output only. The type of models. For more information, see
         [Supported models in BigQuery ML] (https://cloud.google.com/bigquery-
         ml/docs/introduction#supported_models_in).

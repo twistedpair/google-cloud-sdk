@@ -390,23 +390,30 @@
       "type": "object",
       "properties": {
         "domain": {
-          "description": "Domain name to associate with the router.",
+          "description": "Deprecated. Use the DomainConfig instead. Domain name to associate with the router.",
           "type": "string"
         },
         "default-route": {
-          "description": "The default route config. The URL paths field is not required for this route config.",
+          "description": "Deprecated. Use the DomainConfig instead. The default route config. The URL paths field is not required for this route config.",
           "$ref": "Route"
         },
         "routes": {
-          "description": "A list of route configurations to associate with the router. Each Route configuration must include a paths configuration.",
+          "description": "Deprecated. Use the DomainConfig instead. A list of route configurations to associate with the router. Each Route configuration must include a paths configuration.",
           "type": "array",
           "items": {
             "$ref": "Route"
           }
         },
         "dns-zone": {
-          "description": "DNSZone represents an existing DNS zone for the router. It's used for bring-your-own-DNSZone case. If empty, a new managed DNS zone shall be created.",
+          "description": "Deprecated. Use the DomainConfig instead. DNSZone represents an existing DNS zone for the router. It's used for bring-your-own-DNSZone case. If empty, a new managed DNS zone shall be created.",
           "type": "string"
+        },
+        "domains": {
+          "description": "The config for each domain.",
+          "type": "array",
+          "items": {
+            "$ref": "DomainConfig"
+          }
         }
       }
     },
@@ -429,6 +436,23 @@
         "cdn": {
           "description": "Whether to enable CDN on the route.",
           "type": "boolean"
+        }
+      }
+    },
+    "DomainConfig": {
+      "id": "DomainConfig",
+      "type": "object",
+      "properties": {
+        "domain": {
+          "description": "Domain name for this config.",
+          "type": "string"
+        },
+        "routes": {
+          "description": "A list of route configurations to associate with the domain. Each Route configuration must include a paths configuration.",
+          "type": "array",
+          "items": {
+            "$ref": "Route"
+          }
         }
       }
     },

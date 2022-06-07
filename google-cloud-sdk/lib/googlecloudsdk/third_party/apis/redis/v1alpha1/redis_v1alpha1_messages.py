@@ -47,6 +47,158 @@ class CategoryHealth(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 3)
 
 
+class Cluster(_messages.Message):
+  r"""A cluster instance.
+
+  Enums:
+    RedisVersionValueValuesEnum: Output only. Redis version. This is an output
+      only field and currently only Redis 6 is supported.
+    StateValueValuesEnum: Output only. The current state of this cluster. Can
+      be CREATING, READY, UPDATING, DELETING and SUSPENDED
+    TierValueValuesEnum: Required. Redis tier. This field is hiden from
+      customers in private preview.
+
+  Messages:
+    RedisConfigsValue: Optional. Redis configuration parameters, according to
+      http://redis.io/topics/config. Currently, the only supported parameters
+      are: Redis version 6.x and newer: * lfu-decay-time * lfu-log-factor *
+      maxmemory-policy
+
+  Fields:
+    clusterUid: Output only. UID of the cluster for use by Pantheon for
+      analytics.
+    createTime: Output only. The timestamp associated with the cluster
+      creation request.
+    customerManagedKey: Input only. The KMS key reference that the customer
+      provides when trying to create the instance.
+    defaultReplicaCount: Optional. Input only. The number of replica nodes per
+      shard. Valid range is [0-2] and defaults to 0. This field is INPUT only.
+    displayName: Optional. An arbitrary and optional user-provided name for
+      the cluster.
+    endpoints: Output only. Hostname or IP address and port pairs used to
+      connect to the cluster.
+    name: Required. Unique name of the resource in this scope including
+      project and location using the form:
+      `projects/{project_id}/locations/{location_id}/clusters/{cluster_id}`
+    redisConfigs: Optional. Redis configuration parameters, according to
+      http://redis.io/topics/config. Currently, the only supported parameters
+      are: Redis version 6.x and newer: * lfu-decay-time * lfu-log-factor *
+      maxmemory-policy
+    redisVersion: Output only. Redis version. This is an output only field and
+      currently only Redis 6 is supported.
+    slots: Output only. The slots making up the cluster. Read-only. In future
+      versions this will be writable to allow for heterogeneous clusters.
+    state: Output only. The current state of this cluster. Can be CREATING,
+      READY, UPDATING, DELETING and SUSPENDED
+    tier: Required. Redis tier. This field is hiden from customers in private
+      preview.
+    totalMemorySizeGb: Optional. Redis memory size in GiB for the entire
+      cluster. Defaults to 48 for Dense tier and 12 for Performance tier.
+  """
+
+  class RedisVersionValueValuesEnum(_messages.Enum):
+    r"""Output only. Redis version. This is an output only field and currently
+    only Redis 6 is supported.
+
+    Values:
+      REDIS_VERSION_UNSPECIFIED: <no description>
+      REDIS_6_X: `REDIS_6_X` for Redis 6.x compatibility This is the default
+        and only supported version in Flex for now.
+    """
+    REDIS_VERSION_UNSPECIFIED = 0
+    REDIS_6_X = 1
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of this cluster. Can be CREATING,
+    READY, UPDATING, DELETING and SUSPENDED
+
+    Values:
+      STATE_UNSPECIFIED: Not set.
+      CREATING: Redis cluster is being created.
+      ACTIVE: Redis cluster has been created and is fully usable.
+      UPDATING: Redis cluster configuration is being updated.
+      DELETING: Redis cluster is being deleted.
+      REPAIRING: Redis instance is being repaired and may be unusable.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    ACTIVE = 2
+    UPDATING = 3
+    DELETING = 4
+    REPAIRING = 5
+
+  class TierValueValuesEnum(_messages.Enum):
+    r"""Required. Redis tier. This field is hiden from customers in private
+    preview.
+
+    Values:
+      TIER_NOT_SPECIFIED: <no description>
+      DENSE: dense tier
+    """
+    TIER_NOT_SPECIFIED = 0
+    DENSE = 1
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class RedisConfigsValue(_messages.Message):
+    r"""Optional. Redis configuration parameters, according to
+    http://redis.io/topics/config. Currently, the only supported parameters
+    are: Redis version 6.x and newer: * lfu-decay-time * lfu-log-factor *
+    maxmemory-policy
+
+    Messages:
+      AdditionalProperty: An additional property for a RedisConfigsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type RedisConfigsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a RedisConfigsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  clusterUid = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  customerManagedKey = _messages.StringField(3)
+  defaultReplicaCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  displayName = _messages.StringField(5)
+  endpoints = _messages.MessageField('Endpoint', 6, repeated=True)
+  name = _messages.StringField(7)
+  redisConfigs = _messages.MessageField('RedisConfigsValue', 8)
+  redisVersion = _messages.EnumField('RedisVersionValueValuesEnum', 9)
+  slots = _messages.MessageField('ClusterSlots', 10, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  tier = _messages.EnumField('TierValueValuesEnum', 12)
+  totalMemorySizeGb = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+
+
+class ClusterSlots(_messages.Message):
+  r"""A series of slots belonging to a cluster.
+
+  Fields:
+    endSlotsExclusive: Output only. The end of the slots that make up this
+      series.
+    memorySizeGb: Output only. The total size of keyspace this series has.
+    replicaCount: Output only. The number of replicas this series has.
+    startSlotsInclusive: Output only. The start of the slots that make up this
+      series.
+  """
+
+  endSlotsExclusive = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  memorySizeGb = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  replicaCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  startSlotsInclusive = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -54,6 +206,21 @@ class Empty(_messages.Message):
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
 
+
+
+class Endpoint(_messages.Message):
+  r"""An endpoint exposed by a cluster. In the future we will add an enum to
+  identify whether this endpoint is read/write or read-only when the feature
+  is ready.
+
+  Fields:
+    host: Output only. Hostname or IP address of the exposed Redis endpoint
+      used by clients to connect to the service.
+    port: Output only. The port number of the exposed Redis endpoint.
+  """
+
+  host = _messages.StringField(1)
+  port = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class ExportInstanceRequest(_messages.Message):
@@ -170,7 +337,7 @@ class InputConfig(_messages.Message):
 
 
 class Instance(_messages.Message):
-  r"""A Memorystore for Redis instance. next id = 43
+  r"""A Memorystore for Redis instance. next id = 44
 
   Enums:
     ConnectModeValueValuesEnum: Optional. The network connect mode of the
@@ -205,6 +372,8 @@ class Instance(_messages.Message):
     authorizedNetwork: Optional. The full name of the Google Compute Engine
       [network](https://cloud.google.com/vpc/docs/vpc) to which the instance
       is connected. If left unspecified, the `default` network will be used.
+    availableMaintenanceVersions: Optional. The available maintenance versions
+      that an instance could update to.
     connectMode: Optional. The network connect mode of the Redis instance. If
       not provided, the connect mode defaults to DIRECT_PEERING.
     createTime: Output only. The time the instance was created.
@@ -454,37 +623,38 @@ class Instance(_messages.Message):
   alternativeLocationId = _messages.StringField(1)
   authEnabled = _messages.BooleanField(2)
   authorizedNetwork = _messages.StringField(3)
-  connectMode = _messages.EnumField('ConnectModeValueValuesEnum', 4)
-  createTime = _messages.StringField(5)
-  currentLocationId = _messages.StringField(6)
-  customerManagedKey = _messages.StringField(7)
-  displayName = _messages.StringField(8)
-  host = _messages.StringField(9)
-  labels = _messages.MessageField('LabelsValue', 10)
-  locationId = _messages.StringField(11)
-  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 12)
-  maintenanceSchedule = _messages.MessageField('MaintenanceSchedule', 13)
-  maintenanceVersion = _messages.StringField(14)
-  memorySizeGb = _messages.IntegerField(15, variant=_messages.Variant.INT32)
-  name = _messages.StringField(16)
-  nodes = _messages.MessageField('NodeInfo', 17, repeated=True)
-  persistenceConfig = _messages.MessageField('PersistenceConfig', 18)
-  persistenceIamIdentity = _messages.StringField(19)
-  port = _messages.IntegerField(20, variant=_messages.Variant.INT32)
-  readEndpoint = _messages.StringField(21)
-  readEndpointPort = _messages.IntegerField(22, variant=_messages.Variant.INT32)
-  readReplicasMode = _messages.EnumField('ReadReplicasModeValueValuesEnum', 23)
-  redisConfigs = _messages.MessageField('RedisConfigsValue', 24)
-  redisVersion = _messages.StringField(25)
-  replicaCount = _messages.IntegerField(26, variant=_messages.Variant.INT32)
-  reservedIpRange = _messages.StringField(27)
-  secondaryIpRange = _messages.StringField(28)
-  serverCaCerts = _messages.MessageField('TlsCertificate', 29, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 30)
-  statusMessage = _messages.StringField(31)
-  suspensionReasons = _messages.EnumField('SuspensionReasonsValueListEntryValuesEnum', 32, repeated=True)
-  tier = _messages.EnumField('TierValueValuesEnum', 33)
-  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 34)
+  availableMaintenanceVersions = _messages.StringField(4, repeated=True)
+  connectMode = _messages.EnumField('ConnectModeValueValuesEnum', 5)
+  createTime = _messages.StringField(6)
+  currentLocationId = _messages.StringField(7)
+  customerManagedKey = _messages.StringField(8)
+  displayName = _messages.StringField(9)
+  host = _messages.StringField(10)
+  labels = _messages.MessageField('LabelsValue', 11)
+  locationId = _messages.StringField(12)
+  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 13)
+  maintenanceSchedule = _messages.MessageField('MaintenanceSchedule', 14)
+  maintenanceVersion = _messages.StringField(15)
+  memorySizeGb = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+  name = _messages.StringField(17)
+  nodes = _messages.MessageField('NodeInfo', 18, repeated=True)
+  persistenceConfig = _messages.MessageField('PersistenceConfig', 19)
+  persistenceIamIdentity = _messages.StringField(20)
+  port = _messages.IntegerField(21, variant=_messages.Variant.INT32)
+  readEndpoint = _messages.StringField(22)
+  readEndpointPort = _messages.IntegerField(23, variant=_messages.Variant.INT32)
+  readReplicasMode = _messages.EnumField('ReadReplicasModeValueValuesEnum', 24)
+  redisConfigs = _messages.MessageField('RedisConfigsValue', 25)
+  redisVersion = _messages.StringField(26)
+  replicaCount = _messages.IntegerField(27, variant=_messages.Variant.INT32)
+  reservedIpRange = _messages.StringField(28)
+  secondaryIpRange = _messages.StringField(29)
+  serverCaCerts = _messages.MessageField('TlsCertificate', 30, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 31)
+  statusMessage = _messages.StringField(32)
+  suspensionReasons = _messages.EnumField('SuspensionReasonsValueListEntryValuesEnum', 33, repeated=True)
+  tier = _messages.EnumField('TierValueValuesEnum', 34)
+  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 35)
 
 
 class InstanceAuthString(_messages.Message):
@@ -495,6 +665,29 @@ class InstanceAuthString(_messages.Message):
   """
 
   authString = _messages.StringField(1)
+
+
+class ListClustersResponse(_messages.Message):
+  r"""Response for ListClusters.
+
+  Fields:
+    clusters: A list of Redis clusters in the project in the specified
+      location, or across all locations. If the `location_id` in the parent
+      field of the request is "-", all regions available to the project are
+      queried, and the results aggregated. If in such an aggregated query a
+      location is unavailable, a placeholder Redis entry is included in the
+      response with the `name` field set to a value of the form
+      `projects/{project_id}/locations/{location_id}/clusters/`- and the
+      `status` field set to ERROR and `status_message` field set to "location
+      not available for ListClusters".
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+    unreachable: Locations that could not be reached.
+  """
+
+  clusters = _messages.MessageField('Cluster', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListInstancesResponse(_messages.Message):
@@ -890,6 +1083,33 @@ class Operation(_messages.Message):
   response = _messages.MessageField('ResponseValue', 5)
 
 
+class OperationMetadata(_messages.Message):
+  r"""Pre-defined metadata fields.
+
+  Fields:
+    apiVersion: Output only. API version used to start the operation.
+    createTime: Output only. The time the operation was created.
+    endTime: Output only. The time the operation finished running.
+    requestedCancellation: Output only. Identifies whether the user has
+      requested cancellation of the operation. Operations that have
+      successfully been cancelled have Operation.error value with a
+      google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
+    statusMessage: Output only. Human-readable status of the operation, if
+      any.
+    target: Output only. Server-defined resource path for the target of the
+      operation.
+    verb: Output only. Name of the verb executed by the operation.
+  """
+
+  apiVersion = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  endTime = _messages.StringField(3)
+  requestedCancellation = _messages.BooleanField(4)
+  statusMessage = _messages.StringField(5)
+  target = _messages.StringField(6)
+  verb = _messages.StringField(7)
+
+
 class OutputConfig(_messages.Message):
   r"""The output content
 
@@ -973,6 +1193,71 @@ class PersistenceConfig(_messages.Message):
   rdbNextSnapshotTime = _messages.StringField(2)
   rdbSnapshotPeriod = _messages.EnumField('RdbSnapshotPeriodValueValuesEnum', 3)
   rdbSnapshotStartTime = _messages.StringField(4)
+
+
+class RedisProjectsLocationsClustersCreateRequest(_messages.Message):
+  r"""A RedisProjectsLocationsClustersCreateRequest object.
+
+  Fields:
+    cluster: A Cluster resource to be passed as the request body.
+    clusterId: Required. The logical name of the Redis cluster in the customer
+      project with the following restrictions: * Must contain only lowercase
+      letters, numbers, and hyphens. * Must start with a letter. * Must be
+      between 1-40 characters. * Must end with a number or a letter. * Must be
+      unique within the customer project / location
+    parent: Required. The resource name of the cluster location using the
+      form: `projects/{project_id}/locations/{location_id}` where
+      `location_id` refers to a GCP region.
+  """
+
+  cluster = _messages.MessageField('Cluster', 1)
+  clusterId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class RedisProjectsLocationsClustersDeleteRequest(_messages.Message):
+  r"""A RedisProjectsLocationsClustersDeleteRequest object.
+
+  Fields:
+    name: Required. Redis cluster resource name using the form:
+      `projects/{project_id}/locations/{location_id}/clusters/{cluster_id}`
+      where `location_id` refers to a GCP region.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class RedisProjectsLocationsClustersGetRequest(_messages.Message):
+  r"""A RedisProjectsLocationsClustersGetRequest object.
+
+  Fields:
+    name: Required. Redis cluster resource name using the form:
+      `projects/{project_id}/locations/{location_id}/clusters/{cluster_id}`
+      where `location_id` refers to a GCP region.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class RedisProjectsLocationsClustersListRequest(_messages.Message):
+  r"""A RedisProjectsLocationsClustersListRequest object.
+
+  Fields:
+    pageSize: The maximum number of items to return. If not specified, a
+      default value of 1000 will be used by the service. Regardless of the
+      page_size value, the response may include a partial list and a caller
+      should only rely on response's `next_page_token` to determine if there
+      are more clusters left to be queried.
+    pageToken: The `next_page_token` value returned from a previous
+      ListClusters request, if any.
+    parent: Required. The resource name of the cluster location using the
+      form: `projects/{project_id}/locations/{location_id}` where
+      `location_id` refers to a GCP region.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class RedisProjectsLocationsGetRequest(_messages.Message):

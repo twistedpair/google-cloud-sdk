@@ -407,6 +407,19 @@ class FetchNetworkPolicyExternalAddressesResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class FetchPeeringRoutesResponse(_messages.Message):
+  r"""Response message for VmwareEngine.FetchPeeringRoutes
+
+  Fields:
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    peeringRoutes: A list of peering routes.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  peeringRoutes = _messages.MessageField('PeeringRoute', 2, repeated=True)
+
+
 class Hcx(_messages.Message):
   r"""Details about a HCX Cloud Manager appliance.
 
@@ -638,19 +651,6 @@ class ListOperationsResponse(_messages.Message):
   operations = _messages.MessageField('Operation', 2, repeated=True)
 
 
-class ListPeeringRoutesResponse(_messages.Message):
-  r"""Response message for VmwareEngine.ListPeeringRoutes
-
-  Fields:
-    nextPageToken: A token, which can be sent as `page_token` to retrieve the
-      next page. If this field is omitted, there are no subsequent pages.
-    peeringRoutes: A list of peering routes.
-  """
-
-  nextPageToken = _messages.StringField(1)
-  peeringRoutes = _messages.MessageField('PeeringRoute', 2, repeated=True)
-
-
 class ListPrivateCloudsResponse(_messages.Message):
   r"""Response message for VmwareEngine.ListPrivateClouds
 
@@ -857,7 +857,7 @@ class NetworkPeering(_messages.Message):
       names are scheme-less URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
       `projects/my-project/locations/global/networkPeerings/my-peering`
-    peerMtu: Optional. Maximum transmission unit (MTU) in bytes.
+    peerMtu: A integer attribute.
     peerNetwork: Required. The relative resource name of the network to peer
       with the VMware Engine network. This network can be a consumer VPC
       network or another VMware Engine network. If the `peer_network_type` is
@@ -1818,6 +1818,87 @@ class VmwareengineProjectsLocationsGlobalNetworkPeeringsDeleteRequest(_messages.
   requestId = _messages.StringField(2)
 
 
+class VmwareengineProjectsLocationsGlobalNetworkPeeringsFetchRoutesRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsGlobalNetworkPeeringsFetchRoutesRequest
+  object.
+
+  Enums:
+    DirectionValueValuesEnum: Required. Direction of the routes exchanged with
+      the peer network, from the VMware Engine network perspective: * Routes
+      of direction `INCOMING` are imported from the peer network. * Routes of
+      direction `OUTGOING` are exported from the intranet VPC network of the
+      VMware Engine network.
+
+  Fields:
+    direction: Required. Direction of the routes exchanged with the peer
+      network, from the VMware Engine network perspective: * Routes of
+      direction `INCOMING` are imported from the peer network. * Routes of
+      direction `OUTGOING` are exported from the intranet VPC network of the
+      VMware Engine network.
+    networkPeering: Required. The resource name of the VPC network peering to
+      retrieve peering routes from. Resource names are schemeless URIs that
+      follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/global/networkPeerings/my-peering`
+    pageSize: The maximum number of peering routes to return in one page. The
+      service may return fewer than this value. The maximum value is coerced
+      to 1000. The default value of this field is 500.
+    pageToken: A page token, received from a previous `FetchPeeringRoutes`
+      call. Provide this to retrieve the subsequent page. When paginating, all
+      other parameters provided to `FetchPeeringRoutes` must match the call
+      that provided the page token.
+  """
+
+  class DirectionValueValuesEnum(_messages.Enum):
+    r"""Required. Direction of the routes exchanged with the peer network,
+    from the VMware Engine network perspective: * Routes of direction
+    `INCOMING` are imported from the peer network. * Routes of direction
+    `OUTGOING` are exported from the intranet VPC network of the VMware Engine
+    network.
+
+    Values:
+      DIRECTION_UNSPECIFIED: Unspecified exchanged routes direction. This is
+        default.
+      INCOMING: Routes imported from the peer network.
+      OUTGOING: Routes exported to the peer network.
+    """
+    DIRECTION_UNSPECIFIED = 0
+    INCOMING = 1
+    OUTGOING = 2
+
+  direction = _messages.EnumField('DirectionValueValuesEnum', 1)
+  networkPeering = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
+class VmwareengineProjectsLocationsGlobalNetworkPeeringsGetIamPolicyRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsGlobalNetworkPeeringsGetIamPolicyRequest
+  object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
 class VmwareengineProjectsLocationsGlobalNetworkPeeringsGetRequest(_messages.Message):
   r"""A VmwareengineProjectsLocationsGlobalNetworkPeeringsGetRequest object.
 
@@ -1854,7 +1935,8 @@ class VmwareengineProjectsLocationsGlobalNetworkPeeringsListRequest(_messages.Me
       results in descending order based on the `name` value using
       `orderBy="name desc"`. Currently, only ordering by `name` is supported.
     pageSize: The maximum number of VPC network peerings to return in one
-      page. The maximum value of this field is 25.
+      page. The maximum value is coerced to 1000. The default value of this
+      field is 500.
     pageToken: A page token, received from a previous `ListNetworkPeerings`
       call. Provide this to retrieve the subsequent page. When paginating, all
       other parameters provided to `ListNetworkPeerings` must match the call
@@ -1907,28 +1989,39 @@ class VmwareengineProjectsLocationsGlobalNetworkPeeringsPatchRequest(_messages.M
   updateMask = _messages.StringField(4)
 
 
-class VmwareengineProjectsLocationsGlobalNetworkPeeringsPeeringRoutesListRequest(_messages.Message):
-  r"""A
-  VmwareengineProjectsLocationsGlobalNetworkPeeringsPeeringRoutesListRequest
+class VmwareengineProjectsLocationsGlobalNetworkPeeringsSetIamPolicyRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsGlobalNetworkPeeringsSetIamPolicyRequest
   object.
 
   Fields:
-    pageSize: The maximum number of peering routes to return in one page. The
-      service may return fewer than this value. The maximum value is 25.
-    pageToken: A page token, received from a previous `ListPeeringRoutes`
-      call. Provide this to retrieve the subsequent page. When paginating, all
-      other parameters provided to `ListPeeringRoutes` must match the call
-      that provided the page token.
-    parent: Required. The resource name of the VPC network peering to retrieve
-      peering routes from. Resource names are schemeless URIs that follow the
-      conventions in https://cloud.google.com/apis/design/resource_names. For
-      example: `projects/my-project/locations/global/networkPeerings/my-
-      peering`
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class VmwareengineProjectsLocationsGlobalNetworkPeeringsTestIamPermissionsRequest(_messages.Message):
+  r"""A
+  VmwareengineProjectsLocationsGlobalNetworkPeeringsTestIamPermissionsRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class VmwareengineProjectsLocationsListRequest(_messages.Message):
@@ -2084,6 +2177,33 @@ class VmwareengineProjectsLocationsNetworkPoliciesExternalAccessRulesDeleteReque
   requestId = _messages.StringField(2)
 
 
+class VmwareengineProjectsLocationsNetworkPoliciesExternalAccessRulesGetIamPolicyRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsNetworkPoliciesExternalAccessRulesGetIamP
+  olicyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
 class VmwareengineProjectsLocationsNetworkPoliciesExternalAccessRulesGetRequest(_messages.Message):
   r"""A
   VmwareengineProjectsLocationsNetworkPoliciesExternalAccessRulesGetRequest
@@ -2125,7 +2245,7 @@ class VmwareengineProjectsLocationsNetworkPoliciesExternalAccessRulesListRequest
       `orderBy="name desc"`. Currently, only ordering by `name` is supported.
     pageSize: The maximum number of external access rules to return in one
       page. The service may return fewer than this value. The maximum value is
-      coerced to 50.
+      coerced to 1000. The default value of this field is 500.
     pageToken: A page token, received from a previous
       `ListExternalAccessRulesRequest` call. Provide this to retrieve the
       subsequent page. When paginating, all other parameters provided to
@@ -2183,6 +2303,40 @@ class VmwareengineProjectsLocationsNetworkPoliciesExternalAccessRulesPatchReques
   updateMask = _messages.StringField(4)
 
 
+class VmwareengineProjectsLocationsNetworkPoliciesExternalAccessRulesSetIamPolicyRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsNetworkPoliciesExternalAccessRulesSetIamP
+  olicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class VmwareengineProjectsLocationsNetworkPoliciesExternalAccessRulesTestIamPermissionsRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsNetworkPoliciesExternalAccessRulesTestIam
+  PermissionsRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
 class VmwareengineProjectsLocationsNetworkPoliciesFetchExternalAddressesRequest(_messages.Message):
   r"""A
   VmwareengineProjectsLocationsNetworkPoliciesFetchExternalAddressesRequest
@@ -2196,7 +2350,7 @@ class VmwareengineProjectsLocationsNetworkPoliciesFetchExternalAddressesRequest(
       `projects/my-project/locations/us-west1/networkPolicies/my-policy`
     pageSize: The maximum number of external IP addresses to return in one
       page. The service may return fewer than this value. The maximum value is
-      coerced to 50.
+      coerced to 1000. The default value of this field is 500.
     pageToken: A page token, received from a previous
       `FetchNetworkPolicyExternalAddresses` call. Provide this to retrieve the
       subsequent page. When paginating, all other parameters provided to
@@ -2272,7 +2426,8 @@ class VmwareengineProjectsLocationsNetworkPoliciesListRequest(_messages.Message)
       results in descending order based on the `name` value using
       `orderBy="name desc"`. Currently, only ordering by `name` is supported.
     pageSize: The maximum number of network policies to return in one page.
-      The service may return fewer than this value. The maximum value is 25.
+      The service may return fewer than this value. The maximum value is
+      coerced to 1000. The default value of this field is 500.
     pageToken: A page token, received from a previous `ListNetworkPolicies`
       call. Provide this to retrieve the subsequent page. When paginating, all
       other parameters provided to `ListNetworkPolicies` must match the call
@@ -2416,7 +2571,7 @@ class VmwareengineProjectsLocationsNodeTypesListRequest(_messages.Message):
       (virtual_cpu_count > 2) OR (name = "standard-72") ```
     pageSize: The maximum number of node types to return in one page. The
       service may return fewer than this value. The maximum value is coerced
-      to 50.
+      to 1000. The default value of this field is 500.
     pageToken: A page token, received from a previous `ListNodeTypes` call.
       Provide this to retrieve the subsequent page. When paginating, all other
       parameters provided to `ListNodeTypes` must match the call that provided
@@ -2611,7 +2766,7 @@ class VmwareengineProjectsLocationsPrivateCloudsClustersListRequest(_messages.Me
       `orderBy="name desc"`. Currently, only ordering by `name` is supported.
     pageSize: The maximum number of clusters to return in one page. The
       service may return fewer than this value. The maximum value is coerced
-      to 25.
+      to 1000. The default value of this field is 500.
     pageToken: A page token, received from a previous `ListClusters` call.
       Provide this to retrieve the subsequent page. When paginating, all other
       parameters provided to `ListClusters` must match the call that provided
@@ -2865,7 +3020,7 @@ class VmwareengineProjectsLocationsPrivateCloudsExternalAddressesListRequest(_me
       `orderBy="name desc"`. Currently, only ordering by `name` is supported.
     pageSize: The maximum number of external IP addresses to return in one
       page. The service may return fewer than this value. The maximum value is
-      coerced to 50.
+      coerced to 1000. The default value of this field is 500.
     pageToken: A page token, received from a previous `ListExternalAddresses`
       call. Provide this to retrieve the subsequent page. When paginating, all
       other parameters provided to `ListExternalAddresses` must match the call
@@ -3049,7 +3204,7 @@ class VmwareengineProjectsLocationsPrivateCloudsHcxActivationKeysListRequest(_me
   Fields:
     pageSize: The maximum number of autoscale policies to return in one page.
       The service may return fewer than this value. The maximum value is
-      coerced to 50.
+      coerced to 1000. The default value of this field is 500.
     pageToken: A page token, received from a previous `ListHcxActivationKeys`
       call. Provide this to retrieve the subsequent page. When paginating, all
       other parameters provided to `ListHcxActivationKeys` must match the call
@@ -3126,7 +3281,7 @@ class VmwareengineProjectsLocationsPrivateCloudsListRequest(_messages.Message):
       `orderBy="name desc"`. Currently, only ordering by `name` is supported.
     pageSize: The maximum number of private clouds to return in one page. The
       service may return fewer than this value. The maximum value is coerced
-      to 25.
+      to 1000. The default value of this field is 500.
     pageToken: A page token, received from a previous `ListPrivateClouds`
       call. Provide this to retrieve the subsequent page. When paginating, all
       other parameters provided to `ListPrivateClouds` must match the call
@@ -3424,7 +3579,7 @@ class VmwareengineProjectsLocationsVmwareEngineNetworksListRequest(_messages.Mes
       results in descending order based on the `name` value using
       `orderBy="name desc"`. Currently, only ordering by `name` is supported.
     pageSize: The maximum number of results to return in one page. The maximum
-      value of this field is 25.
+      value is coerced to 1000. The default value of this field is 500.
     pageToken: A page token, received from a previous
       `ListVmwareEngineNetworks` call. Provide this to retrieve the subsequent
       page. When paginating, all other parameters provided to

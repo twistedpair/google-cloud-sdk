@@ -21,7 +21,9 @@ from __future__ import unicode_literals
 import uuid
 
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
+from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
 import six
 
@@ -71,3 +73,23 @@ def GenerateRequestId():
     string, the 40-character UUID for the request ID.
   """
   return six.text_type(uuid.uuid4())
+
+
+def HandleLRO(client, result_operation, service):
+  """Uses the waiter library to handle LRO synchronous execution."""
+  op_resource = resources.REGISTRY.ParseRelativeName(
+      result_operation.name,
+      collection='datamigration.projects.locations.operations')
+  poller = waiter.CloudOperationPoller(
+      service,
+      client.projects_locations_operations)
+  try:
+    waiter.WaitFor(
+        poller, op_resource,
+        'Waiting for operation [{}] to complete'.format(
+            result_operation.name))
+  except waiter.TimeoutError:
+    log.status.Print(
+        'The operations may still be underway remotely and may still succeed. You may check the operation status for the following operation  [{}]'
+        .format(result_operation.name))
+    return

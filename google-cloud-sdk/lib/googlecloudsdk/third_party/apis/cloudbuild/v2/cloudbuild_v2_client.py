@@ -39,6 +39,8 @@ class CloudbuildV2(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.projects_locations_connections_repositories = self.ProjectsLocationsConnectionsRepositoriesService(self)
+    self.projects_locations_connections = self.ProjectsLocationsConnectionsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_pipelineRuns = self.ProjectsLocationsPipelineRunsService(self)
     self.projects_locations_results_records = self.ProjectsLocationsResultsRecordsService(self)
@@ -47,6 +49,350 @@ class CloudbuildV2(base_api.BaseApiClient):
     self.projects_locations_workflows = self.ProjectsLocationsWorkflowsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class ProjectsLocationsConnectionsRepositoriesService(base_api.BaseApiService):
+    """Service class for the projects_locations_connections_repositories resource."""
+
+    _NAME = 'projects_locations_connections_repositories'
+
+    def __init__(self, client):
+      super(CloudbuildV2.ProjectsLocationsConnectionsRepositoriesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a Repository.
+
+      Args:
+        request: (CloudbuildProjectsLocationsConnectionsRepositoriesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/connections/{connectionsId}/repositories',
+        http_method='POST',
+        method_id='cloudbuild.projects.locations.connections.repositories.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['repositoryId'],
+        relative_path='v2/{+parent}/repositories',
+        request_field='repository',
+        request_type_name='CloudbuildProjectsLocationsConnectionsRepositoriesCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single repository.
+
+      Args:
+        request: (CloudbuildProjectsLocationsConnectionsRepositoriesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/connections/{connectionsId}/repositories/{repositoriesId}',
+        http_method='DELETE',
+        method_id='cloudbuild.projects.locations.connections.repositories.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['etag', 'validateOnly'],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='CloudbuildProjectsLocationsConnectionsRepositoriesDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single repository.
+
+      Args:
+        request: (CloudbuildProjectsLocationsConnectionsRepositoriesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Repository) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/connections/{connectionsId}/repositories/{repositoriesId}',
+        http_method='GET',
+        method_id='cloudbuild.projects.locations.connections.repositories.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='CloudbuildProjectsLocationsConnectionsRepositoriesGetRequest',
+        response_type_name='Repository',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists Repositories in a given connection.
+
+      Args:
+        request: (CloudbuildProjectsLocationsConnectionsRepositoriesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListRepositoriesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/connections/{connectionsId}/repositories',
+        http_method='GET',
+        method_id='cloudbuild.projects.locations.connections.repositories.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/repositories',
+        request_field='',
+        request_type_name='CloudbuildProjectsLocationsConnectionsRepositoriesListRequest',
+        response_type_name='ListRepositoriesResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsConnectionsService(base_api.BaseApiService):
+    """Service class for the projects_locations_connections resource."""
+
+    _NAME = 'projects_locations_connections'
+
+    def __init__(self, client):
+      super(CloudbuildV2.ProjectsLocationsConnectionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def AccessReadToken(self, request, global_params=None):
+      r"""Gets read token of a given connection.
+
+      Args:
+        request: (CloudbuildProjectsLocationsConnectionsAccessReadTokenRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AccessReadTokenResponse) The response message.
+      """
+      config = self.GetMethodConfig('AccessReadToken')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AccessReadToken.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/connections/{connectionsId}:accessReadToken',
+        http_method='POST',
+        method_id='cloudbuild.projects.locations.connections.accessReadToken',
+        ordered_params=['connection'],
+        path_params=['connection'],
+        query_params=[],
+        relative_path='v2/{+connection}:accessReadToken',
+        request_field='accessReadTokenRequest',
+        request_type_name='CloudbuildProjectsLocationsConnectionsAccessReadTokenRequest',
+        response_type_name='AccessReadTokenResponse',
+        supports_download=False,
+    )
+
+    def AccessReadWriteToken(self, request, global_params=None):
+      r"""Gets read/write token of a given connection.
+
+      Args:
+        request: (CloudbuildProjectsLocationsConnectionsAccessReadWriteTokenRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AccessReadWriteTokenResponse) The response message.
+      """
+      config = self.GetMethodConfig('AccessReadWriteToken')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AccessReadWriteToken.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/connections/{connectionsId}:accessReadWriteToken',
+        http_method='POST',
+        method_id='cloudbuild.projects.locations.connections.accessReadWriteToken',
+        ordered_params=['connection'],
+        path_params=['connection'],
+        query_params=[],
+        relative_path='v2/{+connection}:accessReadWriteToken',
+        request_field='accessReadWriteTokenRequest',
+        request_type_name='CloudbuildProjectsLocationsConnectionsAccessReadWriteTokenRequest',
+        response_type_name='AccessReadWriteTokenResponse',
+        supports_download=False,
+    )
+
+    def Create(self, request, global_params=None):
+      r"""Creates a Connection.
+
+      Args:
+        request: (CloudbuildProjectsLocationsConnectionsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/connections',
+        http_method='POST',
+        method_id='cloudbuild.projects.locations.connections.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['connectionId'],
+        relative_path='v2/{+parent}/connections',
+        request_field='connection',
+        request_type_name='CloudbuildProjectsLocationsConnectionsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single connection.
+
+      Args:
+        request: (CloudbuildProjectsLocationsConnectionsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/connections/{connectionsId}',
+        http_method='DELETE',
+        method_id='cloudbuild.projects.locations.connections.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['etag', 'validateOnly'],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='CloudbuildProjectsLocationsConnectionsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single connection.
+
+      Args:
+        request: (CloudbuildProjectsLocationsConnectionsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Connection) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/connections/{connectionsId}',
+        http_method='GET',
+        method_id='cloudbuild.projects.locations.connections.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='CloudbuildProjectsLocationsConnectionsGetRequest',
+        response_type_name='Connection',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists Connections in a given project and location.
+
+      Args:
+        request: (CloudbuildProjectsLocationsConnectionsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListConnectionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/connections',
+        http_method='GET',
+        method_id='cloudbuild.projects.locations.connections.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/connections',
+        request_field='',
+        request_type_name='CloudbuildProjectsLocationsConnectionsListRequest',
+        response_type_name='ListConnectionsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a single connection.
+
+      Args:
+        request: (CloudbuildProjectsLocationsConnectionsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/connections/{connectionsId}',
+        http_method='PATCH',
+        method_id='cloudbuild.projects.locations.connections.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['allowMissing', 'etag', 'updateMask'],
+        relative_path='v2/{+name}',
+        request_field='connection',
+        request_type_name='CloudbuildProjectsLocationsConnectionsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def ProcessWebhook(self, request, global_params=None):
+      r"""ProcessWebhook is called by the external SCM for notifying of events.
+
+      Args:
+        request: (CloudbuildProjectsLocationsConnectionsProcessWebhookRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('ProcessWebhook')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ProcessWebhook.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/connections:processWebhook',
+        http_method='POST',
+        method_id='cloudbuild.projects.locations.connections.processWebhook',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2/{+parent}/connections:processWebhook',
+        request_field='httpBody',
+        request_type_name='CloudbuildProjectsLocationsConnectionsProcessWebhookRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
 
   class ProjectsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_operations resource."""

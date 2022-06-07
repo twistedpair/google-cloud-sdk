@@ -167,9 +167,23 @@ def GetRemoveShareWithFlag(custom_name=None):
       help=help_text)
 
 
+def GetResourcePolicyFlag(custom_name=None):
+  """Gets the --resource-policies flag."""
+  help_text = """\
+  Specify if this is reservation with resource policy. If you omit this flag,
+  no resource policy will be added to this reservation.
+  """
+  return base.Argument(
+      custom_name or '--resource-policies',
+      metavar='KEY=VALUE',
+      type=arg_parsers.ArgDict(),
+      help=help_text)
+
+
 def AddCreateFlags(parser,
                    support_fleet=False,
-                   support_share_setting=False):
+                   support_share_setting=False,
+                   support_resource_policies=False):
   """Adds all flags needed for the create command."""
   GetDescriptionFlag().AddToParser(parser)
 
@@ -183,6 +197,8 @@ def AddCreateFlags(parser,
   group.AddArgument(GetLocalSsdFlag())
   group.AddArgument(GetAcceleratorFlag())
   group.AddArgument(GetLocationHint())
+  if support_resource_policies:
+    group.AddArgument(GetResourcePolicyFlag())
   if support_fleet:
     group.AddArgument(instance_flags.AddMaintenanceFreezeDuration())
     group.AddArgument(instance_flags.AddMaintenanceInterval())

@@ -41,7 +41,7 @@ class NameExpansionIterator:
   """
 
   def __init__(self,
-               urls,
+               urls_iterable,
                all_versions=False,
                fields_scope=cloud_api.FieldsScope.NO_ACL,
                ignore_symlinks=False,
@@ -50,7 +50,7 @@ class NameExpansionIterator:
     """Instantiates NameExpansionIterator.
 
     Args:
-      urls (Iterable[str]): The URLs to expand.
+      urls_iterable (Iterable[str]): The URLs to expand.
       all_versions (bool): True if all versions of objects should be fetched,
         else False.
       fields_scope (cloud_api.FieldsScope): Determines amount of metadata
@@ -61,7 +61,8 @@ class NameExpansionIterator:
     """
     self.all_versions = all_versions
 
-    self._urls = urls
+    self._urls_iterator = (
+        plurality_checkable_iterator.PluralityCheckableIterator(urls_iterable))
     self._fields_scope = fields_scope
     self._ignore_symlinks = ignore_symlinks
     self._include_buckets = include_buckets
@@ -71,6 +72,7 @@ class NameExpansionIterator:
         plurality_checkable_iterator.PluralityCheckableIterator(
             self._get_top_level_iterator()))
     self._has_multiple_top_level_resources = None
+    self._url_found_match_tracker = collections.OrderedDict()
 
   def _get_wildcard_iterator(self, url):
     """Returns get_wildcard_iterator with instance variables as args."""
@@ -93,11 +95,14 @@ class NameExpansionIterator:
     """
     if self._has_multiple_top_level_resources is None:
       self._has_multiple_top_level_resources = (
-          len(self._urls) > 1 or self._top_level_iterator.is_plural())
+          self._urls_iterator.is_plural() or
+          self._top_level_iterator.is_plural())
     return self._has_multiple_top_level_resources
 
   def _get_top_level_iterator(self):
-    for url in self._urls:
+    for url in self._urls_iterator:
+      # Set to True if associated Cloud resource found in __iter__.
+      self._url_found_match_tracker[url] = False
       for resource in self._get_wildcard_iterator(url):
         original_storage_url = storage_url.storage_url_from_string(url)
         yield url, self._get_name_expansion_result(resource,
@@ -125,9 +130,9 @@ class NameExpansionIterator:
       resource.storage_url = new_storage_url
     return NameExpansionResult(resource, expanded_url, original_url)
 
-  def _raise_no_url_match_error_if_necessary(self, url_found_match_dict):
+  def _raise_no_url_match_error_if_necessary(self):
     non_matching_urls = [
-        url for url, found_match in url_found_match_dict.items()
+        url for url, found_match in self._url_found_match_tracker.items()
         if not found_match
     ]
     if non_matching_urls:
@@ -136,7 +141,7 @@ class NameExpansionIterator:
               '\n-'.join(non_matching_urls)))
 
   def __iter__(self):
-    """Iterates over each URL in self._urls and yield the expanded result.
+    """Iterates over each URL in self._urls_iterator and yield the expanded result.
 
     Yields:
       NameExpansionResult instance.
@@ -146,22 +151,19 @@ class NameExpansionIterator:
     """
     self._has_multiple_top_level_resources = self._top_level_iterator.is_plural(
     )
-    url_found_match_dict = collections.OrderedDict([
-        (url, False) for url in self._urls
-    ])
     for input_url, name_expansion_result in self._top_level_iterator:
       should_return_bucket = self._include_buckets and isinstance(
           name_expansion_result.resource, resource_reference.BucketResource)
       if not name_expansion_result.resource.is_container() or (
           should_return_bucket):
-        url_found_match_dict[input_url] = True
+        self._url_found_match_tracker[input_url] = True
         yield name_expansion_result
 
       if name_expansion_result.resource.is_container():
         if self._recursion_requested:
           for nested_name_expansion_result in self._get_nested_objects_iterator(
               name_expansion_result):
-            url_found_match_dict[input_url] = True
+            self._url_found_match_tracker[input_url] = True
             yield nested_name_expansion_result
 
         elif not should_return_bucket:
@@ -170,7 +172,7 @@ class NameExpansionIterator:
           log.warning('Omitting {} because it is a container, and recursion'
                       ' is not enabled.'.format(name_expansion_result.resource))
 
-    self._raise_no_url_match_error_if_necessary(url_found_match_dict)
+    self._raise_no_url_match_error_if_necessary()
 
 
 class NameExpansionResult:

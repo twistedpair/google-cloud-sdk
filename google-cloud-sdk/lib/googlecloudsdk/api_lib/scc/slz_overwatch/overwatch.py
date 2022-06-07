@@ -150,7 +150,7 @@ class SLZOverwatchClient(object):
     request = self._messages.SecuredlandingzoneOrganizationsLocationsOverwatchesPatchRequest(
         name=overwatch_path,
         googleCloudSecuredlandingzoneV1betaOverwatch=overwatch,
-        update_mask=update_mask)
+        updateMask=update_mask)
     response = self._overwatch_service.Patch(request)
     return response
 

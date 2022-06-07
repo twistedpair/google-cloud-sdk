@@ -38,6 +38,28 @@ class Collections(enum.Enum):
       ['projectsId', 'locationsId'],
       True
   )
+  PROJECTS_LOCATIONS_CONNECTIONS = (
+      'projects.locations.connections',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/connections/'
+              '{connectionsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_CONNECTIONS_REPOSITORIES = (
+      'projects.locations.connections.repositories',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/connections/'
+              '{connectionsId}/repositories/{repositoriesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_OPERATIONS = (
       'projects.locations.operations',
       '{+name}',

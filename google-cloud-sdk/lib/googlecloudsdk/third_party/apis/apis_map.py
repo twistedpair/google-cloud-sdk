@@ -242,15 +242,6 @@ MAP = {
                 default_version=False,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
-        'v1alpha1':
-            APIDef(
-                ApitoolsClientDef(
-                    class_path='googlecloudsdk.third_party.apis.alloydb.v1alpha1',
-                    client_classpath='alloydb_v1alpha1_client.AlloydbV1alpha1',
-                    messages_modulepath='alloydb_v1alpha1_messages'),
-                default_version=False,
-                enable_mtls=True,
-                mtls_endpoint_override=''),
         'v1beta':
             APIDef(
                 ApitoolsClientDef(

@@ -91,8 +91,9 @@ def AddMtuArg(parser):
       type=int,
       help="""Maximum transmission unit (MTU) is the size of the largest
               IP packet that can be transmitted on this network. Default value
-              is 1460 bytes, and the maximum is 1500 bytes. The MTU advertised
-              via DHCP to all instances attached to this network.""")
+              is 1460 bytes. The minimum value is 1300 bytes and the maximum
+              value is 8896 bytes. The MTU advertised via DHCP to all instances
+              attached to this network.""")
 
 
 def AddEnableUlaInternalIpv6Arg(parser):

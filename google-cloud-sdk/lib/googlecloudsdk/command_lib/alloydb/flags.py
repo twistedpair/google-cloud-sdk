@@ -280,9 +280,8 @@ def _GetDayOfWeekArgList(alloydb_messages):
   """Returns an ArgList accepting days of the week."""
   day_of_week_enum = (
       alloydb_messages.WeeklySchedule.DaysOfWeekValueListEntryValuesEnum)
-  visible_choices = list(day_of_week_enum.names())
-  visible_choices.remove('DAY_OF_WEEK_UNSPECIFIED')
-  choices = [day_of_week_enum.lookup_by_name(c) for c in visible_choices]
+  choices = [day_of_week_enum.lookup_by_number(i) for i in range(1, 8)]
+  visible_choices = [c.name for c in choices]
   visible_choices_set = set(visible_choices)
   def _ParseDayOfWeek(value):
     value_upper = value.upper()

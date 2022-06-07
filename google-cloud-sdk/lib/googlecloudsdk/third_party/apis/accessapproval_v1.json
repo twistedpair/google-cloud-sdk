@@ -244,6 +244,11 @@
           "type": "string",
           "format": "google-datetime"
         },
+        "invalidateTime": {
+          "description": "If set, denotes the timestamp at which the approval is invalidated.",
+          "type": "string",
+          "format": "google-datetime"
+        },
         "signatureInfo": {
           "description": "The signature for the ApprovalRequest and details on how it was signed.",
           "$ref": "SignatureInfo"
@@ -305,6 +310,13 @@
     "DismissApprovalRequestMessage": {
       "id": "DismissApprovalRequestMessage",
       "description": "Request to dismiss an approval request.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "InvalidateApprovalRequestMessage": {
+      "id": "InvalidateApprovalRequestMessage",
+      "description": "Request to invalidate an existing approval.",
       "type": "object",
       "properties": {
       }
@@ -637,6 +649,34 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Dismisses a request. Returns the updated ApprovalRequest. NOTE: This does not deny access to the resource if another request has been made and approved. It is equivalent in effect to ignoring the request altogether. Returns NOT_FOUND if the request does not exist. Returns FAILED_PRECONDITION if the request exists but is not in a pending state."
+            },
+            "invalidate": {
+              "id": "accessapproval.projects.approvalRequests.invalidate",
+              "path": "v1/{+name}:invalidate",
+              "flatPath": "v1/projects/{projectsId}/approvalRequests/{approvalRequestsId}:invalidate",
+              "httpMethod": "POST",
+              "parameters": {
+                "name": {
+                  "description": "Name of the ApprovalRequest to invalidate.",
+                  "pattern": "^projects\/[^\/]+\/approvalRequests\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "InvalidateApprovalRequestMessage"
+              },
+              "response": {
+                "$ref": "ApprovalRequest"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Invalidates an existing ApprovalRequest. Returns the updated ApprovalRequest. NOTE: This does not deny access to the resource if another request has been made and approved. It only invalidates a single approval. Returns FAILED_PRECONDITION if the request exists but is not in an approved state."
             }
           }
         }
@@ -879,6 +919,34 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Dismisses a request. Returns the updated ApprovalRequest. NOTE: This does not deny access to the resource if another request has been made and approved. It is equivalent in effect to ignoring the request altogether. Returns NOT_FOUND if the request does not exist. Returns FAILED_PRECONDITION if the request exists but is not in a pending state."
+            },
+            "invalidate": {
+              "id": "accessapproval.folders.approvalRequests.invalidate",
+              "path": "v1/{+name}:invalidate",
+              "flatPath": "v1/folders/{foldersId}/approvalRequests/{approvalRequestsId}:invalidate",
+              "httpMethod": "POST",
+              "parameters": {
+                "name": {
+                  "description": "Name of the ApprovalRequest to invalidate.",
+                  "pattern": "^folders\/[^\/]+\/approvalRequests\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "InvalidateApprovalRequestMessage"
+              },
+              "response": {
+                "$ref": "ApprovalRequest"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Invalidates an existing ApprovalRequest. Returns the updated ApprovalRequest. NOTE: This does not deny access to the resource if another request has been made and approved. It only invalidates a single approval. Returns FAILED_PRECONDITION if the request exists but is not in an approved state."
             }
           }
         }
@@ -1121,6 +1189,34 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Dismisses a request. Returns the updated ApprovalRequest. NOTE: This does not deny access to the resource if another request has been made and approved. It is equivalent in effect to ignoring the request altogether. Returns NOT_FOUND if the request does not exist. Returns FAILED_PRECONDITION if the request exists but is not in a pending state."
+            },
+            "invalidate": {
+              "id": "accessapproval.organizations.approvalRequests.invalidate",
+              "path": "v1/{+name}:invalidate",
+              "flatPath": "v1/organizations/{organizationsId}/approvalRequests/{approvalRequestsId}:invalidate",
+              "httpMethod": "POST",
+              "parameters": {
+                "name": {
+                  "description": "Name of the ApprovalRequest to invalidate.",
+                  "pattern": "^organizations\/[^\/]+\/approvalRequests\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "InvalidateApprovalRequestMessage"
+              },
+              "response": {
+                "$ref": "ApprovalRequest"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Invalidates an existing ApprovalRequest. Returns the updated ApprovalRequest. NOTE: This does not deny access to the resource if another request has been made and approved. It only invalidates a single approval. Returns FAILED_PRECONDITION if the request exists but is not in an approved state."
             }
           }
         }

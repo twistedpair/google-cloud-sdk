@@ -624,7 +624,7 @@ class CloudcommerceconsumerprocurementV1alpha1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists Order resources that the user have access to, within the scope of the parent resource.
+      r"""Lists Order resources that the user has access to, within the scope of the parent resource.
 
       Args:
         request: (CloudcommerceconsumerprocurementBillingAccountsOrdersListRequest) input message
@@ -651,7 +651,7 @@ class CloudcommerceconsumerprocurementV1alpha1(base_api.BaseApiClient):
     )
 
     def ListMigratable(self, request, global_params=None):
-      r"""Lists migratable Order resources that the user have access to, within the scope of the parent resource.
+      r"""Lists migratable Order resources that the user has access to, within the scope of the parent resource.
 
       Args:
         request: (CloudcommerceconsumerprocurementBillingAccountsOrdersListMigratableRequest) input message
@@ -732,7 +732,7 @@ class CloudcommerceconsumerprocurementV1alpha1(base_api.BaseApiClient):
     )
 
     def Place(self, request, global_params=None):
-      r"""Creates a new Order. The returned long-running operation will be in-progress until the backend can complete the creation of the resource. Once completed, the order will be in OrderState.ORDER_STATE_ACTIVE. In case of failure, the order resource will be removed.
+      r"""Creates a new Order. The returned long-running operation is in-progress until the backend completes the creation of the resource. Once completed, the order is in OrderState.ORDER_STATE_ACTIVE. In case of failure, the order resource will be removed.
 
       Args:
         request: (CloudcommerceconsumerprocurementBillingAccountsOrdersPlaceRequest) input message

@@ -850,7 +850,7 @@
     },
     "Backup": {
       "id": "Backup",
-      "description": "Message describing Backup object NEXT ID: 17",
+      "description": "Message describing Backup object NEXT ID: 18",
       "type": "object",
       "properties": {
         "name": {
@@ -948,6 +948,12 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "sizeBytes": {
+          "description": "Output only. The size of the backup in bytes.",
+          "readOnly": true,
+          "type": "string",
+          "format": "int64"
         }
       }
     },

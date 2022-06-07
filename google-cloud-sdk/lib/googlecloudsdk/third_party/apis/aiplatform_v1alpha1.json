@@ -873,18 +873,57 @@
       "description": "Example-based explainability that returns the nearest neighbors from the provided dataset.",
       "type": "object",
       "properties": {
-        "gcsSource": {
-          "description": "The Cloud Storage location for the input instances.",
-          "$ref": "GoogleCloudAiplatformV1alpha1GcsSource"
-        },
         "nearestNeighborSearchConfig": {
           "description": "The configuration for the generated index, the semantics are the same as metadata and should match NearestNeighborSearchConfig.",
           "type": "any"
+        },
+        "presets": {
+          "description": "Preset config based on the desired query speed-precision trade-off and modality",
+          "$ref": "GoogleCloudAiplatformV1alpha1Presets"
+        },
+        "gcsSource": {
+          "description": "The Cloud Storage location for the input instances.",
+          "$ref": "GoogleCloudAiplatformV1alpha1GcsSource"
         },
         "neighborCount": {
           "description": "The number of neighbors to return.",
           "type": "integer",
           "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1Presets": {
+      "id": "GoogleCloudAiplatformV1alpha1Presets",
+      "description": "Preset configuration for example-based explanations",
+      "type": "object",
+      "properties": {
+        "query": {
+          "description": "Preset option controlling parameters for query speed-precision trade-off",
+          "type": "string",
+          "enumDescriptions": [
+            "More precise neighbors as a trade-off against slower response. This is also the default value (field-number 0).",
+            "Faster response as a trade-off against less precise neighbors."
+          ],
+          "enum": [
+            "PRECISE",
+            "FAST"
+          ]
+        },
+        "modality": {
+          "description": "Preset option controlling parameters for different modalities",
+          "type": "string",
+          "enumDescriptions": [
+            "Should not be set. Added as a recommended best practice for enums",
+            "IMAGE modality",
+            "TEXT modality",
+            "TABULAR modality"
+          ],
+          "enum": [
+            "MODALITY_UNSPECIFIED",
+            "IMAGE",
+            "TEXT",
+            "TABULAR"
+          ]
         }
       }
     },
@@ -1406,6 +1445,55 @@
           "description": "A token to retrieve next page of results. Pass to ListIndexesRequest.page_token to obtain that page.",
           "type": "string"
         }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1UpsertDatapointsRequest": {
+      "id": "GoogleCloudAiplatformV1alpha1UpsertDatapointsRequest",
+      "description": "Request message for IndexService.UpsertDatapoints",
+      "type": "object",
+      "properties": {
+        "datapoints": {
+          "description": "A list of datapoints to be created\/updated.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1alpha1IndexDatapoint"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1IndexDatapoint": {
+      "id": "GoogleCloudAiplatformV1alpha1IndexDatapoint",
+      "description": "A datapoint of Index.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1UpsertDatapointsResponse": {
+      "id": "GoogleCloudAiplatformV1alpha1UpsertDatapointsResponse",
+      "description": "Response message for IndexService.UpsertDatapoints",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1RemoveDatapointsRequest": {
+      "id": "GoogleCloudAiplatformV1alpha1RemoveDatapointsRequest",
+      "description": "Request message for IndexService.RemoveDatapoints",
+      "type": "object",
+      "properties": {
+        "datapointIds": {
+          "description": "A list of datapoint ids to be deleted.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1RemoveDatapointsResponse": {
+      "id": "GoogleCloudAiplatformV1alpha1RemoveDatapointsResponse",
+      "description": "Response message for IndexService.RemoveDatapoints",
+      "type": "object",
+      "properties": {
       }
     },
     "GoogleCloudAiplatformV1alpha1IndexEndpoint": {
@@ -1984,11 +2072,6 @@
         "activeLearningConfig": {
           "description": "Parameters that configure the active learning pipeline. Active learning will label the data incrementally via several iterations. For every iteration, it will select a batch of data based on the sampling strategy.",
           "$ref": "GoogleCloudAiplatformV1alpha1ActiveLearningConfig"
-        },
-        "labelingTimeLimit": {
-          "description": "Maximum duration for operators to answer a question.",
-          "type": "string",
-          "format": "google-duration"
         }
       }
     },
@@ -3092,6 +3175,12 @@
           "readOnly": true,
           "type": "string",
           "format": "int64"
+        },
+        "successfulForecastPointCount": {
+          "description": "Output only. The number of the successful forecast points that are generated by the forecasting model. This is ONLY used by the forecasting batch prediction.",
+          "readOnly": true,
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -3351,7 +3440,7 @@
           "$ref": "GoogleCloudAiplatformV1alpha1BigQuerySource"
         },
         "dataFormat": {
-          "description": "\"jsonl\" The source file is a JSONL file.",
+          "description": "Data format of the dataset, only applicable if the input is from Google Cloud Storage. The possible formats are: \"tf-record\" The source file is a TFRecord file. \"csv\" The source file is a CSV file. \"jsonl\" The source file is a JSONL file.",
           "type": "string"
         },
         "targetField": {
@@ -5593,6 +5682,38 @@
         "gcsOutputDirectory": {
           "description": "Required. A path in a Cloud Storage bucket, which will be treated as the root output directory of the pipeline. It is used by the system to generate the paths of output artifacts. The artifact paths are generated with a sub-path pattern `{job_id}\/{task_id}\/{output_key}` under the specified output directory. The service account specified in this pipeline must have the `storage.objects.get` and `storage.objects.create` permissions for this bucket.",
           "type": "string"
+        },
+        "failurePolicy": {
+          "description": "Represents the failure policy of a pipeline. Currently, the default of a pipeline is that the pipeline will continue to run until no more tasks can be executed, also known as PIPELINE_FAILURE_POLICY_FAIL_SLOW. However, if a pipeline is set to PIPELINE_FAILURE_POLICY_FAIL_FAST, it will stop scheduling any new tasks when a task has failed. Any scheduled tasks will continue to completion.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value, and follows fail slow behavior.",
+            "Indicates that the pipeline should continue to run until all possible tasks have been scheduled and completed.",
+            "Indicates that the pipeline should stop scheduling new tasks after a task has failed."
+          ],
+          "enum": [
+            "PIPELINE_FAILURE_POLICY_UNSPECIFIED",
+            "PIPELINE_FAILURE_POLICY_FAIL_SLOW",
+            "PIPELINE_FAILURE_POLICY_FAIL_FAST"
+          ]
+        },
+        "inputArtifacts": {
+          "description": "The runtime artifacts of the PipelineJob. The key will be the input artifact name and the value would be one of the InputArtifact.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "GoogleCloudAiplatformV1alpha1PipelineJobRuntimeConfigInputArtifact"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1PipelineJobRuntimeConfigInputArtifact": {
+      "id": "GoogleCloudAiplatformV1alpha1PipelineJobRuntimeConfigInputArtifact",
+      "description": "The type of an input artifact.",
+      "type": "object",
+      "properties": {
+        "artifactName": {
+          "description": "Artifact resource id from MLMD in the format of `projects\/{project}\/locations\/{location}\/metadataStores\/default\/artifacts\/{artifact}`. The artifact must stay within the same project, location and default metadatastore as the pipeline.",
+          "type": "string"
         }
       }
     },
@@ -5775,6 +5896,32 @@
           "items": {
             "$ref": "GoogleCloudAiplatformV1alpha1Attribution"
           }
+        },
+        "neighbors": {
+          "description": "Output only. List of the nearest neighbors for example-based explanations. For models deployed with the examples explanations feature enabled, the attributions field is empty and instead the neighbors field is populated.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1alpha1Neighbor"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1Neighbor": {
+      "id": "GoogleCloudAiplatformV1alpha1Neighbor",
+      "description": "Neighbors for example-based explanations.",
+      "type": "object",
+      "properties": {
+        "neighborId": {
+          "description": "Output only. The neighbor id.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "neighborDistance": {
+          "description": "Output only. The neighbor distance.",
+          "readOnly": true,
+          "type": "number",
+          "format": "double"
         }
       }
     },
@@ -7626,18 +7773,57 @@
       "description": "Example-based explainability that returns the nearest neighbors from the provided dataset.",
       "type": "object",
       "properties": {
-        "gcsSource": {
-          "description": "The Cloud Storage location for the input instances.",
-          "$ref": "GoogleCloudAiplatformInternalGcsSource"
-        },
         "nearestNeighborSearchConfig": {
           "description": "The configuration for the generated index, the semantics are the same as metadata and should match NearestNeighborSearchConfig.",
           "type": "any"
+        },
+        "presets": {
+          "description": "Preset config based on the desired query speed-precision trade-off and modality",
+          "$ref": "GoogleCloudAiplatformInternalPresets"
+        },
+        "gcsSource": {
+          "description": "The Cloud Storage location for the input instances.",
+          "$ref": "GoogleCloudAiplatformInternalGcsSource"
         },
         "neighborCount": {
           "description": "The number of neighbors to return.",
           "type": "integer",
           "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalPresets": {
+      "id": "GoogleCloudAiplatformInternalPresets",
+      "description": "Preset configuration for example-based explanations",
+      "type": "object",
+      "properties": {
+        "query": {
+          "description": "Preset option controlling parameters for query speed-precision trade-off",
+          "type": "string",
+          "enumDescriptions": [
+            "More precise neighbors as a trade-off against slower response. This is also the default value (field-number 0).",
+            "Faster response as a trade-off against less precise neighbors."
+          ],
+          "enum": [
+            "PRECISE",
+            "FAST"
+          ]
+        },
+        "modality": {
+          "description": "Preset option controlling parameters for different modalities",
+          "type": "string",
+          "enumDescriptions": [
+            "Should not be set. Added as a recommended best practice for enums",
+            "IMAGE modality",
+            "TEXT modality",
+            "TABULAR modality"
+          ],
+          "enum": [
+            "MODALITY_UNSPECIFIED",
+            "IMAGE",
+            "TEXT",
+            "TABULAR"
+          ]
         }
       }
     },
@@ -8571,13 +8757,6 @@
         }
       }
     },
-    "GoogleCloudAiplatformInternalDeleteFeatureValuesResponse": {
-      "id": "GoogleCloudAiplatformInternalDeleteFeatureValuesResponse",
-      "description": "Response message for FeaturestoreService.DeleteFeatureValues.",
-      "type": "object",
-      "properties": {
-      }
-    },
     "GoogleCloudAiplatformInternalPurgeArtifactsMetadata": {
       "id": "GoogleCloudAiplatformInternalPurgeArtifactsMetadata",
       "description": "Details of operations that perform MetadataService.PurgeArtifacts.",
@@ -8756,6 +8935,19 @@
           "items": {
             "type": "string"
           }
+        },
+        "taskQueueName": {
+          "description": "Output only. Name of the task queue the sent human in the loop entry belongs to.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "questionIds": {
+          "description": "Output only. Question Ids associated with the human in the loop entry.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -8844,6 +9036,17 @@
       "properties": {
         "genericMetadata": {
           "description": "The operation generic information.",
+          "$ref": "GoogleCloudAiplatformInternalGenericOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalUpdateExplanationDatasetOperationMetadata": {
+      "id": "GoogleCloudAiplatformInternalUpdateExplanationDatasetOperationMetadata",
+      "description": "Runtime operation information for ModelService.UpdateExplanationDataset.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The common part of the operation metadata.",
           "$ref": "GoogleCloudAiplatformInternalGenericOperationMetadata"
         }
       }
@@ -10690,18 +10893,57 @@
       "description": "Example-based explainability that returns the nearest neighbors from the provided dataset.",
       "type": "object",
       "properties": {
-        "gcsSource": {
-          "description": "The Cloud Storage location for the input instances.",
-          "$ref": "GoogleCloudAiplatformUiGcsSource"
-        },
         "nearestNeighborSearchConfig": {
           "description": "The configuration for the generated index, the semantics are the same as metadata and should match NearestNeighborSearchConfig.",
           "type": "any"
+        },
+        "presets": {
+          "description": "Preset config based on the desired query speed-precision trade-off and modality",
+          "$ref": "GoogleCloudAiplatformUiPresets"
+        },
+        "gcsSource": {
+          "description": "The Cloud Storage location for the input instances.",
+          "$ref": "GoogleCloudAiplatformUiGcsSource"
         },
         "neighborCount": {
           "description": "The number of neighbors to return.",
           "type": "integer",
           "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiPresets": {
+      "id": "GoogleCloudAiplatformUiPresets",
+      "description": "Preset configuration for example-based explanations",
+      "type": "object",
+      "properties": {
+        "query": {
+          "description": "Preset option controlling parameters for query speed-precision trade-off",
+          "type": "string",
+          "enumDescriptions": [
+            "More precise neighbors as a trade-off against slower response. This is also the default value (field-number 0).",
+            "Faster response as a trade-off against less precise neighbors."
+          ],
+          "enum": [
+            "PRECISE",
+            "FAST"
+          ]
+        },
+        "modality": {
+          "description": "Preset option controlling parameters for different modalities",
+          "type": "string",
+          "enumDescriptions": [
+            "Should not be set. Added as a recommended best practice for enums",
+            "IMAGE modality",
+            "TEXT modality",
+            "TABULAR modality"
+          ],
+          "enum": [
+            "MODALITY_UNSPECIFIED",
+            "IMAGE",
+            "TEXT",
+            "TABULAR"
+          ]
         }
       }
     },
@@ -11049,7 +11291,7 @@
           "$ref": "GoogleCloudAiplatformUiBigQuerySource"
         },
         "dataFormat": {
-          "description": "\"jsonl\" The source file is a JSONL file.",
+          "description": "Data format of the dataset, only applicable if the input is from Google Cloud Storage. The possible formats are: \"tf-record\" The source file is a TFRecord file. \"csv\" The source file is a CSV file. \"jsonl\" The source file is a JSONL file.",
           "type": "string"
         },
         "targetField": {
@@ -11633,13 +11875,6 @@
         }
       }
     },
-    "GoogleCloudAiplatformUiDeleteFeatureValuesResponse": {
-      "id": "GoogleCloudAiplatformUiDeleteFeatureValuesResponse",
-      "description": "Response message for FeaturestoreService.DeleteFeatureValues.",
-      "type": "object",
-      "properties": {
-      }
-    },
     "GoogleCloudAiplatformUiMutateDeployedIndexOperationMetadata": {
       "id": "GoogleCloudAiplatformUiMutateDeployedIndexOperationMetadata",
       "description": "Runtime operation information for IndexEndpointService.MutateDeployedIndex.",
@@ -12098,6 +12333,17 @@
       "properties": {
       }
     },
+    "GoogleCloudAiplatformUiUpdateExplanationDatasetOperationMetadata": {
+      "id": "GoogleCloudAiplatformUiUpdateExplanationDatasetOperationMetadata",
+      "description": "Runtime operation information for ModelService.UpdateExplanationDataset.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The common part of the operation metadata.",
+          "$ref": "GoogleCloudAiplatformUiGenericOperationMetadata"
+        }
+      }
+    },
     "GoogleCloudAiplatformUiUpdateIndexOperationMetadata": {
       "id": "GoogleCloudAiplatformUiUpdateIndexOperationMetadata",
       "description": "Runtime operation information for IndexService.UpdateIndex.",
@@ -12185,6 +12431,28 @@
         "modelVersionId": {
           "description": "Output only. The version ID of the model that is uploaded.",
           "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiCopyModelOperationMetadata": {
+      "id": "GoogleCloudAiplatformUiCopyModelOperationMetadata",
+      "description": "Details of ModelService.CopyModel operation.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The common part of the operation metadata.",
+          "$ref": "GoogleCloudAiplatformUiGenericOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiCopyModelResponse": {
+      "id": "GoogleCloudAiplatformUiCopyModelResponse",
+      "description": "Response message of ModelService.CopyModel operation.",
+      "type": "object",
+      "properties": {
+        "model": {
+          "description": "The name of the copied Model resource. Format: `projects\/{project}\/locations\/{location}\/models\/{model}`",
           "type": "string"
         }
       }
@@ -15399,18 +15667,57 @@
       "description": "Example-based explainability that returns the nearest neighbors from the provided dataset.",
       "type": "object",
       "properties": {
-        "gcsSource": {
-          "description": "The Cloud Storage location for the input instances.",
-          "$ref": "GoogleCloudAiplatformV1beta1GcsSource"
-        },
         "nearestNeighborSearchConfig": {
           "description": "The configuration for the generated index, the semantics are the same as metadata and should match NearestNeighborSearchConfig.",
           "type": "any"
+        },
+        "presets": {
+          "description": "Preset config based on the desired query speed-precision trade-off and modality",
+          "$ref": "GoogleCloudAiplatformV1beta1Presets"
+        },
+        "gcsSource": {
+          "description": "The Cloud Storage location for the input instances.",
+          "$ref": "GoogleCloudAiplatformV1beta1GcsSource"
         },
         "neighborCount": {
           "description": "The number of neighbors to return.",
           "type": "integer",
           "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1Presets": {
+      "id": "GoogleCloudAiplatformV1beta1Presets",
+      "description": "Preset configuration for example-based explanations",
+      "type": "object",
+      "properties": {
+        "query": {
+          "description": "Preset option controlling parameters for query speed-precision trade-off",
+          "type": "string",
+          "enumDescriptions": [
+            "More precise neighbors as a trade-off against slower response. This is also the default value (field-number 0).",
+            "Faster response as a trade-off against less precise neighbors."
+          ],
+          "enum": [
+            "PRECISE",
+            "FAST"
+          ]
+        },
+        "modality": {
+          "description": "Preset option controlling parameters for different modalities",
+          "type": "string",
+          "enumDescriptions": [
+            "Should not be set. Added as a recommended best practice for enums",
+            "IMAGE modality",
+            "TEXT modality",
+            "TABULAR modality"
+          ],
+          "enum": [
+            "MODALITY_UNSPECIFIED",
+            "IMAGE",
+            "TEXT",
+            "TABULAR"
+          ]
         }
       }
     },
@@ -15990,13 +16297,6 @@
         }
       }
     },
-    "GoogleCloudAiplatformV1beta1DeleteFeatureValuesResponse": {
-      "id": "GoogleCloudAiplatformV1beta1DeleteFeatureValuesResponse",
-      "description": "Response message for FeaturestoreService.DeleteFeatureValues.",
-      "type": "object",
-      "properties": {
-      }
-    },
     "GoogleCloudAiplatformV1beta1MutateDeployedIndexOperationMetadata": {
       "id": "GoogleCloudAiplatformV1beta1MutateDeployedIndexOperationMetadata",
       "description": "Runtime operation information for IndexEndpointService.MutateDeployedIndex.",
@@ -16414,6 +16714,24 @@
         }
       }
     },
+    "GoogleCloudAiplatformV1beta1UpdateExplanationDatasetOperationMetadata": {
+      "id": "GoogleCloudAiplatformV1beta1UpdateExplanationDatasetOperationMetadata",
+      "description": "Runtime operation information for ModelService.UpdateExplanationDataset.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The common part of the operation metadata.",
+          "$ref": "GoogleCloudAiplatformV1beta1GenericOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1UpdateExplanationDatasetResponse": {
+      "id": "GoogleCloudAiplatformV1beta1UpdateExplanationDatasetResponse",
+      "description": "Response message of ModelService.UpdateExplanationDataset operation.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "GoogleCloudAiplatformV1beta1UpdateFeaturestoreOperationMetadata": {
       "id": "GoogleCloudAiplatformV1beta1UpdateFeaturestoreOperationMetadata",
       "description": "Details of operations that perform update Featurestore.",
@@ -16501,6 +16819,28 @@
         "modelVersionId": {
           "description": "Output only. The version ID of the model that is uploaded.",
           "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1CopyModelOperationMetadata": {
+      "id": "GoogleCloudAiplatformV1beta1CopyModelOperationMetadata",
+      "description": "Details of ModelService.CopyModel operation.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The common part of the operation metadata.",
+          "$ref": "GoogleCloudAiplatformV1beta1GenericOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1CopyModelResponse": {
+      "id": "GoogleCloudAiplatformV1beta1CopyModelResponse",
+      "description": "Response message of ModelService.CopyModel operation.",
+      "type": "object",
+      "properties": {
+        "model": {
+          "description": "The name of the copied Model resource. Format: `projects\/{project}\/locations\/{location}\/models\/{model}`",
           "type": "string"
         }
       }
@@ -17368,24 +17708,24 @@
       "type": "object",
       "properties": {
         "groupColumns": {
-          "description": "A list of time series attribute column names that define the time series hierarchy. Only one level of hierarchy is supported, ex. \u2018region\u2019 for a hierarchy of stores or \u2018department\u2019 for a hierarchy of products. If multiple columns are specified, time series will be grouped by their combined values, ex. (\u2018blue\u2019, \u2018large\u2019) for \u2018color\u2019 and \u2018size\u2019, up to 5 columns are accepted.",
+          "description": "A list of time series attribute column names that define the time series hierarchy. Only one level of hierarchy is supported, ex. \u2018region\u2019 for a hierarchy of stores or \u2018department\u2019 for a hierarchy of products. If multiple columns are specified, time series will be grouped by their combined values, ex. (\u2018blue\u2019, \u2018large\u2019) for \u2018color\u2019 and \u2018size\u2019, up to 5 columns are accepted. If no group columns are specified, all time series are considered to be part of the same group.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "groupLossWeight": {
-          "description": "The weight of the loss for predictions aggregated over time series in the same hierarchy group, or all time series if no group columns are defined.",
+        "groupTotalWeight": {
+          "description": "The weight of the loss for predictions aggregated over time series in the same group.",
           "type": "number",
           "format": "double"
         },
-        "timeLossWeight": {
+        "temporalTotalWeight": {
           "description": "The weight of the loss for predictions aggregated over the horizon for a single time series.",
           "type": "number",
           "format": "double"
         },
-        "totalLossWeight": {
-          "description": "The weight of the loss for predictions aggregated over both the horizon and time series in the same hierarchy group, or all time series if no group columns are defined.",
+        "groupTemporalTotalWeight": {
+          "description": "The weight of the loss for predictions aggregated over both the horizon and time series in the same hierarchy group.",
           "type": "number",
           "format": "double"
         }
@@ -18148,6 +18488,28 @@
           "items": {
             "type": "string"
           }
+        },
+        "env": {
+          "description": "Environment variables to be passed to the container. Maximum limit is 100.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1EnvVar"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1EnvVar": {
+      "id": "GoogleCloudAiplatformV1beta1EnvVar",
+      "description": "Represents an environment variable present in a Container or Python Module.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. Name of the environment variable. Must be a valid C identifier.",
+          "type": "string"
+        },
+        "value": {
+          "description": "Required. Variables that reference a $(VAR_NAME) are expanded using the previous defined environment variables in the container and any service environment variables. If a variable cannot be resolved, the reference in the input string will be unchanged. The $(VAR_NAME) syntax can be escaped with a double $$, ie: $$(VAR_NAME). Escaped references will never be expanded, regardless of whether the variable exists or not.",
+          "type": "string"
         }
       }
     },
@@ -18176,6 +18538,13 @@
           "type": "array",
           "items": {
             "type": "string"
+          }
+        },
+        "env": {
+          "description": "Environment variables to be passed to the python module. Maximum limit is 100.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1EnvVar"
           }
         }
       }
@@ -18705,6 +19074,239 @@
         },
         "bestTrialBackingCustomJob": {
           "description": "The resource name of the CustomJob that has been created to run the best Trial of this HyperparameterTuning task.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionSeq2SeqPlusForecasting": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionSeq2SeqPlusForecasting",
+      "description": "A TrainingJob that trains and uploads an AutoML Forecasting Model.",
+      "type": "object",
+      "properties": {
+        "inputs": {
+          "description": "The input parameters of this TrainingJob.",
+          "$ref": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputs"
+        },
+        "metadata": {
+          "description": "The metadata information.",
+          "$ref": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputs": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputs",
+      "type": "object",
+      "properties": {
+        "targetColumn": {
+          "description": "The name of the column that the Model is to predict values for. This column must be unavailable at forecast.",
+          "type": "string"
+        },
+        "timeSeriesIdentifierColumn": {
+          "description": "The name of the column that identifies the time series.",
+          "type": "string"
+        },
+        "timeColumn": {
+          "description": "The name of the column that identifies time order in the time series. This column must be available at forecast.",
+          "type": "string"
+        },
+        "transformations": {
+          "description": "Each transformation will apply transform function to given input column. And the result will be used for training. When creating transformation for BigQuery Struct column, the column should be flattened using \".\" as the delimiter.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformation"
+          }
+        },
+        "optimizationObjective": {
+          "description": "Objective function the model is optimizing towards. The training process creates a model that optimizes the value of the objective function over the validation set. The supported optimization objectives: * \"minimize-rmse\" (default) - Minimize root-mean-squared error (RMSE). * \"minimize-mae\" - Minimize mean-absolute error (MAE). * \"minimize-rmsle\" - Minimize root-mean-squared log error (RMSLE). * \"minimize-rmspe\" - Minimize root-mean-squared percentage error (RMSPE). * \"minimize-wape-mae\" - Minimize the combination of weighted absolute percentage error (WAPE) and mean-absolute-error (MAE). * \"minimize-quantile-loss\" - Minimize the quantile loss at the quantiles defined in `quantiles`. * \"minimize-mape\" - Minimize the mean absolute percentage error.",
+          "type": "string"
+        },
+        "trainBudgetMilliNodeHours": {
+          "description": "Required. The train budget of creating this model, expressed in milli node hours i.e. 1,000 value in this field means 1 node hour. The training cost of the model will not exceed this budget. The final cost will be attempted to be close to the budget, though may end up being (even) noticeably smaller - at the backend's discretion. This especially may happen when further model training ceases to provide any improvements. If the budget is set to a value known to be insufficient to train a model for the given dataset, the training won't be attempted and will error. The train budget must be between 1,000 and 72,000 milli node hours, inclusive.",
+          "type": "string",
+          "format": "int64"
+        },
+        "weightColumn": {
+          "description": "Column name that should be used as the weight column. Higher values in this column give more importance to the row during model training. The column must have numeric values between 0 and 10000 inclusively; 0 means the row is ignored for training. If weight column field is not set, then all rows are assumed to have equal weight of 1. This column must be available at forecast.",
+          "type": "string"
+        },
+        "timeSeriesAttributeColumns": {
+          "description": "Column names that should be used as attribute columns. The value of these columns does not vary as a function of time. For example, store ID or item color.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "unavailableAtForecastColumns": {
+          "description": "Names of columns that are unavailable when a forecast is requested. This column contains information for the given entity (identified by the time_series_identifier_column) that is unknown before the forecast For example, actual weather on a given day.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "availableAtForecastColumns": {
+          "description": "Names of columns that are available and provided when a forecast is requested. These columns contain information for the given entity (identified by the time_series_identifier_column column) that is known at forecast. For example, predicted weather for a specific day.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "dataGranularity": {
+          "description": "Expected difference in time granularity between rows in the data.",
+          "$ref": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsGranularity"
+        },
+        "forecastHorizon": {
+          "description": "The amount of time into the future for which forecasted values for the target are returned. Expressed in number of units defined by the `data_granularity` field.",
+          "type": "string",
+          "format": "int64"
+        },
+        "contextWindow": {
+          "description": "The amount of time into the past training and prediction data is used for model training and prediction respectively. Expressed in number of units defined by the `data_granularity` field.",
+          "type": "string",
+          "format": "int64"
+        },
+        "holidayRegions": {
+          "description": "The geographical region based on which the holiday effect is applied in modeling by adding holiday categorical array feature that include all holidays matching the date. This option only allowed when data_granularity is day. By default, holiday effect modeling is disabled. To turn it on, specify the holiday region using this option.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "exportEvaluatedDataItemsConfig": {
+          "description": "Configuration for exporting test set predictions to a BigQuery table. If this configuration is absent, then the export is not performed.",
+          "$ref": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionExportEvaluatedDataItemsConfig"
+        },
+        "windowConfig": {
+          "description": "Config containing strategy for generating sliding windows.",
+          "$ref": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionWindowConfig"
+        },
+        "quantiles": {
+          "description": "Quantiles to use for minimize-quantile-loss `optimization_objective`. Up to 5 quantiles are allowed of values between 0 and 1, exclusive. Required if the value of optimization_objective is minimize-quantile-loss. Represents the percent quantiles to use for that objective. Quantiles must be unique.",
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "validationOptions": {
+          "description": "Validation options for the data validation component. The available options are: * \"fail-pipeline\" - default, will validate against the validation and fail the pipeline if it fails. * \"ignore-validation\" - ignore the results of the validation and continue",
+          "type": "string"
+        },
+        "additionalExperiments": {
+          "description": "Additional experiment flags for the time series forcasting training.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "hierarchyConfig": {
+          "description": "Configuration that defines the hierarchical relationship of time series and parameters for hierarchical forecasting strategies.",
+          "$ref": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionHierarchyConfig"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformation": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformation",
+      "type": "object",
+      "properties": {
+        "auto": {
+          "$ref": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationAutoTransformation"
+        },
+        "numeric": {
+          "$ref": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationNumericTransformation"
+        },
+        "categorical": {
+          "$ref": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationCategoricalTransformation"
+        },
+        "timestamp": {
+          "$ref": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationTimestampTransformation"
+        },
+        "text": {
+          "$ref": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationTextTransformation"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationAutoTransformation": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationAutoTransformation",
+      "description": "Training pipeline will infer the proper transformation based on the statistic of dataset.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationNumericTransformation": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationNumericTransformation",
+      "description": "Training pipeline will perform following transformation functions. * The value converted to float32. * The z_score of the value. * log(value+1) when the value is greater than or equal to 0. Otherwise, this transformation is not applied and the value is considered a missing value. * z_score of log(value+1) when the value is greater than or equal to 0. Otherwise, this transformation is not applied and the value is considered a missing value.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationCategoricalTransformation": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationCategoricalTransformation",
+      "description": "Training pipeline will perform following transformation functions. * The categorical string as is--no change to case, punctuation, spelling, tense, and so on. * Convert the category name to a dictionary lookup index and generate an embedding for each index. * Categories that appear less than 5 times in the training dataset are treated as the \"unknown\" category. The \"unknown\" category gets its own special lookup index and resulting embedding.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationTimestampTransformation": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationTimestampTransformation",
+      "description": "Training pipeline will perform following transformation functions. * Apply the transformation functions for Numerical columns. * Determine the year, month, day,and weekday. Treat each value from the timestamp as a Categorical column. * Invalid numerical values (for example, values that fall outside of a typical timestamp range, or are extreme values) receive no special treatment and are not removed.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        },
+        "timeFormat": {
+          "description": "The format in which that time field is expressed. The time_format must either be one of: * `unix-seconds` * `unix-milliseconds` * `unix-microseconds` * `unix-nanoseconds` (for respectively number of seconds, milliseconds, microseconds and nanoseconds since start of the Unix epoch); or be written in `strftime` syntax. If time_format is not set, then the default format is RFC 3339 `date-time` format, where `time-offset` = `\"Z\"` (e.g. 1985-04-12T23:20:50.52Z)",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationTextTransformation": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationTextTransformation",
+      "description": "Training pipeline will perform following transformation functions. * The text as is--no change to case, punctuation, spelling, tense, and so on. * Convert the category name to a dictionary lookup index and generate an embedding for each index.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsGranularity": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsGranularity",
+      "description": "A duration of time expressed in time granularity units.",
+      "type": "object",
+      "properties": {
+        "unit": {
+          "description": "The time granularity unit of this time period. The supported units are: * \"minute\" * \"hour\" * \"day\" * \"week\" * \"month\" * \"year\"",
+          "type": "string"
+        },
+        "quantity": {
+          "description": "The number of granularity_units between data points in the training data. If `granularity_unit` is `minute`, can be 1, 5, 10, 15, or 30. For all other values of `granularity_unit`, must be 1.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingMetadata": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingMetadata",
+      "description": "Model metadata specific to Seq2Seq Plus Forecasting.",
+      "type": "object",
+      "properties": {
+        "trainCostMilliNodeHours": {
+          "description": "Output only. The actual training cost of the model, expressed in milli node hours, i.e. 1,000 value in this field means 1 node hour. Guaranteed to not exceed the train budget.",
+          "type": "string",
+          "format": "int64"
+        },
+        "evaluatedDataItemsBigqueryUri": {
+          "description": "BigQuery destination uri for exported evaluated examples.",
           "type": "string"
         }
       }
@@ -21519,6 +22121,28 @@
         }
       }
     },
+    "GoogleCloudAiplatformV1CopyModelOperationMetadata": {
+      "id": "GoogleCloudAiplatformV1CopyModelOperationMetadata",
+      "description": "Details of ModelService.CopyModel operation.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The common part of the operation metadata.",
+          "$ref": "GoogleCloudAiplatformV1GenericOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1CopyModelResponse": {
+      "id": "GoogleCloudAiplatformV1CopyModelResponse",
+      "description": "Response message of ModelService.CopyModel operation.",
+      "type": "object",
+      "properties": {
+        "model": {
+          "description": "The name of the copied Model resource. Format: `projects\/{project}\/locations\/{location}\/models\/{model}`",
+          "type": "string"
+        }
+      }
+    },
     "GoogleCloudAiplatformV1SchemaPredictInstanceImageClassificationPredictionInstance": {
       "id": "GoogleCloudAiplatformV1SchemaPredictInstanceImageClassificationPredictionInstance",
       "description": "Prediction input format for Image Classification.",
@@ -22382,24 +23006,24 @@
       "type": "object",
       "properties": {
         "groupColumns": {
-          "description": "A list of time series attribute column names that define the time series hierarchy. Only one level of hierarchy is supported, ex. \u2018region\u2019 for a hierarchy of stores or \u2018department\u2019 for a hierarchy of products. If multiple columns are specified, time series will be grouped by their combined values, ex. (\u2018blue\u2019, \u2018large\u2019) for \u2018color\u2019 and \u2018size\u2019, up to 5 columns are accepted.",
+          "description": "A list of time series attribute column names that define the time series hierarchy. Only one level of hierarchy is supported, ex. \u2018region\u2019 for a hierarchy of stores or \u2018department\u2019 for a hierarchy of products. If multiple columns are specified, time series will be grouped by their combined values, ex. (\u2018blue\u2019, \u2018large\u2019) for \u2018color\u2019 and \u2018size\u2019, up to 5 columns are accepted. If no group columns are specified, all time series are considered to be part of the same group.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "groupLossWeight": {
-          "description": "The weight of the loss for predictions aggregated over time series in the same hierarchy group, or all time series if no group columns are defined.",
+        "groupTotalWeight": {
+          "description": "The weight of the loss for predictions aggregated over time series in the same group.",
           "type": "number",
           "format": "double"
         },
-        "timeLossWeight": {
+        "temporalTotalWeight": {
           "description": "The weight of the loss for predictions aggregated over the horizon for a single time series.",
           "type": "number",
           "format": "double"
         },
-        "totalLossWeight": {
-          "description": "The weight of the loss for predictions aggregated over both the horizon and time series in the same hierarchy group, or all time series if no group columns are defined.",
+        "groupTemporalTotalWeight": {
+          "description": "The weight of the loss for predictions aggregated over both the horizon and time series in the same hierarchy group.",
           "type": "number",
           "format": "double"
         }
@@ -23714,6 +24338,239 @@
         },
         "bestTrialBackingCustomJob": {
           "description": "The resource name of the CustomJob that has been created to run the best Trial of this HyperparameterTuning task.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionSeq2SeqPlusForecasting": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionSeq2SeqPlusForecasting",
+      "description": "A TrainingJob that trains and uploads an AutoML Forecasting Model.",
+      "type": "object",
+      "properties": {
+        "inputs": {
+          "description": "The input parameters of this TrainingJob.",
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputs"
+        },
+        "metadata": {
+          "description": "The metadata information.",
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputs": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputs",
+      "type": "object",
+      "properties": {
+        "targetColumn": {
+          "description": "The name of the column that the Model is to predict values for. This column must be unavailable at forecast.",
+          "type": "string"
+        },
+        "timeSeriesIdentifierColumn": {
+          "description": "The name of the column that identifies the time series.",
+          "type": "string"
+        },
+        "timeColumn": {
+          "description": "The name of the column that identifies time order in the time series. This column must be available at forecast.",
+          "type": "string"
+        },
+        "transformations": {
+          "description": "Each transformation will apply transform function to given input column. And the result will be used for training. When creating transformation for BigQuery Struct column, the column should be flattened using \".\" as the delimiter.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformation"
+          }
+        },
+        "optimizationObjective": {
+          "description": "Objective function the model is optimizing towards. The training process creates a model that optimizes the value of the objective function over the validation set. The supported optimization objectives: * \"minimize-rmse\" (default) - Minimize root-mean-squared error (RMSE). * \"minimize-mae\" - Minimize mean-absolute error (MAE). * \"minimize-rmsle\" - Minimize root-mean-squared log error (RMSLE). * \"minimize-rmspe\" - Minimize root-mean-squared percentage error (RMSPE). * \"minimize-wape-mae\" - Minimize the combination of weighted absolute percentage error (WAPE) and mean-absolute-error (MAE). * \"minimize-quantile-loss\" - Minimize the quantile loss at the quantiles defined in `quantiles`. * \"minimize-mape\" - Minimize the mean absolute percentage error.",
+          "type": "string"
+        },
+        "trainBudgetMilliNodeHours": {
+          "description": "Required. The train budget of creating this model, expressed in milli node hours i.e. 1,000 value in this field means 1 node hour. The training cost of the model will not exceed this budget. The final cost will be attempted to be close to the budget, though may end up being (even) noticeably smaller - at the backend's discretion. This especially may happen when further model training ceases to provide any improvements. If the budget is set to a value known to be insufficient to train a model for the given dataset, the training won't be attempted and will error. The train budget must be between 1,000 and 72,000 milli node hours, inclusive.",
+          "type": "string",
+          "format": "int64"
+        },
+        "weightColumn": {
+          "description": "Column name that should be used as the weight column. Higher values in this column give more importance to the row during model training. The column must have numeric values between 0 and 10000 inclusively; 0 means the row is ignored for training. If weight column field is not set, then all rows are assumed to have equal weight of 1. This column must be available at forecast.",
+          "type": "string"
+        },
+        "timeSeriesAttributeColumns": {
+          "description": "Column names that should be used as attribute columns. The value of these columns does not vary as a function of time. For example, store ID or item color.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "unavailableAtForecastColumns": {
+          "description": "Names of columns that are unavailable when a forecast is requested. This column contains information for the given entity (identified by the time_series_identifier_column) that is unknown before the forecast For example, actual weather on a given day.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "availableAtForecastColumns": {
+          "description": "Names of columns that are available and provided when a forecast is requested. These columns contain information for the given entity (identified by the time_series_identifier_column column) that is known at forecast. For example, predicted weather for a specific day.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "dataGranularity": {
+          "description": "Expected difference in time granularity between rows in the data.",
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsGranularity"
+        },
+        "forecastHorizon": {
+          "description": "The amount of time into the future for which forecasted values for the target are returned. Expressed in number of units defined by the `data_granularity` field.",
+          "type": "string",
+          "format": "int64"
+        },
+        "contextWindow": {
+          "description": "The amount of time into the past training and prediction data is used for model training and prediction respectively. Expressed in number of units defined by the `data_granularity` field.",
+          "type": "string",
+          "format": "int64"
+        },
+        "holidayRegions": {
+          "description": "The geographical region based on which the holiday effect is applied in modeling by adding holiday categorical array feature that include all holidays matching the date. This option only allowed when data_granularity is day. By default, holiday effect modeling is disabled. To turn it on, specify the holiday region using this option.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "exportEvaluatedDataItemsConfig": {
+          "description": "Configuration for exporting test set predictions to a BigQuery table. If this configuration is absent, then the export is not performed.",
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionExportEvaluatedDataItemsConfig"
+        },
+        "windowConfig": {
+          "description": "Config containing strategy for generating sliding windows.",
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionWindowConfig"
+        },
+        "quantiles": {
+          "description": "Quantiles to use for minimize-quantile-loss `optimization_objective`. Up to 5 quantiles are allowed of values between 0 and 1, exclusive. Required if the value of optimization_objective is minimize-quantile-loss. Represents the percent quantiles to use for that objective. Quantiles must be unique.",
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "validationOptions": {
+          "description": "Validation options for the data validation component. The available options are: * \"fail-pipeline\" - default, will validate against the validation and fail the pipeline if it fails. * \"ignore-validation\" - ignore the results of the validation and continue",
+          "type": "string"
+        },
+        "additionalExperiments": {
+          "description": "Additional experiment flags for the time series forcasting training.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "hierarchyConfig": {
+          "description": "Configuration that defines the hierarchical relationship of time series and parameters for hierarchical forecasting strategies.",
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionHierarchyConfig"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformation": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformation",
+      "type": "object",
+      "properties": {
+        "auto": {
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationAutoTransformation"
+        },
+        "numeric": {
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationNumericTransformation"
+        },
+        "categorical": {
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationCategoricalTransformation"
+        },
+        "timestamp": {
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationTimestampTransformation"
+        },
+        "text": {
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationTextTransformation"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationAutoTransformation": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationAutoTransformation",
+      "description": "Training pipeline will infer the proper transformation based on the statistic of dataset.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationNumericTransformation": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationNumericTransformation",
+      "description": "Training pipeline will perform following transformation functions. * The value converted to float32. * The z_score of the value. * log(value+1) when the value is greater than or equal to 0. Otherwise, this transformation is not applied and the value is considered a missing value. * z_score of log(value+1) when the value is greater than or equal to 0. Otherwise, this transformation is not applied and the value is considered a missing value.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationCategoricalTransformation": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationCategoricalTransformation",
+      "description": "Training pipeline will perform following transformation functions. * The categorical string as is--no change to case, punctuation, spelling, tense, and so on. * Convert the category name to a dictionary lookup index and generate an embedding for each index. * Categories that appear less than 5 times in the training dataset are treated as the \"unknown\" category. The \"unknown\" category gets its own special lookup index and resulting embedding.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationTimestampTransformation": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationTimestampTransformation",
+      "description": "Training pipeline will perform following transformation functions. * Apply the transformation functions for Numerical columns. * Determine the year, month, day,and weekday. Treat each value from the timestamp as a Categorical column. * Invalid numerical values (for example, values that fall outside of a typical timestamp range, or are extreme values) receive no special treatment and are not removed.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        },
+        "timeFormat": {
+          "description": "The format in which that time field is expressed. The time_format must either be one of: * `unix-seconds` * `unix-milliseconds` * `unix-microseconds` * `unix-nanoseconds` (for respectively number of seconds, milliseconds, microseconds and nanoseconds since start of the Unix epoch); or be written in `strftime` syntax. If time_format is not set, then the default format is RFC 3339 `date-time` format, where `time-offset` = `\"Z\"` (e.g. 1985-04-12T23:20:50.52Z)",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationTextTransformation": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationTextTransformation",
+      "description": "Training pipeline will perform following transformation functions. * The text as is--no change to case, punctuation, spelling, tense, and so on. * Convert the category name to a dictionary lookup index and generate an embedding for each index.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsGranularity": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsGranularity",
+      "description": "A duration of time expressed in time granularity units.",
+      "type": "object",
+      "properties": {
+        "unit": {
+          "description": "The time granularity unit of this time period. The supported units are: * \"minute\" * \"hour\" * \"day\" * \"week\" * \"month\" * \"year\"",
+          "type": "string"
+        },
+        "quantity": {
+          "description": "The number of granularity_units between data points in the training data. If `granularity_unit` is `minute`, can be 1, 5, 10, 15, or 30. For all other values of `granularity_unit`, must be 1.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingMetadata": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingMetadata",
+      "description": "Model metadata specific to Seq2Seq Plus Forecasting.",
+      "type": "object",
+      "properties": {
+        "trainCostMilliNodeHours": {
+          "description": "Output only. The actual training cost of the model, expressed in milli node hours, i.e. 1,000 value in this field means 1 node hour. Guaranteed to not exceed the train budget.",
+          "type": "string",
+          "format": "int64"
+        },
+        "evaluatedDataItemsBigqueryUri": {
+          "description": "BigQuery destination uri for exported evaluated examples.",
           "type": "string"
         }
       }
@@ -26888,6 +27745,62 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Deletes an Index. An Index can only be deleted when all its DeployedIndexes had been undeployed."
+                },
+                "upsertDatapoints": {
+                  "id": "aiplatform.projects.locations.indexes.upsertDatapoints",
+                  "path": "v1alpha1/{+index}:upsertDatapoints",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/indexes/{indexesId}:upsertDatapoints",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "index": {
+                      "description": "Required. The name of the Index resource to be updated. Format: `projects\/{project}\/locations\/{location}\/indexes\/{index}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/indexes\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "index"
+                  ],
+                  "request": {
+                    "$ref": "GoogleCloudAiplatformV1alpha1UpsertDatapointsRequest"
+                  },
+                  "response": {
+                    "$ref": "GoogleCloudAiplatformV1alpha1UpsertDatapointsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Add\/update Datapoints into an Index."
+                },
+                "removeDatapoints": {
+                  "id": "aiplatform.projects.locations.indexes.removeDatapoints",
+                  "path": "v1alpha1/{+index}:removeDatapoints",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/indexes/{indexesId}:removeDatapoints",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "index": {
+                      "description": "Required. The name of the Index resource to be updated. Format: `projects\/{project}\/locations\/{location}\/indexes\/{index}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/indexes\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "index"
+                  ],
+                  "request": {
+                    "$ref": "GoogleCloudAiplatformV1alpha1RemoveDatapointsRequest"
+                  },
+                  "response": {
+                    "$ref": "GoogleCloudAiplatformV1alpha1RemoveDatapointsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Remove Datapoints from an Index."
                 }
               }
               ,
@@ -29879,7 +30792,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. The name of the Model resource. Format: `projects\/{project}\/locations\/{location}\/models\/{model}` In order to retrieve a specific version of the model, also provide the version ID or version alias. Example: projects\/{project}\/locations\/{location}\/models\/{model}@2 or projects\/{project}\/locations\/{location}\/models\/{model}@golden If no version ID or alias is specified, the \"default\" version will be returned. The \"default\" version alias is created for the first version of the model, and can be moved to other versions later on. There will be exactly one default version.",
+                      "description": "Required. The name of the Model resource. Format: `projects\/{project}\/locations\/{location}\/models\/{model}` In order to retrieve a specific version of the model, also provide the version ID or version alias. Example: `projects\/{project}\/locations\/{location}\/models\/{model}@2` or `projects\/{project}\/locations\/{location}\/models\/{model}@golden` If no version ID or alias is specified, the \"default\" version will be returned. The \"default\" version alias is created for the first version of the model, and can be moved to other versions later on. There will be exactly one default version.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/models\/[^\/]+$",
                       "location": "path",
                       "required": true,

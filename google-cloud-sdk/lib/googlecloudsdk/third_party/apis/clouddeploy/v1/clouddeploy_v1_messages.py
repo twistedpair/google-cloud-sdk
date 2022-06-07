@@ -953,6 +953,8 @@ class DeliveryPipeline(_messages.Message):
       projects/{project}/ locations/{location}/deliveryPipelines/a-z{0,62}.
     serialPipeline: SerialPipeline defines a sequential set of stages for a
       `DeliveryPipeline`.
+    suspended: When suspended, no new releases or rollouts can be created, but
+      in-progress ones will complete.
     uid: Output only. Unique identifier of the `DeliveryPipeline`.
     updateTime: Output only. Most recent time at which the pipeline was
       updated.
@@ -1025,8 +1027,9 @@ class DeliveryPipeline(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 6)
   name = _messages.StringField(7)
   serialPipeline = _messages.MessageField('SerialPipeline', 8)
-  uid = _messages.StringField(9)
-  updateTime = _messages.StringField(10)
+  suspended = _messages.BooleanField(9)
+  uid = _messages.StringField(10)
+  updateTime = _messages.StringField(11)
 
 
 class DeliveryPipelineNotificationEvent(_messages.Message):

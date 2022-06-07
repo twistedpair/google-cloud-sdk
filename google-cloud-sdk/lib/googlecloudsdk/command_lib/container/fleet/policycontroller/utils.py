@@ -17,6 +17,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import argparse
+
 from googlecloudsdk.command_lib.container.fleet.features import base
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core.console import console_io
@@ -65,6 +67,20 @@ def set_poco_hub_config_parameters_from_args(args, messages):
   """
   poco_hub_config = messages.PolicyControllerHubConfig(
     )
+  merge_args_with_poco_hub_config(args, poco_hub_config, messages)
+  return poco_hub_config
+
+
+def merge_args_with_poco_hub_config(args, poco_hub_config, messages):
+  """Sets the given Policy Controller Hub Config object with parameters as passed in the command flags.
+
+  If nothing is set in args, preserve the original config object.
+
+  Args:
+    args: object containing arguments passed as flags with the command
+    poco_hub_config: current config object read from GKE Hub API
+    messages: GKE Hub proto messages
+  """
   if args.audit_interval_seconds:
     poco_hub_config.auditIntervalSeconds = args.audit_interval_seconds
   if args.exemptable_namespaces:
@@ -77,4 +93,53 @@ def set_poco_hub_config_parameters_from_args(args, messages):
   if args.template_library_installed is not None:
     poco_hub_config.templateLibraryConfig = messages.PolicyControllerTemplateLibraryConfig(
         included=args.template_library_installed)
-  return poco_hub_config
+
+
+class BooleanOptionalAction(argparse.Action):
+  """BooleanOptionalAction is copied from Python 3.9 library.
+
+  This is a workaround before the minimum supported version of python is updated
+  to 3.9 in gcloud, or the field mask bug is implemented (b/233366392),
+  whichever comes first.
+  """
+
+  def __init__(self,
+               option_strings,
+               dest,
+               default=None,
+               type=None,  # pylint: disable=redefined-builtin
+               choices=None,
+               required=False,
+               help=None,  # pylint: disable=redefined-builtin
+               metavar=None,
+               const=None):
+
+    _option_strings = []  # pylint: disable=invalid-name
+    for option_string in option_strings:
+      _option_strings.append(option_string)
+
+      if option_string.startswith('--'):
+        option_string = '--no-' + option_string[2:]
+        _option_strings.append(option_string)
+
+    if help is not None and default is not None:
+      help += ' (default: %(default)s)'
+
+    super(BooleanOptionalAction, self).__init__(
+        option_strings=_option_strings,
+        dest=dest,
+        nargs=0,
+        default=default,
+        type=type,
+        choices=choices,
+        required=required,
+        help=help,
+        metavar=metavar,
+        const=const)
+
+  def __call__(self, parser, namespace, values, option_string=None):
+    if option_string in self.option_strings:
+      setattr(namespace, self.dest, not option_string.startswith('--no-'))
+
+  def format_usage(self):
+    return ' | '.join(self.option_strings)

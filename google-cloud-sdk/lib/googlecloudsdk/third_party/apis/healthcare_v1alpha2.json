@@ -1303,7 +1303,7 @@
           "enumDescriptions": [
             "No text redaction specified. Same as REDACT_NO_TEXT.",
             "Redact all text.",
-            "Redact sensitive text.",
+            "Redact sensitive text. Uses the set of [Default DICOM InfoTypes](https:\/\/cloud.google.com\/healthcare-api\/docs\/how-tos\/dicom-deidentify#default_dicom_infotypes).",
             "Do not redact text."
           ],
           "enum": [
@@ -1969,7 +1969,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Resource name of the HL7v2 store, of the form `projects\/{project_id}\/datasets\/{dataset_id}\/hl7V2Stores\/{hl7v2_store_id}`.",
+          "description": "Resource name of the HL7v2 store, of the form `projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/hl7V2Stores\/{hl7v2_store_id}`.",
           "type": "string"
         },
         "notificationConfig": {
@@ -3644,7 +3644,7 @@
                       "httpMethod": "PATCH",
                       "parameters": {
                         "name": {
-                          "description": "Resource name of the HL7v2 store, of the form `projects\/{project_id}\/datasets\/{dataset_id}\/hl7V2Stores\/{hl7v2_store_id}`.",
+                          "description": "Resource name of the HL7v2 store, of the form `projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/hl7V2Stores\/{hl7v2_store_id}`.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/hl7V2Stores\/[^\/]+$",
                           "location": "path",
                           "required": true,

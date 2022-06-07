@@ -44,7 +44,9 @@ class GkehubV1alpha(base_api.BaseApiClient):
     self.organizations = self.OrganizationsService(self)
     self.projects_locations_features = self.ProjectsLocationsFeaturesService(self)
     self.projects_locations_fleets = self.ProjectsLocationsFleetsService(self)
+    self.projects_locations_memberships_namespacebindings = self.ProjectsLocationsMembershipsNamespacebindingsService(self)
     self.projects_locations_memberships = self.ProjectsLocationsMembershipsService(self)
+    self.projects_locations_namespaces_rbacrolebindings = self.ProjectsLocationsNamespacesRbacrolebindingsService(self)
     self.projects_locations_namespaces = self.ProjectsLocationsNamespacesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
@@ -478,6 +480,151 @@ class GkehubV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsMembershipsNamespacebindingsService(base_api.BaseApiService):
+    """Service class for the projects_locations_memberships_namespacebindings resource."""
+
+    _NAME = 'projects_locations_memberships_namespacebindings'
+
+    def __init__(self, client):
+      super(GkehubV1alpha.ProjectsLocationsMembershipsNamespacebindingsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a NamespaceBinding.
+
+      Args:
+        request: (GkehubProjectsLocationsMembershipsNamespacebindingsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/memberships/{membershipsId}/namespacebindings',
+        http_method='POST',
+        method_id='gkehub.projects.locations.memberships.namespacebindings.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['namespacebindingId'],
+        relative_path='v1alpha/{+parent}/namespacebindings',
+        request_field='namespaceBinding',
+        request_type_name='GkehubProjectsLocationsMembershipsNamespacebindingsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a NamespaceBinding.
+
+      Args:
+        request: (GkehubProjectsLocationsMembershipsNamespacebindingsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/memberships/{membershipsId}/namespacebindings/{namespacebindingsId}',
+        http_method='DELETE',
+        method_id='gkehub.projects.locations.memberships.namespacebindings.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='GkehubProjectsLocationsMembershipsNamespacebindingsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Returns the details of a NamespaceBinding.
+
+      Args:
+        request: (GkehubProjectsLocationsMembershipsNamespacebindingsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (NamespaceBinding) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/memberships/{membershipsId}/namespacebindings/{namespacebindingsId}',
+        http_method='GET',
+        method_id='gkehub.projects.locations.memberships.namespacebindings.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='GkehubProjectsLocationsMembershipsNamespacebindingsGetRequest',
+        response_type_name='NamespaceBinding',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists NamespaceBinding.
+
+      Args:
+        request: (GkehubProjectsLocationsMembershipsNamespacebindingsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListNamespaceBindingsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/memberships/{membershipsId}/namespacebindings',
+        http_method='GET',
+        method_id='gkehub.projects.locations.memberships.namespacebindings.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/namespacebindings',
+        request_field='',
+        request_type_name='GkehubProjectsLocationsMembershipsNamespacebindingsListRequest',
+        response_type_name='ListNamespaceBindingsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a NamespaceBinding.
+
+      Args:
+        request: (GkehubProjectsLocationsMembershipsNamespacebindingsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/memberships/{membershipsId}/namespacebindings/{namespacebindingsId}',
+        http_method='PATCH',
+        method_id='gkehub.projects.locations.memberships.namespacebindings.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha/{+name}',
+        request_field='namespaceBinding',
+        request_type_name='GkehubProjectsLocationsMembershipsNamespacebindingsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class ProjectsLocationsMembershipsService(base_api.BaseApiService):
     """Service class for the projects_locations_memberships resource."""
 
@@ -677,6 +824,60 @@ class GkehubV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ListNamespaces(self, request, global_params=None):
+      r"""Lists fleet namespaces of a given membership.
+
+      Args:
+        request: (GkehubProjectsLocationsMembershipsListNamespacesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListNamespacesForMembershipResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListNamespaces')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListNamespaces.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/memberships/{membershipsId}:listNamespaces',
+        http_method='GET',
+        method_id='gkehub.projects.locations.memberships.listNamespaces',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha/{+name}:listNamespaces',
+        request_field='',
+        request_type_name='GkehubProjectsLocationsMembershipsListNamespacesRequest',
+        response_type_name='ListNamespacesForMembershipResponse',
+        supports_download=False,
+    )
+
+    def ListPermitted(self, request, global_params=None):
+      r"""Lists Memberships that the user is permitted to access in IAM.
+
+      Args:
+        request: (GkehubProjectsLocationsMembershipsListPermittedRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListMembershipsResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListPermitted')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListPermitted.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/memberships:listPermitted',
+        http_method='GET',
+        method_id='gkehub.projects.locations.memberships.listPermitted',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/memberships:listPermitted',
+        request_field='',
+        request_type_name='GkehubProjectsLocationsMembershipsListPermittedRequest',
+        response_type_name='ListMembershipsResponse',
+        supports_download=False,
+    )
+
     def Patch(self, request, global_params=None):
       r"""Updates an existing Membership.
 
@@ -755,6 +956,151 @@ class GkehubV1alpha(base_api.BaseApiClient):
         request_field='testIamPermissionsRequest',
         request_type_name='GkehubProjectsLocationsMembershipsTestIamPermissionsRequest',
         response_type_name='TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsNamespacesRbacrolebindingsService(base_api.BaseApiService):
+    """Service class for the projects_locations_namespaces_rbacrolebindings resource."""
+
+    _NAME = 'projects_locations_namespaces_rbacrolebindings'
+
+    def __init__(self, client):
+      super(GkehubV1alpha.ProjectsLocationsNamespacesRbacrolebindingsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a RBACRoleBinding.
+
+      Args:
+        request: (GkehubProjectsLocationsNamespacesRbacrolebindingsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/rbacrolebindings',
+        http_method='POST',
+        method_id='gkehub.projects.locations.namespaces.rbacrolebindings.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['rbacrolebindingId'],
+        relative_path='v1alpha/{+parent}/rbacrolebindings',
+        request_field='rBACRoleBinding',
+        request_type_name='GkehubProjectsLocationsNamespacesRbacrolebindingsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a RBACRoleBinding.
+
+      Args:
+        request: (GkehubProjectsLocationsNamespacesRbacrolebindingsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/rbacrolebindings/{rbacrolebindingsId}',
+        http_method='DELETE',
+        method_id='gkehub.projects.locations.namespaces.rbacrolebindings.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='GkehubProjectsLocationsNamespacesRbacrolebindingsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Returns the details of a RBACRoleBinding.
+
+      Args:
+        request: (GkehubProjectsLocationsNamespacesRbacrolebindingsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RBACRoleBinding) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/rbacrolebindings/{rbacrolebindingsId}',
+        http_method='GET',
+        method_id='gkehub.projects.locations.namespaces.rbacrolebindings.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='GkehubProjectsLocationsNamespacesRbacrolebindingsGetRequest',
+        response_type_name='RBACRoleBinding',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists RBACRoleBinding.
+
+      Args:
+        request: (GkehubProjectsLocationsNamespacesRbacrolebindingsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListRBACRoleBindingsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/rbacrolebindings',
+        http_method='GET',
+        method_id='gkehub.projects.locations.namespaces.rbacrolebindings.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/rbacrolebindings',
+        request_field='',
+        request_type_name='GkehubProjectsLocationsNamespacesRbacrolebindingsListRequest',
+        response_type_name='ListRBACRoleBindingsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a RBACRoleBinding.
+
+      Args:
+        request: (GkehubProjectsLocationsNamespacesRbacrolebindingsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/rbacrolebindings/{rbacrolebindingsId}',
+        http_method='PATCH',
+        method_id='gkehub.projects.locations.namespaces.rbacrolebindings.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha/{+name}',
+        request_field='rBACRoleBinding',
+        request_type_name='GkehubProjectsLocationsNamespacesRbacrolebindingsPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -872,6 +1218,60 @@ class GkehubV1alpha(base_api.BaseApiClient):
         relative_path='v1alpha/{+parent}/namespaces',
         request_field='',
         request_type_name='GkehubProjectsLocationsNamespacesListRequest',
+        response_type_name='ListNamespacesResponse',
+        supports_download=False,
+    )
+
+    def ListMemberships(self, request, global_params=None):
+      r"""Lists Memberships that are bound to a Fleet Namespace.
+
+      Args:
+        request: (GkehubProjectsLocationsNamespacesListMembershipsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListMembershipsForNamespaceResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListMemberships')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListMemberships.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}:listMemberships',
+        http_method='GET',
+        method_id='gkehub.projects.locations.namespaces.listMemberships',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha/{+name}:listMemberships',
+        request_field='',
+        request_type_name='GkehubProjectsLocationsNamespacesListMembershipsRequest',
+        response_type_name='ListMembershipsForNamespaceResponse',
+        supports_download=False,
+    )
+
+    def ListPermitted(self, request, global_params=None):
+      r"""Lists fleet namespaces that the caller is permitted to access in IAM.
+
+      Args:
+        request: (GkehubProjectsLocationsNamespacesListPermittedRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListNamespacesResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListPermitted')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListPermitted.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/namespaces:listPermitted',
+        http_method='GET',
+        method_id='gkehub.projects.locations.namespaces.listPermitted',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/namespaces:listPermitted',
+        request_field='',
+        request_type_name='GkehubProjectsLocationsNamespacesListPermittedRequest',
         response_type_name='ListNamespacesResponse',
         supports_download=False,
     )

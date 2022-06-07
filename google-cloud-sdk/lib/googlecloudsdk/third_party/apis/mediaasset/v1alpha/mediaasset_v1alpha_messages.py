@@ -140,10 +140,14 @@ class Annotation(_messages.Message):
       DELETING: DELETING means the annotation is being deleted. This state
         only shows up in the annotation in pub sub notification when
         DeleteAnnotation method is called.
+      PROCESSING: PROCESSING means the annotation is being processed by the
+        system. IMS Annotations under PROCESSING state will not show up as
+        part of the search result.
     """
     STATE_UNSPECIFIED = 0
     ACTIVE = 1
     DELETING = 2
+    PROCESSING = 3
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DataValue(_messages.Message):
@@ -1486,14 +1490,15 @@ class GoogleIamV1Condition(_messages.Message):
         (go/security-realms). When used with IN, the condition indicates "any
         of the request's realms match one of the given values; with NOT_IN,
         "none of the realms match any of the given values". Note that a value
-        can be: - 'self' (i.e., allow connections from clients that are in the
-        same security realm, which is currently but not guaranteed to be
-        campus-sized) - 'self:metro' (i.e., clients that are in the same
-        metro) - 'self:cloud-region' (i.e., allow connections from clients
-        that are in the same cloud region) - 'self:prod-region' (i.e., allow
-        connections from clients that are in the same prod region) -
-        'guardians' (i.e., allow connections from its guardian realms. See
-        go/security-realms-glossary#guardian for more information.) - a realm
+        can be: - 'self:campus' (i.e., clients that are in the same campus) -
+        'self:metro' (i.e., clients that are in the same metro) - 'self:cloud-
+        region' (i.e., allow connections from clients that are in the same
+        cloud region) - 'self:prod-region' (i.e., allow connections from
+        clients that are in the same prod region) - 'guardians' (i.e., allow
+        connections from its guardian realms. See go/security-realms-
+        glossary#guardian for more information.) - 'self' [DEPRECATED] (i.e.,
+        allow connections from clients that are in the same security realm,
+        which is currently but not guaranteed to be campus-sized) - a realm
         (e.g., 'campus-abc') - a realm group (e.g., 'realms-for-borg-cell-xx',
         see: go/realm-groups) A match is determined by a realm group
         membership check performed by a RealmAclRep object (go/realm-acl-

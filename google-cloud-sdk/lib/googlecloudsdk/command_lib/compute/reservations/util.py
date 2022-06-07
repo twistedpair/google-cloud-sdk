@@ -19,9 +19,11 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.command_lib.compute.resource_policies import util as maintenance_util
+import six
 
 
-def MakeReservationMessageFromArgs(messages, args, reservation_ref):
+def MakeReservationMessageFromArgs(messages, args, reservation_ref, resources):
   """Construct reservation message from args passed in."""
   accelerators = MakeGuestAccelerators(messages,
                                        getattr(args, 'accelerator', None))
@@ -33,8 +35,12 @@ def MakeReservationMessageFromArgs(messages, args, reservation_ref):
       args.min_cpu_platform, getattr(args, 'location_hint', None),
       getattr(args, 'maintenance_freeze_duration', None),
       getattr(args, 'maintenance_interval', None))
+  resource_policies = MakeResourcePolicies(
+      messages, reservation_ref, getattr(args, 'resource_policies', None),
+      resources)
   return MakeReservationMessage(messages, reservation_ref.Name(),
                                 share_settings, specific_reservation,
+                                resource_policies,
                                 args.require_specific_reservation,
                                 reservation_ref.zone)
 
@@ -198,7 +204,8 @@ def MakeSpecificSKUReservationMessage(messages,
 
 
 def MakeReservationMessage(messages, reservation_name, share_settings,
-                           specific_reservation, require_specific_reservation,
+                           specific_reservation, resource_policies,
+                           require_specific_reservation,
                            reservation_zone):
   """Constructs a single reservations message object."""
   reservation_message = messages.Reservation(
@@ -208,6 +215,8 @@ def MakeReservationMessage(messages, reservation_name, share_settings,
       zone=reservation_zone)
   if share_settings:
     reservation_message.shareSettings = share_settings
+  if resource_policies:
+    reservation_message.resourcePolicies = resource_policies
   return reservation_message
 
 
@@ -231,3 +240,24 @@ def MakeFolderMapFromFolderList(messages, folders):
             value=messages.ShareSettingsFolderConfig(folderId=folder)))
   return messages.ShareSettings.FolderMapValue(
       additionalProperties=additional_properties)
+
+
+def MakeResourcePolicies(messages, reservation_ref, resource_policy_dictionary,
+                         resources):
+  """Constructs the resource policies message objects."""
+  if resource_policy_dictionary is None:
+    return None
+
+  return messages.Reservation.ResourcePoliciesValue(additionalProperties=[
+      messages.Reservation.ResourcePoliciesValue.AdditionalProperty(
+          key=key, value=MakeUrl(resources, value, reservation_ref))
+      for key, value in sorted(six.iteritems(resource_policy_dictionary))
+  ])
+
+
+def MakeUrl(resources, value, reservation_ref):
+  return maintenance_util.ParseResourcePolicyWithZone(
+      resources,
+      value,
+      project=reservation_ref.project,
+      zone=reservation_ref.zone).SelfLink()

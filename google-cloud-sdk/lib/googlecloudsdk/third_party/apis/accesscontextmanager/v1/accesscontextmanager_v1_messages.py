@@ -234,8 +234,9 @@ class AccesscontextmanagerAccessPoliciesAccessLevelsTestIamPermissionsRequest(_m
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """
@@ -262,8 +263,9 @@ class AccesscontextmanagerAccessPoliciesGetIamPolicyRequest(_messages.Message):
     getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
       request body.
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
@@ -427,8 +429,9 @@ class AccesscontextmanagerAccessPoliciesServicePerimetersTestIamPermissionsReque
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """
@@ -442,8 +445,9 @@ class AccesscontextmanagerAccessPoliciesSetIamPolicyRequest(_messages.Message):
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
@@ -457,8 +461,9 @@ class AccesscontextmanagerAccessPoliciesTestIamPermissionsRequest(_messages.Mess
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """
@@ -629,8 +634,8 @@ class AuditConfig(_messages.Message):
   "audit_log_configs": [ { "log_type": "DATA_READ" }, { "log_type":
   "DATA_WRITE", "exempted_members": [ "user:aliya@example.com" ] } ] } ] } For
   sampleservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ
-  logging. It also exempts jose@example.com from DATA_READ logging, and
-  aliya@example.com from DATA_WRITE logging.
+  logging. It also exempts `jose@example.com` from DATA_READ logging, and
+  `aliya@example.com` from DATA_WRITE logging.
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
@@ -730,7 +735,7 @@ class Binding(_messages.Message):
       policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
-    members: Specifies the principals requesting access for a Cloud Platform
+    members: Specifies the principals requesting access for a Google Cloud
       resource. `members` can have the following values: * `allUsers`: A
       special identifier that represents anyone who is on the internet; with
       or without a Google account. * `allAuthenticatedUsers`: A special
@@ -1007,6 +1012,9 @@ class EgressTo(_messages.Message):
   to be allowed egress out of the perimeter.
 
   Fields:
+    externalResources: A list of external resources that are allowed to be
+      accessed. A request matches if it contains an external resource in this
+      list (Example: s3://bucket/path). Currently '*' is not allowed.
     operations: A list of ApiOperations allowed to be performed by the sources
       specified in the corresponding EgressFrom. A request matches if it uses
       an operation/service in this list.
@@ -1017,16 +1025,16 @@ class EgressTo(_messages.Message):
       will authorize access to all resources outside the perimeter.
   """
 
-  operations = _messages.MessageField('ApiOperation', 1, repeated=True)
-  resources = _messages.StringField(2, repeated=True)
+  externalResources = _messages.StringField(1, repeated=True)
+  operations = _messages.MessageField('ApiOperation', 2, repeated=True)
+  resources = _messages.StringField(3, repeated=True)
 
 
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
   or the response type of an API method. For instance: service Foo { rpc
-  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
-  representation for `Empty` is empty JSON object `{}`.
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
 
 
@@ -1742,8 +1750,8 @@ class SetIamPolicyRequest(_messages.Message):
   Fields:
     policy: REQUIRED: The complete policy to be applied to the `resource`. The
       size of the policy is limited to a few 10s of KB. An empty policy is a
-      valid policy but certain Cloud Platform services (such as Projects)
-      might reject them.
+      valid policy but certain Google Cloud services (such as Projects) might
+      reject them.
     updateMask: OPTIONAL: A FieldMask specifying which fields of the policy to
       modify. Only the fields in the mask will be modified. If no mask is
       provided, the following default mask is used: `paths: "bindings, etag"`
@@ -1872,7 +1880,7 @@ class TestIamPermissionsRequest(_messages.Message):
 
   Fields:
     permissions: The set of permissions to check for the `resource`.
-      Permissions with wildcards (such as '*' or 'storage.*') are not allowed.
+      Permissions with wildcards (such as `*` or `storage.*`) are not allowed.
       For more information see [IAM
       Overview](https://cloud.google.com/iam/docs/overview#permissions).
   """

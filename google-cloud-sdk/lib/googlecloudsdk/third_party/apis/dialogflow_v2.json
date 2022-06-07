@@ -3646,7 +3646,7 @@
     },
     "GoogleCloudDialogflowV2HumanAgentAssistantConfigConversationModelConfig": {
       "id": "GoogleCloudDialogflowV2HumanAgentAssistantConfigConversationModelConfig",
-      "description": "Custom conversation models used in agent assist feature. Supported feature: ARTICLE_SUGGESTION, SMART_COMPOSE, SMART_REPLY.",
+      "description": "Custom conversation models used in agent assist feature. Supported feature: ARTICLE_SUGGESTION, SMART_COMPOSE, SMART_REPLY, CONVERSATION_SUMMARIZATION.",
       "type": "object",
       "properties": {
         "model": {
@@ -6222,6 +6222,10 @@
         "testCasesConfig": {
           "description": "The test cases config for continuous tests of this environment.",
           "$ref": "GoogleCloudDialogflowCxV3EnvironmentTestCasesConfig"
+        },
+        "webhookConfig": {
+          "description": "The webhook configuration for this environment.",
+          "$ref": "GoogleCloudDialogflowCxV3EnvironmentWebhookConfig"
         }
       }
     },
@@ -6255,6 +6259,101 @@
         "enablePredeploymentRun": {
           "description": "Whether to run test cases in TestCasesConfig.test_cases before deploying a flow version to the environment. Default false.",
           "type": "boolean"
+        }
+      }
+    },
+    "GoogleCloudDialogflowCxV3EnvironmentWebhookConfig": {
+      "id": "GoogleCloudDialogflowCxV3EnvironmentWebhookConfig",
+      "description": "Configuration for webhooks.",
+      "type": "object",
+      "properties": {
+        "webhookOverrides": {
+          "description": "The list of webhooks to override for the agent environment. The webhook must exist in the agent. You can override fields in `generic_web_service` and `service_directory`.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudDialogflowCxV3Webhook"
+          }
+        }
+      }
+    },
+    "GoogleCloudDialogflowCxV3Webhook": {
+      "id": "GoogleCloudDialogflowCxV3Webhook",
+      "description": "Webhooks host the developer's business logic. During a session, webhooks allow the developer to use the data extracted by Dialogflow's natural language processing to generate dynamic responses, validate collected data, or trigger actions on the backend.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The unique identifier of the webhook. Required for the Webhooks.UpdateWebhook method. Webhooks.CreateWebhook populates the name automatically. Format: `projects\/\/locations\/\/agents\/\/webhooks\/`.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "Required. The human-readable name of the webhook, unique within the agent.",
+          "type": "string"
+        },
+        "genericWebService": {
+          "description": "Configuration for a generic web service.",
+          "$ref": "GoogleCloudDialogflowCxV3WebhookGenericWebService"
+        },
+        "serviceDirectory": {
+          "description": "Configuration for a [Service Directory](https:\/\/cloud.google.com\/service-directory) service.",
+          "$ref": "GoogleCloudDialogflowCxV3WebhookServiceDirectoryConfig"
+        },
+        "timeout": {
+          "description": "Webhook execution timeout. Execution is considered failed if Dialogflow doesn't receive a response from webhook at the end of the timeout period. Defaults to 5 seconds, maximum allowed timeout is 30 seconds.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "disabled": {
+          "description": "Indicates whether the webhook is disabled.",
+          "type": "boolean"
+        }
+      }
+    },
+    "GoogleCloudDialogflowCxV3WebhookGenericWebService": {
+      "id": "GoogleCloudDialogflowCxV3WebhookGenericWebService",
+      "description": "Represents configuration for a generic web service.",
+      "type": "object",
+      "properties": {
+        "uri": {
+          "description": "Required. The webhook URI for receiving POST requests. It must use https protocol.",
+          "type": "string"
+        },
+        "username": {
+          "description": "The user name for HTTP Basic authentication.",
+          "type": "string"
+        },
+        "password": {
+          "description": "The password for HTTP Basic authentication.",
+          "type": "string"
+        },
+        "requestHeaders": {
+          "description": "The HTTP request headers to send together with webhook requests.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "allowedCaCerts": {
+          "description": "Optional. Specifies a list of allowed custom CA certificates (in DER format) for HTTPS verification. This overrides the default SSL trust store. If this is empty or unspecified, Dialogflow will use Google's default trust store to verify certificates. N.B. Make sure the HTTPS server certificates are signed with \"subject alt name\". For instance a certificate can be self-signed using the following command, ``` openssl x509 -req -days 200 -in example.com.csr \\ -signkey example.com.key \\ -out example.com.crt \\ -extfile <(printf \"\\nsubjectAltName='DNS:www.example.com'\") ```",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "byte"
+          }
+        }
+      }
+    },
+    "GoogleCloudDialogflowCxV3WebhookServiceDirectoryConfig": {
+      "id": "GoogleCloudDialogflowCxV3WebhookServiceDirectoryConfig",
+      "description": "Represents configuration for a [Service Directory](https:\/\/cloud.google.com\/service-directory) service.",
+      "type": "object",
+      "properties": {
+        "service": {
+          "description": "Required. The name of [Service Directory](https:\/\/cloud.google.com\/service-directory) service. Format: `projects\/\/locations\/\/namespaces\/\/services\/`. `Location ID` of the service directory must be the same as the location of the agent.",
+          "type": "string"
+        },
+        "genericWebService": {
+          "description": "Generic Service configuration of this webhook.",
+          "$ref": "GoogleCloudDialogflowCxV3WebhookGenericWebService"
         }
       }
     },
@@ -7917,6 +8016,10 @@
         "testCasesConfig": {
           "description": "The test cases config for continuous tests of this environment.",
           "$ref": "GoogleCloudDialogflowCxV3beta1EnvironmentTestCasesConfig"
+        },
+        "webhookConfig": {
+          "description": "The webhook configuration for this environment.",
+          "$ref": "GoogleCloudDialogflowCxV3beta1EnvironmentWebhookConfig"
         }
       }
     },
@@ -7950,6 +8053,101 @@
         "enablePredeploymentRun": {
           "description": "Whether to run test cases in TestCasesConfig.test_cases before deploying a flow version to the environment. Default false.",
           "type": "boolean"
+        }
+      }
+    },
+    "GoogleCloudDialogflowCxV3beta1EnvironmentWebhookConfig": {
+      "id": "GoogleCloudDialogflowCxV3beta1EnvironmentWebhookConfig",
+      "description": "Configuration for webhooks.",
+      "type": "object",
+      "properties": {
+        "webhookOverrides": {
+          "description": "The list of webhooks to override for the agent environment. The webhook must exist in the agent. You can override fields in `generic_web_service` and `service_directory`.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudDialogflowCxV3beta1Webhook"
+          }
+        }
+      }
+    },
+    "GoogleCloudDialogflowCxV3beta1Webhook": {
+      "id": "GoogleCloudDialogflowCxV3beta1Webhook",
+      "description": "Webhooks host the developer's business logic. During a session, webhooks allow the developer to use the data extracted by Dialogflow's natural language processing to generate dynamic responses, validate collected data, or trigger actions on the backend.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The unique identifier of the webhook. Required for the Webhooks.UpdateWebhook method. Webhooks.CreateWebhook populates the name automatically. Format: `projects\/\/locations\/\/agents\/\/webhooks\/`.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "Required. The human-readable name of the webhook, unique within the agent.",
+          "type": "string"
+        },
+        "genericWebService": {
+          "description": "Configuration for a generic web service.",
+          "$ref": "GoogleCloudDialogflowCxV3beta1WebhookGenericWebService"
+        },
+        "serviceDirectory": {
+          "description": "Configuration for a [Service Directory](https:\/\/cloud.google.com\/service-directory) service.",
+          "$ref": "GoogleCloudDialogflowCxV3beta1WebhookServiceDirectoryConfig"
+        },
+        "timeout": {
+          "description": "Webhook execution timeout. Execution is considered failed if Dialogflow doesn't receive a response from webhook at the end of the timeout period. Defaults to 5 seconds, maximum allowed timeout is 30 seconds.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "disabled": {
+          "description": "Indicates whether the webhook is disabled.",
+          "type": "boolean"
+        }
+      }
+    },
+    "GoogleCloudDialogflowCxV3beta1WebhookGenericWebService": {
+      "id": "GoogleCloudDialogflowCxV3beta1WebhookGenericWebService",
+      "description": "Represents configuration for a generic web service.",
+      "type": "object",
+      "properties": {
+        "uri": {
+          "description": "Required. The webhook URI for receiving POST requests. It must use https protocol.",
+          "type": "string"
+        },
+        "username": {
+          "description": "The user name for HTTP Basic authentication.",
+          "type": "string"
+        },
+        "password": {
+          "description": "The password for HTTP Basic authentication.",
+          "type": "string"
+        },
+        "requestHeaders": {
+          "description": "The HTTP request headers to send together with webhook requests.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "allowedCaCerts": {
+          "description": "Optional. Specifies a list of allowed custom CA certificates (in DER format) for HTTPS verification. This overrides the default SSL trust store. If this is empty or unspecified, Dialogflow will use Google's default trust store to verify certificates. N.B. Make sure the HTTPS server certificates are signed with \"subject alt name\". For instance a certificate can be self-signed using the following command, ``` openssl x509 -req -days 200 -in example.com.csr \\ -signkey example.com.key \\ -out example.com.crt \\ -extfile <(printf \"\\nsubjectAltName='DNS:www.example.com'\") ```",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "byte"
+          }
+        }
+      }
+    },
+    "GoogleCloudDialogflowCxV3beta1WebhookServiceDirectoryConfig": {
+      "id": "GoogleCloudDialogflowCxV3beta1WebhookServiceDirectoryConfig",
+      "description": "Represents configuration for a [Service Directory](https:\/\/cloud.google.com\/service-directory) service.",
+      "type": "object",
+      "properties": {
+        "service": {
+          "description": "Required. The name of [Service Directory](https:\/\/cloud.google.com\/service-directory) service. Format: `projects\/\/locations\/\/namespaces\/\/services\/`. `Location ID` of the service directory must be the same as the location of the agent.",
+          "type": "string"
+        },
+        "genericWebService": {
+          "description": "Generic Service configuration of this webhook.",
+          "$ref": "GoogleCloudDialogflowCxV3beta1WebhookGenericWebService"
         }
       }
     },

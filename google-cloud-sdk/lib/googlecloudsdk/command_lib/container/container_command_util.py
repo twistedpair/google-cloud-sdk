@@ -293,6 +293,8 @@ def ParseUpdateOptionsBase(args, locations):
       enable_binauthz=args.enable_binauthz,
       min_nodes=args.min_nodes,
       max_nodes=args.max_nodes,
+      total_min_nodes=args.total_min_nodes,
+      total_max_nodes=args.total_max_nodes,
       node_pool=args.node_pool,
       locations=locations,
       enable_master_authorized_networks=args.enable_master_authorized_networks,

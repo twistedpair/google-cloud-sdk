@@ -349,6 +349,32 @@ class DnsV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
+
+      Args:
+        request: (DnsManagedZonesGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='dns.managedZones.getIamPolicy',
+        ordered_params=['projectsId', 'managedZonesId'],
+        path_params=['managedZonesId', 'projectsId'],
+        query_params=[],
+        relative_path='projects/{projectsId}/managedZones/{managedZonesId}:getIamPolicy',
+        request_field='googleIamV1GetIamPolicyRequest',
+        request_type_name='DnsManagedZonesGetIamPolicyRequest',
+        response_type_name='GoogleIamV1Policy',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Enumerates ManagedZones that have been created but not yet deleted.
 
@@ -398,6 +424,58 @@ class DnsV1(base_api.BaseApiClient):
         request_field='managedZoneResource',
         request_type_name='DnsManagedZonesPatchRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
+
+      Args:
+        request: (DnsManagedZonesSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='dns.managedZones.setIamPolicy',
+        ordered_params=['projectsId', 'managedZonesId'],
+        path_params=['managedZonesId', 'projectsId'],
+        query_params=[],
+        relative_path='projects/{projectsId}/managedZones/{managedZonesId}:setIamPolicy',
+        request_field='googleIamV1SetIamPolicyRequest',
+        request_type_name='DnsManagedZonesSetIamPolicyRequest',
+        response_type_name='GoogleIamV1Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
+
+      Args:
+        request: (DnsManagedZonesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='dns.managedZones.testIamPermissions',
+        ordered_params=['projectsId', 'managedZonesId'],
+        path_params=['managedZonesId', 'projectsId'],
+        query_params=[],
+        relative_path='projects/{projectsId}/managedZones/{managedZonesId}:testIamPermissions',
+        request_field='googleIamV1TestIamPermissionsRequest',
+        request_type_name='DnsManagedZonesTestIamPermissionsRequest',
+        response_type_name='GoogleIamV1TestIamPermissionsResponse',
         supports_download=False,
     )
 

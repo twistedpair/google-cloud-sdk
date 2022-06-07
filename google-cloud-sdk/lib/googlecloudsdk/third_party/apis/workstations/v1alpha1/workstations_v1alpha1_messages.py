@@ -225,14 +225,15 @@ class Condition(_messages.Message):
         (go/security-realms). When used with IN, the condition indicates "any
         of the request's realms match one of the given values; with NOT_IN,
         "none of the realms match any of the given values". Note that a value
-        can be: - 'self' (i.e., allow connections from clients that are in the
-        same security realm, which is currently but not guaranteed to be
-        campus-sized) - 'self:metro' (i.e., clients that are in the same
-        metro) - 'self:cloud-region' (i.e., allow connections from clients
-        that are in the same cloud region) - 'self:prod-region' (i.e., allow
-        connections from clients that are in the same prod region) -
-        'guardians' (i.e., allow connections from its guardian realms. See
-        go/security-realms-glossary#guardian for more information.) - a realm
+        can be: - 'self:campus' (i.e., clients that are in the same campus) -
+        'self:metro' (i.e., clients that are in the same metro) - 'self:cloud-
+        region' (i.e., allow connections from clients that are in the same
+        cloud region) - 'self:prod-region' (i.e., allow connections from
+        clients that are in the same prod region) - 'guardians' (i.e., allow
+        connections from its guardian realms. See go/security-realms-
+        glossary#guardian for more information.) - 'self' [DEPRECATED] (i.e.,
+        allow connections from clients that are in the same security realm,
+        which is currently but not guaranteed to be campus-sized) - a realm
         (e.g., 'campus-abc') - a realm group (e.g., 'realms-for-borg-cell-xx',
         see: go/realm-groups) A match is determined by a realm group
         membership check performed by a RealmAclRep object (go/realm-acl-
@@ -516,13 +517,15 @@ class GceRegionalPersistentDisk(_messages.Message):
   disk.
 
   Fields:
+    diskType: Type of the disk to use.
     fsType: Type of file system that the disk should be formatted with. The
       Workstation image must support this file system type.
     sizeGb: Size of the disk in GB.
   """
 
-  fsType = _messages.StringField(1)
-  sizeGb = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  diskType = _messages.StringField(1)
+  fsType = _messages.StringField(2)
+  sizeGb = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class GenerateAccessTokenRequest(_messages.Message):
@@ -1231,7 +1234,12 @@ class WorkstationCluster(_messages.Message):
 
   Fields:
     annotations: Client-specified annotations.
+    conditions: Output only. Status conditions describing the current resource
+      state.
     createTime: Output only. Time when this resource was created.
+    degraded: Output only. Whether this resource is in degraded mode, in which
+      case it may require user action to restore full functionality. Details
+      can be found in the `conditions` field.
     deleteTime: Output only. Time when this resource was soft-deleted.
     displayName: Human-readable name for this resource.
     etag: Checksum computed by the server. May be sent on update and delete
@@ -1278,17 +1286,19 @@ class WorkstationCluster(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   annotations = _messages.MessageField('AnnotationsValue', 1)
-  createTime = _messages.StringField(2)
-  deleteTime = _messages.StringField(3)
-  displayName = _messages.StringField(4)
-  etag = _messages.StringField(5)
-  name = _messages.StringField(6)
-  network = _messages.StringField(7)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 8)
-  reconciling = _messages.BooleanField(9)
-  subnetwork = _messages.StringField(10)
-  uid = _messages.StringField(11)
-  updateTime = _messages.StringField(12)
+  conditions = _messages.MessageField('Status', 2, repeated=True)
+  createTime = _messages.StringField(3)
+  degraded = _messages.BooleanField(4)
+  deleteTime = _messages.StringField(5)
+  displayName = _messages.StringField(6)
+  etag = _messages.StringField(7)
+  name = _messages.StringField(8)
+  network = _messages.StringField(9)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 10)
+  reconciling = _messages.BooleanField(11)
+  subnetwork = _messages.StringField(12)
+  uid = _messages.StringField(13)
+  updateTime = _messages.StringField(14)
 
 
 class WorkstationConfig(_messages.Message):
@@ -1300,9 +1310,14 @@ class WorkstationConfig(_messages.Message):
 
   Fields:
     annotations: Client-specified annotations.
+    conditions: Output only. Status conditions describing the current resource
+      state.
     container: Container that will be run for each Workstation using this
       config when that Workstation is started.
     createTime: Output only. Time when this resource was created.
+    degraded: Output only. Whether this resource is in degraded mode, in which
+      case it may require user action to restore full functionality. Details
+      can be found in the `conditions` field.
     deleteTime: Output only. Time when this resource was soft-deleted.
     displayName: Human-readable name for this resource.
     etag: Checksum computed by the server. May be sent on update and delete
@@ -1360,23 +1375,25 @@ class WorkstationConfig(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   annotations = _messages.MessageField('AnnotationsValue', 1)
-  container = _messages.MessageField('Container', 2)
-  createTime = _messages.StringField(3)
-  deleteTime = _messages.StringField(4)
-  displayName = _messages.StringField(5)
-  etag = _messages.StringField(6)
-  fastStartWorkstationCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  hostConfig = _messages.MessageField('HostConfig', 8)
-  idleTimeout = _messages.StringField(9)
-  machineType = _messages.StringField(10)
-  name = _messages.StringField(11)
-  persistentDirectories = _messages.MessageField('PersistentDirectory', 12, repeated=True)
-  reconciling = _messages.BooleanField(13)
-  serviceAccount = _messages.StringField(14)
-  serviceAccountScopes = _messages.StringField(15, repeated=True)
-  tags = _messages.StringField(16, repeated=True)
-  uid = _messages.StringField(17)
-  updateTime = _messages.StringField(18)
+  conditions = _messages.MessageField('Status', 2, repeated=True)
+  container = _messages.MessageField('Container', 3)
+  createTime = _messages.StringField(4)
+  degraded = _messages.BooleanField(5)
+  deleteTime = _messages.StringField(6)
+  displayName = _messages.StringField(7)
+  etag = _messages.StringField(8)
+  fastStartWorkstationCount = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  hostConfig = _messages.MessageField('HostConfig', 10)
+  idleTimeout = _messages.StringField(11)
+  machineType = _messages.StringField(12)
+  name = _messages.StringField(13)
+  persistentDirectories = _messages.MessageField('PersistentDirectory', 14, repeated=True)
+  reconciling = _messages.BooleanField(15)
+  serviceAccount = _messages.StringField(16)
+  serviceAccountScopes = _messages.StringField(17, repeated=True)
+  tags = _messages.StringField(18, repeated=True)
+  uid = _messages.StringField(19)
+  updateTime = _messages.StringField(20)
 
 
 class WorkstationsProjectsLocationsOperationsCancelRequest(_messages.Message):

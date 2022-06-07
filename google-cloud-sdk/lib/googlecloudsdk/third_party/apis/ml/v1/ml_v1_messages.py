@@ -1407,7 +1407,8 @@ class GoogleCloudMlV1Model(_messages.Message):
     LabelsValue: Optional. One or more labels that you can add, to organize
       your models. Each label is a key-value pair, where both the key and the
       value are arbitrary strings that you supply. For more information, see
-      the documentation on using labels.
+      the documentation on using labels. Note that this field is not updatable
+      for mls1* models.
 
   Fields:
     defaultVersion: Output only. The default version of the model. This
@@ -1426,7 +1427,8 @@ class GoogleCloudMlV1Model(_messages.Message):
     labels: Optional. One or more labels that you can add, to organize your
       models. Each label is a key-value pair, where both the key and the value
       are arbitrary strings that you supply. For more information, see the
-      documentation on using labels.
+      documentation on using labels. Note that this field is not updatable for
+      mls1* models.
     name: Required. The name specified for the model when it was created. The
       model name must be unique within the project it is created in.
     onlinePredictionConsoleLogging: Optional. If true, online prediction nodes
@@ -1458,7 +1460,8 @@ class GoogleCloudMlV1Model(_messages.Message):
     r"""Optional. One or more labels that you can add, to organize your
     models. Each label is a key-value pair, where both the key and the value
     are arbitrary strings that you supply. For more information, see the
-    documentation on using labels.
+    documentation on using labels. Note that this field is not updatable for
+    mls1* models.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -3073,7 +3076,8 @@ class GoogleCloudMlV1Version(_messages.Message):
     LabelsValue: Optional. One or more labels that you can add, to organize
       your model versions. Each label is a key-value pair, where both the key
       and the value are arbitrary strings that you supply. For more
-      information, see the documentation on using labels.
+      information, see the documentation on using labels. Note that this field
+      is not updatable for mls1* models.
 
   Fields:
     acceleratorConfig: Optional. Accelerator config for using GPUs for online
@@ -3134,7 +3138,8 @@ class GoogleCloudMlV1Version(_messages.Message):
     labels: Optional. One or more labels that you can add, to organize your
       model versions. Each label is a key-value pair, where both the key and
       the value are arbitrary strings that you supply. For more information,
-      see the documentation on using labels.
+      see the documentation on using labels. Note that this field is not
+      updatable for mls1* models.
     lastMigrationModelId: Output only. The [AI Platform (Unified)
       `Model`](https://cloud.google.com/ai-platform-
       unified/docs/reference/rest/v1beta1/projects.locations.models) ID for
@@ -3287,7 +3292,8 @@ class GoogleCloudMlV1Version(_messages.Message):
     r"""Optional. One or more labels that you can add, to organize your model
     versions. Each label is a key-value pair, where both the key and the value
     are arbitrary strings that you supply. For more information, see the
-    documentation on using labels.
+    documentation on using labels. Note that this field is not updatable for
+    mls1* models.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.

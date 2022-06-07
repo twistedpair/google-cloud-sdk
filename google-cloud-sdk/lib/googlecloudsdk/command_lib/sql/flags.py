@@ -1052,7 +1052,8 @@ def AddPasswordPolicyMinLength(parser):
       type=int,
       required=False,
       default=None,
-      help='Minimum number of characters allowed in the password.')
+      help='Minimum number of characters allowed in the password. This flag is available only for PostgreSQL.'
+  )
 
 
 def AddPasswordPolicyComplexity(parser):
@@ -1071,7 +1072,8 @@ def AddPasswordPolicyComplexity(parser):
       },
       required=False,
       default=None,
-      help='The complexity of the password.')
+      help='The complexity of the password. This flag is available only for PostgreSQL.'
+  )
 
 
 def AddPasswordPolicyReuseInterval(parser):
@@ -1085,7 +1087,7 @@ def AddPasswordPolicyReuseInterval(parser):
       type=arg_parsers.BoundedInt(lower_bound=0, upper_bound=100),
       required=False,
       default=None,
-      help='Number of previous passwords that cannot be reused. The valid range is between 0 and 100.'
+      help='Number of previous passwords that cannot be reused. The valid range is 0 to 100. This flag is available only for PostgreSQL.'
   )
 
 
@@ -1101,7 +1103,7 @@ def AddPasswordPolicyDisallowUsernameSubstring(parser,
   parser.add_argument(
       '--password-policy-disallow-username-substring',
       required=False,
-      help='Disallow username as a part of the password.',
+      help='Disallow username as a part of the password. This flag is available only for PostgreSQL.',
       **kwargs)
 
 
@@ -1120,6 +1122,7 @@ def AddPasswordPolicyPasswordChangeInterval(parser):
         Minimum interval after which the password can be changed, for example,
         2m for 2 minutes. See <a href="/sdk/gcloud/reference/topic/datetimes">
         $ gcloud topic datetimes</a> for information on duration formats.
+        This flag is available only for PostgreSQL.
       """)
 
 
@@ -1136,7 +1139,7 @@ def AddPasswordPolicyEnablePasswordPolicy(parser, show_negated_in_help=False):
       required=False,
       help="""\
         Enable the password policy, which enforces user password management with
-        the policies configured for the instance.
+        the policies configured for the instance. This flag is only available for Postgres.
       """,
       **kwargs)
 
@@ -1152,7 +1155,7 @@ def AddPasswordPolicyClearPasswordPolicy(parser, show_negated_in_help=False):
   parser.add_argument(
       '--clear-password-policy',
       required=False,
-      help='Clear the existing password policy.',
+      help='Clear the existing password policy. This flag is only available for Postgres.',
       **kwargs)
 
 
@@ -1167,7 +1170,7 @@ def AddPasswordPolicyAllowedFailedAttempts(parser):
       type=int,
       required=False,
       default=None,
-      help='Number of failed login attempts allowed before a user is locked out.'
+      help='Number of failed login attempts allowed before a user is locked out. This flag is currently not available.'
   )
 
 
@@ -1185,7 +1188,7 @@ def AddPasswordPolicyPasswordExpirationDuration(parser):
       help="""\
         Expiration duration after a password is updated, for example,
         2m for 2 minutes. See `gcloud topic datetimes` for information on
-        duration formats.
+        duration formats. This flag is currently not available.
       """)
 
 
@@ -1201,7 +1204,7 @@ def AddPasswordPolicyEnableFailedAttemptsCheck(parser,
   parser.add_argument(
       '--password-policy-enable-failed-attempts-check',
       required=False,
-      help='Enables the failed login attempts check if set to true.',
+      help='Enables the failed login attempts check if set to true. This flag is currently not available.',
       **kwargs)
 
 
@@ -1218,7 +1221,7 @@ def AddPasswordPolicyEnablePasswordVerification(parser,
       '--password-policy-enable-password-verification',
       required=False,
       hidden=True,
-      help='The current password must be specified when altering the password.',
+      help='The current password must be specified when altering the password. This flag is available only for MySQL.',
       **kwargs)
 
 

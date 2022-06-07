@@ -18,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://securedlandingzone.googleapis.com/v1beta/'
-DOCS_URL = 'https://www.google.com'
+DOCS_URL = 'https://cloud.google.com/security-command-center/docs/concepts-secured-landing-zone-overview'
 
 
 class Collections(enum.Enum):

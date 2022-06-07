@@ -672,7 +672,7 @@ class AutomatedBackupPolicy(_messages.Message):
 
 
 class Backup(_messages.Message):
-  r"""Message describing Backup object NEXT ID: 17
+  r"""Message describing Backup object NEXT ID: 18
 
   Enums:
     StateValueValuesEnum: Output only. The current state of the backup.
@@ -708,6 +708,7 @@ class Backup(_messages.Message):
       (https://google.aip.dev/128#reconciliation), if true, indicates that the
       service is actively updating the resource. This can happen due to user-
       triggered updates or system actions like failover or maintenance.
+    sizeBytes: Output only. The size of the backup in bytes.
     state: Output only. The current state of the backup.
     type: The backup type, which suggests the trigger for the backup.
     uid: Output only. The system-generated UID of the resource. The UID is
@@ -806,10 +807,11 @@ class Backup(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 8)
   name = _messages.StringField(9)
   reconciling = _messages.BooleanField(10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  type = _messages.EnumField('TypeValueValuesEnum', 12)
-  uid = _messages.StringField(13)
-  updateTime = _messages.StringField(14)
+  sizeBytes = _messages.IntegerField(11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  type = _messages.EnumField('TypeValueValuesEnum', 13)
+  uid = _messages.StringField(14)
+  updateTime = _messages.StringField(15)
 
 
 class BackupSource(_messages.Message):

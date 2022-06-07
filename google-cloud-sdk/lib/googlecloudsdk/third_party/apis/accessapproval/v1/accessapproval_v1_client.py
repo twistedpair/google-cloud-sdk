@@ -137,6 +137,33 @@ class AccessapprovalV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Invalidate(self, request, global_params=None):
+      r"""Invalidates an existing ApprovalRequest. Returns the updated ApprovalRequest. NOTE: This does not deny access to the resource if another request has been made and approved. It only invalidates a single approval. Returns FAILED_PRECONDITION if the request exists but is not in an approved state.
+
+      Args:
+        request: (AccessapprovalFoldersApprovalRequestsInvalidateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ApprovalRequest) The response message.
+      """
+      config = self.GetMethodConfig('Invalidate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Invalidate.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/folders/{foldersId}/approvalRequests/{approvalRequestsId}:invalidate',
+        http_method='POST',
+        method_id='accessapproval.folders.approvalRequests.invalidate',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:invalidate',
+        request_field='invalidateApprovalRequestMessage',
+        request_type_name='AccessapprovalFoldersApprovalRequestsInvalidateRequest',
+        response_type_name='ApprovalRequest',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists approval requests associated with a project, folder, or organization. Approval requests can be filtered by state (pending, active, dismissed). The order is reverse chronological.
 
@@ -373,6 +400,33 @@ class AccessapprovalV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Invalidate(self, request, global_params=None):
+      r"""Invalidates an existing ApprovalRequest. Returns the updated ApprovalRequest. NOTE: This does not deny access to the resource if another request has been made and approved. It only invalidates a single approval. Returns FAILED_PRECONDITION if the request exists but is not in an approved state.
+
+      Args:
+        request: (AccessapprovalOrganizationsApprovalRequestsInvalidateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ApprovalRequest) The response message.
+      """
+      config = self.GetMethodConfig('Invalidate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Invalidate.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/approvalRequests/{approvalRequestsId}:invalidate',
+        http_method='POST',
+        method_id='accessapproval.organizations.approvalRequests.invalidate',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:invalidate',
+        request_field='invalidateApprovalRequestMessage',
+        request_type_name='AccessapprovalOrganizationsApprovalRequestsInvalidateRequest',
+        response_type_name='ApprovalRequest',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists approval requests associated with a project, folder, or organization. Approval requests can be filtered by state (pending, active, dismissed). The order is reverse chronological.
 
@@ -605,6 +659,33 @@ class AccessapprovalV1(base_api.BaseApiClient):
         relative_path='v1/{+name}',
         request_field='',
         request_type_name='AccessapprovalProjectsApprovalRequestsGetRequest',
+        response_type_name='ApprovalRequest',
+        supports_download=False,
+    )
+
+    def Invalidate(self, request, global_params=None):
+      r"""Invalidates an existing ApprovalRequest. Returns the updated ApprovalRequest. NOTE: This does not deny access to the resource if another request has been made and approved. It only invalidates a single approval. Returns FAILED_PRECONDITION if the request exists but is not in an approved state.
+
+      Args:
+        request: (AccessapprovalProjectsApprovalRequestsInvalidateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ApprovalRequest) The response message.
+      """
+      config = self.GetMethodConfig('Invalidate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Invalidate.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/approvalRequests/{approvalRequestsId}:invalidate',
+        http_method='POST',
+        method_id='accessapproval.projects.approvalRequests.invalidate',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:invalidate',
+        request_field='invalidateApprovalRequestMessage',
+        request_type_name='AccessapprovalProjectsApprovalRequestsInvalidateRequest',
         response_type_name='ApprovalRequest',
         supports_download=False,
     )

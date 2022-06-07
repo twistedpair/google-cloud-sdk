@@ -841,7 +841,7 @@
           "type": "string"
         },
         "clusterName": {
-          "description": "Required. The cluster name. Cluster names within a project must be unique. Names of deleted clusters can be reused.",
+          "description": "Required. The cluster name, which must be unique within a project. The name must start with a lowercase letter, and can contain up to 51 lowercase letters, numbers, and hyphens. It cannot end with a hyphen. The name of a deleted cluster can be reused.",
           "type": "string"
         },
         "config": {
@@ -881,6 +881,26 @@
           "description": "Output only. Contains cluster daemon metrics such as HDFS and YARN stats.Beta Feature: This report is available for testing purposes only. It may be changed before final release.",
           "readOnly": true,
           "$ref": "ClusterMetrics"
+        },
+        "driverLocation": {
+          "description": "Output only. The cluster driver location type.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "If unspecified, the default behavior applies: drivers run on the master.",
+            "Drivers run on driver pools."
+          ],
+          "enum": [
+            "UNSPECIFIED",
+            "DRIVER_POOL"
+          ]
+        },
+        "auxiliaryGceNodePoolConfigs": {
+          "description": "Input only. The Compute Engine configuration settings for cluster node pools.",
+          "type": "array",
+          "items": {
+            "$ref": "GceNodePool"
+          }
         }
       }
     },
@@ -1654,6 +1674,10 @@
           "description": "Optional. Minimum CPU platform (https:\/\/cloud.google.com\/compute\/docs\/instances\/specify-min-cpu-platform) to be used by this instance. The instance may be scheduled on the specified or a newer CPU platform. Specify the friendly names of CPU platforms, such as \"Intel Haswell\"` or Intel Sandy Bridge\".",
           "type": "string"
         },
+        "bootDiskKmsKey": {
+          "description": "Optional. The Customer Managed Encryption Key (CMEK) (https:\/\/cloud.google.com\/compute\/docs\/disks\/customer-managed-encryption) used to encrypt the boot disk attached to each node in the node pool. Specify the key using the following format: projects\/KEY_PROJECT_ID \/locations\/LOCATION\/keyRings\/RING_NAME\/cryptoKeys\/KEY_NAME.",
+          "type": "string"
+        },
         "spot": {
           "description": "Optional. Spot flag for enabling Spot VM, which is a rebrand of the existing preemptible flag.",
           "type": "boolean"
@@ -1713,11 +1737,17 @@
             "type": "string",
             "enumDescriptions": [
               "Required unspecified role.",
-              "The node pool will have job drivers run on it."
+              "The node pool will have job drivers run on it.",
+              "Master nodes",
+              "Primary workers",
+              "Secondary workers"
             ],
             "enum": [
               "ROLE_UNSPECIFIED",
-              "DRIVER"
+              "DRIVER",
+              "MASTER",
+              "PRIMARY_WORKER",
+              "SECONDARY_WORKER"
             ]
           }
         },
@@ -1940,6 +1970,43 @@
           "additionalProperties": {
             "type": "string",
             "format": "int64"
+          }
+        }
+      }
+    },
+    "GceNodePool": {
+      "id": "GceNodePool",
+      "description": "Dataproc Compute Engine node pool identification and configuration information.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. The Compute Engine node pool resource name (https:\/\/aip.dev\/122).",
+          "type": "string"
+        },
+        "roles": {
+          "description": "Required. Compute Engine node pool roles.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enumDescriptions": [
+              "Required unspecified role.",
+              "Job drivers will run on the node pool."
+            ],
+            "enum": [
+              "ROLE_UNSPECIFIED",
+              "DRIVER"
+            ]
+          }
+        },
+        "nodePoolConfig": {
+          "description": "Optional. The Compute Engine node pool instance group configuration.",
+          "$ref": "InstanceGroupConfig"
+        },
+        "labels": {
+          "description": "Optional. Compute Engine node pool labels. Label keys must consist of 1 to 63 characters and conform to RFC 1035 (https:\/\/www.ietf.org\/rfc\/rfc1035.txt). Label values can be empty. If specified, they must consist of 1 to 63 characters and conform to RFC 1035 (https:\/\/www.ietf.org\/rfc\/rfc1035.txt). The Compute Engine node pool can have no more than 32 labels.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
           }
         }
       }

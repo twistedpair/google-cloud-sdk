@@ -618,7 +618,7 @@ def ApplyFailoverPolicyArgs(messages, args, backend_service, support_failover):
 
 
 def ApplyLogConfigArgs(messages, args, backend_service, support_logging,
-                       support_tcp_ssl_logging):
+                       support_tcp_ssl_logging, support_net_lb_ilb_logging):
   """Applies the LogConfig arguments to the specified backend service.
 
   If there are no arguments related to LogConfig, the backend service
@@ -630,6 +630,7 @@ def ApplyLogConfigArgs(messages, args, backend_service, support_logging,
     backend_service: The backend service proto message object.
     support_logging: Support logging functionality.
     support_tcp_ssl_logging: Support logging for TCL and SSL protocols.
+    support_net_lb_ilb_logging: Support logging for External Net LB and ILB.
   """
   logging_specified = (
       support_logging and (args.IsSpecified('enable_logging') or
@@ -643,7 +644,26 @@ def ApplyLogConfigArgs(messages, args, backend_service, support_logging,
       messages.BackendService.ProtocolValueValuesEnum.TCP,
       messages.BackendService.ProtocolValueValuesEnum.SSL
   ]
-  if support_tcp_ssl_logging:
+  net_lb_ilb_protocols = [
+      messages.BackendService.ProtocolValueValuesEnum.TCP,
+      messages.BackendService.ProtocolValueValuesEnum.UDP,
+      messages.BackendService.ProtocolValueValuesEnum.UNSPECIFIED
+  ]
+  if support_net_lb_ilb_logging and support_tcp_ssl_logging:
+    if (logging_specified and backend_service.protocol
+        not in valid_protocols + tcp_ssl_protocols + net_lb_ilb_protocols):
+      raise exceptions.InvalidArgumentException(
+          '--protocol',
+          'can only specify --enable-logging or --logging-sample-rate if the '
+          'protocol is HTTP/HTTPS/HTTP2/TCP/SSL/UDP/UNSPECIFIED.')
+  elif support_net_lb_ilb_logging:
+    if (logging_specified and
+        backend_service.protocol not in valid_protocols + net_lb_ilb_protocols):
+      raise exceptions.InvalidArgumentException(
+          '--protocol',
+          'can only specify --enable-logging or --logging-sample-rate if the '
+          'protocol is HTTP/HTTPS/HTTP2/TCP/UDP/UNSPECIFIED.')
+  elif support_tcp_ssl_logging:
     if (logging_specified and
         backend_service.protocol not in valid_protocols + tcp_ssl_protocols):
       raise exceptions.InvalidArgumentException(

@@ -227,6 +227,13 @@ class IapLightWeightWebsocket(object):
       options.update({"subprotocols": self.subprotocols})
       self._connect(sslopt, **options)
       while self.connected:
+        # If the socket is already closed, we throw
+        if self.sock.fileno() == -1:
+          raise websocket_exceptions.WebSocketConnectionClosedException(
+              "Connection closed while receiving data.")
+        # Wait for websocket to be ready so we don't use too much cpu looping
+        # forever.
+        self._wait_for_socket_to_ready(timeout=None)
         frame = self.recv()
         if frame.opcode == websocket_frame_utils.ABNF.OPCODE_CLOSE:
           close_args = self._get_close_args(frame.data)
@@ -319,33 +326,37 @@ class IapLightWeightWebsocket(object):
     # send.
     if (attempt < WEBSOCKET_MAX_ATTEMPTS and self.sock and
         self.sock.fileno() != -1):
-      try:
-        _ = select.select([self.sock], (), (), WEBSOCKET_RETRY_TIMEOUT_SECS)
-      except TypeError as e:
-        message = websocket_utils.extract_err_message(e)
-        # There's a possibility that the socket gets transitioned to an invalid
-        # state (i.e NoneType) while we are waiting for the select,
-        # in which case we will throw the websocket closed error
-        if isinstance(message,
-                      str) and "arguments 1-3 must be sequences" in message:
-          raise websocket_exceptions.WebSocketConnectionClosedException(
-              "Connection closed while waiting for retry.")
-        raise
-      # select.error is the equivalent of OSError in python 2.7
-      except (OSError, select.error) as e:
-        # For windows, mocking the socket will throw on this select as it only
-        # support sockets (for linux we bypass that by implementing fileno). The
-        # error below is "An operation was attempted on something that is not a
-        # socket", which will never happen unless this is a socket based on a
-        # file or a mocked socket, in which case we just let execution continue.
-        if not platforms.OperatingSystem.IsWindows():
-          raise
-        if e is OSError  and e.winerror != 10038:
-          raise
-        if e is select.error and e.errno != errno.ENOTSOCK:
-          raise
+      self._wait_for_socket_to_ready(WEBSOCKET_RETRY_TIMEOUT_SECS)
     else:
       raise exception
+
+  def _wait_for_socket_to_ready(self, timeout):
+    """Wait for socket to be ready and treat some special errors cases."""
+    try:
+      _ = select.select([self.sock], (), (), timeout)
+    except TypeError as e:
+      message = websocket_utils.extract_err_message(e)
+      # There's a possibility that the socket gets transitioned to an invalid
+      # state (i.e NoneType) while we are waiting for the select,
+      # in which case we will throw the websocket closed error
+      if isinstance(message,
+                    str) and "arguments 1-3 must be sequences" in message:
+        raise websocket_exceptions.WebSocketConnectionClosedException(
+            "Connection closed while waiting for socket to ready.")
+      raise
+    # select.error is the equivalent of OSError in python 2.7
+    except (OSError, select.error) as e:
+      # For windows, mocking the socket will throw on this select as it only
+      # support sockets (for linux we bypass that by implementing fileno). The
+      # error below is "An operation was attempted on something that is not a
+      # socket", which will never happen unless this is a socket based on a
+      # file or a mocked socket, in which case we just let execution continue.
+      if not platforms.OperatingSystem.IsWindows():
+        raise
+      if e is OSError  and e.winerror != 10038:
+        raise
+      if e is select.error and e.errno != errno.ENOTSOCK:
+        raise
 
   def _is_closed_connection_exception(self, exception):
     """Method to identify if the exception is of closed connection type."""

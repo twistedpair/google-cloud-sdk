@@ -2210,7 +2210,7 @@ def AddMaintenancePolicyArgs(parser, deprecate=False):
   Specifies the behavior of the VMs when their host machines undergo
   maintenance. The default is MIGRATE.
   For more information, see
-  https://cloud.google.com/compute/docs/instances/setting-instance-scheduling-options.
+  https://cloud.google.com/compute/docs/instances/host-maintenance-options.
   """
   flag_type = lambda x: x.upper()
   action = None

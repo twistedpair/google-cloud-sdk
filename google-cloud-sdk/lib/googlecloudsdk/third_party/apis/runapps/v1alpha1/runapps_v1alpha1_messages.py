@@ -498,6 +498,19 @@ class DeploymentStatus(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 3)
 
 
+class DomainConfig(_messages.Message):
+  r"""A DomainConfig object.
+
+  Fields:
+    domain: Domain name for this config.
+    routes: A list of route configurations to associate with the domain. Each
+      Route configuration must include a paths configuration.
+  """
+
+  domain = _messages.StringField(1)
+  routes = _messages.MessageField('Route', 2, repeated=True)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -1024,20 +1037,24 @@ class RouterConfig(_messages.Message):
   r"""Message for a Router resource.
 
   Fields:
-    default_route: The default route config. The URL paths field is not
-      required for this route config.
-    dns_zone: DNSZone represents an existing DNS zone for the router. It's
-      used for bring-your-own-DNSZone case. If empty, a new managed DNS zone
-      shall be created.
-    domain: Domain name to associate with the router.
-    routes: A list of route configurations to associate with the router. Each
-      Route configuration must include a paths configuration.
+    default_route: Deprecated. Use the DomainConfig instead. The default route
+      config. The URL paths field is not required for this route config.
+    dns_zone: Deprecated. Use the DomainConfig instead. DNSZone represents an
+      existing DNS zone for the router. It's used for bring-your-own-DNSZone
+      case. If empty, a new managed DNS zone shall be created.
+    domain: Deprecated. Use the DomainConfig instead. Domain name to associate
+      with the router.
+    domains: The config for each domain.
+    routes: Deprecated. Use the DomainConfig instead. A list of route
+      configurations to associate with the router. Each Route configuration
+      must include a paths configuration.
   """
 
   default_route = _messages.MessageField('Route', 1)
   dns_zone = _messages.StringField(2)
   domain = _messages.StringField(3)
-  routes = _messages.MessageField('Route', 4, repeated=True)
+  domains = _messages.MessageField('DomainConfig', 4, repeated=True)
+  routes = _messages.MessageField('Route', 5, repeated=True)
 
 
 class RouterStatus(_messages.Message):

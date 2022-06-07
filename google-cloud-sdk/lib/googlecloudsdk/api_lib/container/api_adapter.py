@@ -488,6 +488,8 @@ class CreateClusterOptions(object):
       enable_autoscaling=None,
       min_nodes=None,
       max_nodes=None,
+      total_min_nodes=None,
+      total_max_nodes=None,
       location_policy=None,
       image_type=None,
       image=None,
@@ -654,6 +656,8 @@ class CreateClusterOptions(object):
     self.enable_autoscaling = enable_autoscaling
     self.min_nodes = min_nodes
     self.max_nodes = max_nodes
+    self.total_min_nodes = total_min_nodes
+    self.total_max_nodes = total_max_nodes
     self.location_policy = location_policy
     self.image_type = image_type
     self.image = image
@@ -815,6 +819,8 @@ class UpdateClusterOptions(object):
       enable_autoscaling=None,
       min_nodes=None,
       max_nodes=None,
+      total_min_nodes=None,
+      total_max_nodes=None,
       location_policy=None,
       image_type=None,
       image=None,
@@ -919,6 +925,8 @@ class UpdateClusterOptions(object):
     self.enable_autoscaling = enable_autoscaling
     self.min_nodes = min_nodes
     self.max_nodes = max_nodes
+    self.total_min_nodes = total_min_nodes
+    self.total_max_nodes = total_max_nodes
     self.location_policy = location_policy
     self.image_type = image_type
     self.image = image
@@ -1040,6 +1048,8 @@ class CreateNodePoolOptions(object):
                enable_autoscaling=None,
                max_nodes=None,
                min_nodes=None,
+               total_max_nodes=None,
+               total_min_nodes=None,
                location_policy=None,
                enable_autoprovisioning=None,
                image_type=None,
@@ -1100,6 +1110,8 @@ class CreateNodePoolOptions(object):
     self.enable_autoscaling = enable_autoscaling
     self.max_nodes = max_nodes
     self.min_nodes = min_nodes
+    self.total_max_nodes = total_max_nodes
+    self.total_min_nodes = total_min_nodes
     self.enable_autoprovisioning = enable_autoprovisioning
     self.image_type = image_type
     self.location_policy = location_policy
@@ -1156,6 +1168,8 @@ class UpdateNodePoolOptions(object):
                enable_autoscaling=None,
                max_nodes=None,
                min_nodes=None,
+               total_max_nodes=None,
+               total_min_nodes=None,
                location_policy=None,
                enable_autoprovisioning=None,
                workload_metadata=None,
@@ -1182,6 +1196,8 @@ class UpdateNodePoolOptions(object):
     self.enable_autoscaling = enable_autoscaling
     self.max_nodes = max_nodes
     self.min_nodes = min_nodes
+    self.total_max_nodes = total_max_nodes
+    self.total_min_nodes = total_min_nodes
     self.location_policy = location_policy
     self.enable_autoprovisioning = enable_autoprovisioning
     self.workload_metadata = workload_metadata
@@ -1206,7 +1222,8 @@ class UpdateNodePoolOptions(object):
 
   def IsAutoscalingUpdate(self):
     return (self.enable_autoscaling is not None or self.max_nodes is not None or
-            self.min_nodes is not None or
+            self.min_nodes is not None or self.total_max_nodes is not None or
+            self.total_min_nodes is not None or
             self.enable_autoprovisioning is not None or
             self.location_policy is not None)
 
@@ -1871,7 +1888,9 @@ class APIAdapter(object):
         pool.autoscaling = self.messages.NodePoolAutoscaling(
             enabled=options.enable_autoscaling,
             minNodeCount=options.min_nodes,
-            maxNodeCount=options.max_nodes)
+            maxNodeCount=options.max_nodes,
+            totalMinNodeCount=options.total_min_nodes,
+            totalMaxNodeCount=options.total_max_nodes)
         if options.location_policy is not None:
           pool.autoscaling.locationPolicy = LocationPolicyEnumFromString(
               self.messages, options.location_policy)
@@ -2573,6 +2592,8 @@ class APIAdapter(object):
       if options.enable_autoscaling:
         autoscaling.minNodeCount = options.min_nodes
         autoscaling.maxNodeCount = options.max_nodes
+        autoscaling.totalMinNodeCount = options.total_min_nodes
+        autoscaling.totalMaxNodeCount = options.total_max_nodes
         if options.location_policy is not None:
           autoscaling.locationPolicy = LocationPolicyEnumFromString(
               self.messages, options.location_policy)
@@ -3238,6 +3259,8 @@ class APIAdapter(object):
       pool.autoscaling.enabled = options.enable_autoscaling
       pool.autoscaling.minNodeCount = options.min_nodes
       pool.autoscaling.maxNodeCount = options.max_nodes
+      pool.autoscaling.totalMinNodeCount = options.total_min_nodes
+      pool.autoscaling.totalMaxNodeCount = options.total_max_nodes
       if options.location_policy is not None:
         pool.autoscaling.locationPolicy = LocationPolicyEnumFromString(
             self.messages, options.location_policy)
@@ -3352,6 +3375,10 @@ class APIAdapter(object):
       autoscaling.maxNodeCount = options.max_nodes
     if options.min_nodes is not None:
       autoscaling.minNodeCount = options.min_nodes
+    if options.total_max_nodes is not None:
+      autoscaling.totalMaxNodeCount = options.total_max_nodes
+    if options.total_min_nodes is not None:
+      autoscaling.totalMinNodeCount = options.total_min_nodes
     if options.location_policy is not None:
       autoscaling.locationPolicy = LocationPolicyEnumFromString(
           self.messages, options.location_policy)
@@ -5030,7 +5057,9 @@ class V1Alpha1Adapter(V1Beta1Adapter):
         pool.autoscaling = self.messages.NodePoolAutoscaling(
             enabled=options.enable_autoscaling,
             minNodeCount=options.min_nodes,
-            maxNodeCount=options.max_nodes)
+            maxNodeCount=options.max_nodes,
+            totalMinNodeCount=options.total_min_nodes,
+            totalMaxNodeCount=options.total_max_nodes)
         if options.location_policy is not None:
           pool.autoscaling.locationPolicy = LocationPolicyEnumFromString(
               self.messages, options.location_policy)

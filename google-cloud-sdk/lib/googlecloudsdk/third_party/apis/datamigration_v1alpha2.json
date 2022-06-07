@@ -1212,7 +1212,8 @@
             "The types of the source and the destination are incompatible.",
             "The gtid_mode is not supported, applicable for MySQL.",
             "The definer is not supported.",
-            "Migration is already running at the time of restart request."
+            "Migration is already running at the time of restart request.",
+            "The source has tables with limited support. E.g. PostgreSQL tables without primary keys."
           ],
           "enum": [
             "ERROR_CODE_UNSPECIFIED",
@@ -1223,7 +1224,8 @@
             "CONNECTION_PROFILE_TYPES_INCOMPATIBILITY",
             "UNSUPPORTED_GTID_MODE",
             "UNSUPPORTED_DEFINER",
-            "CANT_RESTART_RUNNING_MIGRATION"
+            "CANT_RESTART_RUNNING_MIGRATION",
+            "TABLES_WITH_LIMITED_SUPPORT"
           ]
         },
         "errorMessage": {

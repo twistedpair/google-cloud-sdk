@@ -396,18 +396,51 @@ class BigqueryTablesDeleteResponse(_messages.Message):
 class BigqueryTablesGetRequest(_messages.Message):
   r"""A BigqueryTablesGetRequest object.
 
+  Enums:
+    ViewValueValuesEnum: Specifies the view that determines which table
+      information is returned. By default, basic table information and storage
+      statistics (STORAGE_STATS) are returned.
+
   Fields:
     datasetId: Dataset ID of the requested table
     projectId: Project ID of the requested table
     selectedFields: List of fields to return (comma-separated). If
       unspecified, all fields are returned
     tableId: Table ID of the requested table
+    view: Specifies the view that determines which table information is
+      returned. By default, basic table information and storage statistics
+      (STORAGE_STATS) are returned.
   """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""Specifies the view that determines which table information is
+    returned. By default, basic table information and storage statistics
+    (STORAGE_STATS) are returned.
+
+    Values:
+      BASIC: Includes basic table information including schema and
+        partitioning specification. This view does not include storage
+        statistics such as numRows or numBytes. This view is significantly
+        more efficient and should be used to support high query rates.
+      FULL: Includes all table information, including storage statistics. It
+        returns same information as STORAGE_STATS view, but may contain
+        additional information in the future.
+      STORAGE_STATS: Includes all information in the BASIC view as well as
+        storage statistics (numBytes, numLongTermBytes, numRows and
+        lastModifiedTime).
+      TABLE_METADATA_VIEW_UNSPECIFIED: The default value. Default to the
+        STORAGE_STATS view.
+    """
+    BASIC = 0
+    FULL = 1
+    STORAGE_STATS = 2
+    TABLE_METADATA_VIEW_UNSPECIFIED = 3
 
   datasetId = _messages.StringField(1, required=True)
   projectId = _messages.StringField(2, required=True)
   selectedFields = _messages.StringField(3)
   tableId = _messages.StringField(4, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 5)
 
 
 class BigqueryTablesInsertRequest(_messages.Message):

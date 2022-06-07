@@ -379,6 +379,7 @@ class CommonFeatureSpec(_messages.Message):
     cloudauditlogging: Cloud Audit Logging-specific spec.
     helloworld: Hello World-specific spec.
     multiclusteringress: Multicluster Ingress-specific spec.
+    rbacrolebindingactuation: RBAC Role Binding Actuation feature spec
     workloadcertificate: Workload Certificate spec.
   """
 
@@ -387,7 +388,8 @@ class CommonFeatureSpec(_messages.Message):
   cloudauditlogging = _messages.MessageField('CloudAuditLoggingFeatureSpec', 3)
   helloworld = _messages.MessageField('HelloWorldFeatureSpec', 4)
   multiclusteringress = _messages.MessageField('MultiClusterIngressFeatureSpec', 5)
-  workloadcertificate = _messages.MessageField('FeatureSpec', 6)
+  rbacrolebindingactuation = _messages.MessageField('RBACRoleBindingActuationFeatureSpec', 6)
+  workloadcertificate = _messages.MessageField('FeatureSpec', 7)
 
 
 class CommonFeatureState(_messages.Message):
@@ -396,14 +398,16 @@ class CommonFeatureState(_messages.Message):
   Fields:
     appdevexperience: Appdevexperience specific state.
     helloworld: Hello World-specific state.
+    rbacrolebindingactuation: RBAC Role Binding Actuation feature state
     servicemesh: Service Mesh-specific state.
     state: Output only. The "running state" of the Feature in this Hub.
   """
 
   appdevexperience = _messages.MessageField('AppDevExperienceFeatureState', 1)
   helloworld = _messages.MessageField('HelloWorldFeatureState', 2)
-  servicemesh = _messages.MessageField('ServiceMeshFeatureState', 3)
-  state = _messages.MessageField('FeatureState', 4)
+  rbacrolebindingactuation = _messages.MessageField('RBACRoleBindingActuationFeatureState', 3)
+  servicemesh = _messages.MessageField('ServiceMeshFeatureState', 4)
+  state = _messages.MessageField('FeatureState', 5)
 
 
 class ConfigManagementBinauthzConfig(_messages.Message):
@@ -466,6 +470,7 @@ class ConfigManagementConfigSync(_messages.Message):
       ConfigSync resources will be managed depends on the presence of git
       field.
     git: Git repo configuration for the cluster.
+    oci: OCI repo configuration for the cluster
     preventDrift: Set to true to enable the Config Sync admission webhook to
       prevent drifts. If set to `false`, disables the Config Sync admission
       webhook and does not prevent drifts.
@@ -475,8 +480,9 @@ class ConfigManagementConfigSync(_messages.Message):
 
   enabled = _messages.BooleanField(1)
   git = _messages.MessageField('ConfigManagementGitConfig', 2)
-  preventDrift = _messages.BooleanField(3)
-  sourceFormat = _messages.StringField(4)
+  oci = _messages.MessageField('ConfigManagementOciConfig', 3)
+  preventDrift = _messages.BooleanField(4)
+  sourceFormat = _messages.StringField(5)
 
 
 class ConfigManagementConfigSyncDeploymentState(_messages.Message):
@@ -915,6 +921,27 @@ class ConfigManagementMembershipState(_messages.Message):
   policyControllerState = _messages.MessageField('ConfigManagementPolicyControllerState', 7)
 
 
+class ConfigManagementOciConfig(_messages.Message):
+  r"""OCI repo configuration for a single cluster
+
+  Fields:
+    gcpServiceAccountEmail: The GCP Service Account Email used for auth when
+      secret_type is gcpServiceAccount.
+    policyDir: The absolute path of the directory that contains the local
+      resources. Default: the root directory of the image.
+    secretType: Type of secret configured for access to the Git repo.
+    syncRepo: The OCI image repository URL for the package to sync from. e.g.
+      `LOCATION-docker.pkg.dev/PROJECT_ID/REPOSITORY_NAME/PACKAGE_NAME`.
+    syncWaitSecs: Period in seconds between consecutive syncs. Default: 15.
+  """
+
+  gcpServiceAccountEmail = _messages.StringField(1)
+  policyDir = _messages.StringField(2)
+  secretType = _messages.StringField(3)
+  syncRepo = _messages.StringField(4)
+  syncWaitSecs = _messages.IntegerField(5)
+
+
 class ConfigManagementOperatorState(_messages.Message):
   r"""State information for an ACM's Operator
 
@@ -959,6 +986,7 @@ class ConfigManagementPolicyController(_messages.Message):
       Controller checks. Namespaces do not need to currently exist on the
       cluster.
     logDeniesEnabled: Logs all denies and dry run failures.
+    monitoring: Monitoring specifies the configuration of monitoring.
     mutationEnabled: Enable users to try out mutation for PolicyController.
     referentialRulesEnabled: Enables the ability to use Constraint Templates
       that reference to objects other than the object currently being
@@ -971,9 +999,39 @@ class ConfigManagementPolicyController(_messages.Message):
   enabled = _messages.BooleanField(2)
   exemptableNamespaces = _messages.StringField(3, repeated=True)
   logDeniesEnabled = _messages.BooleanField(4)
-  mutationEnabled = _messages.BooleanField(5)
-  referentialRulesEnabled = _messages.BooleanField(6)
-  templateLibraryInstalled = _messages.BooleanField(7)
+  monitoring = _messages.MessageField('ConfigManagementPolicyControllerMonitoring', 5)
+  mutationEnabled = _messages.BooleanField(6)
+  referentialRulesEnabled = _messages.BooleanField(7)
+  templateLibraryInstalled = _messages.BooleanField(8)
+
+
+class ConfigManagementPolicyControllerMonitoring(_messages.Message):
+  r"""PolicyControllerMonitoring specifies the backends Policy Controller
+  should export metrics to. For example, to specify metrics should be exported
+  to Cloud Monitoring and Prometheus, specify backends: ["cloudmonitoring",
+  "prometheus"]
+
+  Enums:
+    BackendsValueListEntryValuesEnum:
+
+  Fields:
+    backends: Specifies the list of backends Policy Controller will export to.
+      An empty list would effectively disable metrics export.
+  """
+
+  class BackendsValueListEntryValuesEnum(_messages.Enum):
+    r"""BackendsValueListEntryValuesEnum enum type.
+
+    Values:
+      MONITORING_BACKEND_UNSPECIFIED: Backend cannot be determined
+      PROMETHEUS: Prometheus backend for monitoring
+      CLOUD_MONITORING: Stackdriver/Cloud Monitoring backend for monitoring
+    """
+    MONITORING_BACKEND_UNSPECIFIED = 0
+    PROMETHEUS = 1
+    CLOUD_MONITORING = 2
+
+  backends = _messages.EnumField('BackendsValueListEntryValuesEnum', 1, repeated=True)
 
 
 class ConfigManagementPolicyControllerState(_messages.Message):
@@ -1948,6 +2006,56 @@ class GkehubProjectsLocationsMembershipsListAdminRequest(_messages.Message):
   parent = _messages.StringField(5, required=True)
 
 
+class GkehubProjectsLocationsMembershipsListNamespacesRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsMembershipsListNamespacesRequest object.
+
+  Fields:
+    name: Required. The parent (project and location) where the Features will
+      be listed. Specified in the format
+      `projects/*/locations/*/memberships/*`.
+    pageSize: Optional. When requesting a 'page' of resources, `page_size`
+      specifies number of resources to return. If unspecified or set to 0, all
+      resources will be returned.
+    pageToken: Optional. Token returned by previous call to `ListFeatures`
+      which specifies the position in the list from where to continue listing
+      the resources.
+  """
+
+  name = _messages.StringField(1, required=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+
+
+class GkehubProjectsLocationsMembershipsListPermittedRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsMembershipsListPermittedRequest object.
+
+  Fields:
+    filter: Optional. Lists Memberships that match the filter expression,
+      following the syntax outlined in https://google.aip.dev/160. Examples: -
+      Name is `bar` in project `foo-proj` and location `global`: name =
+      "projects/foo-proj/locations/global/membership/bar" - Memberships that
+      have a label called `foo`: labels.foo:* - Memberships that have a label
+      called `foo` whose value is `bar`: labels.foo = bar - Memberships in the
+      CREATING state: state = CREATING
+    orderBy: Optional. One or more fields to compare and use to sort the
+      output. See https://google.aip.dev/132#ordering.
+    pageSize: Optional. When requesting a 'page' of resources, `page_size`
+      specifies number of resources to return. If unspecified or set to 0, all
+      resources will be returned.
+    pageToken: Optional. Token returned by previous call to `ListMemberships`
+      which specifies the position in the list from where to continue listing
+      the resources.
+    parent: Required. The parent (project and location) where the Memberships
+      will be listed. Specified in the format `projects/*/locations/*`.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
 class GkehubProjectsLocationsMembershipsListRequest(_messages.Message):
   r"""A GkehubProjectsLocationsMembershipsListRequest object.
 
@@ -1976,6 +2084,90 @@ class GkehubProjectsLocationsMembershipsListRequest(_messages.Message):
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
+
+
+class GkehubProjectsLocationsMembershipsNamespacebindingsCreateRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsMembershipsNamespacebindingsCreateRequest
+  object.
+
+  Fields:
+    namespaceBinding: A NamespaceBinding resource to be passed as the request
+      body.
+    namespacebindingId: Required. Client chosen ID for the NamespaceBinding.
+      `namespacebinding_id` must be a valid RFC 1123 compliant DNS label: 1.
+      At most 63 characters in length 2. It must consist of lower case
+      alphanumeric characters or `-` 3. It must start and end with an
+      alphanumeric character Which can be expressed as the regex:
+      `[a-z0-9]([-a-z0-9]*[a-z0-9])?`, with a maximum length of 63 characters.
+    parent: Required. The parent (project and location) where the
+      NamespaceBinding will be created. Specified in the format
+      `projects/*/locations/*/memberships/*`.
+  """
+
+  namespaceBinding = _messages.MessageField('NamespaceBinding', 1)
+  namespacebindingId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class GkehubProjectsLocationsMembershipsNamespacebindingsDeleteRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsMembershipsNamespacebindingsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The NamespaceBinding resource name in the format
+      `projects/*/locations/*/memberships/*/namespacebindings/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class GkehubProjectsLocationsMembershipsNamespacebindingsGetRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsMembershipsNamespacebindingsGetRequest object.
+
+  Fields:
+    name: Required. The NamespaceBinding resource name in the format
+      `projects/*/locations/*/memberships/*/namespacebindings/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class GkehubProjectsLocationsMembershipsNamespacebindingsListRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsMembershipsNamespacebindingsListRequest object.
+
+  Fields:
+    pageSize: Optional. When requesting a 'page' of resources, `page_size`
+      specifies number of resources to return. If unspecified or set to 0, all
+      resources will be returned.
+    pageToken: Optional. Token returned by previous call to
+      `ListNamespaceBindings` which specifies the position in the list from
+      where to continue listing the resources.
+    parent: Required. The parent (project and location) where the Features
+      will be listed. Specified in the format
+      `projects/*/locations/*/memberships/*`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class GkehubProjectsLocationsMembershipsNamespacebindingsPatchRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsMembershipsNamespacebindingsPatchRequest
+  object.
+
+  Fields:
+    name: The resource name for the namespacebinding `projects/{project}/locat
+      ions/{location}/memberships/{membership}/namespacebindings/{namespacebin
+      ding}`
+    namespaceBinding: A NamespaceBinding resource to be passed as the request
+      body.
+    updateMask: Required. The fields to be updated.
+  """
+
+  name = _messages.StringField(1, required=True)
+  namespaceBinding = _messages.MessageField('NamespaceBinding', 2)
+  updateMask = _messages.StringField(3)
 
 
 class GkehubProjectsLocationsMembershipsPatchRequest(_messages.Message):
@@ -2079,6 +2271,45 @@ class GkehubProjectsLocationsNamespacesGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class GkehubProjectsLocationsNamespacesListMembershipsRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsNamespacesListMembershipsRequest object.
+
+  Fields:
+    name: Required. The parent (project and location) where the Memberships
+      will be listed. Specified in the format
+      `projects/*/locations/*/namespaces/`.
+    pageSize: Optional. When requesting a 'page' of resources, `page_size`
+      specifies number of resources to return. If unspecified or set to 0, all
+      resources will be returned.
+    pageToken: Optional. Token returned by previous call to `ListMemberships`
+      which specifies the position in the list from where to continue listing
+      the resources.
+  """
+
+  name = _messages.StringField(1, required=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+
+
+class GkehubProjectsLocationsNamespacesListPermittedRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsNamespacesListPermittedRequest object.
+
+  Fields:
+    pageSize: Optional. When requesting a 'page' of resources, `page_size`
+      specifies number of resources to return. If unspecified or set to 0, all
+      resources will be returned.
+    pageToken: Optional. Token returned by previous call to `ListFeatures`
+      which specifies the position in the list from where to continue listing
+      the resources.
+    parent: Required. The parent (project and location) where the Features
+      will be listed. Specified in the format `projects/*/locations/*`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class GkehubProjectsLocationsNamespacesListRequest(_messages.Message):
   r"""A GkehubProjectsLocationsNamespacesListRequest object.
 
@@ -2110,6 +2341,87 @@ class GkehubProjectsLocationsNamespacesPatchRequest(_messages.Message):
 
   name = _messages.StringField(1, required=True)
   namespace = _messages.MessageField('Namespace', 2)
+  updateMask = _messages.StringField(3)
+
+
+class GkehubProjectsLocationsNamespacesRbacrolebindingsCreateRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsNamespacesRbacrolebindingsCreateRequest object.
+
+  Fields:
+    parent: Required. The parent (project and location) where the
+      RBACRoleBinding will be created. Specified in the format
+      `projects/*/locations/*/namespaces/*`.
+    rBACRoleBinding: A RBACRoleBinding resource to be passed as the request
+      body.
+    rbacrolebindingId: Required. Client chosen ID for the RBACRoleBinding.
+      `rbacrolebinding_id` must be a valid RFC 1123 compliant DNS label: 1. At
+      most 63 characters in length 2. It must consist of lower case
+      alphanumeric characters or `-` 3. It must start and end with an
+      alphanumeric character Which can be expressed as the regex:
+      `[a-z0-9]([-a-z0-9]*[a-z0-9])?`, with a maximum length of 63 characters.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  rBACRoleBinding = _messages.MessageField('RBACRoleBinding', 2)
+  rbacrolebindingId = _messages.StringField(3)
+
+
+class GkehubProjectsLocationsNamespacesRbacrolebindingsDeleteRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsNamespacesRbacrolebindingsDeleteRequest object.
+
+  Fields:
+    name: Required. The RBACRoleBinding resource name in the format
+      `projects/*/locations/*/namespaces/*/rbacrolebindings/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class GkehubProjectsLocationsNamespacesRbacrolebindingsGetRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsNamespacesRbacrolebindingsGetRequest object.
+
+  Fields:
+    name: Required. The RBACRoleBinding resource name in the format
+      `projects/*/locations/*/namespaces/*/rbacrolebindings/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class GkehubProjectsLocationsNamespacesRbacrolebindingsListRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsNamespacesRbacrolebindingsListRequest object.
+
+  Fields:
+    pageSize: Optional. When requesting a 'page' of resources, `page_size`
+      specifies number of resources to return. If unspecified or set to 0, all
+      resources will be returned.
+    pageToken: Optional. Token returned by previous call to
+      `ListRBACRoleBindings` which specifies the position in the list from
+      where to continue listing the resources.
+    parent: Required. The parent (project and location) where the Features
+      will be listed. Specified in the format
+      `projects/*/locations/*/namespaces/*`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class GkehubProjectsLocationsNamespacesRbacrolebindingsPatchRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsNamespacesRbacrolebindingsPatchRequest object.
+
+  Fields:
+    name: The resource name for the rbacrolebinding `projects/{project}/locati
+      ons/{location}/namespaces/{namespace}/rbacrolebindings/{rbacrolebinding}
+      `
+    rBACRoleBinding: A RBACRoleBinding resource to be passed as the request
+      body.
+    updateMask: Required. The fields to be updated.
+  """
+
+  name = _messages.StringField(1, required=True)
+  rBACRoleBinding = _messages.MessageField('RBACRoleBinding', 2)
   updateMask = _messages.StringField(3)
 
 
@@ -2585,6 +2897,23 @@ class ListLocationsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class ListMembershipsForNamespaceResponse(_messages.Message):
+  r"""Response message for the `GkeHub.ListMemberships` method.
+
+  Fields:
+    nextPageToken: A token to request the next page of resources from the
+      `ListMemberships` method. The value of an empty string means that there
+      are no more resources to return.
+    resources: The list of matching Memberships.
+    unreachable: List of locations that could not be reached while fetching
+      this list.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  resources = _messages.MessageField('Membership', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
 class ListMembershipsResponse(_messages.Message):
   r"""Response message for the `GkeHub.ListMemberships` method.
 
@@ -2600,6 +2929,34 @@ class ListMembershipsResponse(_messages.Message):
   nextPageToken = _messages.StringField(1)
   resources = _messages.MessageField('Membership', 2, repeated=True)
   unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListNamespaceBindingsResponse(_messages.Message):
+  r"""List of NamespaceBindings.
+
+  Fields:
+    namespacebindings: The list of NamespaceBindings
+    nextPageToken: A token to request the next page of resources from the
+      `ListNamespaceBindings` method. The value of an empty string means that
+      there are no more resources to return.
+  """
+
+  namespacebindings = _messages.MessageField('NamespaceBinding', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListNamespacesForMembershipResponse(_messages.Message):
+  r"""List of fleet namespaces.
+
+  Fields:
+    namespaces: The list of fleet namespaces
+    nextPageToken: A token to request the next page of resources from the
+      `ListNamespaces` method. The value of an empty string means that there
+      are no more resources to return.
+  """
+
+  namespaces = _messages.MessageField('Namespace', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
 class ListNamespacesResponse(_messages.Message):
@@ -2627,6 +2984,20 @@ class ListOperationsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+
+
+class ListRBACRoleBindingsResponse(_messages.Message):
+  r"""List of RBACRoleBindings.
+
+  Fields:
+    nextPageToken: A token to request the next page of resources from the
+      `ListRBACRoleBindings` method. The value of an empty string means that
+      there are no more resources to return.
+    rbacrolebindings: The list of RBACRoleBindings
+  """
+
+  nextPageToken = _messages.StringField(1)
+  rbacrolebindings = _messages.MessageField('RBACRoleBinding', 2, repeated=True)
 
 
 class LocalControllerState(_messages.Message):
@@ -2895,6 +3266,7 @@ class MembershipFeatureSpec(_messages.Message):
     identityservice: Identity Service-specific spec.
     mesh: Anthos Service Mesh-specific spec
     policycontroller: Policy Controller spec.
+    rbacrolebindingactuation: RBAC Role Binding Actuation membership spec
     workloadcertificate: Workload Certificate spec.
   """
 
@@ -2907,7 +3279,8 @@ class MembershipFeatureSpec(_messages.Message):
   identityservice = _messages.MessageField('IdentityServiceMembershipSpec', 7)
   mesh = _messages.MessageField('ServiceMeshMembershipSpec', 8)
   policycontroller = _messages.MessageField('PolicyControllerMembershipSpec', 9)
-  workloadcertificate = _messages.MessageField('MembershipSpec', 10)
+  rbacrolebindingactuation = _messages.MessageField('RBACRoleBindingActuationMembershipSpec', 10)
+  workloadcertificate = _messages.MessageField('MembershipSpec', 11)
 
 
 class MembershipFeatureState(_messages.Message):
@@ -2922,6 +3295,7 @@ class MembershipFeatureState(_messages.Message):
     identityservice: Identity Service-specific state.
     metering: Metering-specific spec.
     policycontroller: Policycontroller-specific state.
+    rbacrolebindingactuation: RBAC Role Binding Actuation membership state
     servicemesh: Service Mesh-specific state.
     state: The high-level state of this Feature for a single membership.
   """
@@ -2933,8 +3307,9 @@ class MembershipFeatureState(_messages.Message):
   identityservice = _messages.MessageField('IdentityServiceMembershipState', 5)
   metering = _messages.MessageField('MeteringMembershipState', 6)
   policycontroller = _messages.MessageField('PolicyControllerMembershipState', 7)
-  servicemesh = _messages.MessageField('ServiceMeshMembershipState', 8)
-  state = _messages.MessageField('FeatureState', 9)
+  rbacrolebindingactuation = _messages.MessageField('RBACRoleBindingActuationMembershipState', 8)
+  servicemesh = _messages.MessageField('ServiceMeshMembershipState', 9)
+  state = _messages.MessageField('FeatureState', 10)
 
 
 class MembershipSpec(_messages.Message):
@@ -3092,6 +3467,29 @@ class Namespace(_messages.Message):
   state = _messages.MessageField('NamespaceLifecycleState', 4)
   uid = _messages.StringField(5)
   updateTime = _messages.StringField(6)
+
+
+class NamespaceBinding(_messages.Message):
+  r"""NamespaceBinding represents a namespacebinding across the Fleet
+
+  Fields:
+    createTime: Output only. When the namespacebinding was created.
+    deleteTime: Output only. When the namespacebinding was deleted.
+    name: The resource name for the namespacebinding `projects/{project}/locat
+      ions/{location}/memberships/{membership}/namespacebindings/{namespacebin
+      ding}`
+    uid: Output only. Google-generated UUID for this resource. This is unique
+      across all namespacebinding resources. If a namespacebinding resource is
+      deleted and another resource with the same name is created, it gets a
+      different uid.
+    updateTime: Output only. When the namespacebinding was last updated.
+  """
+
+  createTime = _messages.StringField(1)
+  deleteTime = _messages.StringField(2)
+  name = _messages.StringField(3)
+  uid = _messages.StringField(4)
+  updateTime = _messages.StringField(5)
 
 
 class NamespaceLifecycleState(_messages.Message):
@@ -3588,6 +3986,86 @@ class PolicyControllerTemplateLibraryConfig(_messages.Message):
   included = _messages.BooleanField(1)
 
 
+class RBACRoleBinding(_messages.Message):
+  r"""RBACRoleBinding represents a rbacrolebinding across the Fleet
+
+  Fields:
+    createTime: Output only. When the rbacrolebinding was created.
+    deleteTime: Output only. When the rbacrolebinding was deleted.
+    name: The resource name for the rbacrolebinding `projects/{project}/locati
+      ons/{location}/namespaces/{namespace}/rbacrolebindings/{rbacrolebinding}
+      `
+    uid: Output only. Google-generated UUID for this resource. This is unique
+      across all rbacrolebinding resources. If a rbacrolebinding resource is
+      deleted and another resource with the same name is created, it gets a
+      different uid.
+    updateTime: Output only. When the rbacrolebinding was last updated.
+  """
+
+  createTime = _messages.StringField(1)
+  deleteTime = _messages.StringField(2)
+  name = _messages.StringField(3)
+  uid = _messages.StringField(4)
+  updateTime = _messages.StringField(5)
+
+
+class RBACRoleBindingActuationFeatureSpec(_messages.Message):
+  r"""**RBAC RoleBinding Actuation**: The Hub-wide input for the
+  RBACRoleBindingActuation feature.
+
+  Fields:
+    actuationDisabled: A boolean attribute.
+  """
+
+  actuationDisabled = _messages.BooleanField(1)
+
+
+class RBACRoleBindingActuationFeatureState(_messages.Message):
+  r"""**RBAC RoleBinding Actuation**: An empty state left as an example Hub-
+  wide Feature state.
+  """
+
+
+
+class RBACRoleBindingActuationMembershipSpec(_messages.Message):
+  r"""**RBAC RoleBinding Actuation**: The membership-specific input for
+  RBACRoleBindingActuation feature.
+
+  Fields:
+    actuationDisabled: A boolean attribute.
+  """
+
+  actuationDisabled = _messages.BooleanField(1)
+
+
+class RBACRoleBindingActuationMembershipState(_messages.Message):
+  r"""**RBAC RoleBinding Actuation**: An empty state left as an example
+  membership-specific Feature state.
+
+  Enums:
+    LifecycleStateValueValuesEnum:
+
+  Fields:
+    lifecycleState: A LifecycleStateValueValuesEnum attribute.
+    stateDetails: A string attribute.
+  """
+
+  class LifecycleStateValueValuesEnum(_messages.Enum):
+    r"""LifecycleStateValueValuesEnum enum type.
+
+    Values:
+      LIFECYCLE_STATE_UNSPECIFIED: The lifecycle state is unspecified.
+      ACTIVE: <no description>
+      ERROR: <no description>
+    """
+    LIFECYCLE_STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    ERROR = 2
+
+  lifecycleState = _messages.EnumField('LifecycleStateValueValuesEnum', 1)
+  stateDetails = _messages.StringField(2)
+
+
 class ResourceManifest(_messages.Message):
   r"""ResourceManifest represents a single Kubernetes resource to be applied
   to the cluster.
@@ -3911,12 +4389,14 @@ class ServiceMeshMembershipSpec(_messages.Message):
     DataPlaneValueValuesEnum: Enables automatic data plane management.
     DefaultChannelValueValuesEnum: Determines which release channel to use for
       default injection and service mesh APIs.
+    ManagementValueValuesEnum: Enables automatic Service Mesh management.
 
   Fields:
     controlPlane: Enables automatic control plane management.
     dataPlane: Enables automatic data plane management.
     defaultChannel: Determines which release channel to use for default
       injection and service mesh APIs.
+    management: Enables automatic Service Mesh management.
   """
 
   class ControlPlaneValueValuesEnum(_messages.Enum):
@@ -3968,9 +4448,29 @@ class ServiceMeshMembershipSpec(_messages.Message):
     REGULAR = 2
     STABLE = 3
 
+  class ManagementValueValuesEnum(_messages.Enum):
+    r"""Enables automatic Service Mesh management.
+
+    Values:
+      MANAGEMENT_UNSPECIFIED: Unspecified
+      MANAGEMENT_AUTOMATIC: Google should manage my Service Mesh for the
+        cluster. This will ensure that a control plane revision is available
+        to the cluster. Google will enroll this revision in a release channel
+        and keep it up to date. Enables a Google-managed data plane that
+        provides L7 service mesh capabilities. Data plane management is
+        enabled at the cluster level. Users can exclude individual workloads
+        or namespaces.
+      MANAGEMENT_MANUAL: User will manually configure their service mesh
+        components.
+    """
+    MANAGEMENT_UNSPECIFIED = 0
+    MANAGEMENT_AUTOMATIC = 1
+    MANAGEMENT_MANUAL = 2
+
   controlPlane = _messages.EnumField('ControlPlaneValueValuesEnum', 1)
   dataPlane = _messages.EnumField('DataPlaneValueValuesEnum', 2)
   defaultChannel = _messages.EnumField('DefaultChannelValueValuesEnum', 3)
+  management = _messages.EnumField('ManagementValueValuesEnum', 4)
 
 
 class ServiceMeshMembershipState(_messages.Message):

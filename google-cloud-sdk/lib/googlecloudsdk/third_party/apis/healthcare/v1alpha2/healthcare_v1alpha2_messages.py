@@ -3697,7 +3697,8 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresPatchRequest(_messages.Messa
   Fields:
     hl7V2Store: A Hl7V2Store resource to be passed as the request body.
     name: Resource name of the HL7v2 store, of the form `projects/{project_id}
-      /datasets/{dataset_id}/hl7V2Stores/{hl7v2_store_id}`.
+      /locations/{location_id}/datasets/{dataset_id}/hl7V2Stores/{hl7v2_store_
+      id}`.
     updateMask: The update mask applies to the resource. For the `FieldMask`
       definition, see https://developers.google.com/protocol-
       buffers/docs/reference/google.protobuf#fieldmask
@@ -4036,7 +4037,8 @@ class Hl7V2Store(_messages.Message):
       [\p{Ll}\p{Lo}\p{N}_-]{0,63} No more than 64 labels can be associated
       with a given store.
     name: Resource name of the HL7v2 store, of the form `projects/{project_id}
-      /datasets/{dataset_id}/hl7V2Stores/{hl7v2_store_id}`.
+      /locations/{location_id}/datasets/{dataset_id}/hl7V2Stores/{hl7v2_store_
+      id}`.
     notificationConfig: The notification destination all messages (both Ingest
       & Create) are published on. Only the message name is sent as part of the
       notification. If this is unset, no notifications are sent. Supplied by
@@ -4181,7 +4183,9 @@ class ImageConfig(_messages.Message):
       TEXT_REDACTION_MODE_UNSPECIFIED: No text redaction specified. Same as
         REDACT_NO_TEXT.
       REDACT_ALL_TEXT: Redact all text.
-      REDACT_SENSITIVE_TEXT: Redact sensitive text.
+      REDACT_SENSITIVE_TEXT: Redact sensitive text. Uses the set of [Default
+        DICOM InfoTypes](https://cloud.google.com/healthcare-api/docs/how-
+        tos/dicom-deidentify#default_dicom_infotypes).
       REDACT_NO_TEXT: Do not redact text.
     """
     TEXT_REDACTION_MODE_UNSPECIFIED = 0

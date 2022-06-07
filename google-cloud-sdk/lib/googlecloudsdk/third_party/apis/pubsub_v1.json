@@ -277,6 +277,46 @@
         }
       }
     },
+    "ListSchemaRevisionsResponse": {
+      "id": "ListSchemaRevisionsResponse",
+      "description": "Response for the `ListSchemaRevisions` method.",
+      "type": "object",
+      "properties": {
+        "schemas": {
+          "description": "The revisions of the schema.",
+          "type": "array",
+          "items": {
+            "$ref": "Schema"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token that can be sent as `page_token` to retrieve the next page. If this field is empty, there are no subsequent pages.",
+          "type": "string"
+        }
+      }
+    },
+    "CommitSchemaRequest": {
+      "id": "CommitSchemaRequest",
+      "description": "Request for CommitSchema method.",
+      "type": "object",
+      "properties": {
+        "schema": {
+          "description": "Required. The schema revision to commit.",
+          "$ref": "Schema"
+        }
+      }
+    },
+    "RollbackSchemaRequest": {
+      "id": "RollbackSchemaRequest",
+      "description": "Request for the `RollbackSchema` method.",
+      "type": "object",
+      "properties": {
+        "revisionId": {
+          "description": "Required. The revision ID to roll back to. It must be a revision of the same schema. Example: c7cfa2a8",
+          "type": "string"
+        }
+      }
+    },
     "Empty": {
       "id": "Empty",
       "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }",
@@ -418,6 +458,14 @@
             "JSON",
             "BINARY"
           ]
+        },
+        "firstRevisionId": {
+          "description": "The minimum (inclusive) revision allowed for validating messages. If empty or not present, allow any revision to be validated against last_revision or any revision created before.",
+          "type": "string"
+        },
+        "lastRevisionId": {
+          "description": "The maximum (inclusive) revision allowed for validating messages. If empty or not present, allow any revision to be validated against first_revision or any revision created after.",
+          "type": "string"
         }
       }
     },
@@ -572,11 +620,11 @@
           "type": "string"
         },
         "pushConfig": {
-          "description": "If push delivery is used with this subscription, this field is used to configure it. At most one of `pushConfig` and `bigQueryConfig` can be set. If both are empty, then the subscriber will pull and ack messages using API methods.",
+          "description": "If push delivery is used with this subscription, this field is used to configure it. Either `pushConfig` or `bigQueryConfig` can be set, but not both. If both are empty, then the subscriber will pull and ack messages using API methods.",
           "$ref": "PushConfig"
         },
         "bigqueryConfig": {
-          "description": "If delivery to BigQuery is used with this subscription, this field is used to configure it. At most one of `pushConfig` and `bigQueryConfig` can be set. If both are empty, then the subscriber will pull and ack messages using API methods.",
+          "description": "If delivery to BigQuery is used with this subscription, this field is used to configure it. Either `pushConfig` or `bigQueryConfig` can be set, but not both. If both are empty, then the subscriber will pull and ack messages using API methods.",
           "$ref": "BigQueryConfig"
         },
         "ackDeadlineSeconds": {
@@ -2234,6 +2282,116 @@
                 "https://www.googleapis.com/auth/pubsub"
               ],
               "description": "Lists schemas in a project."
+            },
+            "listRevisions": {
+              "id": "pubsub.projects.schemas.listRevisions",
+              "path": "v1/{+name}:listRevisions",
+              "flatPath": "v1/projects/{projectsId}/schemas/{schemasId}:listRevisions",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Required. The name of the schema to list revisions for.",
+                  "pattern": "^projects\/[^\/]+\/schemas\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "view": {
+                  "description": "The set of Schema fields to return in the response. If not set, returns Schemas with `name` and `type`, but not `definition`. Set to `FULL` to retrieve all fields.",
+                  "location": "query",
+                  "type": "string",
+                  "enumDescriptions": [
+                    "The default \/ unset value. The API will default to the BASIC view.",
+                    "Include the name and type of the schema, but not the definition.",
+                    "Include all Schema object fields."
+                  ],
+                  "enum": [
+                    "SCHEMA_VIEW_UNSPECIFIED",
+                    "BASIC",
+                    "FULL"
+                  ]
+                },
+                "pageSize": {
+                  "description": "The maximum number of revisions to return per page.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "The page token, received from a previous ListSchemaRevisions call. Provide this to retrieve the subsequent page.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "ListSchemaRevisionsResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/pubsub"
+              ],
+              "description": "Lists all schema revisions for the named schema."
+            },
+            "commit": {
+              "id": "pubsub.projects.schemas.commit",
+              "path": "v1/{+name}:commit",
+              "flatPath": "v1/projects/{projectsId}/schemas/{schemasId}:commit",
+              "httpMethod": "POST",
+              "parameters": {
+                "name": {
+                  "description": "Required. The name of the schema we are revising. Format is `projects\/{project}\/schemas\/{schema}`.",
+                  "pattern": "^projects\/[^\/]+\/schemas\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "CommitSchemaRequest"
+              },
+              "response": {
+                "$ref": "Schema"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/pubsub"
+              ],
+              "description": "Commits a new schema revision to an existing schema."
+            },
+            "rollback": {
+              "id": "pubsub.projects.schemas.rollback",
+              "path": "v1/{+name}:rollback",
+              "flatPath": "v1/projects/{projectsId}/schemas/{schemasId}:rollback",
+              "httpMethod": "POST",
+              "parameters": {
+                "name": {
+                  "description": "Required. The schema being rolled back with revision id.",
+                  "pattern": "^projects\/[^\/]+\/schemas\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "RollbackSchemaRequest"
+              },
+              "response": {
+                "$ref": "Schema"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/pubsub"
+              ],
+              "description": "Creates a new schema revision that is a copy of the provided revision_id."
             },
             "delete": {
               "id": "pubsub.projects.schemas.delete",
