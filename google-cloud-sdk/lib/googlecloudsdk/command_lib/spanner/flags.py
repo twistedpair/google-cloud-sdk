@@ -250,7 +250,7 @@ def ReplicaFlag(parser, name, text, required=True):
       metavar='location=LOCATION,type=TYPE',
       action='store',
       type=arg_parsers.ArgList(
-          custom_delim_char=';',
+          custom_delim_char=':',
           min_length=1,
           element_type=arg_parsers.ArgDict(
               spec={

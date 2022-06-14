@@ -548,6 +548,10 @@ class Job(_messages.Message):
   Enums:
     StateValueValuesEnum: Output only. The current state of the job.
 
+  Messages:
+    LabelsValue: The labels associated with this job. You can use these to
+      organize and group your jobs.
+
   Fields:
     config: The configuration for this job.
     createTime: Output only. The time the job was created.
@@ -562,6 +566,8 @@ class Job(_messages.Message):
       output
       formats](https://cloud.google.com/transcoder/docs/concepts/supported-
       input-and-output-formats).
+    labels: The labels associated with this job. You can use these to organize
+      and group your jobs.
     name: The resource name of the job. Format:
       `projects/{project_number}/locations/{location}/jobs/{job}`
     outputUri: Input only. Specify the `output_uri` to populate an empty
@@ -598,17 +604,43 @@ class Job(_messages.Message):
     SUCCEEDED = 3
     FAILED = 4
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""The labels associated with this job. You can use these to organize and
+    group your jobs.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   config = _messages.MessageField('JobConfig', 1)
   createTime = _messages.StringField(2)
   endTime = _messages.StringField(3)
   error = _messages.MessageField('Status', 4)
   inputUri = _messages.StringField(5)
-  name = _messages.StringField(6)
-  outputUri = _messages.StringField(7)
-  startTime = _messages.StringField(8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
-  templateId = _messages.StringField(10)
-  ttlAfterCompletionDays = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  outputUri = _messages.StringField(8)
+  startTime = _messages.StringField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  templateId = _messages.StringField(11)
+  ttlAfterCompletionDays = _messages.IntegerField(12, variant=_messages.Variant.INT32)
 
 
 class JobConfig(_messages.Message):
@@ -645,14 +677,46 @@ class JobConfig(_messages.Message):
 class JobTemplate(_messages.Message):
   r"""Transcoding job template resource.
 
+  Messages:
+    LabelsValue: The labels associated with this job template. You can use
+      these to organize and group your job templates.
+
   Fields:
     config: The configuration for this template.
+    labels: The labels associated with this job template. You can use these to
+      organize and group your job templates.
     name: The resource name of the job template. Format: `projects/{project_nu
       mber}/locations/{location}/jobTemplates/{job_template}`
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""The labels associated with this job template. You can use these to
+    organize and group your job templates.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   config = _messages.MessageField('JobConfig', 1)
-  name = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 2)
+  name = _messages.StringField(3)
 
 
 class ListJobTemplatesResponse(_messages.Message):

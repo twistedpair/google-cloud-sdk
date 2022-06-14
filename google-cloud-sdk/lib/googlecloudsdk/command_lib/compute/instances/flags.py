@@ -25,6 +25,7 @@ import ipaddress
 from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.compute import containers_utils
 from googlecloudsdk.api_lib.compute import csek_utils
+from googlecloudsdk.api_lib.compute import disks_util
 from googlecloudsdk.api_lib.compute import image_utils
 from googlecloudsdk.api_lib.compute import kms_utils
 from googlecloudsdk.api_lib.compute.zones import service as zones_service
@@ -1139,11 +1140,11 @@ def ValidateDiskBootFlags(args, enable_kms=False):
     boot_disk_specified = True
 
   if args.IsSpecified('boot_disk_provisioned_iops'):
-    if not args.IsSpecified(
-        'boot_disk_type') or not args.boot_disk_type.endswith('pd-extreme'):
+    if (not args.IsSpecified('boot_disk_type') or
+        not disks_util.IsProvisioingTypeIops(args.boot_disk_type)):
       raise exceptions.InvalidArgumentException(
           '--boot-disk-provisioned-iops',
-          '--boot-disk-provisioned-iops can be used only with pd-extreme disk type.'
+          '--boot-disk-provisioned-iops cannot be used with the given disk type.'
       )
 
   if args.image and boot_disk_specified:
@@ -3209,10 +3210,9 @@ def AddDistributionTargetShapeArgs(parser):
           'while distributing VMs as evenly as possible across selected zones '
           'to minimize the impact of zonal failures. Recommended for highly '
           'available serving or batch workloads.',
-      'ANY':
-          'Allows creating VMs in multiple zones if one zone cannot '
-          'accommodate all the requested VMs. The resulting distribution '
-          'shapes can vary.'
+      'ANY': 'Allows creating VMs in multiple zones if one zone cannot '
+             'accommodate all the requested VMs. The resulting distribution '
+             'shapes can vary.'
   }
   parser.add_argument(
       '--target-distribution-shape',

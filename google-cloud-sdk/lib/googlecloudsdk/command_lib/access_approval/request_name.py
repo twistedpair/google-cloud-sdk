@@ -24,7 +24,8 @@ from googlecloudsdk.calliope import exceptions
 
 def Args(parser):
   """Adds an arg for the approval request name to the parser."""
-  parser.add_argument('name', help='approval request name')
+  parser.add_argument(
+      'name', help='Name of the Access Approval request to invalidate')
 
 
 def GetName(args):

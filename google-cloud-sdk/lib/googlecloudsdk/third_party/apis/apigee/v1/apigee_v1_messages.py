@@ -400,10 +400,12 @@ class ApigeeOrganizationsApisKeyvaluemapsEntriesCreateRequest(_messages.Message)
     googleCloudApigeeV1KeyValueEntry: A GoogleCloudApigeeV1KeyValueEntry
       resource to be passed as the request body.
     parent: Required. Scope as indicated by the URI in which to create the key
-      value map entry. Use one of the following formats in your request:
-      `organizations/{organization}/apis/{api}/keyvaluemaps/{keyvaluemap}`. `o
-      rganizations/{organization}/environments/{environment}/keyvaluemaps/{key
-      valuemap}` `organizations/{organization}/keyvaluemaps/{keyvaluemap}`.
+      value map entry. Use **one** of the following structures in your
+      request: *
+      `organizations/{organization}/apis/{api}/keyvaluemaps/{keyvaluemap}`. *
+      `organizations/{organization}/environments/{environment}/keyvaluemaps/{k
+      eyvaluemap}` *
+      `organizations/{organization}/keyvaluemaps/{keyvaluemap}`.
   """
 
   googleCloudApigeeV1KeyValueEntry = _messages.MessageField('GoogleCloudApigeeV1KeyValueEntry', 1)
@@ -415,11 +417,11 @@ class ApigeeOrganizationsApisKeyvaluemapsEntriesDeleteRequest(_messages.Message)
 
   Fields:
     name: Required. Scope as indicated by the URI in which to delete the key
-      value map entry. Use one of the following formats in your request: `orga
-      nizations/{organization}/apis/{api}/keyvaluemaps/{keyvaluemap}/entries/{
-      entry}`. `organizations/{organization}/environments/{environment}/keyval
-      uemaps/{keyvaluemap}/entries/{entry}` `organizations/{organization}/keyv
-      aluemaps/{keyvaluemap}/entries/{entry}`.
+      value map entry. Use **one** of the following structures in your
+      request: * `organizations/{organization}/apis/{api}/keyvaluemaps/{keyval
+      uemap}/entries/{entry}`. * `organizations/{organization}/environments/{e
+      nvironment}/keyvaluemaps/{keyvaluemap}/entries/{entry}` * `organizations
+      /{organization}/keyvaluemaps/{keyvaluemap}/entries/{entry}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -430,11 +432,11 @@ class ApigeeOrganizationsApisKeyvaluemapsEntriesGetRequest(_messages.Message):
 
   Fields:
     name: Required. Scope as indicated by the URI in which to fetch the key
-      value map entry/value. Use one of the following formats in your request:
-      `organizations/{organization}/apis/{api}/keyvaluemaps/{keyvaluemap}/entr
-      ies/{entry}`. `organizations/{organization}/environments/{environment}/k
-      eyvaluemaps/{keyvaluemap}/entries/{entry}` `organizations/{organization}
-      /keyvaluemaps/{keyvaluemap}/entries/{entry}`.
+      value map entry/value. Use **one** of the following structures in your
+      request: * `organizations/{organization}/apis/{api}/keyvaluemaps/{keyval
+      uemap}/entries/{entry}`. * `organizations/{organization}/environments/{e
+      nvironment}/keyvaluemaps/{keyvaluemap}/entries/{entry}` * `organizations
+      /{organization}/keyvaluemaps/{keyvaluemap}/entries/{entry}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -446,13 +448,15 @@ class ApigeeOrganizationsApisKeyvaluemapsEntriesListRequest(_messages.Message):
   Fields:
     pageSize: Optional. Maximum number of key value entries to return. If
       unspecified, at most 100 entries will be returned.
-    pageToken: Optional. Page token, a key value entry returned from a
-      previous call that can use to retrieve the next page.
+    pageToken: Optional. Page token. If provides, must be a valid key value
+      entry returned from a previous call that can be used to retrieve the
+      next page.
     parent: Required. Scope as indicated by the URI in which to list key value
-      maps. Use one of the following formats in your request:
-      `organizations/{organization}/apis/{api}/keyvaluemaps/{keyvaluemap}`. `o
-      rganizations/{organization}/environments/{environment}/keyvaluemaps/{key
-      valuemap}` `organizations/{organization}/keyvaluemaps/{keyvaluemap}`.
+      maps. Use **one** of the following structures in your request: *
+      `organizations/{organization}/apis/{api}/keyvaluemaps/{keyvaluemap}`. *
+      `organizations/{organization}/environments/{environment}/keyvaluemaps/{k
+      eyvaluemap}` *
+      `organizations/{organization}/keyvaluemaps/{keyvaluemap}`.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -2190,10 +2194,12 @@ class ApigeeOrganizationsEnvironmentsKeyvaluemapsEntriesCreateRequest(_messages.
     googleCloudApigeeV1KeyValueEntry: A GoogleCloudApigeeV1KeyValueEntry
       resource to be passed as the request body.
     parent: Required. Scope as indicated by the URI in which to create the key
-      value map entry. Use one of the following formats in your request:
-      `organizations/{organization}/apis/{api}/keyvaluemaps/{keyvaluemap}`. `o
-      rganizations/{organization}/environments/{environment}/keyvaluemaps/{key
-      valuemap}` `organizations/{organization}/keyvaluemaps/{keyvaluemap}`.
+      value map entry. Use **one** of the following structures in your
+      request: *
+      `organizations/{organization}/apis/{api}/keyvaluemaps/{keyvaluemap}`. *
+      `organizations/{organization}/environments/{environment}/keyvaluemaps/{k
+      eyvaluemap}` *
+      `organizations/{organization}/keyvaluemaps/{keyvaluemap}`.
   """
 
   googleCloudApigeeV1KeyValueEntry = _messages.MessageField('GoogleCloudApigeeV1KeyValueEntry', 1)
@@ -2206,11 +2212,11 @@ class ApigeeOrganizationsEnvironmentsKeyvaluemapsEntriesDeleteRequest(_messages.
 
   Fields:
     name: Required. Scope as indicated by the URI in which to delete the key
-      value map entry. Use one of the following formats in your request: `orga
-      nizations/{organization}/apis/{api}/keyvaluemaps/{keyvaluemap}/entries/{
-      entry}`. `organizations/{organization}/environments/{environment}/keyval
-      uemaps/{keyvaluemap}/entries/{entry}` `organizations/{organization}/keyv
-      aluemaps/{keyvaluemap}/entries/{entry}`.
+      value map entry. Use **one** of the following structures in your
+      request: * `organizations/{organization}/apis/{api}/keyvaluemaps/{keyval
+      uemap}/entries/{entry}`. * `organizations/{organization}/environments/{e
+      nvironment}/keyvaluemaps/{keyvaluemap}/entries/{entry}` * `organizations
+      /{organization}/keyvaluemaps/{keyvaluemap}/entries/{entry}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2221,11 +2227,11 @@ class ApigeeOrganizationsEnvironmentsKeyvaluemapsEntriesGetRequest(_messages.Mes
 
   Fields:
     name: Required. Scope as indicated by the URI in which to fetch the key
-      value map entry/value. Use one of the following formats in your request:
-      `organizations/{organization}/apis/{api}/keyvaluemaps/{keyvaluemap}/entr
-      ies/{entry}`. `organizations/{organization}/environments/{environment}/k
-      eyvaluemaps/{keyvaluemap}/entries/{entry}` `organizations/{organization}
-      /keyvaluemaps/{keyvaluemap}/entries/{entry}`.
+      value map entry/value. Use **one** of the following structures in your
+      request: * `organizations/{organization}/apis/{api}/keyvaluemaps/{keyval
+      uemap}/entries/{entry}`. * `organizations/{organization}/environments/{e
+      nvironment}/keyvaluemaps/{keyvaluemap}/entries/{entry}` * `organizations
+      /{organization}/keyvaluemaps/{keyvaluemap}/entries/{entry}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2237,13 +2243,15 @@ class ApigeeOrganizationsEnvironmentsKeyvaluemapsEntriesListRequest(_messages.Me
   Fields:
     pageSize: Optional. Maximum number of key value entries to return. If
       unspecified, at most 100 entries will be returned.
-    pageToken: Optional. Page token, a key value entry returned from a
-      previous call that can use to retrieve the next page.
+    pageToken: Optional. Page token. If provides, must be a valid key value
+      entry returned from a previous call that can be used to retrieve the
+      next page.
     parent: Required. Scope as indicated by the URI in which to list key value
-      maps. Use one of the following formats in your request:
-      `organizations/{organization}/apis/{api}/keyvaluemaps/{keyvaluemap}`. `o
-      rganizations/{organization}/environments/{environment}/keyvaluemaps/{key
-      valuemap}` `organizations/{organization}/keyvaluemaps/{keyvaluemap}`.
+      maps. Use **one** of the following structures in your request: *
+      `organizations/{organization}/apis/{api}/keyvaluemaps/{keyvaluemap}`. *
+      `organizations/{organization}/environments/{environment}/keyvaluemaps/{k
+      eyvaluemap}` *
+      `organizations/{organization}/keyvaluemaps/{keyvaluemap}`.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -3584,10 +3592,12 @@ class ApigeeOrganizationsKeyvaluemapsEntriesCreateRequest(_messages.Message):
     googleCloudApigeeV1KeyValueEntry: A GoogleCloudApigeeV1KeyValueEntry
       resource to be passed as the request body.
     parent: Required. Scope as indicated by the URI in which to create the key
-      value map entry. Use one of the following formats in your request:
-      `organizations/{organization}/apis/{api}/keyvaluemaps/{keyvaluemap}`. `o
-      rganizations/{organization}/environments/{environment}/keyvaluemaps/{key
-      valuemap}` `organizations/{organization}/keyvaluemaps/{keyvaluemap}`.
+      value map entry. Use **one** of the following structures in your
+      request: *
+      `organizations/{organization}/apis/{api}/keyvaluemaps/{keyvaluemap}`. *
+      `organizations/{organization}/environments/{environment}/keyvaluemaps/{k
+      eyvaluemap}` *
+      `organizations/{organization}/keyvaluemaps/{keyvaluemap}`.
   """
 
   googleCloudApigeeV1KeyValueEntry = _messages.MessageField('GoogleCloudApigeeV1KeyValueEntry', 1)
@@ -3599,11 +3609,11 @@ class ApigeeOrganizationsKeyvaluemapsEntriesDeleteRequest(_messages.Message):
 
   Fields:
     name: Required. Scope as indicated by the URI in which to delete the key
-      value map entry. Use one of the following formats in your request: `orga
-      nizations/{organization}/apis/{api}/keyvaluemaps/{keyvaluemap}/entries/{
-      entry}`. `organizations/{organization}/environments/{environment}/keyval
-      uemaps/{keyvaluemap}/entries/{entry}` `organizations/{organization}/keyv
-      aluemaps/{keyvaluemap}/entries/{entry}`.
+      value map entry. Use **one** of the following structures in your
+      request: * `organizations/{organization}/apis/{api}/keyvaluemaps/{keyval
+      uemap}/entries/{entry}`. * `organizations/{organization}/environments/{e
+      nvironment}/keyvaluemaps/{keyvaluemap}/entries/{entry}` * `organizations
+      /{organization}/keyvaluemaps/{keyvaluemap}/entries/{entry}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -3614,11 +3624,11 @@ class ApigeeOrganizationsKeyvaluemapsEntriesGetRequest(_messages.Message):
 
   Fields:
     name: Required. Scope as indicated by the URI in which to fetch the key
-      value map entry/value. Use one of the following formats in your request:
-      `organizations/{organization}/apis/{api}/keyvaluemaps/{keyvaluemap}/entr
-      ies/{entry}`. `organizations/{organization}/environments/{environment}/k
-      eyvaluemaps/{keyvaluemap}/entries/{entry}` `organizations/{organization}
-      /keyvaluemaps/{keyvaluemap}/entries/{entry}`.
+      value map entry/value. Use **one** of the following structures in your
+      request: * `organizations/{organization}/apis/{api}/keyvaluemaps/{keyval
+      uemap}/entries/{entry}`. * `organizations/{organization}/environments/{e
+      nvironment}/keyvaluemaps/{keyvaluemap}/entries/{entry}` * `organizations
+      /{organization}/keyvaluemaps/{keyvaluemap}/entries/{entry}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -3630,13 +3640,15 @@ class ApigeeOrganizationsKeyvaluemapsEntriesListRequest(_messages.Message):
   Fields:
     pageSize: Optional. Maximum number of key value entries to return. If
       unspecified, at most 100 entries will be returned.
-    pageToken: Optional. Page token, a key value entry returned from a
-      previous call that can use to retrieve the next page.
+    pageToken: Optional. Page token. If provides, must be a valid key value
+      entry returned from a previous call that can be used to retrieve the
+      next page.
     parent: Required. Scope as indicated by the URI in which to list key value
-      maps. Use one of the following formats in your request:
-      `organizations/{organization}/apis/{api}/keyvaluemaps/{keyvaluemap}`. `o
-      rganizations/{organization}/environments/{environment}/keyvaluemaps/{key
-      valuemap}` `organizations/{organization}/keyvaluemaps/{keyvaluemap}`.
+      maps. Use **one** of the following structures in your request: *
+      `organizations/{organization}/apis/{api}/keyvaluemaps/{keyvaluemap}`. *
+      `organizations/{organization}/environments/{environment}/keyvaluemaps/{k
+      eyvaluemap}` *
+      `organizations/{organization}/keyvaluemaps/{keyvaluemap}`.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -6147,6 +6159,10 @@ class GoogleCloudApigeeV1Environment(_messages.Message):
       updating, or deleting target servers
     description: Optional. Description of the environment.
     displayName: Optional. Display name for this environment.
+    forwardProxyUri: Optional. Url of the forward proxy to be applied to the
+      runtime instances in this environment. Must be in the format of
+      {scheme}://{hostname}:{port}. Note that scheme must be one of "http" or
+      "https", and port must be supplied.
     lastModifiedAt: Output only. Last modification time of this environment as
       milliseconds since epoch.
     name: Required. Name of the environment. Values must match the regular
@@ -6224,11 +6240,12 @@ class GoogleCloudApigeeV1Environment(_messages.Message):
   deploymentType = _messages.EnumField('DeploymentTypeValueValuesEnum', 3)
   description = _messages.StringField(4)
   displayName = _messages.StringField(5)
-  lastModifiedAt = _messages.IntegerField(6)
-  name = _messages.StringField(7)
-  nodeConfig = _messages.MessageField('GoogleCloudApigeeV1NodeConfig', 8)
-  properties = _messages.MessageField('GoogleCloudApigeeV1Properties', 9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
+  forwardProxyUri = _messages.StringField(6)
+  lastModifiedAt = _messages.IntegerField(7)
+  name = _messages.StringField(8)
+  nodeConfig = _messages.MessageField('GoogleCloudApigeeV1NodeConfig', 9)
+  properties = _messages.MessageField('GoogleCloudApigeeV1Properties', 10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
 
 
 class GoogleCloudApigeeV1EnvironmentConfig(_messages.Message):
@@ -6250,6 +6267,9 @@ class GoogleCloudApigeeV1EnvironmentConfig(_messages.Message):
     featureFlags: Feature flags inherited from the organization and
       environment.
     flowhooks: List of flow hooks in the environment.
+    forwardProxyUri: The forward proxy's url to be used by the runtime. When
+      set, runtime will send requests to the target via the given forward
+      proxy. This is only used by programmable gateways.
     gatewayConfigLocation: The location for the gateway config blob as a URI,
       e.g. a Cloud Storage URI. This is only used by Envoy-based gateways.
     keystores: List of keystores in the environment.
@@ -6303,18 +6323,19 @@ class GoogleCloudApigeeV1EnvironmentConfig(_messages.Message):
   deployments = _messages.MessageField('GoogleCloudApigeeV1DeploymentConfig', 5, repeated=True)
   featureFlags = _messages.MessageField('FeatureFlagsValue', 6)
   flowhooks = _messages.MessageField('GoogleCloudApigeeV1FlowHookConfig', 7, repeated=True)
-  gatewayConfigLocation = _messages.StringField(8)
-  keystores = _messages.MessageField('GoogleCloudApigeeV1KeystoreConfig', 9, repeated=True)
-  name = _messages.StringField(10)
-  provider = _messages.StringField(11)
-  pubsubTopic = _messages.StringField(12)
-  resourceReferences = _messages.MessageField('GoogleCloudApigeeV1ReferenceConfig', 13, repeated=True)
-  resources = _messages.MessageField('GoogleCloudApigeeV1ResourceConfig', 14, repeated=True)
-  revisionId = _messages.IntegerField(15)
-  sequenceNumber = _messages.IntegerField(16)
-  targets = _messages.MessageField('GoogleCloudApigeeV1TargetServerConfig', 17, repeated=True)
-  traceConfig = _messages.MessageField('GoogleCloudApigeeV1RuntimeTraceConfig', 18)
-  uid = _messages.StringField(19)
+  forwardProxyUri = _messages.StringField(8)
+  gatewayConfigLocation = _messages.StringField(9)
+  keystores = _messages.MessageField('GoogleCloudApigeeV1KeystoreConfig', 10, repeated=True)
+  name = _messages.StringField(11)
+  provider = _messages.StringField(12)
+  pubsubTopic = _messages.StringField(13)
+  resourceReferences = _messages.MessageField('GoogleCloudApigeeV1ReferenceConfig', 14, repeated=True)
+  resources = _messages.MessageField('GoogleCloudApigeeV1ResourceConfig', 15, repeated=True)
+  revisionId = _messages.IntegerField(16)
+  sequenceNumber = _messages.IntegerField(17)
+  targets = _messages.MessageField('GoogleCloudApigeeV1TargetServerConfig', 18, repeated=True)
+  traceConfig = _messages.MessageField('GoogleCloudApigeeV1RuntimeTraceConfig', 19)
+  uid = _messages.StringField(20)
 
 
 class GoogleCloudApigeeV1EnvironmentGroup(_messages.Message):
@@ -7010,7 +7031,8 @@ class GoogleCloudApigeeV1KeyValueMap(_messages.Message):
 
   Fields:
     encrypted: Optional. Flag that specifies whether entry values will be
-      encrypted. Enable to encrypt entry values.
+      encrypted. You must set this value to `true`. Apigee X and hybrid do not
+      support unencrytped key value maps.
     name: Required. ID of the key value map.
     resourceName: Output only. Resource URI on which the key value map is
       based.

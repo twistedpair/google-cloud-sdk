@@ -102,19 +102,25 @@ def CopyTree(src, dst):
     raise shutil.Error(errors)
 
 
-def MakeDir(path, mode=0o777):
+def MakeDir(path, mode=0o777, convert_invalid_windows_characters=False):
   """Creates the given directory and its parents and does not fail if it exists.
 
   Args:
     path: str, The path of the directory to create.
     mode: int, The permissions to give the created directories. 0777 is the
-        default mode for os.makedirs(), allowing reading, writing, and listing
-        by all users on the machine.
+      default mode for os.makedirs(), allowing reading, writing, and listing by
+      all users on the machine.
+    convert_invalid_windows_characters: bool, Convert invalid Windows path
+      characters with an 'unsupported' symbol rather than trigger an OSError on
+      Windows (e.g. "file|.txt" -> "file$.txt").
 
   Raises:
     Error: if the operation fails and we can provide extra information.
     OSError: if the operation fails.
   """
+  if (convert_invalid_windows_characters and
+      platforms.OperatingSystem.Current() == platforms.OperatingSystem.WINDOWS):
+    path = platforms.MakePathWindowsCompatible(path)
   try:
     os.makedirs(path, mode=mode)
   except OSError as ex:
@@ -943,7 +949,9 @@ def ReadStdinBytes():
     return sys.stdin.buffer.read()
 
 
-def WriteFileAtomically(file_name, contents):
+def WriteFileAtomically(file_name,
+                        contents,
+                        convert_invalid_windows_characters=False):
   """Writes a file to disk safely cross platform.
 
   Specified directories will be created if they don't exist.
@@ -954,6 +962,9 @@ def WriteFileAtomically(file_name, contents):
   Args:
     file_name: The actual file to write to.
     contents:  The file contents to write.
+    convert_invalid_windows_characters: bool, Convert invalid Windows path
+        characters with an 'unsupported' symbol rather than trigger an OSError
+        on Windows (e.g. "file|.txt" -> "file$.txt").
 
   Raises:
     ValueError: file_name or contents is empty.
@@ -978,7 +989,11 @@ def WriteFileAtomically(file_name, contents):
 
   if platforms.OperatingSystem.IsWindows():
     # On Windows, there is no good way to atomically write this file.
-    WriteFileContents(file_name, contents, private=True)
+    WriteFileContents(
+        file_name,
+        contents,
+        private=True,
+        convert_invalid_windows_characters=convert_invalid_windows_characters)
   else:
     # This opens files with 0600, which are the correct permissions.
     with tempfile.NamedTemporaryFile(
@@ -1092,7 +1107,8 @@ def WriteFileContents(path,
                       overwrite=True,
                       private=False,
                       create_path=True,
-                      newline=None):
+                      newline=None,
+                      convert_invalid_windows_characters=False):
   """Writes the given text contents to a file at the given path.
 
   Args:
@@ -1102,6 +1118,9 @@ def WriteFileContents(path,
     private: bool, True to make the file have 0o600 permissions.
     create_path: bool, True to create intermediate directories, if needed.
     newline: str, The line ending style to use, or None to use platform default.
+    convert_invalid_windows_characters: bool, Convert invalid Windows path
+        characters with an 'unsupported' symbol rather than trigger an OSError
+        on Windows (e.g. "file|.txt" -> "file$.txt").
 
   Raises:
     Error: If the file cannot be written.
@@ -1109,7 +1128,12 @@ def WriteFileContents(path,
   try:
     _CheckOverwrite(path, overwrite)
     with FileWriter(
-        path, private=private, create_path=create_path, newline=newline) as f:
+        path,
+        private=private,
+        create_path=create_path,
+        newline=newline,
+        convert_invalid_windows_characters=convert_invalid_windows_characters
+    ) as f:
       # This decode is here because a lot of libraries on Python 2 can return
       # both text or bytes depending on if unicode is present. If you truly
       # pass binary data to this, the decode will fail (as it should). If you
@@ -1126,7 +1150,8 @@ def WriteBinaryFileContents(path,
                             contents,
                             overwrite=True,
                             private=False,
-                            create_path=True):
+                            create_path=True,
+                            convert_invalid_windows_characters=False):
   """Writes the given binary contents to a file at the given path.
 
   Args:
@@ -1135,13 +1160,21 @@ def WriteBinaryFileContents(path,
     overwrite: bool, False to error out if the file already exists.
     private: bool, True to make the file have 0o600 permissions.
     create_path: bool, True to create intermediate directories, if needed.
+    convert_invalid_windows_characters: bool, Convert invalid Windows path
+        characters with an 'unsupported' symbol rather than trigger an OSError
+        on Windows (e.g. "file|.txt" -> "file$7.txt").
 
   Raises:
     Error: If the file cannot be written.
   """
   try:
     _CheckOverwrite(path, overwrite)
-    with BinaryFileWriter(path, private=private, create_path=create_path) as f:
+    with BinaryFileWriter(
+        path,
+        private=private,
+        create_path=create_path,
+        convert_invalid_windows_characters=convert_invalid_windows_characters
+    ) as f:
       f.write(contents)
   except EnvironmentError as e:
     # EnvironmentError is parent of IOError, OSError and WindowsError.
@@ -1183,7 +1216,8 @@ def FileWriter(path,
                private=False,
                append=False,
                create_path=False,
-               newline=None):
+               newline=None,
+               convert_invalid_windows_characters=False):
   """Opens the given file for text write for use in a 'with' statement.
 
   Args:
@@ -1192,6 +1226,9 @@ def FileWriter(path,
     append: bool, True to append to an existing file.
     create_path: bool, True to create intermediate directories, if needed.
     newline: str, The line ending style to use, or None to use plaform default.
+    convert_invalid_windows_characters: bool, Convert invalid Windows path
+        characters with an 'unsupported' symbol rather than trigger an OSError
+        on Windows (e.g. "file|.txt" -> "file$7.txt").
 
   Returns:
     A file-like object opened for write in text mode.
@@ -1204,7 +1241,8 @@ def FileWriter(path,
       encoding='utf-8',
       private=private,
       create_path=create_path,
-      newline=newline)
+      newline=newline,
+      convert_invalid_windows_characters=convert_invalid_windows_characters)
 
 
 class BinaryFileWriterMode(enum.Enum):
@@ -1216,7 +1254,8 @@ class BinaryFileWriterMode(enum.Enum):
 def BinaryFileWriter(path,
                      private=False,
                      mode=BinaryFileWriterMode.TRUNCATE,
-                     create_path=False):
+                     create_path=False,
+                     convert_invalid_windows_characters=False):
   """Opens the given file for binary write for use in a 'with' statement.
 
   Args:
@@ -1224,12 +1263,20 @@ def BinaryFileWriter(path,
     private: bool, True to create or update the file permission to be 0o600.
     mode: BinaryFileWriterMode, Determines how to open file for writing.
     create_path: bool, True to create intermediate directories, if needed.
+    convert_invalid_windows_characters: bool, Convert invalid Windows path
+        characters with an 'unsupported' symbol rather than trigger an OSError
+        on Windows (e.g. "file|.txt" -> "file$7.txt").
 
   Returns:
     A file-like object opened for write in binary mode.
   """
   return _FileOpener(
-      path, mode.value, 'write', private=private, create_path=create_path)
+      path,
+      mode.value,
+      'write',
+      private=private,
+      create_path=create_path,
+      convert_invalid_windows_characters=convert_invalid_windows_characters)
 
 
 def _FileOpener(path,
@@ -1238,8 +1285,12 @@ def _FileOpener(path,
                 encoding=None,
                 private=False,
                 create_path=False,
-                newline=None):
+                newline=None,
+                convert_invalid_windows_characters=False):
   """Opens a file in various modes and does error handling."""
+  if (convert_invalid_windows_characters and
+      platforms.OperatingSystem.Current() == platforms.OperatingSystem.WINDOWS):
+    path = platforms.MakePathWindowsCompatible(path)
   if private:
     PrivatizeFile(path)
   if create_path:

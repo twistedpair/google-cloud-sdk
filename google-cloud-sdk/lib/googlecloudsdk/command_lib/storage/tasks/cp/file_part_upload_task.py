@@ -26,7 +26,6 @@ from __future__ import unicode_literals
 import collections
 import functools
 import os
-import threading
 
 from googlecloudsdk.api_lib.storage import api_factory
 from googlecloudsdk.api_lib.storage import cloud_api
@@ -35,17 +34,14 @@ from googlecloudsdk.api_lib.storage import request_config_factory
 from googlecloudsdk.command_lib.storage import encryption_util
 from googlecloudsdk.command_lib.storage import errors as command_errors
 from googlecloudsdk.command_lib.storage import hash_util
-from googlecloudsdk.command_lib.storage import progress_callbacks
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage import tracker_file_util
-from googlecloudsdk.command_lib.storage import upload_stream
+from googlecloudsdk.command_lib.storage.resources import resource_reference
 from googlecloudsdk.command_lib.storage.tasks import task
-from googlecloudsdk.command_lib.storage.tasks import task_status
 from googlecloudsdk.command_lib.storage.tasks.cp import file_part_task
 from googlecloudsdk.command_lib.storage.tasks.cp import upload_util
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
-from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import hashing
 from googlecloudsdk.core.util import retry
 
@@ -91,29 +87,9 @@ class FilePartUploadTask(file_part_task.FilePartTask):
           self).__init__(source_resource, destination_resource, offset, length,
                          component_number, total_components)
     self._source_path = source_path
+    self._transformed_source_resource = resource_reference.FileObjectResource(
+        storage_url.storage_url_from_string(self._source_path))
     self._user_request_args = user_request_args
-
-  def _get_upload_stream(self, digesters, task_status_queue):
-    if task_status_queue:
-      progress_callback = progress_callbacks.FilesAndBytesProgressCallback(
-          status_queue=task_status_queue,
-          offset=self._offset,
-          length=self._length,
-          source_url=self._source_resource.storage_url,
-          destination_url=self._destination_resource.storage_url,
-          component_number=self._component_number,
-          total_components=self._total_components,
-          operation_name=task_status.OperationName.UPLOADING,
-          process_id=os.getpid(),
-          thread_id=threading.get_ident(),
-      )
-    else:
-      progress_callback = None
-
-    source_stream = files.BinaryFileReader(self._source_path)
-    return upload_stream.UploadStream(
-        source_stream, self._offset, self._length, digesters=digesters,
-        progress_callback=progress_callback)
 
   def _get_output(self, destination_resource):
     messages = []
@@ -145,7 +121,11 @@ class FilePartUploadTask(file_part_task.FilePartTask):
   def _existing_destination_is_valid(self, destination_resource):
     """Returns True if a completed temporary component can be reused."""
     digesters = self._get_digesters()
-    with self._get_upload_stream(digesters, task_status_queue=None) as stream:
+    with upload_util.get_stream(
+        self._transformed_source_resource,
+        length=self._length,
+        offset=self._offset,
+        digesters=digesters) as stream:
       stream.seek(0, whence=os.SEEK_END)  # Populates digesters.
 
     try:
@@ -174,7 +154,15 @@ class FilePartUploadTask(file_part_task.FilePartTask):
     else:
       source_resource_for_metadata = None
 
-    with self._get_upload_stream(digesters, task_status_queue) as source_stream:
+    with upload_util.get_stream(
+        self._transformed_source_resource,
+        length=self._length,
+        offset=self._offset,
+        digesters=digesters,
+        task_status_queue=task_status_queue,
+        destination_resource=self._destination_resource,
+        component_number=self._component_number,
+        total_components=self._total_components) as source_stream:
       upload_strategy = upload_util.get_upload_strategy(api, self._length)
       if upload_strategy == cloud_api.UploadStrategy.RESUMABLE:
         tracker_file_path = tracker_file_util.get_tracker_file_path(

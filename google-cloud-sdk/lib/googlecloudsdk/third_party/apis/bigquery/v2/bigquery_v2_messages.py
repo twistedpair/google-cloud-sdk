@@ -1518,6 +1518,26 @@ class HivePartitioningOptions(_messages.Message):
   sourceUriPrefix = _messages.StringField(3)
 
 
+class IndexUnusedReason(_messages.Message):
+  r"""A IndexUnusedReason object.
+
+  Fields:
+    base_table: [Output-only] Specifies the base table involved in the reason
+      that no search index was used.
+    code: [Output-only] Specifies the high-level reason for the scenario when
+      no search index was used.
+    index_name: [Output-only] Specifies the name of the unused search index,
+      if available.
+    message: [Output-only] Free form human-readable reason for the scenario
+      when no search index was used.
+  """
+
+  base_table = _messages.MessageField('TableReference', 1)
+  code = _messages.StringField(2, default='$(reason.code)')
+  index_name = _messages.StringField(3, default='$(reason.index_name)')
+  message = _messages.StringField(4, default='$(reason.message)')
+
+
 class IterationResult(_messages.Message):
   r"""A IterationResult object.
 
@@ -2279,6 +2299,7 @@ class JobStatistics2(_messages.Message):
       reservation.
     schema: [Output-only] The schema of the results. Present only for
       successful dry run of non-legacy SQL queries.
+    searchStatistics: [Output-only] Search query specific statistics.
     statementType: The type of query statement, if valid. Possible values (new
       values might be added in the future): "SELECT": SELECT query. "INSERT":
       INSERT query; see
@@ -2349,14 +2370,15 @@ class JobStatistics2(_messages.Message):
   referencedTables = _messages.MessageField('TableReference', 20, repeated=True)
   reservationUsage = _messages.MessageField('ReservationUsageValueListEntry', 21, repeated=True)
   schema = _messages.MessageField('TableSchema', 22)
-  statementType = _messages.StringField(23)
-  timeline = _messages.MessageField('QueryTimelineSample', 24, repeated=True)
-  totalBytesBilled = _messages.IntegerField(25)
-  totalBytesProcessed = _messages.IntegerField(26)
-  totalBytesProcessedAccuracy = _messages.StringField(27)
-  totalPartitionsProcessed = _messages.IntegerField(28)
-  totalSlotMs = _messages.IntegerField(29)
-  undeclaredQueryParameters = _messages.MessageField('QueryParameter', 30, repeated=True)
+  searchStatistics = _messages.MessageField('SearchStatistics', 23)
+  statementType = _messages.StringField(24)
+  timeline = _messages.MessageField('QueryTimelineSample', 25, repeated=True)
+  totalBytesBilled = _messages.IntegerField(26)
+  totalBytesProcessed = _messages.IntegerField(27)
+  totalBytesProcessedAccuracy = _messages.StringField(28)
+  totalPartitionsProcessed = _messages.IntegerField(29)
+  totalSlotMs = _messages.IntegerField(30)
+  undeclaredQueryParameters = _messages.MessageField('QueryParameter', 31, repeated=True)
 
 
 class JobStatistics3(_messages.Message):
@@ -2908,6 +2930,10 @@ class QueryTimelineSample(_messages.Message):
       value observed since the last sample.
     completedUnits: Total parallel units of work completed by this query.
     elapsedMs: Milliseconds elapsed since the start of query execution.
+    estimatedRunnableUnits: Units of work that can be scheduled immediately.
+      Providing additional slots for these units of work will speed up the
+      query, provided no other query in the reservation needs additional
+      slots.
     pendingUnits: Total parallel units of work remaining for the active
       stages.
     totalSlotMs: Cumulative slot-ms consumed by the query.
@@ -2916,8 +2942,9 @@ class QueryTimelineSample(_messages.Message):
   activeUnits = _messages.IntegerField(1)
   completedUnits = _messages.IntegerField(2)
   elapsedMs = _messages.IntegerField(3)
-  pendingUnits = _messages.IntegerField(4)
-  totalSlotMs = _messages.IntegerField(5)
+  estimatedRunnableUnits = _messages.IntegerField(4)
+  pendingUnits = _messages.IntegerField(5)
+  totalSlotMs = _messages.IntegerField(6)
 
 
 class RangePartitioning(_messages.Message):
@@ -3035,6 +3062,20 @@ class ScriptStatistics(_messages.Message):
 
   evaluationKind = _messages.StringField(1)
   stackFrames = _messages.MessageField('ScriptStackFrame', 2, repeated=True)
+
+
+class SearchStatistics(_messages.Message):
+  r"""A SearchStatistics object.
+
+  Fields:
+    indexUnusedReason: When index_usage_mode is UNUSED or PARTIALLY_USED, this
+      field explains why index was not used in all or part of the search
+      query. If index_usage_mode is FULLLY_USED, this field is not populated.
+    indexUsageMode: Specifies index usage mode for the query.
+  """
+
+  indexUnusedReason = _messages.MessageField('IndexUnusedReason', 1, repeated=True)
+  indexUsageMode = _messages.StringField(2)
 
 
 class SessionInfo(_messages.Message):
@@ -3168,6 +3209,9 @@ class Table(_messages.Message):
     location: [Output-only] The geographic location where the table resides.
       This value is inherited from the dataset.
     materializedView: [Optional] Materialized view definition.
+    maxStaleness: [Optional] Max staleness of data that could be returned when
+      table or materialized view is queried (formatted as Google SQL Interval
+      type).
     model: [Output-only, Beta] Present iff this table represents a ML model.
       Describes the training information for the model, and it is required to
       run 'PREDICT' queries.
@@ -3275,29 +3319,30 @@ class Table(_messages.Message):
   lastModifiedTime = _messages.IntegerField(14, variant=_messages.Variant.UINT64)
   location = _messages.StringField(15)
   materializedView = _messages.MessageField('MaterializedViewDefinition', 16)
-  model = _messages.MessageField('ModelDefinition', 17)
-  numBytes = _messages.IntegerField(18)
-  numLongTermBytes = _messages.IntegerField(19)
-  numPhysicalBytes = _messages.IntegerField(20)
-  numRows = _messages.IntegerField(21, variant=_messages.Variant.UINT64)
-  num_active_logical_bytes = _messages.IntegerField(22)
-  num_active_physical_bytes = _messages.IntegerField(23)
-  num_long_term_logical_bytes = _messages.IntegerField(24)
-  num_long_term_physical_bytes = _messages.IntegerField(25)
-  num_partitions = _messages.IntegerField(26)
-  num_time_travel_physical_bytes = _messages.IntegerField(27)
-  num_total_logical_bytes = _messages.IntegerField(28)
-  num_total_physical_bytes = _messages.IntegerField(29)
-  rangePartitioning = _messages.MessageField('RangePartitioning', 30)
-  requirePartitionFilter = _messages.BooleanField(31, default=False)
-  schema = _messages.MessageField('TableSchema', 32)
-  selfLink = _messages.StringField(33)
-  snapshotDefinition = _messages.MessageField('SnapshotDefinition', 34)
-  streamingBuffer = _messages.MessageField('Streamingbuffer', 35)
-  tableReference = _messages.MessageField('TableReference', 36)
-  timePartitioning = _messages.MessageField('TimePartitioning', 37)
-  type = _messages.StringField(38)
-  view = _messages.MessageField('ViewDefinition', 39)
+  maxStaleness = _messages.BytesField(17)
+  model = _messages.MessageField('ModelDefinition', 18)
+  numBytes = _messages.IntegerField(19)
+  numLongTermBytes = _messages.IntegerField(20)
+  numPhysicalBytes = _messages.IntegerField(21)
+  numRows = _messages.IntegerField(22, variant=_messages.Variant.UINT64)
+  num_active_logical_bytes = _messages.IntegerField(23)
+  num_active_physical_bytes = _messages.IntegerField(24)
+  num_long_term_logical_bytes = _messages.IntegerField(25)
+  num_long_term_physical_bytes = _messages.IntegerField(26)
+  num_partitions = _messages.IntegerField(27)
+  num_time_travel_physical_bytes = _messages.IntegerField(28)
+  num_total_logical_bytes = _messages.IntegerField(29)
+  num_total_physical_bytes = _messages.IntegerField(30)
+  rangePartitioning = _messages.MessageField('RangePartitioning', 31)
+  requirePartitionFilter = _messages.BooleanField(32, default=False)
+  schema = _messages.MessageField('TableSchema', 33)
+  selfLink = _messages.StringField(34)
+  snapshotDefinition = _messages.MessageField('SnapshotDefinition', 35)
+  streamingBuffer = _messages.MessageField('Streamingbuffer', 36)
+  tableReference = _messages.MessageField('TableReference', 37)
+  timePartitioning = _messages.MessageField('TimePartitioning', 38)
+  type = _messages.StringField(39)
+  view = _messages.MessageField('ViewDefinition', 40)
 
 
 class TableCell(_messages.Message):

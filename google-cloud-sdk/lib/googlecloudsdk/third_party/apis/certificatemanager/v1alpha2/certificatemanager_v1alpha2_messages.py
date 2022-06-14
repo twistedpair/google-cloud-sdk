@@ -1022,10 +1022,11 @@ class GclbTarget(_messages.Message):
   Fields:
     ipConfigs: IP configurations for this Target Proxy where the Certificate
       Map is serving.
-    targetHttpsProxy: A name must be in the format
-      `projects/*/locations/*/targetHttpsProxies/*`.
-    targetSslProxy: A name must be in the format
-      `projects/*/locations/*/targetSslProxies/*`.
+    targetHttpsProxy: This field returns the resource name in the following
+      format:
+      `//compute.googleapis.com/projects/*/global/targetHttpsProxies/*`.
+    targetSslProxy: This field returns the resource name in the following
+      format: `//compute.googleapis.com/projects/*/global/targetSslProxies/*`.
   """
 
   ipConfigs = _messages.MessageField('IpConfig', 1, repeated=True)

@@ -733,6 +733,29 @@ class FirestoreProjectsDatabasesCollectionGroupsIndexesListRequest(_messages.Mes
   parent = _messages.StringField(4, required=True)
 
 
+class FirestoreProjectsDatabasesCreateRequest(_messages.Message):
+  r"""A FirestoreProjectsDatabasesCreateRequest object.
+
+  Fields:
+    databaseId: Required. The ID to use for the database, which will become
+      the final component of the database's resource name. This value should
+      be 4-63 characters. Valid characters are /a-z-/ with first character a
+      letter and the last a letter or a number. Must not be UUID-like
+      /[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}/. "(default)" database id is
+      also valid.
+    googleFirestoreAdminV1Database: A GoogleFirestoreAdminV1Database resource
+      to be passed as the request body.
+    parent: Required. A parent name of the form `projects/{project_id}`
+    validateOnly: If set, validate the request and preview the response, but
+      do not actually create the database.
+  """
+
+  databaseId = _messages.StringField(1)
+  googleFirestoreAdminV1Database = _messages.MessageField('GoogleFirestoreAdminV1Database', 2)
+  parent = _messages.StringField(3, required=True)
+  validateOnly = _messages.BooleanField(4)
+
+
 class FirestoreProjectsDatabasesDocumentsBatchGetRequest(_messages.Message):
   r"""A FirestoreProjectsDatabasesDocumentsBatchGetRequest object.
 
@@ -2040,10 +2063,13 @@ class ListCollectionIdsRequest(_messages.Message):
   Fields:
     pageSize: The maximum number of results to return.
     pageToken: A page token. Must be a value from ListCollectionIdsResponse.
+    readTime: Reads documents as they were at the given time. This may not be
+      older than 270 seconds.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
+  readTime = _messages.StringField(3)
 
 
 class ListCollectionIdsResponse(_messages.Message):
@@ -2325,6 +2351,8 @@ class PartitionQueryRequest(_messages.Message):
       For example, this may be set to one fewer than the number of parallel
       queries to be run, or in running a data pipeline job, one fewer than the
       number of workers or compute instances available.
+    readTime: Reads documents as they were at the given time. This may not be
+      older than 270 seconds.
     structuredQuery: A structured query. Query must specify collection with
       all descendants and be ordered by name ascending. Other filters, order
       bys, limits, offsets, and start/end cursors are not supported.
@@ -2333,7 +2361,8 @@ class PartitionQueryRequest(_messages.Message):
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   partitionCount = _messages.IntegerField(3)
-  structuredQuery = _messages.MessageField('StructuredQuery', 4)
+  readTime = _messages.StringField(4)
+  structuredQuery = _messages.MessageField('StructuredQuery', 5)
 
 
 class PartitionQueryResponse(_messages.Message):

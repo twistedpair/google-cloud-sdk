@@ -234,6 +234,172 @@
         }
       }
     },
+    "ListMavenArtifactsResponse": {
+      "id": "ListMavenArtifactsResponse",
+      "description": "The response from listing maven artifacts.",
+      "type": "object",
+      "properties": {
+        "mavenArtifacts": {
+          "description": "The maven artifacts returned.",
+          "type": "array",
+          "items": {
+            "$ref": "MavenArtifact"
+          }
+        },
+        "nextPageToken": {
+          "description": "The token to retrieve the next page of artifacts, or empty if there are no more artifacts to return.",
+          "type": "string"
+        }
+      }
+    },
+    "MavenArtifact": {
+      "id": "MavenArtifact",
+      "description": "MavenArtifact represents a maven artifact.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. registry_location, project_id, repository_name and maven_artifact forms a unique artifact For example, \"projects\/test-project\/locations\/us-west4\/repositories\/test-repo\/mavenArtifacts\/ com.google.guava:guava:31.0-jre\", where \"us-west4\" is the registry_location, \"test-project\" is the project_id, \"test-repo\" is the repository_name and \"com.google.guava:guava:31.0-jre\" is the maven artifact.",
+          "type": "string"
+        },
+        "pomUri": {
+          "description": "Required. URL to access the pom file of the artifact. Example: us-west4-maven.pkg.dev\/test-project\/test-repo\/com\/google\/guava\/guava\/31.0\/guava-31.0.pom",
+          "type": "string"
+        },
+        "groupId": {
+          "description": "Group ID for the artifact. Example: com.google.guava",
+          "type": "string"
+        },
+        "artifactId": {
+          "description": "Artifact ID for the artifact.",
+          "type": "string"
+        },
+        "version": {
+          "description": "Version of this artifact.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. Time the artifact was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. Time the artifact was updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "ListNpmPackagesResponse": {
+      "id": "ListNpmPackagesResponse",
+      "description": "The response from listing npm packages.",
+      "type": "object",
+      "properties": {
+        "npmPackages": {
+          "description": "The npm packages returned.",
+          "type": "array",
+          "items": {
+            "$ref": "NpmPackage"
+          }
+        },
+        "nextPageToken": {
+          "description": "The token to retrieve the next page of artifacts, or empty if there are no more artifacts to return.",
+          "type": "string"
+        }
+      }
+    },
+    "NpmPackage": {
+      "id": "NpmPackage",
+      "description": "NpmPackage represents an npm artifact.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. registry_location, project_id, repository_name and npm_package forms a unique package For example, \"projects\/test-project\/locations\/us-west4\/repositories\/test-repo\/npmPackages\/ npm_test:1.0.0\", where \"us-west4\" is the registry_location, \"test-project\" is the project_id, \"test-repo\" is the repository_name and npm_test:1.0.0\" is the npm package.",
+          "type": "string"
+        },
+        "packageName": {
+          "description": "Package for the artifact.",
+          "type": "string"
+        },
+        "version": {
+          "description": "Version of this package.",
+          "type": "string"
+        },
+        "tags": {
+          "description": "Tags attached to this package.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "createTime": {
+          "description": "Output only. Time the package was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. Time the package was updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "ListPythonPackagesResponse": {
+      "id": "ListPythonPackagesResponse",
+      "description": "The response from listing python packages.",
+      "type": "object",
+      "properties": {
+        "pythonPackages": {
+          "description": "The python packages returned.",
+          "type": "array",
+          "items": {
+            "$ref": "PythonPackage"
+          }
+        },
+        "nextPageToken": {
+          "description": "The token to retrieve the next page of artifacts, or empty if there are no more artifacts to return.",
+          "type": "string"
+        }
+      }
+    },
+    "PythonPackage": {
+      "id": "PythonPackage",
+      "description": "PythonPackage represents a python artifact.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. registry_location, project_id, repository_name and python_package forms a unique package name:`projects\/\/locations\/\/repository\/\/pythonPackages\/`. For example, \"projects\/test-project\/locations\/us-west4\/repositories\/test-repo\/pythonPackages\/ python_package:1.0.0\", where \"us-west4\" is the registry_location, \"test-project\" is the project_id, \"test-repo\" is the repository_name and python_package:1.0.0\" is the python package.",
+          "type": "string"
+        },
+        "uri": {
+          "description": "Required. URL to access the package. Example: us-west4-python.pkg.dev\/test-project\/test-repo\/python_package\/file-name-1.0.0.tar.gz",
+          "type": "string"
+        },
+        "packageName": {
+          "description": "Package for the artifact.",
+          "type": "string"
+        },
+        "version": {
+          "description": "Version of this package.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. Time the package was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. Time the package was updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
     "ImportAptArtifactsRequest": {
       "id": "ImportAptArtifactsRequest",
       "description": "The request to import new apt artifacts.",
@@ -373,6 +539,14 @@
           "description": "Maven repository config contains repository level configuration for the repositories of maven type.",
           "$ref": "MavenRepositoryConfig"
         },
+        "virtualRepositoryConfig": {
+          "description": "Configuration specific for a Virtual Repository.",
+          "$ref": "VirtualRepositoryConfig"
+        },
+        "remoteRepositoryConfig": {
+          "description": "Configuration specific for a Remote Repository.",
+          "$ref": "RemoteRepositoryConfig"
+        },
         "name": {
           "description": "The name of the repository, for example: \"projects\/p1\/locations\/us-central1\/repositories\/repo1\".",
           "type": "string"
@@ -428,6 +602,22 @@
           "description": "The Cloud KMS resource name of the customer managed encryption key that's used to encrypt the contents of the Repository. Has the form: `projects\/my-project\/locations\/my-region\/keyRings\/my-kr\/cryptoKeys\/my-key`. This value may not be changed after the Repository has been created.",
           "type": "string"
         },
+        "mode": {
+          "description": "The mode of the repository.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified mode.",
+            "A standard repository storing artifacts.",
+            "A virtual repository to serve artifacts from one or more sources.",
+            "A remote repository to serve artifacts from a remote source."
+          ],
+          "enum": [
+            "MODE_UNSPECIFIED",
+            "STANDARD_REPOSITORY",
+            "VIRTUAL_REPOSITORY",
+            "REMOTE_REPOSITORY"
+          ]
+        },
         "sizeBytes": {
           "description": "Output only. The size, in bytes, of all artifact storage in this repository. Repositories that are generally available or in public preview use this to calculate storage costs.",
           "readOnly": true,
@@ -457,6 +647,143 @@
             "VERSION_POLICY_UNSPECIFIED",
             "RELEASE",
             "SNAPSHOT"
+          ]
+        }
+      }
+    },
+    "VirtualRepositoryConfig": {
+      "id": "VirtualRepositoryConfig",
+      "description": "Virtual repository configuration.",
+      "type": "object",
+      "properties": {
+        "upstreamPolicies": {
+          "description": "Policies that configure the upstream artifacts distributed by the Virtual Repository. Upstream policies cannot be set on a standard repository.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "UpstreamPolicy"
+          }
+        }
+      }
+    },
+    "UpstreamPolicy": {
+      "id": "UpstreamPolicy",
+      "description": "Artifact policy configuration for the repository contents.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "The user-provided ID of the upstream policy.",
+          "type": "string"
+        },
+        "repository": {
+          "description": "A reference to the repository resource, for example: \"projects\/p1\/locations\/us-central1\/repository\/repo1\".",
+          "type": "string"
+        },
+        "priority": {
+          "description": "Entries with a greater priority value take precedence in the pull order.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "RemoteRepositoryConfig": {
+      "id": "RemoteRepositoryConfig",
+      "description": "Remote repository configuration.",
+      "type": "object",
+      "properties": {
+        "dockerRepository": {
+          "description": "Specific settings for a Docker remote repository.",
+          "$ref": "DockerRepository"
+        },
+        "mavenRepository": {
+          "description": "Specific settings for a Maven remote repository.",
+          "$ref": "MavenRepository"
+        },
+        "npmRepository": {
+          "description": "Specific settings for an Npm remote repository.",
+          "$ref": "NpmRepository"
+        },
+        "pythonRepository": {
+          "description": "Specific settings for a Python remote repository.",
+          "$ref": "PythonRepository"
+        },
+        "description": {
+          "description": "The description of the remote source.",
+          "type": "string"
+        }
+      }
+    },
+    "DockerRepository": {
+      "id": "DockerRepository",
+      "description": "Configuration for a Docker remote repository.",
+      "type": "object",
+      "properties": {
+        "publicRepository": {
+          "description": "One of the publicly available Docker repositories supported by Artifact Registry.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified repository.",
+            "Docker Hub."
+          ],
+          "enum": [
+            "PUBLIC_REPOSITORY_UNSPECIFIED",
+            "DOCKER_HUB"
+          ]
+        }
+      }
+    },
+    "MavenRepository": {
+      "id": "MavenRepository",
+      "description": "Configuration for a Maven remote repository.",
+      "type": "object",
+      "properties": {
+        "publicRepository": {
+          "description": "One of the publicly available Maven repositories supported by Artifact Registry.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified repository.",
+            "Maven Central."
+          ],
+          "enum": [
+            "PUBLIC_REPOSITORY_UNSPECIFIED",
+            "MAVEN_CENTRAL"
+          ]
+        }
+      }
+    },
+    "NpmRepository": {
+      "id": "NpmRepository",
+      "description": "Configuration for a Npm remote repository.",
+      "type": "object",
+      "properties": {
+        "publicRepository": {
+          "description": "One of the publicly available Npm repositories supported by Artifact Registry.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified repository.",
+            "npmjs."
+          ],
+          "enum": [
+            "PUBLIC_REPOSITORY_UNSPECIFIED",
+            "NPMJS"
+          ]
+        }
+      }
+    },
+    "PythonRepository": {
+      "id": "PythonRepository",
+      "description": "Configuration for a Python remote repository.",
+      "type": "object",
+      "properties": {
+        "publicRepository": {
+          "description": "One of the publicly available Python repositories supported by Artifact Registry.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified repository.",
+            "PyPI."
+          ],
+          "enum": [
+            "PUBLIC_REPOSITORY_UNSPECIFIED",
+            "PYPI"
           ]
         }
       }
@@ -1622,6 +1949,207 @@
                         "https://www.googleapis.com/auth/cloud-platform.read-only"
                       ],
                       "description": "Gets a docker image."
+                    }
+                  }
+                },
+                "mavenArtifacts": {
+                  "methods": {
+                    "list": {
+                      "id": "artifactregistry.projects.locations.repositories.mavenArtifacts.list",
+                      "path": "v1/{+parent}/mavenArtifacts",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/mavenArtifacts",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The name of the parent resource whose maven artifacts will be listed.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "The maximum number of artifacts to return.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "The next_page_token value returned from a previous list request, if any.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListMavenArtifactsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/cloud-platform.read-only"
+                      ],
+                      "description": "Lists maven artifacts."
+                    },
+                    "get": {
+                      "id": "artifactregistry.projects.locations.repositories.mavenArtifacts.get",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/mavenArtifacts/{mavenArtifactsId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The name of the maven artifact.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+\/mavenArtifacts\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "MavenArtifact"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/cloud-platform.read-only"
+                      ],
+                      "description": "Gets a maven artifact."
+                    }
+                  }
+                },
+                "npmPackages": {
+                  "methods": {
+                    "list": {
+                      "id": "artifactregistry.projects.locations.repositories.npmPackages.list",
+                      "path": "v1/{+parent}/npmPackages",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/npmPackages",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The name of the parent resource whose npm packages will be listed.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "The maximum number of artifacts to return.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "The next_page_token value returned from a previous list request, if any.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListNpmPackagesResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/cloud-platform.read-only"
+                      ],
+                      "description": "Lists npm packages."
+                    },
+                    "get": {
+                      "id": "artifactregistry.projects.locations.repositories.npmPackages.get",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/npmPackages/{npmPackagesId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The name of the npm package.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+\/npmPackages\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "NpmPackage"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/cloud-platform.read-only"
+                      ],
+                      "description": "Gets a npm package."
+                    }
+                  }
+                },
+                "pythonPackages": {
+                  "methods": {
+                    "list": {
+                      "id": "artifactregistry.projects.locations.repositories.pythonPackages.list",
+                      "path": "v1/{+parent}/pythonPackages",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/pythonPackages",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The name of the parent resource whose python packages will be listed.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "The maximum number of artifacts to return.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "The next_page_token value returned from a previous list request, if any.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListPythonPackagesResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/cloud-platform.read-only"
+                      ],
+                      "description": "Lists python packages."
+                    },
+                    "get": {
+                      "id": "artifactregistry.projects.locations.repositories.pythonPackages.get",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/pythonPackages/{pythonPackagesId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The name of the python package.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+\/pythonPackages\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "PythonPackage"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/cloud-platform.read-only"
+                      ],
+                      "description": "Gets a python package."
                     }
                   }
                 },

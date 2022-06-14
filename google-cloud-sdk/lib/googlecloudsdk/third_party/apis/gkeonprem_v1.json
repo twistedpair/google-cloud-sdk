@@ -1063,8 +1063,7 @@
           "type": "string"
         },
         "image": {
-          "description": "Output only. The OS image name in vCenter, only valid when using Windows.",
-          "readOnly": true,
+          "description": "The OS image name in vCenter, only valid when using Windows.",
           "type": "string"
         },
         "bootDiskSizeGb": {

@@ -80,7 +80,7 @@ class Service(k8s_object.KubernetesObject):
     else:
       ret = revision.Revision.Template(
           self.spec.template, self.MessagesModule())
-      if not ret.metadata:
+      if not ret.IsFullObject():
         ret.metadata = k8s_object.MakeMeta(self.MessagesModule())
       return ret
 
@@ -191,6 +191,14 @@ class Service(k8s_object.KubernetesObject):
   @image.setter
   def image(self, value):
     self.template.image = value
+
+  @property
+  def description(self):
+    return self.annotations.get(k8s_object.DESCRIPTION_ANNOTATION)
+
+  @description.setter
+  def description(self, value):
+    self.annotations[u'run.googleapis.com/description'] = value
 
   def UserImage(self):
     """Human-readable "what's deployed"."""

@@ -4,7 +4,7 @@
  "id": "bigquery:v2",
  "name": "bigquery",
  "version": "v2",
- "revision": "20220527",
+ "revision": "20220607",
  "title": "BigQuery API",
  "description": "A data platform for customers to create, manage, share and query data.",
  "ownerDomain": "google.com",
@@ -1094,6 +1094,31 @@
     }
    }
   },
+  "IndexUnusedReason": {
+   "id": "IndexUnusedReason",
+   "type": "object",
+   "properties": {
+    "base_table": {
+     "$ref": "TableReference",
+     "description": "[Output-only] Specifies the base table involved in the reason that no search index was used."
+    },
+    "code": {
+     "type": "string",
+     "description": "[Output-only] Specifies the high-level reason for the scenario when no search index was used.",
+     "default": "$(reason.code)"
+    },
+    "index_name": {
+     "type": "string",
+     "description": "[Output-only] Specifies the name of the unused search index, if available.",
+     "default": "$(reason.index_name)"
+    },
+    "message": {
+     "type": "string",
+     "description": "[Output-only] Free form human-readable reason for the scenario when no search index was used.",
+     "default": "$(reason.message)"
+    }
+   }
+  },
   "IterationResult": {
    "id": "IterationResult",
    "type": "object",
@@ -1902,6 +1927,10 @@
      "$ref": "TableSchema",
      "description": "[Output-only] The schema of the results. Present only for successful dry run of non-legacy SQL queries."
     },
+    "searchStatistics": {
+     "$ref": "SearchStatistics",
+     "description": "[Output-only] Search query specific statistics."
+    },
     "statementType": {
      "type": "string",
      "description": "The type of query statement, if valid. Possible values (new values might be added in the future): \"SELECT\": SELECT query. \"INSERT\": INSERT query; see https://cloud.google.com/bigquery/docs/reference/standard-sql/data-manipulation-language. \"UPDATE\": UPDATE query; see https://cloud.google.com/bigquery/docs/reference/standard-sql/data-manipulation-language. \"DELETE\": DELETE query; see https://cloud.google.com/bigquery/docs/reference/standard-sql/data-manipulation-language. \"MERGE\": MERGE query; see https://cloud.google.com/bigquery/docs/reference/standard-sql/data-manipulation-language. \"ALTER_TABLE\": ALTER TABLE query. \"ALTER_VIEW\": ALTER VIEW query. \"ASSERT\": ASSERT condition AS 'description'. \"CREATE_FUNCTION\": CREATE FUNCTION query. \"CREATE_MODEL\": CREATE [OR REPLACE] MODEL ... AS SELECT ... . \"CREATE_PROCEDURE\": CREATE PROCEDURE query. \"CREATE_TABLE\": CREATE [OR REPLACE] TABLE without AS SELECT. \"CREATE_TABLE_AS_SELECT\": CREATE [OR REPLACE] TABLE ... AS SELECT ... . \"CREATE_VIEW\": CREATE [OR REPLACE] VIEW ... AS SELECT ... . \"DROP_FUNCTION\" : DROP FUNCTION query. \"DROP_PROCEDURE\": DROP PROCEDURE query. \"DROP_TABLE\": DROP TABLE query. \"DROP_VIEW\": DROP VIEW query."
@@ -2478,6 +2507,11 @@
      "description": "Milliseconds elapsed since the start of query execution.",
      "format": "int64"
     },
+    "estimatedRunnableUnits": {
+     "type": "string",
+     "description": "Units of work that can be scheduled immediately. Providing additional slots for these units of work will speed up the query, provided no other query in the reservation needs additional slots.",
+     "format": "int64"
+    },
     "pendingUnits": {
      "type": "string",
      "description": "Total parallel units of work remaining for the active stages.",
@@ -2622,6 +2656,23 @@
     }
    }
   },
+  "SearchStatistics": {
+   "id": "SearchStatistics",
+   "type": "object",
+   "properties": {
+    "indexUnusedReason": {
+     "type": "array",
+     "description": "When index_usage_mode is UNUSED or PARTIALLY_USED, this field explains why index was not used in all or part of the search query. If index_usage_mode is FULLLY_USED, this field is not populated.",
+     "items": {
+      "$ref": "IndexUnusedReason"
+     }
+    },
+    "indexUsageMode": {
+     "type": "string",
+     "description": "Specifies index usage mode for the query."
+    }
+   }
+  },
   "SessionInfo": {
    "id": "SessionInfo",
    "type": "object",
@@ -2742,6 +2793,11 @@
     "materializedView": {
      "$ref": "MaterializedViewDefinition",
      "description": "[Optional] Materialized view definition."
+    },
+    "maxStaleness": {
+     "type": "string",
+     "description": "[Optional] Max staleness of data that could be returned when table or materialized view is queried (formatted as Google SQL Interval type).",
+     "format": "byte"
     },
     "model": {
      "$ref": "ModelDefinition",

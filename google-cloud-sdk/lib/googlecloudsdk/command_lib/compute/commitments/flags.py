@@ -22,6 +22,7 @@ from __future__ import unicode_literals
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
+from googlecloudsdk.command_lib.compute.instances import flags as instance_flags
 from googlecloudsdk.command_lib.compute.reservations import flags as reservation_flags
 from googlecloudsdk.command_lib.compute.reservations import resource_args
 from googlecloudsdk.command_lib.util.apis import arg_utils
@@ -108,10 +109,12 @@ def MakeCommitmentArg(plural):
       region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION)
 
 
-def AddCreateFlags(parser, support_share_setting=False):
+def AddCreateFlags(parser,
+                   support_share_setting=False,
+                   support_stable_fleet=False):
   """Add general arguments for `commitments create` flag."""
   AddPlan(parser)
-  AddReservationArgGroup(parser, support_share_setting)
+  AddReservationArgGroup(parser, support_share_setting, support_stable_fleet)
   AddResourcesArgGroup(parser)
 
 
@@ -288,7 +291,9 @@ def AddReservationsFromFileFlag(parser, custom_text=None):
       help=help_text)
 
 
-def AddReservationArgGroup(parser, support_share_setting=False):
+def AddReservationArgGroup(parser,
+                           support_share_setting=False,
+                           support_stable_fleet=False):
   """Adds all flags needed for reservations creation."""
   reservations_manage_group = parser.add_group(
       'Manage the reservations to be created with the commitment.', mutex=True)
@@ -308,7 +313,8 @@ def AddReservationArgGroup(parser, support_share_setting=False):
 
   specific_sku_reservation_group = single_reservation_group.add_argument_group(
       help='Manage the specific SKU reservation properties to create.')
-  AddFlagsToSpecificSkuGroup(specific_sku_reservation_group)
+  AddFlagsToSpecificSkuGroup(specific_sku_reservation_group,
+                             support_stable_fleet)
 
   if support_share_setting:
     share_setting_reservation_group = single_reservation_group.add_argument_group(
@@ -317,7 +323,7 @@ def AddReservationArgGroup(parser, support_share_setting=False):
     AddFlagsToShareSettingGroup(share_setting_reservation_group)
 
 
-def AddFlagsToSpecificSkuGroup(group):
+def AddFlagsToSpecificSkuGroup(group, support_stable_fleet=False):
   """Adds flags needed for a specific sku zonal allocation."""
   args = [
       reservation_flags.GetRequireSpecificAllocation(),
@@ -327,6 +333,9 @@ def AddFlagsToSpecificSkuGroup(group):
       reservation_flags.GetLocalSsdFlag(),
       reservation_flags.GetAcceleratorFlag(),
   ]
+
+  if support_stable_fleet:
+    args.append(instance_flags.AddMaintenanceInterval())
 
   for arg in args:
     arg.AddToParser(group)

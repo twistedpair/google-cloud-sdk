@@ -549,6 +549,8 @@ class CreateClusterOptions(object):
       enable_resource_consumption_metering=None,
       workload_pool=None,
       identity_provider=None,
+      tune_gke_metadata_server_cpu=None,
+      tune_gke_metadata_server_memory=None,
       enable_workload_certificates=None,
       enable_mesh_certificates=None,
       enable_alts=None,
@@ -717,6 +719,8 @@ class CreateClusterOptions(object):
     self.enable_resource_consumption_metering = enable_resource_consumption_metering
     self.workload_pool = workload_pool
     self.identity_provider = identity_provider
+    self.tune_gke_metadata_server_cpu = tune_gke_metadata_server_cpu
+    self.tune_gke_metadata_server_memory = tune_gke_metadata_server_memory
     self.enable_workload_certificates = enable_workload_certificates
     self.enable_mesh_certificates = enable_mesh_certificates
     self.enable_alts = enable_alts
@@ -1599,6 +1603,25 @@ class APIAdapter(object):
       cluster.shieldedNodes = self.messages.ShieldedNodes(
           enabled=options.enable_shielded_nodes)
 
+    if options.workload_pool:
+      cluster.workloadIdentityConfig = self.messages.WorkloadIdentityConfig(
+          workloadPool=options.workload_pool)
+      if options.tune_gke_metadata_server_memory:
+        cluster.workloadIdentityConfig.tuneGkeMetadataServerMemory = options.tune_gke_metadata_server_memory
+      if options.tune_gke_metadata_server_cpu:
+        cluster.workloadIdentityConfig.tuneGkeMetadataServerCpu = options.tune_gke_metadata_server_cpu
+    else:
+      if options.tune_gke_metadata_server_cpu:
+        raise util.Error(
+            PREREQUISITE_OPTION_ERROR_MSG.format(
+                prerequisite='workload-pool',
+                opt='tune-gke-metadata-server-cpu'))
+      if options.tune_gke_metadata_server_memory:
+        raise util.Error(
+            PREREQUISITE_OPTION_ERROR_MSG.format(
+                prerequisite='workload-pool',
+                opt='tune-gke-metadata-server-memory'))
+
     self.ParseIPAliasOptions(options, cluster)
     self.ParseAllowRouteOverlapOptions(options, cluster)
     self.ParsePrivateClusterOptions(options, cluster)
@@ -2193,10 +2216,6 @@ class APIAdapter(object):
             options, self.messages)
         cluster.addonsConfig.cloudRunConfig = self.messages.CloudRunConfig(
             disabled=False, loadBalancerType=load_balancer_type)
-
-    if options.workload_pool:
-      cluster.workloadIdentityConfig = self.messages.WorkloadIdentityConfig(
-          workloadPool=options.workload_pool)
 
     if options.enable_master_global_access is not None:
       if not options.enable_private_nodes:
@@ -4043,6 +4062,36 @@ class APIAdapter(object):
             update=update))
     return self.ParseOperation(op.name, cluster_ref.zone)
 
+  def TuneGkeMetadataServerCpu(self, cluster_ref, existing_cluster,
+                               requested_cpu):
+    """Update gke-metadata-server CPU requests and limits."""
+    desired_workload_identity_config = existing_cluster.workloadIdentityConfig
+    desired_workload_identity_config.tuneGkeMetadataServerCpu = requested_cpu
+    update = self.messages.ClusterUpdate(
+        etag=existing_cluster.etag,
+        desiredWorkloadIdentityConfig=desired_workload_identity_config)
+    op = self.client.projects_locations_clusters.Update(
+        self.messages.UpdateClusterRequest(
+            name=ProjectLocationCluster(cluster_ref.projectId, cluster_ref.zone,
+                                        cluster_ref.clusterId),
+            update=update))
+    return self.ParseOperation(op.name, cluster_ref.zone)
+
+  def TuneGkeMetadataServerMemory(self, cluster_ref, existing_cluster,
+                                  requested_memory):
+    """Update gke-metadata-server memory requests and limits."""
+    desired_workload_identity_config = existing_cluster.workloadIdentityConfig
+    desired_workload_identity_config.tuneGkeMetadataServerMemory = requested_memory
+    update = self.messages.ClusterUpdate(
+        etag=existing_cluster.etag,
+        desiredWorkloadIdentityConfig=desired_workload_identity_config)
+    op = self.client.projects_locations_clusters.Update(
+        self.messages.UpdateClusterRequest(
+            name=ProjectLocationCluster(cluster_ref.projectId, cluster_ref.zone,
+                                        cluster_ref.clusterId),
+            update=update))
+    return self.ParseOperation(op.name, cluster_ref.zone)
+
 
 class V1Adapter(APIAdapter):
   """APIAdapter for v1."""
@@ -4098,11 +4147,6 @@ class V1Beta1Adapter(V1Adapter):
         options.autoscaling_profile is not None):
       cluster.autoscaling = self.CreateClusterAutoscalingCommon(
           None, options, False)
-    if options.workload_pool:
-      cluster.workloadIdentityConfig = self.messages.WorkloadIdentityConfig(
-          workloadPool=options.workload_pool)
-      if options.identity_provider:
-        cluster.workloadIdentityConfig.identityProvider = options.identity_provider
     if options.enable_workload_certificates:
       if not options.workload_pool:
         raise util.Error(
@@ -4161,6 +4205,13 @@ class V1Beta1Adapter(V1Adapter):
         cluster.networkConfig = self.messages.NetworkConfig()
       cluster.networkConfig.serviceExternalIpsConfig = self.messages.ServiceExternalIPsConfig(
           enabled=options.enable_service_externalips)
+    if options.identity_provider:
+      if options.workload_pool:
+        cluster.workloadIdentityConfig.identityProvider = options.identity_provider
+      else:
+        raise util.Error(
+            PREREQUISITE_OPTION_ERROR_MSG.format(
+                prerequisite='workload-pool', opt='identity-provider'))
 
     if options.datapath_provider is not None:
       if cluster.networkConfig is None:
@@ -4608,11 +4659,6 @@ class V1Alpha1Adapter(V1Beta1Adapter):
               istio_auth = mtls
         cluster.addonsConfig.istioConfig = self.messages.IstioConfig(
             disabled=False, auth=istio_auth)
-    if options.workload_pool:
-      cluster.workloadIdentityConfig = self.messages.WorkloadIdentityConfig(
-          workloadPool=options.workload_pool)
-      if options.identity_provider:
-        cluster.workloadIdentityConfig.identityProvider = options.identity_provider
     if options.enable_workload_certificates:
       if not options.workload_pool:
         raise util.Error(
@@ -4713,6 +4759,14 @@ class V1Alpha1Adapter(V1Beta1Adapter):
     if options.disable_pod_cidr_overprovision is not None:
       cluster.ipAllocationPolicy.podCidrOverprovisionConfig = self.messages.PodCIDROverprovisionConfig(
           disable=options.disable_pod_cidr_overprovision)
+
+    if options.identity_provider:
+      if options.workload_pool:
+        cluster.workloadIdentityConfig.identityProvider = options.identity_provider
+      else:
+        raise util.Error(
+            PREREQUISITE_OPTION_ERROR_MSG.format(
+                prerequisite='workload-pool', opt='identity-provider'))
 
     if options.stack_type is not None:
       cluster.ipAllocationPolicy.stackType = util.GetStackTypeMapper(

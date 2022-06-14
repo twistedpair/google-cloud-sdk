@@ -48,6 +48,15 @@ class ReleaseInactiveError(exceptions.Error):
     )
 
 
+class AbandonedReleaseError(exceptions.Error):
+  """Error when an activity happens on an abandoned release."""
+
+  def __init__(self, error_msg, release_name):
+    error_template = '{} Release {} is abandoned.'.format(
+        error_msg, release_name)
+    super(AbandonedReleaseError, self).__init__(error_template)
+
+
 class NoSnappedTargetsError(exceptions.Error):
   """Error when a release doesn't contain any snapped target resource."""
 
@@ -95,3 +104,12 @@ class RolloutInProgressError(exceptions.Error):
     super(RolloutInProgressError, self).__init__(
         'Unable to promote release {} to target {}. A rollout is already in progress.'
         .format(release_name, target_name))
+
+
+class PipelineSuspendedError(exceptions.Error):
+  """Error when a user performs an activity on a suspended pipeline."""
+
+  def __init__(self, pipeline_name, failed_activity_msg):
+    error_msg = '{} DeliveryPipeline {} is suspended.'.format(
+        failed_activity_msg, pipeline_name)
+    super(PipelineSuspendedError, self).__init__(error_msg)

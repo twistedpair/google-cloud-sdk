@@ -400,7 +400,7 @@
       "type": "object",
       "properties": {
         "method": {
-          "description": "Reauth method required by the policy.",
+          "description": "Reauth method requested.",
           "type": "string",
           "enumDescriptions": [
             "Reauthentication disabled.",
@@ -442,7 +442,7 @@
       "type": "object",
       "properties": {
         "csmSettings": {
-          "description": "Settings to configure IAP's behavior for a CSM mesh.",
+          "description": "Settings to configure IAP's behavior for a service mesh.",
           "$ref": "CsmSettings"
         },
         "accessDeniedPageSettings": {
@@ -457,7 +457,7 @@
     },
     "CsmSettings": {
       "id": "CsmSettings",
-      "description": "Configuration for RCTokens generated for CSM workloads protected by IAP. RCTokens are IAP generated JWTs that can be verified at the application. The RCToken is primarily used for ISTIO deployments, and can be scoped to a single mesh by configuring the audience field accordingly",
+      "description": "Configuration for RCTokens generated for service mesh workloads protected by IAP. RCTokens are IAP generated JWTs that can be verified at the application. The RCToken is primarily used for service mesh deployments, and can be scoped to a single mesh by configuring the audience field accordingly",
       "type": "object",
       "properties": {
         "rctokenAud": {
@@ -505,7 +505,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Required. Immutable. Identifier for the TunnelDestGroup. Must be unique within the project.",
+          "description": "Required. Immutable. Identifier for the TunnelDestGroup. Must be unique within the project and contain only lower case letters (a-z) and dashes (-).",
           "type": "string"
         },
         "cidrs": {
@@ -823,7 +823,7 @@
                           "type": "string"
                         },
                         "tunnelDestGroupId": {
-                          "description": "Required. The ID to use for the TunnelDestGroup, which becomes the final component of the resource name. This value must be 4-63 characters, and valid characters are `a-z-`.",
+                          "description": "Required. The ID to use for the TunnelDestGroup, which becomes the final component of the resource name. This value must be 4-63 characters, and valid characters are `[a-z]-`.",
                           "location": "query",
                           "type": "string"
                         }
@@ -899,7 +899,7 @@
                       "httpMethod": "PATCH",
                       "parameters": {
                         "name": {
-                          "description": "Required. Immutable. Identifier for the TunnelDestGroup. Must be unique within the project.",
+                          "description": "Required. Immutable. Identifier for the TunnelDestGroup. Must be unique within the project and contain only lower case letters (a-z) and dashes (-).",
                           "pattern": "^projects\/[^\/]+\/iap_tunnel\/locations\/[^\/]+\/destGroups\/[^\/]+$",
                           "location": "path",
                           "required": true,

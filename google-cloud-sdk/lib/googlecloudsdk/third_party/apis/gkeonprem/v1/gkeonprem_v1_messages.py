@@ -2133,8 +2133,7 @@ class VmwareNodeConfig(_messages.Message):
     cpus: The number of CPUs for each node in the node pool.
     enableLoadBalancer: Allow node pool traffic to be load balanced. Only
       works for clusters with MetalLB load balancers.
-    image: Output only. The OS image name in vCenter, only valid when using
-      Windows.
+    image: The OS image name in vCenter, only valid when using Windows.
     imageType: Required. The OS image to be used for each node in a node pool.
       Currently `cos`, `ubuntu`, `ubuntu_containerd` and `windows` are
       supported.

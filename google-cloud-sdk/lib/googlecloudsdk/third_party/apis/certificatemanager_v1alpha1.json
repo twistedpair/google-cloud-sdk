@@ -377,7 +377,7 @@
       "type": "object",
       "properties": {
         "targetProxy": {
-          "description": "A Target Proxy to which this map is attached to. The accepted Target Proxies are: TargetHttpsProxy and TargetSslProxy. Names must match one of the patterns: * `projects\/*\/locations\/*\/targetHttpsProxies\/*` * `projects\/*\/locations\/*\/targetSslProxies\/*`",
+          "description": "A Target Proxy to which this map is attached to. The accepted Target Proxies are: TargetHttpsProxy and TargetSslProxy. Names match one of the patterns: * `\/\/compute.googleapis.com\/projects\/*\/global\/targetHttpsProxies\/*` * `\/\/compute.googleapis.com\/projects\/*\/global\/targetSslProxies\/*`",
           "type": "string"
         },
         "ipConfig": {

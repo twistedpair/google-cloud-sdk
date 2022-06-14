@@ -186,6 +186,14 @@ class Collections(enum.Enum):
       ['project', 'image'],
       True
   )
+  INSTANCEGROUPMANAGERRESIZEREQUESTS = (
+      'instanceGroupManagerResizeRequests',
+      'projects/{project}/zones/{zone}/instanceGroupManagers/'
+      '{instanceGroupManager}/resizeRequests/{resizeRequest}',
+      {},
+      ['project', 'zone', 'instanceGroupManager', 'resizeRequest'],
+      True
+  )
   INSTANCEGROUPMANAGERS = (
       'instanceGroupManagers',
       'projects/{project}/zones/{zone}/instanceGroupManagers/'

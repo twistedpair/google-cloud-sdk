@@ -35,6 +35,7 @@ class ContainerAnalysisMetadata:
     self.deployment = DeploymentSummary()
     self.build = BuildSummary()
     self.provenance = ProvenanceSummary()
+    self.package = PackageSummary()
 
   def AddOccurrence(self, occ, include_build=True):
     """Adds occurrences retrieved from containeranalysis API."""
@@ -53,6 +54,8 @@ class ContainerAnalysisMetadata:
       self.provenance.AddOccurrence(occ)
     elif occ.kind == messages.Occurrence.KindValueValuesEnum.BUILD and occ.build and occ.build.intotoStatement:
       self.provenance.AddOccurrence(occ)
+    elif occ.kind == messages.Occurrence.KindValueValuesEnum.PACKAGE:
+      self.package.AddOccurrence(occ)
 
   def ImagesListView(self):
     """Returns a dictionary representing the metadata.
@@ -90,6 +93,8 @@ class ContainerAnalysisMetadata:
       view['package_vulnerability_summary'] = vuln
     if self.provenance.provenance:
       view['provenance_summary'] = self.provenance
+    if self.package.packages:
+      view['package_summary'] = self.package
     return view
 
 
@@ -198,6 +203,16 @@ class ProvenanceSummary:
 
   def AddOccurrence(self, occ):
     self.provenance.append(occ)
+
+
+class PackageSummary:
+  """PackageSummary holds image package information."""
+
+  def __init__(self):
+    self.packages = []
+
+  def AddOccurrence(self, occ):
+    self.packages.append(occ)
 
 
 def GetContainerAnalysisMetadata(docker_version, args):

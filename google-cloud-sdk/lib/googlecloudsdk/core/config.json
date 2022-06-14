@@ -5,9 +5,9 @@
   "documentation_url": "https://cloud.google.com/sdk/",
   "release_channel": "rapid",
   "release_notes_url": "https://cloud.google.com/sdk/release_notes",
-  "revision": 20220603151008,
+  "revision": 20220610143733,
   "snapshot_schema_version": 3,
   "snapshot_url": "https://dl.google.com/dl/cloudsdk/channels/rapid/components-2.json",
   "user_agent": "google-cloud-sdk",
-  "version": "389.0.0"
+  "version": "390.0.0"
 }

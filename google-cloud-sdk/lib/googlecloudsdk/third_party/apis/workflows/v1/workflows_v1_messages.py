@@ -400,6 +400,12 @@ class Workflow(_messages.Message):
 
   Fields:
     createTime: Output only. The timestamp of when the workflow was created.
+    cryptoKeyName: Optional. The resource name of a KMS crypto key used to
+      encrypt/decrypt the data associated with the workflow. Format: projects/
+      {project}/locations/{location}/keyRings/{keyRing}/cryptoKeys/{cryptoKey}
+      Using `-` as a wildcard for the `{project}` or not providing one at all
+      will infer the project from the account. If not provided, data
+      associated with the workflow will not be CMEK-encrypted.
     description: Description of the workflow provided by the user. Must be at
       most 1000 unicode characters long.
     labels: Labels associated with this workflow. Labels can contain at most
@@ -469,15 +475,16 @@ class Workflow(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  description = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  name = _messages.StringField(4)
-  revisionCreateTime = _messages.StringField(5)
-  revisionId = _messages.StringField(6)
-  serviceAccount = _messages.StringField(7)
-  sourceContents = _messages.StringField(8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
-  updateTime = _messages.StringField(10)
+  cryptoKeyName = _messages.StringField(2)
+  description = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  revisionCreateTime = _messages.StringField(6)
+  revisionId = _messages.StringField(7)
+  serviceAccount = _messages.StringField(8)
+  sourceContents = _messages.StringField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  updateTime = _messages.StringField(11)
 
 
 class WorkflowsProjectsLocationsGetRequest(_messages.Message):

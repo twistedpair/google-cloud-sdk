@@ -1089,9 +1089,9 @@
         }
       }
     },
-    "FetchPeeringRoutesResponse": {
-      "id": "FetchPeeringRoutesResponse",
-      "description": "Response message for VmwareEngine.FetchPeeringRoutes",
+    "ListPeeringRoutesResponse": {
+      "id": "ListPeeringRoutesResponse",
+      "description": "Response message for VmwareEngine.ListPeeringRoutes",
       "type": "object",
       "properties": {
         "peeringRoutes": {
@@ -1149,6 +1149,21 @@
           "description": "Output only. True if the peering route has been imported from a peered VPC network; false otherwise. The import happens if the field `NetworkPeering.importCustomRoutes` is true for this network, `NetworkPeering.exportCustomRoutes` is true for the peer VPC network, and the import does not result in a route conflict.",
           "readOnly": true,
           "type": "boolean"
+        },
+        "direction": {
+          "description": "Output only. Direction of the routes exchanged with the peer network, from the VMware Engine network perspective: * Routes of direction `INCOMING` are imported from the peer network. * Routes of direction `OUTGOING` are exported from the intranet VPC network of the VMware Engine network.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified exchanged routes direction. This is default.",
+            "Routes imported from the peer network.",
+            "Routes exported to the peer network."
+          ],
+          "enum": [
+            "DIRECTION_UNSPECIFIED",
+            "INCOMING",
+            "OUTGOING"
+          ]
         }
       }
     },
@@ -2989,7 +3004,7 @@
                       "format": "int32"
                     },
                     "pageToken": {
-                      "description": "A page token, received from a previous `FetchNetworkPolicyExternalAddresses` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `FetchNetworkPolicyExternalAddresses` must match the call that provided the page token.",
+                      "description": "A page token, received from a previous `FetchNetworkPolicyExternalAddresses` call. Provide this to retrieve the subsequent page. When paginating, all parameters provided to `FetchNetworkPolicyExternalAddresses`, except for page_size and page_token, must match the call that provided the page token.",
                       "location": "query",
                       "type": "string"
                     }
@@ -3883,57 +3898,6 @@
                       ],
                       "description": "Modifies a `NetworkPeering` resource. Only the `description` field can be updated. Only fields specified in `updateMask` are applied."
                     },
-                    "fetchRoutes": {
-                      "id": "vmwareengine.projects.locations.global.networkPeerings.fetchRoutes",
-                      "path": "v1/{+networkPeering}:fetchRoutes",
-                      "flatPath": "v1/projects/{projectsId}/locations/global/networkPeerings/{networkPeeringsId}:fetchRoutes",
-                      "httpMethod": "GET",
-                      "parameters": {
-                        "networkPeering": {
-                          "description": "Required. The resource name of the VPC network peering to retrieve peering routes from. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/global\/networkPeerings\/my-peering`",
-                          "pattern": "^projects\/[^\/]+\/locations\/global\/networkPeerings\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "pageSize": {
-                          "description": "The maximum number of peering routes to return in one page. The service may return fewer than this value. The maximum value is coerced to 1000. The default value of this field is 500.",
-                          "location": "query",
-                          "type": "integer",
-                          "format": "int32"
-                        },
-                        "pageToken": {
-                          "description": "A page token, received from a previous `FetchPeeringRoutes` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `FetchPeeringRoutes` must match the call that provided the page token.",
-                          "location": "query",
-                          "type": "string"
-                        },
-                        "direction": {
-                          "description": "Required. Direction of the routes exchanged with the peer network, from the VMware Engine network perspective: * Routes of direction `INCOMING` are imported from the peer network. * Routes of direction `OUTGOING` are exported from the intranet VPC network of the VMware Engine network.",
-                          "location": "query",
-                          "type": "string",
-                          "enumDescriptions": [
-                            "Unspecified exchanged routes direction. This is default.",
-                            "Routes imported from the peer network.",
-                            "Routes exported to the peer network."
-                          ],
-                          "enum": [
-                            "DIRECTION_UNSPECIFIED",
-                            "INCOMING",
-                            "OUTGOING"
-                          ]
-                        }
-                      },
-                      "parameterOrder": [
-                        "networkPeering"
-                      ],
-                      "response": {
-                        "$ref": "FetchPeeringRoutesResponse"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Lists the VPC network peering routes exchanged over a peering connection."
-                    },
                     "setIamPolicy": {
                       "id": "vmwareengine.projects.locations.global.networkPeerings.setIamPolicy",
                       "path": "v1/{+resource}:setIamPolicy",
@@ -4020,6 +3984,54 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
+                    }
+                  }
+                  ,
+                  "resources": {
+                    "peeringRoutes": {
+                      "methods": {
+                        "list": {
+                          "id": "vmwareengine.projects.locations.global.networkPeerings.peeringRoutes.list",
+                          "path": "v1/{+parent}/peeringRoutes",
+                          "flatPath": "v1/projects/{projectsId}/locations/global/networkPeerings/{networkPeeringsId}/peeringRoutes",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "parent": {
+                              "description": "Required. The resource name of the VPC network peering to retrieve peering routes from. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/global\/networkPeerings\/my-peering`",
+                              "pattern": "^projects\/[^\/]+\/locations\/global\/networkPeerings\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            },
+                            "pageSize": {
+                              "description": "The maximum number of peering routes to return in one page. The service may return fewer than this value. The maximum value is coerced to 1000. The default value of this field is 500.",
+                              "location": "query",
+                              "type": "integer",
+                              "format": "int32"
+                            },
+                            "pageToken": {
+                              "description": "A page token, received from a previous `ListPeeringRoutes` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListPeeringRoutes` must match the call that provided the page token.",
+                              "location": "query",
+                              "type": "string"
+                            },
+                            "filter": {
+                              "description": "A filter expression that matches resources returned in the response. Currently, only filtering on the `direction` field is supported. To return routes imported from the peer network, provide \"direction=INCOMING\". To return routes exported from the VMware Engine network, provide \"direction=OUTGOING\". Other filter expressions return an error.",
+                              "location": "query",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "parent"
+                          ],
+                          "response": {
+                            "$ref": "ListPeeringRoutesResponse"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Lists the VPC network peering routes exchanged over a peering connection."
+                        }
+                      }
                     }
                   }
                 }

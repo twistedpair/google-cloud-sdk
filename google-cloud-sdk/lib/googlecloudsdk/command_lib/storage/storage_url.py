@@ -127,18 +127,16 @@ class FileUrl(StorageUrl):
     generation (str): None for FileUrl.
   """
 
-  def __init__(self, url_string, is_stream=False):
+  def __init__(self, url_string):
     """Initialize FileUrl instance.
 
     Args:
       url_string (str): The string representing the filepath.
-      is_stream (bool): URL points to a stream (e.g. stdin).
     """
     super(FileUrl, self).__init__()
     self.scheme = ProviderPrefix.FILE
     self.bucket_name = None
     self.generation = None
-    self._is_stream = is_stream
 
     if url_string.startswith('file://'):
       filename = url_string[len('file://'):]
@@ -181,10 +179,15 @@ class FileUrl(StorageUrl):
     return os.sep
 
   @property
+  def is_stream(self):
+    """Returns True when stdin is requested."""
+    return self.object_name == '-'
+
+  @property
   def is_pipe(self):
     """Returns if URL points to a named pipe (FIFO) or stream."""
-    return self._is_stream or (os.path.exists(self.object_name) and
-                               stat.S_ISFIFO(os.stat(self.object_name).st_mode))
+    return self.is_stream or (os.path.exists(self.object_name) and
+                              stat.S_ISFIFO(os.stat(self.object_name).st_mode))
 
   def exists(self):
     """Returns True if the file/directory exists."""

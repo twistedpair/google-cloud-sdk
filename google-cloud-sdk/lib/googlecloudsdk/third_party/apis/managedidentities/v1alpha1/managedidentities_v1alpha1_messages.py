@@ -372,6 +372,30 @@ class Domain(_messages.Message):
   updateTime = _messages.StringField(13)
 
 
+class DomainJoinMachineRequest(_messages.Message):
+  r"""DomainJoinMachineRequest is the request message for DomainJoinMachine
+  method
+
+  Fields:
+    machine: Required. Details of the VM to be domain joined
+    ouName: Optional. OU name where the VM needs to be domain joined
+  """
+
+  machine = _messages.MessageField('Machine', 1)
+  ouName = _messages.StringField(2)
+
+
+class DomainJoinMachineResponse(_messages.Message):
+  r"""DomainJoinMachineResponse is the response message for DomainJoinMachine
+  method
+
+  Fields:
+    domainJoinBlob: Offline domain join blob as the response
+  """
+
+  domainJoinBlob = _messages.StringField(1)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -1312,6 +1336,21 @@ class Location(_messages.Message):
   name = _messages.StringField(5)
 
 
+class Machine(_messages.Message):
+  r"""Machine is the resource containing VM information to be domain joined
+
+  Fields:
+    id: Required. Instance Id of the GCE VM
+    name: Required. Instance name of the GCE VM which will be used as host
+      name for domain join
+    token: Required. Instance token of the GCE VM to verify instance identity
+  """
+
+  id = _messages.StringField(1)
+  name = _messages.StringField(2)
+  token = _messages.StringField(3)
+
+
 class MaintenancePolicy(_messages.Message):
   r"""Defines policies to service maintenance events.
 
@@ -1704,6 +1743,21 @@ class ManagedidentitiesProjectsLocationsGlobalDomainsGetRequest(_messages.Messag
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class ManagedidentitiesProjectsLocationsGlobalDomainsJoinMachineRequest(_messages.Message):
+  r"""A ManagedidentitiesProjectsLocationsGlobalDomainsJoinMachineRequest
+  object.
+
+  Fields:
+    domainJoinMachineRequest: A DomainJoinMachineRequest resource to be passed
+      as the request body.
+    name: Required. The domain resource name using the form:
+      projects/{project_id}/locations/global/domains/{domain_name}
+  """
+
+  domainJoinMachineRequest = _messages.MessageField('DomainJoinMachineRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class ManagedidentitiesProjectsLocationsGlobalDomainsListRequest(_messages.Message):

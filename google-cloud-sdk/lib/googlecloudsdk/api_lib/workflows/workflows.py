@@ -106,8 +106,17 @@ class WorkflowsClient(object):
         workflow=workflow)
     return self._service.Patch(patch_req)
 
-  def BuildWorkflowFromArgs(self, args):
-    """Create a workflow from command-line arguments."""
+  def BuildWorkflowFromArgs(self, args, release_track):
+    """Creates a workflow from command-line arguments.
+
+    Args:
+      args: The arguments of the gcloud command.
+      release_track: The gcloud release track used in the command.
+
+    Returns:
+      workflow: The consturcted Workflow message from the passed in arguments.
+      updated_fields: The workflow fields that are updated.
+    """
     workflow = self.messages.Workflow()
     updated_fields = []
     flags.SetSource(args, workflow, updated_fields)
@@ -116,6 +125,8 @@ class WorkflowsClient(object):
     labels = labels_util.ParseCreateArgs(args,
                                          self.messages.Workflow.LabelsValue)
     flags.SetLabels(labels, workflow, updated_fields)
+    if release_track == base.ReleaseTrack.GA:
+      flags.SetKmsKey(args, workflow, updated_fields)
     return workflow, updated_fields
 
   def WaitForOperation(self, operation, workflow_ref):

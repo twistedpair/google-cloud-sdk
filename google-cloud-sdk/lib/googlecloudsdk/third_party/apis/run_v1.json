@@ -1823,6 +1823,11 @@
           "description": "Optional. Creation timestamp of the execution.",
           "type": "string",
           "format": "google-datetime"
+        },
+        "completionTimestamp": {
+          "description": "Optional. Completion timestamp of the execution.",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },

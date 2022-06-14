@@ -39,6 +39,7 @@ class VmwareengineV1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.projects_locations_global_networkPeerings_peeringRoutes = self.ProjectsLocationsGlobalNetworkPeeringsPeeringRoutesService(self)
     self.projects_locations_global_networkPeerings = self.ProjectsLocationsGlobalNetworkPeeringsService(self)
     self.projects_locations_global = self.ProjectsLocationsGlobalService(self)
     self.projects_locations_networkPolicies_externalAccessRules = self.ProjectsLocationsNetworkPoliciesExternalAccessRulesService(self)
@@ -52,6 +53,43 @@ class VmwareengineV1(base_api.BaseApiClient):
     self.projects_locations_vmwareEngineNetworks = self.ProjectsLocationsVmwareEngineNetworksService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class ProjectsLocationsGlobalNetworkPeeringsPeeringRoutesService(base_api.BaseApiService):
+    """Service class for the projects_locations_global_networkPeerings_peeringRoutes resource."""
+
+    _NAME = 'projects_locations_global_networkPeerings_peeringRoutes'
+
+    def __init__(self, client):
+      super(VmwareengineV1.ProjectsLocationsGlobalNetworkPeeringsPeeringRoutesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists the VPC network peering routes exchanged over a peering connection.
+
+      Args:
+        request: (VmwareengineProjectsLocationsGlobalNetworkPeeringsPeeringRoutesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListPeeringRoutesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/global/networkPeerings/{networkPeeringsId}/peeringRoutes',
+        http_method='GET',
+        method_id='vmwareengine.projects.locations.global.networkPeerings.peeringRoutes.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/peeringRoutes',
+        request_field='',
+        request_type_name='VmwareengineProjectsLocationsGlobalNetworkPeeringsPeeringRoutesListRequest',
+        response_type_name='ListPeeringRoutesResponse',
+        supports_download=False,
+    )
 
   class ProjectsLocationsGlobalNetworkPeeringsService(base_api.BaseApiService):
     """Service class for the projects_locations_global_networkPeerings resource."""
@@ -114,33 +152,6 @@ class VmwareengineV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='VmwareengineProjectsLocationsGlobalNetworkPeeringsDeleteRequest',
         response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def FetchRoutes(self, request, global_params=None):
-      r"""Lists the VPC network peering routes exchanged over a peering connection.
-
-      Args:
-        request: (VmwareengineProjectsLocationsGlobalNetworkPeeringsFetchRoutesRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (FetchPeeringRoutesResponse) The response message.
-      """
-      config = self.GetMethodConfig('FetchRoutes')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    FetchRoutes.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/global/networkPeerings/{networkPeeringsId}:fetchRoutes',
-        http_method='GET',
-        method_id='vmwareengine.projects.locations.global.networkPeerings.fetchRoutes',
-        ordered_params=['networkPeering'],
-        path_params=['networkPeering'],
-        query_params=['direction', 'pageSize', 'pageToken'],
-        relative_path='v1/{+networkPeering}:fetchRoutes',
-        request_field='',
-        request_type_name='VmwareengineProjectsLocationsGlobalNetworkPeeringsFetchRoutesRequest',
-        response_type_name='FetchPeeringRoutesResponse',
         supports_download=False,
     )
 

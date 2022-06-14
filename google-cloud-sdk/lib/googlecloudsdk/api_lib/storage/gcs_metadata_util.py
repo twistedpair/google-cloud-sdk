@@ -170,7 +170,8 @@ def get_object_resource_from_metadata(metadata):
       md5_hash=metadata.md5Hash,
       metadata=metadata,
       metageneration=metadata.metageneration,
-      size=metadata.size)
+      size=metadata.size,
+      storage_class=metadata.storageClass)
 
 
 def update_bucket_metadata_from_request_config(bucket_metadata, request_config):
@@ -206,6 +207,11 @@ def update_bucket_metadata_from_request_config(bucket_metadata, request_config):
       resource_args.log_object_prefix is not None):
     bucket_metadata.logging = gcs_metadata_field_converters.process_log_config(
         resource_args.log_bucket, resource_args.log_object_prefix)
+  if resource_args.public_access_prevention is not None:
+    bucket_metadata.iamConfiguration = (
+        gcs_metadata_field_converters.process_public_access_prevention(
+            bucket_metadata.iamConfiguration,
+            resource_args.public_access_prevention))
   if resource_args.requester_pays is not None:
     bucket_metadata.billing = (
         gcs_metadata_field_converters.process_requester_pays(
@@ -258,6 +264,10 @@ def get_cleared_bucket_fields(request_config):
     cleared_fields.append('logging.logBucket')
   elif resource_args.log_object_prefix == user_request_args_factory.CLEAR:
     cleared_fields.append('logging.logObjectPrefix')
+
+  if (resource_args.public_access_prevention == user_request_args_factory.CLEAR
+     ):
+    cleared_fields.append('iamConfiguration.publicAccessPrevention')
 
   if resource_args.retention_period == user_request_args_factory.CLEAR:
     cleared_fields.append('retentionPolicy')

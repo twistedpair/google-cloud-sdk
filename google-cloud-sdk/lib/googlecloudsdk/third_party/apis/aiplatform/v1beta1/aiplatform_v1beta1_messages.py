@@ -824,6 +824,29 @@ class AiplatformProjectsLocationsDatasetsPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class AiplatformProjectsLocationsDatasetsSavedQueriesListRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsDatasetsSavedQueriesListRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    orderBy: A comma-separated list of fields to order by, sorted in ascending
+      order. Use "desc" after a field name for descending.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+    parent: Required. The resource name of the Dataset to list SavedQueries
+      from. Format:
+      `projects/{project}/locations/{location}/datasets/{dataset}`
+    readMask: Mask specifying which fields to read.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+  readMask = _messages.StringField(6)
+
+
 class AiplatformProjectsLocationsDatasetsSavedQueriesOperationsCancelRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsDatasetsSavedQueriesOperationsCancelRequest
   object.
@@ -16241,6 +16264,11 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlImageObjectDetecti
       enabled, which means that AutoML Image Object Detection might stop
       training before the entire training budget has been used.
     modelType: A ModelTypeValueValuesEnum attribute.
+    uptrainBaseModelId: The ID of `base` model for upTraining. If it is
+      specified, the new model will be upTrained based on the `base` model for
+      upTraining. Otherwise, the new model will be trained from scratch. The
+      `base` model for upTraining must be in the same Project and Location as
+      the new Model to train, and have the same modelType.
   """
 
   class ModelTypeValueValuesEnum(_messages.Enum):
@@ -16280,6 +16308,7 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlImageObjectDetecti
   budgetMilliNodeHours = _messages.IntegerField(1)
   disableEarlyStopping = _messages.BooleanField(2)
   modelType = _messages.EnumField('ModelTypeValueValuesEnum', 3)
+  uptrainBaseModelId = _messages.StringField(4)
 
 
 class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlImageObjectDetectionMetadata(_messages.Message):
@@ -25575,6 +25604,15 @@ class GoogleCloudAiplatformV1beta1InputDataConfig(_messages.Message):
       "gcs_destination/dataset---/test-*.${AIP_DATA_FORMAT}"
     predefinedSplit: Supported only for tabular Datasets. Split based on a
       predefined key.
+    savedQueryId: Only applicable to Datasets that have SavedQueries. The ID
+      of a SavedQuery (annotation set) under the Dataset specified by
+      dataset_id used for filtering Annotations for training. Only Annotations
+      that are associated with this SavedQuery are used in respectively
+      training. When used in conjunction with annotations_filter, the
+      Annotations used for training are filtered by both saved_query_id and
+      annotations_filter. Only one of saved_query_id and annotation_schema_uri
+      should be specified as both of them represent the same thing: problem
+      type.
     stratifiedSplit: Supported only for tabular Datasets. Split based on the
       distribution of the specified column.
     timestampSplit: Supported only for tabular Datasets. Split based on the
@@ -25589,8 +25627,9 @@ class GoogleCloudAiplatformV1beta1InputDataConfig(_messages.Message):
   fractionSplit = _messages.MessageField('GoogleCloudAiplatformV1beta1FractionSplit', 6)
   gcsDestination = _messages.MessageField('GoogleCloudAiplatformV1beta1GcsDestination', 7)
   predefinedSplit = _messages.MessageField('GoogleCloudAiplatformV1beta1PredefinedSplit', 8)
-  stratifiedSplit = _messages.MessageField('GoogleCloudAiplatformV1beta1StratifiedSplit', 9)
-  timestampSplit = _messages.MessageField('GoogleCloudAiplatformV1beta1TimestampSplit', 10)
+  savedQueryId = _messages.StringField(9)
+  stratifiedSplit = _messages.MessageField('GoogleCloudAiplatformV1beta1StratifiedSplit', 10)
+  timestampSplit = _messages.MessageField('GoogleCloudAiplatformV1beta1TimestampSplit', 11)
 
 
 class GoogleCloudAiplatformV1beta1Int64Array(_messages.Message):
@@ -25983,6 +26022,19 @@ class GoogleCloudAiplatformV1beta1ListPipelineJobsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   pipelineJobs = _messages.MessageField('GoogleCloudAiplatformV1beta1PipelineJob', 2, repeated=True)
+
+
+class GoogleCloudAiplatformV1beta1ListSavedQueriesResponse(_messages.Message):
+  r"""Response message for DatasetService.ListSavedQueries.
+
+  Fields:
+    nextPageToken: The standard List next-page token.
+    savedQueries: A list of SavedQueries that matches the specified filter in
+      the request.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  savedQueries = _messages.MessageField('GoogleCloudAiplatformV1beta1SavedQuery', 2, repeated=True)
 
 
 class GoogleCloudAiplatformV1beta1ListSpecialistPoolsResponse(_messages.Message):
@@ -27174,9 +27226,18 @@ class GoogleCloudAiplatformV1beta1ModelDeploymentMonitoringScheduleConfig(_messa
     monitorInterval: Required. The model monitoring job scheduling interval.
       It will be rounded up to next full hour. This defines how often the
       monitoring jobs are triggered.
+    monitorWindow: The time window of the prediction data being included in
+      each prediction dataset. This window specifies how long the data should
+      be collected from historical model results for each run. If not set,
+      ModelDeploymentMonitoringScheduleConfig.monitor_interval will be used.
+      e.g. If currently the cutoff time is 2022-01-08 14:30:00 and the
+      monitor_window is set to be 3600, then data from 2022-01-08 13:30:00 to
+      2022-01-08 14:30:00 will be retrieved and aggregated to calculate the
+      monitoring statistics.
   """
 
   monitorInterval = _messages.StringField(1)
+  monitorWindow = _messages.StringField(2)
 
 
 class GoogleCloudAiplatformV1beta1ModelEvaluation(_messages.Message):
@@ -28028,9 +28089,6 @@ class GoogleCloudAiplatformV1beta1PipelineJobRuntimeConfig(_messages.Message):
       when a task has failed. Any scheduled tasks will continue to completion.
 
   Messages:
-    InputArtifactsValue: The runtime artifacts of the PipelineJob. The key
-      will be the input artifact name and the value would be one of the
-      InputArtifact.
     ParameterValuesValue: The runtime parameters of the PipelineJob. The
       parameters will be passed into PipelineJob.pipeline_spec to replace the
       placeholders at runtime. This field is used by pipelines built using
@@ -28057,8 +28115,6 @@ class GoogleCloudAiplatformV1beta1PipelineJobRuntimeConfig(_messages.Message):
       under the specified output directory. The service account specified in
       this pipeline must have the `storage.objects.get` and
       `storage.objects.create` permissions for this bucket.
-    inputArtifacts: The runtime artifacts of the PipelineJob. The key will be
-      the input artifact name and the value would be one of the InputArtifact.
     parameterValues: The runtime parameters of the PipelineJob. The parameters
       will be passed into PipelineJob.pipeline_spec to replace the
       placeholders at runtime. This field is used by pipelines built using
@@ -28092,34 +28148,6 @@ class GoogleCloudAiplatformV1beta1PipelineJobRuntimeConfig(_messages.Message):
     PIPELINE_FAILURE_POLICY_UNSPECIFIED = 0
     PIPELINE_FAILURE_POLICY_FAIL_SLOW = 1
     PIPELINE_FAILURE_POLICY_FAIL_FAST = 2
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class InputArtifactsValue(_messages.Message):
-    r"""The runtime artifacts of the PipelineJob. The key will be the input
-    artifact name and the value would be one of the InputArtifact.
-
-    Messages:
-      AdditionalProperty: An additional property for a InputArtifactsValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type InputArtifactsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a InputArtifactsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A
-          GoogleCloudAiplatformV1beta1PipelineJobRuntimeConfigInputArtifact
-          attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('GoogleCloudAiplatformV1beta1PipelineJobRuntimeConfigInputArtifact', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ParameterValuesValue(_messages.Message):
@@ -28181,22 +28209,8 @@ class GoogleCloudAiplatformV1beta1PipelineJobRuntimeConfig(_messages.Message):
 
   failurePolicy = _messages.EnumField('FailurePolicyValueValuesEnum', 1)
   gcsOutputDirectory = _messages.StringField(2)
-  inputArtifacts = _messages.MessageField('InputArtifactsValue', 3)
-  parameterValues = _messages.MessageField('ParameterValuesValue', 4)
-  parameters = _messages.MessageField('ParametersValue', 5)
-
-
-class GoogleCloudAiplatformV1beta1PipelineJobRuntimeConfigInputArtifact(_messages.Message):
-  r"""The type of an input artifact.
-
-  Fields:
-    artifactName: Artifact resource id from MLMD in the format of `projects/{p
-      roject}/locations/{location}/metadataStores/default/artifacts/{artifact}
-      `. The artifact must stay within the same project, location and default
-      metadatastore as the pipeline.
-  """
-
-  artifactName = _messages.StringField(1)
+  parameterValues = _messages.MessageField('ParameterValuesValue', 3)
+  parameters = _messages.MessageField('ParametersValue', 4)
 
 
 class GoogleCloudAiplatformV1beta1PipelineTaskDetail(_messages.Message):
@@ -29008,6 +29022,46 @@ class GoogleCloudAiplatformV1beta1SamplingStrategyRandomSampleConfig(_messages.M
   """
 
   sampleRate = _messages.FloatField(1)
+
+
+class GoogleCloudAiplatformV1beta1SavedQuery(_messages.Message):
+  r"""A SavedQuery is a view of the dataset. It references a subset of
+  annotations by problem type and filters.
+
+  Fields:
+    annotationFilter: Output only. Filters on the Annotations in the dataset.
+    annotationSpecCount: Output only. Number of AnnotationSpecs in the context
+      of the SavedQuery.
+    createTime: Output only. Timestamp when this SavedQuery was created.
+    displayName: Required. The user-defined name of the SavedQuery. The name
+      can be up to 128 characters long and can be consist of any UTF-8
+      characters.
+    etag: Used to perform a consistent read-modify-write updates. If not set,
+      a blind "overwrite" update happens.
+    metadata: Some additional information about the SavedQuery.
+    name: Output only. Resource name of the SavedQuery.
+    problemType: Required. LINT.IfChange Problem type of the SavedQuery.
+      Allowed values: * IMAGE_CLASSIFICATION_SINGLE_LABEL *
+      IMAGE_CLASSIFICATION_MULTI_LABEL * IMAGE_BOUNDING_POLY *
+      IMAGE_BOUNDING_BOX * IMAGE_POLYLINE * IMAGE_SEGMENTATION *
+      TEXT_CLASSIFICATION_SINGLE_LABEL * TEXT_CLASSIFICATION_MULTI_LABEL *
+      TEXT_EXTRACTION * TEXT_SENTIMENT * VIDEO_CLASSIFICATION *
+      VIDEO_OBJECT_TRACKING * VIDEO_ACTION_RECOGNITION
+    supportAutomlTraining: Output only. If the Annotations belonging to the
+      SavedQuery can be used for AutoML training.
+    updateTime: Output only. Timestamp when SavedQuery was last updated.
+  """
+
+  annotationFilter = _messages.StringField(1)
+  annotationSpecCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  createTime = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  etag = _messages.StringField(5)
+  metadata = _messages.MessageField('extra_types.JsonValue', 6)
+  name = _messages.StringField(7)
+  problemType = _messages.StringField(8)
+  supportAutomlTraining = _messages.BooleanField(9)
+  updateTime = _messages.StringField(10)
 
 
 class GoogleCloudAiplatformV1beta1Scalar(_messages.Message):
@@ -30580,6 +30634,11 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageObjectDe
       enabled, which means that AutoML Image Object Detection might stop
       training before the entire training budget has been used.
     modelType: A ModelTypeValueValuesEnum attribute.
+    uptrainBaseModelId: The ID of `base` model for upTraining. If it is
+      specified, the new model will be upTrained based on the `base` model for
+      upTraining. Otherwise, the new model will be trained from scratch. The
+      `base` model for upTraining must be in the same Project and Location as
+      the new Model to train, and have the same modelType.
   """
 
   class ModelTypeValueValuesEnum(_messages.Enum):
@@ -30619,6 +30678,7 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageObjectDe
   budgetMilliNodeHours = _messages.IntegerField(1)
   disableEarlyStopping = _messages.BooleanField(2)
   modelType = _messages.EnumField('ModelTypeValueValuesEnum', 3)
+  uptrainBaseModelId = _messages.StringField(4)
 
 
 class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageObjectDetectionMetadata(_messages.Message):

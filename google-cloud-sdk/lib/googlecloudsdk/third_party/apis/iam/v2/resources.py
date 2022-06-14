@@ -33,9 +33,12 @@ class Collections(enum.Enum):
   )
   POLICIES = (
       'policies',
-      'policies/{policiesId}/{policiesId1}/{policiesId2}',
-      {},
-      ['policiesId', 'policiesId1', 'policiesId2'],
+      '{+name}',
+      {
+          '':
+              'policies/{policiesId}/{policiesId1}/{policiesId2}',
+      },
+      ['name'],
       True
   )
   POLICIES_OPERATIONS = (

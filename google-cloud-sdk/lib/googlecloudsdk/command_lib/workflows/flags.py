@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.calliope.concepts import concepts
@@ -25,6 +26,14 @@ from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files
+
+_KEY_NAME_PATTERN = (
+    r'^projects/[^/]+/locations/[^/]+/keyRings/[a-zA-Z0-9_-]+'
+    '/cryptoKeys/[a-zA-Z0-9_-]+$')
+_KEY_NAME_ERROR = (
+    'KMS key name should match projects/{project}/locations/{location}'
+    '/keyRings/{keyring}/cryptoKeys/{cryptokey} and only contain characters '
+    'from the valid character set for a KMS key.')
 
 
 def LocationAttributeConfig():
@@ -149,6 +158,37 @@ def AddLoggingArg(parser):
   log_level.AddToParser(parser)
 
 
+# Flags for CMEK
+def AddKmsKeyFlags(parser):
+  """Adds flags for configuring the CMEK key.
+
+  Args:
+    parser: The flag parser used for the specified command.
+  """
+  kmskey_group = parser.add_group(mutex=True, hidden=True)
+  kmskey_group.add_argument(
+      '--kms-key',
+      type=arg_parsers.RegexpValidator(_KEY_NAME_PATTERN,
+                                       _KEY_NAME_ERROR),
+      help="""\
+        Sets the user managed KMS crypto key used to encrypt the new Workflow
+        Revision and the Executions associated with it.
+
+        The KMS crypto key name should match the pattern
+        `projects/${PROJECT}/locations/${LOCATION}/keyRings/${KEYRING}/cryptoKeys/${CRYPTOKEY}`
+        where ${PROJECT} is the project, ${LOCATION} is the location of the key
+        ring, and ${KEYRING} is the key ring that contains the ${CRYPTOKEY}
+        crypto key.
+      """)
+  kmskey_group.add_argument(
+      '--clear-kms-key',
+      action='store_true',
+      help="""\
+        Creates the new Workflow Revision and its associated Executions without
+        the KMS key specified on the previous revision.
+      """)
+
+
 def ParseExecution(args):
   """Get and validate execution from the args."""
   return args.CONCEPTS.execution.Parse()
@@ -166,9 +206,9 @@ def SetSource(args, workflow, updated_fields):
   Currently only local source file is supported.
 
   Args:
-    args: args passed to the command.
-    workflow: the workflow in which to set the source configuration.
-    updated_fields: a list to which an appropriate source field will be added.
+    args: Args passed to the command.
+    workflow: The workflow in which to set the source configuration.
+    updated_fields: A list to which an appropriate source field will be added.
   """
   if args.source:
     try:
@@ -185,9 +225,9 @@ def SetDescription(args, workflow, updated_fields):
   Also update updated_fields accordingly.
 
   Args:
-    args: args passed to the command.
-    workflow: the workflow in which to set the description.
-    updated_fields: a list to which a description field will be added if needed.
+    args: Args passed to the command.
+    workflow: The workflow in which to set the description.
+    updated_fields: A list to which a description field will be added if needed.
   """
   if args.description is not None:
     workflow.description = args.description
@@ -200,9 +240,9 @@ def SetServiceAccount(args, workflow, updated_fields):
   Also update updated_fields accordingly.
 
   Args:
-    args: args passed to the command.
-    workflow: the workflow in which to set the service account.
-    updated_fields: a list to which a service_account field will be added if
+    args: Args passed to the command.
+    workflow: The workflow in which to set the service account.
+    updated_fields: A list to which a service_account field will be added if
       needed.
   """
   if args.service_account is not None:
@@ -219,11 +259,26 @@ def SetLabels(labels, workflow, updated_fields):
   Also update updated_fields accordingly.
 
   Args:
-    labels: labels parsed as string to be set on the workflow, or None in case
+    labels: Labels parsed as string to be set on the workflow, or None in case
       the field shouldn't be set.
-    workflow: the workflow in which to set the labels.
-    updated_fields: a list to which a labels field will be added if needed.
+    workflow: The workflow in which to set the labels.
+    updated_fields: A list to which a labels field will be added if needed.
   """
   if labels is not None:
     workflow.labels = labels
     updated_fields.append('labels')
+
+
+def SetKmsKey(args, workflow, updated_fields):
+  """Sets KMS key for the workflow based on the arguments.
+
+  Also update updated_fields accordingly.
+
+  Args:
+    args: Args passed to the command.
+    workflow: The workflow in which to set the KMS key.
+    updated_fields: A list to which the KMS key field will be added if needed.
+  """
+  if args.IsSpecified('kms_key') or args.IsSpecified('clear_kms_key'):
+    workflow.cryptoKeyName = (None if args.clear_kms_key else args.kms_key)
+    updated_fields.append('cryptoKeyName')

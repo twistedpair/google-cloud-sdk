@@ -283,3 +283,13 @@ def AddPreviewFormatFlag(parser):
       choices=['text', 'json'],
       default='text',
       help='Preview results output format')
+
+
+def AddClusterlessFlag(parser):
+  """Adds --clusterless flag."""
+  parser.add_argument(
+      '--clusterless',
+      default=True,
+      action='store_true',
+      help='Whether or not to use clusterless actuation',
+  )

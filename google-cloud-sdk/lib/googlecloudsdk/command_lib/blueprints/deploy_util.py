@@ -419,7 +419,8 @@ def Apply(source,
           source_git_subdir='.',
           config_controller=None,
           target_git=None,
-          target_git_subdir=None):
+          target_git_subdir=None,
+          clusterless=True):
   """Updates the deployment if one exists, otherwise one will be created.
 
   Bundles parameters for creating/updating a deployment.
@@ -447,6 +448,8 @@ def Apply(source,
     target_git: optional string, a Git repo to use as a deployment target.
     target_git_subdir: optional string. Represents the directory within the
       target Git repo to use.
+    clusterless: optional bool, defaulted to True. If True, then clusterless
+      actuation is used, otherwise clusterful actuation is used.
 
   Returns:
     The resulting Deployment resource or, in the case that async_ is True, a
@@ -498,13 +501,20 @@ def Apply(source,
   git_target = git_blueprint_util.GetBlueprintTargetForGit(
       messages, target_git, target_git_subdir) if target_git else None
 
+  if clusterless and (git_target or config_controller):
+    raise c_exceptions.InvalidArgumentException(
+        'clusterless',
+        '--target-git and --config-controller cannot be set if '
+        'deployment is meant to be clusterless'
+    )
+
   if is_creating_deployment:
     op = _CreateDeploymentOp(deployment, deployment_full_name,
-                             config_controller, git_target, async_)
+                             config_controller, git_target, async_, clusterless)
   else:
     op = _UpdateDeploymentOp(deployment, existing_deployment,
                              deployment_full_name, config_controller,
-                             git_target, labels)
+                             git_target, labels, clusterless)
 
   log.debug('LRO: %s', op.name)
 
@@ -568,7 +578,7 @@ def _DeploymentPerformsActuation(deployment):
 
 
 def _CreateDeploymentOp(deployment, deployment_full_name, config_controller,
-                        git_target, async_):
+                        git_target, async_, clusterless):
   """Initiates and returns a CreateDeployment operation.
 
   Args:
@@ -583,13 +593,16 @@ def _CreateDeploymentOp(deployment, deployment_full_name, config_controller,
     git_target: optional messages.GitTarget. The Git target for the deployment.
     async_: bool, if True, gcloud will return immediately, otherwise it will
       wait on the long-running operation.
+    clusterless: bool, if True, deployment is done without a cluster, otherwise
+      deployment uses a config-controller instance.
 
   Returns:
     The CreateDeployment operation.
 
   Raises:
     InvalidArgumentException: If an invalid set of flags is provided (e.g.
-      trying to run with --async but without a target).
+      trying to run with --async but without a target), or if a
+      target is set with clusterless being True.
   """
   deployment_ref = resources.REGISTRY.Parse(
       deployment_full_name, collection='config.projects.locations.deployments')
@@ -602,7 +615,9 @@ def _CreateDeploymentOp(deployment, deployment_full_name, config_controller,
   # if we decide to consolidate these into a single --target flag (or
   # --target-git is becomes unhidden), then some of these error messages will
   # need to be reworked.
-  if git_target:
+  if clusterless:
+    deployment.clusterless = clusterless
+  elif git_target:
     deployment.gitTarget = git_target
   else:
     deployment.configController = _GetOrCreateConfigControllerInstance(
@@ -614,7 +629,7 @@ def _CreateDeploymentOp(deployment, deployment_full_name, config_controller,
 
 
 def _UpdateDeploymentOp(deployment, existing_deployment, deployment_full_name,
-                        config_controller, git_target, labels):
+                        config_controller, git_target, labels, clusterless):
   """Initiates and returns an UpdateDeployment operation.
 
   Args:
@@ -631,6 +646,8 @@ def _UpdateDeploymentOp(deployment, existing_deployment, deployment_full_name,
     git_target: optional messages.GitTarget. The Git target for the deployment.
     labels: dictionary of string → string, labels to be associated with the
       deployment.
+    clusterless: bool, if True, deployment is clusterless, otherwise it is
+      clusterfull.
 
   Returns:
     The UpdateDeployment operation.
@@ -639,6 +656,13 @@ def _UpdateDeploymentOp(deployment, existing_deployment, deployment_full_name,
     InvalidArgumentException: If the user tries to update a field that cannot be
     updated.
   """
+  if clusterless and (config_controller or git_target):
+    msg = '--clusterless cannot be True if there is a target set'
+    if not existing_deployment.clusterless:
+      msg = ('--clusterless cannot be True if the existing deployment is not '
+             'clusterless')
+      raise c_exceptions.InvalidArgumentException('clusterless', msg)
+
   if (config_controller is not None and
       config_controller != existing_deployment.configController):
     msg = '--config-controller cannot be updated for an existing deployment'

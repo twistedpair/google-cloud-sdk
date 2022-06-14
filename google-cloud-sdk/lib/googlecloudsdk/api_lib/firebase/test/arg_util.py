@@ -164,7 +164,7 @@ def AddAndroidTestArgs(parser):
       results when using Android Test Orchestrator (`--use-orchestrator`):
 
       ```
-      --environment-variables clearPackageData=true,coverage=true,coverageFilePath=/sdcard/
+      --environment-variables clearPackageData=true,coverage=true,coverageFilePath=/sdcard/Download/
       ```
 
       Enable code coverage and provide a file path to store the coverage
@@ -172,7 +172,7 @@ def AddAndroidTestArgs(parser):
       (`--no-use-orchestrator`):
 
       ```
-      --environment-variables coverage=true,coverageFile=/sdcard/coverage.ec
+      --environment-variables coverage=true,coverageFile=/sdcard/Download/coverage.ec
       ```
 
       Note: If you need to embed a comma into a `VALUE` string, please refer to

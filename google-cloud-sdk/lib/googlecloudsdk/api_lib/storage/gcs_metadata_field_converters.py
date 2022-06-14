@@ -25,6 +25,13 @@ from googlecloudsdk.core.util import iso_duration
 from googlecloudsdk.core.util import times
 
 
+def _create_iam_metadata_if_needed(current_iam_metadata):
+  """Creates Apitools IAM metadata object if ones does not already exist."""
+  if current_iam_metadata:
+    return current_iam_metadata
+  return apis.GetMessagesModule('storage', 'v1').Bucket.IamConfigurationValue()
+
+
 def process_cors(file_path):
   """Converts CORS file to Apitools objects."""
   if file_path == user_request_args_factory.CLEAR:
@@ -164,6 +171,19 @@ def process_log_config(log_bucket, log_object_prefix):
   return logging_value
 
 
+def process_public_access_prevention(existing_iam_metadata,
+                                     public_access_prevention_boolean):
+  """Converts public_access_prevention boolean to Apitools object."""
+  iam_metadata = _create_iam_metadata_if_needed(existing_iam_metadata)
+
+  if public_access_prevention_boolean:
+    public_access_prevention_string = 'enforced'
+  else:
+    public_access_prevention_string = 'inherited'
+  iam_metadata.publicAccessPrevention = public_access_prevention_string
+  return iam_metadata
+
+
 def process_requester_pays(existing_billing, requester_pays):
   """Converts requester_pays boolean to Apitools object."""
   messages = apis.GetMessagesModule('storage', 'v1')
@@ -190,16 +210,13 @@ def process_retention_period(retention_period_string):
 def process_uniform_bucket_level_access(existing_iam_metadata,
                                         uniform_bucket_level_access):
   """Converts uniform_bucket_level_access boolean to Apitools object."""
-  messages = apis.GetMessagesModule('storage', 'v1')
-  if existing_iam_metadata:
-    result_iam_metadata = existing_iam_metadata
-  else:
-    result_iam_metadata = messages.Bucket.IamConfigurationValue()
+  iam_metadata = _create_iam_metadata_if_needed(existing_iam_metadata)
 
-  result_iam_metadata.uniformBucketLevelAccess = (
+  messages = apis.GetMessagesModule('storage', 'v1')
+  iam_metadata.uniformBucketLevelAccess = (
       messages.Bucket.IamConfigurationValue.UniformBucketLevelAccessValue(
           enabled=uniform_bucket_level_access))
-  return result_iam_metadata
+  return iam_metadata
 
 
 def process_versioning(versioning):

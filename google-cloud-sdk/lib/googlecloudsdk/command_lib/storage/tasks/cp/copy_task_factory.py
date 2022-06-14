@@ -25,6 +25,7 @@ from googlecloudsdk.command_lib.storage.tasks.cp import file_download_task
 from googlecloudsdk.command_lib.storage.tasks.cp import file_upload_task
 from googlecloudsdk.command_lib.storage.tasks.cp import intra_cloud_copy_task
 from googlecloudsdk.command_lib.storage.tasks.cp import streaming_download_task
+from googlecloudsdk.command_lib.storage.tasks.cp import streaming_upload_task
 
 
 def get_copy_task(source_resource,
@@ -78,11 +79,18 @@ def get_copy_task(source_resource,
 
   if (isinstance(source_url, storage_url.FileUrl)
       and isinstance(destination_url, storage_url.CloudUrl)):
-    return file_upload_task.FileUploadTask(
-        source_resource,
-        destination_resource,
-        print_created_message=print_created_message,
-        user_request_args=user_request_args)
+    if source_url.is_pipe:
+      return streaming_upload_task.StreamingUploadTask(
+          source_resource,
+          destination_resource,
+          print_created_message=print_created_message,
+          user_request_args=user_request_args)
+    else:
+      return file_upload_task.FileUploadTask(
+          source_resource,
+          destination_resource,
+          print_created_message=print_created_message,
+          user_request_args=user_request_args)
 
   if (isinstance(source_url, storage_url.CloudUrl)
       and isinstance(destination_url, storage_url.CloudUrl)):

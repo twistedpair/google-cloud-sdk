@@ -1104,18 +1104,6 @@
           "description": "Input only. The KMS key reference that the customer provides when trying to create the instance.",
           "type": "string"
         },
-        "tier": {
-          "description": "Required. Redis tier. This field is hiden from customers in private preview.",
-          "type": "string",
-          "enumDescriptions": [
-            "",
-            "dense tier"
-          ],
-          "enum": [
-            "TIER_NOT_SPECIFIED",
-            "DENSE"
-          ]
-        },
         "redisVersion": {
           "description": "Output only. Redis version. This is an output only field and currently only Redis 6 is supported.",
           "readOnly": true,

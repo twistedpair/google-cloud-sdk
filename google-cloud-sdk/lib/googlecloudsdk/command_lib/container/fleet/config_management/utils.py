@@ -55,6 +55,7 @@ CONFIG_SYNC = 'configSync'
 POLICY_CONTROLLER = 'policyController'
 HNC = 'hierarchyController'
 PREVENT_DRIFT_VERSION = '1.10.0'
+MONITORING_VERSION = '1.12.0'
 
 
 def versions_for_member(feature, membership):

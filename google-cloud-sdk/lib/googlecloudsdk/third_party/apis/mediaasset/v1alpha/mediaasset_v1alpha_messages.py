@@ -591,6 +591,7 @@ class AssetType(_messages.Message):
       id are: 1. 1 character minimum, 63 characters maximum 2. only contains
       letters, digits, underscore and hyphen 3. starts with a letter if length
       == 1, starts with a letter or underscore if length > 1
+    FacetConfigsValue: Mapping of facet name to its configuration.
     IndexedFieldConfigsValue: List of indexed fields (e.g.
       "metadata.file.url") to make available in searches with their
       corresponding properties.
@@ -610,6 +611,7 @@ class AssetType(_messages.Message):
       starts with a letter or underscore if length > 1
     assetTypeStats: asset_type_stats stores stats on this asset type.
     createTime: Output only. The creation time.
+    facetConfigs: Mapping of facet name to its configuration.
     indexedFieldConfigs: List of indexed fields (e.g. "metadata.file.url") to
       make available in searches with their corresponding properties.
     labels: The labels associated with this resource. Each label is a key-
@@ -673,6 +675,31 @@ class AssetType(_messages.Message):
 
       key = _messages.StringField(1)
       value = _messages.MessageField('AnnotationSetConfig', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class FacetConfigsValue(_messages.Message):
+    r"""Mapping of facet name to its configuration.
+
+    Messages:
+      AdditionalProperty: An additional property for a FacetConfigsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type FacetConfigsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a FacetConfigsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A FacetConfig attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('FacetConfig', 2)
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
@@ -806,15 +833,16 @@ class AssetType(_messages.Message):
   annotationSetConfigs = _messages.MessageField('AnnotationSetConfigsValue', 1)
   assetTypeStats = _messages.MessageField('AssetTypeStats', 2)
   createTime = _messages.StringField(3)
-  indexedFieldConfigs = _messages.MessageField('IndexedFieldConfigsValue', 4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  linkConfigs = _messages.MessageField('LinkConfigsValue', 6)
-  linkSetConfigs = _messages.MessageField('LinkSetConfigsValue', 7)
-  mediaType = _messages.EnumField('MediaTypeValueValuesEnum', 8)
-  metadataConfigs = _messages.MessageField('MetadataConfigsValue', 9)
-  name = _messages.StringField(10)
-  sortOrder = _messages.MessageField('SortOrderConfig', 11)
-  updateTime = _messages.StringField(12)
+  facetConfigs = _messages.MessageField('FacetConfigsValue', 4)
+  indexedFieldConfigs = _messages.MessageField('IndexedFieldConfigsValue', 5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  linkConfigs = _messages.MessageField('LinkConfigsValue', 7)
+  linkSetConfigs = _messages.MessageField('LinkSetConfigsValue', 8)
+  mediaType = _messages.EnumField('MediaTypeValueValuesEnum', 9)
+  metadataConfigs = _messages.MessageField('MetadataConfigsValue', 10)
+  name = _messages.StringField(11)
+  sortOrder = _messages.MessageField('SortOrderConfig', 12)
+  updateTime = _messages.StringField(13)
 
 
 class AssetTypeConfig(_messages.Message):
@@ -975,6 +1003,8 @@ class Catalog(_messages.Message):
   Messages:
     AssetTypeConfigsValue: A map between asset type name and its configuration
       within this catalog.
+    FacetConfigsValue: A map between facet name and its configuration within
+      this catalog.
     LabelsValue: The labels associated with this resource. Each label is a
       key-value pair.
 
@@ -982,6 +1012,8 @@ class Catalog(_messages.Message):
     assetTypeConfigs: A map between asset type name and its configuration
       within this catalog.
     createTime: Output only. The creation time of the catalog.
+    facetConfigs: A map between facet name and its configuration within this
+      catalog.
     labels: The labels associated with this resource. Each label is a key-
       value pair.
     name: The resource name of the catalog, in the following form:
@@ -1017,6 +1049,31 @@ class Catalog(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
+  class FacetConfigsValue(_messages.Message):
+    r"""A map between facet name and its configuration within this catalog.
+
+    Messages:
+      AdditionalProperty: An additional property for a FacetConfigsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type FacetConfigsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a FacetConfigsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A FacetConfig attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('FacetConfig', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     r"""The labels associated with this resource. Each label is a key-value
     pair.
@@ -1043,9 +1100,10 @@ class Catalog(_messages.Message):
 
   assetTypeConfigs = _messages.MessageField('AssetTypeConfigsValue', 1)
   createTime = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  name = _messages.StringField(4)
-  updateTime = _messages.StringField(5)
+  facetConfigs = _messages.MessageField('FacetConfigsValue', 3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  updateTime = _messages.StringField(6)
 
 
 class CatalogConfig(_messages.Message):
@@ -1339,6 +1397,19 @@ class Expr(_messages.Message):
   expression = _messages.StringField(2)
   location = _messages.StringField(3)
   title = _messages.StringField(4)
+
+
+class FacetConfig(_messages.Message):
+  r"""FacetConfig allows for configuration of faceted search.
+
+  Fields:
+    maxValues: Maximum number of facet values to return in a facet. Default is
+      10.
+    operators: The list of search operators to include in a facet.
+  """
+
+  maxValues = _messages.IntegerField(1)
+  operators = _messages.StringField(2, repeated=True)
 
 
 class GoogleIamV1AuditConfig(_messages.Message):

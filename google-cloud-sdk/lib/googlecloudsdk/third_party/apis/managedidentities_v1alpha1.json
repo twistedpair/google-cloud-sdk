@@ -1013,6 +1013,51 @@
         }
       }
     },
+    "DomainJoinMachineRequest": {
+      "id": "DomainJoinMachineRequest",
+      "description": "DomainJoinMachineRequest is the request message for DomainJoinMachine method",
+      "type": "object",
+      "properties": {
+        "machine": {
+          "description": "Required. Details of the VM to be domain joined",
+          "$ref": "Machine"
+        },
+        "ouName": {
+          "description": "Optional. OU name where the VM needs to be domain joined",
+          "type": "string"
+        }
+      }
+    },
+    "Machine": {
+      "id": "Machine",
+      "description": "Machine is the resource containing VM information to be domain joined",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. Instance name of the GCE VM which will be used as host name for domain join",
+          "type": "string"
+        },
+        "id": {
+          "description": "Required. Instance Id of the GCE VM",
+          "type": "string"
+        },
+        "token": {
+          "description": "Required. Instance token of the GCE VM to verify instance identity",
+          "type": "string"
+        }
+      }
+    },
+    "DomainJoinMachineResponse": {
+      "id": "DomainJoinMachineResponse",
+      "description": "DomainJoinMachineResponse is the response message for DomainJoinMachine method",
+      "type": "object",
+      "properties": {
+        "domainJoinBlob": {
+          "description": "Offline domain join blob as the response",
+          "type": "string"
+        }
+      }
+    },
     "SetIamPolicyRequest": {
       "id": "SetIamPolicyRequest",
       "description": "Request message for `SetIamPolicy` method.",
@@ -2437,6 +2482,34 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Enable Domain Migration"
+                    },
+                    "joinMachine": {
+                      "id": "managedidentities.projects.locations.global.domains.joinMachine",
+                      "path": "v1alpha1/{+name}:joinMachine",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/global/domains/{domainsId}:joinMachine",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The domain resource name using the form: projects\/{project_id}\/locations\/global\/domains\/{domain_name}",
+                          "pattern": "^projects\/[^\/]+\/locations\/global\/domains\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "DomainJoinMachineRequest"
+                      },
+                      "response": {
+                        "$ref": "DomainJoinMachineResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "DomainJoinMachine API joins a GCE VM to the domain"
                     },
                     "setIamPolicy": {
                       "id": "managedidentities.projects.locations.global.domains.setIamPolicy",

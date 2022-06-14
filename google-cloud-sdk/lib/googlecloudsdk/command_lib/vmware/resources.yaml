@@ -71,7 +71,6 @@ operation:
       The name of the VMware Engine operation.
   disable_auto_completers: false
 
-
 node_type:
   name: node type
   collection: vmwareengine.projects.locations.nodeTypes
@@ -83,4 +82,17 @@ node_type:
     attribute_name: node-type
     help: |
       Node Type in a VMware Engine cluster.
+  disable_auto_completers: false
+
+external_address:
+  name: external address
+  collection: vmwareengine.projects.locations.privateClouds.externalAddresses
+  attributes:
+  - *project
+  - *location
+  - *private_cloud
+  - &external_address
+    parameter_name: externalAddressesId
+    attribute_name: external-address
+    help: Resource ID of the ExternalAddress
   disable_auto_completers: false

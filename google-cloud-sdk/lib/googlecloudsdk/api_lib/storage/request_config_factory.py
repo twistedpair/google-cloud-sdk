@@ -36,20 +36,25 @@ DEFAULT_CONTENT_TYPE = 'application/octet-stream'
 
 
 # Bucket update fields and corresponding flags unsupported by S3.
-S3_ERROR_FLAGS = {
+S3_REQUEST_ERROR_FLAGS = {
     'gzip_settings': [
         '--gzip-in-flight-all', '-J', '--gzip-in-flight', '-j',
         '--gzip-local-all', '-Z', '--gzip-local', '-z'
     ],
 }
-S3_WARNING_FLAGS = [
-    ('default_encryption_key', '--default-encryption-key'),
-    ('default_event_based_hold', '--default-event-based-hold'),
-    ('default_storage_class', '--default-storage-class'),
-    ('preserve_acl', '--preserve-acl'),
-    ('retention_period', '--retention-period'),
-    ('uniform_bucket_level_access', '--uniform-bucket-level-access'),
-]
+S3_RESOURCE_ERROR_FLAGS = {
+    'public_access_prevention': [
+        '--[no-]public-access-prevention', '--[no-]pap'
+    ],
+}
+S3_RESOURCE_WARNING_FLAGS = {
+    'default_encryption_key': ['--default-encryption-key', '-k'],
+    'default_event_based_hold': ['--default-event-based-hold'],
+    'default_storage_class': ['--default-event-based-hold', '-c', '-s'],
+    'preserve_acl': ['--preserve-acl', '-p'],
+    'retention_period': ['--retention-period'],
+    'uniform_bucket_level_access': ['--[no-]uniform-bucket-level-access', '-b'],
+}
 
 
 class _BucketConfig(object):
@@ -132,6 +137,9 @@ class _GcsBucketConfig(_BucketConfig):
       automatically be applied to new objects in bucket.
     default_storage_class (str|None): Storage class assigned to objects in the
       bucket by default.
+    public_access_prevention (bool|None): Blocks public access to bucket.
+      See docs for specifics:
+      https://cloud.google.com/storage/docs/public-access-prevention
     retention_period (int|None): Minimum retention period in seconds for objects
       in a bucket. Attempts to delete an object earlier will be denied.
     uniform_bucket_level_access (bool|None):
@@ -150,6 +158,7 @@ class _GcsBucketConfig(_BucketConfig):
                location=None,
                log_bucket=None,
                log_object_prefix=None,
+               public_access_prevention=None,
                retention_period=None,
                requester_pays=None,
                uniform_bucket_level_access=None,
@@ -161,6 +170,7 @@ class _GcsBucketConfig(_BucketConfig):
                          labels_to_remove, lifecycle_file_path, location,
                          log_bucket, log_object_prefix, requester_pays,
                          versioning, web_error_page, web_main_page_suffix)
+    self.public_access_prevention = public_access_prevention
     self.default_encryption_key = default_encryption_key
     self.default_event_based_hold = default_event_based_hold
     self.default_storage_class = default_storage_class
@@ -170,6 +180,7 @@ class _GcsBucketConfig(_BucketConfig):
 
   def __eq__(self, other):
     return (super(_GcsBucketConfig, self).__eq__(other) and
+            self.public_access_prevention == other.public_access_prevention and
             self.default_encryption_key == other.default_encryption_key and
             self.default_event_based_hold == other.default_event_based_hold and
             self.default_storage_class == other.default_storage_class and
@@ -401,25 +412,33 @@ class _S3RequestConfig(_RequestConfig):
   """
 
 
+def _extract_unsupported_flags_from_user_args(user_args,
+                                              unsupported_fields_and_flags):
+  """Takes user_args object and unsupported info dict and returns flag list."""
+  unsupported_flags = []
+  for field in unsupported_fields_and_flags:
+    if getattr(user_args, field, None) is not None:
+      unsupported_flags.extend(unsupported_fields_and_flags[field])
+  return unsupported_flags
+
+
 def _check_for_unsupported_s3_flags(user_request_args):
   """Raises error or logs warning if unsupported S3 flag present."""
-  error_flags_present = []
-  for field in S3_ERROR_FLAGS:
-    if getattr(user_request_args, field, None):
-      for flag in S3_ERROR_FLAGS[field]:
-        error_flags_present.append(flag)
-  if error_flags_present:
-    raise ValueError('Flags disallowed for S3: {}'.format(
-        ', '.join(error_flags_present)))
-
   user_resource_args = getattr(user_request_args, 'resource_args', None)
-  warning_flags_present = []
-  for field, flag in S3_WARNING_FLAGS:
-    if getattr(user_resource_args, field, None):
-      warning_flags_present.append(flag)
+  error_flags_present = (
+      _extract_unsupported_flags_from_user_args(user_request_args,
+                                                S3_REQUEST_ERROR_FLAGS) +
+      _extract_unsupported_flags_from_user_args(user_resource_args,
+                                                S3_RESOURCE_ERROR_FLAGS))
+  if error_flags_present:
+    raise ValueError('Flags disallowed for S3: {}'.format(', '.join(
+        sorted(error_flags_present))))
+
+  warning_flags_present = _extract_unsupported_flags_from_user_args(
+      user_resource_args, S3_RESOURCE_WARNING_FLAGS)
   if warning_flags_present:
-    log.warning('Some flags do not have S3 support: {}.'.format(
-        ', '.join(warning_flags_present)))
+    log.warning('Some flags do not have S3 support: {}'.format(', '.join(
+        sorted(warning_flags_present))))
 
 
 def _get_request_config_resource_args(url,
@@ -446,6 +465,8 @@ def _get_request_config_resource_args(url,
               user_resource_args.default_event_based_hold)
           new_resource_args.default_storage_class = (
               user_resource_args.default_storage_class)
+          new_resource_args.public_access_prevention = (
+              user_resource_args.public_access_prevention)
           new_resource_args.retention_period = (
               user_resource_args.retention_period)
           new_resource_args.uniform_bucket_level_access = (

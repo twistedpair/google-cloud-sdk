@@ -293,6 +293,62 @@ class ArtifactregistryProjectsLocationsRepositoriesListRequest(_messages.Message
   parent = _messages.StringField(3, required=True)
 
 
+class ArtifactregistryProjectsLocationsRepositoriesMavenArtifactsGetRequest(_messages.Message):
+  r"""A ArtifactregistryProjectsLocationsRepositoriesMavenArtifactsGetRequest
+  object.
+
+  Fields:
+    name: Required. The name of the maven artifact.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ArtifactregistryProjectsLocationsRepositoriesMavenArtifactsListRequest(_messages.Message):
+  r"""A ArtifactregistryProjectsLocationsRepositoriesMavenArtifactsListRequest
+  object.
+
+  Fields:
+    pageSize: The maximum number of artifacts to return.
+    pageToken: The next_page_token value returned from a previous list
+      request, if any.
+    parent: Required. The name of the parent resource whose maven artifacts
+      will be listed.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class ArtifactregistryProjectsLocationsRepositoriesNpmPackagesGetRequest(_messages.Message):
+  r"""A ArtifactregistryProjectsLocationsRepositoriesNpmPackagesGetRequest
+  object.
+
+  Fields:
+    name: Required. The name of the npm package.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ArtifactregistryProjectsLocationsRepositoriesNpmPackagesListRequest(_messages.Message):
+  r"""A ArtifactregistryProjectsLocationsRepositoriesNpmPackagesListRequest
+  object.
+
+  Fields:
+    pageSize: The maximum number of artifacts to return.
+    pageToken: The next_page_token value returned from a previous list
+      request, if any.
+    parent: Required. The name of the parent resource whose npm packages will
+      be listed.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class ArtifactregistryProjectsLocationsRepositoriesPackagesDeleteRequest(_messages.Message):
   r"""A ArtifactregistryProjectsLocationsRepositoriesPackagesDeleteRequest
   object.
@@ -518,6 +574,34 @@ class ArtifactregistryProjectsLocationsRepositoriesPatchRequest(_messages.Messag
   updateMask = _messages.StringField(3)
 
 
+class ArtifactregistryProjectsLocationsRepositoriesPythonPackagesGetRequest(_messages.Message):
+  r"""A ArtifactregistryProjectsLocationsRepositoriesPythonPackagesGetRequest
+  object.
+
+  Fields:
+    name: Required. The name of the python package.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ArtifactregistryProjectsLocationsRepositoriesPythonPackagesListRequest(_messages.Message):
+  r"""A ArtifactregistryProjectsLocationsRepositoriesPythonPackagesListRequest
+  object.
+
+  Fields:
+    pageSize: The maximum number of artifacts to return.
+    pageToken: The next_page_token value returned from a previous list
+      request, if any.
+    parent: Required. The name of the parent resource whose python packages
+      will be listed.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class ArtifactregistryProjectsLocationsRepositoriesSetIamPolicyRequest(_messages.Message):
   r"""A ArtifactregistryProjectsLocationsRepositoriesSetIamPolicyRequest
   object.
@@ -699,6 +783,32 @@ class DockerImage(_messages.Message):
   tags = _messages.StringField(5, repeated=True)
   uploadTime = _messages.StringField(6)
   uri = _messages.StringField(7)
+
+
+class DockerRepository(_messages.Message):
+  r"""Configuration for a Docker remote repository.
+
+  Enums:
+    PublicRepositoryValueValuesEnum: One of the publicly available Docker
+      repositories supported by Artifact Registry.
+
+  Fields:
+    publicRepository: One of the publicly available Docker repositories
+      supported by Artifact Registry.
+  """
+
+  class PublicRepositoryValueValuesEnum(_messages.Enum):
+    r"""One of the publicly available Docker repositories supported by
+    Artifact Registry.
+
+    Values:
+      PUBLIC_REPOSITORY_UNSPECIFIED: Unspecified repository.
+      DOCKER_HUB: Docker Hub.
+    """
+    PUBLIC_REPOSITORY_UNSPECIFIED = 0
+    DOCKER_HUB = 1
+
+  publicRepository = _messages.EnumField('PublicRepositoryValueValuesEnum', 1)
 
 
 class Empty(_messages.Message):
@@ -954,6 +1064,32 @@ class ListLocationsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class ListMavenArtifactsResponse(_messages.Message):
+  r"""The response from listing maven artifacts.
+
+  Fields:
+    mavenArtifacts: The maven artifacts returned.
+    nextPageToken: The token to retrieve the next page of artifacts, or empty
+      if there are no more artifacts to return.
+  """
+
+  mavenArtifacts = _messages.MessageField('MavenArtifact', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListNpmPackagesResponse(_messages.Message):
+  r"""The response from listing npm packages.
+
+  Fields:
+    nextPageToken: The token to retrieve the next page of artifacts, or empty
+      if there are no more artifacts to return.
+    npmPackages: The npm packages returned.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  npmPackages = _messages.MessageField('NpmPackage', 2, repeated=True)
+
+
 class ListPackagesResponse(_messages.Message):
   r"""The response from listing packages.
 
@@ -965,6 +1101,19 @@ class ListPackagesResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   packages = _messages.MessageField('Package', 2, repeated=True)
+
+
+class ListPythonPackagesResponse(_messages.Message):
+  r"""The response from listing python packages.
+
+  Fields:
+    nextPageToken: The token to retrieve the next page of artifacts, or empty
+      if there are no more artifacts to return.
+    pythonPackages: The python packages returned.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  pythonPackages = _messages.MessageField('PythonPackage', 2, repeated=True)
 
 
 class ListRepositoriesResponse(_messages.Message):
@@ -1086,6 +1235,62 @@ class Location(_messages.Message):
   name = _messages.StringField(5)
 
 
+class MavenArtifact(_messages.Message):
+  r"""MavenArtifact represents a maven artifact.
+
+  Fields:
+    artifactId: Artifact ID for the artifact.
+    createTime: Output only. Time the artifact was created.
+    groupId: Group ID for the artifact. Example: com.google.guava
+    name: Required. registry_location, project_id, repository_name and
+      maven_artifact forms a unique artifact For example, "projects/test-
+      project/locations/us-west4/repositories/test-repo/mavenArtifacts/
+      com.google.guava:guava:31.0-jre", where "us-west4" is the
+      registry_location, "test-project" is the project_id, "test-repo" is the
+      repository_name and "com.google.guava:guava:31.0-jre" is the maven
+      artifact.
+    pomUri: Required. URL to access the pom file of the artifact. Example: us-
+      west4-maven.pkg.dev/test-project/test-
+      repo/com/google/guava/guava/31.0/guava-31.0.pom
+    updateTime: Output only. Time the artifact was updated.
+    version: Version of this artifact.
+  """
+
+  artifactId = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  groupId = _messages.StringField(3)
+  name = _messages.StringField(4)
+  pomUri = _messages.StringField(5)
+  updateTime = _messages.StringField(6)
+  version = _messages.StringField(7)
+
+
+class MavenRepository(_messages.Message):
+  r"""Configuration for a Maven remote repository.
+
+  Enums:
+    PublicRepositoryValueValuesEnum: One of the publicly available Maven
+      repositories supported by Artifact Registry.
+
+  Fields:
+    publicRepository: One of the publicly available Maven repositories
+      supported by Artifact Registry.
+  """
+
+  class PublicRepositoryValueValuesEnum(_messages.Enum):
+    r"""One of the publicly available Maven repositories supported by Artifact
+    Registry.
+
+    Values:
+      PUBLIC_REPOSITORY_UNSPECIFIED: Unspecified repository.
+      MAVEN_CENTRAL: Maven Central.
+    """
+    PUBLIC_REPOSITORY_UNSPECIFIED = 0
+    MAVEN_CENTRAL = 1
+
+  publicRepository = _messages.EnumField('PublicRepositoryValueValuesEnum', 1)
+
+
 class MavenRepositoryConfig(_messages.Message):
   r"""MavenRepositoryConfig is maven related repository details. Provides
   additional configuration details for repositories of the maven format type.
@@ -1117,6 +1322,57 @@ class MavenRepositoryConfig(_messages.Message):
 
   allowSnapshotOverwrites = _messages.BooleanField(1)
   versionPolicy = _messages.EnumField('VersionPolicyValueValuesEnum', 2)
+
+
+class NpmPackage(_messages.Message):
+  r"""NpmPackage represents an npm artifact.
+
+  Fields:
+    createTime: Output only. Time the package was created.
+    name: Required. registry_location, project_id, repository_name and
+      npm_package forms a unique package For example, "projects/test-
+      project/locations/us-west4/repositories/test-repo/npmPackages/
+      npm_test:1.0.0", where "us-west4" is the registry_location, "test-
+      project" is the project_id, "test-repo" is the repository_name and
+      npm_test:1.0.0" is the npm package.
+    packageName: Package for the artifact.
+    tags: Tags attached to this package.
+    updateTime: Output only. Time the package was updated.
+    version: Version of this package.
+  """
+
+  createTime = _messages.StringField(1)
+  name = _messages.StringField(2)
+  packageName = _messages.StringField(3)
+  tags = _messages.StringField(4, repeated=True)
+  updateTime = _messages.StringField(5)
+  version = _messages.StringField(6)
+
+
+class NpmRepository(_messages.Message):
+  r"""Configuration for a Npm remote repository.
+
+  Enums:
+    PublicRepositoryValueValuesEnum: One of the publicly available Npm
+      repositories supported by Artifact Registry.
+
+  Fields:
+    publicRepository: One of the publicly available Npm repositories supported
+      by Artifact Registry.
+  """
+
+  class PublicRepositoryValueValuesEnum(_messages.Enum):
+    r"""One of the publicly available Npm repositories supported by Artifact
+    Registry.
+
+    Values:
+      PUBLIC_REPOSITORY_UNSPECIFIED: Unspecified repository.
+      NPMJS: npmjs.
+    """
+    PUBLIC_REPOSITORY_UNSPECIFIED = 0
+    NPMJS = 1
+
+  publicRepository = _messages.EnumField('PublicRepositoryValueValuesEnum', 1)
 
 
 class Operation(_messages.Message):
@@ -1360,12 +1616,85 @@ class ProjectSettings(_messages.Message):
   name = _messages.StringField(2)
 
 
+class PythonPackage(_messages.Message):
+  r"""PythonPackage represents a python artifact.
+
+  Fields:
+    createTime: Output only. Time the package was created.
+    name: Required. registry_location, project_id, repository_name and
+      python_package forms a unique package
+      name:`projects//locations//repository//pythonPackages/`. For example,
+      "projects/test-project/locations/us-west4/repositories/test-
+      repo/pythonPackages/ python_package:1.0.0", where "us-west4" is the
+      registry_location, "test-project" is the project_id, "test-repo" is the
+      repository_name and python_package:1.0.0" is the python package.
+    packageName: Package for the artifact.
+    updateTime: Output only. Time the package was updated.
+    uri: Required. URL to access the package. Example: us-
+      west4-python.pkg.dev/test-project/test-repo/python_package/file-
+      name-1.0.0.tar.gz
+    version: Version of this package.
+  """
+
+  createTime = _messages.StringField(1)
+  name = _messages.StringField(2)
+  packageName = _messages.StringField(3)
+  updateTime = _messages.StringField(4)
+  uri = _messages.StringField(5)
+  version = _messages.StringField(6)
+
+
+class PythonRepository(_messages.Message):
+  r"""Configuration for a Python remote repository.
+
+  Enums:
+    PublicRepositoryValueValuesEnum: One of the publicly available Python
+      repositories supported by Artifact Registry.
+
+  Fields:
+    publicRepository: One of the publicly available Python repositories
+      supported by Artifact Registry.
+  """
+
+  class PublicRepositoryValueValuesEnum(_messages.Enum):
+    r"""One of the publicly available Python repositories supported by
+    Artifact Registry.
+
+    Values:
+      PUBLIC_REPOSITORY_UNSPECIFIED: Unspecified repository.
+      PYPI: PyPI.
+    """
+    PUBLIC_REPOSITORY_UNSPECIFIED = 0
+    PYPI = 1
+
+  publicRepository = _messages.EnumField('PublicRepositoryValueValuesEnum', 1)
+
+
+class RemoteRepositoryConfig(_messages.Message):
+  r"""Remote repository configuration.
+
+  Fields:
+    description: The description of the remote source.
+    dockerRepository: Specific settings for a Docker remote repository.
+    mavenRepository: Specific settings for a Maven remote repository.
+    npmRepository: Specific settings for an Npm remote repository.
+    pythonRepository: Specific settings for a Python remote repository.
+  """
+
+  description = _messages.StringField(1)
+  dockerRepository = _messages.MessageField('DockerRepository', 2)
+  mavenRepository = _messages.MessageField('MavenRepository', 3)
+  npmRepository = _messages.MessageField('NpmRepository', 4)
+  pythonRepository = _messages.MessageField('PythonRepository', 5)
+
+
 class Repository(_messages.Message):
   r"""A Repository for storing artifacts with a specific format.
 
   Enums:
     FormatValueValuesEnum: The format of packages that are stored in the
       repository.
+    ModeValueValuesEnum: The mode of the repository.
 
   Messages:
     LabelsValue: Labels with user-defined metadata. This field may contain up
@@ -1388,12 +1717,15 @@ class Repository(_messages.Message):
       lowercase letters, numeric characters, underscores, and dashes.
     mavenConfig: Maven repository config contains repository level
       configuration for the repositories of maven type.
+    mode: The mode of the repository.
     name: The name of the repository, for example: "projects/p1/locations/us-
       central1/repositories/repo1".
+    remoteRepositoryConfig: Configuration specific for a Remote Repository.
     sizeBytes: Output only. The size, in bytes, of all artifact storage in
       this repository. Repositories that are generally available or in public
       preview use this to calculate storage costs.
     updateTime: The time when the repository was last updated.
+    virtualRepositoryConfig: Configuration specific for a Virtual Repository.
   """
 
   class FormatValueValuesEnum(_messages.Enum):
@@ -1419,6 +1751,22 @@ class Repository(_messages.Message):
     PYTHON = 6
     KFP = 7
     GO = 8
+
+  class ModeValueValuesEnum(_messages.Enum):
+    r"""The mode of the repository.
+
+    Values:
+      MODE_UNSPECIFIED: Unspecified mode.
+      STANDARD_REPOSITORY: A standard repository storing artifacts.
+      VIRTUAL_REPOSITORY: A virtual repository to serve artifacts from one or
+        more sources.
+      REMOTE_REPOSITORY: A remote repository to serve artifacts from a remote
+        source.
+    """
+    MODE_UNSPECIFIED = 0
+    STANDARD_REPOSITORY = 1
+    VIRTUAL_REPOSITORY = 2
+    REMOTE_REPOSITORY = 3
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1453,9 +1801,12 @@ class Repository(_messages.Message):
   kmsKeyName = _messages.StringField(4)
   labels = _messages.MessageField('LabelsValue', 5)
   mavenConfig = _messages.MessageField('MavenRepositoryConfig', 6)
-  name = _messages.StringField(7)
-  sizeBytes = _messages.IntegerField(8)
-  updateTime = _messages.StringField(9)
+  mode = _messages.EnumField('ModeValueValuesEnum', 7)
+  name = _messages.StringField(8)
+  remoteRepositoryConfig = _messages.MessageField('RemoteRepositoryConfig', 9)
+  sizeBytes = _messages.IntegerField(10)
+  updateTime = _messages.StringField(11)
+  virtualRepositoryConfig = _messages.MessageField('VirtualRepositoryConfig', 12)
 
 
 class SetIamPolicyRequest(_messages.Message):
@@ -1706,6 +2057,22 @@ class UploadYumArtifactResponse(_messages.Message):
   yumArtifacts = _messages.MessageField('YumArtifact', 1, repeated=True)
 
 
+class UpstreamPolicy(_messages.Message):
+  r"""Artifact policy configuration for the repository contents.
+
+  Fields:
+    id: The user-provided ID of the upstream policy.
+    priority: Entries with a greater priority value take precedence in the
+      pull order.
+    repository: A reference to the repository resource, for example:
+      "projects/p1/locations/us-central1/repository/repo1".
+  """
+
+  id = _messages.StringField(1)
+  priority = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  repository = _messages.StringField(3)
+
+
 class Version(_messages.Message):
   r"""The body of a version resource. A version resource represents a
   collection of components, such as files and other data. This may correspond
@@ -1764,6 +2131,51 @@ class Version(_messages.Message):
   name = _messages.StringField(4)
   relatedTags = _messages.MessageField('Tag', 5, repeated=True)
   updateTime = _messages.StringField(6)
+
+
+class VirtualRepositoryConfig(_messages.Message):
+  r"""Virtual repository configuration.
+
+  Messages:
+    UpstreamPoliciesValue: Policies that configure the upstream artifacts
+      distributed by the Virtual Repository. Upstream policies cannot be set
+      on a standard repository.
+
+  Fields:
+    upstreamPolicies: Policies that configure the upstream artifacts
+      distributed by the Virtual Repository. Upstream policies cannot be set
+      on a standard repository.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class UpstreamPoliciesValue(_messages.Message):
+    r"""Policies that configure the upstream artifacts distributed by the
+    Virtual Repository. Upstream policies cannot be set on a standard
+    repository.
+
+    Messages:
+      AdditionalProperty: An additional property for a UpstreamPoliciesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        UpstreamPoliciesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a UpstreamPoliciesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A UpstreamPolicy attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('UpstreamPolicy', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  upstreamPolicies = _messages.MessageField('UpstreamPoliciesValue', 1)
 
 
 class YumArtifact(_messages.Message):

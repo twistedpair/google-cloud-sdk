@@ -558,11 +558,8 @@ class Deployment(_messages.Message):
     configController: Required. Config Controller instance to deploy to.
       Format:
       `projects/{project}/locations/{location}/krmApiHosts/{instance}`.
-    createConfigController: Required. If set, then a Config Controller
-      instance with a default, well-known name will be created as part of the
-      deployment, if it does not already exist. Note that Blueprints
-      Controller does not manage this Config Controller instance and only
-      creates it.
+    createConfigController: Optional. DEPRECATED: Please use config_controller
+      target.
     createTime: Output only. Time the deployment was created.
     deleteBuild: Output only. Cloud Build instance UUID associated with
       deleting this deployment.

@@ -103,6 +103,253 @@ class GoogleIamV1betaWorkloadIdentityPoolOperationMetadata(_messages.Message):
   r"""Metadata for long-running WorkloadIdentityPool operations."""
 
 
+class GoogleIamV2DenyRule(_messages.Message):
+  r"""A deny rule in an IAM deny policy.
+
+  Fields:
+    denialCondition: The condition that determines whether this deny rule
+      applies to a request. If the condition expression evaluates to `true`,
+      then the deny rule is applied; otherwise, the deny rule is not applied.
+      Each deny rule is evaluated independently. If this deny rule does not
+      apply to a request, other deny rules might still apply. The condition
+      can use CEL functions that evaluate [resource
+      tags](https://cloud.google.com/iam/help/conditions/resource-tags). Other
+      functions and operators are not supported.
+    deniedPermissions: The permissions that are explicitly denied by this
+      rule. Each permission uses the format
+      `{service_fqdn}/{resource}.{verb}`, where `{service_fqdn}` is the fully
+      qualified domain name for the service. For example,
+      `iam.googleapis.com/roles.list`.
+    deniedPrincipals: The identities that are prevented from using one or more
+      permissions on Google Cloud resources. This field can contain the
+      following values: * `principalSet://goog/public:all`: A special
+      identifier that represents any user who is on the internet, even if they
+      do not have a Google Account or are not logged in. *
+      `principal://goog/subject/{email_id}`: A specific Google Account.
+      Includes Gmail, Cloud Identity, and Google Workspace user accounts. For
+      example, `principal://goog/subject/alice@example.com`. *
+      `deleted:principal://goog/subject/{email_id}?uid={uid}`: A specific
+      Google Account that was deleted recently. For example,
+      `deleted:principal://goog/subject/alice@example.com?uid=1234567890`. If
+      the Google Account is recovered, this identifier reverts to the standard
+      identifier for a Google Account. *
+      `principalSet://goog/group/{group_id}`: A Google group. For example,
+      `principalSet://goog/group/admins@example.com`. *
+      `deleted:principalSet://goog/group/{group_id}?uid={uid}`: A Google group
+      that was deleted recently. For example,
+      `deleted:principalSet://goog/group/admins@example.com?uid=1234567890`.
+      If the Google group is restored, this identifier reverts to the standard
+      identifier for a Google group. * `principal://iam.googleapis.com/project
+      s/-/serviceAccounts/{service_account_id}`: A Google Cloud service
+      account. For example,
+      `principal://iam.googleapis.com/projects/-/serviceAccounts/my-service-
+      account@iam.gserviceaccount.com`. * `deleted:principal://iam.googleapis.
+      com/projects/-/serviceAccounts/{service_account_id}?uid={uid}`: A Google
+      Cloud service account that was deleted recently. For example,
+      `deleted:principal://iam.googleapis.com/projects/-/serviceAccounts/my-
+      service-account@iam.gserviceaccount.com?uid=1234567890`. If the service
+      account is undeleted, this identifier reverts to the standard identifier
+      for a service account. *
+      `principalSet://goog/cloudIdentityCustomerId/{customer_id}`: All of the
+      principals associated with the specified Google Workspace or Cloud
+      Identity customer ID. For example,
+      `principalSet://goog/cloudIdentityCustomerId/C01Abc35`.
+    exceptionPermissions: Specifies the permissions that this rule excludes
+      from the set of denied permissions given by `denied_permissions`. If a
+      permission appears in `denied_permissions` _and_ in
+      `exception_permissions` then it will _not_ be denied. The excluded
+      permissions can be specified using the same syntax as
+      `denied_permissions`.
+    exceptionPrincipals: The identities that are excluded from the deny rule,
+      even if they are listed in the `denied_principals`. For example, you
+      could add a Google group to the `denied_principals`, then exclude
+      specific users who belong to that group. This field can contain the same
+      values as the `denied_principals` field, excluding
+      `principalSet://goog/public:all`, which represents all users on the
+      internet.
+  """
+
+  denialCondition = _messages.MessageField('GoogleTypeExpr', 1)
+  deniedPermissions = _messages.StringField(2, repeated=True)
+  deniedPrincipals = _messages.StringField(3, repeated=True)
+  exceptionPermissions = _messages.StringField(4, repeated=True)
+  exceptionPrincipals = _messages.StringField(5, repeated=True)
+
+
+class GoogleIamV2GetEffectivePoliciesResponse(_messages.Message):
+  r"""A GoogleIamV2GetEffectivePoliciesResponse object.
+
+  Fields:
+    policiesPerResource: Ordered list starting from the resource on which this
+      API was called, and walking up the hierarchy.
+  """
+
+  policiesPerResource = _messages.MessageField('GoogleIamV2GetEffectivePoliciesResponsePoliciesPerResource', 1, repeated=True)
+
+
+class GoogleIamV2GetEffectivePoliciesResponsePoliciesPerResource(_messages.Message):
+  r"""A GoogleIamV2GetEffectivePoliciesResponsePoliciesPerResource object.
+
+  Fields:
+    attachmentPoint: Empty if the user doesn't have the "kind.list" permission
+      for any of the policy kinds in the request.
+    policiesPerResourcePerKind: One entry for each kind in the request.
+  """
+
+  attachmentPoint = _messages.StringField(1)
+  policiesPerResourcePerKind = _messages.MessageField('GoogleIamV2GetEffectivePoliciesResponsePoliciesPerResourcePoliciesPerResourcePerKind', 2, repeated=True)
+
+
+class GoogleIamV2GetEffectivePoliciesResponsePoliciesPerResourcePoliciesPerResourcePerKind(_messages.Message):
+  r"""A GoogleIamV2GetEffectivePoliciesResponsePoliciesPerResourcePoliciesPerR
+  esourcePerKind object.
+
+  Fields:
+    hasListPermission: Is false if "kind.list" permission is denied. If false,
+      policies is empty.
+    kind: A string attribute.
+    policies: Includes policies for a specific kind for callers having
+      'kind.list' permission (i.e. has_list_permission = true) and any such
+      policies exist.
+  """
+
+  hasListPermission = _messages.BooleanField(1)
+  kind = _messages.StringField(2)
+  policies = _messages.MessageField('GoogleIamV2GetEffectivePoliciesResponsePoliciesPerResourcePoliciesPerResourcePerKindPolicyView', 3, repeated=True)
+
+
+class GoogleIamV2GetEffectivePoliciesResponsePoliciesPerResourcePoliciesPerResourcePerKindPolicyView(_messages.Message):
+  r"""A GoogleIamV2GetEffectivePoliciesResponsePoliciesPerResourcePoliciesPerR
+  esourcePerKindPolicyView object.
+
+  Fields:
+    hasGetPermission: Is false if "kind.get" permission is denied. If false,
+      policies.rules is empty.
+    policy: A single policy. Includes policy.rules for callers having
+      'kind.get' permission (i.e. has_get_permission = true) and rules exist
+      in the policy.
+  """
+
+  hasGetPermission = _messages.BooleanField(1)
+  policy = _messages.MessageField('GoogleIamV2Policy', 2)
+
+
+class GoogleIamV2ListApplicablePoliciesResponse(_messages.Message):
+  r"""Response message for ListApplicablePolicies method.
+
+  Fields:
+    inaccessible: A list of resources that the caller does not have permission
+      to retrieve. List or Get can be used to get detailed error messages.
+      Get: `policies/{attachment-point}/denypolicies/{policy-id}` List:
+      `policies/{attachment-point}/denypolicies`
+    nextPageToken: A page token that can be used in a
+      ListApplicablePoliciesRequest to retrieve the next page. If this field
+      is blank, there are no additional pages.
+    policies: Ordered list starting from the resource on which this API was
+      called then proceeding up the hierarchy. Policies for the same
+      attachment point will be grouped, but no further ordering is guaranteed.
+  """
+
+  inaccessible = _messages.StringField(1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  policies = _messages.MessageField('GoogleIamV2Policy', 3, repeated=True)
+
+
+class GoogleIamV2ListPoliciesResponse(_messages.Message):
+  r"""Response message for `ListPolicies`.
+
+  Fields:
+    nextPageToken: A page token that you can use in a ListPoliciesRequest to
+      retrieve the next page. If this field is omitted, there are no
+      additional pages.
+    policies: Metadata for the policies that are attached to the resource.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  policies = _messages.MessageField('GoogleIamV2Policy', 2, repeated=True)
+
+
+class GoogleIamV2Policy(_messages.Message):
+  r"""Data for an IAM policy.
+
+  Messages:
+    AnnotationsValue: A key-value map to store arbitrary metadata for the
+      `Policy`. Keys can be up to 63 characters. Values can be up to 255
+      characters.
+
+  Fields:
+    annotations: A key-value map to store arbitrary metadata for the `Policy`.
+      Keys can be up to 63 characters. Values can be up to 255 characters.
+    createTime: Output only. The time when the `Policy` was created.
+    deleteTime: Output only. The time when the `Policy` was deleted. Empty if
+      the policy is not deleted.
+    displayName: A user-specified description of the `Policy`. This value can
+      be up to 63 characters.
+    etag: An opaque tag that identifies the current version of the `Policy`.
+      IAM uses this value to help manage concurrent updates, so they do not
+      cause one update to be overwritten by another. If this field is present
+      in a CreatePolicy request, the value is ignored.
+    kind: Output only. The kind of the `Policy`. Always contains the value
+      `DenyPolicy`.
+    managingAuthority: Immutable. Specifies that this policy is managed by an
+      authority and can only be modified by that authority. Usage is
+      restricted.
+    name: Immutable. The resource name of the `Policy`, which must be unique.
+      Format: `policies/{attachment_point}/denypolicies/{policy_id}` The
+      attachment point is identified by its URL-encoded full resource name,
+      which means that the forward-slash character, `/`, must be written as
+      `%2F`. For example,
+      `policies/cloudresourcemanager.googleapis.com%2Fprojects%2Fmy-
+      project/denypolicies/my-deny-policy`. For organizations and folders, use
+      the numeric ID in the full resource name. For projects, requests can use
+      the alphanumeric or the numeric ID. Responses always contain the numeric
+      ID.
+    rules: A list of rules that specify the behavior of the `Policy`. All of
+      the rules should be of the `kind` specified in the `Policy`.
+    uid: Immutable. The globally unique ID of the `Policy`. Assigned
+      automatically when the `Policy` is created.
+    updateTime: Output only. The time when the `Policy` was last updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""A key-value map to store arbitrary metadata for the `Policy`. Keys can
+    be up to 63 characters. Values can be up to 255 characters.
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  createTime = _messages.StringField(2)
+  deleteTime = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  etag = _messages.StringField(5)
+  kind = _messages.StringField(6)
+  managingAuthority = _messages.StringField(7)
+  name = _messages.StringField(8)
+  rules = _messages.MessageField('GoogleIamV2PolicyRule', 9, repeated=True)
+  uid = _messages.StringField(10)
+  updateTime = _messages.StringField(11)
+
+
 class GoogleIamV2PolicyOperationMetadata(_messages.Message):
   r"""Metadata for long-running `Policy` operations.
 
@@ -111,6 +358,19 @@ class GoogleIamV2PolicyOperationMetadata(_messages.Message):
   """
 
   createTime = _messages.StringField(1)
+
+
+class GoogleIamV2PolicyRule(_messages.Message):
+  r"""A single rule in a `Policy`.
+
+  Fields:
+    denyRule: A rule for a deny policy.
+    description: A user-specified description of the rule. This value can be
+      up to 256 characters.
+  """
+
+  denyRule = _messages.MessageField('GoogleIamV2DenyRule', 1)
+  description = _messages.StringField(2)
 
 
 class GoogleLongrunningOperation(_messages.Message):
@@ -306,6 +566,143 @@ class GoogleTypeExpr(_messages.Message):
   expression = _messages.StringField(2)
   location = _messages.StringField(3)
   title = _messages.StringField(4)
+
+
+class IamGetEffectivePoliciesRequest(_messages.Message):
+  r"""A IamGetEffectivePoliciesRequest object.
+
+  Fields:
+    attachmentPoint: Required. The Cloud resource at which the effective
+      policies are to be retrieved.
+    filter: Filtering currently only supports the kind of policies to return,
+      and must be in the format "kind:[policyKind1],[policyKind2]". An empty
+      value returns all policy kinds. Example Value: "" (empty),
+      "kind:denyPolicies", "kind:denyPolicies,grantPolicies".
+  """
+
+  attachmentPoint = _messages.StringField(1, required=True)
+  filter = _messages.StringField(2)
+
+
+class IamListApplicablePoliciesRequest(_messages.Message):
+  r"""A IamListApplicablePoliciesRequest object.
+
+  Fields:
+    attachmentPoint: Required. The Cloud resource at which the applicable
+      policies are to be retrieved. Format: `{attachment-point}` Use the URL-
+      encoded full resource name, which means that the forward-slash
+      character, `/`, must be written as `%2F`. For example,
+      `cloudresourcemanager.googleapis.com%2Fprojects%2Fmy-project`.
+    filter: Filtering currently only supports the kind of policies to return,
+      and must be in the format "kind:[policyKind1] OR kind:[policyKind2]".
+      New policy kinds may be added in the future without notice. Example
+      value: "kind:denyPolicies"
+    pageSize: Limit on the number of policies to include in the response.
+      Further policies can subsequently be obtained by including the
+      ListApplicablePoliciesResponse.next_page_token in a subsequent request.
+      The minimum is 25, and the maximum is 100.
+    pageToken: If present, then retrieve the batch of results following the
+      results from the preceding call to this method. `page_token` must be the
+      value of `next_page_token`
+      ListApplicablePoliciesResponse.next_page_token from the previous
+      response. The values of other method parameters should be identical to
+      those in the previous call.
+  """
+
+  attachmentPoint = _messages.StringField(1, required=True)
+  filter = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
+class IamPoliciesCreatePolicyRequest(_messages.Message):
+  r"""A IamPoliciesCreatePolicyRequest object.
+
+  Fields:
+    googleIamV2Policy: A GoogleIamV2Policy resource to be passed as the
+      request body.
+    parent: Required. The resource that the policy is attached to, along with
+      the kind of policy to create. Format:
+      `policies/{attachment_point}/denypolicies` The attachment point is
+      identified by its URL-encoded full resource name, which means that the
+      forward-slash character, `/`, must be written as `%2F`. For example,
+      `policies/cloudresourcemanager.googleapis.com%2Fprojects%2Fmy-
+      project/denypolicies`. For organizations and folders, use the numeric ID
+      in the full resource name. For projects, you can use the alphanumeric or
+      the numeric ID.
+    policyId: The ID to use for this policy, which will become the final
+      component of the policy's resource name. The ID must contain 3 to 63
+      characters. It can contain lowercase letters and numbers, as well as
+      dashes (`-`) and periods (`.`). The first character must be a lowercase
+      letter.
+  """
+
+  googleIamV2Policy = _messages.MessageField('GoogleIamV2Policy', 1)
+  parent = _messages.StringField(2, required=True)
+  policyId = _messages.StringField(3)
+
+
+class IamPoliciesDeleteRequest(_messages.Message):
+  r"""A IamPoliciesDeleteRequest object.
+
+  Fields:
+    etag: Optional. The expected `etag` of the policy to delete. If the value
+      does not match the value that is stored in IAM, the request fails with a
+      `409` error code and `ABORTED` status. If you omit this field, the
+      policy is deleted regardless of its current `etag`.
+    name: Required. The resource name of the policy to delete. Format:
+      `policies/{attachment_point}/denypolicies/{policy_id}` Use the URL-
+      encoded full resource name, which means that the forward-slash
+      character, `/`, must be written as `%2F`. For example,
+      `policies/cloudresourcemanager.googleapis.com%2Fprojects%2Fmy-
+      project/denypolicies/my-policy`. For organizations and folders, use the
+      numeric ID in the full resource name. For projects, you can use the
+      alphanumeric or the numeric ID.
+  """
+
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+
+
+class IamPoliciesGetRequest(_messages.Message):
+  r"""A IamPoliciesGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the policy to retrieve. Format:
+      `policies/{attachment_point}/denypolicies/{policy_id}` Use the URL-
+      encoded full resource name, which means that the forward-slash
+      character, `/`, must be written as `%2F`. For example,
+      `policies/cloudresourcemanager.googleapis.com%2Fprojects%2Fmy-
+      project/denypolicies/my-policy`. For organizations and folders, use the
+      numeric ID in the full resource name. For projects, you can use the
+      alphanumeric or the numeric ID.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class IamPoliciesListPoliciesRequest(_messages.Message):
+  r"""A IamPoliciesListPoliciesRequest object.
+
+  Fields:
+    pageSize: The maximum number of policies to return. IAM ignores this value
+      and uses the value 1000.
+    pageToken: A page token received in a ListPoliciesResponse. Provide this
+      token to retrieve the next page.
+    parent: Required. The resource that the policy is attached to, along with
+      the kind of policy to list. Format:
+      `policies/{attachment_point}/denypolicies` The attachment point is
+      identified by its URL-encoded full resource name, which means that the
+      forward-slash character, `/`, must be written as `%2F`. For example,
+      `policies/cloudresourcemanager.googleapis.com%2Fprojects%2Fmy-
+      project/denypolicies`. For organizations and folders, use the numeric ID
+      in the full resource name. For projects, you can use the alphanumeric or
+      the numeric ID.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class IamPoliciesOperationsGetRequest(_messages.Message):

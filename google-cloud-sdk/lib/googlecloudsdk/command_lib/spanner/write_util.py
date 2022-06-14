@@ -263,7 +263,7 @@ class Table(object):
           #        Qux STRING(MAX),
           #    )
           CREATE\s+TABLE\s+
-          (?P<name>\w+)\s+\(\s+
+          (?P<name>[\w\.]+)\s+\(\s+
           (?P<columns>.*)\)\s+
           # Then, it has "PRIMARY KEY" and a list of primary keys, in parens:
           # PRIMARY KEY ( Bar, Qux )

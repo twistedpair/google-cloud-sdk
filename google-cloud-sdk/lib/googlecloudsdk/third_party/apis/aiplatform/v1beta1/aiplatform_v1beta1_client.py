@@ -1679,6 +1679,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def List(self, request, global_params=None):
+      r"""Lists SavedQueries in a Dataset.
+
+      Args:
+        request: (AiplatformProjectsLocationsDatasetsSavedQueriesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1ListSavedQueriesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/savedQueries',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.datasets.savedQueries.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken', 'readMask'],
+        relative_path='v1beta1/{+parent}/savedQueries',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsDatasetsSavedQueriesListRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1ListSavedQueriesResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsDatasetsService(base_api.BaseApiService):
     """Service class for the projects_locations_datasets resource."""
 
@@ -6762,7 +6789,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
           }
 
     def Copy(self, request, global_params=None):
-      r"""Copies an already existing in Vertex AI Model into this Location. The source Model must exist in the same Project.
+      r"""Copies an already existing in Vertex AI Model into this Location. The source Model must exist in the same Project. If Model has a custom ID which is already taken at the destination location, then "-" is appended to it, with NOW_TIMESTAMP being in yyyyMMddHHmmss format. (Note: the ID may be taken by another Model that is not visible at the moment (e.g. being created)).
 
       Args:
         request: (AiplatformProjectsLocationsModelsCopyRequest) input message

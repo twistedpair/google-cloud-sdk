@@ -5,6 +5,76 @@ Copyright 2014-2022 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 390.0.0 (2022-06-14)
+
+### Access Approval
+
+*  Added `gcloud access-approval requests invalidate` to invalidate an existing
+   approval.
+
+### BigQuery
+
+*  Add support for `partitioning_type` with `--time_partitioning_type` flag in Scheduled Queries when a schedule is specified by `--schedule` in `bq query`.
+*  Added support for showing table clone info in `bq show`.
+*  Added support for External Support Credentials.
+*  Added `--max_time_travel_hours` flag to `bq mk`.
+*  Added `--autodetect_schema` flag to `bq update`.
+*  Added flag `--preserve_ascii_control_characters` to `bq load` to allow ASCII Control chars.
+*  Updated the comment on `--restore` flag in `bq cp` to reflect that it's deprecated.
+*  Added support for dataset tags.
+*  Minor bug fixes and dependency updates.
+*  Add `--federated_app_client_id` and `--federated_azure` flags to `mk` command.
+*  Add `--federated_app_client_id` flag to `update` command.
+*  Add support for `LOAD DATA` query.
+
+### Cloud Dataproc
+
+*   Added `--metric-sources, --metric-overrides and --metric-overrides-file`
+    flags to `gcloud beta dataproc clusters create` to allow clusters to be
+    created with a metric sources specified, override specific set of metrics
+    using a list or a file as an input.
+*   Added `--metric-sources, --metric-overrides and --metric-overrides-file`
+    flag to `gcloud beta dataproc workflow-templates set-managed-cluster`
+    to allow managed clusters created with a metric sources specified, override
+    specific set of metrics using a list or a file as an input.
+*   Modified `gcloud dataproc clusters export` to remove un-importable fields
+    on Dataproc on GKE clusters.
+
+### Cloud Firestore
+
+* Added `gcloud beta firestore fields ttls` command group.
+
+### Cloud Pub/Sub
+
+*   Fixed issue where `gcloud --format=json beta pubsub subscriptions pull
+    --auto-ack` and `gcloud --format=json alpha pubsub subscriptions pull
+    --auto-ack` output was backwards incompatible. This issue can be tracked at
+    <https://issuetracker.google.com/issues/222551623>.
+
+### Cloud Run
+
+* Added `--description` flag in `gcloud beta run deploy`, and description field in `gcloud beta run services describe [SERVICE]`.
+  * Description is an optional, human-readable string of up to 512 characters.
+  * Using the flag is functionally equivalent to adding service annotation "run.googleapis.com/description".
+
+### Compute Engine
+
+* Promoted `network-firewall-policies` command group to GA.
+* Promoted `gcloud compute instances create --visible_core_count` to beta.
+
+### Config Connector
+
+* Updated Google Cloud Config Connector to version 1.88.0.
+  See Config Connector Overview for more details [https://cloud.google.com/config-connector/docs/overview](https://cloud.google.com/config-connector/docs/overview).
+
+### Kubernetes Engine
+
+* Added `--enable-confidential-nodes` to `gcloud container cluster create` to enable cluster creation with nodes on Confidential VM. Added `--enable-confidential-nodes` flag to `gcloud container node-pools create/update` to allow creating node-pools with confidential nodes, and updating existing node pools to confidential nodes.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 389.0.0 (2022-06-07)
 
 ### Anthos Multi-Cloud

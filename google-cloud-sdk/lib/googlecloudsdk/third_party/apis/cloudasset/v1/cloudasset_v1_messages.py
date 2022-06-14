@@ -701,8 +701,8 @@ class CloudassetAnalyzeOrgPoliciesRequest(_messages.Message):
       a maximum of 200.
     pageToken: The pagination token to retrieve the next page.
     scope: Required. The project/folder/organization to scope the request.
-      Only resources and organization policies within the scope will be
-      analyzed. * projects/{PROJECT_NUMBER} (e.g., "projects/12345678") *
+      Only organization policies within the scope will be analyzed. *
+      projects/{PROJECT_NUMBER} (e.g., "projects/12345678") *
       projects/{PROJECT_ID} (e.g., "projects/test-project") *
       folders/{FOLDER_NUMBER} (e.g., "folders/1234567") *
       organizations/{ORGANIZATION_NUMBER} (e.g., "organizations/123456")
@@ -732,10 +732,11 @@ class CloudassetAnalyzeOrgPolicyGovernedContainersRequest(_messages.Message):
       a maximum of 200.
     pageToken: The pagination token to retrieve the next page.
     scope: Required. The project/folder/organization to scope the request.
-      Only resources within the scope will be analyzed. *
-      projects/{PROJECT_NUMBER} (e.g., "projects/12345678") *
-      projects/{PROJECT_ID} (e.g., "projects/test-project") *
-      folders/{FOLDER_NUMBER} (e.g., "folders/1234567") *
+      Only organization policies within the scope will be analyzed. The output
+      containers will also be limited to the ones governed by those in-scope
+      organization policies. * projects/{PROJECT_NUMBER} (e.g.,
+      "projects/12345678") * projects/{PROJECT_ID} (e.g., "projects/test-
+      project") * folders/{FOLDER_NUMBER} (e.g., "folders/1234567") *
       organizations/{ORGANIZATION_NUMBER} (e.g., "organizations/123456")
   """
 
@@ -763,10 +764,11 @@ class CloudassetAnalyzeOrgPolicyGovernedResourcesRequest(_messages.Message):
       a maximum of 200.
     pageToken: The pagination token to retrieve the next page.
     scope: Required. The project/folder/organization to scope the request.
-      Only organization policies and resources within the scope will be
-      analyzed. * projects/{PROJECT_NUMBER} (e.g., "projects/12345678") *
-      projects/{PROJECT_ID} (e.g., "projects/test-project") *
-      folders/{FOLDER_NUMBER} (e.g., "folders/1234567") *
+      Only organization policies within the scope will be analyzed. The output
+      resources will also be limited to the ones governed by those in-scope
+      organization policies. * projects/{PROJECT_NUMBER} (e.g.,
+      "projects/12345678") * projects/{PROJECT_ID} (e.g., "projects/test-
+      project") * folders/{FOLDER_NUMBER} (e.g., "folders/1234567") *
       organizations/{ORGANIZATION_NUMBER} (e.g., "organizations/123456")
   """
 
@@ -1296,7 +1298,15 @@ class CloudassetSearchAllResourcesRequest(_messages.Message):
       that have a label "env" and its value is "prod". * `labels.env:*` to
       find Cloud resources that have a label "env". * `kmsKey:key` to find
       Cloud resources encrypted with a customer-managed encryption key whose
-      name contains the word "key". * `state:ACTIVE` to find Cloud resources
+      name contains the word "key". * `relationships:instance-group-1` to find
+      Cloud resources that have relationships with "instance-group-1" in the
+      related resource name. * `relationships:INSTANCE_TO_INSTANCEGROUP` to
+      find compute instances that have relationships of type
+      "INSTANCE_TO_INSTANCEGROUP". *
+      `relationships.INSTANCE_TO_INSTANCEGROUP:instance-group-1` to find
+      compute instances that have relationships with "instance-group-1" in the
+      compute instance group resource name, for relationship type
+      "INSTANCE_TO_INSTANCEGROUP". * `state:ACTIVE` to find Cloud resources
       whose state contains "ACTIVE" as a word. * `NOT state:ACTIVE` to find
       Cloud resources whose state doesn't contain "ACTIVE" as a word. *
       `createTime<1609459200` to find Cloud resources that were created before
@@ -4373,6 +4383,7 @@ class Resource(_messages.Message):
 
 class ResourceSearchResult(_messages.Message):
   r"""A result of Resource Search, containing information of a cloud resource.
+  Next ID: 28
 
   Messages:
     AdditionalAttributesValue: The additional searchable attributes of this

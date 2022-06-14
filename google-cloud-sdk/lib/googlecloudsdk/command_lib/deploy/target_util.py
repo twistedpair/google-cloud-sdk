@@ -44,7 +44,7 @@ def GetCurrentRollout(target_ref, pipeline_ref):
   try:
     # find the last deployed rollout.
     rollouts = list(
-        rollout_util.GetSucceededRollout(target_ref, pipeline_ref, 1))
+        rollout_util.GetSucceededRollout(target_ref, pipeline_ref, limit=1))
     if rollouts:
       current_rollout = rollouts[0]
   except apitools_exceptions.HttpError as error:

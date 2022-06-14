@@ -22,6 +22,14 @@ from __future__ import unicode_literals
 from frozendict import frozendict
 from googlecloudsdk.command_lib.run import exceptions
 
+# TODO(b/233097220) Update this tuple to be only runapps once prod is setup
+BASELINE_APIS = (
+    'cloudbuild.googleapis.com',
+    'run.googleapis.com',
+    'runapps.googleapis.com',
+    'storage.googleapis.com',
+)
+
 _INTEGRATION_TYPES = frozenset([
     frozendict({
         'name':
@@ -59,7 +67,10 @@ _INTEGRATION_TYPES = frozenset([
                     'type': 'string',
                     'hidden': True,
                 }),
-            })
+            }),
+        'required_apis': frozenset({
+            'compute.googleapis.com'
+        }),
     }),
     frozendict({
         'name':
@@ -97,6 +108,10 @@ _INTEGRATION_TYPES = frozenset([
                     'hidden': True,
                 }),
             }),
+        'required_apis': frozenset({
+            'redis.googleapis.com',
+            'vpcaccess.googleapis.com'
+        }),
     }),
 ])
 

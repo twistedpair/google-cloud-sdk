@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 
 import abc
 import copy
+import json
 
 from googlecloudsdk.api_lib.run import container_resource
 from googlecloudsdk.api_lib.run import job
@@ -1058,14 +1059,17 @@ class CpuThrottlingChange(ConfigChanger):
     return resource
 
 
-class ConfidentialChange(ConfigChanger):
-  """Sets the confidential annotation on the service."""
+class NetworkInterfacesChange(SetTemplateAnnotationChange):
+  """Sets the network interfaces annotation on the service template."""
 
-  def __init__(self, confidential):
-    super(ConfidentialChange, self).__init__(adjusts_template=True)
-    self._confidential = confidential
-
-  def Adjust(self, resource):
-    resource.template.annotations[
-        container_resource.CONFIDENTIAL_ANNOTATION] = str(self._confidential)
-    return resource
+  def __init__(self, network, subnet, network_tags):
+    network_interface = {}
+    if network:
+      network_interface['network'] = network
+    if subnet:
+      network_interface['subnetwork'] = subnet
+    if network_tags:
+      network_interface['tags'] = network_tags
+    super(NetworkInterfacesChange, self).__init__(
+        key=k8s_object.NETWORK_INTERFACES_ANNOTATION,
+        value='[{interfaces}]'.format(interfaces=json.dumps(network_interface)))

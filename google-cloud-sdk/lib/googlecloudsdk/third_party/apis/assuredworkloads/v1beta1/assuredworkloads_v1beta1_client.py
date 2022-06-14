@@ -383,7 +383,7 @@ class AssuredworkloadsV1beta1(base_api.BaseApiClient):
     )
 
     def RestrictAllowedServices(self, request, global_params=None):
-      r"""Restrict the list of services allowed in the Workload environment. The current list of allowed services can be found at https://cloud.google.com/assured-workloads/docs/supported-products In addition to assuredworkloads.workload.create permission, the user should also have orgpolicy.policy.set permission on the folder resource to use this functionality.
+      r"""Restrict the list of services allowed in the Workload environment. The current list of allowed services can be found at https://cloud.google.com/assured-workloads/docs/supported-products In addition to assuredworkloads.workload.update permission, the user should also have orgpolicy.policy.set permission on the folder resource to use this functionality.
 
       Args:
         request: (AssuredworkloadsOrganizationsLocationsWorkloadsRestrictAllowedServicesRequest) input message

@@ -51,3 +51,14 @@ instance:
     attribute_name: instance
     help: The name of the Redis instance.
   disable_auto_completers: false
+
+cluster:
+  name: cluster
+  collection: redis.projects.locations.clusters
+  request_id_field: clusterId
+  attributes:
+  - *region
+  - parameter_name: clustersId
+    attribute_name: cluster
+    help: The name of the Redis cluster
+  disable_auto_completers: false

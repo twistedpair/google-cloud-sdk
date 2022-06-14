@@ -44,9 +44,12 @@ class ArtifactregistryV1(base_api.BaseApiClient):
     self.projects_locations_repositories_dockerImages = self.ProjectsLocationsRepositoriesDockerImagesService(self)
     self.projects_locations_repositories_files = self.ProjectsLocationsRepositoriesFilesService(self)
     self.projects_locations_repositories_goModules = self.ProjectsLocationsRepositoriesGoModulesService(self)
+    self.projects_locations_repositories_mavenArtifacts = self.ProjectsLocationsRepositoriesMavenArtifactsService(self)
+    self.projects_locations_repositories_npmPackages = self.ProjectsLocationsRepositoriesNpmPackagesService(self)
     self.projects_locations_repositories_packages_tags = self.ProjectsLocationsRepositoriesPackagesTagsService(self)
     self.projects_locations_repositories_packages_versions = self.ProjectsLocationsRepositoriesPackagesVersionsService(self)
     self.projects_locations_repositories_packages = self.ProjectsLocationsRepositoriesPackagesService(self)
+    self.projects_locations_repositories_pythonPackages = self.ProjectsLocationsRepositoriesPythonPackagesService(self)
     self.projects_locations_repositories_yumArtifacts = self.ProjectsLocationsRepositoriesYumArtifactsService(self)
     self.projects_locations_repositories = self.ProjectsLocationsRepositoriesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
@@ -339,6 +342,134 @@ class ArtifactregistryV1(base_api.BaseApiClient):
         request_field='uploadGoModuleRequest',
         request_type_name='ArtifactregistryProjectsLocationsRepositoriesGoModulesUploadRequest',
         response_type_name='UploadGoModuleMediaResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsRepositoriesMavenArtifactsService(base_api.BaseApiService):
+    """Service class for the projects_locations_repositories_mavenArtifacts resource."""
+
+    _NAME = 'projects_locations_repositories_mavenArtifacts'
+
+    def __init__(self, client):
+      super(ArtifactregistryV1.ProjectsLocationsRepositoriesMavenArtifactsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets a maven artifact.
+
+      Args:
+        request: (ArtifactregistryProjectsLocationsRepositoriesMavenArtifactsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (MavenArtifact) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/mavenArtifacts/{mavenArtifactsId}',
+        http_method='GET',
+        method_id='artifactregistry.projects.locations.repositories.mavenArtifacts.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ArtifactregistryProjectsLocationsRepositoriesMavenArtifactsGetRequest',
+        response_type_name='MavenArtifact',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists maven artifacts.
+
+      Args:
+        request: (ArtifactregistryProjectsLocationsRepositoriesMavenArtifactsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListMavenArtifactsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/mavenArtifacts',
+        http_method='GET',
+        method_id='artifactregistry.projects.locations.repositories.mavenArtifacts.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/mavenArtifacts',
+        request_field='',
+        request_type_name='ArtifactregistryProjectsLocationsRepositoriesMavenArtifactsListRequest',
+        response_type_name='ListMavenArtifactsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsRepositoriesNpmPackagesService(base_api.BaseApiService):
+    """Service class for the projects_locations_repositories_npmPackages resource."""
+
+    _NAME = 'projects_locations_repositories_npmPackages'
+
+    def __init__(self, client):
+      super(ArtifactregistryV1.ProjectsLocationsRepositoriesNpmPackagesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets a npm package.
+
+      Args:
+        request: (ArtifactregistryProjectsLocationsRepositoriesNpmPackagesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (NpmPackage) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/npmPackages/{npmPackagesId}',
+        http_method='GET',
+        method_id='artifactregistry.projects.locations.repositories.npmPackages.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ArtifactregistryProjectsLocationsRepositoriesNpmPackagesGetRequest',
+        response_type_name='NpmPackage',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists npm packages.
+
+      Args:
+        request: (ArtifactregistryProjectsLocationsRepositoriesNpmPackagesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListNpmPackagesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/npmPackages',
+        http_method='GET',
+        method_id='artifactregistry.projects.locations.repositories.npmPackages.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/npmPackages',
+        request_field='',
+        request_type_name='ArtifactregistryProjectsLocationsRepositoriesNpmPackagesListRequest',
+        response_type_name='ListNpmPackagesResponse',
         supports_download=False,
     )
 
@@ -666,6 +797,70 @@ class ArtifactregistryV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='ArtifactregistryProjectsLocationsRepositoriesPackagesListRequest',
         response_type_name='ListPackagesResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsRepositoriesPythonPackagesService(base_api.BaseApiService):
+    """Service class for the projects_locations_repositories_pythonPackages resource."""
+
+    _NAME = 'projects_locations_repositories_pythonPackages'
+
+    def __init__(self, client):
+      super(ArtifactregistryV1.ProjectsLocationsRepositoriesPythonPackagesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets a python package.
+
+      Args:
+        request: (ArtifactregistryProjectsLocationsRepositoriesPythonPackagesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PythonPackage) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/pythonPackages/{pythonPackagesId}',
+        http_method='GET',
+        method_id='artifactregistry.projects.locations.repositories.pythonPackages.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ArtifactregistryProjectsLocationsRepositoriesPythonPackagesGetRequest',
+        response_type_name='PythonPackage',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists python packages.
+
+      Args:
+        request: (ArtifactregistryProjectsLocationsRepositoriesPythonPackagesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListPythonPackagesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/pythonPackages',
+        http_method='GET',
+        method_id='artifactregistry.projects.locations.repositories.pythonPackages.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/pythonPackages',
+        request_field='',
+        request_type_name='ArtifactregistryProjectsLocationsRepositoriesPythonPackagesListRequest',
+        response_type_name='ListPythonPackagesResponse',
         supports_download=False,
     )
 

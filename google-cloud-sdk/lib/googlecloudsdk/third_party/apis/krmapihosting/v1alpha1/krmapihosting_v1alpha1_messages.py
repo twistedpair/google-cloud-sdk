@@ -165,9 +165,12 @@ class ConfigControllerConfig(_messages.Message):
   Fields:
     enabled: Whether the Config Controller bundle is enabled on the
       KrmApiHost.
+    experimentalFeatures: The experimentalFeautres of Config Controller bundle
+      that will be installed on the krmApiHost.
   """
 
   enabled = _messages.BooleanField(1)
+  experimentalFeatures = _messages.StringField(2, repeated=True)
 
 
 class Empty(_messages.Message):

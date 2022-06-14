@@ -1160,6 +1160,20 @@
         }
       }
     },
+    "SimulateMaintenanceEventRequest": {
+      "id": "SimulateMaintenanceEventRequest",
+      "description": "Request for SimulateMaintenanceEvent.",
+      "type": "object",
+      "properties": {
+        "workerIds": {
+          "description": "The 0-based worker ID. If it is empty, worker ID 0 will be selected for maintenance event simulation. A maintenance event will only be fired on the first specified worker ID. Future implementations may support firing on multiple workers.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "OperationMetadata": {
       "id": "OperationMetadata",
       "description": "Metadata describing an Operation",
@@ -1668,6 +1682,34 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Retrieves the guest attributes for the node."
+                },
+                "simulateMaintenanceEvent": {
+                  "id": "tpu.projects.locations.nodes.simulateMaintenanceEvent",
+                  "path": "v2alpha1/{+name}:simulateMaintenanceEvent",
+                  "flatPath": "v2alpha1/projects/{projectsId}/locations/{locationsId}/nodes/{nodesId}:simulateMaintenanceEvent",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The resource name.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/nodes\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "SimulateMaintenanceEventRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Simulates a maintenance event."
                 }
               }
             },

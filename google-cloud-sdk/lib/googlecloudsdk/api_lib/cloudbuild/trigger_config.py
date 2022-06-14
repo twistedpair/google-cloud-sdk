@@ -29,11 +29,12 @@ _UPDATE_FILE_DESC = ('A file that contains updates to the configuration for '
                      'the WorkerPool.')
 
 
-def AddTriggerArgs(parser):
+def AddTriggerArgs(parser, add_region_flag=True):
   """Set up the generic argparse flags for creating or updating a build trigger.
 
   Args:
     parser: An argparse.ArgumentParser-like object.
+    add_region_flag: If true, the default region flag is added.
 
   Returns:
     An empty parser group to be populated with flags specific to a trigger-type.
@@ -54,7 +55,8 @@ def AddTriggerArgs(parser):
   # Trigger configuration
   flag_config = trigger_config.add_argument_group(
       help='Flag based trigger configuration')
-  build_flags.AddRegionFlag(flag_config, hidden=True, required=False)
+  if add_region_flag:
+    build_flags.AddRegionFlag(flag_config, hidden=True, required=False)
   AddFlagConfigArgs(flag_config)
 
   return flag_config
@@ -246,12 +248,15 @@ https://cloud.google.com/cloud-build/docs/api/build-requests#substitutions
 """)
 
 
-def AddBuildConfigArgs(flag_config):
+def AddBuildConfigArgs(flag_config, add_docker_args=True):
   """Adds additional argparse flags to a group for build configuration options.
 
   Args:
     flag_config: argparse argument group. Additional flags will be added to this
       group to cover common build configuration settings.
+    add_docker_args: If true, docker args are added automatically.
+  Returns:
+    build_config: a build config.
   """
 
   # Build config and inline config support substitutions whereas dockerfile
@@ -269,7 +274,9 @@ def AddBuildConfigArgs(flag_config):
       Local path to a YAML or JSON file containing a build configuration.
     """)
 
-  AddBuildDockerArgs(build_config)
+  if add_docker_args:
+    AddBuildDockerArgs(build_config)
+  return build_config
 
 
 def AddGitLabEnterpriseBuildConfigArgs(flag_config):
@@ -304,12 +311,13 @@ For more details, see: https://cloud.google.com/cloud-build/docs/build-config
   AddBuildDockerArgs(build_config)
 
 
-def AddBuildDockerArgs(argument_group):
+def AddBuildDockerArgs(argument_group, require_docker_image=False):
   """Adds additional argparse flags to a group for build docker options.
 
   Args:
     argument_group: argparse argument group to which build docker flag will
       be added.
+    require_docker_image: If true, --dockerfile-image must be provided.
   """
   docker = argument_group.add_argument_group(
       help='Dockerfile build configuration flags')
@@ -331,15 +339,20 @@ Location of the directory containing the Dockerfile in the repository.
 
 The directory will also be used as the Docker build context.
 """)
-  docker.add_argument(
-      '--dockerfile-image',
-      help="""\
+
+  docker_image_help_text = """\
 Docker image name to build.
 
 If not specified, gcr.io/PROJECT/github.com/REPO_OWNER/REPO_NAME:$COMMIT_SHA will be used.
 
 Use a build configuration (cloudbuild.yaml) file for building multiple images in a single trigger.
-""")
+"""
+  if require_docker_image:
+    docker_image_help_text = 'Docker image name to build.'
+  docker.add_argument(
+      '--dockerfile-image',
+      required=require_docker_image,
+      help=docker_image_help_text)
 
 
 def AddBuildFileConfigArgs(flag_config):

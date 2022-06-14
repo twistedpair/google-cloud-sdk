@@ -288,8 +288,8 @@ class Bucket(_messages.Message):
         Fields:
           storageClass: Target storage class. Required iff the type of the
             action is SetStorageClass.
-          type: Type of the action. Currently, only Delete and SetStorageClass
-            are supported.
+          type: Type of the action. Currently, only Delete, SetStorageClass,
+            and AbortIncompleteMultipartUpload are supported.
         """
 
         storageClass = _messages.StringField(1)

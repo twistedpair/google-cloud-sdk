@@ -776,10 +776,10 @@ class GclbTarget(_messages.Message):
     ipConfig: IP configurations for this Target Proxy where the Certificate
       Map is serving.
     targetProxy: A Target Proxy to which this map is attached to. The accepted
-      Target Proxies are: TargetHttpsProxy and TargetSslProxy. Names must
-      match one of the patterns: *
-      `projects/*/locations/*/targetHttpsProxies/*` *
-      `projects/*/locations/*/targetSslProxies/*`
+      Target Proxies are: TargetHttpsProxy and TargetSslProxy. Names match one
+      of the patterns: *
+      `//compute.googleapis.com/projects/*/global/targetHttpsProxies/*` *
+      `//compute.googleapis.com/projects/*/global/targetSslProxies/*`
   """
 
   ipConfig = _messages.MessageField('IpConfig', 1, repeated=True)

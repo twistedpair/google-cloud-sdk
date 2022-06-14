@@ -832,9 +832,14 @@ class CancelOperationRequest(_messages.Message):
 class Cluster(_messages.Message):
   r"""A cluster is a collection of regional AlloyDB resources. It can include
   a primary instance and one or more read pool instances. All cluster
-  resources share a storage layer, which scales as needed. NEXT_ID: 22
+  resources share a storage layer, which scales as needed. NEXT_ID: 25
 
   Enums:
+    ClusterTypeValueValuesEnum: Output only. The type of the cluster. This is
+      an output-only field and it's populated at the Cluster creation time or
+      the Cluster promotion time. The cluster type is determined by which RPC
+      was used to create the cluster (i.e. `CreateCluster` vs.
+      `CreateSecondaryCluster`
     DatabaseVersionValueValuesEnum: Output only. The database engine major
       version. This is an output-only field and it's populated at the Cluster
       creation time. This field cannot be changed after cluster creation.
@@ -855,6 +860,10 @@ class Cluster(_messages.Message):
       policy takes one backup a day, has a backup window of 1 hour, and
       retains backups for 14 days.
     backupSource: Output only. Cluster created from backup.
+    clusterType: Output only. The type of the cluster. This is an output-only
+      field and it's populated at the Cluster creation time or the Cluster
+      promotion time. The cluster type is determined by which RPC was used to
+      create the cluster (i.e. `CreateCluster` vs. `CreateSecondaryCluster`
     createTime: Output only. Create time stamp
     databaseVersion: Output only. The database engine major version. This is
       an output-only field and it's populated at the Cluster creation time.
@@ -895,6 +904,22 @@ class Cluster(_messages.Message):
       deleted.
     updateTime: Output only. Update time stamp
   """
+
+  class ClusterTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. The type of the cluster. This is an output-only field and
+    it's populated at the Cluster creation time or the Cluster promotion time.
+    The cluster type is determined by which RPC was used to create the cluster
+    (i.e. `CreateCluster` vs. `CreateSecondaryCluster`
+
+    Values:
+      CLUSTER_TYPE_UNSPECIFIED: The type of the cluster is unknown.
+      PRIMARY: Primary cluster that support read and write operations.
+      SECONDARY: Secondary cluster that is replicating from another region.
+        This only supports read.
+    """
+    CLUSTER_TYPE_UNSPECIFIED = 0
+    PRIMARY = 1
+    SECONDARY = 2
 
   class DatabaseVersionValueValuesEnum(_messages.Enum):
     r"""Output only. The database engine major version. This is an output-only
@@ -992,21 +1017,22 @@ class Cluster(_messages.Message):
   annotations = _messages.MessageField('AnnotationsValue', 1)
   automatedBackupPolicy = _messages.MessageField('AutomatedBackupPolicy', 2)
   backupSource = _messages.MessageField('BackupSource', 3)
-  createTime = _messages.StringField(4)
-  databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 5)
-  deleteTime = _messages.StringField(6)
-  displayName = _messages.StringField(7)
-  etag = _messages.StringField(8)
-  initialUser = _messages.MessageField('UserPassword', 9)
-  labels = _messages.MessageField('LabelsValue', 10)
-  migrationSource = _messages.MessageField('MigrationSource', 11)
-  name = _messages.StringField(12)
-  network = _messages.StringField(13)
-  reconciling = _messages.BooleanField(14)
-  sslConfig = _messages.MessageField('SslConfig', 15)
-  state = _messages.EnumField('StateValueValuesEnum', 16)
-  uid = _messages.StringField(17)
-  updateTime = _messages.StringField(18)
+  clusterType = _messages.EnumField('ClusterTypeValueValuesEnum', 4)
+  createTime = _messages.StringField(5)
+  databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 6)
+  deleteTime = _messages.StringField(7)
+  displayName = _messages.StringField(8)
+  etag = _messages.StringField(9)
+  initialUser = _messages.MessageField('UserPassword', 10)
+  labels = _messages.MessageField('LabelsValue', 11)
+  migrationSource = _messages.MessageField('MigrationSource', 12)
+  name = _messages.StringField(13)
+  network = _messages.StringField(14)
+  reconciling = _messages.BooleanField(15)
+  sslConfig = _messages.MessageField('SslConfig', 16)
+  state = _messages.EnumField('StateValueValuesEnum', 17)
+  uid = _messages.StringField(18)
+  updateTime = _messages.StringField(19)
 
 
 class ConnectionInfo(_messages.Message):

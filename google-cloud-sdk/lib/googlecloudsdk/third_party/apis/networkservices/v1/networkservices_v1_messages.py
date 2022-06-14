@@ -1011,6 +1011,412 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
+class Gateway(_messages.Message):
+  r"""Gateway represents the configuration for a proxy, typically a load
+  balancer. It captures the ip:port over which the services are exposed by the
+  proxy, along with any policy configurations. Routes have reference to to
+  Gateways to dictate how requests should be routed by this Gateway.
+
+  Enums:
+    TypeValueValuesEnum: Immutable. The type of the customer managed gateway.
+
+  Messages:
+    LabelsValue: Optional. Set of label tags associated with the Gateway
+      resource.
+
+  Fields:
+    authorizationPolicy: Optional. A fully-qualified AuthorizationPolicy URL
+      reference. Specifies how traffic is authorized. If empty, authorization
+      checks are disabled.
+    createTime: Output only. The timestamp when the resource was created.
+    description: Optional. A free-text description of the resource. Max length
+      1024 characters.
+    labels: Optional. Set of label tags associated with the Gateway resource.
+    name: Required. Name of the Gateway resource. It matches pattern
+      `projects/*/locations/*/gateways/`.
+    ports: Required. One or more ports that the Gateway must receive traffic
+      on. The proxy binds to the ports specified. Gateway listen on 0.0.0.0 on
+      the ports specified below.
+    scope: Required. Immutable. Scope determines how configuration across
+      multiple Gateway instances are merged. The configuration for multiple
+      Gateway instances with the same scope will be merged as presented as a
+      single coniguration to the proxy/load balancer. Max length 64
+      characters. Scope should start with a letter and can only have letters,
+      numbers, hyphens.
+    selfLink: Output only. Server-defined URL of this resource
+    serverTlsPolicy: Optional. A fully-qualified ServerTLSPolicy URL
+      reference. Specifies how TLS traffic is terminated. If empty, TLS
+      termination is disabled.
+    type: Immutable. The type of the customer managed gateway.
+    updateTime: Output only. The timestamp when the resource was updated.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Immutable. The type of the customer managed gateway.
+
+    Values:
+      TYPE_UNSPECIFIED: The type of the customer managed gateway is
+        unspecified.
+      OPEN_MESH: The type of the customer managed gateway is TrafficDirector
+        Open Mesh.
+      SECURE_WEB_GATEWAY: The type of the customer managed gateway is
+        SecureWebGateway (SWG).
+    """
+    TYPE_UNSPECIFIED = 0
+    OPEN_MESH = 1
+    SECURE_WEB_GATEWAY = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Set of label tags associated with the Gateway resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  authorizationPolicy = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  ports = _messages.IntegerField(6, repeated=True, variant=_messages.Variant.INT32)
+  scope = _messages.StringField(7)
+  selfLink = _messages.StringField(8)
+  serverTlsPolicy = _messages.StringField(9)
+  type = _messages.EnumField('TypeValueValuesEnum', 10)
+  updateTime = _messages.StringField(11)
+
+
+class GrpcRoute(_messages.Message):
+  r"""GrpcRoute is the resource defining how gRPC traffic routed by a Mesh or
+  Gateway resource is routed.
+
+  Messages:
+    LabelsValue: Optional. Set of label tags associated with the GrpcRoute
+      resource.
+
+  Fields:
+    createTime: Output only. The timestamp when the resource was created.
+    description: Optional. A free-text description of the resource. Max length
+      1024 characters.
+    gateways: Optional. Gateways defines a list of gateways this GrpcRoute is
+      attached to, as one of the routing rules to route the requests served by
+      the gateway. Each gateway reference should match the pattern:
+      `projects/*/locations/global/gateways/`
+    hostnames: Required. Service hostnames with an optional port for which
+      this route describes traffic. Format: [:] Hostname is the fully
+      qualified domain name of a network host. This matches the RFC 1123
+      definition of a hostname with 2 notable exceptions: - IPs are not
+      allowed. - A hostname may be prefixed with a wildcard label (*.). The
+      wildcard label must appear by itself as the first label. Hostname can be
+      "precise" which is a domain name without the terminating dot of a
+      network host (e.g. "foo.example.com") or "wildcard", which is a domain
+      name prefixed with a single wildcard label (e.g. *.example.com). Note
+      that as per RFC1035 and RFC1123, a label must consist of lower case
+      alphanumeric characters or '-', and must start and end with an
+      alphanumeric character. No other punctuation is allowed. The routes
+      associated with a Mesh or Gateway must have unique hostnames. If you
+      attempt to attach multiple routes with conflicting hostnames, the
+      configuration will be rejected. For example, while it is acceptable for
+      routes for the hostnames "*.foo.bar.com" and "*.bar.com" to be
+      associated with the same route, it is not possible to associate two
+      routes both with "*.bar.com" or both with "bar.com". If a port is
+      specified, then gRPC clients must use the channel URI with the port to
+      match this rule (i.e. "xds:///service:123"), otherwise they must supply
+      the URI without a port (i.e. "xds:///service").
+    labels: Optional. Set of label tags associated with the GrpcRoute
+      resource.
+    meshes: Optional. Meshes defines a list of meshes this GrpcRoute is
+      attached to, as one of the routing rules to route the requests served by
+      the mesh. Each mesh reference should match the pattern:
+      `projects/*/locations/global/meshes/`
+    name: Required. Name of the GrpcRoute resource. It matches pattern
+      `projects/*/locations/global/grpcRoutes/`
+    rules: Required. A list of detailed rules defining how to route traffic.
+      Within a single GrpcRoute, the GrpcRoute.RouteAction associated with the
+      first matching GrpcRoute.RouteRule will be executed. At least one rule
+      must be supplied.
+    selfLink: Output only. Server-defined URL of this resource
+    updateTime: Output only. The timestamp when the resource was updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Set of label tags associated with the GrpcRoute resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  gateways = _messages.StringField(3, repeated=True)
+  hostnames = _messages.StringField(4, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 5)
+  meshes = _messages.StringField(6, repeated=True)
+  name = _messages.StringField(7)
+  rules = _messages.MessageField('GrpcRouteRouteRule', 8, repeated=True)
+  selfLink = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
+
+
+class GrpcRouteDestination(_messages.Message):
+  r"""The destination to which traffic will be routed.
+
+  Fields:
+    serviceName: Required. The URL of a destination service to which to route
+      traffic. Must refer to either a BackendService or
+      ServiceDirectoryService.
+    weight: Optional. Specifies the proportion of requests forwarded to the
+      backend referenced by the serviceName field. This is computed as:
+      weight/Sum(weights in this destination list). For non-zero values, there
+      may be some epsilon from the exact proportion defined here depending on
+      the precision an implementation supports. If only one serviceName is
+      specified and it has a weight greater than 0, 100% of the traffic is
+      forwarded to that backend. If weights are specified for any one service
+      name, they need to be specified for all of them. If weights are
+      unspecified for all services, then, traffic is distributed in equal
+      proportions to all of them.
+  """
+
+  serviceName = _messages.StringField(1)
+  weight = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class GrpcRouteFaultInjectionPolicy(_messages.Message):
+  r"""The specification for fault injection introduced into traffic to test
+  the resiliency of clients to destination service failure. As part of fault
+  injection, when clients send requests to a destination, delays can be
+  introduced on a percentage of requests before sending those requests to the
+  destination service. Similarly requests from clients can be aborted by for a
+  percentage of requests.
+
+  Fields:
+    abort: The specification for aborting to client requests.
+    delay: The specification for injecting delay to client requests.
+  """
+
+  abort = _messages.MessageField('GrpcRouteFaultInjectionPolicyAbort', 1)
+  delay = _messages.MessageField('GrpcRouteFaultInjectionPolicyDelay', 2)
+
+
+class GrpcRouteFaultInjectionPolicyAbort(_messages.Message):
+  r"""Specification of how client requests are aborted as part of fault
+  injection before being sent to a destination.
+
+  Fields:
+    httpStatus: The HTTP status code used to abort the request. The value must
+      be between 200 and 599 inclusive.
+    percentage: The percentage of traffic which will be aborted. The value
+      must be between [0, 100]
+  """
+
+  httpStatus = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  percentage = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class GrpcRouteFaultInjectionPolicyDelay(_messages.Message):
+  r"""Specification of how client requests are delayed as part of fault
+  injection before being sent to a destination.
+
+  Fields:
+    fixedDelay: Specify a fixed delay before forwarding the request.
+    percentage: The percentage of traffic on which delay will be injected. The
+      value must be between [0, 100]
+  """
+
+  fixedDelay = _messages.StringField(1)
+  percentage = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class GrpcRouteHeaderMatch(_messages.Message):
+  r"""A match against a collection of headers.
+
+  Enums:
+    TypeValueValuesEnum: Optional. Specifies how to match against the value of
+      the header. If not specified, a default value of EXACT is used.
+
+  Fields:
+    key: Required. The key of the header.
+    type: Optional. Specifies how to match against the value of the header. If
+      not specified, a default value of EXACT is used.
+    value: Required. The value of the header.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Specifies how to match against the value of the header. If
+    not specified, a default value of EXACT is used.
+
+    Values:
+      TYPE_UNSPECIFIED: Unspecified.
+      EXACT: Will only match the exact value provided.
+      REGULAR_EXPRESSION: Will match paths conforming to the prefix specified
+        by value. RE2 syntax is supported.
+    """
+    TYPE_UNSPECIFIED = 0
+    EXACT = 1
+    REGULAR_EXPRESSION = 2
+
+  key = _messages.StringField(1)
+  type = _messages.EnumField('TypeValueValuesEnum', 2)
+  value = _messages.StringField(3)
+
+
+class GrpcRouteMethodMatch(_messages.Message):
+  r"""Specifies a match against a method.
+
+  Enums:
+    TypeValueValuesEnum: Optional. Specifies how to match against the name. If
+      not specified, a default value of "EXACT" is used.
+
+  Fields:
+    caseSensitive: Optional. Specifies that matches are case sensitive. The
+      default value is true. case_sensitive must not be used with a type of
+      REGULAR_EXPRESSION.
+    grpcMethod: Required. Name of the method to match against. If unspecified,
+      will match all methods.
+    grpcService: Required. Name of the service to match against. If
+      unspecified, will match all services.
+    type: Optional. Specifies how to match against the name. If not specified,
+      a default value of "EXACT" is used.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Specifies how to match against the name. If not specified, a
+    default value of "EXACT" is used.
+
+    Values:
+      TYPE_UNSPECIFIED: Unspecified.
+      EXACT: Will only match the exact name provided.
+      REGULAR_EXPRESSION: Will interpret grpc_method and grpc_service as
+        regexes. RE2 syntax is supported.
+    """
+    TYPE_UNSPECIFIED = 0
+    EXACT = 1
+    REGULAR_EXPRESSION = 2
+
+  caseSensitive = _messages.BooleanField(1)
+  grpcMethod = _messages.StringField(2)
+  grpcService = _messages.StringField(3)
+  type = _messages.EnumField('TypeValueValuesEnum', 4)
+
+
+class GrpcRouteRetryPolicy(_messages.Message):
+  r"""The specifications for retries.
+
+  Fields:
+    numRetries: Specifies the allowed number of retries. This number must be >
+      0. If not specpfied, default to 1.
+    retryConditions: - connect-failure: Router will retry on failures
+      connecting to Backend Services, for example due to connection timeouts.
+      - refused-stream: Router will retry if the backend service resets the
+      stream with a REFUSED_STREAM error code. This reset type indicates that
+      it is safe to retry. - cancelled: Router will retry if the gRPC status
+      code in the response header is set to cancelled - deadline-exceeded:
+      Router will retry if the gRPC status code in the response header is set
+      to deadline-exceeded - resource-exhausted: Router will retry if the gRPC
+      status code in the response header is set to resource-exhausted -
+      unavailable: Router will retry if the gRPC status code in the response
+      header is set to unavailable
+  """
+
+  numRetries = _messages.IntegerField(1, variant=_messages.Variant.UINT32)
+  retryConditions = _messages.StringField(2, repeated=True)
+
+
+class GrpcRouteRouteAction(_messages.Message):
+  r"""Specifies how to route matched traffic.
+
+  Fields:
+    destinations: Optional. The destination services to which traffic should
+      be forwarded. If multiple destinations are specified, traffic will be
+      split between Backend Service(s) according to the weight field of these
+      destinations.
+    faultInjectionPolicy: Optional. The specification for fault injection
+      introduced into traffic to test the resiliency of clients to destination
+      service failure. As part of fault injection, when clients send requests
+      to a destination, delays can be introduced on a percentage of requests
+      before sending those requests to the destination service. Similarly
+      requests from clients can be aborted by for a percentage of requests.
+      timeout and retry_policy will be ignored by clients that are configured
+      with a fault_injection_policy
+    retryPolicy: Optional. Specifies the retry policy associated with this
+      route.
+    timeout: Optional. Specifies the timeout for selected route. Timeout is
+      computed from the time the request has been fully processed (i.e. end of
+      stream) up until the response has been completely processed. Timeout
+      includes all retries.
+  """
+
+  destinations = _messages.MessageField('GrpcRouteDestination', 1, repeated=True)
+  faultInjectionPolicy = _messages.MessageField('GrpcRouteFaultInjectionPolicy', 2)
+  retryPolicy = _messages.MessageField('GrpcRouteRetryPolicy', 3)
+  timeout = _messages.StringField(4)
+
+
+class GrpcRouteRouteMatch(_messages.Message):
+  r"""Criteria for matching traffic. A RouteMatch will be considered to match
+  when all supplied fields match.
+
+  Fields:
+    headers: Optional. Specifies a collection of headers to match.
+    method: Optional. A gRPC method to match against. If this field is empty
+      or omitted, will match all methods.
+  """
+
+  headers = _messages.MessageField('GrpcRouteHeaderMatch', 1, repeated=True)
+  method = _messages.MessageField('GrpcRouteMethodMatch', 2)
+
+
+class GrpcRouteRouteRule(_messages.Message):
+  r"""Describes how to route traffic.
+
+  Fields:
+    action: Required. A detailed rule defining how to route traffic. This
+      field is required.
+    matches: Optional. Matches define conditions used for matching the rule
+      against incoming gRPC requests. Each match is independent, i.e. this
+      rule will be matched if ANY one of the matches is satisfied. If no
+      matches field is specified, this rule will unconditionally match
+      traffic.
+  """
+
+  action = _messages.MessageField('GrpcRouteRouteAction', 1)
+  matches = _messages.MessageField('GrpcRouteRouteMatch', 2, repeated=True)
+
+
 class HeaderAction(_messages.Message):
   r"""HeaderAction defines the addition and removal of HTTP headers for
   requests/responses.
@@ -1125,6 +1531,552 @@ class HostRule(_messages.Message):
   pathMatcher = _messages.StringField(3)
 
 
+class HttpRoute(_messages.Message):
+  r"""HttpRoute is the resource defining how HTTP traffic should be routed by
+  a Mesh or Gateway resource.
+
+  Messages:
+    LabelsValue: Optional. Set of label tags associated with the HttpRoute
+      resource.
+
+  Fields:
+    createTime: Output only. The timestamp when the resource was created.
+    description: Optional. A free-text description of the resource. Max length
+      1024 characters.
+    gateways: Optional. Gateways defines a list of gateways this HttpRoute is
+      attached to, as one of the routing rules to route the requests served by
+      the gateway. Each gateway reference should match the pattern:
+      `projects/*/locations/global/gateways/`
+    hostnames: Required. Hostnames define a set of hosts that should match
+      against the HTTP host header to select a HttpRoute to process the
+      request. Hostname is the fully qualified domain name of a network host,
+      as defined by RFC 1123 with the exception that: - IPs are not allowed. -
+      A hostname may be prefixed with a wildcard label (*.). The wildcard
+      label must appear by itself as the first label. Hostname can be
+      "precise" which is a domain name without the terminating dot of a
+      network host (e.g. "foo.example.com") or "wildcard", which is a domain
+      name prefixed with a single wildcard label (e.g. *.example.com). Note
+      that as per RFC1035 and RFC1123, a label must consist of lower case
+      alphanumeric characters or '-', and must start and end with an
+      alphanumeric character. No other punctuation is allowed. The routes
+      associated with a Mesh or Gateways must have unique hostnames. If you
+      attempt to attach multiple routes with conflicting hostnames, the
+      configuration will be rejected. For example, while it is acceptable for
+      routes for the hostnames "*.foo.bar.com" and "*.bar.com" to be
+      associated with the same Mesh (or Gateways under the same scope), it is
+      not possible to associate two routes both with "*.bar.com" or both with
+      "bar.com".
+    labels: Optional. Set of label tags associated with the HttpRoute
+      resource.
+    meshes: Optional. Meshes defines a list of meshes this HttpRoute is
+      attached to, as one of the routing rules to route the requests served by
+      the mesh. Each mesh reference should match the pattern:
+      `projects/*/locations/global/meshes/` The attached Mesh should be of a
+      type SIDECAR
+    name: Required. Name of the HttpRoute resource. It matches pattern
+      `projects/*/locations/global/httpRoutes/http_route_name>`.
+    rules: Required. Rules that define how traffic is routed and handled.
+      Rules will be matched sequentially based on the RouteMatch specified for
+      the rule.
+    selfLink: Output only. Server-defined URL of this resource
+    updateTime: Output only. The timestamp when the resource was updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Set of label tags associated with the HttpRoute resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  gateways = _messages.StringField(3, repeated=True)
+  hostnames = _messages.StringField(4, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 5)
+  meshes = _messages.StringField(6, repeated=True)
+  name = _messages.StringField(7)
+  rules = _messages.MessageField('HttpRouteRouteRule', 8, repeated=True)
+  selfLink = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
+
+
+class HttpRouteCorsPolicy(_messages.Message):
+  r"""The Specification for allowing client side cross-origin requests.
+
+  Fields:
+    allowCredentials: In response to a preflight request, setting this to true
+      indicates that the actual request can include user credentials. This
+      translates to the Access-Control-Allow-Credentials header. Default value
+      is false.
+    allowHeaders: Specifies the content for Access-Control-Allow-Headers
+      header.
+    allowMethods: Specifies the content for Access-Control-Allow-Methods
+      header.
+    allowOriginRegexes: Specifies the regular expression patterns that match
+      allowed origins. For regular expression grammar, please see
+      https://github.com/google/re2/wiki/Syntax.
+    allowOrigins: Specifies the list of origins that will be allowed to do
+      CORS requests. An origin is allowed if it matches either an item in
+      allow_origins or an item in allow_origin_regexes.
+    disabled: If true, the CORS policy is disabled. The default value is
+      false, which indicates that the CORS policy is in effect.
+    exposeHeaders: Specifies the content for Access-Control-Expose-Headers
+      header.
+    maxAge: Specifies how long result of a preflight request can be cached in
+      seconds. This translates to the Access-Control-Max-Age header.
+  """
+
+  allowCredentials = _messages.BooleanField(1)
+  allowHeaders = _messages.StringField(2, repeated=True)
+  allowMethods = _messages.StringField(3, repeated=True)
+  allowOriginRegexes = _messages.StringField(4, repeated=True)
+  allowOrigins = _messages.StringField(5, repeated=True)
+  disabled = _messages.BooleanField(6)
+  exposeHeaders = _messages.StringField(7, repeated=True)
+  maxAge = _messages.StringField(8)
+
+
+class HttpRouteDestination(_messages.Message):
+  r"""Specifications of a destination to which the request should be routed
+  to.
+
+  Fields:
+    serviceName: The URL of a BackendService to route traffic to.
+    weight: Specifies the proportion of requests forwarded to the backend
+      referenced by the serviceName field. This is computed as:
+      weight/Sum(weights in this destination list). For non-zero values, there
+      may be some epsilon from the exact proportion defined here depending on
+      the precision an implementation supports. If only one serviceName is
+      specified and it has a weight greater than 0, 100% of the traffic is
+      forwarded to that backend. If weights are specified for any one service
+      name, they need to be specified for all of them. If weights are
+      unspecified for all services, then, traffic is distributed in equal
+      proportions to all of them.
+  """
+
+  serviceName = _messages.StringField(1)
+  weight = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class HttpRouteFaultInjectionPolicy(_messages.Message):
+  r"""The specification for fault injection introduced into traffic to test
+  the resiliency of clients to destination service failure. As part of fault
+  injection, when clients send requests to a destination, delays can be
+  introduced by client proxy on a percentage of requests before sending those
+  requests to the destination service. Similarly requests can be aborted by
+  client proxy for a percentage of requests.
+
+  Fields:
+    abort: The specification for aborting to client requests.
+    delay: The specification for injecting delay to client requests.
+  """
+
+  abort = _messages.MessageField('HttpRouteFaultInjectionPolicyAbort', 1)
+  delay = _messages.MessageField('HttpRouteFaultInjectionPolicyDelay', 2)
+
+
+class HttpRouteFaultInjectionPolicyAbort(_messages.Message):
+  r"""Specification of how client requests are aborted as part of fault
+  injection before being sent to a destination.
+
+  Fields:
+    httpStatus: The HTTP status code used to abort the request. The value must
+      be between 200 and 599 inclusive.
+    percentage: The percentage of traffic which will be aborted. The value
+      must be between [0, 100]
+  """
+
+  httpStatus = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  percentage = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class HttpRouteFaultInjectionPolicyDelay(_messages.Message):
+  r"""Specification of how client requests are delayed as part of fault
+  injection before being sent to a destination.
+
+  Fields:
+    fixedDelay: Specify a fixed delay before forwarding the request.
+    percentage: The percentage of traffic on which delay will be injected. The
+      value must be between [0, 100]
+  """
+
+  fixedDelay = _messages.StringField(1)
+  percentage = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class HttpRouteHeaderMatch(_messages.Message):
+  r"""Specifies how to select a route rule based on HTTP request headers.
+
+  Fields:
+    exactMatch: The value of the header should match exactly the content of
+      exact_match.
+    header: The name of the HTTP header to match against.
+    invertMatch: If specified, the match result will be inverted before
+      checking. Default value is set to false.
+    prefixMatch: The value of the header must start with the contents of
+      prefix_match.
+    presentMatch: A header with header_name must exist. The match takes place
+      whether or not the header has a value.
+    rangeMatch: If specified, the rule will match if the request header value
+      is within the range.
+    regexMatch: The value of the header must match the regular expression
+      specified in regex_match. For regular expression grammar, please see:
+      https://github.com/google/re2/wiki/Syntax
+    suffixMatch: The value of the header must end with the contents of
+      suffix_match.
+  """
+
+  exactMatch = _messages.StringField(1)
+  header = _messages.StringField(2)
+  invertMatch = _messages.BooleanField(3)
+  prefixMatch = _messages.StringField(4)
+  presentMatch = _messages.BooleanField(5)
+  rangeMatch = _messages.MessageField('HttpRouteHeaderMatchIntegerRange', 6)
+  regexMatch = _messages.StringField(7)
+  suffixMatch = _messages.StringField(8)
+
+
+class HttpRouteHeaderMatchIntegerRange(_messages.Message):
+  r"""Represents an integer value range.
+
+  Fields:
+    end: End of the range (exclusive)
+    start: Start of the range (inclusive)
+  """
+
+  end = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  start = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class HttpRouteHeaderModifier(_messages.Message):
+  r"""The specification for modifying HTTP header in HTTP request and HTTP
+  response.
+
+  Messages:
+    AddValue: Add the headers with given map where key is the name of the
+      header, value is the value of the header.
+    SetValue: Completely overwrite/replace the headers with given map where
+      key is the name of the header, value is the value of the header.
+
+  Fields:
+    add: Add the headers with given map where key is the name of the header,
+      value is the value of the header.
+    remove: Remove headers (matching by header names) specified in the list.
+    set: Completely overwrite/replace the headers with given map where key is
+      the name of the header, value is the value of the header.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AddValue(_messages.Message):
+    r"""Add the headers with given map where key is the name of the header,
+    value is the value of the header.
+
+    Messages:
+      AdditionalProperty: An additional property for a AddValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type AddValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AddValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class SetValue(_messages.Message):
+    r"""Completely overwrite/replace the headers with given map where key is
+    the name of the header, value is the value of the header.
+
+    Messages:
+      AdditionalProperty: An additional property for a SetValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type SetValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a SetValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  add = _messages.MessageField('AddValue', 1)
+  remove = _messages.StringField(2, repeated=True)
+  set = _messages.MessageField('SetValue', 3)
+
+
+class HttpRouteQueryParameterMatch(_messages.Message):
+  r"""Specifications to match a query parameter in the request.
+
+  Fields:
+    exactMatch: The value of the query parameter must exactly match the
+      contents of exact_match. Only one of exact_match, regex_match, or
+      present_match must be set.
+    presentMatch: Specifies that the QueryParameterMatcher matches if request
+      contains query parameter, irrespective of whether the parameter has a
+      value or not. Only one of exact_match, regex_match, or present_match
+      must be set.
+    queryParameter: The name of the query parameter to match.
+    regexMatch: The value of the query parameter must match the regular
+      expression specified by regex_match. For regular expression grammar,
+      please see https://github.com/google/re2/wiki/Syntax Only one of
+      exact_match, regex_match, or present_match must be set.
+  """
+
+  exactMatch = _messages.StringField(1)
+  presentMatch = _messages.BooleanField(2)
+  queryParameter = _messages.StringField(3)
+  regexMatch = _messages.StringField(4)
+
+
+class HttpRouteRedirect(_messages.Message):
+  r"""The specification for redirecting traffic.
+
+  Enums:
+    ResponseCodeValueValuesEnum: The HTTP Status code to use for the redirect.
+
+  Fields:
+    hostRedirect: The host that will be used in the redirect response instead
+      of the one that was supplied in the request.
+    httpsRedirect: If set to true, the URL scheme in the redirected request is
+      set to https. If set to false, the URL scheme of the redirected request
+      will remain the same as that of the request. The default is set to
+      false.
+    pathRedirect: The path that will be used in the redirect response instead
+      of the one that was supplied in the request. path_redirect can not be
+      supplied together with prefix_redirect. Supply one alone or neither. If
+      neither is supplied, the path of the original request will be used for
+      the redirect.
+    portRedirect: The port that will be used in the redirected request instead
+      of the one that was supplied in the request.
+    prefixRewrite: Indicates that during redirection, the matched prefix (or
+      path) should be swapped with this value. This option allows URLs be
+      dynamically created based on the request.
+    responseCode: The HTTP Status code to use for the redirect.
+    stripQuery: if set to true, any accompanying query portion of the original
+      URL is removed prior to redirecting the request. If set to false, the
+      query portion of the original URL is retained. The default is set to
+      false.
+  """
+
+  class ResponseCodeValueValuesEnum(_messages.Enum):
+    r"""The HTTP Status code to use for the redirect.
+
+    Values:
+      RESPONSE_CODE_UNSPECIFIED: Default value
+      MOVED_PERMANENTLY_DEFAULT: Corresponds to 301.
+      FOUND: Corresponds to 302.
+      SEE_OTHER: Corresponds to 303.
+      TEMPORARY_REDIRECT: Corresponds to 307. In this case, the request method
+        will be retained.
+      PERMANENT_REDIRECT: Corresponds to 308. In this case, the request method
+        will be retained.
+    """
+    RESPONSE_CODE_UNSPECIFIED = 0
+    MOVED_PERMANENTLY_DEFAULT = 1
+    FOUND = 2
+    SEE_OTHER = 3
+    TEMPORARY_REDIRECT = 4
+    PERMANENT_REDIRECT = 5
+
+  hostRedirect = _messages.StringField(1)
+  httpsRedirect = _messages.BooleanField(2)
+  pathRedirect = _messages.StringField(3)
+  portRedirect = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  prefixRewrite = _messages.StringField(5)
+  responseCode = _messages.EnumField('ResponseCodeValueValuesEnum', 6)
+  stripQuery = _messages.BooleanField(7)
+
+
+class HttpRouteRequestMirrorPolicy(_messages.Message):
+  r"""Specifies the policy on how requests are shadowed to a separate mirrored
+  destination service. The proxy does not wait for responses from the shadow
+  service. Prior to sending traffic to the shadow service, the host/authority
+  header is suffixed with -shadow.
+
+  Fields:
+    destination: The destination the requests will be mirrored to. The weight
+      of the destination will be ignored.
+  """
+
+  destination = _messages.MessageField('HttpRouteDestination', 1)
+
+
+class HttpRouteRetryPolicy(_messages.Message):
+  r"""The specifications for retries.
+
+  Fields:
+    numRetries: Specifies the allowed number of retries. This number must be >
+      0. If not specified, default to 1.
+    perTryTimeout: Specifies a non-zero timeout per retry attempt.
+    retryConditions: Specifies one or more conditions when this retry policy
+      applies. Valid values are: 5xx: Proxy will attempt a retry if the
+      destination service responds with any 5xx response code, of if the
+      destination service does not respond at all, example: disconnect, reset,
+      read timeout, connection failure and refused streams. gateway-error:
+      Similar to 5xx, but only applies to response codes 502, 503, 504. reset:
+      Proxy will attempt a retry if the destination service does not respond
+      at all (disconnect/reset/read timeout) connect-failure: Proxy will retry
+      on failures connecting to destination for example due to connection
+      timeouts. retriable-4xx: Proxy will retry fro retriable 4xx response
+      codes. Currently the only retriable error supported is 409. refused-
+      stream: Proxy will retry if the destination resets the stream with a
+      REFUSED_STREAM error code. This reset type indicates that it is safe to
+      retry.
+  """
+
+  numRetries = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  perTryTimeout = _messages.StringField(2)
+  retryConditions = _messages.StringField(3, repeated=True)
+
+
+class HttpRouteRouteAction(_messages.Message):
+  r"""The specifications for routing traffic and applying associated policies.
+
+  Fields:
+    corsPolicy: The specification for allowing client side cross-origin
+      requests.
+    destinations: The destination to which traffic should be forwarded.
+    faultInjectionPolicy: The specification for fault injection introduced
+      into traffic to test the resiliency of clients to backend service
+      failure. As part of fault injection, when clients send requests to a
+      backend service, delays can be introduced on a percentage of requests
+      before sending those requests to the backend service. Similarly requests
+      from clients can be aborted for a percentage of requests. timeout and
+      retry_policy will be ignored by clients that are configured with a
+      fault_injection_policy
+    redirect: If set, the request is directed as configured by this field.
+    requestHeaderModifier: The specification for modifying the headers of a
+      matching request prior to delivery of the request to the destination.
+    requestMirrorPolicy: Specifies the policy on how requests intended for the
+      routes destination are shadowed to a separate mirrored destination.
+      Proxy will not wait for the shadow destination to respond before
+      returning the response. Prior to sending traffic to the shadow service,
+      the host/authority header is suffixed with -shadow.
+    responseHeaderModifier: The specification for modifying the headers of a
+      response prior to sending the response back to the client.
+    retryPolicy: Specifies the retry policy associated with this route.
+    timeout: Specifies the timeout for selected route. Timeout is computed
+      from the time the request has been fully processed (i.e. end of stream)
+      up until the response has been completely processed. Timeout includes
+      all retries.
+    urlRewrite: The specification for rewrite URL before forwarding requests
+      to the destination.
+  """
+
+  corsPolicy = _messages.MessageField('HttpRouteCorsPolicy', 1)
+  destinations = _messages.MessageField('HttpRouteDestination', 2, repeated=True)
+  faultInjectionPolicy = _messages.MessageField('HttpRouteFaultInjectionPolicy', 3)
+  redirect = _messages.MessageField('HttpRouteRedirect', 4)
+  requestHeaderModifier = _messages.MessageField('HttpRouteHeaderModifier', 5)
+  requestMirrorPolicy = _messages.MessageField('HttpRouteRequestMirrorPolicy', 6)
+  responseHeaderModifier = _messages.MessageField('HttpRouteHeaderModifier', 7)
+  retryPolicy = _messages.MessageField('HttpRouteRetryPolicy', 8)
+  timeout = _messages.StringField(9)
+  urlRewrite = _messages.MessageField('HttpRouteURLRewrite', 10)
+
+
+class HttpRouteRouteMatch(_messages.Message):
+  r"""RouteMatch defines specifications used to match requests. If multiple
+  match types are set, this RouteMatch will match if ALL type of matches are
+  matched.
+
+  Fields:
+    fullPathMatch: The HTTP request path value should exactly match this
+      value. Only one of full_path_match, prefix_match, or regex_match should
+      be used.
+    headers: Specifies a list of HTTP request headers to match against. ALL of
+      the supplied headers must be matched.
+    ignoreCase: Specifies if prefix_match and full_path_match matches are case
+      sensitive. The default value is false.
+    prefixMatch: The HTTP request path value must begin with specified
+      prefix_match. prefix_match must begin with a /. Only one of
+      full_path_match, prefix_match, or regex_match should be used.
+    queryParameters: Specifies a list of query parameters to match against.
+      ALL of the query parameters must be matched.
+    regexMatch: The HTTP request path value must satisfy the regular
+      expression specified by regex_match after removing any query parameters
+      and anchor supplied with the original URL. For regular expression
+      grammar, please see https://github.com/google/re2/wiki/Syntax Only one
+      of full_path_match, prefix_match, or regex_match should be used.
+  """
+
+  fullPathMatch = _messages.StringField(1)
+  headers = _messages.MessageField('HttpRouteHeaderMatch', 2, repeated=True)
+  ignoreCase = _messages.BooleanField(3)
+  prefixMatch = _messages.StringField(4)
+  queryParameters = _messages.MessageField('HttpRouteQueryParameterMatch', 5, repeated=True)
+  regexMatch = _messages.StringField(6)
+
+
+class HttpRouteRouteRule(_messages.Message):
+  r"""Specifies how to match traffic and how to route traffic when traffic is
+  matched.
+
+  Fields:
+    action: The detailed rule defining how to route matched traffic.
+    matches: A list of matches define conditions used for matching the rule
+      against incoming HTTP requests. Each match is independent, i.e. this
+      rule will be matched if ANY one of the matches is satisfied. If no
+      matches field is specified, this rule will unconditionally match
+      traffic. If a default rule is desired to be configured, add a rule with
+      no matches specified to the end of the rules list.
+  """
+
+  action = _messages.MessageField('HttpRouteRouteAction', 1)
+  matches = _messages.MessageField('HttpRouteRouteMatch', 2, repeated=True)
+
+
+class HttpRouteURLRewrite(_messages.Message):
+  r"""The specification for modifying the URL of the request, prior to
+  forwarding the request to the destination.
+
+  Fields:
+    hostRewrite: Prior to forwarding the request to the selected destination,
+      the requests host header is replaced by this value.
+    pathPrefixRewrite: Prior to forwarding the request to the selected
+      destination, the matching portion of the requests path is replaced by
+      this value.
+  """
+
+  hostRewrite = _messages.StringField(1)
+  pathPrefixRewrite = _messages.StringField(2)
+
+
 class InvalidateCacheRequest(_messages.Message):
   r"""Request used by the InvalidateCache method.
 
@@ -1215,6 +2167,51 @@ class ListEndpointPoliciesResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class ListGatewaysResponse(_messages.Message):
+  r"""Response returned by the ListGateways method.
+
+  Fields:
+    gateways: List of Gateway resources.
+    nextPageToken: If there might be more results than those appearing in this
+      response, then `next_page_token` is included. To get the next set of
+      results, call this method again using the value of `next_page_token` as
+      `page_token`.
+  """
+
+  gateways = _messages.MessageField('Gateway', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListGrpcRoutesResponse(_messages.Message):
+  r"""Response returned by the ListGrpcRoutes method.
+
+  Fields:
+    grpcRoutes: List of GrpcRoute resources.
+    nextPageToken: If there might be more results than those appearing in this
+      response, then `next_page_token` is included. To get the next set of
+      results, call this method again using the value of `next_page_token` as
+      `page_token`.
+  """
+
+  grpcRoutes = _messages.MessageField('GrpcRoute', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListHttpRoutesResponse(_messages.Message):
+  r"""Response returned by the ListHttpRoutes method.
+
+  Fields:
+    httpRoutes: List of HttpRoute resources.
+    nextPageToken: If there might be more results than those appearing in this
+      response, then `next_page_token` is included. To get the next set of
+      results, call this method again using the value of `next_page_token` as
+      `page_token`.
+  """
+
+  httpRoutes = _messages.MessageField('HttpRoute', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class ListLocationsResponse(_messages.Message):
   r"""The response message for Locations.ListLocations.
 
@@ -1225,6 +2222,21 @@ class ListLocationsResponse(_messages.Message):
   """
 
   locations = _messages.MessageField('Location', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListMeshesResponse(_messages.Message):
+  r"""Response returned by the ListMeshes method.
+
+  Fields:
+    meshes: List of Mesh resources.
+    nextPageToken: If there might be more results than those appearing in this
+      response, then `next_page_token` is included. To get the next set of
+      results, call this method again using the value of `next_page_token` as
+      `page_token`.
+  """
+
+  meshes = _messages.MessageField('Mesh', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
 
 
@@ -1254,6 +2266,36 @@ class ListServiceBindingsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   serviceBindings = _messages.MessageField('ServiceBinding', 2, repeated=True)
+
+
+class ListTcpRoutesResponse(_messages.Message):
+  r"""Response returned by the ListTcpRoutes method.
+
+  Fields:
+    nextPageToken: If there might be more results than those appearing in this
+      response, then `next_page_token` is included. To get the next set of
+      results, call this method again using the value of `next_page_token` as
+      `page_token`.
+    tcpRoutes: List of TcpRoute resources.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  tcpRoutes = _messages.MessageField('TcpRoute', 2, repeated=True)
+
+
+class ListTlsRoutesResponse(_messages.Message):
+  r"""Response returned by the ListTlsRoutes method.
+
+  Fields:
+    nextPageToken: If there might be more results than those appearing in this
+      response, then `next_page_token` is included. To get the next set of
+      results, call this method again using the value of `next_page_token` as
+      `page_token`.
+    tlsRoutes: List of TlsRoute resources.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  tlsRoutes = _messages.MessageField('TlsRoute', 2, repeated=True)
 
 
 class Location(_messages.Message):
@@ -1394,6 +2436,65 @@ class MatchRule(_messages.Message):
   pathTemplateMatch = _messages.StringField(4)
   prefixMatch = _messages.StringField(5)
   queryParameterMatches = _messages.MessageField('QueryParameterMatcher', 6, repeated=True)
+
+
+class Mesh(_messages.Message):
+  r"""Mesh represents a logical configuration grouping for workload to
+  workload communication within a service mesh. Routes that point to mesh
+  dictate how requests are routed within this logical mesh boundary.
+
+  Messages:
+    LabelsValue: Optional. Set of label tags associated with the Mesh
+      resource.
+
+  Fields:
+    createTime: Output only. The timestamp when the resource was created.
+    description: Optional. A free-text description of the resource. Max length
+      1024 characters.
+    interceptionPort: Optional. If set to a valid TCP port (1-65535),
+      instructs the SIDECAR proxy to listen on the specified port of localhost
+      (127.0.0.1) address. The SIDECAR proxy will expect all traffic to be
+      redirected to this port regardless of its actual ip:port destination. If
+      unset, a port '15001' is used as the interception port. This will is
+      applicable only for sidecar proxy deployments.
+    labels: Optional. Set of label tags associated with the Mesh resource.
+    name: Required. Name of the Mesh resource. It matches pattern
+      `projects/*/locations/global/meshes/`.
+    selfLink: Output only. Server-defined URL of this resource
+    updateTime: Output only. The timestamp when the resource was updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Set of label tags associated with the Mesh resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  interceptionPort = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  selfLink = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
 
 
 class NetworkservicesProjectsLocationsEdgeCacheKeysetsCreateRequest(_messages.Message):
@@ -1976,6 +3077,138 @@ class NetworkservicesProjectsLocationsEndpointPoliciesTestIamPermissionsRequest(
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
+class NetworkservicesProjectsLocationsGatewaysCreateRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsGatewaysCreateRequest object.
+
+  Fields:
+    gateway: A Gateway resource to be passed as the request body.
+    gatewayId: Required. Short name of the Gateway resource to be created.
+    parent: Required. The parent resource of the Gateway. Must be in the
+      format `projects/*/locations/*`.
+  """
+
+  gateway = _messages.MessageField('Gateway', 1)
+  gatewayId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NetworkservicesProjectsLocationsGatewaysDeleteRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsGatewaysDeleteRequest object.
+
+  Fields:
+    name: Required. A name of the Gateway to delete. Must be in the format
+      `projects/*/locations/*/gateways/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsGatewaysGetIamPolicyRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsGatewaysGetIamPolicyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class NetworkservicesProjectsLocationsGatewaysGetRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsGatewaysGetRequest object.
+
+  Fields:
+    name: Required. A name of the Gateway to get. Must be in the format
+      `projects/*/locations/*/gateways/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsGatewaysListRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsGatewaysListRequest object.
+
+  Fields:
+    pageSize: Maximum number of Gateways to return per call.
+    pageToken: The value returned by the last `ListGatewaysResponse` Indicates
+      that this is a continuation of a prior `ListGateways` call, and that the
+      system should return the next page of data.
+    parent: Required. The project and location from which the Gateways should
+      be listed, specified in the format `projects/*/locations/*`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NetworkservicesProjectsLocationsGatewaysPatchRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsGatewaysPatchRequest object.
+
+  Fields:
+    gateway: A Gateway resource to be passed as the request body.
+    name: Required. Name of the Gateway resource. It matches pattern
+      `projects/*/locations/*/gateways/`.
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the Gateway resource by the update. The fields specified
+      in the update_mask are relative to the resource, not the full request. A
+      field will be overwritten if it is in the mask. If the user does not
+      provide a mask then all fields will be overwritten.
+  """
+
+  gateway = _messages.MessageField('Gateway', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class NetworkservicesProjectsLocationsGatewaysSetIamPolicyRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsGatewaysSetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class NetworkservicesProjectsLocationsGatewaysTestIamPermissionsRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsGatewaysTestIamPermissionsRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
 class NetworkservicesProjectsLocationsGetRequest(_messages.Message):
   r"""A NetworkservicesProjectsLocationsGetRequest object.
 
@@ -1984,6 +3217,152 @@ class NetworkservicesProjectsLocationsGetRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsGrpcRoutesCreateRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsGrpcRoutesCreateRequest object.
+
+  Fields:
+    grpcRoute: A GrpcRoute resource to be passed as the request body.
+    grpcRouteId: Required. Short name of the GrpcRoute resource to be created.
+    parent: Required. The parent resource of the GrpcRoute. Must be in the
+      format `projects/*/locations/global`.
+  """
+
+  grpcRoute = _messages.MessageField('GrpcRoute', 1)
+  grpcRouteId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NetworkservicesProjectsLocationsGrpcRoutesDeleteRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsGrpcRoutesDeleteRequest object.
+
+  Fields:
+    name: Required. A name of the GrpcRoute to delete. Must be in the format
+      `projects/*/locations/global/grpcRoutes/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsGrpcRoutesGetRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsGrpcRoutesGetRequest object.
+
+  Fields:
+    name: Required. A name of the GrpcRoute to get. Must be in the format
+      `projects/*/locations/global/grpcRoutes/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsGrpcRoutesListRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsGrpcRoutesListRequest object.
+
+  Fields:
+    pageSize: Maximum number of GrpcRoutes to return per call.
+    pageToken: The value returned by the last `ListGrpcRoutesResponse`
+      Indicates that this is a continuation of a prior `ListGrpcRoutes` call,
+      and that the system should return the next page of data.
+    parent: Required. The project and location from which the GrpcRoutes
+      should be listed, specified in the format `projects/*/locations/global`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NetworkservicesProjectsLocationsGrpcRoutesPatchRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsGrpcRoutesPatchRequest object.
+
+  Fields:
+    grpcRoute: A GrpcRoute resource to be passed as the request body.
+    name: Required. Name of the GrpcRoute resource. It matches pattern
+      `projects/*/locations/global/grpcRoutes/`
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the GrpcRoute resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then all fields will be overwritten.
+  """
+
+  grpcRoute = _messages.MessageField('GrpcRoute', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class NetworkservicesProjectsLocationsHttpRoutesCreateRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsHttpRoutesCreateRequest object.
+
+  Fields:
+    httpRoute: A HttpRoute resource to be passed as the request body.
+    httpRouteId: Required. Short name of the HttpRoute resource to be created.
+    parent: Required. The parent resource of the HttpRoute. Must be in the
+      format `projects/*/locations/global`.
+  """
+
+  httpRoute = _messages.MessageField('HttpRoute', 1)
+  httpRouteId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NetworkservicesProjectsLocationsHttpRoutesDeleteRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsHttpRoutesDeleteRequest object.
+
+  Fields:
+    name: Required. A name of the HttpRoute to delete. Must be in the format
+      `projects/*/locations/global/httpRoutes/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsHttpRoutesGetRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsHttpRoutesGetRequest object.
+
+  Fields:
+    name: Required. A name of the HttpRoute to get. Must be in the format
+      `projects/*/locations/global/httpRoutes/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsHttpRoutesListRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsHttpRoutesListRequest object.
+
+  Fields:
+    pageSize: Maximum number of HttpRoutes to return per call.
+    pageToken: The value returned by the last `ListHttpRoutesResponse`
+      Indicates that this is a continuation of a prior `ListRouters` call, and
+      that the system should return the next page of data.
+    parent: Required. The project and location from which the HttpRoutes
+      should be listed, specified in the format `projects/*/locations/global`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NetworkservicesProjectsLocationsHttpRoutesPatchRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsHttpRoutesPatchRequest object.
+
+  Fields:
+    httpRoute: A HttpRoute resource to be passed as the request body.
+    name: Required. Name of the HttpRoute resource. It matches pattern
+      `projects/*/locations/global/httpRoutes/http_route_name>`.
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the HttpRoute resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then all fields will be overwritten.
+  """
+
+  httpRoute = _messages.MessageField('HttpRoute', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class NetworkservicesProjectsLocationsListRequest(_messages.Message):
@@ -2004,6 +3383,138 @@ class NetworkservicesProjectsLocationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsMeshesCreateRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMeshesCreateRequest object.
+
+  Fields:
+    mesh: A Mesh resource to be passed as the request body.
+    meshId: Required. Short name of the Mesh resource to be created.
+    parent: Required. The parent resource of the Mesh. Must be in the format
+      `projects/*/locations/global`.
+  """
+
+  mesh = _messages.MessageField('Mesh', 1)
+  meshId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NetworkservicesProjectsLocationsMeshesDeleteRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMeshesDeleteRequest object.
+
+  Fields:
+    name: Required. A name of the Mesh to delete. Must be in the format
+      `projects/*/locations/global/meshes/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsMeshesGetIamPolicyRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMeshesGetIamPolicyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class NetworkservicesProjectsLocationsMeshesGetRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMeshesGetRequest object.
+
+  Fields:
+    name: Required. A name of the Mesh to get. Must be in the format
+      `projects/*/locations/global/meshes/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsMeshesListRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMeshesListRequest object.
+
+  Fields:
+    pageSize: Maximum number of Meshes to return per call.
+    pageToken: The value returned by the last `ListMeshesResponse` Indicates
+      that this is a continuation of a prior `ListMeshes` call, and that the
+      system should return the next page of data.
+    parent: Required. The project and location from which the Meshes should be
+      listed, specified in the format `projects/*/locations/global`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NetworkservicesProjectsLocationsMeshesPatchRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMeshesPatchRequest object.
+
+  Fields:
+    mesh: A Mesh resource to be passed as the request body.
+    name: Required. Name of the Mesh resource. It matches pattern
+      `projects/*/locations/global/meshes/`.
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the Mesh resource by the update. The fields specified in
+      the update_mask are relative to the resource, not the full request. A
+      field will be overwritten if it is in the mask. If the user does not
+      provide a mask then all fields will be overwritten.
+  """
+
+  mesh = _messages.MessageField('Mesh', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class NetworkservicesProjectsLocationsMeshesSetIamPolicyRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMeshesSetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class NetworkservicesProjectsLocationsMeshesTestIamPermissionsRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMeshesTestIamPermissionsRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class NetworkservicesProjectsLocationsOperationsCancelRequest(_messages.Message):
@@ -2171,6 +3682,154 @@ class NetworkservicesProjectsLocationsServiceBindingsTestIamPermissionsRequest(_
 
   resource = _messages.StringField(1, required=True)
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class NetworkservicesProjectsLocationsTcpRoutesCreateRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsTcpRoutesCreateRequest object.
+
+  Fields:
+    parent: Required. The parent resource of the TcpRoute. Must be in the
+      format `projects/*/locations/global`.
+    tcpRoute: A TcpRoute resource to be passed as the request body.
+    tcpRouteId: Required. Short name of the TcpRoute resource to be created.
+      E.g. TODO(Add an example).
+  """
+
+  parent = _messages.StringField(1, required=True)
+  tcpRoute = _messages.MessageField('TcpRoute', 2)
+  tcpRouteId = _messages.StringField(3)
+
+
+class NetworkservicesProjectsLocationsTcpRoutesDeleteRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsTcpRoutesDeleteRequest object.
+
+  Fields:
+    name: Required. A name of the TcpRoute to delete. Must be in the format
+      `projects/*/locations/global/tcpRoutes/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsTcpRoutesGetRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsTcpRoutesGetRequest object.
+
+  Fields:
+    name: Required. A name of the TcpRoute to get. Must be in the format
+      `projects/*/locations/global/tcpRoutes/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsTcpRoutesListRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsTcpRoutesListRequest object.
+
+  Fields:
+    pageSize: Maximum number of TcpRoutes to return per call.
+    pageToken: The value returned by the last `ListTcpRoutesResponse`
+      Indicates that this is a continuation of a prior `ListRouters` call, and
+      that the system should return the next page of data.
+    parent: Required. The project and location from which the TcpRoutes should
+      be listed, specified in the format `projects/*/locations/global`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NetworkservicesProjectsLocationsTcpRoutesPatchRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsTcpRoutesPatchRequest object.
+
+  Fields:
+    name: Required. Name of the TcpRoute resource. It matches pattern
+      `projects/*/locations/global/tcpRoutes/tcp_route_name>`.
+    tcpRoute: A TcpRoute resource to be passed as the request body.
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the TcpRoute resource by the update. The fields specified
+      in the update_mask are relative to the resource, not the full request. A
+      field will be overwritten if it is in the mask. If the user does not
+      provide a mask then all fields will be overwritten.
+  """
+
+  name = _messages.StringField(1, required=True)
+  tcpRoute = _messages.MessageField('TcpRoute', 2)
+  updateMask = _messages.StringField(3)
+
+
+class NetworkservicesProjectsLocationsTlsRoutesCreateRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsTlsRoutesCreateRequest object.
+
+  Fields:
+    parent: Required. The parent resource of the TlsRoute. Must be in the
+      format `projects/*/locations/global`.
+    tlsRoute: A TlsRoute resource to be passed as the request body.
+    tlsRouteId: Required. Short name of the TlsRoute resource to be created.
+      E.g. TODO(Add an example).
+  """
+
+  parent = _messages.StringField(1, required=True)
+  tlsRoute = _messages.MessageField('TlsRoute', 2)
+  tlsRouteId = _messages.StringField(3)
+
+
+class NetworkservicesProjectsLocationsTlsRoutesDeleteRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsTlsRoutesDeleteRequest object.
+
+  Fields:
+    name: Required. A name of the TlsRoute to delete. Must be in the format
+      `projects/*/locations/global/tlsRoutes/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsTlsRoutesGetRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsTlsRoutesGetRequest object.
+
+  Fields:
+    name: Required. A name of the TlsRoute to get. Must be in the format
+      `projects/*/locations/global/tlsRoutes/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsTlsRoutesListRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsTlsRoutesListRequest object.
+
+  Fields:
+    pageSize: Maximum number of TlsRoutes to return per call.
+    pageToken: The value returned by the last `ListTlsRoutesResponse`
+      Indicates that this is a continuation of a prior `ListRouters` call, and
+      that the system should return the next page of data.
+    parent: Required. The project and location from which the TlsRoutes should
+      be listed, specified in the format `projects/*/locations/global`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NetworkservicesProjectsLocationsTlsRoutesPatchRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsTlsRoutesPatchRequest object.
+
+  Fields:
+    name: Required. Name of the TlsRoute resource. It matches pattern
+      `projects/*/locations/global/tlsRoutes/tls_route_name>`.
+    tlsRoute: A TlsRoute resource to be passed as the request body.
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the TlsRoute resource by the update. The fields specified
+      in the update_mask are relative to the resource, not the full request. A
+      field will be overwritten if it is in the mask. If the user does not
+      provide a mask then all fields will be overwritten.
+  """
+
+  name = _messages.StringField(1, required=True)
+  tlsRoute = _messages.MessageField('TlsRoute', 2)
+  updateMask = _messages.StringField(3)
 
 
 class Operation(_messages.Message):
@@ -2714,6 +4373,144 @@ class Status(_messages.Message):
   message = _messages.StringField(3)
 
 
+class TcpRoute(_messages.Message):
+  r"""TcpRoute is the resource defining how TCP traffic should be routed by a
+  Mesh/Gateway resource.
+
+  Messages:
+    LabelsValue: Optional. Set of label tags associated with the TcpRoute
+      resource.
+
+  Fields:
+    createTime: Output only. The timestamp when the resource was created.
+    description: Optional. A free-text description of the resource. Max length
+      1024 characters.
+    gateways: Optional. Gateways defines a list of gateways this TcpRoute is
+      attached to, as one of the routing rules to route the requests served by
+      the gateway. Each gateway reference should match the pattern:
+      `projects/*/locations/global/gateways/`
+    labels: Optional. Set of label tags associated with the TcpRoute resource.
+    meshes: Optional. Meshes defines a list of meshes this TcpRoute is
+      attached to, as one of the routing rules to route the requests served by
+      the mesh. Each mesh reference should match the pattern:
+      `projects/*/locations/global/meshes/` The attached Mesh should be of a
+      type SIDECAR
+    name: Required. Name of the TcpRoute resource. It matches pattern
+      `projects/*/locations/global/tcpRoutes/tcp_route_name>`.
+    rules: Required. Rules that define how traffic is routed and handled. At
+      least one RouteRule must be supplied. If there are multiple rules then
+      the action taken will be the first rule to match.
+    selfLink: Output only. Server-defined URL of this resource
+    updateTime: Output only. The timestamp when the resource was updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Set of label tags associated with the TcpRoute resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  gateways = _messages.StringField(3, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 4)
+  meshes = _messages.StringField(5, repeated=True)
+  name = _messages.StringField(6)
+  rules = _messages.MessageField('TcpRouteRouteRule', 7, repeated=True)
+  selfLink = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
+
+
+class TcpRouteRouteAction(_messages.Message):
+  r"""The specifications for routing traffic and applying associated policies.
+
+  Fields:
+    destinations: Optional. The destination services to which traffic should
+      be forwarded. At least one destination service is required.
+    originalDestination: Optional. If true, Router will use the destination IP
+      and port of the original connection as the destination of the request.
+      Default is false.
+  """
+
+  destinations = _messages.MessageField('TcpRouteRouteDestination', 1, repeated=True)
+  originalDestination = _messages.BooleanField(2)
+
+
+class TcpRouteRouteDestination(_messages.Message):
+  r"""Describe the destination for traffic to be routed to.
+
+  Fields:
+    serviceName: Required. The URL of a BackendService to route traffic to.
+    weight: Optional. Specifies the proportion of requests forwarded to the
+      backend referenced by the serviceName field. This is computed as:
+      weight/Sum(weights in this destination list). For non-zero values, there
+      may be some epsilon from the exact proportion defined here depending on
+      the precision an implementation supports. If only one serviceName is
+      specified and it has a weight greater than 0, 100% of the traffic is
+      forwarded to that backend. If weights are specified for any one service
+      name, they need to be specified for all of them. If weights are
+      unspecified for all services, then, traffic is distributed in equal
+      proportions to all of them.
+  """
+
+  serviceName = _messages.StringField(1)
+  weight = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class TcpRouteRouteMatch(_messages.Message):
+  r"""RouteMatch defines the predicate used to match requests to a given
+  action. Multiple match types are "OR"ed for evaluation. If no routeMatch
+  field is specified, this rule will unconditionally match traffic.
+
+  Fields:
+    address: Required. Must be specified in the CIDR range format. A CIDR
+      range consists of an IP Address and a prefix length to construct the
+      subnet mask. By default, the prefix length is 32 (i.e. matches a single
+      IP address). Only IPV4 addresses are supported. Examples: "10.0.0.1" -
+      matches against this exact IP address. "10.0.0.0/8" - matches against
+      any IP address within the 10.0.0.0 subnet and 255.255.255.0 mask.
+      "0.0.0.0/0" - matches against any IP address'.
+    port: Required. Specifies the destination port to match against.
+  """
+
+  address = _messages.StringField(1)
+  port = _messages.StringField(2)
+
+
+class TcpRouteRouteRule(_messages.Message):
+  r"""Specifies how to match traffic and how to route traffic when traffic is
+  matched.
+
+  Fields:
+    action: Required. The detailed rule defining how to route matched traffic.
+    matches: Optional. RouteMatch defines the predicate used to match requests
+      to a given action. Multiple match types are "OR"ed for evaluation. If no
+      routeMatch field is specified, this rule will unconditionally match
+      traffic.
+  """
+
+  action = _messages.MessageField('TcpRouteRouteAction', 1)
+  matches = _messages.MessageField('TcpRouteRouteMatch', 2, repeated=True)
+
+
 class TestIamPermissionsRequest(_messages.Message):
   r"""Request message for `TestIamPermissions` method.
 
@@ -2779,6 +4576,103 @@ class Timeout(_messages.Message):
   maxAttemptsTimeout = _messages.StringField(2)
   readTimeout = _messages.StringField(3)
   responseTimeout = _messages.StringField(4)
+
+
+class TlsRoute(_messages.Message):
+  r"""TlsRoute defines how traffic should be routed based on SNI and other
+  matching L3 attributes.
+
+  Fields:
+    createTime: Output only. The timestamp when the resource was created.
+    description: Optional. A free-text description of the resource. Max length
+      1024 characters.
+    gateways: Optional. Gateways defines a list of gateways this TlsRoute is
+      attached to, as one of the routing rules to route the requests served by
+      the gateway. Each gateway reference should match the pattern:
+      `projects/*/locations/global/gateways/`
+    meshes: Optional. Meshes defines a list of meshes this TlsRoute is
+      attached to, as one of the routing rules to route the requests served by
+      the mesh. Each mesh reference should match the pattern:
+      `projects/*/locations/global/meshes/` The attached Mesh should be of a
+      type SIDECAR
+    name: Required. Name of the TlsRoute resource. It matches pattern
+      `projects/*/locations/global/tlsRoutes/tls_route_name>`.
+    rules: Required. Rules that define how traffic is routed and handled. At
+      least one RouteRule must be supplied. If there are multiple rules then
+      the action taken will be the first rule to match.
+    selfLink: Output only. Server-defined URL of this resource
+    updateTime: Output only. The timestamp when the resource was updated.
+  """
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  gateways = _messages.StringField(3, repeated=True)
+  meshes = _messages.StringField(4, repeated=True)
+  name = _messages.StringField(5)
+  rules = _messages.MessageField('TlsRouteRouteRule', 6, repeated=True)
+  selfLink = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
+
+
+class TlsRouteRouteAction(_messages.Message):
+  r"""The specifications for routing traffic and applying associated policies.
+
+  Fields:
+    destinations: Required. The destination services to which traffic should
+      be forwarded. At least one destination service is required.
+  """
+
+  destinations = _messages.MessageField('TlsRouteRouteDestination', 1, repeated=True)
+
+
+class TlsRouteRouteDestination(_messages.Message):
+  r"""Describe the destination for traffic to be routed to.
+
+  Fields:
+    serviceName: Required. The URL of a BackendService to route traffic to.
+    weight: Optional. Specifies the proportion of requests forwareded to the
+      backend referenced by the service_name field. This is computed as:
+      weight/Sum(weights in destinations) Weights in all destinations does not
+      need to sum up to 100.
+  """
+
+  serviceName = _messages.StringField(1)
+  weight = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class TlsRouteRouteMatch(_messages.Message):
+  r"""RouteMatch defines the predicate used to match requests to a given
+  action. Multiple match types are "AND"ed for evaluation. If no routeMatch
+  field is specified, this rule will unconditionally match traffic.
+
+  Fields:
+    alpn: Optional. ALPN (Application-Layer Protocol Negotiation) to match
+      against. Examples: "http/1.1", "h2". At least one of sni_host and alpn
+      is required. Up to 5 alpns across all matches can be set.
+    sniHost: Optional. SNI (server name indicator) to match against. SNI will
+      be matched against all wildcard domains, i.e. www.example.com will be
+      first matched against www.example.com, then *.example.com, then *.com.
+      Partial wildcards are not supported, and values like *w.example.com are
+      invalid. At least one of sni_host and alpn is required. Up to 5 sni
+      hosts across all matches can be set.
+  """
+
+  alpn = _messages.StringField(1, repeated=True)
+  sniHost = _messages.StringField(2, repeated=True)
+
+
+class TlsRouteRouteRule(_messages.Message):
+  r"""Specifies how to match traffic and how to route traffic when traffic is
+  matched.
+
+  Fields:
+    action: Required. The detailed rule defining how to route matched traffic.
+    matches: Required. RouteMatch defines the predicate used to match requests
+      to a given action. Multiple match types are "OR"ed for evaluation.
+  """
+
+  action = _messages.MessageField('TlsRouteRouteAction', 1)
+  matches = _messages.MessageField('TlsRouteRouteMatch', 2, repeated=True)
 
 
 class TrafficPortSelector(_messages.Message):

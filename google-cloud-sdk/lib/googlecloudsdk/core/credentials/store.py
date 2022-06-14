@@ -481,7 +481,8 @@ def Load(account=None,
          scopes=None,
          prevent_refresh=False,
          allow_account_impersonation=True,
-         use_google_auth=True):
+         use_google_auth=True,
+         with_access_token_cache=True):
   """Get the credentials associated with the provided account.
 
   This loads credentials regardless of whether credentials have been disabled
@@ -507,7 +508,10 @@ def Load(account=None,
       account credentials (if that is configured). If False, the active user
       credentials will always be loaded.
     use_google_auth: bool, True to load credentials as google-auth credentials.
-    False to load credentials as oauth2client credentials..
+      False to load credentials as oauth2client credentials..
+    with_access_token_cache: bool, True to load a credential store with
+      auto caching for access tokens. False to load a credential store without
+      auto caching for access tokens.
 
   Returns:
     oauth2client.client.Credentials or google.auth.credentials.Credentials.
@@ -549,7 +553,8 @@ def Load(account=None,
       google_auth_source_creds = Load(
           account=account,
           allow_account_impersonation=False,
-          use_google_auth=use_google_auth)
+          use_google_auth=use_google_auth,
+          with_access_token_cache=with_access_token_cache)
       cred = IMPERSONATION_TOKEN_PROVIDER.GetElevationAccessTokenGoogleAuth(
           google_auth_source_creds, target_principal, delegates, scopes or
           config.CLOUDSDK_SCOPES)
@@ -557,7 +562,12 @@ def Load(account=None,
       cred = IMPERSONATION_TOKEN_PROVIDER.GetElevationAccessToken(
           impersonate_service_account, scopes or config.CLOUDSDK_SCOPES)
   else:
-    cred = _Load(account, scopes, prevent_refresh, use_google_auth)
+    cred = _Load(
+        account,
+        scopes,
+        prevent_refresh,
+        use_google_auth,
+        with_access_token_cache=with_access_token_cache)
 
   return cred
 
@@ -678,7 +688,11 @@ def _LoadAccessTokenCredsFromFile(token_file, use_google_auth):
   return c_google_auth.AccessTokenCredentials(content)
 
 
-def _Load(account, scopes, prevent_refresh, use_google_auth=True):
+def _Load(account,
+          scopes,
+          prevent_refresh,
+          use_google_auth=True,
+          with_access_token_cache=True):
   """Helper for Load()."""
   # If an access token, access token file, or credential file is set, just use
   # that and ignore the active account and whatever is in the credential store.
@@ -704,7 +718,8 @@ def _Load(account, scopes, prevent_refresh, use_google_auth=True):
     if cred is not None:
       return cred
 
-    store = c_creds.GetCredentialStore()
+    store = c_creds.GetCredentialStore(
+        with_access_token_cache=with_access_token_cache)
     cred = store.Load(account, use_google_auth)
     if not cred:
       raise NoCredentialsForAccountException(account)

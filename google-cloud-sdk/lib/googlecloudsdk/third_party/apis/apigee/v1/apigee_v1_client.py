@@ -833,7 +833,7 @@ class ApigeeV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates key value entries in a org, env or apis scoped key value map.
+      r"""Creates key value entries in a key value map scoped to an organization, environment, or API proxy.
 
       Args:
         request: (ApigeeOrganizationsApisKeyvaluemapsEntriesCreateRequest) input message
@@ -860,7 +860,7 @@ class ApigeeV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a key value entry from an org, environment or apis scoped key value map.
+      r"""Deletes a key value entry from a key value map scoped to an organization, environment, or API proxy. **Note:** After you delete the key value entry, the policy consuming the entry will continue to function with its cached values for a few minutes. This is expected behavior.
 
       Args:
         request: (ApigeeOrganizationsApisKeyvaluemapsEntriesDeleteRequest) input message
@@ -4180,7 +4180,7 @@ class ApigeeV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates key value entries in a org, env or apis scoped key value map.
+      r"""Creates key value entries in a key value map scoped to an organization, environment, or API proxy.
 
       Args:
         request: (ApigeeOrganizationsEnvironmentsKeyvaluemapsEntriesCreateRequest) input message
@@ -4207,7 +4207,7 @@ class ApigeeV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a key value entry from an org, environment or apis scoped key value map.
+      r"""Deletes a key value entry from a key value map scoped to an organization, environment, or API proxy. **Note:** After you delete the key value entry, the policy consuming the entry will continue to function with its cached values for a few minutes. This is expected behavior.
 
       Args:
         request: (ApigeeOrganizationsEnvironmentsKeyvaluemapsEntriesDeleteRequest) input message
@@ -5518,7 +5518,7 @@ class ApigeeV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes an environment from an organization.
+      r"""Deletes an environment from an organization. **Note**: You must delete all key value maps and key value entries before you can delete an environment.
 
       Args:
         request: (ApigeeOrganizationsEnvironmentsDeleteRequest) input message
@@ -6759,7 +6759,7 @@ class ApigeeV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates key value entries in a org, env or apis scoped key value map.
+      r"""Creates key value entries in a key value map scoped to an organization, environment, or API proxy.
 
       Args:
         request: (ApigeeOrganizationsKeyvaluemapsEntriesCreateRequest) input message
@@ -6786,7 +6786,7 @@ class ApigeeV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a key value entry from an org, environment or apis scoped key value map.
+      r"""Deletes a key value entry from a key value map scoped to an organization, environment, or API proxy. **Note:** After you delete the key value entry, the policy consuming the entry will continue to function with its cached values for a few minutes. This is expected behavior.
 
       Args:
         request: (ApigeeOrganizationsKeyvaluemapsEntriesDeleteRequest) input message

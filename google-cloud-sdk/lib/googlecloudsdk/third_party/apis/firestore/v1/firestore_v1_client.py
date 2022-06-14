@@ -837,6 +837,33 @@ class FirestoreV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Create(self, request, global_params=None):
+      r"""Create a database.
+
+      Args:
+        request: (FirestoreProjectsDatabasesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/databases',
+        http_method='POST',
+        method_id='firestore.projects.databases.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['databaseId', 'validateOnly'],
+        relative_path='v1/{+parent}/databases',
+        request_field='googleFirestoreAdminV1Database',
+        request_type_name='FirestoreProjectsDatabasesCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
     def ExportDocuments(self, request, global_params=None):
       r"""Exports a copy of all or a subset of documents from Google Cloud Firestore to another storage system, such as Google Cloud Storage. Recent updates to documents may not be reflected in the export. The export occurs in the background and its progress can be monitored and managed via the Operation resource that is created. The output of an export may only be used once the associated operation is done. If an export operation is cancelled before completion it may leave partial data behind in Google Cloud Storage. For more details on export behavior and output format, refer to: https://cloud.google.com/firestore/docs/manage-data/export-import.
 

@@ -1259,15 +1259,6 @@ def KeyTypeFromCreateKeyType(key_type):
     return KEY_TYPES.TYPE_UNSPECIFIED
 
 
-def AccountNameValidator():
-  # https://cloud.google.com/iam/reference/rest/v1/projects.serviceAccounts/create
-  return arg_parsers.RegexpValidator(
-      r'[a-z][a-z0-9\-]{4,28}[a-z0-9]',
-      'Service account name must be between 6 and 30 characters (inclusive), '
-      'must begin with a lowercase letter, and consist of lowercase '
-      'alphanumeric characters that can be separated by hyphens.')
-
-
 def ProjectToProjectResourceName(project):
   """Turns a project id into a project resource name."""
   return 'projects/{0}'.format(project)

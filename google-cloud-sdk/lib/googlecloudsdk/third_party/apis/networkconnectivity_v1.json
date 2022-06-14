@@ -326,13 +326,17 @@
             "No state information available",
             "The resource's create operation is in progress",
             "The resource is active",
-            "The resource's Delete operation is in progress"
+            "The resource's Delete operation is in progress",
+            "The resource's Activate operation is in progress",
+            "The resource's Deactivate operation is in progress"
           ],
           "enum": [
             "STATE_UNSPECIFIED",
             "CREATING",
             "ACTIVE",
-            "DELETING"
+            "DELETING",
+            "ACTIVATING",
+            "DEACTIVATING"
           ]
         },
         "routingVpcs": {
@@ -450,13 +454,17 @@
             "No state information available",
             "The resource's create operation is in progress",
             "The resource is active",
-            "The resource's Delete operation is in progress"
+            "The resource's Delete operation is in progress",
+            "The resource's Activate operation is in progress",
+            "The resource's Deactivate operation is in progress"
           ],
           "enum": [
             "STATE_UNSPECIFIED",
             "CREATING",
             "ACTIVE",
-            "DELETING"
+            "DELETING",
+            "ACTIVATING",
+            "DEACTIVATING"
           ]
         }
       }

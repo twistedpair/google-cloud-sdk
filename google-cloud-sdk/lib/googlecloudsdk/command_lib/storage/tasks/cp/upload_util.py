@@ -22,11 +22,14 @@ from __future__ import unicode_literals
 import mimetypes
 import os
 import subprocess
+import sys
 import threading
 
 from googlecloudsdk.api_lib.storage import api_factory
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.api_lib.storage import request_config_factory
+from googlecloudsdk.command_lib.storage import buffered_upload_stream
+from googlecloudsdk.command_lib.storage import component_stream
 from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import hash_util
 from googlecloudsdk.command_lib.storage import progress_callbacks
@@ -130,8 +133,8 @@ def get_digesters(source_resource, destination_resource):
 
 
 def get_stream(source_resource,
-               length,
-               offset=0,
+               length=None,
+               offset=None,
                digesters=None,
                task_status_queue=None,
                destination_resource=None,
@@ -142,13 +145,13 @@ def get_stream(source_resource,
   Args:
     source_resource (resource_reference.FileObjectResource): Contains a path to
       the source file.
-    length (int): The total number of bytes to be uploaded.
-    offset (int): The position of the first byte to be uploaded.
-    digesters (dict[hash_util.HashAlgorithm, hash object]): Hash objects to be
-      populated as bytes are read.
+    length (int|None): The total number of bytes to be uploaded.
+    offset (int|None): The position of the first byte to be uploaded.
+    digesters (dict[hash_util.HashAlgorithm, hash object]|None): Hash objects to
+      be populated as bytes are read.
     task_status_queue (multiprocessing.Queue|None): Used for sending progress
       messages. If None, no messages will be generated or sent.
-    destination_resource (resource_reference.ObjectResource): The upload
+    destination_resource (resource_reference.ObjectResource|None): The upload
       destination. Used for progress reports, and should be specified if
       task_status_queue is.
     component_number (int|None): Identifies a component in composite uploads.
@@ -174,14 +177,30 @@ def get_stream(source_resource,
   else:
     progress_callback = None
 
-  source_stream = files.BinaryFileReader(
-      source_resource.storage_url.object_name)
-  return upload_stream.UploadStream(
-      source_stream,
-      offset,
-      length,
-      digesters=digesters,
-      progress_callback=progress_callback)
+  if source_resource.storage_url.is_stream:
+    source_stream = sys.stdin
+  else:
+    source_stream = files.BinaryFileReader(
+        source_resource.storage_url.object_name)
+
+  if source_resource.storage_url.is_pipe:
+    max_buffer_size = scaled_integer.ParseBinaryInteger(
+        properties.VALUES.storage.upload_chunk_size.Get())
+    return buffered_upload_stream.BufferedUploadStream(
+        source_stream,
+        max_buffer_size=max_buffer_size,
+        digesters=digesters,
+        progress_callback=progress_callback)
+  elif offset is None:
+    return upload_stream.UploadStream(
+        source_stream,
+        length=length,
+        digesters=digesters,
+        progress_callback=progress_callback)
+  else:
+    return component_stream.ComponentStream(
+        source_stream, offset=offset, length=length, digesters=digesters,
+        progress_callback=progress_callback)
 
 
 def validate_uploaded_object(digesters, uploaded_resource, task_status_queue):

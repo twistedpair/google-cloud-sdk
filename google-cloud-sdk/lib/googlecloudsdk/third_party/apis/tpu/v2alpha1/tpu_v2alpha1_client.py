@@ -283,6 +283,33 @@ class TpuV2alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def SimulateMaintenanceEvent(self, request, global_params=None):
+      r"""Simulates a maintenance event.
+
+      Args:
+        request: (TpuProjectsLocationsNodesSimulateMaintenanceEventRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SimulateMaintenanceEvent')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SimulateMaintenanceEvent.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2alpha1/projects/{projectsId}/locations/{locationsId}/nodes/{nodesId}:simulateMaintenanceEvent',
+        http_method='POST',
+        method_id='tpu.projects.locations.nodes.simulateMaintenanceEvent',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2alpha1/{+name}:simulateMaintenanceEvent',
+        request_field='simulateMaintenanceEventRequest',
+        request_type_name='TpuProjectsLocationsNodesSimulateMaintenanceEventRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Start(self, request, global_params=None):
       r"""Starts a node.
 

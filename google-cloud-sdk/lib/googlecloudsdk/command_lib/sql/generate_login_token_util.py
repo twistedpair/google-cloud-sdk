@@ -42,7 +42,8 @@ def generate_login_token_from_gcloud_auth(scopes):
   """
   cred = c_store.Load(
       allow_account_impersonation=True,
-      use_google_auth=True)
+      use_google_auth=True,
+      with_access_token_cache=False)
 
   cred = _downscope_credential(cred, scopes)
 

@@ -337,6 +337,10 @@
         "sourceContents": {
           "description": "Workflow code to be executed. The size limit is 128KB.",
           "type": "string"
+        },
+        "cryptoKeyName": {
+          "description": "Optional. The resource name of a KMS crypto key used to encrypt\/decrypt the data associated with the workflow. Format: projects\/{project}\/locations\/{location}\/keyRings\/{keyRing}\/cryptoKeys\/{cryptoKey} Using `-` as a wildcard for the `{project}` or not providing one at all will infer the project from the account. If not provided, data associated with the workflow will not be CMEK-encrypted. ",
+          "type": "string"
         }
       }
     },

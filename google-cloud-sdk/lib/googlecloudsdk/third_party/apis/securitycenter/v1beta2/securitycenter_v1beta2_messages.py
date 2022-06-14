@@ -44,9 +44,10 @@ class Compliance(_messages.Message):
   unmet recommendations.
 
   Fields:
-    ids: e.g. A.12.4.1
-    standard: e.g. "cis", "pci", "owasp", etc.
-    version: e.g. 1.1
+    ids: Policies within the standard/benchmark e.g. A.12.4.1
+    standard: Refers to industry wide standards or benchmarks e.g. "cis",
+      "pci", "owasp", etc.
+    version: Version of the standard/benchmark e.g. 1.1
   """
 
   ids = _messages.StringField(1, repeated=True)
@@ -525,9 +526,23 @@ class Details(_messages.Message):
   type = _messages.EnumField('TypeValueValuesEnum', 3)
 
 
+class Detection(_messages.Message):
+  r"""Memory hash detection contributing to the binary family match.
+
+  Fields:
+    binary: The name of the binary associated with the memory hash signature
+      detection.
+    percentPagesMatched: The percentage of memory page hashes in the signature
+      that were matched.
+  """
+
+  binary = _messages.StringField(1)
+  percentPagesMatched = _messages.FloatField(2)
+
+
 class EnvironmentVariable(_messages.Message):
-  r"""EnvironmentVariable is a name-value pair to store env variables for
-  Process.
+  r"""EnvironmentVariable is a name-value pair to store environment variables
+  for Process.
 
   Fields:
     name: Environment variable name as a JSON encoded string.
@@ -630,9 +645,8 @@ class ExfilResource(_messages.Message):
 
 class Exfiltration(_messages.Message):
   r"""Exfiltration represents a data exfiltration attempt of one or more
-  source(s) to one or more target(s). Source(s) represent the source of data
-  that is exfiltrated, and Target(s) represents the destination the data was
-  copied to.
+  sources to one or more targets. Sources represent the source of data that is
+  exfiltrated, and Targets represents the destination the data was copied to.
 
   Fields:
     sources: If there are multiple sources, then the data is considered
@@ -658,8 +672,8 @@ class File(_messages.Message):
     partiallyHashed: True when the hash covers only a prefix of the file.
     path: Absolute path of the file as a JSON encoded string.
     sha256: SHA256 hash of the first hashed_size bytes of the file encoded as
-      a hex string. If hashed_size == size, hash_sha256 represents the SHA256
-      hash of the entire file.
+      a hex string. If hashed_size == size, sha256 represents the SHA256 hash
+      of the entire file.
     size: Size of the file in bytes.
   """
 
@@ -735,7 +749,7 @@ class Finding(_messages.Message):
       determined by the detector. If the finding is later resolved, then this
       time reflects when the finding was resolved. This must not be set to a
       value greater than the current timestamp.
-    exfiltration: Represents exfiltrations associated with the Finding.
+    exfiltration: Represents exfiltration associated with the Finding.
     externalSystems: Output only. Third party SIEM/SOAR fields within SCC,
       contains external system information and external system finding fields.
     externalUri: The URI that, if available, points to a web page outside of
@@ -1596,10 +1610,26 @@ class Indicator(_messages.Message):
   Fields:
     domains: List of domains associated to the Finding.
     ipAddresses: List of ip addresses associated to the Finding.
+    signatures: The list of matched signatures indicating that the given
+      process is present in the environment.
   """
 
   domains = _messages.StringField(1, repeated=True)
   ipAddresses = _messages.StringField(2, repeated=True)
+  signatures = _messages.MessageField('ProcessSignature', 3, repeated=True)
+
+
+class MemoryHashSignature(_messages.Message):
+  r"""A signature corresponding to memory page hashes.
+
+  Fields:
+    binaryFamily: The binary family.
+    detections: The list of memory hash detections contributing to the binary
+      family match.
+  """
+
+  binaryFamily = _messages.StringField(1)
+  detections = _messages.MessageField('Detection', 2, repeated=True)
 
 
 class MitreAttack(_messages.Message):
@@ -1894,15 +1924,17 @@ class Process(_messages.Message):
 
   Fields:
     args: Process arguments as JSON encoded strings.
-    argumentsTruncated: True if arguments is incomplete.
+    argumentsTruncated: True if `args` is incomplete.
     binary: File information for the process executable.
     envVariables: Process environment variables.
-    envVariablesTruncated: True if env_variables is incomplete.
+    envVariablesTruncated: True if `env_variables` is incomplete.
     libraries: File information for libraries loaded by the process.
+    name: The process name visible in utilities like top and ps; it can be
+      accessed via /proc/[pid]/comm and changed with prctl(PR_SET_NAME).
     parentPid: The parent process id.
     pid: The process id.
-    script: When the process represents the invocation of a script, binary
-      provides information about the interpreter while script provides
+    script: When the process represents the invocation of a script, `binary`
+      provides information about the interpreter while `script` provides
       information about the script file provided to the interpreter.
   """
 
@@ -1912,9 +1944,23 @@ class Process(_messages.Message):
   envVariables = _messages.MessageField('EnvironmentVariable', 4, repeated=True)
   envVariablesTruncated = _messages.BooleanField(5)
   libraries = _messages.MessageField('File', 6, repeated=True)
-  parentPid = _messages.IntegerField(7)
-  pid = _messages.IntegerField(8)
-  script = _messages.MessageField('File', 9)
+  name = _messages.StringField(7)
+  parentPid = _messages.IntegerField(8)
+  pid = _messages.IntegerField(9)
+  script = _messages.MessageField('File', 10)
+
+
+class ProcessSignature(_messages.Message):
+  r"""Indicates what signature matched this process.
+
+  Fields:
+    memoryHashSignature: Signature indicating that a binary family was
+      matched.
+    yaraRuleSignature: Signature indicating that a YARA rule was matched.
+  """
+
+  memoryHashSignature = _messages.MessageField('MemoryHashSignature', 1)
+  yaraRuleSignature = _messages.MessageField('YaraRuleSignature', 2)
 
 
 class Reference(_messages.Message):
@@ -3254,6 +3300,16 @@ class WebSecurityScannerSettings(_messages.Message):
   name = _messages.StringField(2)
   serviceEnablementState = _messages.EnumField('ServiceEnablementStateValueValuesEnum', 3)
   updateTime = _messages.StringField(4)
+
+
+class YaraRuleSignature(_messages.Message):
+  r"""A signature corresponding to a YARA rule.
+
+  Fields:
+    yaraRule: The name of the YARA rule.
+  """
+
+  yaraRule = _messages.StringField(1)
 
 
 encoding.AddCustomJsonFieldMapping(

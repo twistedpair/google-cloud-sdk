@@ -5729,14 +5729,16 @@ class Commitment(_messages.Message):
 
     Values:
       ACTIVE: <no description>
+      CANCELLED: <no description>
       CREATING: <no description>
       EXPIRED: <no description>
       NOT_YET_ACTIVE: <no description>
     """
     ACTIVE = 0
-    CREATING = 1
-    EXPIRED = 2
-    NOT_YET_ACTIVE = 3
+    CANCELLED = 1
+    CREATING = 2
+    EXPIRED = 3
+    NOT_YET_ACTIVE = 4
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""The type of commitment, which affects the discount rate and the
@@ -68310,6 +68312,7 @@ class VmEndpointNatMappingsInterfaceNatMappings(_messages.Message):
     numTotalNatPorts: Total number of ports across all NAT IPs allocated to
       this interface. It equals to the aggregated port number in the field
       nat_ip_port_ranges.
+    ruleMappings: Information about mappings provided by rules in this NAT.
     sourceAliasIpRange: Alias IP range for this interface endpoint. It will be
       a private (RFC 1918) IP range. Examples: "10.33.4.55/32", or
       "192.168.5.0/24".
@@ -68320,8 +68323,37 @@ class VmEndpointNatMappingsInterfaceNatMappings(_messages.Message):
   natIpPortRanges = _messages.StringField(2, repeated=True)
   numTotalDrainNatPorts = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   numTotalNatPorts = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  sourceAliasIpRange = _messages.StringField(5)
-  sourceVirtualIp = _messages.StringField(6)
+  ruleMappings = _messages.MessageField('VmEndpointNatMappingsInterfaceNatMappingsNatRuleMappings', 5, repeated=True)
+  sourceAliasIpRange = _messages.StringField(6)
+  sourceVirtualIp = _messages.StringField(7)
+
+
+class VmEndpointNatMappingsInterfaceNatMappingsNatRuleMappings(_messages.Message):
+  r"""Contains information of NAT Mappings provided by a NAT Rule.
+
+  Fields:
+    drainNatIpPortRanges: List of all drain IP:port-range mappings assigned to
+      this interface by this rule. These ranges are inclusive, that is, both
+      the first and the last ports can be used for NAT. Example:
+      ["2.2.2.2:12345-12355", "1.1.1.1:2234-2234"].
+    natIpPortRanges: A list of all IP:port-range mappings assigned to this
+      interface by this rule. These ranges are inclusive, that is, both the
+      first and the last ports can be used for NAT. Example:
+      ["2.2.2.2:12345-12355", "1.1.1.1:2234-2234"].
+    numTotalDrainNatPorts: Total number of drain ports across all NAT IPs
+      allocated to this interface by this rule. It equals the aggregated port
+      number in the field drain_nat_ip_port_ranges.
+    numTotalNatPorts: Total number of ports across all NAT IPs allocated to
+      this interface by this rule. It equals the aggregated port number in the
+      field nat_ip_port_ranges.
+    ruleNumber: Rule number of the NAT Rule.
+  """
+
+  drainNatIpPortRanges = _messages.StringField(1, repeated=True)
+  natIpPortRanges = _messages.StringField(2, repeated=True)
+  numTotalDrainNatPorts = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  numTotalNatPorts = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  ruleNumber = _messages.IntegerField(5, variant=_messages.Variant.INT32)
 
 
 class VmEndpointNatMappingsList(_messages.Message):

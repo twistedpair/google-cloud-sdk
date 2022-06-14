@@ -585,6 +585,13 @@
         "assetTypeStats": {
           "description": "asset_type_stats stores stats on this asset type.",
           "$ref": "AssetTypeStats"
+        },
+        "facetConfigs": {
+          "description": "Mapping of facet name to its configuration.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "FacetConfig"
+          }
         }
       }
     },
@@ -741,6 +748,25 @@
         },
         "updating": {
           "description": "The number of actions with version < `version of the current rule`.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "FacetConfig": {
+      "id": "FacetConfig",
+      "description": "FacetConfig allows for configuration of faceted search.",
+      "type": "object",
+      "properties": {
+        "operators": {
+          "description": "The list of search operators to include in a facet.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "maxValues": {
+          "description": "Maximum number of facet values to return in a facet. Default is 10.",
           "type": "string",
           "format": "int64"
         }
@@ -1070,6 +1096,13 @@
           "type": "object",
           "additionalProperties": {
             "type": "string"
+          }
+        },
+        "facetConfigs": {
+          "description": "A map between facet name and its configuration within this catalog.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "FacetConfig"
           }
         }
       }

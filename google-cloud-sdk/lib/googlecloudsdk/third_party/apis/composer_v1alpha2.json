@@ -1485,6 +1485,18 @@
         "skipPypiPackagesInstallation": {
           "description": "Whether or not to skip installing Pypi packages when loading the environment's state.",
           "type": "boolean"
+        },
+        "skipEnvironmentVariablesSetting": {
+          "description": "Whether or not to skip setting environment variables when loading the environment's state.",
+          "type": "boolean"
+        },
+        "skipAirflowOverridesSetting": {
+          "description": "Whether or not to skip setting Airflow overrides when loading the environment's state.",
+          "type": "boolean"
+        },
+        "skipCopyingGcsData": {
+          "description": "Whether or not to skip copying GCS data when loading the environment's state.",
+          "type": "boolean"
         }
       }
     },

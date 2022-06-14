@@ -203,6 +203,32 @@ def ValidateFieldIndexArgs(args):
           "for each --index flag provided.")
 
 
+def UpdateFieldRequestTtls(ref, args, request):
+  """Update field request for TTL.
+
+  Args:
+    ref: The field resource reference(unused).
+    args: The parsed arg namespace.
+    request: The ttl field request.
+  Raises:
+    InvalidArgumentException: If the provided indexes are incorrectly specified.
+  Returns:
+    UpdateFieldRequest
+  """
+  messages = GetMessagesModule()
+  request.updateMask = 'ttlConfig'
+  ttl_config = None
+
+  if args.enable_ttl:
+    ttl_config = messages.GoogleFirestoreAdminV1TtlConfig()
+
+  request.googleFirestoreAdminV1Field = messages.GoogleFirestoreAdminV1Field(
+      name=ref.RelativeName(),
+      ttlConfig=ttl_config)
+
+  return request
+
+
 def CreateFieldUpdateRequest(ref, args):
   """Python hook to create the field update request.
 

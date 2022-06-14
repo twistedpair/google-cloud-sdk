@@ -12,17 +12,23 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Used for validating parameters provided to create and update integrations."""
+"""Used to validate integrations are setup correctly for deployment."""
 
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.run.integrations import types_utils
+from googlecloudsdk.api_lib.services import enable_api
+from googlecloudsdk.api_lib.services import services_util
+from googlecloudsdk.api_lib.services import serviceusage
 from googlecloudsdk.command_lib.run import exceptions
+from googlecloudsdk.core import log
+from googlecloudsdk.core import properties
+from googlecloudsdk.core.console import console_io
 
 
-def GetIntegrationValidator(integration_type, parameters):
+def GetIntegrationValidator(integration_type):
   """Gets the integration validator based on the integration type."""
   integration = types_utils.GetIntegration(integration_type)
 
@@ -31,17 +37,66 @@ def GetIntegrationValidator(integration_type, parameters):
         'Integration type: [{}] has not been defined in types_utils'
         .format(integration_type))
 
-  return Validator(integration, parameters)
+  return Validator(integration)
 
 
 class Validator:
-  """Validates parameters for creating and updating integrations."""
+  """Validates an integration is setup correctly for deployment."""
 
-  def __init__(self, integration, parameters):
+  def __init__(self, integration):
     self.integration = integration
-    self.user_provided_params = parameters
 
-  def ValidateCreateParameters(self):
+  def ValidateEnabledGcpApis(self):
+    """Validates user has all GCP APIs enabled for an integration.
+
+    If the user does not have all the GCP APIs enabled they will
+    be prompted to enable them.  If they do not want to enable them,
+    then the process will exit.
+    """
+    project_id = properties.VALUES.core.project.Get()
+    apis_not_enabled = self._GetDisabledGcpApis(project_id)
+
+    if apis_not_enabled:
+      apis_to_enable = '\n\t'.join(apis_not_enabled)
+      console_io.PromptContinue(
+          default=False,
+          cancel_on_no=True,
+          message=
+          'The following APIs are not enabled on project [{0}]:\n\t{1}'.format(
+              project_id, apis_to_enable
+          ),
+          prompt_string='Do you want enable these APIs to ' +
+          'continue (this will take a few minutes)?'
+      )
+
+      log.status.Print(
+          'Enabling APIs on project [{0}]...'.format(project_id))
+      op = serviceusage.BatchEnableApiCall(project_id, apis_not_enabled)
+      if not op.done:
+        op = services_util.WaitOperation(op.name, serviceusage.GetOperation)
+        services_util.PrintOperation(op)
+
+  def _GetDisabledGcpApis(self, project_id):
+    """Returns all GCP APIs needed for an integration.
+
+    Args:
+      project_id: The project's ID as a string.
+
+    Returns:
+      A list of strings.  Each item is a GCP API that is not enabled.
+    """
+    required_apis = self.integration['required_apis'].union(
+        types_utils.BASELINE_APIS)
+    project_id = properties.VALUES.core.project.Get()
+    apis_not_enabled = [
+        # iterable is sorted for scenario tests.  The order of API calls
+        # should happen in the same order each time for the scenario tests.
+        api for api in sorted(required_apis)
+        if not enable_api.IsServiceEnabled(project_id, api)
+    ]
+    return apis_not_enabled
+
+  def ValidateCreateParameters(self, parameters):
     """Validates parameters provided for creating an integration.
 
     Three things are done for all integrations created:
@@ -54,26 +109,32 @@ class Validator:
 
     Note that user provided params may be modified in place
     if default values are missing.
-    """
-    self._ValidateProvidedParams()
-    self._ValidateRequiredParams()
-    self._SetupDefaultParams()
 
-  def ValidateUpdateParameters(self):
+    Args:
+      parameters: A dict where the key, value mapping is provided by the user.
+    """
+    self._ValidateProvidedParams(parameters)
+    self._ValidateRequiredParams(parameters)
+    self._SetupDefaultParams(parameters)
+
+  def ValidateUpdateParameters(self, parameters):
     """Checks that certain parameters have not been updated.
 
     This firstly checks that the parameters provided exist in the mapping
     and thus are recognized the control plane.
-    """
-    self._ValidateProvidedParams()
-    self._CheckForInvalidUpdateParameters()
 
-  def _CheckForInvalidUpdateParameters(self):
+    Args:
+      parameters: A dict where the key, value mapping is provided by the user.
+    """
+    self._ValidateProvidedParams(parameters)
+    self._CheckForInvalidUpdateParameters(parameters)
+
+  def _CheckForInvalidUpdateParameters(self, user_provided_params):
     """Raises an exception that lists the parameters that can't be changed."""
     invalid_params = []
     for param_name, param in self.integration['parameters'].items():
       update_allowed = param.get('update_allowed', True)
-      if not update_allowed and param_name in self.user_provided_params:
+      if not update_allowed and param_name in user_provided_params:
         invalid_params.append(param_name)
 
     if invalid_params:
@@ -83,10 +144,10 @@ class Validator:
           .format(self._RemoveEncoding(invalid_params))
       )
 
-  def _ValidateProvidedParams(self):
+  def _ValidateProvidedParams(self, user_provided_params):
     """Checks that the user provided parameters exist in the mapping."""
     invalid_params = []
-    for param in self.user_provided_params:
+    for param in user_provided_params:
       if param not in self.integration['parameters']:
         invalid_params.append(param)
 
@@ -96,13 +157,13 @@ class Validator:
               self._RemoveEncoding(invalid_params))
       )
 
-  def _ValidateRequiredParams(self):
+  def _ValidateRequiredParams(self, user_provided_params):
     """Checks that required parameters are provided by the user."""
     missing_required_params = []
     for param_name, param in self.integration['parameters'].items():
       required = param.get('required', False)
 
-      if required and param_name not in self.user_provided_params:
+      if required and param_name not in user_provided_params:
         missing_required_params.append(param_name)
 
     if missing_required_params:
@@ -128,9 +189,9 @@ class Validator:
     """
     return [str(x) for x in elements]
 
-  def _SetupDefaultParams(self):
+  def _SetupDefaultParams(self, user_provided_params):
     """Ensures that default parameters have a value if not set."""
     for param_name, param in self.integration['parameters'].items():
       if ('default' in param and
-          param_name not in self.user_provided_params):
-        self.user_provided_params[param_name] = param['default']
+          param_name not in user_provided_params):
+        user_provided_params[param_name] = param['default']

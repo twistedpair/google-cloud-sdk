@@ -407,19 +407,6 @@ class FetchNetworkPolicyExternalAddressesResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
-class FetchPeeringRoutesResponse(_messages.Message):
-  r"""Response message for VmwareEngine.FetchPeeringRoutes
-
-  Fields:
-    nextPageToken: A token, which can be sent as `page_token` to retrieve the
-      next page. If this field is omitted, there are no subsequent pages.
-    peeringRoutes: A list of peering routes.
-  """
-
-  nextPageToken = _messages.StringField(1)
-  peeringRoutes = _messages.MessageField('PeeringRoute', 2, repeated=True)
-
-
 class Hcx(_messages.Message):
   r"""Details about a HCX Cloud Manager appliance.
 
@@ -649,6 +636,19 @@ class ListOperationsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+
+
+class ListPeeringRoutesResponse(_messages.Message):
+  r"""Response message for VmwareEngine.ListPeeringRoutes
+
+  Fields:
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    peeringRoutes: A list of peering routes.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  peeringRoutes = _messages.MessageField('PeeringRoute', 2, repeated=True)
 
 
 class ListPrivateCloudsResponse(_messages.Message):
@@ -1236,12 +1236,22 @@ class PeeringRoute(_messages.Message):
   r"""Exchanged VPC network peering route.
 
   Enums:
+    DirectionValueValuesEnum: Output only. Direction of the routes exchanged
+      with the peer network, from the VMware Engine network perspective: *
+      Routes of direction `INCOMING` are imported from the peer network. *
+      Routes of direction `OUTGOING` are exported from the intranet VPC
+      network of the VMware Engine network.
     TypeValueValuesEnum: Output only. Type of the route in the peer VPC
       network.
 
   Fields:
     destRange: Output only. Destination range of the peering route in CIDR
       notation.
+    direction: Output only. Direction of the routes exchanged with the peer
+      network, from the VMware Engine network perspective: * Routes of
+      direction `INCOMING` are imported from the peer network. * Routes of
+      direction `OUTGOING` are exported from the intranet VPC network of the
+      VMware Engine network.
     imported: Output only. True if the peering route has been imported from a
       peered VPC network; false otherwise. The import happens if the field
       `NetworkPeering.importCustomRoutes` is true for this network,
@@ -1253,6 +1263,23 @@ class PeeringRoute(_messages.Message):
     priority: Output only. The priority of the peering route.
     type: Output only. Type of the route in the peer VPC network.
   """
+
+  class DirectionValueValuesEnum(_messages.Enum):
+    r"""Output only. Direction of the routes exchanged with the peer network,
+    from the VMware Engine network perspective: * Routes of direction
+    `INCOMING` are imported from the peer network. * Routes of direction
+    `OUTGOING` are exported from the intranet VPC network of the VMware Engine
+    network.
+
+    Values:
+      DIRECTION_UNSPECIFIED: Unspecified exchanged routes direction. This is
+        default.
+      INCOMING: Routes imported from the peer network.
+      OUTGOING: Routes exported to the peer network.
+    """
+    DIRECTION_UNSPECIFIED = 0
+    INCOMING = 1
+    OUTGOING = 2
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""Output only. Type of the route in the peer VPC network.
@@ -1272,10 +1299,11 @@ class PeeringRoute(_messages.Message):
     SUBNET_PEERING_ROUTE = 3
 
   destRange = _messages.StringField(1)
-  imported = _messages.BooleanField(2)
-  nextHopRegion = _messages.StringField(3)
-  priority = _messages.IntegerField(4)
-  type = _messages.EnumField('TypeValueValuesEnum', 5)
+  direction = _messages.EnumField('DirectionValueValuesEnum', 2)
+  imported = _messages.BooleanField(3)
+  nextHopRegion = _messages.StringField(4)
+  priority = _messages.IntegerField(5)
+  type = _messages.EnumField('TypeValueValuesEnum', 6)
 
 
 class Policy(_messages.Message):
@@ -1818,60 +1846,6 @@ class VmwareengineProjectsLocationsGlobalNetworkPeeringsDeleteRequest(_messages.
   requestId = _messages.StringField(2)
 
 
-class VmwareengineProjectsLocationsGlobalNetworkPeeringsFetchRoutesRequest(_messages.Message):
-  r"""A VmwareengineProjectsLocationsGlobalNetworkPeeringsFetchRoutesRequest
-  object.
-
-  Enums:
-    DirectionValueValuesEnum: Required. Direction of the routes exchanged with
-      the peer network, from the VMware Engine network perspective: * Routes
-      of direction `INCOMING` are imported from the peer network. * Routes of
-      direction `OUTGOING` are exported from the intranet VPC network of the
-      VMware Engine network.
-
-  Fields:
-    direction: Required. Direction of the routes exchanged with the peer
-      network, from the VMware Engine network perspective: * Routes of
-      direction `INCOMING` are imported from the peer network. * Routes of
-      direction `OUTGOING` are exported from the intranet VPC network of the
-      VMware Engine network.
-    networkPeering: Required. The resource name of the VPC network peering to
-      retrieve peering routes from. Resource names are schemeless URIs that
-      follow the conventions in
-      https://cloud.google.com/apis/design/resource_names. For example:
-      `projects/my-project/locations/global/networkPeerings/my-peering`
-    pageSize: The maximum number of peering routes to return in one page. The
-      service may return fewer than this value. The maximum value is coerced
-      to 1000. The default value of this field is 500.
-    pageToken: A page token, received from a previous `FetchPeeringRoutes`
-      call. Provide this to retrieve the subsequent page. When paginating, all
-      other parameters provided to `FetchPeeringRoutes` must match the call
-      that provided the page token.
-  """
-
-  class DirectionValueValuesEnum(_messages.Enum):
-    r"""Required. Direction of the routes exchanged with the peer network,
-    from the VMware Engine network perspective: * Routes of direction
-    `INCOMING` are imported from the peer network. * Routes of direction
-    `OUTGOING` are exported from the intranet VPC network of the VMware Engine
-    network.
-
-    Values:
-      DIRECTION_UNSPECIFIED: Unspecified exchanged routes direction. This is
-        default.
-      INCOMING: Routes imported from the peer network.
-      OUTGOING: Routes exported to the peer network.
-    """
-    DIRECTION_UNSPECIFIED = 0
-    INCOMING = 1
-    OUTGOING = 2
-
-  direction = _messages.EnumField('DirectionValueValuesEnum', 1)
-  networkPeering = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-
-
 class VmwareengineProjectsLocationsGlobalNetworkPeeringsGetIamPolicyRequest(_messages.Message):
   r"""A VmwareengineProjectsLocationsGlobalNetworkPeeringsGetIamPolicyRequest
   object.
@@ -1987,6 +1961,38 @@ class VmwareengineProjectsLocationsGlobalNetworkPeeringsPatchRequest(_messages.M
   networkPeering = _messages.MessageField('NetworkPeering', 2)
   requestId = _messages.StringField(3)
   updateMask = _messages.StringField(4)
+
+
+class VmwareengineProjectsLocationsGlobalNetworkPeeringsPeeringRoutesListRequest(_messages.Message):
+  r"""A
+  VmwareengineProjectsLocationsGlobalNetworkPeeringsPeeringRoutesListRequest
+  object.
+
+  Fields:
+    filter: A filter expression that matches resources returned in the
+      response. Currently, only filtering on the `direction` field is
+      supported. To return routes imported from the peer network, provide
+      "direction=INCOMING". To return routes exported from the VMware Engine
+      network, provide "direction=OUTGOING". Other filter expressions return
+      an error.
+    pageSize: The maximum number of peering routes to return in one page. The
+      service may return fewer than this value. The maximum value is coerced
+      to 1000. The default value of this field is 500.
+    pageToken: A page token, received from a previous `ListPeeringRoutes`
+      call. Provide this to retrieve the subsequent page. When paginating, all
+      other parameters provided to `ListPeeringRoutes` must match the call
+      that provided the page token.
+    parent: Required. The resource name of the VPC network peering to retrieve
+      peering routes from. Resource names are schemeless URIs that follow the
+      conventions in https://cloud.google.com/apis/design/resource_names. For
+      example: `projects/my-project/locations/global/networkPeerings/my-
+      peering`
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class VmwareengineProjectsLocationsGlobalNetworkPeeringsSetIamPolicyRequest(_messages.Message):
@@ -2353,9 +2359,9 @@ class VmwareengineProjectsLocationsNetworkPoliciesFetchExternalAddressesRequest(
       coerced to 1000. The default value of this field is 500.
     pageToken: A page token, received from a previous
       `FetchNetworkPolicyExternalAddresses` call. Provide this to retrieve the
-      subsequent page. When paginating, all other parameters provided to
-      `FetchNetworkPolicyExternalAddresses` must match the call that provided
-      the page token.
+      subsequent page. When paginating, all parameters provided to
+      `FetchNetworkPolicyExternalAddresses`, except for page_size and
+      page_token, must match the call that provided the page token.
   """
 
   networkPolicy = _messages.StringField(1, required=True)

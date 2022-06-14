@@ -603,12 +603,14 @@ class ExecutionReference(_messages.Message):
   name to get full execution including the latest status.
 
   Fields:
+    completionTimestamp: Optional. Completion timestamp of the execution.
     creationTimestamp: Optional. Creation timestamp of the execution.
     name: Optional. Name of the execution.
   """
 
-  creationTimestamp = _messages.StringField(1)
-  name = _messages.StringField(2)
+  completionTimestamp = _messages.StringField(1)
+  creationTimestamp = _messages.StringField(2)
+  name = _messages.StringField(3)
 
 
 class ExecutionSpec(_messages.Message):

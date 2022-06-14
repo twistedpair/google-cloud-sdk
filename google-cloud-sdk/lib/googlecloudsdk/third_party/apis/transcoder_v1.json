@@ -177,6 +177,13 @@
           "type": "integer",
           "format": "int32"
         },
+        "labels": {
+          "description": "The labels associated with this job. You can use these to organize and group your jobs.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
         "error": {
           "description": "Output only. An error object that describes the reason for the failure. This property is always present when `state` is `FAILED`.",
           "readOnly": true,
@@ -1242,6 +1249,13 @@
         "config": {
           "description": "The configuration for this template.",
           "$ref": "JobConfig"
+        },
+        "labels": {
+          "description": "The labels associated with this job template. You can use these to organize and group your job templates.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },

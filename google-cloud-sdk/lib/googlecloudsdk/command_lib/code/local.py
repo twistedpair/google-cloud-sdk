@@ -304,11 +304,12 @@ class Settings(DataObject):
         allow_secret_manager=_FLAG_UNSPECIFIED,
     )
 
-  def WithServiceYaml(self, yaml_path):
+  def WithServiceYaml(self, yaml_path, is_alpha=False):
     """Overrides settings with service.yaml and returns a new Settings object.
 
     Args:
       yaml_path: Filename to read.
+      is_alpha: boolean set to true if alpha features should be used.
 
     Returns:
       New Settings object.
@@ -334,6 +335,13 @@ class Settings(DataObject):
         container_resource.SECRETS_ANNOTATION, '')
     secret_aliases = secrets_mapping.ParseAnnotation(aliases, True)
 
+    # The secrets aliases are supposed to be specified in the revision Template
+    # but we originally specified the wrong location.
+    if is_alpha and knative_service.template.IsFullObject():
+      template_aliases = knative_service.template_annotations.get(
+          container_resource.SECRETS_ANNOTATION, '')
+      secret_aliases.update(
+          secrets_mapping.ParseAnnotation(template_aliases, True))
     new_env_vars = {}
     new_env_vars_secrets = {}
     for var in container.env:
@@ -626,7 +634,8 @@ def AssembleSettings(args, release_track):
   yaml_file = _ChooseExistingServiceYaml(context_dir, service_config_arg)
   if yaml_file:
     try:
-      settings = settings.WithServiceYaml(yaml_file)
+      settings = settings.WithServiceYaml(
+          yaml_file, release_track == base.ReleaseTrack.ALPHA)
     except _ParseError:
       if service_config_may_be_app_yaml:
         try:

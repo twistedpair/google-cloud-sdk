@@ -134,12 +134,13 @@ def _WorkspaceBindingTransform(workspace_binding):
     workspace_binding["secret"]["secretName"] = popped_secret
 
   elif "volume" in workspace_binding:
+    popped_volume = workspace_binding.pop("volume")
     # Volume Claim Template.
     workspace_binding["volumeClaimTemplate"] = {"spec": {}}
 
-    if "accessMode" in workspace_binding["volume"]:
+    if "accessMode" in popped_volume:
       access_modes = []
-      for access_mode in workspace_binding["volume"].pop("accessMode").split(
+      for access_mode in popped_volume.pop("accessMode").split(
           " | "):
         if access_mode == "read":
           access_modes.append("READ_ONLY_MANY")
@@ -148,8 +149,8 @@ def _WorkspaceBindingTransform(workspace_binding):
       workspace_binding["volumeClaimTemplate"]["spec"][
           "accessModes"] = access_modes
 
-    if "storage" in workspace_binding["volume"]:
-      storage = workspace_binding["volume"].pop("storage")
+    if "storage" in popped_volume:
+      storage = popped_volume.pop("storage")
       workspace_binding["volumeClaimTemplate"]["spec"]["resources"] = {}
       workspace_binding["volumeClaimTemplate"]["spec"]["resources"][
           "requests"] = {

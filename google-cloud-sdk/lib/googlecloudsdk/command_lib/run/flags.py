@@ -319,14 +319,6 @@ def AddCpuThrottlingFlag(parser):
       'serving requests.')
 
 
-def AddConfidentialFlag(parser):
-  """Adds flag for deploying a Cloud Run service with Confidential mode."""
-  parser.add_argument(
-      '--confidential',
-      action=arg_parsers.StoreTrueFalseAction,
-      help='Enables confidential Cloud Run.')
-
-
 def AddTokenFlag(parser):
   parser.add_argument(
       '--token',
@@ -746,6 +738,13 @@ def AddConfigMapsFlags(parser):
       flag_name='config-maps')
 
 
+def AddDescriptionFlag(parser):
+  parser.add_argument(
+      '--description',
+      help='Provides an optional, human-'
+      'readable description of the service.')
+
+
 def AddLabelsFlag(parser, extra_message=''):
   """Add only the --labels flag."""
   labels_util.GetCreateLabelsFlag(
@@ -1025,6 +1024,42 @@ def AddBinAuthzBreakglassFlag(parser):
       'and allow the operation. See '
       'https://cloud.google.com/binary-authorization/docs/using-breakglass '
       'for more information.')
+
+
+def AddVpcNetworkFlags(parser, resource_kind='Service'):
+  """Add flags for VPC network."""
+  parser.add_argument(
+      '--network',
+      metavar='NETWORK',
+      hidden=True,
+      help='The Compute Engine Network that the Cloud Run {kind} will connect '
+      'to. If --subnet is also specified, subnet must be a subnetwork of the '
+      'network specified by this --network flag.'.format(kind=resource_kind))
+
+
+def AddVpcSubnetFlags(parser, resource_kind='Service'):
+  """Add flags for VPC network."""
+  parser.add_argument(
+      '--subnet',
+      metavar='SUBNET',
+      hidden=True,
+      help='The Google Compute Engine subnetwork that the Cloud Run {kind} '
+      'will connect to. If --network is also specified, subnet must be a '
+      'subnetwork of the network specified by the --network flag. If --network '
+      'is not specified, network will be looked up from this '
+      'subnetwork.'.format(kind=resource_kind))
+
+
+def AddVpcNetworkTagsFlags(parser, resource_kind='Service'):
+  """Add flags for VPC network."""
+  parser.add_argument(
+      '--network-tags',
+      metavar='TAG',
+      hidden=True,
+      type=arg_parsers.ArgList(),
+      action=arg_parsers.UpdateAction,
+      help='Applies the given Compute Engine tags (comma separated) on the '
+      'Cloud Run {kind}.'.format(kind=resource_kind))
 
 
 def AddCustomAudiencesFlag(parser, with_clear=True):
@@ -1455,8 +1490,18 @@ def _GetConfigurationChanges(args):
     changes.append(
         config_changes.SetAnnotationChange(
             k8s_object.CUSTOM_AUDIENCES_ANNOTATION))
+  if FlagIsExplicitlySet(args, 'description'):
+    changes.append(
+        config_changes.SetAnnotationChange(k8s_object.DESCRIPTION_ANNOTATION,
+                                           args.description))
   if 'execution_environment' in args and args.execution_environment:
     changes.append(config_changes.SandboxChange(args.execution_environment))
+  if (FlagIsExplicitlySet(args, 'network') or
+      FlagIsExplicitlySet(args, 'subnet') or
+      FlagIsExplicitlySet(args, 'network_tags')):
+    changes.append(
+        config_changes.NetworkInterfacesChange(args.network, args.subnet,
+                                               args.network_tags))
   return changes
 
 
@@ -1499,9 +1544,6 @@ def GetServiceConfigurationChanges(args):
   if FlagIsExplicitlySet(args, 'cpu_throttling'):
     changes.append(
         config_changes.CpuThrottlingChange(throttling=args.cpu_throttling))
-  if FlagIsExplicitlySet(args, 'confidential'):
-    changes.append(
-        config_changes.ConfidentialChange(confidential=args.confidential))
   if FlagIsExplicitlySet(args, 'session_affinity'):
     if args.session_affinity:
       changes.append(
@@ -1864,6 +1906,30 @@ def VerifyGKEFlags(args, release_track, product):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--breakglass',
+            platform=platforms.PLATFORM_MANAGED,
+            platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
+                platforms.PLATFORM_MANAGED]))
+
+  if FlagIsExplicitlySet(args, 'network'):
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--network',
+            platform=platforms.PLATFORM_MANAGED,
+            platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
+                platforms.PLATFORM_MANAGED]))
+
+  if FlagIsExplicitlySet(args, 'subnet'):
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--subnet',
+            platform=platforms.PLATFORM_MANAGED,
+            platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
+                platforms.PLATFORM_MANAGED]))
+
+  if FlagIsExplicitlySet(args, 'network-tags'):
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--network-tags',
             platform=platforms.PLATFORM_MANAGED,
             platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
                 platforms.PLATFORM_MANAGED]))

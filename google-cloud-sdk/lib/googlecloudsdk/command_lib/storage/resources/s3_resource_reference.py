@@ -150,7 +150,8 @@ class S3ObjectResource(resource_reference.ObjectResource):
                md5_hash=None,
                metadata=None,
                metageneration=None,
-               size=None):
+               size=None,
+               storage_class=None):
     """Initializes resource. Args are a subset of attributes."""
     super(S3ObjectResource, self).__init__(
         storage_url_object,
@@ -161,7 +162,8 @@ class S3ObjectResource(resource_reference.ObjectResource):
         md5_hash=md5_hash,
         metadata=metadata,
         metageneration=metageneration,
-        size=size)
+        size=size,
+        storage_class=storage_class)
 
   def get_displayable_object_data(self):
     return resource_reference.DisplayableObjectData(

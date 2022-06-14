@@ -137,7 +137,8 @@ def get_object_resource_from_s3_response(object_dict,
       etag=etag,
       md5_hash=_get_md5_hash_from_etag(etag, object_url),
       metadata=object_dict,
-      size=size)
+      size=size,
+      storage_class=object_dict.get('StorageClass'))
 
 
 def get_prefix_resource_from_s3_response(prefix_dict, bucket_name):

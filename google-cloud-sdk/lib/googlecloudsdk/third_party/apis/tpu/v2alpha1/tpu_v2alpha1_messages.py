@@ -972,6 +972,19 @@ class ShieldedInstanceConfig(_messages.Message):
   enableSecureBoot = _messages.BooleanField(1)
 
 
+class SimulateMaintenanceEventRequest(_messages.Message):
+  r"""Request for SimulateMaintenanceEvent.
+
+  Fields:
+    workerIds: The 0-based worker ID. If it is empty, worker ID 0 will be
+      selected for maintenance event simulation. A maintenance event will only
+      be fired on the first specified worker ID. Future implementations may
+      support firing on multiple workers.
+  """
+
+  workerIds = _messages.StringField(1, repeated=True)
+
+
 class StandardQueryParameters(_messages.Message):
   r"""Query parameters accepted by all methods.
 
@@ -1306,6 +1319,19 @@ class TpuProjectsLocationsNodesPatchRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
   node = _messages.MessageField('Node', 2)
   updateMask = _messages.StringField(3)
+
+
+class TpuProjectsLocationsNodesSimulateMaintenanceEventRequest(_messages.Message):
+  r"""A TpuProjectsLocationsNodesSimulateMaintenanceEventRequest object.
+
+  Fields:
+    name: Required. The resource name.
+    simulateMaintenanceEventRequest: A SimulateMaintenanceEventRequest
+      resource to be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  simulateMaintenanceEventRequest = _messages.MessageField('SimulateMaintenanceEventRequest', 2)
 
 
 class TpuProjectsLocationsNodesStartRequest(_messages.Message):

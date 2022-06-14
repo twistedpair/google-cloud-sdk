@@ -36,6 +36,7 @@ def RegionAttributeConfig():
 def GetTriggerResourceSpec():
   return concepts.ResourceSpec(
       'cloudbuild.projects.locations.triggers',
+      api_version='v1',
       resource_name='trigger',
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       locationsId=RegionAttributeConfig(),

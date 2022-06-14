@@ -195,3 +195,19 @@ def GetDiskInfo(disk_ref, client, messages):
     return _ZonalDisk(client, disk_ref, messages)
   else:
     return _RegionalDisk(client, disk_ref, messages)
+
+
+def IsProvisioingTypeIops(disk_type):
+  """Check if the given disk type (name or URI) supports IOPS provisioning.
+
+  Args:
+    disk_type: name of URI of the disk type to be checked.
+
+  Returns:
+    Boolean, true if the disk_type supports IOPS provisioning (currently only
+    pd-extreme and cs-extreme support it), false otherwise.
+  """
+
+  return (disk_type.endswith('/pd-extreme') or
+          disk_type.endswith('/cs-extreme') or
+          disk_type in ['pd-extreme', 'cs-extreme'])

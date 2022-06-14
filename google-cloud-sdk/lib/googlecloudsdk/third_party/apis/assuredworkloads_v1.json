@@ -224,7 +224,8 @@
             "Health Insurance Portability and Accountability Act controls",
             "Health Information Trust Alliance controls",
             "Assured Workloads For EU Regions and Support controls",
-            "Assured Workloads For Canada Regions and Support controls"
+            "Assured Workloads For Canada Regions and Support controls",
+            "International Traffic in Arms Regulations"
           ],
           "enum": [
             "COMPLIANCE_REGIME_UNSPECIFIED",
@@ -236,7 +237,8 @@
             "HIPAA",
             "HITRUST",
             "EU_REGIONS_AND_SUPPORT",
-            "CA_REGIONS_AND_SUPPORT"
+            "CA_REGIONS_AND_SUPPORT",
+            "ITAR"
           ]
         },
         "createTime": {
@@ -479,7 +481,8 @@
             "Health Insurance Portability and Accountability Act controls",
             "Health Information Trust Alliance controls",
             "Assured Workloads For EU Regions and Support controls",
-            "Assured Workloads For Canada Regions and Support controls"
+            "Assured Workloads For Canada Regions and Support controls",
+            "International Traffic in Arms Regulations"
           ],
           "enum": [
             "COMPLIANCE_REGIME_UNSPECIFIED",
@@ -491,7 +494,8 @@
             "HIPAA",
             "HITRUST",
             "EU_REGIONS_AND_SUPPORT",
-            "CA_REGIONS_AND_SUPPORT"
+            "CA_REGIONS_AND_SUPPORT",
+            "ITAR"
           ]
         }
       }
@@ -527,7 +531,8 @@
             "Health Insurance Portability and Accountability Act controls",
             "Health Information Trust Alliance controls",
             "Assured Workloads For EU Regions and Support controls",
-            "Assured Workloads For Canada Regions and Support controls"
+            "Assured Workloads For Canada Regions and Support controls",
+            "International Traffic in Arms Regulations"
           ],
           "enum": [
             "COMPLIANCE_REGIME_UNSPECIFIED",
@@ -539,7 +544,8 @@
             "HIPAA",
             "HITRUST",
             "EU_REGIONS_AND_SUPPORT",
-            "CA_REGIONS_AND_SUPPORT"
+            "CA_REGIONS_AND_SUPPORT",
+            "ITAR"
           ]
         },
         "resourceSettings": {
@@ -618,7 +624,8 @@
             "Health Insurance Portability and Accountability Act controls",
             "Health Information Trust Alliance controls",
             "Assured Workloads For EU Regions and Support controls",
-            "Assured Workloads For Canada Regions and Support controls"
+            "Assured Workloads For Canada Regions and Support controls",
+            "International Traffic in Arms Regulations"
           ],
           "enum": [
             "COMPLIANCE_REGIME_UNSPECIFIED",
@@ -630,7 +637,8 @@
             "HIPAA",
             "HITRUST",
             "EU_REGIONS_AND_SUPPORT",
-            "CA_REGIONS_AND_SUPPORT"
+            "CA_REGIONS_AND_SUPPORT",
+            "ITAR"
           ]
         },
         "createTime": {
@@ -875,7 +883,8 @@
             "Health Insurance Portability and Accountability Act controls",
             "Health Information Trust Alliance controls",
             "Assured Workloads For EU Regions and Support controls",
-            "Assured Workloads For Canada Regions and Support controls"
+            "Assured Workloads For Canada Regions and Support controls",
+            "International Traffic in Arms Regulations"
           ],
           "enum": [
             "COMPLIANCE_REGIME_UNSPECIFIED",
@@ -887,7 +896,8 @@
             "HIPAA",
             "HITRUST",
             "EU_REGIONS_AND_SUPPORT",
-            "CA_REGIONS_AND_SUPPORT"
+            "CA_REGIONS_AND_SUPPORT",
+            "ITAR"
           ]
         },
         "resourceSettings": {
@@ -966,7 +976,8 @@
             "Health Insurance Portability and Accountability Act controls",
             "Health Information Trust Alliance controls",
             "Assured Workloads For EU Regions and Support controls",
-            "Assured Workloads For Canada Regions and Support controls"
+            "Assured Workloads For Canada Regions and Support controls",
+            "International Traffic in Arms Regulations"
           ],
           "enum": [
             "COMPLIANCE_REGIME_UNSPECIFIED",
@@ -978,7 +989,8 @@
             "HIPAA",
             "HITRUST",
             "EU_REGIONS_AND_SUPPORT",
-            "CA_REGIONS_AND_SUPPORT"
+            "CA_REGIONS_AND_SUPPORT",
+            "ITAR"
           ]
         },
         "createTime": {

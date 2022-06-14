@@ -738,3 +738,25 @@ def FinalizeUpgradeRedirection(unused_ref, args):
     log.status.Print("No changes made.")
     return None
   return ar_requests.FinalizeUpgradeRedirection(GetProject(args))
+
+
+def SanitizeRemoteRepositoryConfig(unused_ref, args, request):
+  """Make sure that only one remote source is set at the same time."""
+  if args.remote_mvn_repo:
+    request.repository.remoteRepositoryConfig.dockerRepository = None
+    request.repository.remoteRepositoryConfig.npmRepository = None
+    request.repository.remoteRepositoryConfig.pythonRepository = None
+  elif args.remote_docker_repo:
+    request.repository.remoteRepositoryConfig.mavenRepository = None
+    request.repository.remoteRepositoryConfig.npmRepository = None
+    request.repository.remoteRepositoryConfig.pythonRepository = None
+  elif args.remote_npm_repo:
+    request.repository.remoteRepositoryConfig.dockerRepository = None
+    request.repository.remoteRepositoryConfig.mavenRepository = None
+    request.repository.remoteRepositoryConfig.pythonRepository = None
+  elif args.remote_python_repo:
+    request.repository.remoteRepositoryConfig.dockerRepository = None
+    request.repository.remoteRepositoryConfig.npmRepository = None
+    request.repository.remoteRepositoryConfig.mavenRepository = None
+
+  return request

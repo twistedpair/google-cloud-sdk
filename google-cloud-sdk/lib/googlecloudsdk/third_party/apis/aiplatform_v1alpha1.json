@@ -3583,6 +3583,11 @@
           "description": "Required. The model monitoring job scheduling interval. It will be rounded up to next full hour. This defines how often the monitoring jobs are triggered.",
           "type": "string",
           "format": "google-duration"
+        },
+        "monitorWindow": {
+          "description": "The time window of the prediction data being included in each prediction dataset. This window specifies how long the data should be collected from historical model results for each run. If not set, ModelDeploymentMonitoringScheduleConfig.monitor_interval will be used. e.g. If currently the cutoff time is 2022-01-08 14:30:00 and the monitor_window is set to be 3600, then data from 2022-01-08 13:30:00 to 2022-01-08 14:30:00 will be retrieved and aggregated to calculate the monitoring statistics.",
+          "type": "string",
+          "format": "google-duration"
         }
       }
     },
@@ -5696,24 +5701,6 @@
             "PIPELINE_FAILURE_POLICY_FAIL_SLOW",
             "PIPELINE_FAILURE_POLICY_FAIL_FAST"
           ]
-        },
-        "inputArtifacts": {
-          "description": "The runtime artifacts of the PipelineJob. The key will be the input artifact name and the value would be one of the InputArtifact.",
-          "type": "object",
-          "additionalProperties": {
-            "$ref": "GoogleCloudAiplatformV1alpha1PipelineJobRuntimeConfigInputArtifact"
-          }
-        }
-      }
-    },
-    "GoogleCloudAiplatformV1alpha1PipelineJobRuntimeConfigInputArtifact": {
-      "id": "GoogleCloudAiplatformV1alpha1PipelineJobRuntimeConfigInputArtifact",
-      "description": "The type of an input artifact.",
-      "type": "object",
-      "properties": {
-        "artifactName": {
-          "description": "Artifact resource id from MLMD in the format of `projects\/{project}\/locations\/{location}\/metadataStores\/default\/artifacts\/{artifact}`. The artifact must stay within the same project, location and default metadatastore as the pipeline.",
-          "type": "string"
         }
       }
     },
@@ -17894,6 +17881,10 @@
         "disableEarlyStopping": {
           "description": "Use the entire training budget. This disables the early stopping feature. When false the early stopping feature is enabled, which means that AutoML Image Object Detection might stop training before the entire training budget has been used.",
           "type": "boolean"
+        },
+        "uptrainBaseModelId": {
+          "description": "The ID of `base` model for upTraining. If it is specified, the new model will be upTrained based on the `base` model for upTraining. Otherwise, the new model will be trained from scratch. The `base` model for upTraining must be in the same Project and Location as the new Model to train, and have the same modelType.",
+          "type": "string"
         }
       }
     },
@@ -23192,6 +23183,10 @@
         "disableEarlyStopping": {
           "description": "Use the entire training budget. This disables the early stopping feature. When false the early stopping feature is enabled, which means that AutoML Image Object Detection might stop training before the entire training budget has been used.",
           "type": "boolean"
+        },
+        "uptrainBaseModelId": {
+          "description": "The ID of `base` model for upTraining. If it is specified, the new model will be upTrained based on the `base` model for upTraining. Otherwise, the new model will be trained from scratch. The `base` model for upTraining must be in the same Project and Location as the new Model to train, and have the same modelType.",
+          "type": "string"
         }
       }
     },

@@ -137,7 +137,8 @@ class GkemulticloudProjectsLocationsAwsClustersAwsNodePoolsPatchRequest(_message
       `config.proxy_config.secret_arn`. *
       `config.proxy_config.secret_version`. * `config.ssh_config`. *
       `config.ssh_config.ec2_key_pair`. * `config.instance_placement.tenancy`.
-      * `config.instance_type`. * `config.iam_instance_profile`.
+      * `config.instance_type`. * `config.iam_instance_profile`. *
+      `config.labels`.
     validateOnly: If set, only validate the request, but don't actually update
       the node pool.
   """

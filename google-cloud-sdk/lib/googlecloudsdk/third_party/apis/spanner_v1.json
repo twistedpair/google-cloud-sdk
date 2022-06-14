@@ -791,6 +791,15 @@
             "GOOGLE_STANDARD_SQL",
             "POSTGRESQL"
           ]
+        },
+        "enableDropProtection": {
+          "description": "Whether drop protection is enabled for this database. Defaults to false, if not set.",
+          "type": "boolean"
+        },
+        "reconciling": {
+          "description": "Output only. If true, the database is being updated. If false, there are no ongoing update operations for the database.",
+          "readOnly": true,
+          "type": "boolean"
         }
       }
     },
@@ -3811,6 +3820,41 @@
                     "https://www.googleapis.com/auth/spanner.admin"
                   ],
                   "description": "Gets the state of a Cloud Spanner database."
+                },
+                "patch": {
+                  "id": "spanner.projects.instances.databases.patch",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the database. Values are of the form `projects\/\/instances\/\/databases\/`, where `` is as specified in the `CREATE DATABASE` statement. This name can be passed to other API methods to identify the database.",
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/databases\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Required. The list of fields to update. Currently, only `enable_drop_protection` field can be updated.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "Database"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/spanner.admin"
+                  ],
+                  "description": "Updates a Cloud Spanner database. The returned long-running operation can be used to track the progress of updating the database. If the named database does not exist, returns `NOT_FOUND`. While the operation is pending: * The database's reconciling field is set to true. * Cancelling the operation is best-effort. If the cancellation succeeds, the operation metadata's cancel_time is set, the updates are reverted, and the operation terminates with a `CANCELLED` status. * New UpdateDatabase requests will return a `FAILED_PRECONDITION` error until the pending operation is done (returns successfully or with error). * Reading the database via the API continues to give the pre-request values. Upon completion of the returned operation: * The new values are in effect and readable via the API. * The database's reconciling field becomes false. The returned long-running operation will have a name of the format `projects\/\/instances\/\/databases\/\/operations\/` and can be used to track the database modification. The metadata field type is UpdateDatabaseMetadata. The response field type is Database, if successful."
                 },
                 "updateDdl": {
                   "id": "spanner.projects.instances.databases.updateDdl",

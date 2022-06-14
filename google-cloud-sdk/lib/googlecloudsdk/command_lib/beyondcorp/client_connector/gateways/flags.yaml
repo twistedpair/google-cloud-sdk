@@ -16,5 +16,5 @@ client_connector_service:
   arg_name: client-connector-service
   required: true
   help_text: |-
-    The client connector service that the client gateway is associated with. Client connector service, named as follows-
-    `projects/${PROJECT_ID}/locations/${LOCATION_ID}/clientConnectorServices/${CLIENT_CONNECTOR_SERVICE_ID}`.
+    The client connector service that the client gateway is associated with. Example -
+    `projects/consumer-project-id/locations/us-central1/clientConnectorServices/my-service-resource`.

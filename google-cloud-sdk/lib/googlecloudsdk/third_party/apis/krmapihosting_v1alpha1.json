@@ -385,6 +385,13 @@
         "enabled": {
           "description": "Whether the Config Controller bundle is enabled on the KrmApiHost.",
           "type": "boolean"
+        },
+        "experimentalFeatures": {
+          "description": "The experimentalFeautres of Config Controller bundle that will be installed on the krmApiHost.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },

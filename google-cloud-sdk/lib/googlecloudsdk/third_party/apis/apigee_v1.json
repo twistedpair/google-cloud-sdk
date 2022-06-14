@@ -1609,6 +1609,10 @@
         "nodeConfig": {
           "description": "Optional. NodeConfig of the environment.",
           "$ref": "GoogleCloudApigeeV1NodeConfig"
+        },
+        "forwardProxyUri": {
+          "description": "Optional. Url of the forward proxy to be applied to the runtime instances in this environment. Must be in the format of {scheme}:\/\/{hostname}:{port}. Note that scheme must be one of \"http\" or \"https\", and port must be supplied.",
+          "type": "string"
         }
       }
     },
@@ -1769,6 +1773,10 @@
         },
         "arcConfigLocation": {
           "description": "The location for the config blob of API Runtime Control, aka Envoy Adapter, for op-based authentication as a URI, e.g. a Cloud Storage URI. This is only used by Envoy-based gateways.",
+          "type": "string"
+        },
+        "forwardProxyUri": {
+          "description": "The forward proxy's url to be used by the runtime. When set, runtime will send requests to the target via the given forward proxy. This is only used by programmable gateways.",
           "type": "string"
         }
       }
@@ -6057,7 +6065,7 @@
           "type": "string"
         },
         "encrypted": {
-          "description": "Optional. Flag that specifies whether entry values will be encrypted. Enable to encrypt entry values.",
+          "description": "Optional. Flag that specifies whether entry values will be encrypted. You must set this value to `true`. Apigee X and hybrid do not support unencrytped key value maps.",
           "type": "boolean"
         },
         "resourceName": {
@@ -7847,7 +7855,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "name": {
-                          "description": "Required. Scope as indicated by the URI in which to fetch the key value map entry\/value. Use one of the following formats in your request: `organizations\/{organization}\/apis\/{api}\/keyvaluemaps\/{keyvaluemap}\/entries\/{entry}`. `organizations\/{organization}\/environments\/{environment}\/keyvaluemaps\/{keyvaluemap}\/entries\/{entry}` `organizations\/{organization}\/keyvaluemaps\/{keyvaluemap}\/entries\/{entry}`.",
+                          "description": "Required. Scope as indicated by the URI in which to fetch the key value map entry\/value. Use **one** of the following structures in your request: * `organizations\/{organization}\/apis\/{api}\/keyvaluemaps\/{keyvaluemap}\/entries\/{entry}`. * `organizations\/{organization}\/environments\/{environment}\/keyvaluemaps\/{keyvaluemap}\/entries\/{entry}` * `organizations\/{organization}\/keyvaluemaps\/{keyvaluemap}\/entries\/{entry}`.",
                           "pattern": "^organizations\/[^\/]+\/apis\/[^\/]+\/keyvaluemaps\/[^\/]+\/entries\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -7872,7 +7880,7 @@
                       "httpMethod": "DELETE",
                       "parameters": {
                         "name": {
-                          "description": "Required. Scope as indicated by the URI in which to delete the key value map entry. Use one of the following formats in your request: `organizations\/{organization}\/apis\/{api}\/keyvaluemaps\/{keyvaluemap}\/entries\/{entry}`. `organizations\/{organization}\/environments\/{environment}\/keyvaluemaps\/{keyvaluemap}\/entries\/{entry}` `organizations\/{organization}\/keyvaluemaps\/{keyvaluemap}\/entries\/{entry}`.",
+                          "description": "Required. Scope as indicated by the URI in which to delete the key value map entry. Use **one** of the following structures in your request: * `organizations\/{organization}\/apis\/{api}\/keyvaluemaps\/{keyvaluemap}\/entries\/{entry}`. * `organizations\/{organization}\/environments\/{environment}\/keyvaluemaps\/{keyvaluemap}\/entries\/{entry}` * `organizations\/{organization}\/keyvaluemaps\/{keyvaluemap}\/entries\/{entry}`.",
                           "pattern": "^organizations\/[^\/]+\/apis\/[^\/]+\/keyvaluemaps\/[^\/]+\/entries\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -7888,7 +7896,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Deletes a key value entry from an org, environment or apis scoped key value map."
+                      "description": "Deletes a key value entry from a key value map scoped to an organization, environment, or API proxy. **Note:** After you delete the key value entry, the policy consuming the entry will continue to function with its cached values for a few minutes. This is expected behavior."
                     },
                     "create": {
                       "id": "apigee.organizations.apis.keyvaluemaps.entries.create",
@@ -7897,7 +7905,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "parent": {
-                          "description": "Required. Scope as indicated by the URI in which to create the key value map entry. Use one of the following formats in your request: `organizations\/{organization}\/apis\/{api}\/keyvaluemaps\/{keyvaluemap}`. `organizations\/{organization}\/environments\/{environment}\/keyvaluemaps\/{keyvaluemap}` `organizations\/{organization}\/keyvaluemaps\/{keyvaluemap}`.",
+                          "description": "Required. Scope as indicated by the URI in which to create the key value map entry. Use **one** of the following structures in your request: * `organizations\/{organization}\/apis\/{api}\/keyvaluemaps\/{keyvaluemap}`. * `organizations\/{organization}\/environments\/{environment}\/keyvaluemaps\/{keyvaluemap}` * `organizations\/{organization}\/keyvaluemaps\/{keyvaluemap}`.",
                           "pattern": "^organizations\/[^\/]+\/apis\/[^\/]+\/keyvaluemaps\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -7916,7 +7924,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Creates key value entries in a org, env or apis scoped key value map."
+                      "description": "Creates key value entries in a key value map scoped to an organization, environment, or API proxy."
                     },
                     "list": {
                       "id": "apigee.organizations.apis.keyvaluemaps.entries.list",
@@ -7925,7 +7933,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "Required. Scope as indicated by the URI in which to list key value maps. Use one of the following formats in your request: `organizations\/{organization}\/apis\/{api}\/keyvaluemaps\/{keyvaluemap}`. `organizations\/{organization}\/environments\/{environment}\/keyvaluemaps\/{keyvaluemap}` `organizations\/{organization}\/keyvaluemaps\/{keyvaluemap}`.",
+                          "description": "Required. Scope as indicated by the URI in which to list key value maps. Use **one** of the following structures in your request: * `organizations\/{organization}\/apis\/{api}\/keyvaluemaps\/{keyvaluemap}`. * `organizations\/{organization}\/environments\/{environment}\/keyvaluemaps\/{keyvaluemap}` * `organizations\/{organization}\/keyvaluemaps\/{keyvaluemap}`.",
                           "pattern": "^organizations\/[^\/]+\/apis\/[^\/]+\/keyvaluemaps\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -7938,7 +7946,7 @@
                           "format": "int32"
                         },
                         "pageToken": {
-                          "description": "Optional. Page token, a key value entry returned from a previous call that can use to retrieve the next page.",
+                          "description": "Optional. Page token. If provides, must be a valid key value entry returned from a previous call that can be used to retrieve the next page.",
                           "location": "query",
                           "type": "string"
                         }
@@ -8368,7 +8376,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Deletes an environment from an organization."
+              "description": "Deletes an environment from an organization. **Note**: You must delete all key value maps and key value entries before you can delete an environment."
             },
             "get": {
               "id": "apigee.organizations.environments.get",
@@ -11163,7 +11171,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "name": {
-                          "description": "Required. Scope as indicated by the URI in which to fetch the key value map entry\/value. Use one of the following formats in your request: `organizations\/{organization}\/apis\/{api}\/keyvaluemaps\/{keyvaluemap}\/entries\/{entry}`. `organizations\/{organization}\/environments\/{environment}\/keyvaluemaps\/{keyvaluemap}\/entries\/{entry}` `organizations\/{organization}\/keyvaluemaps\/{keyvaluemap}\/entries\/{entry}`.",
+                          "description": "Required. Scope as indicated by the URI in which to fetch the key value map entry\/value. Use **one** of the following structures in your request: * `organizations\/{organization}\/apis\/{api}\/keyvaluemaps\/{keyvaluemap}\/entries\/{entry}`. * `organizations\/{organization}\/environments\/{environment}\/keyvaluemaps\/{keyvaluemap}\/entries\/{entry}` * `organizations\/{organization}\/keyvaluemaps\/{keyvaluemap}\/entries\/{entry}`.",
                           "pattern": "^organizations\/[^\/]+\/environments\/[^\/]+\/keyvaluemaps\/[^\/]+\/entries\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -11188,7 +11196,7 @@
                       "httpMethod": "DELETE",
                       "parameters": {
                         "name": {
-                          "description": "Required. Scope as indicated by the URI in which to delete the key value map entry. Use one of the following formats in your request: `organizations\/{organization}\/apis\/{api}\/keyvaluemaps\/{keyvaluemap}\/entries\/{entry}`. `organizations\/{organization}\/environments\/{environment}\/keyvaluemaps\/{keyvaluemap}\/entries\/{entry}` `organizations\/{organization}\/keyvaluemaps\/{keyvaluemap}\/entries\/{entry}`.",
+                          "description": "Required. Scope as indicated by the URI in which to delete the key value map entry. Use **one** of the following structures in your request: * `organizations\/{organization}\/apis\/{api}\/keyvaluemaps\/{keyvaluemap}\/entries\/{entry}`. * `organizations\/{organization}\/environments\/{environment}\/keyvaluemaps\/{keyvaluemap}\/entries\/{entry}` * `organizations\/{organization}\/keyvaluemaps\/{keyvaluemap}\/entries\/{entry}`.",
                           "pattern": "^organizations\/[^\/]+\/environments\/[^\/]+\/keyvaluemaps\/[^\/]+\/entries\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -11204,7 +11212,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Deletes a key value entry from an org, environment or apis scoped key value map."
+                      "description": "Deletes a key value entry from a key value map scoped to an organization, environment, or API proxy. **Note:** After you delete the key value entry, the policy consuming the entry will continue to function with its cached values for a few minutes. This is expected behavior."
                     },
                     "create": {
                       "id": "apigee.organizations.environments.keyvaluemaps.entries.create",
@@ -11213,7 +11221,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "parent": {
-                          "description": "Required. Scope as indicated by the URI in which to create the key value map entry. Use one of the following formats in your request: `organizations\/{organization}\/apis\/{api}\/keyvaluemaps\/{keyvaluemap}`. `organizations\/{organization}\/environments\/{environment}\/keyvaluemaps\/{keyvaluemap}` `organizations\/{organization}\/keyvaluemaps\/{keyvaluemap}`.",
+                          "description": "Required. Scope as indicated by the URI in which to create the key value map entry. Use **one** of the following structures in your request: * `organizations\/{organization}\/apis\/{api}\/keyvaluemaps\/{keyvaluemap}`. * `organizations\/{organization}\/environments\/{environment}\/keyvaluemaps\/{keyvaluemap}` * `organizations\/{organization}\/keyvaluemaps\/{keyvaluemap}`.",
                           "pattern": "^organizations\/[^\/]+\/environments\/[^\/]+\/keyvaluemaps\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -11232,7 +11240,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Creates key value entries in a org, env or apis scoped key value map."
+                      "description": "Creates key value entries in a key value map scoped to an organization, environment, or API proxy."
                     },
                     "list": {
                       "id": "apigee.organizations.environments.keyvaluemaps.entries.list",
@@ -11241,7 +11249,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "Required. Scope as indicated by the URI in which to list key value maps. Use one of the following formats in your request: `organizations\/{organization}\/apis\/{api}\/keyvaluemaps\/{keyvaluemap}`. `organizations\/{organization}\/environments\/{environment}\/keyvaluemaps\/{keyvaluemap}` `organizations\/{organization}\/keyvaluemaps\/{keyvaluemap}`.",
+                          "description": "Required. Scope as indicated by the URI in which to list key value maps. Use **one** of the following structures in your request: * `organizations\/{organization}\/apis\/{api}\/keyvaluemaps\/{keyvaluemap}`. * `organizations\/{organization}\/environments\/{environment}\/keyvaluemaps\/{keyvaluemap}` * `organizations\/{organization}\/keyvaluemaps\/{keyvaluemap}`.",
                           "pattern": "^organizations\/[^\/]+\/environments\/[^\/]+\/keyvaluemaps\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -11254,7 +11262,7 @@
                           "format": "int32"
                         },
                         "pageToken": {
-                          "description": "Optional. Page token, a key value entry returned from a previous call that can use to retrieve the next page.",
+                          "description": "Optional. Page token. If provides, must be a valid key value entry returned from a previous call that can be used to retrieve the next page.",
                           "location": "query",
                           "type": "string"
                         }
@@ -15234,7 +15242,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. Scope as indicated by the URI in which to fetch the key value map entry\/value. Use one of the following formats in your request: `organizations\/{organization}\/apis\/{api}\/keyvaluemaps\/{keyvaluemap}\/entries\/{entry}`. `organizations\/{organization}\/environments\/{environment}\/keyvaluemaps\/{keyvaluemap}\/entries\/{entry}` `organizations\/{organization}\/keyvaluemaps\/{keyvaluemap}\/entries\/{entry}`.",
+                      "description": "Required. Scope as indicated by the URI in which to fetch the key value map entry\/value. Use **one** of the following structures in your request: * `organizations\/{organization}\/apis\/{api}\/keyvaluemaps\/{keyvaluemap}\/entries\/{entry}`. * `organizations\/{organization}\/environments\/{environment}\/keyvaluemaps\/{keyvaluemap}\/entries\/{entry}` * `organizations\/{organization}\/keyvaluemaps\/{keyvaluemap}\/entries\/{entry}`.",
                       "pattern": "^organizations\/[^\/]+\/keyvaluemaps\/[^\/]+\/entries\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -15259,7 +15267,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Required. Scope as indicated by the URI in which to delete the key value map entry. Use one of the following formats in your request: `organizations\/{organization}\/apis\/{api}\/keyvaluemaps\/{keyvaluemap}\/entries\/{entry}`. `organizations\/{organization}\/environments\/{environment}\/keyvaluemaps\/{keyvaluemap}\/entries\/{entry}` `organizations\/{organization}\/keyvaluemaps\/{keyvaluemap}\/entries\/{entry}`.",
+                      "description": "Required. Scope as indicated by the URI in which to delete the key value map entry. Use **one** of the following structures in your request: * `organizations\/{organization}\/apis\/{api}\/keyvaluemaps\/{keyvaluemap}\/entries\/{entry}`. * `organizations\/{organization}\/environments\/{environment}\/keyvaluemaps\/{keyvaluemap}\/entries\/{entry}` * `organizations\/{organization}\/keyvaluemaps\/{keyvaluemap}\/entries\/{entry}`.",
                       "pattern": "^organizations\/[^\/]+\/keyvaluemaps\/[^\/]+\/entries\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -15275,7 +15283,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Deletes a key value entry from an org, environment or apis scoped key value map."
+                  "description": "Deletes a key value entry from a key value map scoped to an organization, environment, or API proxy. **Note:** After you delete the key value entry, the policy consuming the entry will continue to function with its cached values for a few minutes. This is expected behavior."
                 },
                 "create": {
                   "id": "apigee.organizations.keyvaluemaps.entries.create",
@@ -15284,7 +15292,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. Scope as indicated by the URI in which to create the key value map entry. Use one of the following formats in your request: `organizations\/{organization}\/apis\/{api}\/keyvaluemaps\/{keyvaluemap}`. `organizations\/{organization}\/environments\/{environment}\/keyvaluemaps\/{keyvaluemap}` `organizations\/{organization}\/keyvaluemaps\/{keyvaluemap}`.",
+                      "description": "Required. Scope as indicated by the URI in which to create the key value map entry. Use **one** of the following structures in your request: * `organizations\/{organization}\/apis\/{api}\/keyvaluemaps\/{keyvaluemap}`. * `organizations\/{organization}\/environments\/{environment}\/keyvaluemaps\/{keyvaluemap}` * `organizations\/{organization}\/keyvaluemaps\/{keyvaluemap}`.",
                       "pattern": "^organizations\/[^\/]+\/keyvaluemaps\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -15303,7 +15311,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Creates key value entries in a org, env or apis scoped key value map."
+                  "description": "Creates key value entries in a key value map scoped to an organization, environment, or API proxy."
                 },
                 "list": {
                   "id": "apigee.organizations.keyvaluemaps.entries.list",
@@ -15312,7 +15320,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. Scope as indicated by the URI in which to list key value maps. Use one of the following formats in your request: `organizations\/{organization}\/apis\/{api}\/keyvaluemaps\/{keyvaluemap}`. `organizations\/{organization}\/environments\/{environment}\/keyvaluemaps\/{keyvaluemap}` `organizations\/{organization}\/keyvaluemaps\/{keyvaluemap}`.",
+                      "description": "Required. Scope as indicated by the URI in which to list key value maps. Use **one** of the following structures in your request: * `organizations\/{organization}\/apis\/{api}\/keyvaluemaps\/{keyvaluemap}`. * `organizations\/{organization}\/environments\/{environment}\/keyvaluemaps\/{keyvaluemap}` * `organizations\/{organization}\/keyvaluemaps\/{keyvaluemap}`.",
                       "pattern": "^organizations\/[^\/]+\/keyvaluemaps\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -15325,7 +15333,7 @@
                       "format": "int32"
                     },
                     "pageToken": {
-                      "description": "Optional. Page token, a key value entry returned from a previous call that can use to retrieve the next page.",
+                      "description": "Optional. Page token. If provides, must be a valid key value entry returned from a previous call that can be used to retrieve the next page.",
                       "location": "query",
                       "type": "string"
                     }

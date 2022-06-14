@@ -2365,6 +2365,33 @@ class Gateway(_messages.Message):
   userPort = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
+class GoogleCloudBeyondcorpAppconnectionsV1AppConnectionOperationMetadata(_messages.Message):
+  r"""Represents the metadata of the long-running operation.
+
+  Fields:
+    apiVersion: Output only. API version used to start the operation.
+    createTime: Output only. The time the operation was created.
+    endTime: Output only. The time the operation finished running.
+    requestedCancellation: Output only. Identifies whether the user has
+      requested cancellation of the operation. Operations that have
+      successfully been cancelled have Operation.error value with a
+      google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
+    statusMessage: Output only. Human-readable status of the operation, if
+      any.
+    target: Output only. Server-defined resource path for the target of the
+      operation.
+    verb: Output only. Name of the verb executed by the operation.
+  """
+
+  apiVersion = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  endTime = _messages.StringField(3)
+  requestedCancellation = _messages.BooleanField(4)
+  statusMessage = _messages.StringField(5)
+  target = _messages.StringField(6)
+  verb = _messages.StringField(7)
+
+
 class GoogleCloudBeyondcorpAppconnectionsV1alphaAppConnection(_messages.Message):
   r"""A BeyondCorp AppConnection resource represents a BeyondCorp protected
   AppConnection to a remote application. It creates all the necessary GCP
@@ -2583,6 +2610,33 @@ class GoogleCloudBeyondcorpAppconnectionsV1alphaResolveAppConnectionsResponseApp
 
   appConnection = _messages.MessageField('GoogleCloudBeyondcorpAppconnectionsV1alphaAppConnection', 1)
   recentMigVms = _messages.StringField(2, repeated=True)
+
+
+class GoogleCloudBeyondcorpAppconnectorsV1AppConnectorOperationMetadata(_messages.Message):
+  r"""Represents the metadata of the long-running operation.
+
+  Fields:
+    apiVersion: Output only. API version used to start the operation.
+    createTime: Output only. The time the operation was created.
+    endTime: Output only. The time the operation finished running.
+    requestedCancellation: Output only. Identifies whether the user has
+      requested cancellation of the operation. Operations that have
+      successfully been cancelled have Operation.error value with a
+      google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
+    statusMessage: Output only. Human-readable status of the operation, if
+      any.
+    target: Output only. Server-defined resource path for the target of the
+      operation.
+    verb: Output only. Name of the verb executed by the operation.
+  """
+
+  apiVersion = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  endTime = _messages.StringField(3)
+  requestedCancellation = _messages.BooleanField(4)
+  statusMessage = _messages.StringField(5)
+  target = _messages.StringField(6)
+  verb = _messages.StringField(7)
 
 
 class GoogleCloudBeyondcorpAppconnectorsV1alphaAppConnector(_messages.Message):
@@ -2927,6 +2981,33 @@ class GoogleCloudBeyondcorpAppconnectorsV1alphaResourceInfo(_messages.Message):
   time = _messages.StringField(5)
 
 
+class GoogleCloudBeyondcorpAppgatewaysV1AppGatewayOperationMetadata(_messages.Message):
+  r"""Represents the metadata of the long-running operation.
+
+  Fields:
+    apiVersion: Output only. API version used to start the operation.
+    createTime: Output only. The time the operation was created.
+    endTime: Output only. The time the operation finished running.
+    requestedCancellation: Output only. Identifies whether the user has
+      requested cancellation of the operation. Operations that have
+      successfully been cancelled have Operation.error value with a
+      google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
+    statusMessage: Output only. Human-readable status of the operation, if
+      any.
+    target: Output only. Server-defined resource path for the target of the
+      operation.
+    verb: Output only. Name of the verb executed by the operation.
+  """
+
+  apiVersion = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  endTime = _messages.StringField(3)
+  requestedCancellation = _messages.BooleanField(4)
+  statusMessage = _messages.StringField(5)
+  target = _messages.StringField(6)
+  verb = _messages.StringField(7)
+
+
 class GoogleCloudBeyondcorpApplicationsV1alphaApplicationOperationMetadata(_messages.Message):
   r"""Represents the metadata of the long-running operation.
 
@@ -2950,6 +3031,164 @@ class GoogleCloudBeyondcorpApplicationsV1alphaApplicationOperationMetadata(_mess
   statusMessage = _messages.StringField(4)
   target = _messages.StringField(5)
   verb = _messages.StringField(6)
+
+
+class GoogleCloudBeyondcorpClientconnectorservicesV1ClientConnectorServiceOperationMetadata(_messages.Message):
+  r"""Represents the metadata of the long-running operation.
+
+  Fields:
+    apiVersion: Output only. API version used to start the operation.
+    createTime: Output only. The time the operation was created.
+    endTime: Output only. The time the operation finished running.
+    requestedCancellation: Output only. Identifies whether the user has
+      requested cancellation of the operation. Operations that have
+      successfully been cancelled have Operation.error value with a
+      google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
+    statusMessage: Output only. Human-readable status of the operation, if
+      any.
+    target: Output only. Server-defined resource path for the target of the
+      operation.
+    verb: Output only. Name of the verb executed by the operation.
+  """
+
+  apiVersion = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  endTime = _messages.StringField(3)
+  requestedCancellation = _messages.BooleanField(4)
+  statusMessage = _messages.StringField(5)
+  target = _messages.StringField(6)
+  verb = _messages.StringField(7)
+
+
+class GoogleCloudBeyondcorpClientgatewaysV1ClientGatewayOperationMetadata(_messages.Message):
+  r"""Represents the metadata of the long-running operation.
+
+  Fields:
+    apiVersion: Output only. API version used to start the operation.
+    createTime: Output only. The time the operation was created.
+    endTime: Output only. The time the operation finished running.
+    requestedCancellation: Output only. Identifies whether the user has
+      requested cancellation of the operation. Operations that have been
+      cancelled successfully have Operation.error value with a
+      google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
+    statusMessage: Output only. Human-readable status of the operation, if
+      any.
+    target: Output only. Server-defined resource path for the target of the
+      operation.
+    verb: Output only. Name of the verb executed by the operation.
+  """
+
+  apiVersion = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  endTime = _messages.StringField(3)
+  requestedCancellation = _messages.BooleanField(4)
+  statusMessage = _messages.StringField(5)
+  target = _messages.StringField(6)
+  verb = _messages.StringField(7)
+
+
+class GoogleCloudBeyondcorpConnectionsV1ConnectionOperationMetadata(_messages.Message):
+  r"""Represents the metadata of the long-running operation.
+
+  Fields:
+    apiVersion: Output only. API version used to start the operation.
+    createTime: Output only. The time the operation was created.
+    endTime: Output only. The time the operation finished running.
+    requestedCancellation: Output only. Identifies whether the user has
+      requested cancellation of the operation. Operations that have
+      successfully been cancelled have Operation.error value with a
+      google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
+    statusMessage: Output only. Human-readable status of the operation, if
+      any.
+    target: Output only. Server-defined resource path for the target of the
+      operation.
+    verb: Output only. Name of the verb executed by the operation.
+  """
+
+  apiVersion = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  endTime = _messages.StringField(3)
+  requestedCancellation = _messages.BooleanField(4)
+  statusMessage = _messages.StringField(5)
+  target = _messages.StringField(6)
+  verb = _messages.StringField(7)
+
+
+class GoogleCloudBeyondcorpConnectorsV1ConnectorOperationMetadata(_messages.Message):
+  r"""Represents the metadata of the long-running operation.
+
+  Fields:
+    apiVersion: Output only. API version used to start the operation.
+    createTime: Output only. The time the operation was created.
+    endTime: Output only. The time the operation finished running.
+    requestedCancellation: Output only. Identifies whether the user has
+      requested cancellation of the operation. Operations that have
+      successfully been cancelled have Operation.error value with a
+      google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
+    statusMessage: Output only. Human-readable status of the operation, if
+      any.
+    target: Output only. Server-defined resource path for the target of the
+      operation.
+    verb: Output only. Name of the verb executed by the operation.
+  """
+
+  apiVersion = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  endTime = _messages.StringField(3)
+  requestedCancellation = _messages.BooleanField(4)
+  statusMessage = _messages.StringField(5)
+  target = _messages.StringField(6)
+  verb = _messages.StringField(7)
+
+
+class GoogleCloudBeyondcorpConnectorsV1ContainerHealthDetails(_messages.Message):
+  r"""ContainerHealthDetails reflects the health details of a container.
+
+  Messages:
+    ExtendedStatusValue: The extended status. Such as ExitCode, StartedAt,
+      FinishedAt, etc.
+
+  Fields:
+    currentConfigVersion: The version of the current config.
+    errorMsg: The latest error message.
+    expectedConfigVersion: The version of the expected config.
+    extendedStatus: The extended status. Such as ExitCode, StartedAt,
+      FinishedAt, etc.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ExtendedStatusValue(_messages.Message):
+    r"""The extended status. Such as ExitCode, StartedAt, FinishedAt, etc.
+
+    Messages:
+      AdditionalProperty: An additional property for a ExtendedStatusValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type ExtendedStatusValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ExtendedStatusValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  currentConfigVersion = _messages.StringField(1)
+  errorMsg = _messages.StringField(2)
+  expectedConfigVersion = _messages.StringField(3)
+  extendedStatus = _messages.MessageField('ExtendedStatusValue', 4)
+
+
+class GoogleCloudBeyondcorpConnectorsV1RemoteAgentDetails(_messages.Message):
+  r"""RemoteAgentDetails reflects the details of a remote agent."""
 
 
 class GoogleCloudLocationListLocationsResponse(_messages.Message):

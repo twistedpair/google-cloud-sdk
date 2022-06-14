@@ -194,6 +194,7 @@ class ObjectResource(CloudResource):
     size (int|None): Size of object in bytes.
     scheme (storage_url.ProviderPrefix): Prefix indicating what cloud provider
         hosts the object.
+    storage_class (str|None): Storage class of the bucket.
     bucket (str): Bucket that contains the object.
     name (str): Name of object.
     generation (str|None): Generation (or "version") of the underlying object.
@@ -210,7 +211,8 @@ class ObjectResource(CloudResource):
                md5_hash=None,
                metadata=None,
                metageneration=None,
-               size=None):
+               size=None,
+               storage_class=None):
     """Initializes resource. Args are a subset of attributes."""
     super(ObjectResource, self).__init__(storage_url_object)
     self.content_type = content_type
@@ -222,6 +224,7 @@ class ObjectResource(CloudResource):
     self.metageneration = metageneration
     self.metadata = metadata
     self.size = size
+    self.storage_class = storage_class
 
   @property
   def bucket(self):
@@ -241,7 +244,9 @@ class ObjectResource(CloudResource):
             self.decryption_key_hash == other.decryption_key_hash and
             self.etag == other.etag and self.generation == other.generation and
             self.crc32c_hash == other.crc32c_hash and
-            self.md5_hash == other.md5_hash and self.metadata == other.metadata)
+            self.md5_hash == other.md5_hash and
+            self.metadata == other.metadata and
+            self.storage_class == other.storage_class)
 
   def is_container(self):
     return False

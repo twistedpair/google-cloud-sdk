@@ -5545,14 +5545,16 @@ class Commitment(_messages.Message):
 
     Values:
       ACTIVE: <no description>
+      CANCELLED: <no description>
       CREATING: <no description>
       EXPIRED: <no description>
       NOT_YET_ACTIVE: <no description>
     """
     ACTIVE = 0
-    CREATING = 1
-    EXPIRED = 2
-    NOT_YET_ACTIVE = 3
+    CANCELLED = 1
+    CREATING = 2
+    EXPIRED = 3
+    NOT_YET_ACTIVE = 4
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""The type of commitment, which affects the discount rate and the
@@ -34179,6 +34181,9 @@ class Instance(_messages.Message):
   Machine Instances.
 
   Enums:
+    KeyRevocationActionTypeValueValuesEnum: KeyRevocationActionType of the
+      instance. Supported options are "STOP" and "NONE". The default value is
+      "NONE" if it is not specified.
     PrivateIpv6GoogleAccessValueValuesEnum: The private IPv6 google access
       type for the VM. If not specified, use INHERIT_FROM_SUBNETWORK as
       default.
@@ -34225,6 +34230,9 @@ class Instance(_messages.Message):
       using zonal DNS.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
+    keyRevocationActionType: KeyRevocationActionType of the instance.
+      Supported options are "STOP" and "NONE". The default value is "NONE" if
+      it is not specified.
     kind: [Output Only] Type of the resource. Always compute#instance for
       instances.
     labelFingerprint: A fingerprint for this request, which is essentially a
@@ -34308,6 +34316,20 @@ class Instance(_messages.Message):
       specify this field as part of the HTTP request URL. It is not settable
       as a field in the request body.
   """
+
+  class KeyRevocationActionTypeValueValuesEnum(_messages.Enum):
+    r"""KeyRevocationActionType of the instance. Supported options are "STOP"
+    and "NONE". The default value is "NONE" if it is not specified.
+
+    Values:
+      KEY_REVOCATION_ACTION_TYPE_UNSPECIFIED: Default value. This value is
+        unused.
+      NONE: Indicates user chose no operation.
+      STOP: Indicates user chose to opt for VM shutdown on key revocation.
+    """
+    KEY_REVOCATION_ACTION_TYPE_UNSPECIFIED = 0
+    NONE = 1
+    STOP = 2
 
   class PrivateIpv6GoogleAccessValueValuesEnum(_messages.Enum):
     r"""The private IPv6 google access type for the VM. If not specified, use
@@ -34401,35 +34423,36 @@ class Instance(_messages.Message):
   guestAccelerators = _messages.MessageField('AcceleratorConfig', 11, repeated=True)
   hostname = _messages.StringField(12)
   id = _messages.IntegerField(13, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(14, default='compute#instance')
-  labelFingerprint = _messages.BytesField(15)
-  labels = _messages.MessageField('LabelsValue', 16)
-  lastStartTimestamp = _messages.StringField(17)
-  lastStopTimestamp = _messages.StringField(18)
-  lastSuspendedTimestamp = _messages.StringField(19)
-  machineType = _messages.StringField(20)
-  metadata = _messages.MessageField('Metadata', 21)
-  minCpuPlatform = _messages.StringField(22)
-  name = _messages.StringField(23)
-  networkInterfaces = _messages.MessageField('NetworkInterface', 24, repeated=True)
-  networkPerformanceConfig = _messages.MessageField('NetworkPerformanceConfig', 25)
-  params = _messages.MessageField('InstanceParams', 26)
-  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 27)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 28)
-  resourcePolicies = _messages.StringField(29, repeated=True)
-  satisfiesPzs = _messages.BooleanField(30)
-  scheduling = _messages.MessageField('Scheduling', 31)
-  selfLink = _messages.StringField(32)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 33, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 34)
-  shieldedInstanceIntegrityPolicy = _messages.MessageField('ShieldedInstanceIntegrityPolicy', 35)
-  sourceMachineImage = _messages.StringField(36)
-  sourceMachineImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 37)
-  startRestricted = _messages.BooleanField(38)
-  status = _messages.EnumField('StatusValueValuesEnum', 39)
-  statusMessage = _messages.StringField(40)
-  tags = _messages.MessageField('Tags', 41)
-  zone = _messages.StringField(42)
+  keyRevocationActionType = _messages.EnumField('KeyRevocationActionTypeValueValuesEnum', 14)
+  kind = _messages.StringField(15, default='compute#instance')
+  labelFingerprint = _messages.BytesField(16)
+  labels = _messages.MessageField('LabelsValue', 17)
+  lastStartTimestamp = _messages.StringField(18)
+  lastStopTimestamp = _messages.StringField(19)
+  lastSuspendedTimestamp = _messages.StringField(20)
+  machineType = _messages.StringField(21)
+  metadata = _messages.MessageField('Metadata', 22)
+  minCpuPlatform = _messages.StringField(23)
+  name = _messages.StringField(24)
+  networkInterfaces = _messages.MessageField('NetworkInterface', 25, repeated=True)
+  networkPerformanceConfig = _messages.MessageField('NetworkPerformanceConfig', 26)
+  params = _messages.MessageField('InstanceParams', 27)
+  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 28)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 29)
+  resourcePolicies = _messages.StringField(30, repeated=True)
+  satisfiesPzs = _messages.BooleanField(31)
+  scheduling = _messages.MessageField('Scheduling', 32)
+  selfLink = _messages.StringField(33)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 34, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 35)
+  shieldedInstanceIntegrityPolicy = _messages.MessageField('ShieldedInstanceIntegrityPolicy', 36)
+  sourceMachineImage = _messages.StringField(37)
+  sourceMachineImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 38)
+  startRestricted = _messages.BooleanField(39)
+  status = _messages.EnumField('StatusValueValuesEnum', 40)
+  statusMessage = _messages.StringField(41)
+  tags = _messages.MessageField('Tags', 42)
+  zone = _messages.StringField(43)
 
 
 class InstanceAggregatedList(_messages.Message):
@@ -37211,6 +37234,9 @@ class InstanceProperties(_messages.Message):
   r"""A InstanceProperties object.
 
   Enums:
+    KeyRevocationActionTypeValueValuesEnum: KeyRevocationActionType of the
+      instance. Supported options are "STOP" and "NONE". The default value is
+      "NONE" if it is not specified.
     PrivateIpv6GoogleAccessValueValuesEnum: The private IPv6 google access
       type for VMs. If not specified, use INHERIT_FROM_SUBNETWORK as default.
       Note that for MachineImage, this is not supported yet.
@@ -37241,6 +37267,9 @@ class InstanceProperties(_messages.Message):
       created from these properties.
     guestAccelerators: A list of guest accelerator cards' type and count to
       use for instances created from these properties.
+    keyRevocationActionType: KeyRevocationActionType of the instance.
+      Supported options are "STOP" and "NONE". The default value is "NONE" if
+      it is not specified.
     labels: Labels to apply to instances that are created from these
       properties.
     machineType: The machine type to use for instances that are created from
@@ -37284,6 +37313,20 @@ class InstanceProperties(_messages.Message):
       firewalls. The setTags method can modify this list of tags. Each tag
       within the list must comply with RFC1035.
   """
+
+  class KeyRevocationActionTypeValueValuesEnum(_messages.Enum):
+    r"""KeyRevocationActionType of the instance. Supported options are "STOP"
+    and "NONE". The default value is "NONE" if it is not specified.
+
+    Values:
+      KEY_REVOCATION_ACTION_TYPE_UNSPECIFIED: Default value. This value is
+        unused.
+      NONE: Indicates user chose no operation.
+      STOP: Indicates user chose to opt for VM shutdown on key revocation.
+    """
+    KEY_REVOCATION_ACTION_TYPE_UNSPECIFIED = 0
+    NONE = 1
+    STOP = 2
 
   class PrivateIpv6GoogleAccessValueValuesEnum(_messages.Enum):
     r"""The private IPv6 google access type for VMs. If not specified, use
@@ -37365,20 +37408,21 @@ class InstanceProperties(_messages.Message):
   description = _messages.StringField(4)
   disks = _messages.MessageField('AttachedDisk', 5, repeated=True)
   guestAccelerators = _messages.MessageField('AcceleratorConfig', 6, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 7)
-  machineType = _messages.StringField(8)
-  metadata = _messages.MessageField('Metadata', 9)
-  minCpuPlatform = _messages.StringField(10)
-  networkInterfaces = _messages.MessageField('NetworkInterface', 11, repeated=True)
-  networkPerformanceConfig = _messages.MessageField('NetworkPerformanceConfig', 12)
-  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 13)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 14)
-  resourceManagerTags = _messages.MessageField('ResourceManagerTagsValue', 15)
-  resourcePolicies = _messages.StringField(16, repeated=True)
-  scheduling = _messages.MessageField('Scheduling', 17)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 18, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 19)
-  tags = _messages.MessageField('Tags', 20)
+  keyRevocationActionType = _messages.EnumField('KeyRevocationActionTypeValueValuesEnum', 7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  machineType = _messages.StringField(9)
+  metadata = _messages.MessageField('Metadata', 10)
+  minCpuPlatform = _messages.StringField(11)
+  networkInterfaces = _messages.MessageField('NetworkInterface', 12, repeated=True)
+  networkPerformanceConfig = _messages.MessageField('NetworkPerformanceConfig', 13)
+  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 14)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 15)
+  resourceManagerTags = _messages.MessageField('ResourceManagerTagsValue', 16)
+  resourcePolicies = _messages.StringField(17, repeated=True)
+  scheduling = _messages.MessageField('Scheduling', 18)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 19, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 20)
+  tags = _messages.MessageField('Tags', 21)
 
 
 class InstanceReference(_messages.Message):
@@ -40294,6 +40338,8 @@ class LocationPolicyLocation(_messages.Message):
     PreferenceValueValuesEnum: Preference for a given location.
 
   Fields:
+    constraints: Constraints that the caller requires on the result
+      distribution in this zone.
     preference: Preference for a given location.
   """
 
@@ -40309,7 +40355,19 @@ class LocationPolicyLocation(_messages.Message):
     DENY = 1
     PREFERENCE_UNSPECIFIED = 2
 
-  preference = _messages.EnumField('PreferenceValueValuesEnum', 1)
+  constraints = _messages.MessageField('LocationPolicyLocationConstraints', 1)
+  preference = _messages.EnumField('PreferenceValueValuesEnum', 2)
+
+
+class LocationPolicyLocationConstraints(_messages.Message):
+  r"""Per-zone constraints on location policy for this zone.
+
+  Fields:
+    maxCount: Maximum number of items that are allowed to be placed in this
+      zone. The value must be non-negative.
+  """
+
+  maxCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
 class LogConfig(_messages.Message):
@@ -56791,6 +56849,11 @@ class SourceInstanceProperties(_messages.Message):
   r"""DEPRECATED: Please use compute#instanceProperties instead. New
   properties will not be added to this field.
 
+  Enums:
+    KeyRevocationActionTypeValueValuesEnum: KeyRevocationActionType of the
+      instance. Supported options are "STOP" and "NONE". The default value is
+      "NONE" if it is not specified.
+
   Messages:
     LabelsValue: Labels to apply to instances that are created from this
       machine image.
@@ -56810,6 +56873,9 @@ class SourceInstanceProperties(_messages.Message):
       created from this machine image.
     guestAccelerators: A list of guest accelerator cards' type and count to
       use for instances created from this machine image.
+    keyRevocationActionType: KeyRevocationActionType of the instance.
+      Supported options are "STOP" and "NONE". The default value is "NONE" if
+      it is not specified.
     labels: Labels to apply to instances that are created from this machine
       image.
     machineType: The machine type to use for instances that are created from
@@ -56837,6 +56903,20 @@ class SourceInstanceProperties(_messages.Message):
       firewalls. The setTags method can modify this list of tags. Each tag
       within the list must comply with RFC1035.
   """
+
+  class KeyRevocationActionTypeValueValuesEnum(_messages.Enum):
+    r"""KeyRevocationActionType of the instance. Supported options are "STOP"
+    and "NONE". The default value is "NONE" if it is not specified.
+
+    Values:
+      KEY_REVOCATION_ACTION_TYPE_UNSPECIFIED: Default value. This value is
+        unused.
+      NONE: Indicates user chose no operation.
+      STOP: Indicates user chose to opt for VM shutdown on key revocation.
+    """
+    KEY_REVOCATION_ACTION_TYPE_UNSPECIFIED = 0
+    NONE = 1
+    STOP = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -56867,14 +56947,15 @@ class SourceInstanceProperties(_messages.Message):
   description = _messages.StringField(3)
   disks = _messages.MessageField('SavedAttachedDisk', 4, repeated=True)
   guestAccelerators = _messages.MessageField('AcceleratorConfig', 5, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 6)
-  machineType = _messages.StringField(7)
-  metadata = _messages.MessageField('Metadata', 8)
-  minCpuPlatform = _messages.StringField(9)
-  networkInterfaces = _messages.MessageField('NetworkInterface', 10, repeated=True)
-  scheduling = _messages.MessageField('Scheduling', 11)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 12, repeated=True)
-  tags = _messages.MessageField('Tags', 13)
+  keyRevocationActionType = _messages.EnumField('KeyRevocationActionTypeValueValuesEnum', 6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  machineType = _messages.StringField(8)
+  metadata = _messages.MessageField('Metadata', 9)
+  minCpuPlatform = _messages.StringField(10)
+  networkInterfaces = _messages.MessageField('NetworkInterface', 11, repeated=True)
+  scheduling = _messages.MessageField('Scheduling', 12)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 13, repeated=True)
+  tags = _messages.MessageField('Tags', 14)
 
 
 class SslCertificate(_messages.Message):
@@ -63914,6 +63995,7 @@ class VmEndpointNatMappingsInterfaceNatMappings(_messages.Message):
     numTotalNatPorts: Total number of ports across all NAT IPs allocated to
       this interface. It equals to the aggregated port number in the field
       nat_ip_port_ranges.
+    ruleMappings: Information about mappings provided by rules in this NAT.
     sourceAliasIpRange: Alias IP range for this interface endpoint. It will be
       a private (RFC 1918) IP range. Examples: "10.33.4.55/32", or
       "192.168.5.0/24".
@@ -63924,8 +64006,37 @@ class VmEndpointNatMappingsInterfaceNatMappings(_messages.Message):
   natIpPortRanges = _messages.StringField(2, repeated=True)
   numTotalDrainNatPorts = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   numTotalNatPorts = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  sourceAliasIpRange = _messages.StringField(5)
-  sourceVirtualIp = _messages.StringField(6)
+  ruleMappings = _messages.MessageField('VmEndpointNatMappingsInterfaceNatMappingsNatRuleMappings', 5, repeated=True)
+  sourceAliasIpRange = _messages.StringField(6)
+  sourceVirtualIp = _messages.StringField(7)
+
+
+class VmEndpointNatMappingsInterfaceNatMappingsNatRuleMappings(_messages.Message):
+  r"""Contains information of NAT Mappings provided by a NAT Rule.
+
+  Fields:
+    drainNatIpPortRanges: List of all drain IP:port-range mappings assigned to
+      this interface by this rule. These ranges are inclusive, that is, both
+      the first and the last ports can be used for NAT. Example:
+      ["2.2.2.2:12345-12355", "1.1.1.1:2234-2234"].
+    natIpPortRanges: A list of all IP:port-range mappings assigned to this
+      interface by this rule. These ranges are inclusive, that is, both the
+      first and the last ports can be used for NAT. Example:
+      ["2.2.2.2:12345-12355", "1.1.1.1:2234-2234"].
+    numTotalDrainNatPorts: Total number of drain ports across all NAT IPs
+      allocated to this interface by this rule. It equals the aggregated port
+      number in the field drain_nat_ip_port_ranges.
+    numTotalNatPorts: Total number of ports across all NAT IPs allocated to
+      this interface by this rule. It equals the aggregated port number in the
+      field nat_ip_port_ranges.
+    ruleNumber: Rule number of the NAT Rule.
+  """
+
+  drainNatIpPortRanges = _messages.StringField(1, repeated=True)
+  natIpPortRanges = _messages.StringField(2, repeated=True)
+  numTotalDrainNatPorts = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  numTotalNatPorts = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  ruleNumber = _messages.IntegerField(5, variant=_messages.Variant.INT32)
 
 
 class VmEndpointNatMappingsList(_messages.Message):

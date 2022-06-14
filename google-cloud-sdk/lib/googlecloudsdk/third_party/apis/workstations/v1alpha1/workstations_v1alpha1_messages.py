@@ -1329,7 +1329,8 @@ class WorkstationConfig(_messages.Message):
       quickly but will impose additional costs.
     hostConfig: Runtime host for the Workstation.
     idleTimeout: How long to wait before automatically stopping an instance
-      that hasn't received any user traffic.
+      that hasn't received any user traffic. A value of 0 indicates that this
+      instance should never time out due to idleness.
     machineType: The name of a Google Compute Engine machine type.
     name: Full name of this resource.
     persistentDirectories: Directories to persist across Workstation sessions.

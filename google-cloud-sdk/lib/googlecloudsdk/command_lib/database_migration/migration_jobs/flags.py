@@ -37,13 +37,16 @@ def AddNoAsyncFlag(parser):
 
 def AddDisplayNameFlag(parser):
   """Adds a --display-name flag to the given parser."""
-  help_text = 'Friendly name for the migration job.'
+  help_text = """
+    A user-friendly name for the migration job. The display name can include
+    letters, numbers, spaces, and hyphens, and must start with a letter.
+    """
   parser.add_argument('--display-name', help=help_text)
 
 
 def AddTypeFlag(parser, required=False):
   """Adds --type flag to the given parser."""
-  help_text = 'Type of the migration job (ONE_TIME or CONTINUOUS).'
+  help_text = 'Type of the migration job.'
   choices = ['ONE_TIME', 'CONTINUOUS']
   parser.add_argument(
       '--type', help=help_text, choices=choices, required=required)

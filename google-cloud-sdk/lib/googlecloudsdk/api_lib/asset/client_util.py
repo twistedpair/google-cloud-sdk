@@ -809,3 +809,58 @@ class AssetQueryClient(object):
             statement=args.statement,
             timeout=timeout))
     return self.service.QueryAssets(query_assets_request)
+
+
+class OrgPolicyAnalyzerClient(object):
+  """Client for org policy analysis."""
+
+  _DEFAULT_PAGE_SIZE = 100
+
+  def __init__(self, api_version=DEFAULT_API_VERSION):
+    self.message_module = GetMessages(api_version)
+    self.service = GetClient(api_version).v1
+
+  def AnalyzeOrgPolicyGovernedResources(self, args):
+    """Calls AnalyzeOrgPolicyGovernedResources method."""
+    request = self.message_module.CloudassetAnalyzeOrgPolicyGovernedResourcesRequest(
+        scope=args.scope, constraint=args.constraint)
+    return list_pager.YieldFromList(
+        self.service,
+        request,
+        method='AnalyzeOrgPolicyGovernedResources',
+        field='governedResources',
+        limit=args.limit,
+        batch_size=args.page_size or self._DEFAULT_PAGE_SIZE,
+        batch_size_attribute='pageSize',
+        current_token_attribute='pageToken',
+        next_token_attribute='nextPageToken')
+
+  def AnalyzeOrgPolicyGovernedContainers(self, args):
+    """Calls AnalyzeOrgPolicyGovernedContainers method."""
+    request = self.message_module.CloudassetAnalyzeOrgPolicyGovernedContainersRequest(
+        scope=args.scope, constraint=args.constraint)
+    return list_pager.YieldFromList(
+        self.service,
+        request,
+        method='AnalyzeOrgPolicyGovernedContainers',
+        field='governedContainers',
+        limit=args.limit,
+        batch_size=args.page_size or self._DEFAULT_PAGE_SIZE,
+        batch_size_attribute='pageSize',
+        current_token_attribute='pageToken',
+        next_token_attribute='nextPageToken')
+
+  def AnalyzeOrgPolicies(self, args):
+    """Calls AnalyzeOrgPolicies method."""
+    request = self.message_module.CloudassetAnalyzeOrgPoliciesRequest(
+        scope=args.scope, constraint=args.constraint)
+    return list_pager.YieldFromList(
+        self.service,
+        request,
+        method='AnalyzeOrgPolicies',
+        field='orgPolicyResults',
+        limit=args.limit,
+        batch_size=args.page_size or self._DEFAULT_PAGE_SIZE,
+        batch_size_attribute='pageSize',
+        current_token_attribute='pageToken',
+        next_token_attribute='nextPageToken')

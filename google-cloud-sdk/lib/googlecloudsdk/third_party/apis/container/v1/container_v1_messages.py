@@ -276,31 +276,31 @@ class BinaryAuthorization(_messages.Message):
 
 
 class BlueGreenInfo(_messages.Message):
-  r"""Information relevant to blue-green update.
+  r"""Information relevant to blue-green upgrade.
 
   Enums:
-    PhaseValueValuesEnum: Current blue-green update phase.
+    PhaseValueValuesEnum: Current blue-green upgrade phase.
 
   Fields:
     blueInstanceGroupUrls: The resource URLs of the [managed instance groups]
       (/compute/docs/instance-groups/creating-groups-of-managed-instances)
       associated with blue pool.
     bluePoolDeletionStartTime: Time to start deleting blue pool to complete
-      blue-green update, in [RFC3339](https://www.ietf.org/rfc/rfc3339.txt)
+      blue-green upgrade, in [RFC3339](https://www.ietf.org/rfc/rfc3339.txt)
       text format.
     greenInstanceGroupUrls: The resource URLs of the [managed instance groups]
       (/compute/docs/instance-groups/creating-groups-of-managed-instances)
       associated with green pool.
     greenPoolVersion: Version of green pool.
-    phase: Current blue-green update phase.
+    phase: Current blue-green upgrade phase.
   """
 
   class PhaseValueValuesEnum(_messages.Enum):
-    r"""Current blue-green update phase.
+    r"""Current blue-green upgrade phase.
 
     Values:
       PHASE_UNSPECIFIED: Unspecified phase.
-      UPDATE_STARTED: Blue-green update has been initiated.
+      UPDATE_STARTED: blue-green upgrade has been initiated.
       CREATING_GREEN_POOL: Start creating green pool nodes.
       CORDONING_BLUE_POOL: Start cordoning blue pool nodes.
       DRAINING_BLUE_POOL: Start draining blue pool nodes.
@@ -325,12 +325,12 @@ class BlueGreenInfo(_messages.Message):
 
 
 class BlueGreenSettings(_messages.Message):
-  r"""Settings for blue-green update.
+  r"""Settings for blue-green upgrade.
 
   Fields:
     nodePoolSoakDuration: Time needed after draining entire blue pool. After
       this period, blue pool will be cleaned up.
-    standardRolloutPolicy: Standard policy for the blue-green update.
+    standardRolloutPolicy: Standard policy for the blue-green upgrade.
   """
 
   nodePoolSoakDuration = _messages.StringField(1)
@@ -2724,6 +2724,8 @@ class NodeConfig(_messages.Message):
       the image running in the instance. The only restriction placed on them
       is that each value's size must be less than or equal to 32 KB. The total
       size of all keys and values must be less than 512 KB.
+    ResourceLabelsValue: The resource labels for the node pool to use to
+      annotate any related Google Compute Engine resources.
 
   Fields:
     accelerators: A list of hardware accelerators to be attached to each node.
@@ -2814,6 +2816,8 @@ class NodeConfig(_messages.Message):
       will apply the specified [Zonal Compute
       Reservation](https://cloud.google.com/compute/docs/instances/reserving-
       zonal-resources) to this node pool.
+    resourceLabels: The resource labels for the node pool to use to annotate
+      any related Google Compute Engine resources.
     sandboxConfig: Sandbox configuration for this node.
     serviceAccount: The Google Cloud Platform Service Account to be used by
       the node VMs. Specify the email address of the Service Account;
@@ -2900,6 +2904,32 @@ class NodeConfig(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ResourceLabelsValue(_messages.Message):
+    r"""The resource labels for the node pool to use to annotate any related
+    Google Compute Engine resources.
+
+    Messages:
+      AdditionalProperty: An additional property for a ResourceLabelsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type ResourceLabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ResourceLabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   accelerators = _messages.MessageField('AcceleratorConfig', 1, repeated=True)
   advancedMachineFeatures = _messages.MessageField('AdvancedMachineFeatures', 2)
   bootDiskKmsKey = _messages.StringField(3)
@@ -2922,13 +2952,14 @@ class NodeConfig(_messages.Message):
   oauthScopes = _messages.StringField(20, repeated=True)
   preemptible = _messages.BooleanField(21)
   reservationAffinity = _messages.MessageField('ReservationAffinity', 22)
-  sandboxConfig = _messages.MessageField('SandboxConfig', 23)
-  serviceAccount = _messages.StringField(24)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 25)
-  spot = _messages.BooleanField(26)
-  tags = _messages.StringField(27, repeated=True)
-  taints = _messages.MessageField('NodeTaint', 28, repeated=True)
-  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 29)
+  resourceLabels = _messages.MessageField('ResourceLabelsValue', 23)
+  sandboxConfig = _messages.MessageField('SandboxConfig', 24)
+  serviceAccount = _messages.StringField(25)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 26)
+  spot = _messages.BooleanField(27)
+  tags = _messages.StringField(28, repeated=True)
+  taints = _messages.MessageField('NodeTaint', 29, repeated=True)
+  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 30)
 
 
 class NodeConfigDefaults(_messages.Message):
@@ -3100,7 +3131,8 @@ class NodePool(_messages.Message):
     instanceGroupUrls: [Output only] The resource URLs of the [managed
       instance groups](https://cloud.google.com/compute/docs/instance-
       groups/creating-groups-of-managed-instances) associated with this node
-      pool.
+      pool. During the node pool blue-green upgrade operation, the URLs
+      contain both blue and green resources.
     locations: The list of Google Compute Engine
       [zones](https://cloud.google.com/compute/docs/zones#available) in which
       the NodePool's nodes should be located. If this value is unspecified
@@ -4652,7 +4684,7 @@ class UpdateInfo(_messages.Message):
   intermediate information relevant to a node pool upgrade.
 
   Fields:
-    blueGreenInfo: Information of a blue-green update.
+    blueGreenInfo: Information of a blue-green upgrade.
   """
 
   blueGreenInfo = _messages.MessageField('BlueGreenInfo', 1)
@@ -4871,13 +4903,30 @@ class UpgradeSettings(_messages.Message):
   This means the upgrade process upgrades 3 nodes simultaneously. It creates 2
   additional (upgraded) nodes, then it brings down 3 old (not yet upgraded)
   nodes at the same time. This ensures that there are always at least 4 nodes
-  available.
+  available. These upgrade settings configure the upgrade strategy for the
+  node pool. Use strategy to switch between the strategies applied to the node
+  pool. If the strategy is ROLLING, use max_surge and max_unavailable to
+  control the level of parallelism and the level of disruption caused by
+  upgrade. 1. maxSurge controls the number of additional nodes that can be
+  added to the node pool temporarily for the time of the upgrade to increase
+  the number of available nodes. 2. maxUnavailable controls the number of
+  nodes that can be simultaneously unavailable. 3. (maxUnavailable + maxSurge)
+  determines the level of parallelism (how many nodes are being upgraded at
+  the same time). If the strategy is BLUE_GREEN, use blue_green_settings to
+  configure the blue-green upgrade related settings. 1.
+  standard_rollout_policy is the default policy. The policy is used to control
+  the way blue pool gets drained. The draining is executed in the batch mode.
+  The batch size could be specified as either percentage of the node pool size
+  or the number of nodes. batch_soak_duration is the soak time after each
+  batch gets drained. 2. node_pool_soak_duration is the soak time after all
+  blue nodes are drained. After this period, the blue pool nodes will be
+  deleted.
 
   Enums:
     StrategyValueValuesEnum: Update strategy of the node pool.
 
   Fields:
-    blueGreenSettings: Settings for blue-green update strategy.
+    blueGreenSettings: Settings for blue-green upgrade strategy.
     maxSurge: The maximum number of nodes that can be created beyond the
       current size of the node pool during the upgrade process.
     maxUnavailable: The maximum number of nodes that can be simultaneously
@@ -4894,9 +4943,9 @@ class UpgradeSettings(_messages.Message):
       NODE_POOL_UPDATE_STRATEGY_UNSPECIFIED: Default value.
       ROLLING: ROLLING is the synonymous with SURGE. Deprecate this value and
         use SURGE instead.
-      BLUE_GREEN: Blue-green update.
-      SURGE: SURGE is the traditional way of updating node pool. max_surge and
-        max_unavailable determines the level of update parallelism.
+      BLUE_GREEN: blue-green upgrade.
+      SURGE: SURGE is the traditional way of upgrade a node pool. max_surge
+        and max_unavailable determines the level of upgrade parallelism.
     """
     NODE_POOL_UPDATE_STRATEGY_UNSPECIFIED = 0
     ROLLING = 1

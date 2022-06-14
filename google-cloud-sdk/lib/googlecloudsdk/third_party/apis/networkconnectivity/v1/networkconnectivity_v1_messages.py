@@ -473,11 +473,15 @@ class Hub(_messages.Message):
       CREATING: The resource's create operation is in progress
       ACTIVE: The resource is active
       DELETING: The resource's Delete operation is in progress
+      ACTIVATING: The resource's Activate operation is in progress
+      DEACTIVATING: The resource's Deactivate operation is in progress
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
     ACTIVE = 2
     DELETING = 3
+    ACTIVATING = 4
+    DEACTIVATING = 5
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1647,11 +1651,15 @@ class Spoke(_messages.Message):
       CREATING: The resource's create operation is in progress
       ACTIVE: The resource is active
       DELETING: The resource's Delete operation is in progress
+      ACTIVATING: The resource's Activate operation is in progress
+      DEACTIVATING: The resource's Deactivate operation is in progress
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
     ACTIVE = 2
     DELETING = 3
+    ACTIVATING = 4
+    DEACTIVATING = 5
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):

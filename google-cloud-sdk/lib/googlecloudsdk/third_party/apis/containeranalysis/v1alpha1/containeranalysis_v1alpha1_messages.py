@@ -2488,12 +2488,11 @@ class Digest(_messages.Message):
 
   Fields:
     algo: `SHA1`, `SHA512` etc.
-    digestValue: Value of the digest encoded. For example: SHA512 - base64
-      encoding, SHA1 - hex encoding.
+    digestBytes: Value of the digest.
   """
 
   algo = _messages.StringField(1)
-  digestValue = _messages.StringField(2)
+  digestBytes = _messages.BytesField(2)
 
 
 class Discovered(_messages.Message):

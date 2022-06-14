@@ -76,6 +76,20 @@ def AddClusterArgToParser(parser, positional=False):
   return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
 
 
+def AddExternalAddressArgToParser(parser):
+  """Sets up an argument for the external address resource."""
+
+  address_data = yaml_data.ResourceYAMLData.FromPath('vmware.external_address')
+  resource_spec = concepts.ResourceSpec.FromYaml(address_data.GetData())
+
+  presentation_spec = presentation_specs.ResourcePresentationSpec(
+      name='external_address',
+      concept_spec=resource_spec,
+      required=True,
+      group_help='external_address.')
+  return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
+
+
 def AddHcxActivationKeyArgToParser(parser):
   """Sets up an argument for the HCX activation key resource."""
   hcx_activation_key_data = yaml_data.ResourceYAMLData.FromPath(

@@ -15186,6 +15186,11 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlImageObjectDetecti
       enabled, which means that AutoML Image Object Detection might stop
       training before the entire training budget has been used.
     modelType: A ModelTypeValueValuesEnum attribute.
+    uptrainBaseModelId: The ID of `base` model for upTraining. If it is
+      specified, the new model will be upTrained based on the `base` model for
+      upTraining. Otherwise, the new model will be trained from scratch. The
+      `base` model for upTraining must be in the same Project and Location as
+      the new Model to train, and have the same modelType.
   """
 
   class ModelTypeValueValuesEnum(_messages.Enum):
@@ -15225,6 +15230,7 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlImageObjectDetecti
   budgetMilliNodeHours = _messages.IntegerField(1)
   disableEarlyStopping = _messages.BooleanField(2)
   modelType = _messages.EnumField('ModelTypeValueValuesEnum', 3)
+  uptrainBaseModelId = _messages.StringField(4)
 
 
 class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlImageObjectDetectionMetadata(_messages.Message):
@@ -22441,9 +22447,18 @@ class GoogleCloudAiplatformV1alpha1ModelDeploymentMonitoringScheduleConfig(_mess
     monitorInterval: Required. The model monitoring job scheduling interval.
       It will be rounded up to next full hour. This defines how often the
       monitoring jobs are triggered.
+    monitorWindow: The time window of the prediction data being included in
+      each prediction dataset. This window specifies how long the data should
+      be collected from historical model results for each run. If not set,
+      ModelDeploymentMonitoringScheduleConfig.monitor_interval will be used.
+      e.g. If currently the cutoff time is 2022-01-08 14:30:00 and the
+      monitor_window is set to be 3600, then data from 2022-01-08 13:30:00 to
+      2022-01-08 14:30:00 will be retrieved and aggregated to calculate the
+      monitoring statistics.
   """
 
   monitorInterval = _messages.StringField(1)
+  monitorWindow = _messages.StringField(2)
 
 
 class GoogleCloudAiplatformV1alpha1ModelEvaluation(_messages.Message):
@@ -23226,9 +23241,6 @@ class GoogleCloudAiplatformV1alpha1PipelineJobRuntimeConfig(_messages.Message):
       when a task has failed. Any scheduled tasks will continue to completion.
 
   Messages:
-    InputArtifactsValue: The runtime artifacts of the PipelineJob. The key
-      will be the input artifact name and the value would be one of the
-      InputArtifact.
     ParametersValue: Deprecated. Use RuntimeConfig.parameter_values instead.
       The runtime parameters of the PipelineJob. The parameters will be passed
       into PipelineJob.pipeline_spec to replace the placeholders at runtime.
@@ -23250,8 +23262,6 @@ class GoogleCloudAiplatformV1alpha1PipelineJobRuntimeConfig(_messages.Message):
       under the specified output directory. The service account specified in
       this pipeline must have the `storage.objects.get` and
       `storage.objects.create` permissions for this bucket.
-    inputArtifacts: The runtime artifacts of the PipelineJob. The key will be
-      the input artifact name and the value would be one of the InputArtifact.
     parameters: Deprecated. Use RuntimeConfig.parameter_values instead. The
       runtime parameters of the PipelineJob. The parameters will be passed
       into PipelineJob.pipeline_spec to replace the placeholders at runtime.
@@ -23280,34 +23290,6 @@ class GoogleCloudAiplatformV1alpha1PipelineJobRuntimeConfig(_messages.Message):
     PIPELINE_FAILURE_POLICY_UNSPECIFIED = 0
     PIPELINE_FAILURE_POLICY_FAIL_SLOW = 1
     PIPELINE_FAILURE_POLICY_FAIL_FAST = 2
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class InputArtifactsValue(_messages.Message):
-    r"""The runtime artifacts of the PipelineJob. The key will be the input
-    artifact name and the value would be one of the InputArtifact.
-
-    Messages:
-      AdditionalProperty: An additional property for a InputArtifactsValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type InputArtifactsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a InputArtifactsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A
-          GoogleCloudAiplatformV1alpha1PipelineJobRuntimeConfigInputArtifact
-          attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('GoogleCloudAiplatformV1alpha1PipelineJobRuntimeConfigInputArtifact', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ParametersValue(_messages.Message):
@@ -23340,21 +23322,7 @@ class GoogleCloudAiplatformV1alpha1PipelineJobRuntimeConfig(_messages.Message):
 
   failurePolicy = _messages.EnumField('FailurePolicyValueValuesEnum', 1)
   gcsOutputDirectory = _messages.StringField(2)
-  inputArtifacts = _messages.MessageField('InputArtifactsValue', 3)
-  parameters = _messages.MessageField('ParametersValue', 4)
-
-
-class GoogleCloudAiplatformV1alpha1PipelineJobRuntimeConfigInputArtifact(_messages.Message):
-  r"""The type of an input artifact.
-
-  Fields:
-    artifactName: Artifact resource id from MLMD in the format of `projects/{p
-      roject}/locations/{location}/metadataStores/default/artifacts/{artifact}
-      `. The artifact must stay within the same project, location and default
-      metadatastore as the pipeline.
-  """
-
-  artifactName = _messages.StringField(1)
+  parameters = _messages.MessageField('ParametersValue', 3)
 
 
 class GoogleCloudAiplatformV1alpha1PipelineTaskDetail(_messages.Message):
@@ -30216,6 +30184,11 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageObjectDe
       enabled, which means that AutoML Image Object Detection might stop
       training before the entire training budget has been used.
     modelType: A ModelTypeValueValuesEnum attribute.
+    uptrainBaseModelId: The ID of `base` model for upTraining. If it is
+      specified, the new model will be upTrained based on the `base` model for
+      upTraining. Otherwise, the new model will be trained from scratch. The
+      `base` model for upTraining must be in the same Project and Location as
+      the new Model to train, and have the same modelType.
   """
 
   class ModelTypeValueValuesEnum(_messages.Enum):
@@ -30255,6 +30228,7 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageObjectDe
   budgetMilliNodeHours = _messages.IntegerField(1)
   disableEarlyStopping = _messages.BooleanField(2)
   modelType = _messages.EnumField('ModelTypeValueValuesEnum', 3)
+  uptrainBaseModelId = _messages.StringField(4)
 
 
 class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageObjectDetectionMetadata(_messages.Message):

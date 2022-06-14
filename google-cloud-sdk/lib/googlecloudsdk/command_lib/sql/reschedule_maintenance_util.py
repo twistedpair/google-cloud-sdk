@@ -18,7 +18,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import datetime
 from apitools.base.py import exceptions as apitools_exceptions
 from dateutil import tz
 from googlecloudsdk.api_lib.sql import exceptions as sql_exceptions
@@ -31,10 +30,6 @@ from googlecloudsdk.core.resource import resource_lex
 from googlecloudsdk.core.resource import resource_property
 from googlecloudsdk.core.util import times
 import six
-
-# Maximum number of days a maintenance can be rescheduled beyond its originally
-#   scheduled time.
-MAX_RESCHEDULE_OFFSET = 7
 
 
 def ParseRescheduleType(sql_messages, reschedule_type):
@@ -121,12 +116,6 @@ def RunRescheduleMaintenanceCommand(args, client):
     if schedule_time < start_time:
       raise sql_exceptions.ArgumentError(
           'argument --schedule-time: Must be after original scheduled time.')
-    if schedule_time > start_time + datetime.timedelta(
-        days=MAX_RESCHEDULE_OFFSET):
-      raise sql_exceptions.ArgumentError(
-          'argument --schedule-time: Must be no more than 7 days after '
-          'original scheduled time.'
-      )
 
   # Convert the schedule_time to the format the backend expects, if it exists.
   schedule_time = times.LocalizeDateTime(

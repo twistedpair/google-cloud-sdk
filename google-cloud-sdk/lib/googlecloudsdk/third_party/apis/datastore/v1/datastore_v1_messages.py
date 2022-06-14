@@ -19,11 +19,14 @@ class AllocateIdsRequest(_messages.Message):
   r"""The request for Datastore.AllocateIds.
 
   Fields:
+    databaseId: If not empty, the ID of the database against which to make the
+      request.
     keys: Required. A list of keys with incomplete key paths for which to
       allocate IDs. No key may be reserved/read-only.
   """
 
-  keys = _messages.MessageField('Key', 1, repeated=True)
+  databaseId = _messages.StringField(1)
+  keys = _messages.MessageField('Key', 2, repeated=True)
 
 
 class AllocateIdsResponse(_messages.Message):
@@ -53,10 +56,13 @@ class BeginTransactionRequest(_messages.Message):
   r"""The request for Datastore.BeginTransaction.
 
   Fields:
+    databaseId: If not empty, the ID of the database against which to make the
+      request.
     transactionOptions: Options for a new transaction.
   """
 
-  transactionOptions = _messages.MessageField('TransactionOptions', 1)
+  databaseId = _messages.StringField(1)
+  transactionOptions = _messages.MessageField('TransactionOptions', 2)
 
 
 class BeginTransactionResponse(_messages.Message):
@@ -77,6 +83,8 @@ class CommitRequest(_messages.Message):
       `TRANSACTIONAL`.
 
   Fields:
+    databaseId: If not empty, the ID of the database against which to make the
+      request.
     mode: The type of commit to perform. Defaults to `TRANSACTIONAL`.
     mutations: The mutations to perform. When mode is `TRANSACTIONAL`,
       mutations affecting a single entity are applied in order. The following
@@ -105,9 +113,10 @@ class CommitRequest(_messages.Message):
     TRANSACTIONAL = 1
     NON_TRANSACTIONAL = 2
 
-  mode = _messages.EnumField('ModeValueValuesEnum', 1)
-  mutations = _messages.MessageField('Mutation', 2, repeated=True)
-  transaction = _messages.BytesField(3)
+  databaseId = _messages.StringField(1)
+  mode = _messages.EnumField('ModeValueValuesEnum', 2)
+  mutations = _messages.MessageField('Mutation', 3, repeated=True)
+  transaction = _messages.BytesField(4)
 
 
 class CommitResponse(_messages.Message):
@@ -134,7 +143,8 @@ class CompositeFilter(_messages.Message):
     OpValueValuesEnum: The operator for combining multiple filters.
 
   Fields:
-    filters: The list of filters to combine. Must contain at least one filter.
+    filters: The list of filters to combine. Requires: * At least one filter
+      is present.
     op: The operator for combining multiple filters.
   """
 
@@ -1529,12 +1539,15 @@ class LookupRequest(_messages.Message):
   r"""The request for Datastore.Lookup.
 
   Fields:
+    databaseId: If not empty, the ID of the database against which to make the
+      request.
     keys: Required. Keys of entities to look up.
     readOptions: The options for this lookup request.
   """
 
-  keys = _messages.MessageField('Key', 1, repeated=True)
-  readOptions = _messages.MessageField('ReadOptions', 2)
+  databaseId = _messages.StringField(1)
+  keys = _messages.MessageField('Key', 2, repeated=True)
+  readOptions = _messages.MessageField('ReadOptions', 3)
 
 
 class LookupResponse(_messages.Message):
@@ -1626,13 +1639,16 @@ class PartitionId(_messages.Message):
   fail if the project is not in an active state.
 
   Fields:
+    databaseId: If not empty, the ID of the database to which the entities
+      belong.
     namespaceId: If not empty, the ID of the namespace to which the entities
       belong.
     projectId: The ID of the project to which the entities belong.
   """
 
-  namespaceId = _messages.StringField(1)
-  projectId = _messages.StringField(2)
+  databaseId = _messages.StringField(1)
+  namespaceId = _messages.StringField(2)
+  projectId = _messages.StringField(3)
 
 
 class PathElement(_messages.Message):
@@ -1964,11 +1980,14 @@ class RollbackRequest(_messages.Message):
   r"""The request for Datastore.Rollback.
 
   Fields:
+    databaseId: If not empty, the ID of the database against which to make the
+      request.
     transaction: Required. The transaction identifier, returned by a call to
       Datastore.BeginTransaction.
   """
 
-  transaction = _messages.BytesField(1)
+  databaseId = _messages.StringField(1)
+  transaction = _messages.BytesField(2)
 
 
 class RollbackResponse(_messages.Message):
@@ -1979,6 +1998,8 @@ class RunQueryRequest(_messages.Message):
   r"""The request for Datastore.RunQuery.
 
   Fields:
+    databaseId: If not empty, the ID of the database against which to make the
+      request.
     gqlQuery: The GQL query to run. This query must be a non-aggregation
       query.
     partitionId: Entities are partitioned into subsets, identified by a
@@ -1988,10 +2009,11 @@ class RunQueryRequest(_messages.Message):
     readOptions: The options for this query.
   """
 
-  gqlQuery = _messages.MessageField('GqlQuery', 1)
-  partitionId = _messages.MessageField('PartitionId', 2)
-  query = _messages.MessageField('Query', 3)
-  readOptions = _messages.MessageField('ReadOptions', 4)
+  databaseId = _messages.StringField(1)
+  gqlQuery = _messages.MessageField('GqlQuery', 2)
+  partitionId = _messages.MessageField('PartitionId', 3)
+  query = _messages.MessageField('Query', 4)
+  readOptions = _messages.MessageField('ReadOptions', 5)
 
 
 class RunQueryResponse(_messages.Message):

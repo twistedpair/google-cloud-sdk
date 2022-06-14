@@ -500,7 +500,7 @@
           "type": "string"
         },
         "interfaceIndex": {
-          "description": "The index of the logical interface mapping to the index of the hardware bond or nic on the chosen network template.",
+          "description": "The index of the logical interface mapping to the index of the hardware bond or nic on the chosen network template. This field is deprecated.",
           "type": "integer",
           "format": "int32"
         }
@@ -788,6 +788,11 @@
           "type": "string",
           "format": "int64"
         },
+        "originallyRequestedSizeGib": {
+          "description": "Originally requested size, in GiB.",
+          "type": "string",
+          "format": "int64"
+        },
         "currentSizeGib": {
           "description": "The current size of this storage volume, in GiB, including space reserved for snapshots. This size might be different than the requested size if the storage volume has been configured with auto grow or auto shrink.",
           "type": "string",
@@ -795,6 +800,11 @@
         },
         "emergencySizeGib": {
           "description": "Additional emergency size that was requested for this Volume, in GiB. current_size_gib includes this value.",
+          "type": "string",
+          "format": "int64"
+        },
+        "maxSizeGib": {
+          "description": "Maximum size volume can be expanded to in case of evergency, in GiB.",
           "type": "string",
           "format": "int64"
         },
@@ -1238,6 +1248,11 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "requestedSizeGib": {
+          "description": "The requested size, in GiB.",
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -1509,6 +1524,10 @@
           "description": "Output only. URI to Cloud Console UI view of this provisioning config.",
           "readOnly": true,
           "type": "string"
+        },
+        "vpcScEnabled": {
+          "description": "If true, VPC SC is enabled for the cluster.",
+          "type": "boolean"
         }
       }
     },
@@ -1685,6 +1704,10 @@
         },
         "vlanSameProject": {
           "description": "Whether the VLAN attachment pair is located in the same project.",
+          "type": "boolean"
+        },
+        "jumboFramesEnabled": {
+          "description": "The JumboFramesEnabled option for customer to set.",
           "type": "boolean"
         }
       }

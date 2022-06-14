@@ -69,6 +69,12 @@ class ServicePrinter(cp.CustomPrinterBase):
       ])
       breakglass_label.skip_empty = False
       labels.append(breakglass_label)
+    description = k8s_util.GetDescription(record)
+    if description is not None:
+      description_label = cp.Labeled([
+          ('Description', description),
+      ])
+      labels.append(description_label)
     return cp.Section(labels)
 
   def Transform(self, record):

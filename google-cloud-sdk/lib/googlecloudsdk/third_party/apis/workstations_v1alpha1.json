@@ -390,7 +390,7 @@
           "type": "string"
         },
         "idleTimeout": {
-          "description": "How long to wait before automatically stopping an instance that hasn't received any user traffic.",
+          "description": "How long to wait before automatically stopping an instance that hasn't received any user traffic. A value of 0 indicates that this instance should never time out due to idleness.",
           "type": "string",
           "format": "google-duration"
         },

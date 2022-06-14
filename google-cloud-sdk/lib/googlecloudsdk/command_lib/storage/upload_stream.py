@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 import os
 
+from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import hash_util
 from googlecloudsdk.core.updater import installers
 
@@ -32,46 +33,34 @@ class UploadStream:
   When data is read from a stream, this class
   1. Updates hash digesters.
   2. Executes a progress callbacks if a byte threshold is passed.
-
-  If offset and length are specified, This class behaves as a contiguous subset
-  of the underlying stream (i.e., this object will behave as though the desired
-  part of the stream was written to a file, and the second file was opened).
-
-  This is helpful for composite uploads since even when total_size is specified,
-  apitools.transfer.Upload looks at the size of the source file to ensure
-  that all bytes have been uploaded.
   """
 
   def __init__(self,
                stream,
-               offset,
-               length,
+               length=None,
                digesters=None,
                progress_callback=None):
     """Initializes a FilePart instance.
 
     Args:
       stream (io.IOBase): The underlying stream wrapped by this class.
-      offset (int): The position (in bytes) in the original stream that
-        corresponds to the first byte of the UploadStream.
-      length: The total number of bytes in the UploadStream.
-      digesters (dict[util.HashAlgorithm, hashlib hash object]): Values are
+      length (int|None): The total number of bytes in the UploadStream.
+      digesters (dict[util.HashAlgorithm, hashlib hash object]|None): Values are
         updated with with data as it's read.
-      progress_callback (func<int>): Accepts an amount of processed bytes and
-        submits progress information for aggregation.
+      progress_callback (func[int]|None): Accepts an amount of processed bytes
+        and submits progress information for aggregation.
     """
     self._stream = stream
     self._length = length
-    self._start_byte = offset
-    self._end_byte = self._start_byte + self._length
-    self._stream.seek(self._start_byte)
     self._digesters = digesters if digesters is not None else {}
     self._progress_callback = progress_callback
 
     self._bytes_read_since_last_progress_callback = 0
     self._progress_updated_with_end_byte = False
     self._checkpoint_digesters = None
-    self._checkpoint_absolute_index = self._start_byte
+    self._checkpoint_absolute_index = 0
+
+    self._start_byte = 0
 
   def _save_digesters_checkpoint(self):
     """Updates checkpoint that holds old hashes to optimize backwards seeks."""
@@ -108,16 +97,13 @@ class UploadStream:
       hash_util.update_digesters(self._digesters, data)
 
   def tell(self):
-    """Returns the current position relative to the part's start byte."""
-    return self._stream.tell() - self._start_byte
+    """Returns the current position in the stream."""
+    return self._stream.tell()
 
   def read(self, size=-1):
     """Returns `size` bytes from the underlying stream."""
     self._save_digesters_checkpoint()
-    if size < 0:
-      size = self._length
-    size = min(size, self._end_byte - self._stream.tell())
-    data = self._stream.read(max(0, size))
+    data = self._stream.read(size)
     if data:
       hash_util.update_digesters(self._digesters, data)
       if self._progress_callback:
@@ -127,7 +113,7 @@ class UploadStream:
           self._bytes_read_since_last_progress_callback = 0
           current_pos = self._stream.tell()
           self._progress_callback(current_pos)
-          self._progress_updated_with_end_byte = current_pos == self._end_byte
+          self._progress_updated_with_end_byte = current_pos == self._length
 
     return data
 
@@ -137,33 +123,37 @@ class UploadStream:
     Args:
       offset (int): The number of bytes to move.
       whence: Specifies the position offset is added to.
-        os.SEEK_END: offset is added to the last byte in the FilePart.
-        os.SEEK_CUR: offset is added to the current position.
-        os.SEEK_SET: offset is added to the first byte in the FilePart.
+        os.SEEK_SET: offset is added to the current byte.
+        os.SEEK_END, os.SEEK_CUR are not supported.
 
     Returns:
-      The new relative position in the stream (int).
+      The new position in the stream (int).
     """
     if whence == os.SEEK_END:
-      new_absolute_index = offset + self._end_byte
+      if self._length:
+        new_absolute_index = offset + self._length
+      else:
+        raise errors.Error(
+            'SEEK_END is not supported if the length of the stream is unknown.')
     elif whence == os.SEEK_CUR:
       new_absolute_index = self._stream.tell() + offset
     else:
-      new_absolute_index = offset + self._start_byte
+      new_absolute_index = offset
 
     self._catch_up_digesters(new_absolute_index)
     # Above may perform seek, but repeating is harmless.
-    return self._stream.seek(new_absolute_index) - self._start_byte
+    return self._stream.seek(new_absolute_index)
 
   def close(self):
     """Closes the underlying stream."""
     if (self._progress_callback and not self._progress_updated_with_end_byte):
       self._progress_callback(self._stream.tell())
       self._progress_updated_with_end_byte = True
-    self._stream.close()
+    return self._stream.close()
 
   def __enter__(self):
     return self
 
   def __exit__(self, *unused_args):
     self.close()
+

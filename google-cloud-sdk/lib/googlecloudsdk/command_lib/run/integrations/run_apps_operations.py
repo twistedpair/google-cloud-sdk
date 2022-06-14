@@ -119,6 +119,7 @@ class RunAppsOperations(object):
                      integration_name=None,
                      deploy_message=None,
                      match_type_names=None,
+                     intermediate_step=False,
                      etag=None):
     """Applies the application config.
 
@@ -129,6 +130,7 @@ class RunAppsOperations(object):
       integration_name: name of the integration that's being updated.
       deploy_message: message to display when deployment in progress.
       match_type_names: array of type/name pairs used for create selector.
+      intermediate_step: bool of whether this is an intermediate step.
       etag: the etag of the application if it's an incremental patch.
     """
     tracker.StartStage(stages.UPDATE_APPLICATION)
@@ -151,9 +153,10 @@ class RunAppsOperations(object):
       match_type_names = [{'type': '*', 'name': '*'}]
     create_selector = {'matchTypeNames': match_type_names}
 
-    tracker.UpdateHeaderMessage(
-        'Deployment started. This process will continue even if '
-        'your terminal session is interrupted.')
+    if not intermediate_step:
+      tracker.UpdateHeaderMessage(
+          'Deployment started. This process will continue even if '
+          'your terminal session is interrupted.')
     tracker.StartStage(stages.CREATE_DEPLOYMENT)
     if deploy_message:
       tracker.UpdateStage(stages.CREATE_DEPLOYMENT, deploy_message)
@@ -333,7 +336,8 @@ class RunAppsOperations(object):
           etag=application.etag)
     except exceptions.IntegrationsOperationError as err:
       tracker.AddWarning('To retry the deployment, use update command ' +
-                         'gcloud alpha run integrations update {}'.format(name))
+                         '`gcloud alpha run integrations update {}`'
+                         .format(name))
       raise err
 
     return name
@@ -457,6 +461,7 @@ class RunAppsOperations(object):
           appname=_DEFAULT_APP_NAME,
           appconfig=application.config,
           match_type_names=match_type_names,
+          intermediate_step=True,
           etag=application.etag)
     else:
       tracker.CompleteStage(stages.UPDATE_APPLICATION)

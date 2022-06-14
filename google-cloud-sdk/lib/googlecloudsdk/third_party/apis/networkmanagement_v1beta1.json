@@ -762,13 +762,15 @@
             "Unspecified type.",
             "Hierarchical firewall policy rule. For details, see [Hierarchical firewall policies overview](https:\/\/cloud.google.com\/vpc\/docs\/firewall-policies).",
             "VPC firewall rule. For details, see [VPC firewall rules overview](https:\/\/cloud.google.com\/vpc\/docs\/firewalls).",
-            "Implied VPC firewall rule. For details, see [Implied rules](https:\/\/cloud.google.com\/vpc\/docs\/firewalls#default_firewall_rules)."
+            "Implied VPC firewall rule. For details, see [Implied rules](https:\/\/cloud.google.com\/vpc\/docs\/firewalls#default_firewall_rules).",
+            "Implicit firewall rules that are managed by serverless VPC access to allow ingress access. They are not visible in the Google Cloud console. For details, see [VPC connector's implicit rules](https:\/\/cloud.google.com\/functions\/docs\/networking\/connecting-vpc#restrict-access)."
           ],
           "enum": [
             "FIREWALL_RULE_TYPE_UNSPECIFIED",
             "HIERARCHICAL_FIREWALL_POLICY_RULE",
             "VPC_FIREWALL_RULE",
-            "IMPLIED_VPC_FIREWALL_RULE"
+            "IMPLIED_VPC_FIREWALL_RULE",
+            "SERVERLESS_VPC_ACCESS_MANAGED_FIREWALL_RULE"
           ]
         }
       }

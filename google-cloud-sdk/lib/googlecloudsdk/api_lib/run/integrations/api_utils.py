@@ -25,13 +25,14 @@ from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.command_lib.run import exceptions
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.util import encoding
+from googlecloudsdk.core.util import retry
 
 
 API_NAME = 'runapps'
 API_VERSION = 'v1alpha1'
 
 # Max wait time before timing out, match timeout of CP
-_POLLING_TIMEOUT_MS = 600000
+_POLLING_TIMEOUT_MS = 30 * 60 * 1000
 # Max wait time between poll retries before timing out
 _RETRY_TIMEOUT_MS = 1000
 
@@ -206,3 +207,9 @@ def _WaitForOperation(client, operation, resource_type):
     raise exceptions.IntegrationsOperationError(
         'OperationError: code={0}, message={1}'.format(
             operation.error.code, encoding.Decode(operation.error.message)))
+  except retry.WaitException:
+    # Operation timed out.
+    raise waiter.TimeoutError(
+        'Operation timed out after {0} seconds. The operations may still '
+        'be underway remotely and may still succeed.'
+        .format(_POLLING_TIMEOUT_MS / 1000))

@@ -373,6 +373,10 @@
       "description": "The request for Datastore.Lookup.",
       "type": "object",
       "properties": {
+        "databaseId": {
+          "description": "If not empty, the ID of the database against which to make the request.",
+          "type": "string"
+        },
         "readOptions": {
           "description": "The options for this lookup request.",
           "$ref": "ReadOptions"
@@ -442,6 +446,10 @@
       "properties": {
         "projectId": {
           "description": "The ID of the project to which the entities belong.",
+          "type": "string"
+        },
+        "databaseId": {
+          "description": "If not empty, the ID of the database to which the entities belong.",
           "type": "string"
         },
         "namespaceId": {
@@ -653,6 +661,10 @@
       "description": "The request for Datastore.RunQuery.",
       "type": "object",
       "properties": {
+        "databaseId": {
+          "description": "If not empty, the ID of the database against which to make the request.",
+          "type": "string"
+        },
         "partitionId": {
           "description": "Entities are partitioned into subsets, identified by a partition ID. Queries are scoped to a single partition. This partition ID is normalized with the standard default context partition ID.",
           "$ref": "PartitionId"
@@ -796,7 +808,7 @@
           ]
         },
         "filters": {
-          "description": "The list of filters to combine. Must contain at least one filter.",
+          "description": "The list of filters to combine. Requires: * At least one filter is present.",
           "type": "array",
           "items": {
             "$ref": "Filter"
@@ -1010,6 +1022,10 @@
       "description": "The request for Datastore.BeginTransaction.",
       "type": "object",
       "properties": {
+        "databaseId": {
+          "description": "If not empty, the ID of the database against which to make the request.",
+          "type": "string"
+        },
         "transactionOptions": {
           "description": "Options for a new transaction.",
           "$ref": "TransactionOptions"
@@ -1072,6 +1088,10 @@
       "description": "The request for Datastore.Commit.",
       "type": "object",
       "properties": {
+        "databaseId": {
+          "description": "If not empty, the ID of the database against which to make the request.",
+          "type": "string"
+        },
         "mode": {
           "description": "The type of commit to perform. Defaults to `TRANSACTIONAL`.",
           "type": "string",
@@ -1187,6 +1207,10 @@
       "description": "The request for Datastore.Rollback.",
       "type": "object",
       "properties": {
+        "databaseId": {
+          "description": "If not empty, the ID of the database against which to make the request.",
+          "type": "string"
+        },
         "transaction": {
           "description": "Required. The transaction identifier, returned by a call to Datastore.BeginTransaction.",
           "type": "string",
@@ -1206,6 +1230,10 @@
       "description": "The request for Datastore.AllocateIds.",
       "type": "object",
       "properties": {
+        "databaseId": {
+          "description": "If not empty, the ID of the database against which to make the request.",
+          "type": "string"
+        },
         "keys": {
           "description": "Required. A list of keys with incomplete key paths for which to allocate IDs. No key may be reserved\/read-only.",
           "type": "array",

@@ -85,6 +85,28 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_REPOSITORIES_MAVENARTIFACTS = (
+      'projects.locations.repositories.mavenArtifacts',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/repositories/'
+              '{repositoriesId}/mavenArtifacts/{mavenArtifactsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_REPOSITORIES_NPMPACKAGES = (
+      'projects.locations.repositories.npmPackages',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/repositories/'
+              '{repositoriesId}/npmPackages/{npmPackagesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_REPOSITORIES_PACKAGES = (
       'projects.locations.repositories.packages',
       '{+name}',
@@ -114,6 +136,17 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/repositories/'
               '{repositoriesId}/packages/{packagesId}/versions/{versionsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_REPOSITORIES_PYTHONPACKAGES = (
+      'projects.locations.repositories.pythonPackages',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/repositories/'
+              '{repositoriesId}/pythonPackages/{pythonPackagesId}',
       },
       ['name'],
       True

@@ -613,6 +613,8 @@ class Database(_messages.Message):
       using this value to recover data, make sure to account for the time from
       the moment when the value is queried to the moment when you initiate the
       recovery.
+    enableDropProtection: Whether drop protection is enabled for this
+      database. Defaults to false, if not set.
     encryptionConfig: Output only. For databases that are using customer
       managed encryption, this field contains the encryption configuration for
       the database. For databases that are using Google default or other types
@@ -628,6 +630,8 @@ class Database(_messages.Message):
       `projects//instances//databases/`, where `` is as specified in the
       `CREATE DATABASE` statement. This name can be passed to other API
       methods to identify the database.
+    reconciling: Output only. If true, the database is being updated. If
+      false, there are no ongoing update operations for the database.
     restoreInfo: Output only. Applicable only for restored databases. Contains
       information about the restore source.
     state: Output only. The current database state.
@@ -674,12 +678,14 @@ class Database(_messages.Message):
   databaseDialect = _messages.EnumField('DatabaseDialectValueValuesEnum', 2)
   defaultLeader = _messages.StringField(3)
   earliestVersionTime = _messages.StringField(4)
-  encryptionConfig = _messages.MessageField('EncryptionConfig', 5)
-  encryptionInfo = _messages.MessageField('EncryptionInfo', 6, repeated=True)
-  name = _messages.StringField(7)
-  restoreInfo = _messages.MessageField('RestoreInfo', 8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
-  versionRetentionPeriod = _messages.StringField(10)
+  enableDropProtection = _messages.BooleanField(5)
+  encryptionConfig = _messages.MessageField('EncryptionConfig', 6)
+  encryptionInfo = _messages.MessageField('EncryptionInfo', 7, repeated=True)
+  name = _messages.StringField(8)
+  reconciling = _messages.BooleanField(9)
+  restoreInfo = _messages.MessageField('RestoreInfo', 10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  versionRetentionPeriod = _messages.StringField(12)
 
 
 class DatabaseRole(_messages.Message):
@@ -4093,6 +4099,24 @@ class SpannerProjectsInstancesDatabasesOperationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class SpannerProjectsInstancesDatabasesPatchRequest(_messages.Message):
+  r"""A SpannerProjectsInstancesDatabasesPatchRequest object.
+
+  Fields:
+    database: A Database resource to be passed as the request body.
+    name: Required. The name of the database. Values are of the form
+      `projects//instances//databases/`, where `` is as specified in the
+      `CREATE DATABASE` statement. This name can be passed to other API
+      methods to identify the database.
+    updateMask: Required. The list of fields to update. Currently, only
+      `enable_drop_protection` field can be updated.
+  """
+
+  database = _messages.MessageField('Database', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class SpannerProjectsInstancesDatabasesRestoreRequest(_messages.Message):

@@ -231,7 +231,7 @@
     },
     "Cluster": {
       "id": "Cluster",
-      "description": "A cluster is a collection of regional AlloyDB resources. It can include a primary instance and one or more read pool instances. All cluster resources share a storage layer, which scales as needed. NEXT_ID: 22",
+      "description": "A cluster is a collection of regional AlloyDB resources. It can include a primary instance and one or more read pool instances. All cluster resources share a storage layer, which scales as needed. NEXT_ID: 25",
       "type": "object",
       "properties": {
         "backupSource": {
@@ -306,6 +306,21 @@
             "DELETING",
             "FAILED",
             "BOOTSTRAPPING"
+          ]
+        },
+        "clusterType": {
+          "description": "Output only. The type of the cluster. This is an output-only field and it's populated at the Cluster creation time or the Cluster promotion time. The cluster type is determined by which RPC was used to create the cluster (i.e. `CreateCluster` vs. `CreateSecondaryCluster`",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "The type of the cluster is unknown.",
+            "Primary cluster that support read and write operations.",
+            "Secondary cluster that is replicating from another region. This only supports read."
+          ],
+          "enum": [
+            "CLUSTER_TYPE_UNSPECIFIED",
+            "PRIMARY",
+            "SECONDARY"
           ]
         },
         "databaseVersion": {

@@ -625,7 +625,9 @@ class CredentialStoreWithCache(CredentialStore):
     self._access_token_cache.Remove(account_id)
 
 
-def GetCredentialStore(store_file=None, access_token_file=None):
+def GetCredentialStore(store_file=None,
+                       access_token_file=None,
+                       with_access_token_cache=True):
   """Constructs credential store.
 
   Args:
@@ -635,11 +637,17 @@ def GetCredentialStore(store_file=None, access_token_file=None):
     access_token_file: str, optional path to use for access token storage. Note
       that some implementations use store_file to also store access_tokens, in
       which case this argument is ignored.
+    with_access_token_cache: bool, True to load a credential store with
+      auto caching for access tokens. False to load a credential store without
+      auto caching for access tokens.
 
   Returns:
     CredentialStore object.
   """
-  return _GetSqliteStore(store_file, access_token_file)
+  if with_access_token_cache:
+    return _GetSqliteStoreWithCache(store_file, access_token_file)
+  else:
+    return _GetSqliteStore(store_file)
 
 
 class CredentialType(enum.Enum):
@@ -1073,18 +1081,26 @@ def FromJsonGoogleAuth(json_value):
           json_key['type']))
 
 
-def _GetSqliteStore(sqlite_credential_file=None, sqlite_access_token_file=None):
+def _GetSqliteStoreWithCache(sqlite_credential_file=None,
+                             sqlite_access_token_file=None):
   """Get a sqlite-based Credential Store."""
-  sqlite_credential_file = (sqlite_credential_file or
-                            config.Paths().credentials_db_path)
-  files.PrivatizeFile(sqlite_credential_file)
-  credential_store = SqliteCredentialStore(sqlite_credential_file)
+
+  credential_store = _GetSqliteStore(sqlite_credential_file)
 
   sqlite_access_token_file = (sqlite_access_token_file or
                               config.Paths().access_token_db_path)
   files.PrivatizeFile(sqlite_access_token_file)
   access_token_cache = AccessTokenCache(sqlite_access_token_file)
   return CredentialStoreWithCache(credential_store, access_token_cache)
+
+
+def _GetSqliteStore(sqlite_credential_file=None):
+  """Get a sqlite-based Credential Store with using the access token cache."""
+  sqlite_credential_file = (sqlite_credential_file or
+                            config.Paths().credentials_db_path)
+  files.PrivatizeFile(sqlite_credential_file)
+  credential_store = SqliteCredentialStore(sqlite_credential_file)
+  return credential_store
 
 
 def _QuotaProjectIsCurrentProject(quota_project):

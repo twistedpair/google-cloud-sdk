@@ -3023,6 +3023,37 @@ For more information on Workload Identity, see
 """)
 
 
+def AddWorkloadIdentityCPUFlags(parser):
+  """Adds tune-gke-metadata-server-cpu flags to the parser."""
+  parser.add_argument(
+      '--tune-gke-metadata-server-cpu',
+      type=arg_parsers.BoundedInt(lower_bound=100),
+      hidden=True,
+      default=None,
+      help="""\
+Set gke-metadata-server daemonset container cpu limits and requests.
+
+e.g. --tune-gke-metadata-server-cpu=100, the unit is CPU in millicores and
+the value should be equal or larger than 100.
+""")
+
+
+def AddWorkloadIdentityMemoryFlags(parser):
+  """Adds tune-gke-metadata-server-memory flags to the parser."""
+  parser.add_argument(
+      '--tune-gke-metadata-server-memory',
+      default=None,
+      hidden=True,
+      type=arg_parsers.BinarySize(
+          lower_bound='100Mi', default_unit='B', type_abbr='B'),
+      help="""\
+Set gke-metadata-server daemonset container memory limits and requests.
+
+e.g. --tune-gke-metadata-server-memory=100Mi, the input value should be memory
+in B, KB, MiB or MB and should be equal or larger than 100MiB.
+""")
+
+
 def AddWorkloadCertificatesFlags(parser):
   """Adds Workload Certificates flags to the parser."""
   parser.add_argument(

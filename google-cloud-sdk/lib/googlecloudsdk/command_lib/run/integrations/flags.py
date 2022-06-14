@@ -95,18 +95,25 @@ def AddParametersArg(parser):
       'integration type. Only simple values can be specified with this flag.')
 
 
+def ValidateEnabledGcpApis(integration_type):
+  """Validates user has enabled APIs, or else prompts user to enable."""
+  types_utils.CheckValidIntegrationType(integration_type)
+  validate = validator.GetIntegrationValidator(integration_type)
+  validate.ValidateEnabledGcpApis()
+
+
 def ValidateCreateParameters(integration_type, parameters):
   """Validates given params conform to what's expected from the integration."""
   types_utils.CheckValidIntegrationType(integration_type)
-  validate = validator.GetIntegrationValidator(integration_type, parameters)
-  validate.ValidateCreateParameters()
+  validate = validator.GetIntegrationValidator(integration_type)
+  validate.ValidateCreateParameters(parameters)
 
 
 def ValidateUpdateParameters(integration_type, parameters):
   """Validate params for update commands for a given integration."""
   types_utils.CheckValidIntegrationType(integration_type)
-  validate = validator.GetIntegrationValidator(integration_type, parameters)
-  validate.ValidateUpdateParameters()
+  validate = validator.GetIntegrationValidator(integration_type)
+  validate.ValidateUpdateParameters(parameters)
 
 
 def ListIntegrationsOfService(parser):

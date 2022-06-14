@@ -34,16 +34,12 @@ _POSIX_SOURCE_OR_DESTINATION_HELP_TEXT = (
     ' need an agent pool flag on this `jobs` command to activate the agent.')
 _SOURCE_HELP_TEXT = (
     'The source of your data. Available sources and formatting information:\n\n'
-    'Public clouds - For Google Cloud Storage and Amazon S3, specify the scheme'
-    '  of the source type; name of the resource; and, if transferring from a'
-    '  folder, the path to the folder. For Azure Storage, note the'
-    ' Azure-specific formatting below. For example:\n'
-    '* [Google Cloud Storage] gs://example-bucket/example-folder\n'
+    'Public clouds -\n'
+    '* [Google Cloud Storage] gs://example-bucket/example-folder/\n'
     '* [Amazon S3] s3://examplebucket/example-folder\n'
     '* [Azure Blob Storage or Data Lake Storage] http://examplestorageaccount.'
     'blob.core.windows.net/examplecontainer/examplefolder\n\n'
-    'POSIX filesystem - Specify the `posix://` scheme followed by the full path'
-    ' to the desired directory. {}\n\n'
+    '{}\n\n'
     'Publicly-accessible objects - Specify the URL of a TSV file containing a'
     ' list of URLs of publicly-accessible objects. For example:\n'
     '* http://example.com/tsvfile'
@@ -53,9 +49,8 @@ _DESTINATION_HELP_TEXT = (
     ' formatting information:\n\n'
     'Google Cloud Storage - Specify the `gs://` scheme; name of the bucket;'
     ' and, if transferring to a folder, the path to the folder. For example:\n'
-    '* gs://example-bucket/example-folder\n\n'
-    'POSIX filesystem - Specify the `posix://` scheme followed by the full path'
-    ' to the desired directory. {}'
+    '* gs://example-bucket/example-folder/\n\n'
+    '{}'
 ).format(_POSIX_SOURCE_OR_DESTINATION_HELP_TEXT)
 
 

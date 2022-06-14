@@ -56,6 +56,23 @@ def Dismiss(name):
   return client.projects_approvalRequests.Dismiss(req)
 
 
+def Invalidate(name):
+  """Invalidate an approval request."""
+  client = apis.GetClientInstance('accessapproval', 'v1')
+  msgs = apis.GetMessagesModule('accessapproval', 'v1')
+
+  if 'organizations/' in name:
+    req = msgs.AccessapprovalOrganizationsApprovalRequestsInvalidateRequest(
+        name=name)
+    return client.organizations_approvalRequests.Invalidate(req)
+  if 'folders/' in name:
+    req = msgs.AccessapprovalFoldersApprovalRequestsInvalidateRequest(name=name)
+    return client.folders_approvalRequests.Invalidate(req)
+
+  req = msgs.AccessapprovalProjectsApprovalRequestsInvalidateRequest(name=name)
+  return client.projects_approvalRequests.Invalidate(req)
+
+
 def Get(name):
   """Get an approval request by name."""
   client = apis.GetClientInstance('accessapproval', 'v1')

@@ -55,8 +55,6 @@ class Cluster(_messages.Message):
       only field and currently only Redis 6 is supported.
     StateValueValuesEnum: Output only. The current state of this cluster. Can
       be CREATING, READY, UPDATING, DELETING and SUSPENDED
-    TierValueValuesEnum: Required. Redis tier. This field is hiden from
-      customers in private preview.
 
   Messages:
     RedisConfigsValue: Optional. Redis configuration parameters, according to
@@ -90,8 +88,6 @@ class Cluster(_messages.Message):
       versions this will be writable to allow for heterogeneous clusters.
     state: Output only. The current state of this cluster. Can be CREATING,
       READY, UPDATING, DELETING and SUSPENDED
-    tier: Required. Redis tier. This field is hiden from customers in private
-      preview.
     totalMemorySizeGb: Optional. Redis memory size in GiB for the entire
       cluster. Defaults to 48 for Dense tier and 12 for Performance tier.
   """
@@ -126,17 +122,6 @@ class Cluster(_messages.Message):
     UPDATING = 3
     DELETING = 4
     REPAIRING = 5
-
-  class TierValueValuesEnum(_messages.Enum):
-    r"""Required. Redis tier. This field is hiden from customers in private
-    preview.
-
-    Values:
-      TIER_NOT_SPECIFIED: <no description>
-      DENSE: dense tier
-    """
-    TIER_NOT_SPECIFIED = 0
-    DENSE = 1
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class RedisConfigsValue(_messages.Message):
@@ -177,8 +162,7 @@ class Cluster(_messages.Message):
   redisVersion = _messages.EnumField('RedisVersionValueValuesEnum', 9)
   slots = _messages.MessageField('ClusterSlots', 10, repeated=True)
   state = _messages.EnumField('StateValueValuesEnum', 11)
-  tier = _messages.EnumField('TierValueValuesEnum', 12)
-  totalMemorySizeGb = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  totalMemorySizeGb = _messages.IntegerField(12, variant=_messages.Variant.INT32)
 
 
 class ClusterSlots(_messages.Message):

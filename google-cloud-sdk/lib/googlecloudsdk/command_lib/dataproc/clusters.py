@@ -529,42 +529,37 @@ def _GetValidMetricSourceChoices(dataproc):
   metric_sources_enum = dataproc.messages.Metric.MetricSourceValueValuesEnum
   return [
       arg_utils.ChoiceToEnumName(n)
-      for n in metric_sources_enum.names()
+      for n in sorted(metric_sources_enum.names())
       if n != 'METRIC_SOURCE_UNSPECIFIED'
   ]
 
 
 def _AddMetricConfigArgs(parser, dataproc):
   """Adds DataprocMetricConfig related args to the parser."""
-  metric_config_group = parser.add_group(hidden=True)
+  metric_config_group = parser.add_group()
   metric_config_group.add_argument(
       '--metric-sources',
       metavar='METRIC_SOURCES',
       type=arg_parsers.ArgList(
           arg_utils.ChoiceToEnumName,
           choices=_GetValidMetricSourceChoices(dataproc)),
-      hidden=True,
       required=True,
       help='Specifies a list of Metric Sources to collect custom '
       'metrics from the cluster.')
-  metric_overrides_group = metric_config_group.add_mutually_exclusive_group(
-      hidden=True)
+  metric_overrides_group = metric_config_group.add_mutually_exclusive_group()
   metric_overrides_group.add_argument(
       '--metric-overrides',
       type=arg_parsers.ArgList(),
       action=arg_parsers.UpdateAction,
       metavar='METRIC_SOURCE:INSTANCE:GROUP:METRIC',
-      hidden=True,
       help='List of Metrics that override the default metrics enabled for the metric source'
   )
   metric_overrides_group.add_argument(
       '--metric-overrides-file',
-      hidden=True,
       help="""\
       Path to a file containing list of Metrics that override the default metrics enabled for the metric source.
-      The path can be a Cloud Storage URL (Example: 'gs://path/to/file') or a local file system path.
-      """
-  )
+      The path can be a Cloud Storage URL (example: `gs://path/to/file`) or a local file system path.
+      """)
 
 
 def _AddAcceleratorArgs(parser):
@@ -1169,6 +1164,7 @@ def _SetDataprocMetricConfig(args, cluster_config, dataproc):
       DataprocMetricConfig.
     dataproc: Dataproc API definition.
   """
+
   def _GetCamelCaseMetricSource(ms):
     title_case = ms.lower().title().replace('_', '').replace('-', '')
     return title_case[0].lower() + title_case[1:]
@@ -1379,23 +1375,35 @@ def DeleteGeneratedProperties(cluster, dataproc):
     cluster: Cluster to filter
     dataproc: Dataproc object that contains client, messages, and resources
   """
-  if (not cluster.config or not cluster.config.softwareConfig or
-      not cluster.config.softwareConfig.properties):
-    return
+  try:
+    if cluster.config.softwareConfig.properties:
+      _DeleteClusterGeneratedProperties(cluster, dataproc)
+  except AttributeError:
+    # The field is not set.
+    pass
+  try:
+    if cluster.virtualClusterConfig.kubernetesClusterConfig.kubernetesSoftwareConfig.properties:
+      _DeleteVirtualClusterGeneratedProperties(cluster, dataproc)
+  except AttributeError:
+    # The field is not set.
+    pass
+
+
+def _DeleteClusterGeneratedProperties(cluster, dataproc):
+  """Removes Dataproc generated properties from GCE-based Clusters."""
   # Filter out Dataproc-generated properties.
   props = encoding.MessageToPyValue(cluster.config.softwareConfig.properties)
   # We don't currently have a nice way to tell which properties are
   # Dataproc-generated, so for now, delete a few properties that we know contain
   # cluster-specific info.
-  props_to_delete = [
+  prop_prefixes_to_delete = (
       'hdfs:dfs.namenode.lifeline.rpc-address',
-      'hdfs:dfs.namenode.servicerpc-address'
-  ]
+      'hdfs:dfs.namenode.servicerpc-address',
+  )
 
   prop_keys_to_delete = [
       prop_key for prop_key in props.keys()
-      if any(prop_key.startswith(prop_to_delete)
-             for prop_to_delete in props_to_delete)
+      if prop_key.startswith(prop_prefixes_to_delete)
   ]
 
   for prop in prop_keys_to_delete:
@@ -1405,6 +1413,34 @@ def DeleteGeneratedProperties(cluster, dataproc):
   else:
     cluster.config.softwareConfig.properties = encoding.DictToAdditionalPropertyMessage(
         props, dataproc.messages.SoftwareConfig.PropertiesValue)
+
+
+def _DeleteVirtualClusterGeneratedProperties(cluster, dataproc):
+  """Removes Dataproc generated properties from Virtual Clusters."""
+  # Filter out Dataproc-generated properties.
+  props = encoding.MessageToPyValue(
+      cluster.virtualClusterConfig.kubernetesClusterConfig
+      .kubernetesSoftwareConfig.properties)
+  # We don't currently have a nice way to tell which properties are
+  # Dataproc-generated, so for now, delete a few properties that we know contain
+  # cluster-specific info.
+  prop_prefixes_to_delete = (
+      # Output only properties from DPGKE.
+      'dpgke:dpgke.unstable.outputOnly.',)
+
+  prop_keys_to_delete = [
+      prop_key for prop_key in props.keys()
+      if prop_key.startswith(prop_prefixes_to_delete)
+  ]
+
+  for prop in prop_keys_to_delete:
+    del props[prop]
+
+  if not props:
+    cluster.virtualClusterConfig.kubernetesClusterConfig.kubernetesSoftwareConfig.properties = None
+  else:
+    cluster.virtualClusterConfig.kubernetesClusterConfig.kubernetesSoftwareConfig.properties = encoding.DictToAdditionalPropertyMessage(
+        props, dataproc.messages.KubernetesSoftwareConfig.PropertiesValue)
 
 
 def ClusterKey(cluster, key_type):

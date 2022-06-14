@@ -51,6 +51,8 @@ REGION_LABEL = GOOGLE_GROUP + '/location'
 CLIENT_NAME_ANNOTATION = RUN_GROUP + '/client-name'
 CLIENT_VERSION_ANNOTATION = RUN_GROUP + '/client-version'
 
+DESCRIPTION_ANNOTATION = RUN_GROUP + '/description'
+
 LAUNCH_STAGE_ANNOTATION = RUN_GROUP + '/launch-stage'
 
 BINAUTHZ_POLICY_ANNOTATION = RUN_GROUP + '/binary-authorization'
@@ -58,6 +60,8 @@ BINAUTHZ_BREAKGLASS_ANNOTATION = RUN_GROUP + '/binary-authorization-breakglass'
 
 EXECUTION_ENVIRONMENT_ANNOTATION = RUN_GROUP + '/execution-environment'
 CUSTOM_AUDIENCES_ANNOTATION = RUN_GROUP + '/custom-audiences'
+
+NETWORK_INTERFACES_ANNOTATION = RUN_GROUP + '/network-interfaces'
 
 
 def Meta(m):
@@ -219,6 +223,9 @@ class KubernetesObject(object):
     if not self._m.metadata:
       raise ValueError('This instance is spec-only.')
 
+  def IsFullObject(self):
+    return self._m.metadata
+
   # Access the "raw" k8s message parts. When subclasses want to allow mutability
   # they should provide their own convenience properties with setters.
   @property
@@ -244,6 +251,10 @@ class KubernetesObject(object):
   def metadata(self):
     self.AssertFullObject()
     return self._m.metadata
+
+  @metadata.setter
+  def metadata(self, value):
+    self._m.metadata = value
 
   # Alias common bits of metadata to the top level, for convenience.
   @property

@@ -109,6 +109,10 @@ def CreateUsingReplicas(config,
                         etag=None):
   """Create a new instance configs based on provided list of replicas."""
   msgs = apis.GetMessagesModule('spanner', 'v1')
+  config_ref = resources.REGISTRY.Parse(
+      base_config,
+      params={'projectsId': properties.VALUES.core.project.GetOrFail},
+      collection='spanner.projects.instanceConfigs')
 
   replica_info_list = []
   _AppendReplicas(msgs, replicas_arg, replica_info_list)
@@ -120,8 +124,8 @@ def CreateUsingReplicas(config,
             key=key, value=value) for key, value in six.iteritems(labels)
     ])
 
-  return _Create(msgs, config, display_name, base_config, replica_info_list,
-                 labels_message, validate_only, etag)
+  return _Create(msgs, config, display_name, config_ref.RelativeName(),
+                 replica_info_list, labels_message, validate_only, etag)
 
 
 def _Create(msgs,

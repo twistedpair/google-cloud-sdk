@@ -224,7 +224,8 @@
             "Health Insurance Portability and Accountability Act controls",
             "Health Information Trust Alliance controls",
             "Assured Workloads For EU Regions and Support controls",
-            "Assured Workloads For Canada Regions and Support controls"
+            "Assured Workloads For Canada Regions and Support controls",
+            "International Traffic in Arms Regulations"
           ],
           "enum": [
             "COMPLIANCE_REGIME_UNSPECIFIED",
@@ -236,7 +237,8 @@
             "HIPAA",
             "HITRUST",
             "EU_REGIONS_AND_SUPPORT",
-            "CA_REGIONS_AND_SUPPORT"
+            "CA_REGIONS_AND_SUPPORT",
+            "ITAR"
           ]
         },
         "createTime": {
@@ -582,7 +584,8 @@
             "Health Insurance Portability and Accountability Act controls",
             "Health Information Trust Alliance controls",
             "Assured Workloads For EU Regions and Support controls",
-            "Assured Workloads For Canada Regions and Support controls"
+            "Assured Workloads For Canada Regions and Support controls",
+            "International Traffic in Arms Regulations"
           ],
           "enum": [
             "COMPLIANCE_REGIME_UNSPECIFIED",
@@ -594,7 +597,8 @@
             "HIPAA",
             "HITRUST",
             "EU_REGIONS_AND_SUPPORT",
-            "CA_REGIONS_AND_SUPPORT"
+            "CA_REGIONS_AND_SUPPORT",
+            "ITAR"
           ]
         },
         "createTime": {
@@ -976,7 +980,8 @@
             "Health Insurance Portability and Accountability Act controls",
             "Health Information Trust Alliance controls",
             "Assured Workloads For EU Regions and Support controls",
-            "Assured Workloads For Canada Regions and Support controls"
+            "Assured Workloads For Canada Regions and Support controls",
+            "International Traffic in Arms Regulations"
           ],
           "enum": [
             "COMPLIANCE_REGIME_UNSPECIFIED",
@@ -988,7 +993,8 @@
             "HIPAA",
             "HITRUST",
             "EU_REGIONS_AND_SUPPORT",
-            "CA_REGIONS_AND_SUPPORT"
+            "CA_REGIONS_AND_SUPPORT",
+            "ITAR"
           ]
         }
       }
@@ -1027,7 +1033,8 @@
             "Health Insurance Portability and Accountability Act controls",
             "Health Information Trust Alliance controls",
             "Assured Workloads For EU Regions and Support controls",
-            "Assured Workloads For Canada Regions and Support controls"
+            "Assured Workloads For Canada Regions and Support controls",
+            "International Traffic in Arms Regulations"
           ],
           "enum": [
             "COMPLIANCE_REGIME_UNSPECIFIED",
@@ -1039,7 +1046,8 @@
             "HIPAA",
             "HITRUST",
             "EU_REGIONS_AND_SUPPORT",
-            "CA_REGIONS_AND_SUPPORT"
+            "CA_REGIONS_AND_SUPPORT",
+            "ITAR"
           ]
         },
         "createTime": {
@@ -1257,7 +1265,8 @@
             "Health Insurance Portability and Accountability Act controls",
             "Health Information Trust Alliance controls",
             "Assured Workloads For EU Regions and Support controls",
-            "Assured Workloads For Canada Regions and Support controls"
+            "Assured Workloads For Canada Regions and Support controls",
+            "International Traffic in Arms Regulations"
           ],
           "enum": [
             "COMPLIANCE_REGIME_UNSPECIFIED",
@@ -1269,7 +1278,8 @@
             "HIPAA",
             "HITRUST",
             "EU_REGIONS_AND_SUPPORT",
-            "CA_REGIONS_AND_SUPPORT"
+            "CA_REGIONS_AND_SUPPORT",
+            "ITAR"
           ]
         },
         "resourceSettings": {
@@ -1312,7 +1322,8 @@
             "Health Insurance Portability and Accountability Act controls",
             "Health Information Trust Alliance controls",
             "Assured Workloads For EU Regions and Support controls",
-            "Assured Workloads For Canada Regions and Support controls"
+            "Assured Workloads For Canada Regions and Support controls",
+            "International Traffic in Arms Regulations"
           ],
           "enum": [
             "COMPLIANCE_REGIME_UNSPECIFIED",
@@ -1324,7 +1335,8 @@
             "HIPAA",
             "HITRUST",
             "EU_REGIONS_AND_SUPPORT",
-            "CA_REGIONS_AND_SUPPORT"
+            "CA_REGIONS_AND_SUPPORT",
+            "ITAR"
           ]
         },
         "resourceSettings": {
@@ -1403,7 +1415,8 @@
             "Health Insurance Portability and Accountability Act controls",
             "Health Information Trust Alliance controls",
             "Assured Workloads For EU Regions and Support controls",
-            "Assured Workloads For Canada Regions and Support controls"
+            "Assured Workloads For Canada Regions and Support controls",
+            "International Traffic in Arms Regulations"
           ],
           "enum": [
             "COMPLIANCE_REGIME_UNSPECIFIED",
@@ -1415,7 +1428,8 @@
             "HIPAA",
             "HITRUST",
             "EU_REGIONS_AND_SUPPORT",
-            "CA_REGIONS_AND_SUPPORT"
+            "CA_REGIONS_AND_SUPPORT",
+            "ITAR"
           ]
         },
         "createTime": {
@@ -1800,7 +1814,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Restrict the list of services allowed in the Workload environment. The current list of allowed services can be found at https:\/\/cloud.google.com\/assured-workloads\/docs\/supported-products In addition to assuredworkloads.workload.create permission, the user should also have orgpolicy.policy.set permission on the folder resource to use this functionality."
+                  "description": "Restrict the list of services allowed in the Workload environment. The current list of allowed services can be found at https:\/\/cloud.google.com\/assured-workloads\/docs\/supported-products In addition to assuredworkloads.workload.update permission, the user should also have orgpolicy.policy.set permission on the folder resource to use this functionality."
                 },
                 "delete": {
                   "id": "assuredworkloads.organizations.locations.workloads.delete",

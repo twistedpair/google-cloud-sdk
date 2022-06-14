@@ -105,13 +105,13 @@ class DataplexV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Create a content resource.
+      r"""Create a content.
 
       Args:
         request: (DataplexProjectsLocationsLakesContentCreateRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (GoogleLongrunningOperation) The response message.
+        (GoogleCloudDataplexV1Content) The response message.
       """
       config = self.GetMethodConfig('Create')
       return self._RunMethod(
@@ -127,18 +127,18 @@ class DataplexV1(base_api.BaseApiClient):
         relative_path='v1/{+parent}/content',
         request_field='googleCloudDataplexV1Content',
         request_type_name='DataplexProjectsLocationsLakesContentCreateRequest',
-        response_type_name='GoogleLongrunningOperation',
+        response_type_name='GoogleCloudDataplexV1Content',
         supports_download=False,
     )
 
     def Delete(self, request, global_params=None):
-      r"""Delete the content resource. All the child resources must have been deleted before content deletion can be initiated.
+      r"""Delete a content.
 
       Args:
         request: (DataplexProjectsLocationsLakesContentDeleteRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (GoogleLongrunningOperation) The response message.
+        (Empty) The response message.
       """
       config = self.GetMethodConfig('Delete')
       return self._RunMethod(
@@ -154,12 +154,12 @@ class DataplexV1(base_api.BaseApiClient):
         relative_path='v1/{+name}',
         request_field='',
         request_type_name='DataplexProjectsLocationsLakesContentDeleteRequest',
-        response_type_name='GoogleLongrunningOperation',
+        response_type_name='Empty',
         supports_download=False,
     )
 
     def Get(self, request, global_params=None):
-      r"""Get content resource.
+      r"""Get a content resource.
 
       Args:
         request: (DataplexProjectsLocationsLakesContentGetRequest) input message
@@ -186,7 +186,7 @@ class DataplexV1(base_api.BaseApiClient):
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
+      r"""Gets the access control policy for a contentitem resource. A NOT_FOUND error is returned if the resource does not exist. An empty policy is returned if the resource exists but does not have a policy set on it.Caller must have Google IAM dataplex.content.getIamPolicy permission on the resource.
 
       Args:
         request: (DataplexProjectsLocationsLakesContentGetIamPolicyRequest) input message
@@ -213,7 +213,7 @@ class DataplexV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists content under the given lake.
+      r"""List content.
 
       Args:
         request: (DataplexProjectsLocationsLakesContentListRequest) input message
@@ -240,13 +240,13 @@ class DataplexV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Update the content resource.
+      r"""Update a content. Only supports full resource update.
 
       Args:
         request: (DataplexProjectsLocationsLakesContentPatchRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (GoogleLongrunningOperation) The response message.
+        (GoogleCloudDataplexV1Content) The response message.
       """
       config = self.GetMethodConfig('Patch')
       return self._RunMethod(
@@ -262,12 +262,12 @@ class DataplexV1(base_api.BaseApiClient):
         relative_path='v1/{+name}',
         request_field='googleCloudDataplexV1Content',
         request_type_name='DataplexProjectsLocationsLakesContentPatchRequest',
-        response_type_name='GoogleLongrunningOperation',
+        response_type_name='GoogleCloudDataplexV1Content',
         supports_download=False,
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy.Can return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED errors.
+      r"""Sets the access control policy on the specified contentitem resource. Replaces any existing policy.Caller must have Google IAM dataplex.content.setIamPolicy permission on the resource.
 
       Args:
         request: (DataplexProjectsLocationsLakesContentSetIamPolicyRequest) input message
@@ -294,7 +294,7 @@ class DataplexV1(base_api.BaseApiClient):
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a NOT_FOUND error.Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
+      r"""Returns the caller's permissions on a resource. If the resource does not exist, an empty set of permissions is returned (a NOT_FOUND error is not returned).A caller is not required to have Google IAM permission to make this request.Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
 
       Args:
         request: (DataplexProjectsLocationsLakesContentTestIamPermissionsRequest) input message

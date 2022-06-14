@@ -271,6 +271,7 @@ class GoogleCloudAssuredworkloadsV1CreateWorkloadOperationMetadata(_messages.Mes
         controls
       CA_REGIONS_AND_SUPPORT: Assured Workloads For Canada Regions and Support
         controls
+      ITAR: International Traffic in Arms Regulations
     """
     COMPLIANCE_REGIME_UNSPECIFIED = 0
     IL4 = 1
@@ -282,6 +283,7 @@ class GoogleCloudAssuredworkloadsV1CreateWorkloadOperationMetadata(_messages.Mes
     HITRUST = 7
     EU_REGIONS_AND_SUPPORT = 8
     CA_REGIONS_AND_SUPPORT = 9
+    ITAR = 10
 
   complianceRegime = _messages.EnumField('ComplianceRegimeValueValuesEnum', 1)
   createTime = _messages.StringField(2)
@@ -368,6 +370,7 @@ class GoogleCloudAssuredworkloadsV1Workload(_messages.Message):
         controls
       CA_REGIONS_AND_SUPPORT: Assured Workloads For Canada Regions and Support
         controls
+      ITAR: International Traffic in Arms Regulations
     """
     COMPLIANCE_REGIME_UNSPECIFIED = 0
     IL4 = 1
@@ -379,6 +382,7 @@ class GoogleCloudAssuredworkloadsV1Workload(_messages.Message):
     HITRUST = 7
     EU_REGIONS_AND_SUPPORT = 8
     CA_REGIONS_AND_SUPPORT = 9
+    ITAR = 10
 
   class KajEnrollmentStateValueValuesEnum(_messages.Enum):
     r"""Output only. Represents the KAJ enrollment state of the given
@@ -627,6 +631,7 @@ class GoogleCloudAssuredworkloadsV1beta1CreateWorkloadOperationMetadata(_message
         controls
       CA_REGIONS_AND_SUPPORT: Assured Workloads For Canada Regions and Support
         controls
+      ITAR: International Traffic in Arms Regulations
     """
     COMPLIANCE_REGIME_UNSPECIFIED = 0
     IL4 = 1
@@ -638,6 +643,7 @@ class GoogleCloudAssuredworkloadsV1beta1CreateWorkloadOperationMetadata(_message
     HITRUST = 7
     EU_REGIONS_AND_SUPPORT = 8
     CA_REGIONS_AND_SUPPORT = 9
+    ITAR = 10
 
   complianceRegime = _messages.EnumField('ComplianceRegimeValueValuesEnum', 1)
   createTime = _messages.StringField(2)
@@ -769,6 +775,7 @@ class GoogleCloudAssuredworkloadsV1beta1Workload(_messages.Message):
         controls
       CA_REGIONS_AND_SUPPORT: Assured Workloads For Canada Regions and Support
         controls
+      ITAR: International Traffic in Arms Regulations
     """
     COMPLIANCE_REGIME_UNSPECIFIED = 0
     IL4 = 1
@@ -780,6 +787,7 @@ class GoogleCloudAssuredworkloadsV1beta1Workload(_messages.Message):
     HITRUST = 7
     EU_REGIONS_AND_SUPPORT = 8
     CA_REGIONS_AND_SUPPORT = 9
+    ITAR = 10
 
   class KajEnrollmentStateValueValuesEnum(_messages.Enum):
     r"""Output only. Represents the KAJ enrollment state of the given
@@ -1207,6 +1215,7 @@ class GoogleCloudAssuredworkloadsVersioningV1beta1Workload(_messages.Message):
         controls
       CA_REGIONS_AND_SUPPORT: Assured Workloads For Canada Regions and Support
         controls
+      ITAR: International Traffic in Arms Regulations
     """
     COMPLIANCE_REGIME_UNSPECIFIED = 0
     IL4 = 1
@@ -1218,6 +1227,7 @@ class GoogleCloudAssuredworkloadsVersioningV1beta1Workload(_messages.Message):
     HITRUST = 7
     EU_REGIONS_AND_SUPPORT = 8
     CA_REGIONS_AND_SUPPORT = 9
+    ITAR = 10
 
   class KajEnrollmentStateValueValuesEnum(_messages.Enum):
     r"""Output only. Represents the KAJ enrollment state of the given
@@ -1500,6 +1510,7 @@ class GoogleCloudAssuredworkloadsVersioningV1mainCreateWorkloadOperationMetadata
         controls
       CA_REGIONS_AND_SUPPORT: Assured Workloads For Canada Regions and Support
         controls
+      ITAR: International Traffic in Arms Regulations
     """
     COMPLIANCE_REGIME_UNSPECIFIED = 0
     IL4 = 1
@@ -1511,6 +1522,7 @@ class GoogleCloudAssuredworkloadsVersioningV1mainCreateWorkloadOperationMetadata
     HITRUST = 7
     EU_REGIONS_AND_SUPPORT = 8
     CA_REGIONS_AND_SUPPORT = 9
+    ITAR = 10
 
   complianceRegime = _messages.EnumField('ComplianceRegimeValueValuesEnum', 1)
   createTime = _messages.StringField(2)
@@ -1606,6 +1618,7 @@ class GoogleCloudAssuredworkloadsVersioningV1mainWorkload(_messages.Message):
         controls
       CA_REGIONS_AND_SUPPORT: Assured Workloads For Canada Regions and Support
         controls
+      ITAR: International Traffic in Arms Regulations
     """
     COMPLIANCE_REGIME_UNSPECIFIED = 0
     IL4 = 1
@@ -1617,6 +1630,7 @@ class GoogleCloudAssuredworkloadsVersioningV1mainWorkload(_messages.Message):
     HITRUST = 7
     EU_REGIONS_AND_SUPPORT = 8
     CA_REGIONS_AND_SUPPORT = 9
+    ITAR = 10
 
   class KajEnrollmentStateValueValuesEnum(_messages.Enum):
     r"""Output only. Represents the KAJ enrollment state of the given

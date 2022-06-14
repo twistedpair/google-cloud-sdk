@@ -683,6 +683,33 @@ class ManagedidentitiesV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def JoinMachine(self, request, global_params=None):
+      r"""DomainJoinMachine API joins a GCE VM to the domain.
+
+      Args:
+        request: (ManagedidentitiesProjectsLocationsGlobalDomainsJoinMachineRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (DomainJoinMachineResponse) The response message.
+      """
+      config = self.GetMethodConfig('JoinMachine')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    JoinMachine.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/global/domains/{domainsId}:joinMachine',
+        http_method='POST',
+        method_id='managedidentities.projects.locations.global.domains.joinMachine',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}:joinMachine',
+        request_field='domainJoinMachineRequest',
+        request_type_name='ManagedidentitiesProjectsLocationsGlobalDomainsJoinMachineRequest',
+        response_type_name='DomainJoinMachineResponse',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists Domains in a given project.
 

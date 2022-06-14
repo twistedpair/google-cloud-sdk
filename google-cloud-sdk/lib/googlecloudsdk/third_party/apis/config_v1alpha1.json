@@ -333,7 +333,7 @@
           "type": "string"
         },
         "createConfigController": {
-          "description": "Required. If set, then a Config Controller instance with a default, well-known name will be created as part of the deployment, if it does not already exist. Note that Blueprints Controller does not manage this Config Controller instance and only creates it.",
+          "description": "Optional. DEPRECATED: Please use config_controller target.",
           "type": "boolean"
         },
         "gitTarget": {

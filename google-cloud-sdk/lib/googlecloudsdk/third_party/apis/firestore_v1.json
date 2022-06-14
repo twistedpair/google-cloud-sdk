@@ -5,7 +5,7 @@
   "name": "firestore",
   "canonicalName": "Firestore",
   "version": "v1",
-  "revision": "20220531",
+  "revision": "20220606",
   "title": "Cloud Firestore API",
   "description": "Accesses the NoSQL document database built for automatic scaling, high performance, and ease of application development. ",
   "ownerDomain": "google.com",
@@ -1357,6 +1357,11 @@
           "description": "The maximum number of partitions to return in this call, subject to `partition_count`. For example, if `partition_count` = 10 and `page_size` = 8, the first call to PartitionQuery will return up to 8 partitions and a `next_page_token` if more results exist. A second call to PartitionQuery will return up to 2 partitions, to complete the total of 10 specified in `partition_count`.",
           "type": "integer",
           "format": "int32"
+        },
+        "readTime": {
+          "description": "Reads documents as they were at the given time. This may not be older than 270 seconds.",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },
@@ -1701,6 +1706,11 @@
         "pageToken": {
           "description": "A page token. Must be a value from ListCollectionIdsResponse.",
           "type": "string"
+        },
+        "readTime": {
+          "description": "Reads documents as they were at the given time. This may not be older than 270 seconds.",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },
@@ -2224,6 +2234,45 @@
                 "https://www.googleapis.com/auth/datastore"
               ],
               "description": "Imports documents into Google Cloud Firestore. Existing documents with the same name are overwritten. The import occurs in the background and its progress can be monitored and managed via the Operation resource that is created. If an ImportDocuments operation is cancelled, it is possible that a subset of the data has already been imported to Cloud Firestore."
+            },
+            "create": {
+              "id": "firestore.projects.databases.create",
+              "path": "v1/{+parent}/databases",
+              "flatPath": "v1/projects/{projectsId}/databases",
+              "httpMethod": "POST",
+              "parameters": {
+                "parent": {
+                  "description": "Required. A parent name of the form `projects\/{project_id}`",
+                  "pattern": "^projects\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "databaseId": {
+                  "description": "Required. The ID to use for the database, which will become the final component of the database's resource name. This value should be 4-63 characters. Valid characters are \/a-z-\/ with first character a letter and the last a letter or a number. Must not be UUID-like \/[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}\/. \"(default)\" database id is also valid.",
+                  "location": "query",
+                  "type": "string"
+                },
+                "validateOnly": {
+                  "description": "If set, validate the request and preview the response, but do not actually create the database.",
+                  "location": "query",
+                  "type": "boolean"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "request": {
+                "$ref": "GoogleFirestoreAdminV1Database"
+              },
+              "response": {
+                "$ref": "GoogleLongrunningOperation"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/datastore"
+              ],
+              "description": "Create a database."
             },
             "get": {
               "id": "firestore.projects.databases.get",

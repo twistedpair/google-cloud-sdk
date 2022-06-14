@@ -713,11 +713,18 @@ class FirewallInfo(_messages.Message):
       IMPLIED_VPC_FIREWALL_RULE: Implied VPC firewall rule. For details, see
         [Implied rules](https://cloud.google.com/vpc/docs/firewalls#default_fi
         rewall_rules).
+      SERVERLESS_VPC_ACCESS_MANAGED_FIREWALL_RULE: Implicit firewall rules
+        that are managed by serverless VPC access to allow ingress access.
+        They are not visible in the Google Cloud console. For details, see
+        [VPC connector's implicit
+        rules](https://cloud.google.com/functions/docs/networking/connecting-
+        vpc#restrict-access).
     """
     FIREWALL_RULE_TYPE_UNSPECIFIED = 0
     HIERARCHICAL_FIREWALL_POLICY_RULE = 1
     VPC_FIREWALL_RULE = 2
     IMPLIED_VPC_FIREWALL_RULE = 3
+    SERVERLESS_VPC_ACCESS_MANAGED_FIREWALL_RULE = 4
 
   action = _messages.StringField(1)
   direction = _messages.StringField(2)

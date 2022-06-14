@@ -12088,6 +12088,159 @@ class ComputeImagesTestIamPermissionsRequest(_messages.Message):
   testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
 
 
+class ComputeInstanceGroupManagerResizeRequestsDeleteRequest(_messages.Message):
+  r"""A ComputeInstanceGroupManagerResizeRequestsDeleteRequest object.
+
+  Fields:
+    instanceGroupManager: The name of the managed instance group. The name
+      should conform to RFC1035 or be a resource ID.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    resizeRequest: The name of the resize request to delete. The name should
+      conform to RFC1035 or be a resource ID.
+    zone: The name of the zone where the managed instance group is located.
+      The name should conform to RFC1035.
+  """
+
+  instanceGroupManager = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  resizeRequest = _messages.StringField(4, required=True)
+  zone = _messages.StringField(5, required=True)
+
+
+class ComputeInstanceGroupManagerResizeRequestsGetRequest(_messages.Message):
+  r"""A ComputeInstanceGroupManagerResizeRequestsGetRequest object.
+
+  Fields:
+    instanceGroupManager: The name of the managed instance group. Name should
+      conform to RFC1035 or be a resource ID.
+    project: Project ID for this request.
+    resizeRequest: The name of the resize request. Name should conform to
+      RFC1035 or be a resource ID.
+    zone: The name of the zone where the managed instance group and the resize
+      request are located. Name should conform to RFC1035.
+  """
+
+  instanceGroupManager = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  resizeRequest = _messages.StringField(3, required=True)
+  zone = _messages.StringField(4, required=True)
+
+
+class ComputeInstanceGroupManagerResizeRequestsInsertRequest(_messages.Message):
+  r"""A ComputeInstanceGroupManagerResizeRequestsInsertRequest object.
+
+  Fields:
+    instanceGroupManager: The name of the managed instance group to which the
+      resize request will be added. Name should conform to RFC1035 or be a
+      resource ID.
+    instanceGroupManagerResizeRequest: A InstanceGroupManagerResizeRequest
+      resource to be passed as the request body.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    zone: The name of the zone where the managed instance group is located and
+      where the resize request will be created. Name should conform to
+      RFC1035.
+  """
+
+  instanceGroupManager = _messages.StringField(1, required=True)
+  instanceGroupManagerResizeRequest = _messages.MessageField('InstanceGroupManagerResizeRequest', 2)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
+
+
+class ComputeInstanceGroupManagerResizeRequestsListRequest(_messages.Message):
+  r"""A ComputeInstanceGroupManagerResizeRequestsListRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      Most Compute resources support two types of filter expressions:
+      expressions that support regular expressions and expressions that follow
+      API improvement proposal AIP-160. If you want to use AIP-160, your
+      expression must specify the field name, an operator, and the value that
+      you want to use for filtering. The value must be a string, a number, or
+      a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
+      or `:`. For example, if you are filtering Compute Engine instances, you
+      can exclude instances named `example-instance` by specifying `name !=
+      example-instance`. The `:` operator can be used with string fields to
+      match substrings. For non-string fields it is equivalent to the `=`
+      operator. The `:*` comparison can be used to test whether a key has been
+      defined. For example, to find all objects with `owner` label use: ```
+      labels.owner:* ``` You can also filter nested fields. For example, you
+      could specify `scheduling.automaticRestart = false` to include instances
+      only if they are not scheduled for automatic restarts. You can use
+      filtering on nested fields to filter based on resource labels. To filter
+      on multiple expressions, provide each separate expression within
+      parentheses. For example: ``` (scheduling.automaticRestart = true)
+      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
+      `AND` expression. However, you can include `AND` and `OR` expressions
+      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
+      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
+      true) ``` If you want to use a regular expression, use the `eq` (equal)
+      or `ne` (not equal) operator against a single un-parenthesized
+      expression with or without quotes or against multiple parenthesized
+      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
+      'single quoted literal'` `fieldname eq "double quoted literal"`
+      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
+      interpreted as a regular expression using Google RE2 library syntax. The
+      literal value must match the entire field. For example, to filter for
+      instances that do not end with name "instance", you would use `name ne
+      .*instance`.
+    instanceGroupManager: The name of the managed instance group. The name
+      should conform to RFC1035.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than
+      `maxResults`, Compute Engine returns a `nextPageToken` that can be used
+      to get the next page of results in subsequent list requests. Acceptable
+      values are `0` to `500`, inclusive. (Default: `500`)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name. You can
+      also sort results in descending order based on the creation timestamp
+      using `orderBy="creationTimestamp desc"`. This sorts results based on
+      the `creationTimestamp` field in reverse chronological order (newest
+      result first). Use this to sort resources like operations so that the
+      newest operation is returned first. Currently, only sorting by `name` or
+      `creationTimestamp desc` is supported.
+    pageToken: Specifies a page token to use. Set `pageToken` to the
+      `nextPageToken` returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false.
+    zone: The name of the zone where the managed instance group is located.
+      The name should conform to RFC1035.
+  """
+
+  filter = _messages.StringField(1)
+  instanceGroupManager = _messages.StringField(2, required=True)
+  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(4)
+  pageToken = _messages.StringField(5)
+  project = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
+  zone = _messages.StringField(8, required=True)
+
+
 class ComputeInstanceGroupManagersAbandonInstancesRequest(_messages.Message):
   r"""A ComputeInstanceGroupManagersAbandonInstancesRequest object.
 
@@ -41773,6 +41926,10 @@ class InstanceGroupManagerActionsSummary(_messages.Message):
       until it creates the instance successfully. If you have disabled
       creation retries, this field will not be populated; instead, the
       creatingWithoutRetries field will be populated.
+    creatingAtomically: [Output Only] The number of instances that the managed
+      instance group will attempt to create atomically, in a batch mode. If
+      the desired count of instances can not be created, entire batch will be
+      deleted and the group will decrease its targetSize value accordingly.
     creatingWithoutRetries: [Output Only] The number of instances that the
       managed instance group will attempt to create. The group attempts to
       create each instance only once. If the group fails to create any of
@@ -41809,17 +41966,18 @@ class InstanceGroupManagerActionsSummary(_messages.Message):
 
   abandoning = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   creating = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  creatingWithoutRetries = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  deleting = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  none = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  recreating = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  refreshing = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  restarting = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  resuming = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  starting = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  stopping = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  suspending = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  verifying = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  creatingAtomically = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  creatingWithoutRetries = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  deleting = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  none = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  recreating = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  refreshing = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  restarting = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  resuming = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  starting = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  stopping = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  suspending = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  verifying = _messages.IntegerField(14, variant=_messages.Variant.INT32)
 
 
 class InstanceGroupManagerAggregatedList(_messages.Message):
@@ -42317,6 +42475,246 @@ class InstanceGroupManagerList(_messages.Message):
   id = _messages.StringField(1)
   items = _messages.MessageField('InstanceGroupManager', 2, repeated=True)
   kind = _messages.StringField(3, default='compute#instanceGroupManagerList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
+
+
+class InstanceGroupManagerResizeRequest(_messages.Message):
+  r"""InstanceGroupManagerResizeRequest represents a request to create a
+  number of VMs: either immediately or by queuing the request for the
+  specified time. This resize request is nested under InstanceGroupManager and
+  the VMs created by this request are added to the owning
+  InstanceGroupManager.
+
+  Enums:
+    StateValueValuesEnum: [Output only] Current state of the request.
+
+  Fields:
+    count: The count of instances to create as part of this resize request.
+    creationTimestamp: [Output Only] The creation timestamp for this resize
+      request in RFC3339 text format.
+    description: An optional description of this resource.
+    id: [Output Only] A unique identifier for this resource type. The server
+      generates this identifier.
+    kind: [Output Only] The resource type, which is always
+      compute#instanceGroupManagerResizeRequest for resize requests.
+    name: The name of this resize request. The name must be 1-63 characters
+      long, and comply with RFC1035.
+    queuingPolicy: When set, defines queing parameters for the requested
+      deferred capacity. When unset, the request starts provisioning
+      immediately, or fails if immediate provisioning is not possible.
+    selfLink: [Output Only] The URL for this resize request. The server
+      defines this URL.
+    selfLinkWithId: [Output Only] Server-defined URL for this resource with
+      the resource id.
+    state: [Output only] Current state of the request.
+    status: [Output only] Status of the request. The Status message is aligned
+      with QueuedResource.status. ResizeRequest.queuing_policy contains the
+      queuing policy as provided by the user; it could have either
+      valid_until_time or valid_until_duration.
+      ResizeRequest.status.queuing_policy always contains absolute time as
+      calculated by the server when the request is queued.
+    zone: [Output Only] The URL of a zone where the resize request is located.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""[Output only] Current state of the request.
+
+    Values:
+      ACCEPTED: The request was created successfully and was accepted for
+        provisioning when the capacity becomes available.
+      CREATING: resize request is being created and may still fail creation.
+      DELETING: The request is being deleted.
+      FAILED: The request failed before or during provisioning. If the request
+        fails during provisioning, any VMs that were created during
+        provisioning are rolled back and removed from the MIG.
+      PROVISIONING: The target resource(s) are being provisioned.
+      SUCCEEDED: The request succeeded.
+    """
+    ACCEPTED = 0
+    CREATING = 1
+    DELETING = 2
+    FAILED = 3
+    PROVISIONING = 4
+    SUCCEEDED = 5
+
+  count = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  creationTimestamp = _messages.StringField(2)
+  description = _messages.StringField(3)
+  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(5, default='compute#instanceGroupManagerResizeRequest')
+  name = _messages.StringField(6)
+  queuingPolicy = _messages.MessageField('QueuingPolicy', 7)
+  selfLink = _messages.StringField(8)
+  selfLinkWithId = _messages.StringField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  status = _messages.MessageField('InstanceGroupManagerResizeRequestStatus', 11)
+  zone = _messages.StringField(12)
+
+
+class InstanceGroupManagerResizeRequestStatus(_messages.Message):
+  r"""A InstanceGroupManagerResizeRequestStatus object.
+
+  Fields:
+    queuingPolicy: Constraints for the time when the instances start
+      provisioning. Always exposed as absolute time.
+  """
+
+  queuingPolicy = _messages.MessageField('QueuingPolicy', 1)
+
+
+class InstanceGroupManagerResizeRequestsListResponse(_messages.Message):
+  r"""[Output Only] A list of resize requests.
+
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
+
+  Fields:
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of resize request resources.
+    kind: [Output Only] Type of the resource. Always
+      compute#instanceGroupManagerResizeRequestList for a list of resize
+      requests.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
+  """
+
+  class WarningValue(_messages.Message):
+    r"""[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      r"""[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: Warning about failed cleanup of transient changes made
+          by a failed operation.
+        DEPRECATED_RESOURCE_USED: A link to a deprecated resource was created.
+        DEPRECATED_TYPE_USED: When deploying and at least one of the resources
+          has a type marked as deprecated
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: The user created a boot disk that is
+          larger than image size.
+        EXPERIMENTAL_TYPE_USED: When deploying and at least one of the
+          resources has a type marked as experimental
+        EXTERNAL_API_WARNING: Warning that is present in an external api call
+        FIELD_VALUE_OVERRIDEN: Warning that value of a field has been
+          overridden. Deprecated unused field.
+        INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
+          kernel, which is deprecated.
+        LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
+          exceedingly large number of resources
+        MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: The route's nextHopIp address is not
+          assigned to an instance on the network.
+        NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
+          forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
+        NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
+          an instance that does not exist.
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
+          refers to an instance that is not on the same network as the route.
+        NEXT_HOP_NOT_RUNNING: The route's next hop instance does not have a
+          status of RUNNING.
+        NOT_CRITICAL_ERROR: Error which is not critical. We decided to
+          continue the process despite the mentioned error.
+        NO_RESULTS_ON_PAGE: No results are present on a particular list page.
+        PARTIAL_SUCCESS: Success is reported, but some results may be missing
+          due to errors
+        REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
+          requires a TOS they have not accepted.
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
+          in use.
+        RESOURCE_NOT_DELETED: One or more of the resources set to auto-delete
+          could not be deleted because they were in use.
+        SCHEMA_VALIDATION_IGNORED: When a resource schema validation is
+          ignored.
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: Instance template used in instance
+          group manager is valid as such, but its application does not make a
+          lot of sense, because it allows only single instance in instance
+          group.
+        UNDECLARED_PROPERTIES: When undeclared properties in the schema are
+          present
+        UNREACHABLE: A given scope cannot be reached.
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      LARGE_DEPLOYMENT_WARNING = 8
+      MISSING_TYPE_DEPENDENCY = 9
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
+      NEXT_HOP_CANNOT_IP_FORWARD = 11
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
+
+    class DataValueListEntry(_messages.Message):
+      r"""A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('InstanceGroupManagerResizeRequest', 2, repeated=True)
+  kind = _messages.StringField(3, default='compute#instanceGroupManagerResizeRequestList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -58431,6 +58829,19 @@ class PublicDelegatedPrefixesScopedList(_messages.Message):
 
   publicDelegatedPrefixes = _messages.MessageField('PublicDelegatedPrefix', 1, repeated=True)
   warning = _messages.MessageField('WarningValue', 2)
+
+
+class QueuingPolicy(_messages.Message):
+  r"""Queuing parameters for the requested deferred capacity.
+
+  Fields:
+    validUntilDuration: Relative deadline for waiting for capacity.
+    validUntilTime: Absolute deadline for waiting for capacity in RFC3339 text
+      format.
+  """
+
+  validUntilDuration = _messages.MessageField('Duration', 1)
+  validUntilTime = _messages.StringField(2)
 
 
 class Quota(_messages.Message):
