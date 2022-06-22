@@ -143,70 +143,43 @@ def AddKmsKeyArg(parser):
       required=False)
 
 
-def GetTierArg(messages, api_version):
+def GetTierArg(messages):
   """Adds a --tier flag to the given parser.
 
   Args:
     messages: The messages module.
-    api_version: filestore_client api version.
 
   Returns:
     the choice arg.
   """
-  if ((api_version == filestore_client.ALPHA_API_VERSION) or
-      (api_version == filestore_client.BETA_API_VERSION)):
-    tier_arg = (
-        arg_utils.ChoiceEnumMapper(
-            '--tier',
-            messages.Instance.TierValueValuesEnum,
-            help_str="""The service tier for the Cloud Filestore instance.
-         For more details, see:
-         https://cloud.google.com/filestore/docs/instance-tiers """,
-            custom_mappings={
-                'STANDARD':
-                    ('standard',
-                     """Standard Filestore instance, An alias for BASIC_HDD.
-                     Use BASIC_HDD instead whenever possible."""),
-                'PREMIUM': ('premium',
-                            """Premium Filestore instance, An alias for BASIC_SSD.
-                            Use BASIC_SSD instead whenever possible."""),
-                'BASIC_HDD':
-                    ('basic-hdd', 'Performant NFS storage system using HDD.'),
-                'BASIC_SSD':
-                    ('basic-ssd', 'Performant NFS storage system using SSD.'),
-                'ENTERPRISE':
-                    ('enterprise', """ENTERPRISE instances offer the features\
-                    and availability needed for mission-critical workloads."""),
-                'HIGH_SCALE_SSD': (
-                    'high-scale-ssd',
-                    """NFS storage system with expanded capacity and performance\
-                    scaling capabilities.""")
-            },
-            default='BASIC_HDD'))
-  else:
-    tier_arg = (
-        arg_utils.ChoiceEnumMapper(
-            '--tier',
-            messages.Instance.TierValueValuesEnum,
-            help_str='The service tier for the Cloud Filestore instance.',
-            custom_mappings={
-                'STANDARD':
-                    ('standard',
-                     """Standard Filestore instance, an alias for BASIC_HDD.
-                     Use BASIC_HDD instead whenever possible."""),
-                'PREMIUM':
-                    ('premium',
-                     """Premium Filestore instance, an alias for BASIC_SSD.
-                            Use BASIC_SSD instead whenever possible."""),
-                'BASIC_HDD':
-                    ('basic-hdd', 'Performant NFS storage system using HDD.'),
-                'BASIC_SSD':
-                    ('basic-ssd', 'Performant NFS storage system using SSD.'),
-                'ENTERPRISE':
-                    ('enterprise', """ENTERPRISE instances offer the features\
-                    and availability needed for mission-critical workloads.""")
-            },
-            default='BASIC_HDD'))
+  tier_arg = (
+      arg_utils.ChoiceEnumMapper(
+          '--tier',
+          messages.Instance.TierValueValuesEnum,
+          help_str="""The service tier for the Cloud Filestore instance.
+       For more details, see:
+       https://cloud.google.com/filestore/docs/instance-tiers """,
+          custom_mappings={
+              'STANDARD':
+                  ('standard',
+                   """Standard Filestore instance, An alias for BASIC_HDD.
+                   Use BASIC_HDD instead whenever possible."""),
+              'PREMIUM': ('premium',
+                          """Premium Filestore instance, An alias for BASIC_SSD.
+                          Use BASIC_SSD instead whenever possible."""),
+              'BASIC_HDD':
+                  ('basic-hdd', 'Performant NFS storage system using HDD.'),
+              'BASIC_SSD':
+                  ('basic-ssd', 'Performant NFS storage system using SSD.'),
+              'ENTERPRISE':
+                  ('enterprise', """ENTERPRISE instances offer the features\
+                  and availability needed for mission-critical workloads."""),
+              'HIGH_SCALE_SSD': (
+                  'high-scale-ssd', """High Scale instances offer NFS storage\
+                  system with expanded capacity and performance scaling\
+                  capabilities.""")
+          },
+          default='BASIC_HDD'))
   return tier_arg
 
 
@@ -408,7 +381,7 @@ def AddInstanceCreateArgs(parser, api_version):
   labels_util.AddCreateLabelsFlags(parser)
   AddNetworkArg(parser)
   messages = filestore_client.GetMessages(version=api_version)
-  GetTierArg(messages, api_version).choice_arg.AddToParser(parser)
+  GetTierArg(messages).choice_arg.AddToParser(parser)
   AddFileShareArg(
       parser,
       api_version,

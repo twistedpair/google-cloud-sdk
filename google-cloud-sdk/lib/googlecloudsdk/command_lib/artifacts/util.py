@@ -28,6 +28,7 @@ from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib import artifacts
 from googlecloudsdk.api_lib.artifacts import exceptions as ar_exceptions
 from googlecloudsdk.api_lib.util import common_args
+from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.artifacts import requests as ar_requests
 from googlecloudsdk.command_lib.projects import util as project_util
 from googlecloudsdk.core import log
@@ -80,6 +81,45 @@ _GCR_BUCKETS = {
         "location": "us"
     }
 }
+
+_REPO_CREATION_HELP_TEXT = """\
+Format of the repository. REPOSITORY_FORMAT must be one of:\n
+ apt
+    APT package format.
+ docker
+    Docker image format.
+ kfp
+    KFP package format.
+ maven
+    Maven package format.
+ npm
+    NPM package format.
+ python
+    Python package format.
+ yum
+    YUM package format.
+"""
+
+
+_REPO_CREATION_HELP_TEXT_BETA = """\
+Format of the repository. REPOSITORY_FORMAT must be one of:\n
+ apt
+    APT package format.
+ docker
+    Docker image format.
+ googet
+    GooGet package format.
+ kfp
+    KFP package format.
+ maven
+    Maven package format.
+ npm
+    NPM package format.
+ python
+    Python package format.
+ yum
+    YUM package format.
+"""
 
 
 def _GetMessagesForResource(resource_ref):
@@ -139,7 +179,32 @@ def AppendRepoDataToRequest(repo_ref, repo_args, request):
 
   request.repository.name = repo_ref.RelativeName()
   request.repositoryId = repo_ref.repositoriesId
+  request.repository.format = repo_format
   return request
+
+
+def AddRepositoryFormatArg():
+  """Adds the repository-format flag."""
+  # We need to do this because the declarative framework doesn't support
+  # hiding an enum from the help text.
+  return [
+      base.Argument(
+          "--repository-format",
+          required=True,
+          help=_REPO_CREATION_HELP_TEXT)
+  ]
+
+
+def AddRepositoryFormatArgBeta():
+  """Adds the repository-format flag."""
+  # We need to do this because the declarative framework doesn't support
+  # hiding an enum from the help text.
+  return [
+      base.Argument(
+          "--repository-format",
+          required=True,
+          help=_REPO_CREATION_HELP_TEXT_BETA)
+  ]
 
 
 def CheckServiceAccountPermission(unused_repo_ref, repo_args, request):
@@ -196,7 +261,7 @@ def CheckServiceAccountPermission(unused_repo_ref, repo_args, request):
       # We are moving the permission check to the backend fairly soon anyway.
       except apitools_exceptions.HttpBadRequestError:
         msg = (
-            "The Artifact Registry service account may not exist, please "
+            "The Artifact Registry service account might not exist, manually "
             "create the service account.\nLearn more: "
             "https://cloud.google.com/artifact-registry/docs/cmek")
         raise ar_exceptions.ArtifactRegistryError(msg)
@@ -268,9 +333,7 @@ def AppendSortingToRequest(unused_ref, ver_args, request):
     else:
       set_limit = False
 
-  if (ver_args.limit is not None
-      and ver_args.filter is None
-      and set_limit):
+  if (ver_args.limit is not None and ver_args.filter is None and set_limit):
     request.pageSize = ver_args.limit
     # Otherwise request gets overriden somewhere down the line.
     ver_args.page_size = ver_args.limit
@@ -316,11 +379,13 @@ def GetGCRRepos(buckets, project):
   """Gets a list of GCR repositories given a list of GCR bucket names."""
   messages = ar_requests.GetMessages()
   existing_buckets = GetExistingGCRBuckets(buckets, project)
+
   def RepoMsg(bucket):
     return messages.Repository(
         name="projects/{}/locations/{}/repositories/{}".format(
             project, bucket["location"], bucket["repository"]),
         format=messages.Repository.FormatValueValuesEnum.DOCKER),
+
   return map(RepoMsg, existing_buckets)
 
 
@@ -731,8 +796,7 @@ def FinalizeUpgradeRedirection(unused_ref, args):
 
   update = console_io.PromptContinue(
       "This action permanently redirects gcr.io traffic to Artifact Registry "
-      "for project {}.".format(
-          con.Emphasize(project, bold=True)),
+      "for project {}.".format(con.Emphasize(project, bold=True)),
       default=False)
   if not update:
     log.status.Print("No changes made.")

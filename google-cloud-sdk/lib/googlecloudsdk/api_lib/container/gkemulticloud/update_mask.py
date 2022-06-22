@@ -70,8 +70,7 @@ AWS_NODEPOOL_ARGS_TO_UPDATE_MASKS = {
     'proxy_secret_arn': 'config.proxy_config.secret_arn',
     'proxy_secret_version_id': 'config.proxy_config.secret_version',
     'ssh_ec2_key_pair': 'config.ssh_config.ec2_key_pair',
-    'clear_ssh_ec2_key_pair': 'config.ssh_config.ec2_key_pair',
-    'instance_type': 'config.instance_type'
+    'clear_ssh_ec2_key_pair': 'config.ssh_config.ec2_key_pair'
 }
 
 AZURE_CLUSTER_ARGS_TO_UPDATE_MASKS = {

@@ -39,17 +39,17 @@ def LocationAttributeConfig(required=True):
                "either ``global'' or one of the supported regions. "
                'Alternatively, set the [eventarc/location] property.')
   if not required:
-    fallthroughs_list.append(deps.Fallthrough(
-        googlecloudsdk.command_lib.eventarc.flags.SetLocation,
-        'use \'-\' location to aggregate results for all Eventarc locations'))
+    fallthroughs_list.append(
+        deps.Fallthrough(
+            googlecloudsdk.command_lib.eventarc.flags.SetLocation,
+            'use \'-\' location to aggregate results for all Eventarc locations'
+        ))
     help_text = ('The location for the Eventarc {resource}, which should be '
                  "either ``global'' or one of the supported regions. "
                  "Use ``-'' to aggregate results for all Eventarc locations. "
                  'Alternatively, set the [eventarc/location] property.')
   return concepts.ResourceParameterAttributeConfig(
-      name='location',
-      fallthroughs=fallthroughs_list,
-      help_text=help_text)
+      name='location', fallthroughs=fallthroughs_list, help_text=help_text)
 
 
 def SetLocation():
@@ -159,7 +159,8 @@ def AddProjectResourceArg(parser):
       resource_name='project',
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
   concept_parser = concept_parsers.ConceptParser.ForResource(
-      '--project', resource_spec,
+      '--project',
+      resource_spec,
       'Project ID of the Google Cloud project for the {resource}.',
       required=True)
   concept_parser.AddToParser(parser)
@@ -601,10 +602,37 @@ def AddCreateChannelArg(parser):
               '--provider',
               ProviderResourceSpec(),
               'Provider to use for the channel.',
-              flag_name_overrides={'location': ''})
+              flag_name_overrides={'location': ''}),
       ],
       # This configures the fallthrough from the provider's location to the
       # primary flag for the channel's location
       command_level_fallthroughs={
           '--provider.location': ['channel.location']
       }).AddToParser(parser)
+
+
+def AddCryptoKeyArg(parser, required=False, hidden=False, with_clear=True):
+  """Adds an argument for the crypto key used for CMEK."""
+  policy_group = parser
+  if with_clear:
+    policy_group = parser.add_mutually_exclusive_group(hidden=hidden)
+    AddClearCryptoNameArg(policy_group, required, hidden)
+  policy_group.add_argument(
+      '--crypto-key',
+      required=required,
+      hidden=hidden,
+      help='The fully qualified name of the crypto key to use for '
+      'customer-managed encryption. If this is unspecified, Google-managed '
+      'keys will be used for encryption.')
+
+
+def AddClearCryptoNameArg(parser, required=False, hidden=False):
+  """Adds an argument for the crypto key used for CMEK."""
+  parser.add_argument(
+      '--clear-crypto-key',
+      required=required,
+      hidden=hidden,
+      default=False,
+      action='store_true',
+      help='Remove the previously configured crypto key. The channel will'
+      ' continue to be encrypted using Google-managed keys.')

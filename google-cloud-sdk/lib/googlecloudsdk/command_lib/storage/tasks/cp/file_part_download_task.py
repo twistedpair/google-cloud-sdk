@@ -165,7 +165,11 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
     with files.BinaryFileWriter(
         self._destination_resource.storage_url.object_name,
         create_path=True,
-        mode=write_mode) as download_stream:
+        mode=write_mode,
+        convert_invalid_windows_characters=(
+            properties.VALUES.storage
+            .convert_incompatible_windows_path_characters.GetBool()
+        )) as download_stream:
       download_stream.seek(start_byte)
       provider = self._source_resource.storage_url.scheme
       # TODO(b/162264437): Support all of download_object's parameters.

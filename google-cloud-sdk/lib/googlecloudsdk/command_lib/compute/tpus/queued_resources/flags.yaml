@@ -63,6 +63,7 @@ reserved:
   arg_name: reserved
   type: bool
   action: store_true
+  default: null
   api_field: queuedResource.guaranteed.reserved
   help_text: |
     Specifies the request should be scheduled on reserved capacity.

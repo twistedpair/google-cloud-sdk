@@ -319,6 +319,15 @@ def AddCpuThrottlingFlag(parser):
       'serving requests.')
 
 
+def AddStartupCpuBoostFlag(parser):
+  """Adds flag for deploying a Cloud Run service with startup CPU boost."""
+  parser.add_argument(
+      '--cpu-boost',
+      action=arg_parsers.StoreTrueFalseAction,
+      help='Whether to allocate extra CPU to containers on startup. '
+      'This can reduce the percieved latency of a cold start request.')
+
+
 def AddTokenFlag(parser):
   parser.add_argument(
       '--token',
@@ -780,10 +789,9 @@ def AddGeneralAnnotationFlags(parser):
       type=arg_parsers.ArgDict(),
       action=arg_parsers.UpdateAction,
       hidden=True,
-      help=(
-          'List of annotation KEY=VALUE pairs to update. If an annotation '
-          'exists, its value is modified. Otherwise, a new annotation is '
-          'created.'))
+      help=('List of annotation KEY=VALUE pairs to update. If an annotation '
+            'exists, its value is modified. Otherwise, a new annotation is '
+            'created.'))
 
 
 class _ScaleValue(object):
@@ -1034,7 +1042,9 @@ def AddVpcNetworkFlags(parser, resource_kind='Service'):
       hidden=True,
       help='The Compute Engine Network that the Cloud Run {kind} will connect '
       'to. If --subnet is also specified, subnet must be a subnetwork of the '
-      'network specified by this --network flag.'.format(kind=resource_kind))
+      'network specified by this --network flag. '
+      'To reset this field to its default, pass an empty string.'.format(
+          kind=resource_kind))
 
 
 def AddVpcSubnetFlags(parser, resource_kind='Service'):
@@ -1047,7 +1057,9 @@ def AddVpcSubnetFlags(parser, resource_kind='Service'):
       'will connect to. If --network is also specified, subnet must be a '
       'subnetwork of the network specified by the --network flag. If --network '
       'is not specified, network will be looked up from this '
-      'subnetwork.'.format(kind=resource_kind))
+      'subnetwork. '
+      'To reset this field to its default, pass an empty string.'.format(
+          kind=resource_kind))
 
 
 def AddVpcNetworkTagsFlags(parser, resource_kind='Service'):
@@ -1059,7 +1071,9 @@ def AddVpcNetworkTagsFlags(parser, resource_kind='Service'):
       type=arg_parsers.ArgList(),
       action=arg_parsers.UpdateAction,
       help='Applies the given Compute Engine tags (comma separated) on the '
-      'Cloud Run {kind}.'.format(kind=resource_kind))
+      'Cloud Run {kind}. '
+      'To reset this field to its default, pass an empty string.'.format(
+          kind=resource_kind))
 
 
 def AddCustomAudiencesFlag(parser, with_clear=True):
@@ -1500,8 +1514,10 @@ def _GetConfigurationChanges(args):
       FlagIsExplicitlySet(args, 'subnet') or
       FlagIsExplicitlySet(args, 'network_tags')):
     changes.append(
-        config_changes.NetworkInterfacesChange(args.network, args.subnet,
-                                               args.network_tags))
+        config_changes.NetworkInterfacesChange(
+            FlagIsExplicitlySet(args, 'network'), args.network,
+            FlagIsExplicitlySet(args, 'subnet'), args.subnet,
+            FlagIsExplicitlySet(args, 'network_tags'), args.network_tags))
   return changes
 
 
@@ -1544,6 +1560,9 @@ def GetServiceConfigurationChanges(args):
   if FlagIsExplicitlySet(args, 'cpu_throttling'):
     changes.append(
         config_changes.CpuThrottlingChange(throttling=args.cpu_throttling))
+  if FlagIsExplicitlySet(args, 'cpu_boost'):
+    changes.append(
+        config_changes.StartupCpuBoostChange(throttling=args.cpu_boost))
   if FlagIsExplicitlySet(args, 'session_affinity'):
     if args.session_affinity:
       changes.append(

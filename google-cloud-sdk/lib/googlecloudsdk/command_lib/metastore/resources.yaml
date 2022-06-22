@@ -23,6 +23,18 @@ location:
       If not specified, will use `default` metastore/location.
     property: metastore/location
 
+federation:
+  name: federation
+  collection: metastore.projects.locations.federations
+  request_id_field: federationId
+  attributes:
+  - *project
+  - *location
+  - &federation
+    parameter_name: federationsId
+    attribute_name: federation
+    help: The identifier of the Dataproc Metastore federation
+
 service:
   name: service
   collection: metastore.projects.locations.services

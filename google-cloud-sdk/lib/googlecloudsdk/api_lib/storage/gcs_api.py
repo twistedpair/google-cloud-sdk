@@ -564,6 +564,7 @@ class GcsApi(cloud_api.CloudApi):
                   source_resource,
                   destination_resource,
                   request_config,
+                  should_deep_copy_metadata=False,
                   progress_callback=None):
     """See super class."""
     destination_metadata = getattr(destination_resource, 'metadata', None)
@@ -571,9 +572,11 @@ class GcsApi(cloud_api.CloudApi):
       destination_metadata = gcs_metadata_util.get_apitools_metadata_from_url(
           destination_resource.storage_url)
     if source_resource.metadata:
-      gcs_metadata_util.copy_select_object_metadata(source_resource.metadata,
-                                                    destination_metadata,
-                                                    request_config)
+      destination_metadata = gcs_metadata_util.copy_object_metadata(
+          source_resource.metadata,
+          destination_metadata,
+          request_config,
+          should_deep_copy=should_deep_copy_metadata)
     gcs_metadata_util.update_object_metadata_from_request_config(
         destination_metadata, request_config)
 

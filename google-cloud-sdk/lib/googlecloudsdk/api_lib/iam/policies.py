@@ -33,8 +33,10 @@ import six
 def GetClientInstance(release_track, no_http=False):
   if release_track == base.ReleaseTrack.ALPHA:
     return apis.GetClientInstance('iam', 'v2alpha', no_http=no_http)
-  else:
+  elif release_track == base.ReleaseTrack.BETA:
     return apis.GetClientInstance('iam', 'v2beta', no_http=no_http)
+  else:
+    return apis.GetClientInstance('iam', 'v2', no_http=no_http)
 
 
 def GetMessagesModule(release_track, client=None):
@@ -80,7 +82,7 @@ def ListDenyPolicies(resource_id, resource_type, release_track):
     resource_id: id for the resource
     resource_type: what type of a resource the id represents. Either
       organization, project, or folder
-    release_track: ALPHA or BETA, GA not supported
+    release_track: ALPHA or BETA or GA
 
   Returns:
     The output from the ListPolicies API call for deny policies for the passed

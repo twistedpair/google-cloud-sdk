@@ -30,7 +30,6 @@ from googlecloudsdk.core import transport
 from googlecloudsdk.third_party.apis import apis_map
 
 import six
-from six.moves.urllib.parse import urljoin
 from six.moves.urllib.parse import urlparse
 
 
@@ -278,23 +277,13 @@ def _MtlsAllowed(api_name, api_version):
   return api_def.enable_mtls
 
 
-def _BuildEndpointOverride(endpoint_override, base_url):
-  url_base = urlparse(base_url)
-  if url_base.path == '/':
-    return endpoint_override
-  url_endpoint_override = urlparse(endpoint_override)
-  return urljoin('{}://{}'.format(url_endpoint_override.scheme,
-                                  url_endpoint_override.netloc),
-                 url_base.path)
-
-
 def _GetEffectiveApiEndpoint(api_name, api_version, client_class=None):
   """Returns effective endpoint for given api."""
   endpoint_overrides = properties.VALUES.api_endpoint_overrides.AllValues()
   endpoint_override = endpoint_overrides.get(api_name)
-  client_class = client_class or _GetClientClass(api_name, api_version)
   if endpoint_override:
-    return _BuildEndpointOverride(endpoint_override, client_class.BASE_URL)
+    return endpoint_override
+  client_class = client_class or _GetClientClass(api_name, api_version)
   if properties.VALUES.context_aware.always_use_mtls_endpoint.GetBool():
     return _GetMtlsEndpoint(api_name, api_version, client_class)
   if (properties.VALUES.context_aware.use_client_certificate.GetBool() and

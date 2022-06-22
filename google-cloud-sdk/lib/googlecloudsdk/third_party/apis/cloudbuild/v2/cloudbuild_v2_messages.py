@@ -27,7 +27,7 @@ class AccessReadTokenResponse(_messages.Message):
   """
 
   expirationTime = _messages.StringField(1)
-  token = _messages.BytesField(2)
+  token = _messages.StringField(2)
 
 
 class AccessReadWriteTokenRequest(_messages.Message):
@@ -43,7 +43,7 @@ class AccessReadWriteTokenResponse(_messages.Message):
   """
 
   expirationTime = _messages.StringField(1)
-  token = _messages.BytesField(2)
+  token = _messages.StringField(2)
 
 
 class ApprovalConfig(_messages.Message):
@@ -758,6 +758,18 @@ class BuiltImage(_messages.Message):
   digest = _messages.StringField(1)
   name = _messages.StringField(2)
   pushTiming = _messages.MessageField('TimeSpan', 3)
+
+
+class CEL(_messages.Message):
+  r"""Filters in CEL.
+
+  Fields:
+    cel: The filter logic in CEL.
+    notification: A notification sent back to SCM if the cel program fails.
+  """
+
+  cel = _messages.StringField(1)
+  notification = _messages.StringField(2)
 
 
 class CancelOperationRequest(_messages.Message):
@@ -1620,6 +1632,22 @@ class EnvVar(_messages.Message):
   value = _messages.StringField(2)
 
 
+class EventSource(_messages.Message):
+  r"""Event Source referenceable within a WorkflowTrigger.
+
+  Fields:
+    id: identification to Resource.
+    repository: Output only. Resource name of GCB v2 repo.
+    secret: Output only. Secret Manager secret.
+    subscription: Output only. Resource name of PubSub subscription.
+  """
+
+  id = _messages.StringField(1)
+  repository = _messages.StringField(2)
+  secret = _messages.MessageField('GoogleDevtoolsCloudbuildV2SecretManagerSecret', 3)
+  subscription = _messages.StringField(4)
+
+
 class ExecutionEnvironment(_messages.Message):
   r"""Contains the workerpool.
 
@@ -1719,6 +1747,7 @@ class GitHubEnterpriseConfig(_messages.Message):
     apiKey: Required. API Key used for authentication of webhook events.
     appId: Id of the GitHub App created from the manifest.
     appInstallationId: ID of the installation of the GitHub App.
+    appSlug: The URL-friendly name of the GitHub App.
     authorizerCredential: OAuth credential of the account that authorized the
       Cloud Build GitHub App. It is recommended to use a robot account instead
       of a human user account The OAuth token must be tied to the Cloud Build
@@ -1747,14 +1776,27 @@ class GitHubEnterpriseConfig(_messages.Message):
   apiKey = _messages.StringField(1)
   appId = _messages.IntegerField(2)
   appInstallationId = _messages.IntegerField(3)
-  authorizerCredential = _messages.MessageField('OAuthCredential', 4)
-  hostUri = _messages.StringField(5)
-  oauthClientIdSecretVersion = _messages.StringField(6)
-  oauthSecretSecretVersion = _messages.StringField(7)
-  privateKeySecretVersion = _messages.StringField(8)
-  serviceDirectoryConfig = _messages.MessageField('ServiceDirectoryConfig', 9)
-  sslCa = _messages.StringField(10)
-  webhookSecretSecretVersion = _messages.StringField(11)
+  appSlug = _messages.StringField(4)
+  authorizerCredential = _messages.MessageField('OAuthCredential', 5)
+  hostUri = _messages.StringField(6)
+  oauthClientIdSecretVersion = _messages.StringField(7)
+  oauthSecretSecretVersion = _messages.StringField(8)
+  privateKeySecretVersion = _messages.StringField(9)
+  serviceDirectoryConfig = _messages.MessageField('ServiceDirectoryConfig', 10)
+  sslCa = _messages.StringField(11)
+  webhookSecretSecretVersion = _messages.StringField(12)
+
+
+class GitRef(_messages.Message):
+  r"""Git ref configuration for filters.
+
+  Fields:
+    inverse: If true, the regex matching result is inversed.
+    nameRegex: Regex to match the branch or tag of SCM.
+  """
+
+  inverse = _messages.BooleanField(1)
+  nameRegex = _messages.StringField(2)
 
 
 class GoogleDevtoolsCloudbuildV2OperationMetadata(_messages.Message):
@@ -2730,6 +2772,36 @@ class ProcessAppManifestCallbackOperationMetadata(_messages.Message):
   completeTime = _messages.StringField(1)
   createTime = _messages.StringField(2)
   githubEnterpriseConfig = _messages.StringField(3)
+
+
+class PullRequest(_messages.Message):
+  r"""Pull request configuration for filters.
+
+  Enums:
+    PusherValueValuesEnum: Allowed PR role that triggers a Workflow.
+
+  Fields:
+    comment: Comment that should be included to trigger a Workflow.
+    pusher: Allowed PR role that triggers a Workflow.
+  """
+
+  class PusherValueValuesEnum(_messages.Enum):
+    r"""Allowed PR role that triggers a Workflow.
+
+    Values:
+      PUSHER_UNSPECIFIED: Default to OWNER_AND_COLLABORATOR.
+      OWNER_AND_COLLABORATORS: PR author are ownes and/or collaborators of the
+        SCM repo.
+      OWNER: PR author is the owner of the SCM repo.
+      ALL_USERS: PR author can be everyone.
+    """
+    PUSHER_UNSPECIFIED = 0
+    OWNER_AND_COLLABORATORS = 1
+    OWNER = 2
+    ALL_USERS = 3
+
+  comment = _messages.StringField(1)
+  pusher = _messages.EnumField('PusherValueValuesEnum', 2)
 
 
 class Record(_messages.Message):
@@ -4060,6 +4132,7 @@ class Workflow(_messages.Message):
     uid: Output only. A unique identifier for the `Workflow`.
     updateTime: Output only. Server assigned timestamp for when the workflow
       was last updated.
+    workflowTriggers: The Workflow triggers that can fire the workflow.
     workspaces: Workspaces is a list of WorkspaceBindings from volumes to
       workspaces.
   """
@@ -4152,7 +4225,8 @@ class Workflow(_messages.Message):
   serviceAccount = _messages.StringField(13)
   uid = _messages.StringField(14)
   updateTime = _messages.StringField(15)
-  workspaces = _messages.MessageField('WorkspaceBinding', 16, repeated=True)
+  workflowTriggers = _messages.MessageField('WorkflowTrigger', 16, repeated=True)
+  workspaces = _messages.MessageField('WorkspaceBinding', 17, repeated=True)
 
 
 class WorkflowOptions(_messages.Message):
@@ -4179,6 +4253,72 @@ class WorkflowStatusUpdateOptions(_messages.Message):
   """
 
   pubsubTopic = _messages.StringField(1)
+
+
+class WorkflowTrigger(_messages.Message):
+  r"""Workflow trigger within a Workflow.
+
+  Enums:
+    EventTypeValueValuesEnum: Optional. The type of the events the
+      WorkflowTrigger accepts.
+    StatusValueValuesEnum: Output only. The status of the WorkflowTrigger.
+
+  Fields:
+    createTime: Output only. Creation time of the WorkflowTrigger.
+    custom: The CEL filters that triggers the Workflow.
+    eventSource: Optional. The event source the WorkflowTrigger listens to.
+    eventType: Optional. The type of the events the WorkflowTrigger accepts.
+    gitRef: Optional. The Git ref matching the SCM repo branch/tag.
+    id: Immutable. id given by the users to the Workflow.
+    params: List of parameters associated with the WorkflowTrigger.
+    pullRequest: Optional. The Pull request role and comment that triggers the
+      Workflow.
+    status: Output only. The status of the WorkflowTrigger.
+    statusMessage: Output only. The reason why WorkflowTrigger is deactivated.
+    updateTime: Output only. Update time of the WorkflowTrigger.
+    uuid: Output only. The internal id of the WorkflowTrigger.
+  """
+
+  class EventTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. The type of the events the WorkflowTrigger accepts.
+
+    Values:
+      EVENTTYPE_UNSPECIFIED: Default to ALL.
+      ALL: All events.
+      PULL_REQUEST: PR events.
+      PUSH_BRANCH: Push to branch events.
+      PUSH_TAG: Push to tag events.
+    """
+    EVENTTYPE_UNSPECIFIED = 0
+    ALL = 1
+    PULL_REQUEST = 2
+    PUSH_BRANCH = 3
+    PUSH_TAG = 4
+
+  class StatusValueValuesEnum(_messages.Enum):
+    r"""Output only. The status of the WorkflowTrigger.
+
+    Values:
+      STATUS_UNSPECIFIED: Defaults to ACTIVE.
+      ACTIVE: WorkflowTrigger is active.
+      DEACTIVATED: WorkflowTrigger is deactivated.
+    """
+    STATUS_UNSPECIFIED = 0
+    ACTIVE = 1
+    DEACTIVATED = 2
+
+  createTime = _messages.StringField(1)
+  custom = _messages.MessageField('CEL', 2, repeated=True)
+  eventSource = _messages.MessageField('EventSource', 3)
+  eventType = _messages.EnumField('EventTypeValueValuesEnum', 4)
+  gitRef = _messages.MessageField('GitRef', 5)
+  id = _messages.StringField(6)
+  params = _messages.MessageField('Param', 7, repeated=True)
+  pullRequest = _messages.MessageField('PullRequest', 8)
+  status = _messages.EnumField('StatusValueValuesEnum', 9)
+  statusMessage = _messages.StringField(10)
+  updateTime = _messages.StringField(11)
+  uuid = _messages.StringField(12)
 
 
 class WorkspaceBinding(_messages.Message):

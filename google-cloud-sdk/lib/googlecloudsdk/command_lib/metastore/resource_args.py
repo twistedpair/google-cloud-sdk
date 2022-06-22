@@ -64,7 +64,7 @@ def AddOperationResourceArg(parser,
     parser: the parser for the command
     verb: str, the verb to describe the resource, for example, 'to update'.
     positional: boolean, if True, means that the resource is a positional rather
-        than a flag.
+      than a flag.
     required: boolean, if True, the arg is required
     plural: boolean, if True, expects a list of resources
   """
@@ -73,6 +73,33 @@ def AddOperationResourceArg(parser,
   concept_parsers.ConceptParser.ForResource(
       name,
       GetOperationResourceSpec(),
+      'The {} {}.'.format(noun, verb),
+      required=required,
+      plural=plural).AddToParser(parser)
+
+
+def AddFederationResourceArg(parser,
+                             verb,
+                             positional=True,
+                             required=True,
+                             plural=False):
+  """Add a resource argument for a Dataproc Metastore Federation.
+
+  NOTE: Must be used only if it's the only resource arg in the command.
+
+  Args:
+    parser: the parser for the command
+    verb: str, the verb to describe the resource, for example, 'to update'.
+    positional: boolean, if True, means that the resource is a positional rather
+      than a flag.
+    required: boolean, if True, the arg is required
+    plural: boolean, if True, expects a list of resources
+  """
+  noun = 'federation' + ('s' if plural else '')
+  name = _BuildArgName(noun, positional)
+  concept_parsers.ConceptParser.ForResource(
+      name,
+      GetFederationResourceSpec(),
       'The {} {}.'.format(noun, verb),
       required=required,
       plural=plural).AddToParser(parser)
@@ -96,10 +123,25 @@ def GetOperationResourceSpec():
       operationsId=OperationAttributeConfig())
 
 
+def GetFederationResourceSpec():
+  return concepts.ResourceSpec(
+      'metastore.projects.locations.federations',
+      resource_name='federation',
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=LocationAttributeConfig(),
+      federationsId=FederationAttributeConfig())
+
+
 def ServiceAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='service',
       help_text='Dataproc Metastore service for the {resource}.')
+
+
+def FederationAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='federation',
+      help_text='Dataproc Metastore federation for the {resource}.')
 
 
 def OperationAttributeConfig():

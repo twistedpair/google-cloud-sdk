@@ -23,7 +23,12 @@ from googlecloudsdk.api_lib.eventarc import common
 from googlecloudsdk.api_lib.eventarc import common_publishing
 from googlecloudsdk.api_lib.eventarc.base import EventarcClientBase
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import resources
+
+
+class NoFieldsSpecifiedError(exceptions.Error):
+  """Error when no fields were specified for a Patch operation."""
 
 
 def GetChannelURI(resource):
@@ -46,9 +51,8 @@ class ChannelClientV1(EventarcClientBase):
     self._service = client.projects_locations_channels
 
     # Eventarc Publishing client
-    publishing_client = apis.GetClientInstance(
-        common_publishing.API_NAME,
-        common_publishing.API_VERSION_1)
+    publishing_client = apis.GetClientInstance(common_publishing.API_NAME,
+                                               common_publishing.API_VERSION_1)
 
     self._publishing_messages = publishing_client.MESSAGES_MODULE
     self._publishing_service = publishing_client.projects_locations_channels
@@ -162,8 +166,32 @@ class ChannelClientV1(EventarcClientBase):
     # GoogleCloudEventarcPublishingV1PublishEventsResponse
     self._publishing_service.PublishEvents(publish_req)
 
-  def BuildChannel(self, channel_ref, provider_ref):
+  def BuildChannel(self, channel_ref, provider_ref, crypto_key_name):
     return self._messages.Channel(
         name=channel_ref.RelativeName(),
+        cryptoKeyName=crypto_key_name,
         provider=provider_ref
         if provider_ref is None else provider_ref.RelativeName())
+
+  def BuildUpdateMask(self, crypto_key, clear_crypto_key):
+    """Builds an update mask for updating a channel.
+
+    Args:
+      crypto_key: bool, whether to update the crypto key.
+      clear_crypto_key: bool, whether to clear the crypto key.
+
+    Returns:
+      The update mask as a string.
+
+    Raises:
+      NoFieldsSpecifiedError: No fields are being updated.
+    """
+    update_mask = []
+    if crypto_key:
+      update_mask.append('cryptoKeyName')
+    if clear_crypto_key:
+      update_mask.append('cryptoKeyName')
+
+    if not update_mask:
+      raise NoFieldsSpecifiedError('Must specify at least one field to update.')
+    return ','.join(update_mask)

@@ -121,7 +121,7 @@ def _ParseAvailabilityType(sql_messages, availability_type):
   return None
 
 
-def _ParseDatabaseVersion(sql_messages, database_version):
+def ParseDatabaseVersion(sql_messages, database_version):
   if database_version:
     return sql_messages.DatabaseInstance.DatabaseVersionValueValuesEnum.lookup_by_name(
         database_version.upper())
@@ -399,6 +399,10 @@ class _BaseInstances(object):
             .password_policy_password_change_interval,
             enable_password_policy=args.enable_password_policy))
 
+    settings.sqlServerAuditConfig = reducers.SqlServerAuditConfig(
+        sql_messages, args.audit_bucket_path, args.audit_retention_interval,
+        args.audit_upload_interval)
+
     # BETA args.
     if _IsBetaOrNewer(release_track):
       settings.userLabels = labels_util.ParseCreateArgs(
@@ -410,9 +414,6 @@ class _BaseInstances(object):
 
     # ALPHA args.
     if _IsAlpha(release_track):
-      settings.sqlServerAuditConfig = reducers.SqlServerAuditConfig(
-          sql_messages, args.audit_bucket_path, args.audit_retention_interval,
-          args.audit_upload_interval)
       if args.deletion_protection is not None:
         settings.deletionProtectionEnabled = args.deletion_protection
 
@@ -526,6 +527,12 @@ class _BaseInstances(object):
             enable_password_policy=args.enable_password_policy,
             clear_password_policy=args.clear_password_policy))
 
+    settings.sqlServerAuditConfig = reducers.SqlServerAuditConfig(
+        sql_messages,
+        bucket=args.audit_bucket_path,
+        retention_interval=args.audit_retention_interval,
+        upload_interval=args.audit_upload_interval)
+
     # BETA args.
     if _IsBetaOrNewer(release_track):
       labels_diff = labels_util.ExplicitNullificationDiff.FromUpdateArgs(args)
@@ -542,11 +549,6 @@ class _BaseInstances(object):
 
     # ALPHA args.
     if _IsAlpha(release_track):
-      settings.sqlServerAuditConfig = reducers.SqlServerAuditConfig(
-          sql_messages,
-          bucket=args.audit_bucket_path,
-          retention_interval=args.audit_retention_interval,
-          upload_interval=args.audit_upload_interval)
       if args.deletion_protection is not None:
         settings.deletionProtectionEnabled = args.deletion_protection
 
@@ -601,7 +603,7 @@ class _BaseInstances(object):
 
     instance_resource.region = reducers.Region(args.region, _GetZone(args),
                                                _GetSecondaryZone(args))
-    instance_resource.databaseVersion = _ParseDatabaseVersion(
+    instance_resource.databaseVersion = ParseDatabaseVersion(
         sql_messages, args.database_version)
     instance_resource.masterInstanceName = args.master_instance_name
     instance_resource.rootPassword = args.root_password
@@ -683,7 +685,7 @@ class _BaseInstances(object):
     instance_resource = cls._ConstructBaseInstanceFromArgs(
         sql_messages, args, original, instance_ref)
 
-    instance_resource.databaseVersion = _ParseDatabaseVersion(
+    instance_resource.databaseVersion = ParseDatabaseVersion(
         sql_messages, args.database_version)
 
     instance_resource.maintenanceVersion = args.maintenance_version

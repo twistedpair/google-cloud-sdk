@@ -313,6 +313,7 @@ class CloudApi(object):
                   source_resource,
                   destination_resource,
                   request_config,
+                  should_deep_copy_metadata=False,
                   progress_callback=None):
     """Copies an object within the cloud of one provider.
 
@@ -323,6 +324,9 @@ class CloudApi(object):
         Resource for destination object. Existence doesn't have to be confirmed.
       request_config (RequestConfig): Object containing general API function
         arguments. Subclasses for specific cloud providers are available.
+      should_deep_copy_metadata (bool): Rather than copying select fields of
+        the source metadata, if True, copy everything. The request_config data
+        (containing user args) overrides the deep-copied data.
       progress_callback (function): Optional callback function for progress
         notifications. Receives calls with arguments (bytes_transferred,
         total_size).

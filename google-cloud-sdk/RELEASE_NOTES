@@ -5,6 +5,69 @@ Copyright 2014-2022 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 391.0.0 (2022-06-22)
+
+### Breaking Changes
+
+*   **(Anthos Multi-Cloud)** Removed `--instance-type` flag of `gcloud container aws node-pools
+    update` to disable updating the EC2 instance type of node pool nodes.
+
+
+### Assured Workloads
+
+*   Added ITAR as compliance regime options for `gcloud assured workloads create` command.
+
+### Cloud Dataflow
+
+* Added a `--force` flag to `gcloud dataflow jobs cancel` which forcibly cancels (leaking VMs) Dataflow jobs that are stuck on normal cancellation.
+
+### Cloud Filestore
+
+*   Enable Filestore High-Scale tier for GA.
+
+### Cloud Identity-Aware Proxy
+
+*   Promoted flags for host based connetion for command `gcloud compute start-iap-tunnel` to beta.
+*   Promoted `gcloud iap oauth-brands` surface to GA.
+*   Promoted `gcloud iap oauth-clients` surface to GA.
+
+### Cloud SQL
+
+* Promoted SQL Server Audit to GA.
+
+### Compute Engine
+
+* Updated `gcloud compute networks subnets list-usable` list format to include PSC and IPv6 fields.
+
+### Dataproc Metastore
+
+* Added support for managing Dataproc Metastore Federation. The following commands have been added to the alpha, beta and GA release tracks:
+  * `metastore federations create`
+  * `metastore federations delete`
+  * `metastore federations describe`
+  * `metastore federations get`
+  * `metastore federations list`
+  * `metastore federations update`
+
+* Added support for managing IAM policy for Dataproc Metastore Federation. The following commands have been added to the GA release track:
+  * `metastore federations get-iam-policy`
+  * `metastore federations set-iam-policy`
+  * `metastore federations add-iam-policy-binding`
+  * `metastore federations remove-iam-policy-binding`
+
+### Identity and Access Management
+
+* Added `--executable-command` flag to `gcloud iam workload-identity-pools create-cred-config` command to allow executable sourced credentials.
+
+### Managed Active Directory
+
+*   Adding support for `gcloud beta active-directory domains extend-schema` for
+    initiating schema extension on domain.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 390.0.0 (2022-06-14)
 
 ### Access Approval

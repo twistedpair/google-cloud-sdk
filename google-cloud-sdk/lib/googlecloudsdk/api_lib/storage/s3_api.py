@@ -316,9 +316,11 @@ class S3Api(cloud_api.CloudApi):
                   source_resource,
                   destination_resource,
                   request_config,
+                  should_deep_copy_metadata=False,
                   progress_callback=None):
     """See super class."""
-    del progress_callback
+    del should_deep_copy_metadata  # Unsupported for S3.
+    del progress_callback  # TODO(b/161900052): Waiting for resumable copies.
 
     source_kwargs = {'Bucket': source_resource.storage_url.bucket_name,
                      'Key': source_resource.storage_url.object_name}

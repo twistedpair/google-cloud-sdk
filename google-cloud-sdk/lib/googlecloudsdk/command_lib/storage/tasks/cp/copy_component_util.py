@@ -24,6 +24,7 @@ import os
 
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage.resources import resource_reference
+from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import scaled_integer
 
@@ -67,7 +68,11 @@ def create_file_if_needed(source_resource, destination_resource):
     return
 
   with files.BinaryFileWriter(
-      file_path, create_path=True, mode=files.BinaryFileWriterMode.TRUNCATE):
+      file_path,
+      create_path=True,
+      mode=files.BinaryFileWriterMode.TRUNCATE,
+      convert_invalid_windows_characters=properties.VALUES.storage
+      .convert_incompatible_windows_path_characters.GetBool()):
     # Wipe or create file.
     pass
 

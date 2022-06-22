@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.command_lib.compute import scope as compute_scope
+
 
 def ResolveTargetGrpcProxyUrlMap(args, url_map_arg, target_grpc_proxy_ref,
                                  resources):
@@ -36,11 +38,10 @@ def ResolveTargetGrpcProxyUrlMap(args, url_map_arg, target_grpc_proxy_ref,
   Returns:
     Returns the URL map resource
   """
-  if IsRegionalTargetGrpcProxiesRef(target_grpc_proxy_ref):
-    if not getattr(args, 'url_map_region', None):
+  if not compute_scope.IsSpecifiedForFlag(args, 'url_map'):
+    if IsRegionalTargetGrpcProxiesRef(target_grpc_proxy_ref):
       args.url_map_region = target_grpc_proxy_ref.region
-  else:
-    if not getattr(args, 'global_url_map', None):
+    else:
       args.global_url_map = args.url_map
 
   return url_map_arg.ResolveAsResource(args, resources)

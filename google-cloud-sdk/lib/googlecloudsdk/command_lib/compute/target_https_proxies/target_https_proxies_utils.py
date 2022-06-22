@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.command_lib.compute import scope as compute_scope
+
 
 def ResolveTargetHttpsProxyUrlMap(args, url_map_arg, target_https_proxy_ref,
                                   resources):
@@ -30,19 +32,18 @@ def ResolveTargetHttpsProxyUrlMap(args, url_map_arg, target_https_proxy_ref,
     args: The arguments provided to the target_https_proxies command.
     url_map_arg: The ResourceArgument specification for the url map argument.
     target_https_proxy_ref: The resource reference to the Target HTTPS Proxy.
-                           This is obtained by parsing the Target HTTPS Proxy
-                           arguments provided.
+                            This is obtained by parsing the Target HTTPS Proxy
+                            arguments provided.
     resources: ComputeApiHolder resources.
 
   Returns:
     Returns the URL map resource
   """
 
-  if IsRegionalTargetHttpsProxiesRef(target_https_proxy_ref):
-    if not getattr(args, 'url_map_region', None):
+  if not compute_scope.IsSpecifiedForFlag(args, 'url_map'):
+    if IsRegionalTargetHttpsProxiesRef(target_https_proxy_ref):
       args.url_map_region = target_https_proxy_ref.region
-  else:
-    if not getattr(args, 'global_url_map', None):
+    else:
       args.global_url_map = bool(args.url_map)
 
   return url_map_arg.ResolveAsResource(args, resources)
@@ -71,11 +72,10 @@ def ResolveSslCertificates(args, ssl_certificate_arg, target_https_proxy_ref,
   if not args.ssl_certificates:
     return []
 
-  if IsRegionalTargetHttpsProxiesRef(target_https_proxy_ref):
-    if not getattr(args, 'ssl_certificates_region', None):
+  if not compute_scope.IsSpecifiedForFlag(args, 'ssl_certificates'):
+    if IsRegionalTargetHttpsProxiesRef(target_https_proxy_ref):
       args.ssl_certificates_region = target_https_proxy_ref.region
-  else:
-    if not getattr(args, 'global_ssl_certificates', None):
+    else:
       args.global_ssl_certificates = bool(args.ssl_certificates)
   return ssl_certificate_arg.ResolveAsResource(args, resources)
 
@@ -98,11 +98,10 @@ def ResolveSslPolicy(args, ssl_policy_arg, target_https_proxy_ref, resources):
     Returns the SSL policy resource
   """
 
-  if IsRegionalTargetHttpsProxiesRef(target_https_proxy_ref):
-    if not getattr(args, 'ssl_policy_region', None):
+  if not compute_scope.IsSpecifiedForFlag(args, 'ssl_policy'):
+    if IsRegionalTargetHttpsProxiesRef(target_https_proxy_ref):
       args.ssl_policy_region = target_https_proxy_ref.region
-  else:
-    if not getattr(args, 'global_ssl_policy', None):
+    else:
       args.global_ssl_policy = bool(args.ssl_policy)
   return ssl_policy_arg.ResolveAsResource(args, resources)
 

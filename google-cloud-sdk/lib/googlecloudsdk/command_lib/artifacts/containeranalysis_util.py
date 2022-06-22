@@ -71,6 +71,8 @@ class ContainerAnalysisMetadata:
       view['DISCOVERY'] = self.discovery.discovery
     if self.build.build_details:
       view['BUILD'] = self.build.build_details
+    if self.package.packages:
+      view['PACKAGE'] = self.package.packages
     view.update(self.vulnerability.ImagesListView())
     return view
 

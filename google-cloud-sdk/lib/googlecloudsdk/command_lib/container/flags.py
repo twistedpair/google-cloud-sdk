@@ -1745,7 +1745,7 @@ def AddNetworkPerformanceConfigFlags(parser, hidden=True):
       is going to internal IP or external IP destinations.
       The following tier values are allowed: [{tier_values}]
 
-      """.format(tier_values=','.join(['DEFAULT', 'TIER_1']))
+      """.format(tier_values=','.join(['TIER_UNSPECIFIED', 'TIER_1']))
 
   spec = {'total-egress-bandwidth-tier': str}
 
@@ -4576,6 +4576,20 @@ def VerifyGetCredentialsFlags(args):
       args.IsSpecified('cross_connect_subnetwork') +
       args.IsSpecified('private_endpoint_fqdn')) > 1:
     raise util.Error(constants.CONFLICTING_GET_CREDS_FLAGS_ERROR_MSG)
+
+
+def AddEnablePrivateEndpoint(parser, hidden=True):
+  """Adds a --enable-private-endpoint flag to the given parser."""
+  help_text = """\
+  Enables cluster's control plane to be accessible using private IP
+  address only.
+  """
+  parser.add_argument(
+      '--enable-private-endpoint',
+      help=help_text,
+      hidden=hidden,
+      default=None,
+      action='store_true')
 
 
 def AddEnableGoogleCloudAccess(parser, hidden=True):

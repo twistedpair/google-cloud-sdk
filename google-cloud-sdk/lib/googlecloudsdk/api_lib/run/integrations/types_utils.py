@@ -25,6 +25,7 @@ from googlecloudsdk.command_lib.run import exceptions
 # TODO(b/233097220) Update this tuple to be only runapps once prod is setup
 BASELINE_APIS = (
     'cloudbuild.googleapis.com',
+    'iam.googleapis.com',
     'run.googleapis.com',
     'runapps.googleapis.com',
     'storage.googleapis.com',

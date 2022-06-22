@@ -39,6 +39,7 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.util import completers
 
 messages = apis.GetMessagesModule('sql', 'v1beta4')
+DEFAULT_INSTANCE_DATABASE_VERSION = 'MYSQL_8_0'
 
 _IP_ADDRESS_PART = r'(25[0-5]|2[0-4][0-9]|1?[0-9]{1,2})'  # Match decimal 0-255
 _CIDR_PREFIX_PART = r'([0-9]|[1-2][0-9]|3[0-2])'  # Match decimal 0-32
@@ -342,7 +343,7 @@ def AddDatabaseVersion(parser,
   ]
   # End of engine-specific content.
 
-  help_text_unspecified_part = 'the API defaults are used.' if support_default_version else 'no changes occur.'
+  help_text_unspecified_part = DEFAULT_INSTANCE_DATABASE_VERSION + ' is used.' if support_default_version else 'no changes occur.'
   help_text = (
       'The database engine type and versions. If left unspecified, ' +
       help_text_unspecified_part + ' See the list of database versions at ' +
@@ -357,8 +358,9 @@ def AddDatabaseVersion(parser,
   parser.add_argument(
       '--database-version',
       required=False,
-      choices=_MajorVersionMatchList(choices)
-      if restrict_choices else None,
+      default=DEFAULT_INSTANCE_DATABASE_VERSION
+      if support_default_version else None,
+      choices=_MajorVersionMatchList(choices) if restrict_choices else None,
       help=help_text,
       hidden=hidden)
 
@@ -653,28 +655,31 @@ def AddSqlServerAudit(parser):
   parser.add_argument(
       '--audit-bucket-path',
       required=False,
-      hidden=True,
-      help=('Path in Google Cloud Storage to upload generated audit files. '
-            'The URI is in the form gs://bucketName/folderName. '
-            'Only available for SQL Server instances.'))
+      help=(
+          'The location, as a Cloud Storage bucket, to which audit files are '
+          'uploaded. The URI is in the form gs://bucketName/folderName. Only '
+          'available for SQL Server instances.'
+      ))
 
   parser.add_argument(
       '--audit-retention-interval',
       default=None,
-      type=arg_parsers.Duration(),
+      type=arg_parsers.Duration(upper_bound='7d'),
       required=False,
-      hidden=True,
-      help=('How long to keep generated audit files. '
-            'Only available for SQL Server instances.'))
+      help=(
+          'The number of days for audit log retention on disk, for example, 3d'
+          'for 3 days. Only available for SQL Server instances.'
+      ))
 
   parser.add_argument(
       '--audit-upload-interval',
       default=None,
-      type=arg_parsers.Duration(),
+      type=arg_parsers.Duration(upper_bound='720m'),
       required=False,
-      hidden=True,
-      help=('How often to upload generated audit files. '
-            'Only available for SQL Server instances.'))
+      help=(
+          'How often to upload audit logs (audit files), for example, 30m'
+          'for 30 minutes. Only available for SQL Server instances.'
+      ))
 
 
 def AddReplication(parser):

@@ -26,7 +26,6 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.command_lib.storage import encryption_util
-from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.core import log
 from googlecloudsdk.core.util import debug_output
@@ -236,7 +235,7 @@ class _ObjectConfig(object):
                decryption_key=None,
                encryption_key=None,
                md5_hash=None,
-               preserve_acl=False,
+               preserve_acl=None,
                size=None,
                storage_class=None):
     self.cache_control = cache_control
@@ -444,6 +443,7 @@ def _check_for_unsupported_s3_flags(user_request_args):
 def _get_request_config_resource_args(url,
                                       content_type=None,
                                       decryption_key_hash=None,
+                                      encryption_key=None,
                                       error_on_missing_key=True,
                                       md5_hash=None,
                                       size=None,
@@ -520,14 +520,11 @@ def _get_request_config_resource_args(url,
     new_resource_args.md5_hash = md5_hash
     new_resource_args.size = size
 
-    new_resource_args.encryption_key = encryption_util.get_encryption_key()
+    new_resource_args.encryption_key = (
+        encryption_key or encryption_util.get_encryption_key())
     if decryption_key_hash:
       new_resource_args.decryption_key = encryption_util.get_decryption_key(
-          decryption_key_hash)
-      if not new_resource_args.decryption_key and error_on_missing_key:
-        raise errors.Error(
-            'Missing decryption key with SHA256 hash {}. No decryption key '
-            'matches object {}.'.format(decryption_key_hash, url))
+          decryption_key_hash, url if error_on_missing_key else None)
 
     if user_resource_args:
       # User args should override existing settings.
@@ -558,16 +555,15 @@ def _get_request_config_resource_args(url,
 def get_request_config(url,
                        content_type=None,
                        decryption_key_hash=None,
+                       encryption_key=None,
                        error_on_missing_key=True,
                        md5_hash=None,
                        size=None,
                        user_request_args=None):
   """Generates API-specific RequestConfig. See output classes for arg info."""
-  resource_args = _get_request_config_resource_args(url, content_type,
-                                                    decryption_key_hash,
-                                                    error_on_missing_key,
-                                                    md5_hash, size,
-                                                    user_request_args)
+  resource_args = _get_request_config_resource_args(
+      url, content_type, decryption_key_hash, encryption_key,
+      error_on_missing_key, md5_hash, size, user_request_args)
 
   if url.scheme == storage_url.ProviderPrefix.GCS:
     request_config = _GcsRequestConfig(resource_args=resource_args)

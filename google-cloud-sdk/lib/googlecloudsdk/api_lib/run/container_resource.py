@@ -31,6 +31,7 @@ POST_CMEK_KEY_REVOCATION_ACTION_TYPE_ANNOTATION = 'run.googleapis.com/post-key-r
 ENCRYPTION_KEY_SHUTDOWN_HOURS_ANNOTATION = 'run.googleapis.com/encryption-key-shutdown-hours'
 SECRETS_ANNOTATION = 'run.googleapis.com/secrets'
 CPU_THROTTLE_ANNOTATION = 'run.googleapis.com/cpu-throttling'
+COLD_START_BOOST_ANNOTATION = 'run.googleapis.com/startup-cpu-boost'
 
 EGRESS_SETTINGS_ANNOTATION = 'run.googleapis.com/vpc-access-egress'
 EGRESS_SETTINGS_ALL = 'all'

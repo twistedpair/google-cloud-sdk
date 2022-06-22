@@ -291,6 +291,10 @@
           "type": "string",
           "format": "int64"
         },
+        "appSlug": {
+          "description": "The URL-friendly name of the GitHub App.",
+          "type": "string"
+        },
         "privateKeySecretVersion": {
           "description": "SecretManager resource containing the private key of the GitHub App, formatted as `projects\/*\/secrets\/*\/versions\/*`.",
           "type": "string"
@@ -461,8 +465,7 @@
       "properties": {
         "token": {
           "description": "The token content.",
-          "type": "string",
-          "format": "byte"
+          "type": "string"
         },
         "expirationTime": {
           "description": "Expiration timestamp. Can be empty if unknown.",
@@ -485,8 +488,7 @@
       "properties": {
         "token": {
           "description": "The token content.",
-          "type": "string",
-          "format": "byte"
+          "type": "string"
         },
         "expirationTime": {
           "description": "Expiration timestamp. Can be empty if unknown.",
@@ -616,6 +618,13 @@
         "etag": {
           "description": "Needed for declarative-friendly resources.",
           "type": "string"
+        },
+        "workflowTriggers": {
+          "description": "The Workflow triggers that can fire the workflow.",
+          "type": "array",
+          "items": {
+            "$ref": "WorkflowTrigger"
+          }
         }
       }
     },
@@ -1400,6 +1409,181 @@
         "secretVersion": {
           "description": "Output only. Resource name of the SecretVersion. In format: projects\/*\/secrets\/*\/versions\/*",
           "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "WorkflowTrigger": {
+      "id": "WorkflowTrigger",
+      "description": "Workflow trigger within a Workflow.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "Immutable. id given by the users to the Workflow.",
+          "type": "string"
+        },
+        "eventSource": {
+          "description": "Optional. The event source the WorkflowTrigger listens to.",
+          "$ref": "EventSource"
+        },
+        "eventType": {
+          "description": "Optional. The type of the events the WorkflowTrigger accepts.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default to ALL.",
+            "All events.",
+            "PR events.",
+            "Push to branch events.",
+            "Push to tag events."
+          ],
+          "enum": [
+            "EVENTTYPE_UNSPECIFIED",
+            "ALL",
+            "PULL_REQUEST",
+            "PUSH_BRANCH",
+            "PUSH_TAG"
+          ]
+        },
+        "createTime": {
+          "description": "Output only. Creation time of the WorkflowTrigger.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. Update time of the WorkflowTrigger.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "gitRef": {
+          "description": "Optional. The Git ref matching the SCM repo branch\/tag.",
+          "$ref": "GitRef"
+        },
+        "pullRequest": {
+          "description": "Optional. The Pull request role and comment that triggers the Workflow.",
+          "$ref": "PullRequest"
+        },
+        "custom": {
+          "description": "The CEL filters that triggers the Workflow.",
+          "type": "array",
+          "items": {
+            "$ref": "CEL"
+          }
+        },
+        "uuid": {
+          "description": "Output only. The internal id of the WorkflowTrigger.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "status": {
+          "description": "Output only. The status of the WorkflowTrigger.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Defaults to ACTIVE.",
+            "WorkflowTrigger is active.",
+            "WorkflowTrigger is deactivated."
+          ],
+          "enum": [
+            "STATUS_UNSPECIFIED",
+            "ACTIVE",
+            "DEACTIVATED"
+          ]
+        },
+        "statusMessage": {
+          "description": "Output only. The reason why WorkflowTrigger is deactivated.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "params": {
+          "description": "List of parameters associated with the WorkflowTrigger.",
+          "type": "array",
+          "items": {
+            "$ref": "Param"
+          }
+        }
+      }
+    },
+    "EventSource": {
+      "id": "EventSource",
+      "description": "Event Source referenceable within a WorkflowTrigger.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "identification to Resource.",
+          "type": "string"
+        },
+        "repository": {
+          "description": "Output only. Resource name of GCB v2 repo.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "subscription": {
+          "description": "Output only. Resource name of PubSub subscription.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "secret": {
+          "description": "Output only. Secret Manager secret.",
+          "readOnly": true,
+          "$ref": "GoogleDevtoolsCloudbuildV2SecretManagerSecret"
+        }
+      }
+    },
+    "GitRef": {
+      "id": "GitRef",
+      "description": "Git ref configuration for filters.",
+      "type": "object",
+      "properties": {
+        "nameRegex": {
+          "description": "Regex to match the branch or tag of SCM.",
+          "type": "string"
+        },
+        "inverse": {
+          "description": "If true, the regex matching result is inversed.",
+          "type": "boolean"
+        }
+      }
+    },
+    "PullRequest": {
+      "id": "PullRequest",
+      "description": "Pull request configuration for filters.",
+      "type": "object",
+      "properties": {
+        "pusher": {
+          "description": "Allowed PR role that triggers a Workflow.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default to OWNER_AND_COLLABORATOR.",
+            "PR author are ownes and\/or collaborators of the SCM repo.",
+            "PR author is the owner of the SCM repo.",
+            "PR author can be everyone."
+          ],
+          "enum": [
+            "PUSHER_UNSPECIFIED",
+            "OWNER_AND_COLLABORATORS",
+            "OWNER",
+            "ALL_USERS"
+          ]
+        },
+        "comment": {
+          "description": "Comment that should be included to trigger a Workflow.",
+          "type": "string"
+        }
+      }
+    },
+    "CEL": {
+      "id": "CEL",
+      "description": "Filters in CEL.",
+      "type": "object",
+      "properties": {
+        "cel": {
+          "description": "The filter logic in CEL.",
+          "type": "string"
+        },
+        "notification": {
+          "description": "A notification sent back to SCM if the cel program fails.",
           "type": "string"
         }
       }

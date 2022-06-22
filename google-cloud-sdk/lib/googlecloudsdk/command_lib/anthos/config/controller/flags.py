@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 
 
@@ -123,3 +124,13 @@ def AddUsePrivateEndpoint(parser):
       "--use-private-endpoint",
       action="store_true",
       help=("Only allow access to the master's private endpoint IP."))
+
+
+def AddExperimentalFeaturesFlag(parser):
+  """Adds --experimental-features flag."""
+  parser.add_argument(
+      "--experimental-features",
+      type=arg_parsers.ArgList(),
+      metavar="FEATURE",
+      help=("Enable experimental features. It can only be enabled in ALPHA "
+            "version."))

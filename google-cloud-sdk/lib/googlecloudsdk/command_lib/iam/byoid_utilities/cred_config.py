@@ -68,8 +68,7 @@ def get_generator(args, config_type):
   if args.credential_source_url:
     return UrlCredConfigGenerator(config_type, args.credential_source_url,
                                   args.credential_source_headers)
-  # In non-alpha tracks, 'executable_command' might not be a valid argument.
-  if args.IsKnownAndSpecified('executable_command'):
+  if args.executable_command:
     return ExecutableCredConfigGenerator(config_type, args.executable_command,
                                          args.executable_timeout_millis,
                                          args.executable_output_file)

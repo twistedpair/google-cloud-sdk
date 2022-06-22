@@ -47,3 +47,14 @@ class ScopeEnum(enum.Enum):
       return 'compute.regions'
     raise exceptions.Error(
         'Expected scope to be ZONE or REGION, got {0!r}'.format(scope))
+
+
+def IsSpecifiedForFlag(args, flag_name):
+  """Returns True if the scope is specified for the flag.
+
+  Args:
+    args: The command-line flags.
+    flag_name: The name of the flag.
+  """
+  return (getattr(args, '{}_region'.format(flag_name), None) is not None or
+          getattr(args, 'global_{}'.format(flag_name), None) is not None)

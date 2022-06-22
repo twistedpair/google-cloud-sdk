@@ -51,20 +51,21 @@ def LocationAttributeConfig():
                  "``asia-northeast1'', and ``asia-northeast2'' are supported."))
 
 
-def GetInstanceResourceSpec():
+def GetInstanceResourceSpec(api_version):
   return concepts.ResourceSpec(
       'krmapihosting.projects.locations.krmApiHosts',
       resource_name='instance',
+      api_version=api_version,
       krmApiHostsId=InstanceAttributeConfig(),
       locationsId=LocationAttributeConfig(),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       disable_auto_completers=False)
 
 
-def AddInstanceResourceArg(parser):
+def AddInstanceResourceArg(parser, api_version):
   concept_parsers.ConceptParser.ForResource(
       'name',
-      GetInstanceResourceSpec(),
+      GetInstanceResourceSpec(api_version),
       'The identifier for a Config Controller instance.',
       required=True).AddToParser(parser)
 

@@ -24,6 +24,7 @@ import shutil
 
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage import user_request_args_factory
+from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files
 
 
@@ -50,7 +51,12 @@ def decompress_gzip_if_necessary(source_resource,
   try:
     with gzip.open(gzipped_path, 'rb') as gzipped_file:
       with files.BinaryFileWriter(
-          destination_path, create_path=True) as ungzipped_file:
+          destination_path,
+          create_path=True,
+          convert_invalid_windows_characters=(
+              properties.VALUES.storage
+              .convert_incompatible_windows_path_characters.GetBool()
+          )) as ungzipped_file:
         shutil.copyfileobj(gzipped_file, ungzipped_file)
     return True
   except OSError:

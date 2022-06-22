@@ -403,7 +403,7 @@ def AddRuntimeFlag(parser):
           - `go113`: Go 1.13
           - `go116`: Go 1.16
           - `java11`: Java 11
-          - `java17`: Java 17 (preview)
+          - `java17`: Java 17
           - `dotnet3`: .NET Framework 3
           - `ruby26`: Ruby 2.6
           - `ruby27`: Ruby 2.7

@@ -44,6 +44,10 @@ class ServiceDeleteError(Error):
   """Class for errors raised when deleting a service."""
 
 
+class FederationDeleteError(Error):
+  """Class for errors raised when deleting a federation."""
+
+
 def GetApiVersion(release_track=base.ReleaseTrack.GA):
   if release_track == base.ReleaseTrack.ALPHA:
     return METASTORE_ALPHA_API_VERSION

@@ -904,6 +904,7 @@ class UpdateClusterOptions(object):
       enable_autoprovisioning_blue_green_update=None,
       autoprovisioning_standard_rollout_policy=None,
       autoprovisioning_node_pool_soak_duration=None,
+      enable_private_endpoint=None,
       enable_google_cloud_access=None,
   ):
     self.version = version
@@ -1011,6 +1012,7 @@ class UpdateClusterOptions(object):
     self.enable_autoprovisioning_blue_green_update = enable_autoprovisioning_blue_green_update
     self.autoprovisioning_standard_rollout_policy = autoprovisioning_standard_rollout_policy
     self.autoprovisioning_node_pool_soak_duration = autoprovisioning_node_pool_soak_duration
+    self.enable_private_endpoint = enable_private_endpoint
     self.enable_google_cloud_access = enable_google_cloud_access
 
 
@@ -2825,6 +2827,10 @@ class APIAdapter(object):
           directMetricsOptIn=options.pod_autoscaling_direct_metrics_opt_in)
       update = self.messages.ClusterUpdate(
           desiredPodAutoscaling=pod_autoscaling_config)
+
+    if options.enable_private_endpoint is not None:
+      update = self.messages.ClusterUpdate(
+          desiredEnablePrivateEndpoint=options.enable_private_endpoint)
 
     return update
 

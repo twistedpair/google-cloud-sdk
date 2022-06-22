@@ -314,6 +314,8 @@ class _Sections(object):
       clusters on AWS.
     container_azure: Section, The section containing properties for Anthos
       clusters on Azure.
+    container_vmware: Section, The section containing properties for Anthos
+      clusters on VMware.
     context_aware: Section, The section containing context aware access
       configurations for the Cloud SDK.
     core: Section, The section containing core properties for the Cloud SDK.
@@ -433,6 +435,7 @@ class _Sections(object):
     self.container = _SectionContainer()
     self.container_aws = _SectionContainerAws()
     self.container_azure = _SectionContainerAzure()
+    self.container_vmware = _SectionContainerVmware()
     self.context_aware = _SectionContextAware()
     self.core = _SectionCore()
     self.ssh = _SectionSsh()
@@ -505,6 +508,7 @@ class _Sections(object):
         self.container,
         self.container_aws,
         self.container_azure,
+        self.container_vmware,
         self.context_aware,
         self.core,
         self.ssh,
@@ -1747,6 +1751,17 @@ class _SectionContainerAzure(_Section):
                    'on Azure.'))
 
 
+class _SectionContainerVmware(_Section):
+  """Contains the properties for the 'container_vmware' section."""
+
+  def __init__(self):
+    super(_SectionContainerVmware, self).__init__('container_vmware')
+    self.location = self._Add(
+        'location',
+        help_text=('Default Google Cloud location to use for Anthos clusters '
+                   'on VMware.'))
+
+
 class _SectionContextAware(_Section):
   """Contains the properties for the 'context_aware' section."""
 
@@ -2945,6 +2960,13 @@ class _SectionStorage(_Section):
         help_text=self._CHECK_HASHES_HELP_TEXT,
         choices=([setting.value for setting in CheckHashes]))
 
+    self.convert_incompatible_windows_path_characters = self._AddBool(
+        'convert_incompatible_windows_path_characters',
+        default=True,
+        help_text='Allows automatic conversion of invalid path'
+        ' characters on Windows. If not enabled, Windows will raise an OSError'
+        ' if an invalid character is encountered.')
+
     self.copy_chunk_size = self._Add(
         'copy_chunk_size',
         default=self.DEFAULT_COPY_CHUNK_SIZE,
@@ -3642,10 +3664,10 @@ def PersistProperty(prop, value, scope=None):
       removed.
     scope: Scope, The config location to set the property in.  If given, only
       this location will be updated and it is an error if that location does not
-      exist.  If not given, it will attempt to update the property in the
-      first of the following places that exists: - the active named config -
-        user level config It will never fall back to installation properties;
-        you must use that scope explicitly to set that value.
+      exist.  If not given, it will attempt to update the property in the first
+      of the following places that exists: - the active named config - user
+      level config It will never fall back to installation properties; you must
+      use that scope explicitly to set that value.
 
   Raises:
     MissingInstallationConfig: If you are trying to set the installation config,

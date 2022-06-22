@@ -35,16 +35,13 @@ def CreateUpdateRequest(release_track, ref, args):
   custom_uri = 'projects/{project_id}/locations/{location}'.format(
       project_id=ref.projectsId, location=args.location)
 
-  # Default values if flags not specified
-
-  # Default master ipv4 cidr block address if not provided
-  master_ipv4_cidr_block = '172.16.0.128/28'
-  if args.master_ipv4_cidr_block is not None:
-    master_ipv4_cidr_block = args.master_ipv4_cidr_block
-
   # We don't expose the bundle in this surface.
   bundles_config = messages.BundlesConfig(
       configControllerConfig=messages.ConfigControllerConfig(enabled=True))
+
+  if release_track == base.ReleaseTrack.ALPHA and args.IsSpecified(
+      'experimental_features'):
+    bundles_config.configControllerConfig.experimentalFeatures = args.experimental_features
 
   krm_api_host = messages.KrmApiHost(
       bundlesConfig=bundles_config)
@@ -59,7 +56,7 @@ def CreateUpdateRequest(release_track, ref, args):
         clusterCidrBlock=args.cluster_ipv4_cidr_block,
         clusterNamedRange=args.cluster_named_range,
         manBlock=args.man_block,
-        masterIpv4CidrBlock=master_ipv4_cidr_block,
+        masterIpv4CidrBlock=args.master_ipv4_cidr_block,
         network=args.network,
         subnet=args.subnet,
         servicesCidrBlock=args.services_ipv4_cidr_block,
@@ -68,6 +65,10 @@ def CreateUpdateRequest(release_track, ref, args):
         fullManagementConfig=full_mgmt_config)
     krm_api_host.managementConfig = mgmt_config
   else:
+    # Default master ipv4 cidr block address if not provided
+    master_ipv4_cidr_block = '172.16.0.128/28'
+    if args.master_ipv4_cidr_block is not None:
+      master_ipv4_cidr_block = args.master_ipv4_cidr_block
     std_mgmt_config = messages.StandardManagementConfig(
         clusterCidrBlock=args.cluster_ipv4_cidr_block,
         clusterNamedRange=args.cluster_named_range,

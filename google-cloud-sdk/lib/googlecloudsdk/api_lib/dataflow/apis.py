@@ -93,11 +93,12 @@ class Jobs:
       raise exceptions.HttpException(error)
 
   @staticmethod
-  def Cancel(job_id, project_id=None, region_id=None):
+  def Cancel(job_id, force=False, project_id=None, region_id=None):
     """Cancels a job by calling the Jobs.Update method.
 
     Args:
       job_id: Identifies a single job.
+      force: True to forcibly cancel the job.
       project_id: The project which owns the job.
       region_id: The regional endpoint where the job lives.
 
@@ -107,7 +108,14 @@ class Jobs:
     project_id = project_id or GetProject()
     # TODO(b/139889563): Remove default when args region is changed to required
     region_id = region_id or DATAFLOW_API_DEFAULT_REGION
+    labels = None
+    if force:
+      labels = GetMessagesModule().Job.LabelsValue(additionalProperties=[
+          GetMessagesModule().Job.LabelsValue.AdditionalProperty(
+              key='force_cancel_job', value='true')
+      ])
     job = GetMessagesModule().Job(
+        labels=labels,
         requestedState=(GetMessagesModule().Job.RequestedStateValueValuesEnum
                         .JOB_STATE_CANCELLED))
     request = GetMessagesModule().DataflowProjectsLocationsJobsUpdateRequest(
@@ -337,9 +345,9 @@ class Templates:
   FLEX_TEMPLATE_PARAMETERS_VALUE = FLEX_TEMPLATE_PARAMETER.ParametersValue
   FLEX_TEMPLATE_TRANSFORM_NAME_MAPPING_VALUE = FLEX_TEMPLATE_PARAMETER.TransformNameMappingsValue
   IP_CONFIGURATION_ENUM_VALUE = GetMessagesModule(
-      ).FlexTemplateRuntimeEnvironment.IpConfigurationValueValuesEnum
+  ).FlexTemplateRuntimeEnvironment.IpConfigurationValueValuesEnum
   FLEXRS_GOAL_ENUM_VALUE = GetMessagesModule(
-      ).FlexTemplateRuntimeEnvironment.FlexrsGoalValueValuesEnum
+  ).FlexTemplateRuntimeEnvironment.FlexrsGoalValueValuesEnum
   TEMPLATE_METADATA = GetMessagesModule().TemplateMetadata
   SDK_INFO = GetMessagesModule().SDKInfo
   SDK_LANGUAGE = GetMessagesModule().SDKInfo.LanguageValueValuesEnum
@@ -417,10 +425,9 @@ class Templates:
             workerRegion=template_args.worker_region,
             workerZone=template_args.worker_zone,
             enableStreamingEngine=template_args.enable_streaming_engine,
-            additionalExperiments=(
-                template_args.additional_experiments
-                if template_args.additional_experiments
-                else [])),
+            additionalExperiments=(template_args.additional_experiments
+                                   if template_args.additional_experiments else
+                                   [])),
         parameters=Templates.PARAMETERS_VALUE(
             additionalProperties=params_list) if parameters else None)
     request = GetMessagesModule(
@@ -614,11 +621,11 @@ class Templates:
       Dockerfile contents as string.
     """
     if sdk_language == 'JAVA':
-      return Templates.BuildJavaImageDockerfile(
-          flex_template_base_image, pipeline_paths, env)
+      return Templates.BuildJavaImageDockerfile(flex_template_base_image,
+                                                pipeline_paths, env)
     elif sdk_language == 'PYTHON':
-      return Templates.BuildPythonImageDockerfile(
-          flex_template_base_image, pipeline_paths, env)
+      return Templates.BuildPythonImageDockerfile(flex_template_base_image,
+                                                  pipeline_paths, env)
 
   @staticmethod
   def _ValidateTemplateParameters(parameters):
@@ -810,13 +817,11 @@ class Templates:
           workerRegion=template_args.worker_region,
           workerZone=template_args.worker_zone,
           enableStreamingEngine=enable_streaming_engine,
-          additionalExperiments=(
-              template_args.additional_experiments
-              if template_args.additional_experiments
-              else []),
+          additionalExperiments=(template_args.additional_experiments if
+                                 template_args.additional_experiments else []),
           additionalUserLabels=Templates.FLEX_TEMPLATE_USER_LABELS_VALUE(
-              additionalProperties=user_labels_list
-          ) if user_labels_list else None)
+              additionalProperties=user_labels_list)
+          if user_labels_list else None)
     container_spec = Templates.CONTAINER_SPEC(
         image=image,
         metadata=template_metadata,
@@ -867,8 +872,7 @@ class Templates:
     """
     Templates.__ValidateFlexTemplateEnv(env, sdk_language)
     with files.TemporaryDirectory() as temp_dir:
-      log.status.Print(
-          'Copying files to a temp directory {}'.format(temp_dir))
+      log.status.Print('Copying files to a temp directory {}'.format(temp_dir))
 
       pipeline_files = []
       paths = jar_paths
@@ -879,14 +883,15 @@ class Templates:
         if os.path.isfile(absl_path):
           shutil.copy2(absl_path, temp_dir)
         else:
-          shutil.copytree(
-              absl_path, '{}/{}'.format(temp_dir, os.path.basename(absl_path)))
+          shutil.copytree(absl_path,
+                          '{}/{}'.format(temp_dir, os.path.basename(absl_path)))
         pipeline_files.append(os.path.split(absl_path)[1])
 
       log.status.Print(
           'Generating dockerfile to build the flex template container image...')
-      dockerfile_contents = Templates.BuildDockerfile(
-          flex_template_base_image, pipeline_files, env, sdk_language)
+      dockerfile_contents = Templates.BuildDockerfile(flex_template_base_image,
+                                                      pipeline_files, env,
+                                                      sdk_language)
 
       dockerfile_path = os.path.join(temp_dir, 'Dockerfile')
       files.WriteFileContents(dockerfile_path, dockerfile_contents)
@@ -895,9 +900,8 @@ class Templates:
 
       messages = cloudbuild_util.GetMessagesModule()
       build_config = submit_util.CreateBuildConfig(
-          image_gcr_path, False, messages, None,
-          'cloudbuild.yaml', True, False, temp_dir, None, None, gcs_log_dir,
-          None, None, None, None)
+          image_gcr_path, False, messages, None, 'cloudbuild.yaml', True, False,
+          temp_dir, None, None, gcs_log_dir, None, None, None, None)
       log.status.Print('Pushing flex template container image to GCR...')
 
       submit_util.Build(messages, False, build_config)
@@ -965,9 +969,8 @@ class Templates:
                 enableStreamingEngine=template_args.enable_streaming_engine,
                 flexrsGoal=flexrs_goal,
                 additionalExperiments=(
-                    template_args.additional_experiments
-                    if template_args.additional_experiments
-                    else []),
+                    template_args.additional_experiments if template_args
+                    .additional_experiments else []),
                 additionalUserLabels=Templates.FLEX_TEMPLATE_USER_LABELS_VALUE(
                     additionalProperties=user_labels_list
                 ) if user_labels_list else None),

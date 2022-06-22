@@ -61,7 +61,7 @@ class RawRepos:
         lambda: collections.defaultdict(RepoResourceGroupPair))
 
   def AddRepo(self, membership, repo, rg, cluster_type):
-    key = _GetGitKey(repo)
+    key = _GetSourceKey(repo)
     self.repos[key][membership] = RepoResourceGroupPair(repo, rg, cluster_type)
 
   def GetRepos(self):
@@ -287,6 +287,31 @@ def _GetGitKey(obj):
         repo=repo, dir=directory, branch=branch, revision=revision)
 
 
+def _GetOciKey(obj):
+  """Hash the Oci specification of the given RepoSync|RootSync object."""
+  image = _GetPathValue(obj, ['spec', 'oci', 'image'])
+  if not image:
+    return ''
+  directory = _GetPathValue(obj, ['spec', 'oci', 'dir'], '.')
+  if directory in {'', '.', '/'}:
+    oci_str = image.rstrip('/')
+  else:
+    oci_str = '{image}/{directory}'.format(
+        image=image.rstrip('/'),
+        directory=directory.lstrip('/'),
+    )
+  return oci_str
+
+
+def _GetSourceKey(obj):
+  """Hash the source key of the given RepoSync|RootSync object."""
+  source_type = _GetPathValue(obj, ['spec', 'sourceType'])
+  if source_type == 'oci':
+    return _GetOciKey(obj)
+  else:
+    return _GetGitKey(obj)
+
+
 def _ParseSelector(selector):
   """This function parses the selector flag."""
   if not selector:
@@ -415,7 +440,7 @@ def _AppendReposAndResourceGroups(membership, repos_cross_clusters,
 
   count = 0
   for key, repo in repos.items():
-    repo_source = _GetGitKey(repo)
+    repo_source = _GetSourceKey(repo)
     if source and repo_source != source:
       continue
     rg = None
@@ -602,7 +627,10 @@ def _Describe(status_filter, repos_cross_clusters):
       status = single_repo_status.GetStatus()
       errors = single_repo_status.GetErrors()
       commit = single_repo_status.GetCommit()
-      resources = pair.rg.get('status', {}).get('resourceStatuses', {})
+      if pair.rg:
+        resources = pair.rg.get('status', {}).get('resourceStatuses', {})
+      else:
+        resources = []
       for resource in resources:
         describe_result.AppendManagedResources(resource, cluster, status_filter)
       status_result = DetailedStatus(

@@ -148,7 +148,7 @@ class _UserObjectArgs:
       custom_metadata=None,
       custom_time=None,
       md5_hash=None,
-      preserve_acl=False,
+      preserve_acl=None,
       storage_class=None,
   ):
     """Initializes class, binding flag values to it."""

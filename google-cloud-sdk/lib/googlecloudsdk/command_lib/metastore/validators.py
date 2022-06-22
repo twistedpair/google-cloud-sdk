@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2020 Google LLC. All Rights Reserved.
+# Copyright 2022 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,10 +19,11 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import re
-
 from googlecloudsdk.calliope import exceptions
 
 STRING_MAX_LENGTH = 1000
+METASTORE_TYPE_DICT = {'dpms': 'DATAPROC_METASTORE', 'dataplex': 'DATAPLEX'}
+METASTORE_RESOURCE_PATH_DICT = {'dpms': 'services', 'dataplex': 'lakes'}
 
 
 def ValidatePort(port):
@@ -116,3 +117,131 @@ def ValidateServiceMutexConfig(unused_ref, unused_args, req):
 
 def _IsNetworkConfigPresentInService(service):
   return service.networkConfig and service.networkConfig.consumers
+
+
+def ValidateClearBackends(unused_ref, args, update_federation_req):
+  """Validate if users run update federation command with --clear-backends arg only.
+
+  Args:
+    unused_ref: A resource ref to the parsed Federation resource.
+    args: The parsed args namespace from CLI.
+    update_federation_req: The request for the API call.
+
+  Returns:
+    String request
+  Raises:
+    BadArgumentException: When users run update federation command with
+    --clear-backends arg only.
+  """
+
+  args_set = set(args.GetSpecifiedArgNames())
+  if '--clear-backends' in args_set:
+    if '--update-backends' not in args_set:
+      raise exceptions.BadArgumentException(
+          '--clear-backends',
+          '--clear-backends must be used with --update-backends')
+  return update_federation_req
+
+
+def _IsZeroOrPositiveNumber(string):
+  if string.isdigit():
+    return int(string) >= 0
+  return False
+
+
+def _GetMetastoreTypeFromDict(dictionary):
+  return '|'.join(value for key, value in dictionary.items())
+
+
+def _GenerateShortOrLongBackendNames(metastore_type_and_name):
+  """Validate and process the format of short and long names for backends.
+
+  Args:
+    metastore_type_and_name: Metastore type and name.
+
+  Returns:
+    String backend name.
+
+  Raises:
+    BadArgumentException: When the input backend(s) are invalid
+  """
+
+  generated_name = ''
+  long_name_regex = r'^projects\/.*[^\/]\/locations\/.[^\/]*\/(' + _GetMetastoreTypeFromDict(
+      METASTORE_RESOURCE_PATH_DICT) + r')\/.[^\/]*$'
+  if '/' in metastore_type_and_name[1]:
+    if re.search(long_name_regex, metastore_type_and_name[1]):
+      generated_name = metastore_type_and_name[1]
+    else:
+      raise exceptions.BadArgumentException('--backends',
+                                            'Invalid backends format')
+  else:
+    generated_name = '{0}/' + METASTORE_RESOURCE_PATH_DICT[
+        metastore_type_and_name[0]] + '/' + metastore_type_and_name[1]
+  return generated_name
+
+
+def ValidateBackendsAndReturnMetastoreDict(backends):
+  """Validate backends argument if it has correct format, metastore type and the keys are positive number and not duplicated.
+
+  In addition, parsing the backends to backend metastore dict
+
+  Args:
+    backends: A string is passed by user in format
+      <key>=<metastore_type>:<name>,... For example:
+      1=dpms:dpms1,2=dataplex:lake1
+
+  Returns:
+    Backend metastore dict
+  Raises:
+    BadArgumentException: When the input backends is invalid or duplicated keys
+  """
+  backend_dict = {}
+
+  if not backends:
+    raise exceptions.BadArgumentException('--backends', 'Cannot be empty')
+  backend = backends.split(',')
+  for data in backend:
+    rank_and_metastore = data.split('=')
+    if len(rank_and_metastore) != 2:
+      raise exceptions.BadArgumentException('--backends',
+                                            'Invalid backends format')
+    key = rank_and_metastore[0]
+    if not _IsZeroOrPositiveNumber(key):
+      raise exceptions.BadArgumentException(
+          '--backends',
+          'Invalid backends format or key of backend is less than 0')
+    value = rank_and_metastore[1]
+    metastore_type_and_name = value.split(':')
+    if len(metastore_type_and_name) != 2:
+      raise exceptions.BadArgumentException('--backends',
+                                            'Invalid backends format')
+    if key in backend_dict:
+      raise exceptions.BadArgumentException('--backends',
+                                            'Duplicated keys of backends')
+    if metastore_type_and_name[0] not in METASTORE_TYPE_DICT.keys():
+      raise exceptions.BadArgumentException('--backends',
+                                            'Invalid backends type')
+    generated_name = _GenerateShortOrLongBackendNames(metastore_type_and_name)
+    backend_metastores_dict = {
+        'name': generated_name,
+        'metastoreType': METASTORE_TYPE_DICT[metastore_type_and_name[0]]
+    }
+    backend_dict[key] = backend_metastores_dict
+  return backend_dict
+
+
+def ParseBackendsIntoRequest(job_ref, request):
+  """Generate the long backend name of Dataproc Metastore federation requests.
+
+  Args:
+    job_ref: A resource ref to the parsed Federation resource.
+    request: The request for the API call.
+
+  Returns:
+    Modified request for the API call.
+  """
+
+  for prop in request.federation.backendMetastores.additionalProperties:
+    prop.value.name = prop.value.name.format(job_ref.Parent().RelativeName())
+  return request

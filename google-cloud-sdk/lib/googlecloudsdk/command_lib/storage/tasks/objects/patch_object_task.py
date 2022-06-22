@@ -55,3 +55,9 @@ class PatchObjectTask(task.Task):
 
     if task_status_queue:
       progress_callbacks.increment_count_callback(task_status_queue)
+
+  def __eq__(self, other):
+    if not isinstance(other, type(self)):
+      return NotImplemented
+    return (self._object_resource == other._object_resource and
+            self._user_request_args == other._user_request_args)

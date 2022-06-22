@@ -136,8 +136,6 @@ def _get_raw_key(args, key_field_name):
     key file.
   """
   flag_key = getattr(args, key_field_name, None)
-  if flag_key == user_request_args_factory.CLEAR:
-    return None
   if flag_key is not None:
     return flag_key
   return _read_key_store_file().get(key_field_name)
@@ -178,7 +176,9 @@ def initialize_key_store(args):
     return
 
   raw_encryption_key = _get_raw_key(args, 'encryption_key')
-  if raw_encryption_key:
+  if getattr(args, 'clear_encryption_key', None):
+    _key_store.encryption_key = user_request_args_factory.CLEAR
+  elif raw_encryption_key:
     _key_store.encryption_key = parse_key(raw_encryption_key)
 
   raw_keys = [raw_encryption_key]
@@ -190,13 +190,22 @@ def initialize_key_store(args):
   _key_store.initialized = True
 
 
-def get_encryption_key():
-  """Returns a key to use for encryption, or None if no key is configured."""
-  if _key_store.initialized:
-    return _key_store.encryption_key
-
-
-def get_decryption_key(sha256_hash):
+def get_decryption_key(sha256_hash, url_for_missing_key_error=None):
   """Returns a key that matches sha256_hash, or None if no key is found."""
   if _key_store.initialized:
-    return _key_store.decryption_key_index.get(sha256_hash)
+    decryption_key = _key_store.decryption_key_index.get(sha256_hash)
+  else:
+    decryption_key = None
+  if not decryption_key and url_for_missing_key_error:
+    raise errors.Error(
+        'Missing decryption key with SHA256 hash {}. No decryption key '
+        'matches object {}.'.format(sha256_hash, url_for_missing_key_error))
+  return decryption_key
+
+
+def get_encryption_key(sha256_hash=None, url_for_missing_key_error=None):
+  """Returns a key to use for encryption, or None if no key is configured."""
+  if _key_store.initialized:
+    if sha256_hash:
+      return get_decryption_key(sha256_hash, url_for_missing_key_error)
+    return _key_store.encryption_key

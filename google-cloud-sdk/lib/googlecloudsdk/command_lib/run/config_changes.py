@@ -1047,7 +1047,7 @@ class JobTaskTimeoutChange(ConfigChanger):
 
 
 class CpuThrottlingChange(ConfigChanger):
-  """Sets the cpu-throttling annotation on the service."""
+  """Sets the cpu-throttling annotation on the service template."""
 
   def __init__(self, throttling):
     super(CpuThrottlingChange, self).__init__(adjusts_template=True)
@@ -1059,17 +1059,55 @@ class CpuThrottlingChange(ConfigChanger):
     return resource
 
 
-class NetworkInterfacesChange(SetTemplateAnnotationChange):
-  """Sets the network interfaces annotation on the service template."""
+class StartupCpuBoostChange(ConfigChanger):
+  """Sets the startup-cpu-boost annotation on the service template."""
 
-  def __init__(self, network, subnet, network_tags):
+  def __init__(self, cpu_boost):
+    super(StartupCpuBoostChange, self).__init__(adjusts_template=True)
+    self._cpu_boost = cpu_boost
+
+  def Adjust(self, resource):
+    resource.template.annotations[
+        container_resource.COLD_START_BOOST_ANNOTATION] = str(self._cpu_boost)
+    return resource
+
+
+class NetworkInterfacesChange(ConfigChanger):
+  """Sets or updates the network interfaces annotation on the template."""
+
+  def __init__(self, network_is_set, network, subnet_is_set, subnet,
+               network_tags_is_set, network_tags):
+    super(NetworkInterfacesChange, self).__init__(adjusts_template=True)
+    self._network_is_set = network_is_set
+    self._network = network
+    self._subnet_is_set = subnet_is_set
+    self._subnet = subnet
+    self._network_tags_is_set = network_tags_is_set
+    self._network_tags = network_tags
+
+  def _SetOrClear(self, m, key, value):
+    if value:
+      # If value is present, add key=value to m.
+      m[key] = value
+    elif key in m:
+      # Otherwise clear the key from m.
+      del m[key]
+
+  def Adjust(self, resource):
+    annotations = resource.template.annotations
     network_interface = {}
-    if network:
-      network_interface['network'] = network
-    if subnet:
-      network_interface['subnetwork'] = subnet
-    if network_tags:
-      network_interface['tags'] = network_tags
-    super(NetworkInterfacesChange, self).__init__(
-        key=k8s_object.NETWORK_INTERFACES_ANNOTATION,
-        value='[{interfaces}]'.format(interfaces=json.dumps(network_interface)))
+    if k8s_object.NETWORK_INTERFACES_ANNOTATION in annotations:
+      network_interface = json.loads(
+          annotations[k8s_object.NETWORK_INTERFACES_ANNOTATION])[0]
+    if self._network_is_set:
+      self._SetOrClear(network_interface, 'network', self._network)
+    if self._subnet_is_set:
+      self._SetOrClear(network_interface, 'subnetwork', self._subnet)
+    if self._network_tags_is_set:
+      self._SetOrClear(network_interface, 'tags', self._network_tags)
+    value = ''
+    if network_interface:
+      value = '[{interfaces}]'.format(interfaces=json.dumps(network_interface))
+    self._SetOrClear(annotations, k8s_object.NETWORK_INTERFACES_ANNOTATION,
+                     value)
+    return resource

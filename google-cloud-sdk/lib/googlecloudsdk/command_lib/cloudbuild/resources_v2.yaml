@@ -26,6 +26,7 @@ region:
 connection:
   name: connection
   collection: cloudbuild.projects.locations.connections
+  request_id_field: connectionId
   attributes:
   - *project
   - *region

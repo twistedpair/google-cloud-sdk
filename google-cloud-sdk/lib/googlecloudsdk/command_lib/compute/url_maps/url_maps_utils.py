@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.command_lib.compute import operation_utils
+from googlecloudsdk.command_lib.compute import scope as compute_scope
 
 
 def ResolveUrlMapDefaultService(args, backend_service_arg, url_map_ref,
@@ -40,11 +41,10 @@ def ResolveUrlMapDefaultService(args, backend_service_arg, url_map_ref,
     Backend service reference parsed from args.
   """
 
-  if IsRegionalUrlMapRef(url_map_ref):
-    if not getattr(args, 'default_service_region', None):
+  if not compute_scope.IsSpecifiedForFlag(args, 'default_service'):
+    if IsRegionalUrlMapRef(url_map_ref):
       args.default_service_region = url_map_ref.region
-  else:
-    if not getattr(args, 'global_default_service', None):
+    else:
       args.global_default_service = args.default_service
 
   return backend_service_arg.ResolveAsResource(args, resources)
