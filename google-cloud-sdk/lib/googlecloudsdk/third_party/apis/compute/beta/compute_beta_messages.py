@@ -32854,8 +32854,7 @@ class ForwardingRule(_messages.Message):
       features](https://cloud.google.com/load-balancing/docs/features#protocol
       s_from_the_load_balancer_to_the_backends).
     IpVersionValueValuesEnum: The IP Version that will be used by this
-      forwarding rule. Valid options are IPV4 or IPV6. This can only be
-      specified for an external global forwarding rule.
+      forwarding rule. Valid options are IPV4 or IPV6.
     LoadBalancingSchemeValueValuesEnum: Specifies the forwarding rule type.
       For more information about forwarding rules, refer to Forwarding rule
       concepts.
@@ -32931,8 +32930,7 @@ class ForwardingRule(_messages.Message):
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     ipVersion: The IP Version that will be used by this forwarding rule. Valid
-      options are IPV4 or IPV6. This can only be specified for an external
-      global forwarding rule.
+      options are IPV4 or IPV6.
     isMirroringCollector: Indicates whether or not this load balancer can be
       used as a collector for packet mirroring. To prevent mirroring loops,
       instances behind this load balancer will not have their traffic mirrored
@@ -33080,8 +33078,7 @@ class ForwardingRule(_messages.Message):
 
   class IpVersionValueValuesEnum(_messages.Enum):
     r"""The IP Version that will be used by this forwarding rule. Valid
-    options are IPV4 or IPV6. This can only be specified for an external
-    global forwarding rule.
+    options are IPV4 or IPV6.
 
     Values:
       IPV4: <no description>
@@ -33140,15 +33137,19 @@ class ForwardingRule(_messages.Message):
       ACCEPTED: The connection has been accepted by the producer.
       CLOSED: The connection has been closed by the producer and will not
         serve traffic going forward.
+      NEEDS_ATTENTION: The connection has been accepted by the producer, but
+        the producer needs to take further action before the forwarding rule
+        can serve traffic.
       PENDING: The connection is pending acceptance by the producer.
       REJECTED: The connection has been rejected by the producer.
       STATUS_UNSPECIFIED: <no description>
     """
     ACCEPTED = 0
     CLOSED = 1
-    PENDING = 2
-    REJECTED = 3
-    STATUS_UNSPECIFIED = 4
+    NEEDS_ATTENTION = 2
+    PENDING = 3
+    REJECTED = 4
+    STATUS_UNSPECIFIED = 5
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -59570,15 +59571,19 @@ class ServiceAttachmentConnectedEndpoint(_messages.Message):
     Values:
       ACCEPTED: The connection has been accepted by the producer.
       CLOSED: The connection has been closed by the producer.
+      NEEDS_ATTENTION: The connection has been accepted by the producer, but
+        the producer needs to take further action before the forwarding rule
+        can serve traffic.
       PENDING: The connection is pending acceptance by the producer.
       REJECTED: The consumer is still connected but not using the connection.
       STATUS_UNSPECIFIED: <no description>
     """
     ACCEPTED = 0
     CLOSED = 1
-    PENDING = 2
-    REJECTED = 3
-    STATUS_UNSPECIFIED = 4
+    NEEDS_ATTENTION = 2
+    PENDING = 3
+    REJECTED = 4
+    STATUS_UNSPECIFIED = 5
 
   endpoint = _messages.StringField(1)
   pscConnectionId = _messages.IntegerField(2, variant=_messages.Variant.UINT64)

@@ -73,7 +73,7 @@ class AllocationPolicy(_messages.Message):
       Default to allow all. Currently only the first model of the
       provisioning_models list will be considered; specifying additional
       models (e.g., 2nd, 3rd, etc.) is a no-op.
-    serviceAccount: ServiceAccount that VMs will run as. [NotImplemented]
+    serviceAccount: ServiceAccount that VMs will run as. Not yet implemented.
     serviceAccountEmail: Email of the service account that VMs will run as.
   """
 
@@ -246,7 +246,7 @@ class BatchProjectsLocationsJobsCreateRequest(_messages.Message):
       job.name field in the request will be ignored and the created resource
       name of the Job will be "{parent}/jobs/{job_id}".
     parent: Required. The parent resource name where the Job will be created.
-      Format: projects/{project}/locations/{location}
+      Pattern: "projects/{project}/locations/{location}"
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -376,8 +376,9 @@ class BatchProjectsLocationsJobsTaskGroupsTasksListRequest(_messages.Message):
       be of the format State=TaskStatus.State e.g. State=RUNNING
     pageSize: Page size.
     pageToken: Page token.
-    parent: Required. Path of the TaskGroup from which Tasks are being
-      requested.
+    parent: Required. Name of a TaskGroup from which Tasks are being
+      requested. Pattern: "projects/{project}/locations/{location}/jobs/{job}/
+      taskGroups/{task_group}"
   """
 
   filter = _messages.StringField(1)
@@ -649,7 +650,7 @@ class ComputeResource(_messages.Message):
   Fields:
     bootDiskMib: Extra boot disk size in MiB for each task.
     cpuMilli: The milliCPU count.
-    gpuCount: The GPU count. [NotImplemented]
+    gpuCount: The GPU count. Not yet implemented.
     memoryMib: Memory in MiB.
   """
 
@@ -698,8 +699,6 @@ class Disk(_messages.Message):
   r"""A new persistent disk.
 
   Fields:
-    disk: Name of an existing PD used as the data source. The full name is in
-      the format of `projects/{project}/zones/{zone}/disks/{disk}`
     image: Name of a public or custom image used as the data source.
     sizeGb: Disk size in GB. This field is ignored if `data_source` is `disk`
       or `image`.
@@ -708,11 +707,10 @@ class Disk(_messages.Message):
       "pd-ssd", "pd-standard", "pd-balanced".
   """
 
-  disk = _messages.StringField(1)
-  image = _messages.StringField(2)
-  sizeGb = _messages.IntegerField(3)
-  snapshot = _messages.StringField(4)
-  type = _messages.StringField(5)
+  image = _messages.StringField(1)
+  sizeGb = _messages.IntegerField(2)
+  snapshot = _messages.StringField(3)
+  type = _messages.StringField(4)
 
 
 class Empty(_messages.Message):
@@ -855,7 +853,8 @@ class InstancePolicy(_messages.Message):
     ProvisioningModelValueValuesEnum: The provisioning model.
 
   Fields:
-    accelerators: The accelerators attached to each VM instance.
+    accelerators: The accelerators attached to each VM instance. Not yet
+      implemented.
     allowedMachineTypes: A string attribute.
     disks: Non-boot disks to be attached for each VM created by this
       InstancePolicy. New disks will be deleted when the attached VM is
@@ -863,7 +862,7 @@ class InstancePolicy(_messages.Message):
     machineType: The Compute Engine machine type.
     minCpuPlatform: The minimum CPU platform. See
       `https://cloud.google.com/compute/docs/instances/specify-min-cpu-
-      platform`.
+      platform`. Not yet implemented.
     provisioningModel: The provisioning model.
   """
 
@@ -961,10 +960,10 @@ class Job(_messages.Message):
   Fields:
     allocationPolicy: Compute resource allocation for all TaskGroups in the
       Job.
-    createTime: When the Job was created.
+    createTime: Output only. When the Job was created.
     dependencies: At least one of the dependencies must be satisfied before
       the Job is scheduled to run. Only one JobDependency is supported now.
-      [NotImplemented]
+      Not yet implemented.
     labels: Labels for the Job. Labels could be user provided or system
       generated. For example, "labels": { "department": "finance",
       "environment": "test" } You can assign up to 64 labels. [Google Compute
@@ -973,20 +972,20 @@ class Job(_messages.Message):
       resources#restrictions) apply. Label names that start with "goog-" or
       "google-" are reserved.
     logsPolicy: Log preservation policy for the Job.
-    name: Job name. It must have the format of
-      "projects/*/locations/*/jobs/*". For example:
-      "projects/123456/locations/us-west1/jobs/job01".
+    name: Output only. Job name. For example: "projects/123456/locations/us-
+      central1/jobs/job01".
     notification: Job notification.
     notifications: Notification configurations.
     priority: Priority of the Job. The valid value range is [0, 100). A job
-      with higher priority value will be scheduled to run earlier.
+      with higher priority value is more likely to run earlier if all other
+      requirements are satisfied.
     schedulingPolicy: Scheduling policy for TaskGroups in the job.
     status: Output only. Job status. It is read only for users.
     taskGroups: Required. TaskGroups in the Job. Only one TaskGroup is
       supported now.
     uid: Output only. A system generated unique ID (in UUID4 format) for the
       Job.
-    updateTime: The last time the Job was updated.
+    updateTime: Output only. The last time the Job was updated.
   """
 
   class SchedulingPolicyValueValuesEnum(_messages.Enum):
@@ -1113,14 +1112,13 @@ class JobNotification(_messages.Message):
   r"""Notification configurations.
 
   Fields:
-    message: The message caters the message attributes configuration will to
-      be sent to this Pub/Sub topic. Without this field, there is no message
-      being sent by default.
+    message: The attribute requirements of messages to be sent to this Pub/Sub
+      topic. Without this field, no message will be sent.
     pubsubTopic: The Pub/Sub topic where notifications like the job state
-      changes will be published. This topic should be an existing topic in the
-      same project with the job and billings will be charged to this project.
-      If no topic is specified, there will be no Pub/Sub messages sent. Topic
-      format is `projects/{project}/topics/{topic}`.
+      changes will be published. This topic exist in the same project as the
+      job and billings will be charged to this project. If not specified, no
+      Pub/Sub messages will be sent. Topic format:
+      `projects/{project}/topics/{topic}`.
   """
 
   message = _messages.MessageField('Message', 1)
@@ -1138,9 +1136,7 @@ class JobStatus(_messages.Message):
       map key is TaskGroup ID.
 
   Fields:
-    runDuration: The duration of time the Job is in status RUNNING. Once the
-      Job completes (i.e. the Job status is either SUCCEEDED/FAILED) the run
-      duration represents the time it took the Job to complete.
+    runDuration: The duration of time that the Job spent in status RUNNING.
     state: Job state
     statusEvents: Job status events
     taskGroups: Aggregated task status for each TaskGroup in the Job. The map
@@ -1152,8 +1148,8 @@ class JobStatus(_messages.Message):
 
     Values:
       STATE_UNSPECIFIED: <no description>
-      QUEUED: Job is submitted into a ResourcePool and waiting for resource
-        allocation.
+      QUEUED: Job is admitted (validated and persisted) and waiting for
+        resources.
       SCHEDULED: Job is scheduled to run as soon as resource allocation is
         ready. The resource allocation may happen at a later time but with a
         high chance to succeed.
@@ -1289,7 +1285,7 @@ class ListOperationsResponse(_messages.Message):
 
 
 class ListTasksResponse(_messages.Message):
-  r"""ListAssignedTasks Response.
+  r"""ListTasks Response.
 
   Fields:
     nextPageToken: Next page token.
@@ -1383,14 +1379,14 @@ class Location(_messages.Message):
 
 
 class LocationPolicy(_messages.Message):
-  r"""Be consistent with LocationPolicy in
-  //cloud/cluster/api/mixer_instances.proto.
+  r"""A LocationPolicy object.
 
   Fields:
     allowedLocations: A list of allowed location names represented by internal
-      URLs, for example, zones/us-central1-a, regions/us-west1. First location
-      in the list should be a region.
-    deniedLocations: A list of denied location names. [NotImplemented]
+      URLs, First location in the list must be a region. for example,
+      ["regions/us-central1"] allow VMs in region us-central1, ["regions/us-
+      central1", "zones/us-central1-a"] only allow VMs in zone us-central1-a.
+    deniedLocations: A list of denied location names. Not yet implemented.
   """
 
   allowedLocations = _messages.StringField(1, repeated=True)
@@ -1407,7 +1403,7 @@ class LogsPolicy(_messages.Message):
   Fields:
     destination: Where logs should be saved.
     logsPath: The path to which logs are saved when the destination = PATH.
-      This can be a local filepath on the VM, or under the mount point of a
+      This can be a local file path on the VM, or under the mount point of a
       Persistent Disk or Filestore, or a Cloud Storage path.
   """
 
@@ -1417,7 +1413,7 @@ class LogsPolicy(_messages.Message):
     Values:
       DESTINATION_UNSPECIFIED: Logs are not preserved.
       CLOUD_LOGGING: Logs are streamed to Cloud Logging.
-      PATH: Logs are saved to a path.
+      PATH: Logs are saved to a file path.
     """
     DESTINATION_UNSPECIFIED = 0
     CLOUD_LOGGING = 1
@@ -1428,7 +1424,7 @@ class LogsPolicy(_messages.Message):
 
 
 class Message(_messages.Message):
-  r"""Message details. Describe a list of attributes this message should have.
+  r"""Message details. Describe the attribute that a message should have.
   Without specified message attributes, no message will be sent by default.
 
   Enums:
@@ -1447,8 +1443,8 @@ class Message(_messages.Message):
 
     Values:
       STATE_UNSPECIFIED: <no description>
-      QUEUED: Job is submitted into a ResourcePool and waiting for resource
-        allocation.
+      QUEUED: Job is admitted (validated and persisted) and waiting for
+        resources.
       SCHEDULED: Job is scheduled to run as soon as resource allocation is
         ready. The resource allocation may happen at a later time but with a
         high chance to succeed.
@@ -1686,7 +1682,10 @@ class PD(_messages.Message):
   Fields:
     device: PD device name, e.g. persistent-disk-1.
     disk: PD disk name, e.g. pd-1.
-    existing: A boolean attribute.
+    existing: Whether this is an existing PD. Default is false. If false,
+      i.e., new PD, we will format it into ext4 and mount to the given path.
+      If true, i.e., existing PD, it should be in ext4 format and we will
+      mount it to the given path.
   """
 
   device = _messages.StringField(1)
@@ -1841,7 +1840,7 @@ class Script(_messages.Message):
   r"""Script runnable.
 
   Fields:
-    path: Script file path.
+    path: Script file path on the host VM.
     text: Shell script text.
   """
 
@@ -2062,18 +2061,18 @@ class TaskGroup(_messages.Message):
       "google-" are reserved.
     name: Output only. TaskGroup name. The system generates this field based
       on parent Job name. For example: "projects/123456/locations/us-
-      west1/jobs/job01/taskGroups/default-group".
+      west1/jobs/job01/taskGroups/group01".
     parallelism: Max number of tasks that can run in parallel. Default to
       min(task_count, 1000).
     permissiveSsh: When true, Batch will configure SSH to allow passwordless
-      login between VMs for the user running the Batch tasks.
+      login between VMs running the Batch tasks in the same TaskGroup.
     requireHostsFile: When true, Batch will populate a file with a list of all
       VMs assigned to the TaskGroup and set the BATCH_HOSTS_FILE environment
       variable to the path of that file. Defaults to false.
     schedulingPolicy: Scheduling policy for Tasks in the TaskGroup.
     taskCount: Number of Tasks in the TaskGroup. default is 1
-    taskCountPerNode: Max number of tasks that can be run on a node at the
-      same time. If not specified, the system will decide a value based on
+    taskCountPerNode: Max number of tasks that can be run on a VM at the same
+      time. If not specified, the system will decide a value based on
       available compute resources on a VM and task requirements.
     taskEnvironments: An array of environment variable mappings, which are
       passed to Tasks with matching indices. If task_environments is used then
@@ -2195,7 +2194,7 @@ class TaskSpec(_messages.Message):
     lifecyclePolicies: Lifecycle management schema when any task in a task
       group is failed. The valid size of lifecycle policies are [0, 10]. For
       each lifecycle policy, when the condition is met, the action in that
-      policy will be executed. If there are multiple policies that the task
+      policy will execute. If there are multiple policies that the task
       execution result matches, we use the action from the first matched
       policy. If task execution result does not meet with any of the defined
       lifecycle policy, we consider it as the default policy. Default policy

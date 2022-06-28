@@ -18,14 +18,17 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from apitools.base.py import exceptions as apitools_exceptions
+from googlecloudsdk.command_lib.compute.os_config.troubleshoot import metadata_setup
 from googlecloudsdk.command_lib.compute.os_config.troubleshoot import service_enablement
+from googlecloudsdk.command_lib.compute.os_config.troubleshoot import utils
 
 
-def Troubleshoot(instance_ref, release_track):
+def Troubleshoot(client, instance_ref, release_track):
   """Main troubleshoot function for testing prerequisites."""
-  response_message = ('OS Config Troubleshooter tool is checking if there are'
-                      'issues with the VM Manager setup for this instance.\n\n'
-                     )
+  response_message = (
+      'OS Config troubleshooter tool is checking if there are '
+      'issues with the VM Manager setup for this VM instance.\n\n')
 
   # Service enablement check.
   service_enablement_response = service_enablement.Check(
@@ -33,6 +36,23 @@ def Troubleshoot(instance_ref, release_track):
   response_message += service_enablement_response.response_message
 
   if not service_enablement_response.continue_flag:
+    return response_message
+
+  exception = None
+  project = None
+  instance = None
+  try:
+    project = utils.GetProject(client, instance_ref.project)
+    instance = utils.GetInstance(client, instance_ref)
+  except apitools_exceptions.HttpError as e:
+    exception = e
+
+  # Metadata setup check.
+  metadata_setup_response = metadata_setup.Check(project, instance,
+                                                 release_track, exception)
+  response_message += metadata_setup_response.response_message
+
+  if not metadata_setup_response.continue_flag:
     return response_message
 
   return response_message

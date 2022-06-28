@@ -203,10 +203,13 @@ class Collections(enum.Enum):
   )
   PROJECTS_LOCATIONS_DEPLOYMENTRESOURCEPOOLS = (
       'projects.locations.deploymentResourcePools',
-      'projects/{projectsId}/locations/{locationsId}/deploymentResourcePools/'
-      '{deploymentResourcePoolsId}',
-      {},
-      ['projectsId', 'locationsId', 'deploymentResourcePoolsId'],
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'deploymentResourcePools/{deploymentResourcePoolsId}',
+      },
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_DEPLOYMENTRESOURCEPOOLS_OPERATIONS = (

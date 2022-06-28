@@ -1107,7 +1107,8 @@ class NetworkInterfacesChange(ConfigChanger):
       self._SetOrClear(network_interface, 'tags', self._network_tags)
     value = ''
     if network_interface:
-      value = '[{interfaces}]'.format(interfaces=json.dumps(network_interface))
+      value = '[{interfaces}]'.format(
+          interfaces=json.dumps(network_interface, sort_keys=True))
     self._SetOrClear(annotations, k8s_object.NETWORK_INTERFACES_ANNOTATION,
                      value)
     return resource

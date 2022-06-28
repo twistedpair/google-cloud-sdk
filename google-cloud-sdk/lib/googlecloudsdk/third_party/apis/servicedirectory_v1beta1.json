@@ -329,7 +329,7 @@
           "type": "string"
         },
         "kubernetesResourceType": {
-          "description": "Kubernetes resource-type associated with this endpoint",
+          "description": "Optional. Kubernetes resource-type associated with this endpoint",
           "type": "string",
           "enumDescriptions": [
             "Not a Kubernetes workload.",
@@ -808,6 +808,92 @@
         }
       }
     },
+    "RegistrationPolicy": {
+      "id": "RegistrationPolicy",
+      "description": "An individual RegistrationPolicy. A list of policies that can be applied to a Service Directory project in order to register the Service Workloads associated with the resources in the policies.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. Immutable. The resource name for the Registration Policy in the format `projects\/*\/locations\/*\/registrationPolicies\/*`.",
+          "type": "string"
+        },
+        "namespace": {
+          "description": "Optional. Service Directory Namespace name to which the Registration Policy is applied. Only one Registration Policy is allowed for a given namespace. Default Namespace is goog-sdrp-default.",
+          "type": "string"
+        },
+        "resourcePolicies": {
+          "description": "Required. The list of ResourcePolicy which are applicable to the Registration Policy.",
+          "type": "array",
+          "items": {
+            "$ref": "ResourcePolicy"
+          }
+        }
+      }
+    },
+    "ResourcePolicy": {
+      "id": "ResourcePolicy",
+      "description": "Resource Policies applied to the Registration Policy.",
+      "type": "object",
+      "properties": {
+        "kind": {
+          "description": "Required. The type of resource which needs to be registered to the Service Workload.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default. Should not be used.",
+            "GCP Managed Instance Group resource."
+          ],
+          "enum": [
+            "KIND_UNSPECIFIED",
+            "KIND_MIG"
+          ]
+        },
+        "selector": {
+          "description": "Required. The selector used to specify resources. Only applies to those in the same project and region as the Service Directory registration policy. Following fields can be selected for MIGs: name, zone, region. Example - 'zone == us-east-c && name != my-secret-mig' selects all zonal MIGs in us-east1-c except those named my-secret-mig. Represents CEL expression.",
+          "$ref": "Expr"
+        }
+      }
+    },
+    "Expr": {
+      "id": "Expr",
+      "description": "Represents a textual expression in the Common Expression Language (CEL) syntax. CEL is a C-like expression language. The syntax and semantics of CEL are documented at https:\/\/github.com\/google\/cel-spec. Example (Comparison): title: \"Summary size limit\" description: \"Determines if a summary is less than 100 chars\" expression: \"document.summary.size() < 100\" Example (Equality): title: \"Requestor is owner\" description: \"Determines if requestor is the document owner\" expression: \"document.owner == request.auth.claims.email\" Example (Logic): title: \"Public documents\" description: \"Determine whether the document should be publicly visible\" expression: \"document.type != 'private' && document.type != 'internal'\" Example (Data Manipulation): title: \"Notification string\" description: \"Create a notification string with a timestamp.\" expression: \"'New message received at ' + string(document.create_time)\" The exact variables and functions that may be referenced within an expression are determined by the service that evaluates it. See the service documentation for additional information.",
+      "type": "object",
+      "properties": {
+        "expression": {
+          "description": "Textual representation of an expression in Common Expression Language syntax.",
+          "type": "string"
+        },
+        "title": {
+          "description": "Optional. Title for the expression, i.e. a short string describing its purpose. This can be used e.g. in UIs which allow to enter the expression.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Optional. Description of the expression. This is a longer text which describes the expression, e.g. when hovered over it in a UI.",
+          "type": "string"
+        },
+        "location": {
+          "description": "Optional. String indicating the location of the expression for error reporting, e.g. a file name and a position in the file.",
+          "type": "string"
+        }
+      }
+    },
+    "ListRegistrationPoliciesResponse": {
+      "id": "ListRegistrationPoliciesResponse",
+      "description": "The response message for RegistrationService.ListRegistrationPolicies.",
+      "type": "object",
+      "properties": {
+        "registrationPolicies": {
+          "description": "The list of registration policies.",
+          "type": "array",
+          "items": {
+            "$ref": "RegistrationPolicy"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results, or empty if there are no more results in the list.",
+          "type": "string"
+        }
+      }
+    },
     "GetIamPolicyRequest": {
       "id": "GetIamPolicyRequest",
       "description": "Request message for `GetIamPolicy` method.",
@@ -890,29 +976,6 @@
           "$ref": "Expr"
         },
         "bindingId": {
-          "type": "string"
-        }
-      }
-    },
-    "Expr": {
-      "id": "Expr",
-      "description": "Represents a textual expression in the Common Expression Language (CEL) syntax. CEL is a C-like expression language. The syntax and semantics of CEL are documented at https:\/\/github.com\/google\/cel-spec. Example (Comparison): title: \"Summary size limit\" description: \"Determines if a summary is less than 100 chars\" expression: \"document.summary.size() < 100\" Example (Equality): title: \"Requestor is owner\" description: \"Determines if requestor is the document owner\" expression: \"document.owner == request.auth.claims.email\" Example (Logic): title: \"Public documents\" description: \"Determine whether the document should be publicly visible\" expression: \"document.type != 'private' && document.type != 'internal'\" Example (Data Manipulation): title: \"Notification string\" description: \"Create a notification string with a timestamp.\" expression: \"'New message received at ' + string(document.create_time)\" The exact variables and functions that may be referenced within an expression are determined by the service that evaluates it. See the service documentation for additional information.",
-      "type": "object",
-      "properties": {
-        "expression": {
-          "description": "Textual representation of an expression in Common Expression Language syntax.",
-          "type": "string"
-        },
-        "title": {
-          "description": "Optional. Title for the expression, i.e. a short string describing its purpose. This can be used e.g. in UIs which allow to enter the expression.",
-          "type": "string"
-        },
-        "description": {
-          "description": "Optional. Description of the expression. This is a longer text which describes the expression, e.g. when hovered over it in a UI.",
-          "type": "string"
-        },
-        "location": {
-          "description": "Optional. String indicating the location of the expression for error reporting, e.g. a file name and a position in the file.",
           "type": "string"
         }
       }
@@ -1609,7 +1672,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Tests IAM permissions for a resource (namespace or service only)."
+                  "description": "Tests IAM permissions for a resource (namespace, service or service workload only)."
                 }
               }
               ,
@@ -1889,7 +1952,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Tests IAM permissions for a resource (namespace or service only)."
+                      "description": "Tests IAM permissions for a resource (namespace, service or service workload only)."
                     }
                   }
                   ,
@@ -2591,8 +2654,208 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Deletes a service workload."
+                    },
+                    "testIamPermissions": {
+                      "id": "servicedirectory.projects.locations.namespaces.serviceWorkloads.testIamPermissions",
+                      "path": "v1beta1/{+resource}:testIamPermissions",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/serviceWorkloads/{serviceWorkloadsId}:testIamPermissions",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "resource": {
+                          "description": "REQUIRED: The resource for which the policy detail is being requested. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+\/serviceWorkloads\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "resource"
+                      ],
+                      "request": {
+                        "$ref": "TestIamPermissionsRequest"
+                      },
+                      "response": {
+                        "$ref": "TestIamPermissionsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Tests IAM permissions for a resource (namespace, service or service workload only)."
                     }
                   }
+                }
+              }
+            },
+            "registrationPolicies": {
+              "methods": {
+                "create": {
+                  "id": "servicedirectory.projects.locations.registrationPolicies.create",
+                  "path": "v1beta1/{+parent}/registrationPolicies",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/registrationPolicies",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The resource name of the namespace this registration policy will belong to.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "registrationPolicyId": {
+                      "description": "Required. The Resource ID must be 1-63 characters long, and comply with [RFC 1035](https:\/\/www.ietf.org\/rfc\/rfc1035.txt). Specifically, the name must be 1-63 characters long and match the regular expression `[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?` which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "RegistrationPolicy"
+                  },
+                  "response": {
+                    "$ref": "RegistrationPolicy"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a Registration Policy, and returns the new registration policy."
+                },
+                "list": {
+                  "id": "servicedirectory.projects.locations.registrationPolicies.list",
+                  "path": "v1beta1/{+parent}/registrationPolicies",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/registrationPolicies",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The resource name of the namespace whose service workloads you'd like to list.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Optional. The maximum number of items to return. maximum default page size is 10000 for unfiltered queries and 25 for filtered queries",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "Optional. The next_page_token value returned from a previous List request, if any.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "Optional. The filter to list results by. General `filter` string syntax: ` ()` * `` can be any field name on the RegistrationPolicy proto. For example: `name`, `namespace`, or `resource_policies` * `` can be `<`, `>`, `<=`, `>=`, `!=`, `=`, `:`. Of which `:` means `HAS`, and is roughly the same as `=` * `` must be the same data type as field * `` can be `AND`, `OR`, `NOT` Examples of valid filters: * `resource.kind:MIG` returns all the registration policies with MIGs associated with them * `name>projects\/my-project\/locations\/us-east1\/registrationPolicies\/registration-policy-c` returns registration policies that have names that are alphabetically later than the string, so \"registration-policy-e\" is returned but \"registration-policy-a\" is not For more information about filtering, see [API Filtering](https:\/\/aip.dev\/160).",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "orderBy": {
+                      "description": "Optional. The order to list results by. General `order_by` string syntax: ` () (,)` * `` allows values: `name`, `namespace` * `` ascending or descending order by ``. If this is left blank, `asc` is used Note that an empty `order_by` string results in default order, which is order by `name` in ascending order.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListRegistrationPoliciesResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists all registration policies"
+                },
+                "get": {
+                  "id": "servicedirectory.projects.locations.registrationPolicies.get",
+                  "path": "v1beta1/{+name}",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/registrationPolicies/{registrationPoliciesId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the registration policy to get.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registrationPolicies\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "RegistrationPolicy"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets a registration policy."
+                },
+                "patch": {
+                  "id": "servicedirectory.projects.locations.registrationPolicies.patch",
+                  "path": "v1beta1/{+name}",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/registrationPolicies/{registrationPoliciesId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Immutable. The resource name for the Registration Policy in the format `projects\/*\/locations\/*\/registrationPolicies\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registrationPolicies\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Required. List of fields to be updated in this request. Allowable fields: `resource_policies'",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    },
+                    "allowMissing": {
+                      "description": "If set to true, and the registration policy is not found, a new registration policy will be created. -- Will remain GOOGLE_INTERNAL visibility post-launch.",
+                      "location": "query",
+                      "type": "boolean"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "RegistrationPolicy"
+                  },
+                  "response": {
+                    "$ref": "RegistrationPolicy"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Updates a registration policy."
+                },
+                "delete": {
+                  "id": "servicedirectory.projects.locations.registrationPolicies.delete",
+                  "path": "v1beta1/{+name}",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/registrationPolicies/{registrationPoliciesId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the registration policy to delete.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registrationPolicies\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Empty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a registration policy."
                 }
               }
             }

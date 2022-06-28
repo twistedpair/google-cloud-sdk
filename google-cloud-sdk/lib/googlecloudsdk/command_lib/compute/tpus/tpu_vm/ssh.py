@@ -24,6 +24,7 @@ import time
 
 from apitools.base.py import encoding_helper
 from apitools.base.py.exceptions import HttpConflictError
+from apitools.base.py.exceptions import HttpError
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.compute import iap_tunnel
 from googlecloudsdk.command_lib.compute.tpus.tpu_vm import exceptions as tpu_exceptions
@@ -36,10 +37,13 @@ import six
 SSH_KEYS_METADATA_KEY = 'ssh-keys'
 
 IAP_TROUBLESHOOTING_HELP = """
-Please ensure that this TPU was created after March 24, 2022. If it is, check
-that you have allowed IAP to connect to instances in your
-firewall (https://cloud.google.com/iap/docs/using-tcp-forwarding#create-firewall-rule),
-and that the TPU is in READY state with HEALTHY health.
+Please check the following:
+- Verify that the 'compute.disableGuestAttributesAccess'
+  Organization Policy Constraint is not enforced in your project.
+- Verify that this TPU was created after March 24, 2022.
+- Check that you have allowed IAP to connect to instances in your
+  firewall (https://cloud.google.com/iap/docs/using-tcp-forwarding#create-firewall-rule),
+  and that the TPU is in READY state with HEALTHY health.
 """
 
 
@@ -224,13 +228,35 @@ def GetFromGuestAttributes(guest_attributes, worker, key):
   return None
 
 
-def GetHostKeySuffixes(
-    guest_attributes, worker_count=None, worker_id=None):
-  """Retrieves the host key suffixes for the TPU workers."""
-  if worker_count and worker_id:
-    return _ParseSingleHostKeySuffix(guest_attributes, worker_count, worker_id)
+def GetHostKeySuffixesFromGuestAttributes(guest_attributes_response,
+                                          single_pod_worker, worker_ips, node):
+  """Retrieves the host key suffixes from the GuestAttributes."""
+  if single_pod_worker:
+    worker_id = list(worker_ips)[0]
+    return _ParseSingleHostKeySuffix(guest_attributes_response.guestAttributes,
+                                     len(node.networkEndpoints), worker_id)
   else:
-    return _ParseHostKeySuffixes(guest_attributes)
+    return _ParseHostKeySuffixes(guest_attributes_response.guestAttributes)
+
+
+def GetGuestAttributes(tpu_helper, single_pod_worker, worker_ips, tpu_name,
+                       zone):
+  """Retrieves the GuestAttributes."""
+  if single_pod_worker:
+    # Retrieve only that worker's GuestAttributes.
+    worker_id = list(worker_ips)[0]
+    try:
+      guest_attributes_response = tpu_helper.GetGuestAttributes(
+          tpu_name, zone, six.text_type((worker_id)))
+    except HttpError:
+      return None
+  else:
+    # Retrieve the GuestAttributes for all workers in that TPU.
+    try:
+      guest_attributes_response = tpu_helper.GetGuestAttributes(tpu_name, zone)
+    except HttpError:
+      return None
+  return guest_attributes_response
 
 
 def TpuHasOsLoginEnabled(node):
@@ -291,7 +317,7 @@ def AddSSHKeyIfNeeded(project, tpu_helper, node, tpu_name, zone, public_key):
 
 def GetInstanceID(node_id, worker, host_key_suffixes):
   instance_id = 'tpu.{}-{}'.format(node_id, worker)
-  if len(host_key_suffixes) > worker:
+  if host_key_suffixes is not None and len(host_key_suffixes) > worker:
     instance_id += '-{}'.format(host_key_suffixes[worker])
   return instance_id
 

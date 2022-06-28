@@ -273,6 +273,40 @@ class AlloydbProjectsLocationsClustersInstancesCreateRequest(_messages.Message):
   validateOnly = _messages.BooleanField(5)
 
 
+class AlloydbProjectsLocationsClustersInstancesCreatesecondaryRequest(_messages.Message):
+  r"""A AlloydbProjectsLocationsClustersInstancesCreatesecondaryRequest
+  object.
+
+  Fields:
+    instance: A Instance resource to be passed as the request body.
+    instanceId: Required. Id of the requesting object If auto-generating Id
+      server-side, remove this field and instance_id from the method_signature
+      of Create RPC
+    parent: Required. The name of the parent resource. For the required
+      format, see the comment on the Instance.name field.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    validateOnly: Optional. If set, performs request validation (e.g.
+      permission checks and any other type of validation), but do not actually
+      execute the create request.
+  """
+
+  instance = _messages.MessageField('Instance', 1)
+  instanceId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  validateOnly = _messages.BooleanField(5)
+
+
 class AlloydbProjectsLocationsClustersInstancesDeleteRequest(_messages.Message):
   r"""A AlloydbProjectsLocationsClustersInstancesDeleteRequest object.
 
@@ -1242,7 +1276,7 @@ class GoogleTypeTimeOfDay(_messages.Message):
 
 class Instance(_messages.Message):
   r"""An Instance is a computing unit that an end customer can connect to.
-  It's the main unit of computing resources in AlloyDB. NEXT ID: 19
+  It's the main unit of computing resources in AlloyDB. NEXT ID: 21
 
   Enums:
     AvailabilityTypeValueValuesEnum: Availability type of an Instance.
@@ -1261,7 +1295,13 @@ class Instance(_messages.Message):
       copied from primary instance on read instance creation. * Read instances
       can set new or override existing flags that are relevant for reads, e.g.
       for enabling columnar cache on a read instance. Flags set on read
-      instance may or may not be present on primary.
+      instance may or may not be present on primary. This is a list of "key":
+      "value" pairs. "key": The name of the flag. These flags are passed at
+      instance setup time, so include both server options and system variables
+      for Postgres. Flags are specified with underscores, not hyphens.
+      "value": The value of the flag. Booleans are set to **on** for true and
+      **off** for false. This field must be omitted if the flag doesn't take a
+      value.
     LabelsValue: Labels as key value pairs
 
   Fields:
@@ -1275,7 +1315,12 @@ class Instance(_messages.Message):
       from primary instance on read instance creation. * Read instances can
       set new or override existing flags that are relevant for reads, e.g. for
       enabling columnar cache on a read instance. Flags set on read instance
-      may or may not be present on primary.
+      may or may not be present on primary. This is a list of "key": "value"
+      pairs. "key": The name of the flag. These flags are passed at instance
+      setup time, so include both server options and system variables for
+      Postgres. Flags are specified with underscores, not hyphens. "value":
+      The value of the flag. Booleans are set to **on** for true and **off**
+      for false. This field must be omitted if the flag doesn't take a value.
     deleteTime: Output only. Delete time stamp
     displayName: User-settable and human-readable display name for the
       Instance.
@@ -1301,6 +1346,8 @@ class Instance(_messages.Message):
       https://google.aip.dev/122. The prefix of the instance resource name is
       the name of the parent resource: *
       projects/{project}/locations/{region}/clusters/{cluster_id}
+    nodes: Output only. List of available read-only VMs in this instance,
+      including the standby for a PRIMARY instance.
     readPoolConfig: Read pool specific config.
     reconciling: Output only. Reconciling
       (https://google.aip.dev/128#reconciliation). Set to true if the current
@@ -1313,6 +1360,8 @@ class Instance(_messages.Message):
       assigned when the resource is created, and it is retained until it is
       deleted.
     updateTime: Output only. Update time stamp
+    writableNode: Output only. This is set for the read-write VM of the
+      PRIMARY instance only.
   """
 
   class AvailabilityTypeValueValuesEnum(_messages.Enum):
@@ -1340,10 +1389,13 @@ class Instance(_messages.Message):
         of size 1 can only have zonal availability. * Read pools with node
         count of 2 or more can have regional availability (nodes are present
         in 2 or more zones in a region).
+      SECONDARY: SECONDARY instances support read operations only. SECONDARY
+        instance is a cross-region read replica
     """
     INSTANCE_TYPE_UNSPECIFIED = 0
     PRIMARY = 1
     READ_POOL = 2
+    SECONDARY = 3
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current serving state of the instance.
@@ -1406,7 +1458,12 @@ class Instance(_messages.Message):
     instance on read instance creation. * Read instances can set new or
     override existing flags that are relevant for reads, e.g. for enabling
     columnar cache on a read instance. Flags set on read instance may or may
-    not be present on primary.
+    not be present on primary. This is a list of "key": "value" pairs. "key":
+    The name of the flag. These flags are passed at instance setup time, so
+    include both server options and system variables for Postgres. Flags are
+    specified with underscores, not hyphens. "value": The value of the flag.
+    Booleans are set to **on** for true and **off** for false. This field must
+    be omitted if the flag doesn't take a value.
 
     Messages:
       AdditionalProperty: An additional property for a DatabaseFlagsValue
@@ -1466,11 +1523,13 @@ class Instance(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 11)
   machineConfig = _messages.MessageField('MachineConfig', 12)
   name = _messages.StringField(13)
-  readPoolConfig = _messages.MessageField('ReadPoolConfig', 14)
-  reconciling = _messages.BooleanField(15)
-  state = _messages.EnumField('StateValueValuesEnum', 16)
-  uid = _messages.StringField(17)
-  updateTime = _messages.StringField(18)
+  nodes = _messages.MessageField('Node', 14, repeated=True)
+  readPoolConfig = _messages.MessageField('ReadPoolConfig', 15)
+  reconciling = _messages.BooleanField(16)
+  state = _messages.EnumField('StateValueValuesEnum', 17)
+  uid = _messages.StringField(18)
+  updateTime = _messages.StringField(19)
+  writableNode = _messages.MessageField('Node', 20)
 
 
 class IntegerRestrictions(_messages.Message):
@@ -1594,6 +1653,16 @@ class MigrationSource(_messages.Message):
   hostPort = _messages.StringField(1)
   referenceId = _messages.StringField(2)
   sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 3)
+
+
+class Node(_messages.Message):
+  r"""Details of a single node in the instance.
+
+  Fields:
+    zoneId: The Compute Engine zone of the VM e.g. "us-central1-b".
+  """
+
+  zoneId = _messages.StringField(1)
 
 
 class Operation(_messages.Message):

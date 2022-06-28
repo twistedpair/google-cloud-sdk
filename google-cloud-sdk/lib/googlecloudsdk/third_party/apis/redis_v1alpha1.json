@@ -1911,6 +1911,11 @@
                       "location": "path",
                       "required": true,
                       "type": "string"
+                    },
+                    "requestId": {
+                      "description": "Idempotent request UUID.",
+                      "location": "query",
+                      "type": "string"
                     }
                   },
                   "parameterOrder": [
@@ -1939,6 +1944,11 @@
                     },
                     "clusterId": {
                       "description": "Required. The logical name of the Redis cluster in the customer project with the following restrictions: * Must contain only lowercase letters, numbers, and hyphens. * Must start with a letter. * Must be between 1-40 characters. * Must end with a number or a letter. * Must be unique within the customer project \/ location",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "description": "Idempotent request UUID.",
                       "location": "query",
                       "type": "string"
                     }

@@ -1847,10 +1847,16 @@ class Network(_messages.Message):
   r"""Extra network settings. Only applicable in the App Engine flexible
   environment.
 
+  Enums:
+    InstanceIpModeValueValuesEnum: The IP mode for instances. Only applicable
+      in the App Engine flexible environment.
+
   Fields:
     forwardedPorts: List of ports, or port pairs, to forward from the virtual
       machine to the application container. Only applicable in the App Engine
       flexible environment.
+    instanceIpMode: The IP mode for instances. Only applicable in the App
+      Engine flexible environment.
     instanceTag: Tag to apply to the instance during creation. Only applicable
       in the App Engine flexible environment.
     name: Google Compute Engine network where the virtual machines are
@@ -1874,11 +1880,26 @@ class Network(_messages.Message):
       Engine flexible environment application.
   """
 
+  class InstanceIpModeValueValuesEnum(_messages.Enum):
+    r"""The IP mode for instances. Only applicable in the App Engine flexible
+    environment.
+
+    Values:
+      INSTANCE_IP_MODE_UNSPECIFIED: Unspecified is treated as EXTERNAL.
+      EXTERNAL: Instances are created with both internal and external IP
+        addresses.
+      INTERNAL: Instances are created with internal IP addresses only.
+    """
+    INSTANCE_IP_MODE_UNSPECIFIED = 0
+    EXTERNAL = 1
+    INTERNAL = 2
+
   forwardedPorts = _messages.StringField(1, repeated=True)
-  instanceTag = _messages.StringField(2)
-  name = _messages.StringField(3)
-  sessionAffinity = _messages.BooleanField(4)
-  subnetworkName = _messages.StringField(5)
+  instanceIpMode = _messages.EnumField('InstanceIpModeValueValuesEnum', 2)
+  instanceTag = _messages.StringField(3)
+  name = _messages.StringField(4)
+  sessionAffinity = _messages.BooleanField(5)
+  subnetworkName = _messages.StringField(6)
 
 
 class NetworkSettings(_messages.Message):

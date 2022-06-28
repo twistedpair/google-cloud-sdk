@@ -7,7 +7,7 @@
   "version": "v1",
   "revision": "0",
   "title": "Network Connectivity API",
-  "description": "The Network Connectivity API provides access to Network Connectivity Center.",
+  "description": "This API enables connectivity with and between Google Cloud resources.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {
@@ -283,7 +283,7 @@
     },
     "Hub": {
       "id": "Hub",
-      "description": "A hub is a collection of spokes. A single hub can contain spokes from multiple regions. However, if any of a hub's spokes use the data transfer feature, the resources associated with those spokes must all reside in the same VPC network. Spokes that do not use data transfer can be associated with any VPC network in your project.",
+      "description": "A Network Connectivity Center hub is a collection of spokes. A single hub can contain spokes from multiple regions. However, if any of a hub's spokes use the data transfer feature, the resources associated with those spokes must all reside in the same VPC network. Spokes that do not use data transfer can be associated with any VPC network in your project.",
       "type": "object",
       "properties": {
         "name": {
@@ -328,7 +328,8 @@
             "The resource is active",
             "The resource's Delete operation is in progress",
             "The resource's Activate operation is in progress",
-            "The resource's Deactivate operation is in progress"
+            "The resource's Deactivate operation is in progress",
+            "The resource's Update operation is in progress"
           ],
           "enum": [
             "STATE_UNSPECIFIED",
@@ -336,7 +337,8 @@
             "ACTIVE",
             "DELETING",
             "ACTIVATING",
-            "DEACTIVATING"
+            "DEACTIVATING",
+            "UPDATING"
           ]
         },
         "routingVpcs": {
@@ -350,7 +352,7 @@
     },
     "RoutingVPC": {
       "id": "RoutingVPC",
-      "description": "RoutingVPC contains information about the VPC networks that are associated with a hub's spokes.",
+      "description": "RoutingVPC contains information about the VPC networks associated with the spokes of a Network Connectivity Center hub.",
       "type": "object",
       "properties": {
         "uri": {
@@ -391,7 +393,7 @@
     },
     "Spoke": {
       "id": "Spoke",
-      "description": "A spoke represents a connection between your Google Cloud network resources and a non-Google-Cloud network. When you create a spoke, you associate it with a hub. You must also identify a value for exactly one of the following fields: * linked_vpn_tunnels * linked_interconnect_attachments * linked_router_appliance_instances",
+      "description": "A Network Connectivity Center spoke represents a connection between your Google Cloud network resources and a non-Google-Cloud network. When you create a spoke, you associate it with a hub. You must also identify a value for exactly one of the following fields: * linked_vpn_tunnels * linked_interconnect_attachments * linked_router_appliance_instances",
       "type": "object",
       "properties": {
         "name": {
@@ -456,7 +458,8 @@
             "The resource is active",
             "The resource's Delete operation is in progress",
             "The resource's Activate operation is in progress",
-            "The resource's Deactivate operation is in progress"
+            "The resource's Deactivate operation is in progress",
+            "The resource's Update operation is in progress"
           ],
           "enum": [
             "STATE_UNSPECIFIED",
@@ -464,7 +467,8 @@
             "ACTIVE",
             "DELETING",
             "ACTIVATING",
-            "DEACTIVATING"
+            "DEACTIVATING",
+            "UPDATING"
           ]
         }
       }
@@ -1235,7 +1239,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Lists hubs in a given project."
+                      "description": "Lists the Network Connectivity Center hubs associated with a given project."
                     },
                     "get": {
                       "id": "networkconnectivity.projects.locations.global.hubs.get",
@@ -1260,7 +1264,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Gets details about the specified hub."
+                      "description": "Gets details about a Network Connectivity Center hub."
                     },
                     "create": {
                       "id": "networkconnectivity.projects.locations.global.hubs.create",
@@ -1298,7 +1302,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Creates a new hub in the specified project."
+                      "description": "Creates a new Network Connectivity Center hub in the specified project."
                     },
                     "patch": {
                       "id": "networkconnectivity.projects.locations.global.hubs.patch",
@@ -1337,7 +1341,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Updates the description and\/or labels of the specified hub."
+                      "description": "Updates the description and\/or labels of a Network Connectivity Center hub."
                     },
                     "delete": {
                       "id": "networkconnectivity.projects.locations.global.hubs.delete",
@@ -1367,7 +1371,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Deletes the specified hub."
+                      "description": "Deletes a Network Connectivity Center hub."
                     },
                     "setIamPolicy": {
                       "id": "networkconnectivity.projects.locations.global.hubs.setIamPolicy",
@@ -1736,7 +1740,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Lists the spokes in the specified project and location."
+                  "description": "Lists the Network Connectivity Center spokes in a specified project and location."
                 },
                 "get": {
                   "id": "networkconnectivity.projects.locations.spokes.get",
@@ -1761,7 +1765,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Gets details about the specified spoke."
+                  "description": "Gets details about a Network Connectivity Center spoke."
                 },
                 "create": {
                   "id": "networkconnectivity.projects.locations.spokes.create",
@@ -1799,7 +1803,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Creates a spoke in the specified project and location."
+                  "description": "Creates a Network Connectivity Center spoke."
                 },
                 "patch": {
                   "id": "networkconnectivity.projects.locations.spokes.patch",
@@ -1838,7 +1842,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Updates the parameters of the specified spoke."
+                  "description": "Updates the parameters of a Network Connectivity Center spoke."
                 },
                 "deactivate": {
                   "id": "networkconnectivity.projects.locations.spokes.deactivate",
@@ -1866,7 +1870,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Deactivates the specified spoke. A deactivated spoke can't be used to connect to the Google Cloud network. When you deactivate a spoke, Network Connectivity Center retains details about the spoke so that you can reactivate it later."
+                  "description": "Deactivates a Network Connectivity Center spoke. A deactivated spoke can't be used to connect to the Google Cloud network. When you deactivate a spoke, Network Connectivity Center retains details about the spoke so that you can reactivate it later."
                 },
                 "activate": {
                   "id": "networkconnectivity.projects.locations.spokes.activate",
@@ -1894,7 +1898,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Activates the specified spoke. By activating a spoke, you permit connectivity through the spoke's linked resources to the Google Cloud network."
+                  "description": "Activates a Network Connectivity Center spoke. By activating a spoke, you permit connectivity through the spoke's linked resources to the Google Cloud network."
                 },
                 "delete": {
                   "id": "networkconnectivity.projects.locations.spokes.delete",
@@ -1924,7 +1928,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Deletes the specified spoke."
+                  "description": "Deletes a Network Connectivity Center spoke."
                 },
                 "setIamPolicy": {
                   "id": "networkconnectivity.projects.locations.spokes.setIamPolicy",

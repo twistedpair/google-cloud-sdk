@@ -83,7 +83,7 @@ BOTH_AUTOPROVISIONING_UPGRADE_SETTINGS_ERROR_MSG = """\
 Must specify both 'maxSurgeUpgrade' and 'maxUnavailableUpgrade' in \
 'upgradeSettings' in --autoprovisioning-config-file, or both \
 '--autoprovisioning-max-surge-upgrade' and '--autoprovisioning-max-unavailable-upgrade' \
-from cmd argument to set a rolling update strategy.
+from cmd argument to set a surge upgrade strategy.
 """
 
 BOTH_AUTOPROVISIONING_MANAGEMENT_SETTINGS_ERROR_MSG = """\
@@ -566,7 +566,7 @@ class CreateClusterOptions(object):
       maintenance_window_start=None,
       maintenance_window_end=None,
       maintenance_window_recurrence=None,
-      enable_cost_management=None,
+      enable_cost_allocation=None,
       max_surge_upgrade=None,
       max_unavailable_upgrade=None,
       enable_autoprovisioning=None,
@@ -618,8 +618,8 @@ class CreateClusterOptions(object):
       enable_workload_config_audit=None,
       pod_autoscaling_direct_metrics_opt_in=None,
       enable_workload_vulnerability_scanning=None,
-      enable_autoprovisioning_rolling_update=None,
-      enable_autoprovisioning_blue_green_update=None,
+      enable_autoprovisioning_surge_upgrade=None,
+      enable_autoprovisioning_blue_green_upgrade=None,
       autoprovisioning_standard_rollout_policy=None,
       autoprovisioning_node_pool_soak_duration=None,
       enable_google_cloud_access=None,
@@ -736,7 +736,7 @@ class CreateClusterOptions(object):
     self.maintenance_window_start = maintenance_window_start
     self.maintenance_window_end = maintenance_window_end
     self.maintenance_window_recurrence = maintenance_window_recurrence
-    self.enable_cost_management = enable_cost_management
+    self.enable_cost_allocation = enable_cost_allocation
     self.max_surge_upgrade = max_surge_upgrade
     self.max_unavailable_upgrade = max_unavailable_upgrade
     self.enable_autoprovisioning = enable_autoprovisioning
@@ -788,8 +788,8 @@ class CreateClusterOptions(object):
     self.enable_workload_config_audit = enable_workload_config_audit
     self.pod_autoscaling_direct_metrics_opt_in = pod_autoscaling_direct_metrics_opt_in
     self.enable_workload_vulnerability_scanning = enable_workload_vulnerability_scanning
-    self.enable_autoprovisioning_rolling_update = enable_autoprovisioning_rolling_update
-    self.enable_autoprovisioning_blue_green_update = enable_autoprovisioning_blue_green_update
+    self.enable_autoprovisioning_surge_upgrade = enable_autoprovisioning_surge_upgrade
+    self.enable_autoprovisioning_blue_green_upgrade = enable_autoprovisioning_blue_green_upgrade
     self.autoprovisioning_standard_rollout_policy = autoprovisioning_standard_rollout_policy
     self.autoprovisioning_node_pool_soak_duration = autoprovisioning_node_pool_soak_duration
     self.enable_google_cloud_access = enable_google_cloud_access
@@ -857,7 +857,7 @@ class UpdateClusterOptions(object):
       enable_resource_consumption_metering=None,
       database_encryption_key=None,
       disable_database_encryption=None,
-      enable_cost_management=None,
+      enable_cost_allocation=None,
       enable_autoprovisioning=None,
       autoprovisioning_config_file=None,
       autoprovisioning_service_account=None,
@@ -900,8 +900,8 @@ class UpdateClusterOptions(object):
       enable_workload_config_audit=None,
       pod_autoscaling_direct_metrics_opt_in=None,
       enable_workload_vulnerability_scanning=None,
-      enable_autoprovisioning_rolling_update=None,
-      enable_autoprovisioning_blue_green_update=None,
+      enable_autoprovisioning_surge_upgrade=None,
+      enable_autoprovisioning_blue_green_upgrade=None,
       autoprovisioning_standard_rollout_policy=None,
       autoprovisioning_node_pool_soak_duration=None,
       enable_private_endpoint=None,
@@ -965,7 +965,7 @@ class UpdateClusterOptions(object):
         enable_resource_consumption_metering)
     self.database_encryption_key = database_encryption_key
     self.disable_database_encryption = disable_database_encryption
-    self.enable_cost_management = enable_cost_management
+    self.enable_cost_allocation = enable_cost_allocation
     self.enable_autoprovisioning = enable_autoprovisioning
     self.autoprovisioning_config_file = autoprovisioning_config_file
     self.autoprovisioning_service_account = autoprovisioning_service_account
@@ -1008,8 +1008,8 @@ class UpdateClusterOptions(object):
     self.enable_workload_config_audit = enable_workload_config_audit
     self.pod_autoscaling_direct_metrics_opt_in = pod_autoscaling_direct_metrics_opt_in
     self.enable_workload_vulnerability_scanning = enable_workload_vulnerability_scanning
-    self.enable_autoprovisioning_rolling_update = enable_autoprovisioning_rolling_update
-    self.enable_autoprovisioning_blue_green_update = enable_autoprovisioning_blue_green_update
+    self.enable_autoprovisioning_surge_upgrade = enable_autoprovisioning_surge_upgrade
+    self.enable_autoprovisioning_blue_green_upgrade = enable_autoprovisioning_blue_green_upgrade
     self.autoprovisioning_standard_rollout_policy = autoprovisioning_standard_rollout_policy
     self.autoprovisioning_node_pool_soak_duration = autoprovisioning_node_pool_soak_duration
     self.enable_private_endpoint = enable_private_endpoint
@@ -1093,8 +1093,8 @@ class CreateNodePoolOptions(object):
                create_pod_ipv4_range=None,
                enable_private_nodes=None,
                threads_per_core=None,
-               enable_blue_green_update=None,
-               enable_rolling_update=None,
+               enable_blue_green_upgrade=None,
+               enable_surge_upgrade=None,
                node_pool_soak_duration=None,
                standard_rollout_policy=None,
                maintenance_interval=None,
@@ -1155,8 +1155,8 @@ class CreateNodePoolOptions(object):
     self.create_pod_ipv4_range = create_pod_ipv4_range
     self.enable_private_nodes = enable_private_nodes
     self.threads_per_core = threads_per_core
-    self.enable_blue_green_update = enable_blue_green_update
-    self.enable_rolling_update = enable_rolling_update
+    self.enable_blue_green_upgrade = enable_blue_green_upgrade
+    self.enable_surge_upgrade = enable_surge_upgrade
     self.node_pool_soak_duration = node_pool_soak_duration
     self.standard_rollout_policy = standard_rollout_policy
     self.maintenance_interval = maintenance_interval
@@ -1191,8 +1191,8 @@ class UpdateNodePoolOptions(object):
                enable_gcfs=None,
                gvnic=None,
                enable_image_streaming=None,
-               enable_blue_green_update=None,
-               enable_rolling_update=None,
+               enable_blue_green_upgrade=None,
+               enable_surge_upgrade=None,
                node_pool_soak_duration=None,
                standard_rollout_policy=None,
                network_performance_config=None,
@@ -1219,8 +1219,8 @@ class UpdateNodePoolOptions(object):
     self.enable_gcfs = enable_gcfs
     self.gvnic = gvnic
     self.enable_image_streaming = enable_image_streaming
-    self.enable_blue_green_update = enable_blue_green_update
-    self.enable_rolling_update = enable_rolling_update
+    self.enable_blue_green_upgrade = enable_blue_green_upgrade
+    self.enable_surge_upgrade = enable_surge_upgrade
     self.node_pool_soak_duration = node_pool_soak_duration
     self.standard_rollout_policy = standard_rollout_policy
     self.network_performance_config = network_performance_config
@@ -1248,8 +1248,8 @@ class UpdateNodePoolOptions(object):
             self.tags is not None or self.enable_private_nodes is not None or
             self.enable_gcfs is not None or self.gvnic is not None or
             self.enable_image_streaming is not None or
-            self.enable_rolling_update is not None or
-            self.enable_blue_green_update is not None or
+            self.enable_surge_upgrade is not None or
+            self.enable_blue_green_upgrade is not None or
             self.node_pool_soak_duration is not None or
             self.standard_rollout_policy is not None or
             self.network_performance_config is not None or
@@ -2319,8 +2319,8 @@ class APIAdapter(object):
       upgrade_settings = None
       if (max_surge_upgrade is not None or
           max_unavailable_upgrade is not None or
-          options.enable_autoprovisioning_blue_green_update or
-          options.enable_autoprovisioning_rolling_update or
+          options.enable_autoprovisioning_blue_green_upgrade or
+          options.enable_autoprovisioning_surge_upgrade or
           options.autoprovisioning_standard_rollout_policy is not None or
           options.autoprovisioning_node_pool_soak_duration is not None):
         upgrade_settings = self.UpdateUpgradeSettingsForNAP(
@@ -2362,17 +2362,17 @@ class APIAdapter(object):
   def UpdateUpgradeSettingsForNAP(self, options, max_surge, max_unavailable):
     """Updates upgrade setting for autoprovisioned node pool."""
 
-    if options.enable_autoprovisioning_rolling_update and options.enable_autoprovisioning_blue_green_update:
+    if options.enable_autoprovisioning_surge_upgrade and options.enable_autoprovisioning_blue_green_upgrade:
       raise util.Error(
-          'UpgradeSettings must contain only one of: --enable-autoprovisioning-rolling-update, --enable-autoprovisioning-blue-green-update'
+          'UpgradeSettings must contain only one of: --enable-autoprovisioning-surge-upgrade, --enable-autoprovisioning-blue-green-upgrade'
       )
 
     upgrade_settings = self.messages.UpgradeSettings()
     upgrade_settings.maxSurge = max_surge
     upgrade_settings.maxUnavailable = max_unavailable
-    if options.enable_autoprovisioning_rolling_update:
-      upgrade_settings.strategy = self.messages.UpgradeSettings.StrategyValueValuesEnum.ROLLING
-    if options.enable_autoprovisioning_blue_green_update:
+    if options.enable_autoprovisioning_surge_upgrade:
+      upgrade_settings.strategy = self.messages.UpgradeSettings.StrategyValueValuesEnum.SURGE
+    if options.enable_autoprovisioning_blue_green_upgrade:
       upgrade_settings.strategy = self.messages.UpgradeSettings.StrategyValueValuesEnum.BLUE_GREEN
     if options.autoprovisioning_standard_rollout_policy is not None or options.autoprovisioning_node_pool_soak_duration is not None:
       upgrade_settings.blueGreenSettings = self.UpdateBlueGreenSettingsForNAP(
@@ -3297,7 +3297,7 @@ class APIAdapter(object):
       pool.maxPodsConstraint = self.messages.MaxPodsConstraint(
           maxPodsPerNode=options.max_pods_per_node)
 
-    if (options.enable_rolling_update or options.enable_blue_green_update or
+    if (options.enable_surge_upgrade or options.enable_blue_green_upgrade or
         options.max_surge_upgrade is not None or
         options.max_unavailable_upgrade is not None or
         options.standard_rollout_policy is not None or
@@ -3445,9 +3445,9 @@ class APIAdapter(object):
     if pool is None:
       pool = self.GetNodePool(node_pool_ref)
 
-    if options.enable_rolling_update and options.enable_blue_green_update:
+    if options.enable_surge_upgrade and options.enable_blue_green_upgrade:
       raise util.Error(
-          'UpgradeSettings must contain only one of: --enable-rolling-update, --enable-blue-green-update'
+          'UpgradeSettings must contain only one of: --enable-surge-upgrade, --enable-blue-green-upgrade'
       )
 
     upgrade_settings = pool.upgradeSettings
@@ -3457,9 +3457,9 @@ class APIAdapter(object):
       upgrade_settings.maxSurge = options.max_surge_upgrade
     if options.max_unavailable_upgrade is not None:
       upgrade_settings.maxUnavailable = options.max_unavailable_upgrade
-    if options.enable_rolling_update:
-      upgrade_settings.strategy = self.messages.UpgradeSettings.StrategyValueValuesEnum.ROLLING
-    if options.enable_blue_green_update:
+    if options.enable_surge_upgrade:
+      upgrade_settings.strategy = self.messages.UpgradeSettings.StrategyValueValuesEnum.SURGE
+    if options.enable_blue_green_upgrade:
       upgrade_settings.strategy = self.messages.UpgradeSettings.StrategyValueValuesEnum.BLUE_GREEN
     if options.standard_rollout_policy is not None or options.node_pool_soak_duration is not None:
       upgrade_settings.blueGreenSettings = self.UpdateBlueGreenSettings(
@@ -3491,7 +3491,7 @@ class APIAdapter(object):
                                             self.messages)
     elif options.node_locations is not None:
       update_request.locations = sorted(options.node_locations)
-    elif (options.enable_blue_green_update or options.enable_rolling_update or
+    elif (options.enable_blue_green_upgrade or options.enable_surge_upgrade or
           options.max_surge_upgrade is not None or
           options.max_unavailable_upgrade is not None or
           options.standard_rollout_policy is not None or
@@ -4249,6 +4249,10 @@ class V1Beta1Adapter(V1Adapter):
       cluster.ipAllocationPolicy.podCidrOverprovisionConfig = self.messages.PodCIDROverprovisionConfig(
           disable=options.disable_pod_cidr_overprovision)
 
+    if options.enable_cost_allocation:
+      cluster.costManagementConfig = self.messages.CostManagementConfig(
+          enabled=True)
+
     if options.stack_type is not None:
       cluster.ipAllocationPolicy.stackType = util.GetStackTypeMapper(
           self.messages, hidden=False).GetEnumForChoice(options.stack_type)
@@ -4362,6 +4366,11 @@ class V1Beta1Adapter(V1Adapter):
           desiredDatapathProvider=(
               self.messages.ClusterUpdate.DesiredDatapathProviderValueValuesEnum
               .ADVANCED_DATAPATH))
+
+    if options.enable_cost_allocation is not None:
+      update = self.messages.ClusterUpdate(
+          desiredCostManagementConfig=self.messages.CostManagementConfig(
+              enabled=options.enable_cost_allocation))
 
     if not update:
       # if reached here, it's possible:
@@ -4492,8 +4501,8 @@ class V1Beta1Adapter(V1Adapter):
       upgrade_settings = None
       if (max_surge_upgrade is not None or
           max_unavailable_upgrade is not None or
-          options.enable_autoprovisioning_blue_green_update or
-          options.enable_autoprovisioning_rolling_update or
+          options.enable_autoprovisioning_blue_green_upgrade or
+          options.enable_autoprovisioning_surge_upgrade or
           options.autoprovisioning_standard_rollout_policy is not None or
           options.autoprovisioning_node_pool_soak_duration is not None):
         upgrade_settings = self.UpdateUpgradeSettingsForNAP(
@@ -4724,7 +4733,7 @@ class V1Alpha1Adapter(V1Beta1Adapter):
         cluster, options, self.messages)
 
     cluster.releaseChannel = _GetReleaseChannel(options, self.messages)
-    if options.enable_cost_management:
+    if options.enable_cost_allocation:
       cluster.costManagementConfig = self.messages.CostManagementConfig(
           enabled=True)
 
@@ -4830,10 +4839,10 @@ class V1Alpha1Adapter(V1Beta1Adapter):
           desiredIdentityServiceConfig=self.messages.IdentityServiceConfig(
               enabled=options.enable_identity_service))
 
-    if options.enable_cost_management is not None:
+    if options.enable_cost_allocation is not None:
       update = self.messages.ClusterUpdate(
           desiredCostManagementConfig=self.messages.CostManagementConfig(
-              enabled=options.enable_cost_management))
+              enabled=options.enable_cost_allocation))
 
     if options.release_channel is not None:
       update = self.messages.ClusterUpdate(
@@ -5036,8 +5045,8 @@ class V1Alpha1Adapter(V1Beta1Adapter):
       upgrade_settings = None
       if (max_surge_upgrade is not None or
           max_unavailable_upgrade is not None or
-          options.enable_autoprovisioning_blue_green_update or
-          options.enable_autoprovisioning_rolling_update or
+          options.enable_autoprovisioning_blue_green_upgrade or
+          options.enable_autoprovisioning_surge_upgrade or
           options.autoprovisioning_standard_rollout_policy is not None or
           options.autoprovisioning_node_pool_soak_duration is not None):
         upgrade_settings = self.UpdateUpgradeSettingsForNAP(

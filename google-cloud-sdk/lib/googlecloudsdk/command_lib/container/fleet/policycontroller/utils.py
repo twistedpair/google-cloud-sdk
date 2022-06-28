@@ -65,10 +65,21 @@ def set_poco_hub_config_parameters_from_args(args, messages):
     poco_hub_config: Policy Controller Hub Config object with parameters filled
     out
   """
-  poco_hub_config = messages.PolicyControllerHubConfig(
-    )
+  validate_args(args)
+  poco_hub_config = messages.PolicyControllerHubConfig()
   merge_args_with_poco_hub_config(args, poco_hub_config, messages)
   return poco_hub_config
+
+
+def validate_args(args):
+  """Validates the passed in arguments to make sure no incompatible arguments are used together.
+
+  Args:
+    args: object containing arguments passed as flags with the command
+  """
+  if args.monitoring is not None and args.no_monitoring:
+    raise exceptions.Error(
+        'Both monitoring and no-monitoring cant be used in the same command')
 
 
 def merge_args_with_poco_hub_config(args, poco_hub_config, messages):
@@ -88,11 +99,44 @@ def merge_args_with_poco_hub_config(args, poco_hub_config, messages):
     poco_hub_config.exemptableNamespaces = exemptable_namespaces
   if args.log_denies_enabled is not None:
     poco_hub_config.logDeniesEnabled = args.log_denies_enabled
+  if hasattr(args, 'mutation_enabled') and args.mutation_enabled is not None:
+    poco_hub_config.mutationEnabled = args.mutation_enabled
   if args.referential_rules_enabled is not None:
     poco_hub_config.referentialRulesEnabled = args.referential_rules_enabled
   if args.template_library_installed is not None:
     poco_hub_config.templateLibraryConfig = messages.PolicyControllerTemplateLibraryConfig(
         included=args.template_library_installed)
+  if args.monitoring is not None:
+    poco_hub_config.monitoring = build_poco_monitoring_config(
+        args.monitoring.split(','), messages)
+  if args.no_monitoring is not None:
+    poco_hub_config.monitoring = build_poco_monitoring_config([], messages)
+
+
+def build_poco_monitoring_config(backends_list, messages):
+  """Build the PoCo Monitoring Config message with backend string list passed in the command.
+
+  If nothing is set in args, preserve the original config object.
+
+  Args:
+    backends_list: list of strings that will be converted to backend options
+    messages: GKE Hub proto messages
+
+  Returns:
+    Policy Controller Monitoring Config message with the backends list
+  """
+  backends = []
+  for backend in backends_list:
+    if backend == 'prometheus':
+      backends.append(messages.PolicyControllerMonitoringConfig
+                      .BackendsValueListEntryValuesEnum.PROMETHEUS)
+    elif backend == 'cloudmonitoring':
+      backends.append(messages.PolicyControllerMonitoringConfig
+                      .BackendsValueListEntryValuesEnum.CLOUD_MONITORING)
+    else:
+      raise exceptions.Error('policycontroller.monitoring.backend ' + backend +
+                             ' is not recognized')
+  return messages.PolicyControllerMonitoringConfig(backends=backends)
 
 
 class BooleanOptionalAction(argparse.Action):

@@ -94,6 +94,9 @@ def _create_or_modify_transfer_options(transfer_spec, args, messages):
       elif field_key == jobs_flag_util.PreserveMetadataField.GID:
         metadata_options.gid = (
             messages.MetadataOptions.GidValueValuesEnum.GID_NUMBER)
+      elif field_key == jobs_flag_util.PreserveMetadataField.UID:
+        metadata_options.uid = (
+            messages.MetadataOptions.UidValueValuesEnum.UID_NUMBER)
       elif field_key == jobs_flag_util.PreserveMetadataField.KMS_KEY:
         metadata_options.kmsKey = (
             messages.MetadataOptions.KmsKeyValueValuesEnum.KMS_KEY_PRESERVE)

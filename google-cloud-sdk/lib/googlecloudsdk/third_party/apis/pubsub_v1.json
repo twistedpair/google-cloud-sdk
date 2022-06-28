@@ -2393,6 +2393,37 @@
               ],
               "description": "Creates a new schema revision that is a copy of the provided revision_id."
             },
+            "deleteRevision": {
+              "id": "pubsub.projects.schemas.deleteRevision",
+              "path": "v1/{+name}:deleteRevision",
+              "flatPath": "v1/projects/{projectsId}/schemas/{schemasId}:deleteRevision",
+              "httpMethod": "DELETE",
+              "parameters": {
+                "name": {
+                  "description": "Required. The name of the schema revision to be deleted, with a revision ID explicitly included. Example: projects\/123\/schemas\/my-schema@c7cfa2a8",
+                  "pattern": "^projects\/[^\/]+\/schemas\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "revisionId": {
+                  "description": "Required. The revision ID to roll back to. It must be a revision of the same schema. Example: c7cfa2a8",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "Schema"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/pubsub"
+              ],
+              "description": "Deletes a specific schema revision."
+            },
             "delete": {
               "id": "pubsub.projects.schemas.delete",
               "path": "v1/{+name}",

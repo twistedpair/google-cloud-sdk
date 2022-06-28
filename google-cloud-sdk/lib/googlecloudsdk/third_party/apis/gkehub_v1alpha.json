@@ -387,6 +387,24 @@
         "adminCluster": {
           "description": "Immutable. Whether the cluster is an admin cluster.",
           "type": "boolean"
+        },
+        "clusterType": {
+          "description": "Immutable. The on prem cluster's type.",
+          "type": "string",
+          "enumDescriptions": [
+            "The ClusterType is not set.",
+            "The ClusterType is bootstrap cluster.",
+            "The ClusterType is baremetal hybrid cluster.",
+            "The ClusterType is baremetal standalone cluster.",
+            "The ClusterType is user cluster."
+          ],
+          "enum": [
+            "CLUSTERTYPE_UNSPECIFIED",
+            "BOOTSTRAP",
+            "HYBRID",
+            "STANDALONE",
+            "USER"
+          ]
         }
       }
     },
@@ -1561,6 +1579,10 @@
         "templateLibraryConfig": {
           "description": "Configures the library templates to install along with Policy Controller.",
           "$ref": "PolicyControllerTemplateLibraryConfig"
+        },
+        "monitoring": {
+          "description": "Monitoring specifies the configuration of monitoring.",
+          "$ref": "PolicyControllerMonitoringConfig"
         }
       }
     },
@@ -1572,6 +1594,30 @@
         "included": {
           "description": "Whether the standard template library should be installed or not.",
           "type": "boolean"
+        }
+      }
+    },
+    "PolicyControllerMonitoringConfig": {
+      "id": "PolicyControllerMonitoringConfig",
+      "description": "MonitoringConfig specifies the backends Policy Controller should export metrics to. For example, to specify metrics should be exported to Cloud Monitoring and Prometheus, specify backends: [\"cloudmonitoring\", \"prometheus\"]",
+      "type": "object",
+      "properties": {
+        "backends": {
+          "description": "Specifies the list of backends Policy Controller will export to. An empty list would effectively disable metrics export.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enumDescriptions": [
+              "Backend cannot be determined",
+              "Prometheus backend for monitoring",
+              "Stackdriver\/Cloud Monitoring backend for monitoring"
+            ],
+            "enum": [
+              "MONITORING_BACKEND_UNSPECIFIED",
+              "PROMETHEUS",
+              "CLOUD_MONITORING"
+            ]
+          }
         }
       }
     },

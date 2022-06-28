@@ -452,7 +452,7 @@
           "type": "string"
         },
         "network": {
-          "description": "The network that this subnetwork belongs to.",
+          "description": "Required. The network that this subnetwork belongs to.",
           "type": "string"
         },
         "ipv4Cidr": {
@@ -820,11 +820,11 @@
           "type": "string"
         },
         "interconnect": {
-          "description": "The canonical name of underlying Interconnect object that this attachment's traffic will traverse through. The name is in the form of projects\/{project}\/locations\/{location}\/zones\/{zone}\/interconnects\/{interconnect}.",
+          "description": "Required. The canonical name of underlying Interconnect object that this attachment's traffic will traverse through. The name is in the form of projects\/{project}\/locations\/{location}\/zones\/{zone}\/interconnects\/{interconnect}.",
           "type": "string"
         },
         "router": {
-          "description": "The canonical Router name in the form of projects\/{project}\/locations\/{location}\/zones\/{zone}\/routers\/{router}.",
+          "description": "Required. The canonical Router name in the form of projects\/{project}\/locations\/{location}\/zones\/{zone}\/routers\/{router}.",
           "type": "string"
         },
         "vlanId": {
@@ -918,7 +918,7 @@
           "type": "string"
         },
         "network": {
-          "description": "The canonical name of the network to which this router belongs. The name is in the form of projects\/{project}\/locations\/{location}\/zones\/{zone}\/networks\/{network}.",
+          "description": "Required. The canonical name of the network to which this router belongs. The name is in the form of projects\/{project}\/locations\/{location}\/zones\/{zone}\/networks\/{network}.",
           "type": "string"
         },
         "interface": {
@@ -1002,6 +1002,7 @@
           "type": "string"
         },
         "interface": {
+          "description": "Name of the RouterInterface the BGP peer is associated with.",
           "type": "string"
         },
         "interfaceIpv4Cidr": {

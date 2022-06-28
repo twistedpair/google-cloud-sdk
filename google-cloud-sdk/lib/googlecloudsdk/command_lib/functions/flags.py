@@ -236,7 +236,7 @@ def AddAllowUnauthenticatedFlag(parser):
             'callers, without checking authentication.'))
 
 
-def AddServeAllTrafficLatestRevisionFlag(parser):
+def AddServeAllTrafficLatestRevisionFlag(parser, track):
   help_text = (
       'If specified, latest function revision will be served all traffic. '
       'This is only relevant when `--gen2` is provided.')
@@ -244,6 +244,7 @@ def AddServeAllTrafficLatestRevisionFlag(parser):
       '--serve-all-traffic-latest-revision',
       action='store_true',
       default=False,
+      hidden=_ShouldHideV2Flags(track),
       help=help_text)
 
 
@@ -514,7 +515,6 @@ def AddTriggerFlagGroup(parser, track=None):
     track: base.ReleaseTrack, calliope release track.
   """
   trigger_flags = ['--trigger-topic', '--trigger-bucket', '--trigger-http']
-  gen2_tracks = [base.ReleaseTrack.ALPHA, base.ReleaseTrack.BETA]
   if not _ShouldHideV2Flags(track):
     trigger_flags.append('--trigger-event-filters')
   formatted_trigger_flags = ', '.join(['`{}`'.format(f) for f in trigger_flags])
@@ -548,46 +548,46 @@ def AddTriggerFlagGroup(parser, track=None):
       the `describe` command. Any HTTP request (of a supported type) to the
       endpoint will trigger function execution. Supported HTTP request
       types are: POST, PUT, GET, DELETE, and OPTIONS.""")
-  if track in gen2_tracks:
-    eventarc_trigger_group = trigger_group.add_argument_group()
-    concept_parsers.ConceptParser(
-        [
-            presentation_specs.ResourcePresentationSpec(
-                '--trigger-channel',
-                eventarc_flags.ChannelResourceSpec(),
-                """\
-                The channel to use in the trigger for third-party event sources.
-                This is only relevant when `--gen2` is provided.""",
-                flag_name_overrides={'location': ''},
-                group=eventarc_trigger_group,
-                hidden=True
-            )
-        ],
-        command_level_fallthroughs={
-            '--trigger-channel.location': ['--trigger-location'],
-        }).AddToParser(parser)
-    eventarc_trigger_group.add_argument(
-        '--trigger-event-filters',
-        type=arg_parsers.ArgDict(),
-        action=arg_parsers.UpdateAction,
-        hidden=_ShouldHideV2Flags(track),
-        metavar='ATTRIBUTE=VALUE',
-        help=(
-            'The Eventarc matching criteria for the trigger. The criteria can '
-            'be specified either as a single comma-separated argument or as '
-            'multiple arguments. This is only relevant when `--gen2` is provided.'
-        ),
+  eventarc_trigger_group = trigger_group.add_argument_group(
+      hidden=_ShouldHideV2Flags(track))
+  concept_parsers.ConceptParser(
+      [
+          presentation_specs.ResourcePresentationSpec(
+              '--trigger-channel',
+              eventarc_flags.ChannelResourceSpec(),
+              """\
+              The channel to use in the trigger for third-party event sources.
+              This is only relevant when `--gen2` is provided.""",
+              flag_name_overrides={'location': ''},
+              group=eventarc_trigger_group,
+              hidden=True
+          )
+      ],
+      command_level_fallthroughs={
+          '--trigger-channel.location': ['--trigger-location'],
+      }).AddToParser(parser)
+  eventarc_trigger_group.add_argument(
+      '--trigger-event-filters',
+      type=arg_parsers.ArgDict(),
+      action=arg_parsers.UpdateAction,
+      hidden=_ShouldHideV2Flags(track),
+      metavar='ATTRIBUTE=VALUE',
+      help=(
+          'The Eventarc matching criteria for the trigger. The criteria can '
+          'be specified either as a single comma-separated argument or as '
+          'multiple arguments. This is only relevant when `--gen2` is provided.'
+      ),
     )
-    eventarc_trigger_group.add_argument(
-        '--trigger-event-filters-path-pattern',
-        type=arg_parsers.ArgDict(),
-        action=arg_parsers.UpdateAction,
-        hidden=_ShouldHideV2Flags(track),
-        metavar='ATTRIBUTE=VALUE',
-        help="""\
-        The Eventarc matching criteria for the trigger in path pattern format.
-        The criteria can be specified as a single comma-separated argument or as
-        multiple arguments. This is only relevant when `--gen2` is provided.""")
+  eventarc_trigger_group.add_argument(
+      '--trigger-event-filters-path-pattern',
+      type=arg_parsers.ArgDict(),
+      action=arg_parsers.UpdateAction,
+      hidden=_ShouldHideV2Flags(track),
+      metavar='ATTRIBUTE=VALUE',
+      help="""\
+      The Eventarc matching criteria for the trigger in path pattern format.
+      The criteria can be specified as a single comma-separated argument or as
+      multiple arguments. This is only relevant when `--gen2` is provided.""")
 
   trigger_provider_spec_group = trigger_group.add_argument_group()
   # check later as type of applicable input depends on options above
@@ -803,11 +803,12 @@ def AddIgnoreFileFlag(parser):
 
 
 # Flags for Artifact Registry
-def AddDockerRegistryFlags(parser):
+def AddDockerRegistryFlags(parser, track):
   """Adds flags for selecting the Docker registry type for Cloud Function."""
   docker_registry_arg = base.ChoiceArgument(
       '--docker-registry',
       choices=sorted(DOCKER_REGISTRY_MAPPING.values()),
+      hidden=_ShouldHideV2Flags(track),
       help_str="""\
         Docker Registry to use for storing the function's Docker images.
         The option `container-registry` is used by default.

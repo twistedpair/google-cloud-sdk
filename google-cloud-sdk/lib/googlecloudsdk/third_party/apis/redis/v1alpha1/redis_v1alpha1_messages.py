@@ -1192,11 +1192,13 @@ class RedisProjectsLocationsClustersCreateRequest(_messages.Message):
     parent: Required. The resource name of the cluster location using the
       form: `projects/{project_id}/locations/{location_id}` where
       `location_id` refers to a GCP region.
+    requestId: Idempotent request UUID.
   """
 
   cluster = _messages.MessageField('Cluster', 1)
   clusterId = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
 
 
 class RedisProjectsLocationsClustersDeleteRequest(_messages.Message):
@@ -1206,9 +1208,11 @@ class RedisProjectsLocationsClustersDeleteRequest(_messages.Message):
     name: Required. Redis cluster resource name using the form:
       `projects/{project_id}/locations/{location_id}/clusters/{cluster_id}`
       where `location_id` refers to a GCP region.
+    requestId: Idempotent request UUID.
   """
 
   name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
 
 
 class RedisProjectsLocationsClustersGetRequest(_messages.Message):

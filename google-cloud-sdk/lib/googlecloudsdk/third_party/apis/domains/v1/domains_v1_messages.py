@@ -316,6 +316,51 @@ class DnsSettings(_messages.Message):
   googleDomainsDns = _messages.MessageField('GoogleDomainsDns', 3)
 
 
+class Domain(_messages.Message):
+  r"""A domain that the calling user manages in Google Domains.
+
+  Enums:
+    ResourceStateValueValuesEnum: The state of this domain as a `Registration`
+      resource.
+
+  Fields:
+    domainName: The domain name. Unicode domain names are expressed in
+      Punycode format.
+    resourceState: The state of this domain as a `Registration` resource.
+    yearlyPrice: Price to renew the domain for one year. Only set when
+      `resource_state` is `IMPORTABLE`.
+  """
+
+  class ResourceStateValueValuesEnum(_messages.Enum):
+    r"""The state of this domain as a `Registration` resource.
+
+    Values:
+      RESOURCE_STATE_UNSPECIFIED: The assessment is undefined.
+      IMPORTABLE: A `Registration` resource can be created for this domain by
+        calling `ImportDomain`.
+      UNSUPPORTED: A `Registration` resource cannot be created for this domain
+        because it is not supported by Cloud Domains; for example, the top-
+        level domain is not supported or the registry charges non-standard
+        pricing for yearly renewals.
+      SUSPENDED: A `Registration` resource cannot be created for this domain
+        because it is suspended and needs to be resolved with Google Domains.
+      EXPIRED: A `Registration` resource cannot be created for this domain
+        because it is expired and needs to be renewed with Google Domains.
+      DELETED: A `Registration` resource cannot be created for this domain
+        because it is deleted, but can be restored with Google Domains.
+    """
+    RESOURCE_STATE_UNSPECIFIED = 0
+    IMPORTABLE = 1
+    UNSUPPORTED = 2
+    SUSPENDED = 3
+    EXPIRED = 4
+    DELETED = 5
+
+  domainName = _messages.StringField(1)
+  resourceState = _messages.EnumField('ResourceStateValueValuesEnum', 2)
+  yearlyPrice = _messages.MessageField('Money', 3)
+
+
 class DomainsProjectsLocationsGetRequest(_messages.Message):
   r"""A DomainsProjectsLocationsGetRequest object.
 
@@ -483,6 +528,20 @@ class DomainsProjectsLocationsRegistrationsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class DomainsProjectsLocationsRegistrationsImportRequest(_messages.Message):
+  r"""A DomainsProjectsLocationsRegistrationsImportRequest object.
+
+  Fields:
+    importDomainRequest: A ImportDomainRequest resource to be passed as the
+      request body.
+    parent: Required. The parent resource of the Registration. Must be in the
+      format `projects/*/locations/*`.
+  """
+
+  importDomainRequest = _messages.MessageField('ImportDomainRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
 class DomainsProjectsLocationsRegistrationsListRequest(_messages.Message):
   r"""A DomainsProjectsLocationsRegistrationsListRequest object.
 
@@ -570,6 +629,23 @@ class DomainsProjectsLocationsRegistrationsRetrieveAuthorizationCodeRequest(_mes
   """
 
   registration = _messages.StringField(1, required=True)
+
+
+class DomainsProjectsLocationsRegistrationsRetrieveImportableDomainsRequest(_messages.Message):
+  r"""A DomainsProjectsLocationsRegistrationsRetrieveImportableDomainsRequest
+  object.
+
+  Fields:
+    location: Required. The location. Must be in the format
+      `projects/*/locations/*`.
+    pageSize: Maximum number of results to return.
+    pageToken: When set to the `next_page_token` from a prior response,
+      provides the next page of results.
+  """
+
+  location = _messages.StringField(1, required=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
 
 
 class DomainsProjectsLocationsRegistrationsRetrieveRegisterParametersRequest(_messages.Message):
@@ -852,6 +928,46 @@ class GoogleDomainsDns(_messages.Message):
   dsRecords = _messages.MessageField('DsRecord', 1, repeated=True)
   dsState = _messages.EnumField('DsStateValueValuesEnum', 2)
   nameServers = _messages.StringField(3, repeated=True)
+
+
+class ImportDomainRequest(_messages.Message):
+  r"""Request for the `ImportDomain` method.
+
+  Messages:
+    LabelsValue: Set of labels associated with the `Registration`.
+
+  Fields:
+    domainName: Required. The domain name. Unicode domain names must be
+      expressed in Punycode format.
+    labels: Set of labels associated with the `Registration`.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Set of labels associated with the `Registration`.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  domainName = _messages.StringField(1)
+  labels = _messages.MessageField('LabelsValue', 2)
 
 
 class ListLocationsResponse(_messages.Message):
@@ -1496,12 +1612,21 @@ class Registration(_messages.Message):
   another registrar. First, go to the current registrar to unlock the domain
   for transfer and retrieve the domain's transfer authorization code. Then
   call `RetrieveTransferParameters` to confirm that the domain is unlocked and
-  to get values needed to build a call to `TransferDomain`.
+  to get values needed to build a call to `TransferDomain`. Finally, you can
+  create a new `Registration` by importing an existing domain managed with
+  [Google Domains](https://domains.google/). First, call
+  `RetrieveImportableDomains` to list domains to which the calling user has
+  sufficient access. Then call `ImportDomain` on any domain names you want to
+  use with Cloud Domains.
 
   Enums:
     IssuesValueListEntryValuesEnum:
+    RegisterFailureReasonValueValuesEnum: Output only. The reason the domain
+      registration failed. Only set for domains in REGISTRATION_FAILED state.
     StateValueValuesEnum: Output only. The state of the `Registration`
     SupportedPrivacyValueListEntryValuesEnum:
+    TransferFailureReasonValueValuesEnum: Output only. The reason the domain
+      transfer failed. Only set for domains in TRANSFER_FAILED state.
 
   Messages:
     LabelsValue: Set of labels associated with the `Registration`.
@@ -1535,9 +1660,13 @@ class Registration(_messages.Message):
       there are pending updates to the `contact_settings` that have not been
       confirmed. To confirm the changes, the `registrant_contact` must follow
       the instructions in the email they receive.
+    registerFailureReason: Output only. The reason the domain registration
+      failed. Only set for domains in REGISTRATION_FAILED state.
     state: Output only. The state of the `Registration`
     supportedPrivacy: Output only. Set of options for the
       `contact_settings.privacy` field that this `Registration` supports.
+    transferFailureReason: Output only. The reason the domain transfer failed.
+      Only set for domains in TRANSFER_FAILED state.
   """
 
   class IssuesValueListEntryValuesEnum(_messages.Enum):
@@ -1560,6 +1689,22 @@ class Registration(_messages.Message):
     CONTACT_SUPPORT = 1
     UNVERIFIED_EMAIL = 2
 
+  class RegisterFailureReasonValueValuesEnum(_messages.Enum):
+    r"""Output only. The reason the domain registration failed. Only set for
+    domains in REGISTRATION_FAILED state.
+
+    Values:
+      REGISTER_FAILURE_REASON_UNSPECIFIED: Register failure unspecified.
+      REGISTER_FAILURE_REASON_UNKNOWN: Registration failed for an unknown
+        reason.
+      DOMAIN_NOT_AVAILABLE: The domain is not available for registration.
+      INVALID_CONTACTS: The provided contact information was rejected.
+    """
+    REGISTER_FAILURE_REASON_UNSPECIFIED = 0
+    REGISTER_FAILURE_REASON_UNKNOWN = 1
+    DOMAIN_NOT_AVAILABLE = 2
+    INVALID_CONTACTS = 3
+
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The state of the `Registration`
 
@@ -1573,6 +1718,8 @@ class Registration(_messages.Message):
       TRANSFER_FAILED: The attempt to transfer the domain from another
         registrar to Cloud Domains failed. You can delete resources in this
         state and retry the transfer.
+      IMPORT_PENDING: The domain is being imported from Google Domains to
+        Cloud Domains.
       ACTIVE: The domain is registered and operational. The domain renews
         automatically as long as it remains in this state.
       SUSPENDED: The domain is suspended and inoperative. For more details,
@@ -1588,9 +1735,10 @@ class Registration(_messages.Message):
     REGISTRATION_FAILED = 2
     TRANSFER_PENDING = 3
     TRANSFER_FAILED = 4
-    ACTIVE = 5
-    SUSPENDED = 6
-    EXPORTED = 7
+    IMPORT_PENDING = 5
+    ACTIVE = 6
+    SUSPENDED = 7
+    EXPORTED = 8
 
   class SupportedPrivacyValueListEntryValuesEnum(_messages.Enum):
     r"""SupportedPrivacyValueListEntryValuesEnum enum type.
@@ -1615,6 +1763,44 @@ class Registration(_messages.Message):
     PUBLIC_CONTACT_DATA = 1
     PRIVATE_CONTACT_DATA = 2
     REDACTED_CONTACT_DATA = 3
+
+  class TransferFailureReasonValueValuesEnum(_messages.Enum):
+    r"""Output only. The reason the domain transfer failed. Only set for
+    domains in TRANSFER_FAILED state.
+
+    Values:
+      TRANSFER_FAILURE_REASON_UNSPECIFIED: Transfer failure unspecified.
+      TRANSFER_FAILURE_REASON_UNKNOWN: Transfer failed for an unknown reason.
+      EMAIL_CONFIRMATION_FAILURE: An email confirmation sent to the user was
+        rejected or expired.
+      DOMAIN_NOT_REGISTERED: The domain is available for registration.
+      DOMAIN_HAS_TRANSFER_LOCK: The domain has a transfer lock with its
+        current registrar which must be removed prior to transfer.
+      INVALID_AUTHORIZATION_CODE: The authorization code entered is not valid.
+      TRANSFER_CANCELLED: The transfer was cancelled by the domain owner,
+        current registrar, or TLD registry.
+      TRANSFER_REJECTED: The transfer was rejected by the current registrar.
+        Contact the current registrar for more information.
+      INVALID_REGISTRANT_EMAIL_ADDRESS: The registrant email address cannot be
+        parsed from the domain's current public contact data.
+      DOMAIN_NOT_ELIGIBLE_FOR_TRANSFER: The domain is not eligible for
+        transfer due requirements imposed by the current registrar or TLD
+        registry.
+      TRANSFER_ALREADY_PENDING: Another transfer is already pending for this
+        domain. The existing transfer attempt must expire or be cancelled in
+        order to proceed.
+    """
+    TRANSFER_FAILURE_REASON_UNSPECIFIED = 0
+    TRANSFER_FAILURE_REASON_UNKNOWN = 1
+    EMAIL_CONFIRMATION_FAILURE = 2
+    DOMAIN_NOT_REGISTERED = 3
+    DOMAIN_HAS_TRANSFER_LOCK = 4
+    INVALID_AUTHORIZATION_CODE = 5
+    TRANSFER_CANCELLED = 6
+    TRANSFER_REJECTED = 7
+    INVALID_REGISTRANT_EMAIL_ADDRESS = 8
+    DOMAIN_NOT_ELIGIBLE_FOR_TRANSFER = 9
+    TRANSFER_ALREADY_PENDING = 10
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1650,12 +1836,29 @@ class Registration(_messages.Message):
   managementSettings = _messages.MessageField('ManagementSettings', 8)
   name = _messages.StringField(9)
   pendingContactSettings = _messages.MessageField('ContactSettings', 10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  supportedPrivacy = _messages.EnumField('SupportedPrivacyValueListEntryValuesEnum', 12, repeated=True)
+  registerFailureReason = _messages.EnumField('RegisterFailureReasonValueValuesEnum', 11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  supportedPrivacy = _messages.EnumField('SupportedPrivacyValueListEntryValuesEnum', 13, repeated=True)
+  transferFailureReason = _messages.EnumField('TransferFailureReasonValueValuesEnum', 14)
 
 
 class ResetAuthorizationCodeRequest(_messages.Message):
   r"""Request for the `ResetAuthorizationCode` method."""
+
+
+class RetrieveImportableDomainsResponse(_messages.Message):
+  r"""Response for the `RetrieveImportableDomains` method.
+
+  Fields:
+    domains: A list of domains that the calling user manages in Google
+      Domains.
+    nextPageToken: When present, there are more results to retrieve. Set
+      `page_token` to this value on a subsequent call to get the next page of
+      results.
+  """
+
+  domains = _messages.MessageField('Domain', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
 class RetrieveRegisterParametersResponse(_messages.Message):
@@ -1900,6 +2103,8 @@ class TransferParameters(_messages.Message):
 
   Fields:
     currentRegistrar: The registrar that currently manages the domain.
+    currentRegistrarUri: The URL of registrar that currently manages the
+      domain.
     domainName: The domain name. Unicode domain names are expressed in
       Punycode format.
     nameServers: The name servers that currently store the configuration of
@@ -1952,11 +2157,12 @@ class TransferParameters(_messages.Message):
     LOCKED = 2
 
   currentRegistrar = _messages.StringField(1)
-  domainName = _messages.StringField(2)
-  nameServers = _messages.StringField(3, repeated=True)
-  supportedPrivacy = _messages.EnumField('SupportedPrivacyValueListEntryValuesEnum', 4, repeated=True)
-  transferLockState = _messages.EnumField('TransferLockStateValueValuesEnum', 5)
-  yearlyPrice = _messages.MessageField('Money', 6)
+  currentRegistrarUri = _messages.StringField(2)
+  domainName = _messages.StringField(3)
+  nameServers = _messages.StringField(4, repeated=True)
+  supportedPrivacy = _messages.EnumField('SupportedPrivacyValueListEntryValuesEnum', 5, repeated=True)
+  transferLockState = _messages.EnumField('TransferLockStateValueValuesEnum', 6)
+  yearlyPrice = _messages.MessageField('Money', 7)
 
 
 encoding.AddCustomJsonFieldMapping(

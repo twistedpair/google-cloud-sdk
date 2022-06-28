@@ -202,7 +202,8 @@
             "Creates clone instance.",
             "Reschedule maintenance to another time.",
             "Starts external sync of a Cloud SQL EM replica to an external primary instance.",
-            "Recovers logs from an instance's old data disk."
+            "Recovers logs from an instance's old data disk.",
+            "Performs auto-restart of an HA-enabled Cloud SQL database for auto recovery."
           ],
           "enum": [
             "SQL_OPERATION_TYPE_UNSPECIFIED",
@@ -240,7 +241,8 @@
             "CREATE_CLONE",
             "RESCHEDULE_MAINTENANCE",
             "START_EXTERNAL_SYNC",
-            "LOG_CLEANUP"
+            "LOG_CLEANUP",
+            "AUTO_RESTART"
           ]
         },
         "importContext": {
@@ -4769,6 +4771,45 @@
             "https://www.googleapis.com/auth/sqlservice.admin"
           ],
           "description": "Deletes a user from a Cloud SQL instance."
+        },
+        "get": {
+          "id": "sql.users.get",
+          "path": "sql/v1beta4/projects/{project}/instances/{instance}/users/{name}",
+          "flatPath": "sql/v1beta4/projects/{project}/instances/{instance}/users/{name}",
+          "httpMethod": "GET",
+          "parameters": {
+            "project": {
+              "description": "Project ID of the project that contains the instance.",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "instance": {
+              "description": "Database instance ID. This does not include the project ID.",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "name": {
+              "description": "User of the instance. If the database user has a host, this is specified as {username}@{host} else as {username}.",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "project",
+            "instance",
+            "name"
+          ],
+          "response": {
+            "$ref": "User"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/sqlservice.admin"
+          ],
+          "description": "Retrieves a resource containing information about a user."
         },
         "insert": {
           "id": "sql.users.insert",

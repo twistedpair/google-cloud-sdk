@@ -286,7 +286,7 @@ class NetworkconnectivityV1alpha1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new Hub in a given project and location.
+      r"""Creates a new Network Connectivity Center hub in the specified project.
 
       Args:
         request: (NetworkconnectivityProjectsLocationsGlobalHubsCreateRequest) input message
@@ -313,7 +313,7 @@ class NetworkconnectivityV1alpha1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single Hub.
+      r"""Deletes a Network Connectivity Center hub.
 
       Args:
         request: (NetworkconnectivityProjectsLocationsGlobalHubsDeleteRequest) input message
@@ -340,7 +340,7 @@ class NetworkconnectivityV1alpha1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single Hub.
+      r"""Gets details about a Network Connectivity Center hub.
 
       Args:
         request: (NetworkconnectivityProjectsLocationsGlobalHubsGetRequest) input message
@@ -394,7 +394,7 @@ class NetworkconnectivityV1alpha1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists Hubs in a given project and location.
+      r"""Lists the Network Connectivity Center hubs associated with a given project.
 
       Args:
         request: (NetworkconnectivityProjectsLocationsGlobalHubsListRequest) input message
@@ -421,7 +421,7 @@ class NetworkconnectivityV1alpha1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single Hub.
+      r"""Updates the description and/or labels of a Network Connectivity Center hub.
 
       Args:
         request: (NetworkconnectivityProjectsLocationsGlobalHubsPatchRequest) input message
@@ -1092,7 +1092,7 @@ class NetworkconnectivityV1alpha1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new Spoke in a given project and location.
+      r"""Creates a Network Connectivity Center spoke.
 
       Args:
         request: (NetworkconnectivityProjectsLocationsSpokesCreateRequest) input message
@@ -1119,7 +1119,7 @@ class NetworkconnectivityV1alpha1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single Spoke.
+      r"""Deletes a Network Connectivity Center spoke.
 
       Args:
         request: (NetworkconnectivityProjectsLocationsSpokesDeleteRequest) input message
@@ -1146,7 +1146,7 @@ class NetworkconnectivityV1alpha1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single Spoke.
+      r"""Gets details about a Network Connectivity Center spoke.
 
       Args:
         request: (NetworkconnectivityProjectsLocationsSpokesGetRequest) input message
@@ -1200,7 +1200,7 @@ class NetworkconnectivityV1alpha1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists Spokes in a given project and location.
+      r"""Lists the Network Connectivity Center spokes in a specified project and location.
 
       Args:
         request: (NetworkconnectivityProjectsLocationsSpokesListRequest) input message
@@ -1227,7 +1227,7 @@ class NetworkconnectivityV1alpha1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single Spoke.
+      r"""Updates the parameters of a Network Connectivity Center spoke.
 
       Args:
         request: (NetworkconnectivityProjectsLocationsSpokesPatchRequest) input message

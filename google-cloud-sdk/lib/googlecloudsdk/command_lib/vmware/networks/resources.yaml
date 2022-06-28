@@ -45,3 +45,15 @@ network_peering:
     attribute_name: network-peering
     help: VMware Engine VPC network peering
   disable_auto_completers: false
+
+network_peering_routes:
+  name: VMware Engine VPC network peering routes
+  collection: vmwareengine.projects.locations.global.networkPeerings.peeringRoutes
+  attributes:
+  - *project
+  - *network_peering
+  - &network_peering_routes
+    parameter_name: networkPeeringsRoutesId
+    attribute_name: network-peering-routes
+    help: VMware Engine VPC network peering routes
+  disable_auto_completers: false

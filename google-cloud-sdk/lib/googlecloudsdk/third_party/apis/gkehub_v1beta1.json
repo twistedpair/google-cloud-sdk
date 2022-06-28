@@ -386,6 +386,24 @@
         "adminCluster": {
           "description": "Immutable. Whether the cluster is an admin cluster.",
           "type": "boolean"
+        },
+        "clusterType": {
+          "description": "Immutable. The on prem cluster's type.",
+          "type": "string",
+          "enumDescriptions": [
+            "The ClusterType is not set.",
+            "The ClusterType is bootstrap cluster.",
+            "The ClusterType is baremetal hybrid cluster.",
+            "The ClusterType is baremetal standalone cluster.",
+            "The ClusterType is user cluster."
+          ],
+          "enum": [
+            "CLUSTERTYPE_UNSPECIFIED",
+            "BOOTSTRAP",
+            "HYBRID",
+            "STANDALONE",
+            "USER"
+          ]
         }
       }
     },

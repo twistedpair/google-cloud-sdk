@@ -466,6 +466,31 @@ class Deployment(_messages.Message):
   updateTime = _messages.StringField(14)
 
 
+class DeploymentOperationMetadata(_messages.Message):
+  r"""Operation metadata for Deployment.Create. Next tag: 8
+
+  Fields:
+    apiVersion: The API version which triggered this operation.
+    cancelRequested: Is cancelation requested for this operation.
+    createTime: The time this operation was created.
+    endTime: The time this operation ended or empty if it is still active.
+    resourceStatus: The ongoinging state of resources that are being deployed.
+      Order is not guaranteed to be stable between multiple reads of the same
+      ongoing operation.
+    target: Resource path for the target resource of the operation.
+    verb: The verb associated with the API method which triggered this
+      operation.
+  """
+
+  apiVersion = _messages.StringField(1)
+  cancelRequested = _messages.BooleanField(2)
+  createTime = _messages.StringField(3)
+  endTime = _messages.StringField(4)
+  resourceStatus = _messages.MessageField('ResourceDeploymentStatus', 5, repeated=True)
+  target = _messages.StringField(6)
+  verb = _messages.StringField(7)
+
+
 class DeploymentStatus(_messages.Message):
   r"""Message to encapsulate the current status of the deployment.
 
@@ -963,6 +988,51 @@ class ResourceConfig(_messages.Message):
   router = _messages.MessageField('RouterConfig', 2)
   service = _messages.MessageField('CloudRunServiceConfig', 3)
   vpc = _messages.MessageField('VPCConfig', 4)
+
+
+class ResourceDeploymentStatus(_messages.Message):
+  r"""Message decribing the status of a resource being deployed. Next tag: 4
+
+  Enums:
+    OperationValueValuesEnum: Operation to be performed on the resource .
+    StateValueValuesEnum: Current status of the resource.
+
+  Fields:
+    name: Name of the resource.
+    operation: Operation to be performed on the resource .
+    state: Current status of the resource.
+  """
+
+  class OperationValueValuesEnum(_messages.Enum):
+    r"""Operation to be performed on the resource .
+
+    Values:
+      OPERATION_UNSPECIFIED: Default value indicating the operation is
+        unknown.
+      APPLY: Apply configuration to resource.
+      DESTROY: Destroy resource.
+    """
+    OPERATION_UNSPECIFIED = 0
+    APPLY = 1
+    DESTROY = 2
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Current status of the resource.
+
+    Values:
+      STATE_UNSPECIFIED: Default value indicating the state is unknown.
+      NOT_STARTED: Resource queued for deployment.
+      RUNNING: Deployment in progress.
+      FINISHED: Deployment completed.
+    """
+    STATE_UNSPECIFIED = 0
+    NOT_STARTED = 1
+    RUNNING = 2
+    FINISHED = 3
+
+  name = _messages.MessageField('TypedName', 1)
+  operation = _messages.EnumField('OperationValueValuesEnum', 2)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
 
 
 class ResourceStatus(_messages.Message):

@@ -535,6 +535,7 @@ class Cluster(_messages.Message):
       will be used for GKE 1.14+ or `logging.googleapis.com` for earlier
       versions.
     maintenancePolicy: Configure the maintenance policy for this cluster.
+    managedConfig: ManagedConfig configuration for the cluster.
     masterAuth: The authentication information for accessing the master
       endpoint. If unspecified, the defaults are used: For clusters before
       v1.12, if master_auth is unspecified, `username` will be set to "admin",
@@ -704,35 +705,36 @@ class Cluster(_messages.Message):
   loggingConfig = _messages.MessageField('LoggingConfig', 31)
   loggingService = _messages.StringField(32)
   maintenancePolicy = _messages.MessageField('MaintenancePolicy', 33)
-  masterAuth = _messages.MessageField('MasterAuth', 34)
-  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 35)
-  meshCertificates = _messages.MessageField('MeshCertificates', 36)
-  monitoringConfig = _messages.MessageField('MonitoringConfig', 37)
-  monitoringService = _messages.StringField(38)
-  name = _messages.StringField(39)
-  network = _messages.StringField(40)
-  networkConfig = _messages.MessageField('NetworkConfig', 41)
-  networkPolicy = _messages.MessageField('NetworkPolicy', 42)
-  nodeConfig = _messages.MessageField('NodeConfig', 43)
-  nodeIpv4CidrSize = _messages.IntegerField(44, variant=_messages.Variant.INT32)
-  nodePoolAutoConfig = _messages.MessageField('NodePoolAutoConfig', 45)
-  nodePoolDefaults = _messages.MessageField('NodePoolDefaults', 46)
-  nodePools = _messages.MessageField('NodePool', 47, repeated=True)
-  notificationConfig = _messages.MessageField('NotificationConfig', 48)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 49)
-  releaseChannel = _messages.MessageField('ReleaseChannel', 50)
-  resourceLabels = _messages.MessageField('ResourceLabelsValue', 51)
-  resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 52)
-  selfLink = _messages.StringField(53)
-  servicesIpv4Cidr = _messages.StringField(54)
-  shieldedNodes = _messages.MessageField('ShieldedNodes', 55)
-  status = _messages.EnumField('StatusValueValuesEnum', 56)
-  statusMessage = _messages.StringField(57)
-  subnetwork = _messages.StringField(58)
-  tpuIpv4CidrBlock = _messages.StringField(59)
-  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 60)
-  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 61)
-  zone = _messages.StringField(62)
+  managedConfig = _messages.MessageField('ManagedConfig', 34)
+  masterAuth = _messages.MessageField('MasterAuth', 35)
+  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 36)
+  meshCertificates = _messages.MessageField('MeshCertificates', 37)
+  monitoringConfig = _messages.MessageField('MonitoringConfig', 38)
+  monitoringService = _messages.StringField(39)
+  name = _messages.StringField(40)
+  network = _messages.StringField(41)
+  networkConfig = _messages.MessageField('NetworkConfig', 42)
+  networkPolicy = _messages.MessageField('NetworkPolicy', 43)
+  nodeConfig = _messages.MessageField('NodeConfig', 44)
+  nodeIpv4CidrSize = _messages.IntegerField(45, variant=_messages.Variant.INT32)
+  nodePoolAutoConfig = _messages.MessageField('NodePoolAutoConfig', 46)
+  nodePoolDefaults = _messages.MessageField('NodePoolDefaults', 47)
+  nodePools = _messages.MessageField('NodePool', 48, repeated=True)
+  notificationConfig = _messages.MessageField('NotificationConfig', 49)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 50)
+  releaseChannel = _messages.MessageField('ReleaseChannel', 51)
+  resourceLabels = _messages.MessageField('ResourceLabelsValue', 52)
+  resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 53)
+  selfLink = _messages.StringField(54)
+  servicesIpv4Cidr = _messages.StringField(55)
+  shieldedNodes = _messages.MessageField('ShieldedNodes', 56)
+  status = _messages.EnumField('StatusValueValuesEnum', 57)
+  statusMessage = _messages.StringField(58)
+  subnetwork = _messages.StringField(59)
+  tpuIpv4CidrBlock = _messages.StringField(60)
+  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 61)
+  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 62)
+  zone = _messages.StringField(63)
 
 
 class ClusterAutoscaling(_messages.Message):
@@ -2372,6 +2374,34 @@ class MaintenanceWindow(_messages.Message):
   recurringWindow = _messages.MessageField('RecurringTimeWindow', 3)
 
 
+class ManagedConfig(_messages.Message):
+  r"""ManagedConfig is used for enforcing set of cluster configurations that
+  are conforming to strandards.
+
+  Enums:
+    TypeValueValuesEnum: The type of standard configurations to enforce for
+      cluster.
+
+  Fields:
+    type: The type of standard configurations to enforce for cluster.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""The type of standard configurations to enforce for cluster.
+
+    Values:
+      TYPE_UNSPECIFIED: Default value.
+      DISABLED: ManagedConfig is disabled.
+      AUTOFLEET: Use ManagedConfig that is conforming to Autofleet
+        requirements.
+    """
+    TYPE_UNSPECIFIED = 0
+    DISABLED = 1
+    AUTOFLEET = 2
+
+  type = _messages.EnumField('TypeValueValuesEnum', 1)
+
+
 class ManagedPrometheusConfig(_messages.Message):
   r"""ManagedPrometheusConfig defines the configuration for Google Cloud
   Managed Service for Prometheus.
@@ -2766,6 +2796,7 @@ class NodeConfig(_messages.Message):
       available on a machine per zone. See:
       https://cloud.google.com/compute/docs/disks/local-ssd for more
       information.
+    loggingConfig: Logging configuration.
     machineType: The name of a Google Compute Engine [machine
       type](https://cloud.google.com/compute/docs/machine-types) If
       unspecified, the default machine type is `e2-medium`.
@@ -2944,32 +2975,35 @@ class NodeConfig(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 12)
   linuxNodeConfig = _messages.MessageField('LinuxNodeConfig', 13)
   localSsdCount = _messages.IntegerField(14, variant=_messages.Variant.INT32)
-  machineType = _messages.StringField(15)
-  metadata = _messages.MessageField('MetadataValue', 16)
-  minCpuPlatform = _messages.StringField(17)
-  nodeGroup = _messages.StringField(18)
-  nodeImageConfig = _messages.MessageField('CustomImageConfig', 19)
-  oauthScopes = _messages.StringField(20, repeated=True)
-  preemptible = _messages.BooleanField(21)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 22)
-  resourceLabels = _messages.MessageField('ResourceLabelsValue', 23)
-  sandboxConfig = _messages.MessageField('SandboxConfig', 24)
-  serviceAccount = _messages.StringField(25)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 26)
-  spot = _messages.BooleanField(27)
-  tags = _messages.StringField(28, repeated=True)
-  taints = _messages.MessageField('NodeTaint', 29, repeated=True)
-  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 30)
+  loggingConfig = _messages.MessageField('NodePoolLoggingConfig', 15)
+  machineType = _messages.StringField(16)
+  metadata = _messages.MessageField('MetadataValue', 17)
+  minCpuPlatform = _messages.StringField(18)
+  nodeGroup = _messages.StringField(19)
+  nodeImageConfig = _messages.MessageField('CustomImageConfig', 20)
+  oauthScopes = _messages.StringField(21, repeated=True)
+  preemptible = _messages.BooleanField(22)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 23)
+  resourceLabels = _messages.MessageField('ResourceLabelsValue', 24)
+  sandboxConfig = _messages.MessageField('SandboxConfig', 25)
+  serviceAccount = _messages.StringField(26)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 27)
+  spot = _messages.BooleanField(28)
+  tags = _messages.StringField(29, repeated=True)
+  taints = _messages.MessageField('NodeTaint', 30, repeated=True)
+  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 31)
 
 
 class NodeConfigDefaults(_messages.Message):
   r"""Subset of NodeConfig message that has defaults.
 
   Fields:
-    gcfsConfig: GCFS (Google Container File System, a.k.a Riptide) options.
+    gcfsConfig: GCFS (Google Container File System, a.k.a. Riptide) options.
+    loggingConfig: Logging configuration for node pools.
   """
 
   gcfsConfig = _messages.MessageField('GcfsConfig', 1)
+  loggingConfig = _messages.MessageField('NodePoolLoggingConfig', 2)
 
 
 class NodeKubeletConfig(_messages.Message):
@@ -3141,7 +3175,8 @@ class NodePool(_messages.Message):
       rence/rest/v1/projects.locations.clusters#Cluster.FIELDS.locations)
       value will be used, instead. Warning: changing node pool locations will
       result in nodes being added and/or removed.
-    loggingConfig: Logging configuration.
+    loggingConfig: Logging configuration for node pools. Deprecated; use
+      config.logging_config instead.
     management: NodeManagement configuration for this NodePool.
     maxPodsConstraint: The constraint on the maximum number of pods that can
       be run simultaneously on a node in the node pool.
@@ -3277,7 +3312,8 @@ class NodePoolDefaults(_messages.Message):
   r"""Subset of Nodepool message that has defaults.
 
   Fields:
-    loggingConfig: Logging configuration for node pools.
+    loggingConfig: Logging configuration for node pools. Deprecated; use
+      node_config_defaults.node_config.logging_config instead
     nodeConfigDefaults: Subset of NodeConfig message that has defaults.
   """
 

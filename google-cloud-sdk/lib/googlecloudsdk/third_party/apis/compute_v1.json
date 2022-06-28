@@ -4,7 +4,7 @@
   "id": "compute:v1",
   "name": "compute",
   "version": "v1",
-  "revision": "20220607",
+  "revision": "20220616",
   "title": "Compute Engine API",
   "description": "Creates and runs virtual machines on Google Cloud Platform. ",
   "ownerDomain": "google.com",
@@ -14219,7 +14219,7 @@
           "format": "byte"
         },
         "ipVersion": {
-          "description": "The IP Version that will be used by this forwarding rule. Valid options are IPV4 or IPV6. This can only be specified for an external global forwarding rule.",
+          "description": "The IP Version that will be used by this forwarding rule. Valid options are IPV4 or IPV6.",
           "type": "string",
           "enumDescriptions": [
             "",
@@ -14266,6 +14266,7 @@
           "enumDescriptions": [
             "The connection has been accepted by the producer.",
             "The connection has been closed by the producer and will not serve traffic going forward.",
+            "The connection has been accepted by the producer, but the producer needs to take further action before the forwarding rule can serve traffic.",
             "The connection is pending acceptance by the producer.",
             "The connection has been rejected by the producer.",
             ""
@@ -14273,6 +14274,7 @@
           "enum": [
             "ACCEPTED",
             "CLOSED",
+            "NEEDS_ATTENTION",
             "PENDING",
             "REJECTED",
             "STATUS_UNSPECIFIED"
@@ -27513,6 +27515,7 @@
           "enumDescriptions": [
             "The connection has been accepted by the producer.",
             "The connection has been closed by the producer.",
+            "The connection has been accepted by the producer, but the producer needs to take further action before the forwarding rule can serve traffic.",
             "The connection is pending acceptance by the producer.",
             "The consumer is still connected but not using the connection.",
             ""
@@ -27520,6 +27523,7 @@
           "enum": [
             "ACCEPTED",
             "CLOSED",
+            "NEEDS_ATTENTION",
             "PENDING",
             "REJECTED",
             "STATUS_UNSPECIFIED"
@@ -43667,7 +43671,7 @@
             "https://www.googleapis.com/auth/compute",
             "https://www.googleapis.com/auth/compute.readonly"
           ],
-          "description": "Lists all of the instances in the managed instance group. Each instance in the list has a currentAction, which indicates the action that the managed instance group is performing on the instance. For example, if the group is still creating an instance, the currentAction is CREATING. If a previous action failed, the list displays the errors for that failed action. The orderBy query parameter is not supported."
+          "description": "Lists all of the instances in the managed instance group. Each instance in the list has a currentAction, which indicates the action that the managed instance group is performing on the instance. For example, if the group is still creating an instance, the currentAction is CREATING. If a previous action failed, the list displays the errors for that failed action. The orderBy query parameter is not supported. The `pageToken` query parameter is supported only in the alpha and beta API and only if the group's `listManagedInstancesResults` field is set to `PAGINATED`."
         },
         "listErrors": {
           "id": "compute.instanceGroupManagers.listErrors",
@@ -44639,7 +44643,7 @@
             "https://www.googleapis.com/auth/compute",
             "https://www.googleapis.com/auth/compute.readonly"
           ],
-          "description": "Lists the instances in the managed instance group and instances that are scheduled to be created. The list includes any current actions that the group has scheduled for its instances. The orderBy query parameter is not supported."
+          "description": "Lists the instances in the managed instance group and instances that are scheduled to be created. The list includes any current actions that the group has scheduled for its instances. The orderBy query parameter is not supported. The `pageToken` query parameter is supported only in the alpha and beta API and only if the group's `listManagedInstancesResults` field is set to `PAGINATED`."
         },
         "listErrors": {
           "id": "compute.regionInstanceGroupManagers.listErrors",

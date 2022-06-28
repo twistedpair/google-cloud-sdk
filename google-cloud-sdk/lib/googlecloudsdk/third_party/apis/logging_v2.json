@@ -977,7 +977,7 @@
           }
         },
         "partialSuccess": {
-          "description": "Optional. Whether a batch's valid entries should be written even if some other entry failed due to a permanent error such as INVALID_ARGUMENT or PERMISSION_DENIED. If any entry failed, then the response status is the response status is the status of one of the failed entries. The response will include error details keyed by the entries' zero-based index in the entries.write method.",
+          "description": "Optional. Whether a batch's valid entries should be written even if some other entry failed due to a permanent error such as INVALID_ARGUMENT or PERMISSION_DENIED. If any entry failed, then the response status is the response status of one of the failed entries. The response will include error details in WriteLogEntriesPartialErrors.log_entry_errors keyed by the entries' zero-based index in the entries. Failed requests for which no entries are written will not include per-entry errors.",
           "type": "boolean"
         },
         "dryRun": {
@@ -2951,6 +2951,41 @@
             "https://www.googleapis.com/auth/logging.read"
           ],
           "description": "Gets the Log Router settings for the given resource.Note: Settings for the Log Router can be get for Google Cloud projects, folders, organizations and billing accounts. Currently it can only be configured for organizations. Once configured for an organization, it applies to all projects and folders in the Google Cloud organization.See Enabling CMEK for Log Router (https:\/\/cloud.google.com\/logging\/docs\/routing\/managed-encryption) for more information."
+        },
+        "updateSettings": {
+          "id": "logging.projects.updateSettings",
+          "path": "v2/{+name}/settings",
+          "flatPath": "v2/projects/{projectsId}/settings",
+          "httpMethod": "PATCH",
+          "parameters": {
+            "name": {
+              "description": "Required. The resource name for the settings to update. \"organizations\/[ORGANIZATION_ID]\/settings\" For example:\"organizations\/12345\/settings\"Note: Settings for the Log Router can currently only be configured for Google Cloud organizations. Once configured, it applies to all projects and folders in the Google Cloud organization.",
+              "pattern": "^projects\/[^\/]+$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "updateMask": {
+              "description": "Optional. Field mask identifying which fields from settings should be updated. A field will be overwritten if and only if it is in the update mask. Output only fields cannot be updated.See FieldMask for more information.For example: \"updateMask=kmsKeyName\"",
+              "location": "query",
+              "type": "string",
+              "format": "google-fieldmask"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "request": {
+            "$ref": "Settings"
+          },
+          "response": {
+            "$ref": "Settings"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/logging.admin"
+          ],
+          "description": "Updates the Log Router settings for the given resource.Note: Settings for the Log Router can currently only be configured for Google Cloud organizations. Once configured, it applies to all projects and folders in the Google Cloud organization.UpdateSettings will fail if 1) kms_key_name is invalid, or 2) the associated service account does not have the required roles\/cloudkms.cryptoKeyEncrypterDecrypter role assigned for the key, or 3) access to the key is disabled. 4) location_id is not supported by Logging. 5) location_id violate OrgPolicy.See Enabling CMEK for Log Router (https:\/\/cloud.google.com\/logging\/docs\/routing\/managed-encryption) for more information."
         }
       }
       ,
@@ -6877,135 +6912,45 @@
             "https://www.googleapis.com/auth/logging.read"
           ],
           "description": "Gets the Log Router settings for the given resource.Note: Settings for the Log Router can be get for Google Cloud projects, folders, organizations and billing accounts. Currently it can only be configured for organizations. Once configured for an organization, it applies to all projects and folders in the Google Cloud organization.See Enabling CMEK for Log Router (https:\/\/cloud.google.com\/logging\/docs\/routing\/managed-encryption) for more information."
+        },
+        "updateSettings": {
+          "id": "logging.billingAccounts.updateSettings",
+          "path": "v2/{+name}/settings",
+          "flatPath": "v2/billingAccounts/{billingAccountsId}/settings",
+          "httpMethod": "PATCH",
+          "parameters": {
+            "name": {
+              "description": "Required. The resource name for the settings to update. \"organizations\/[ORGANIZATION_ID]\/settings\" For example:\"organizations\/12345\/settings\"Note: Settings for the Log Router can currently only be configured for Google Cloud organizations. Once configured, it applies to all projects and folders in the Google Cloud organization.",
+              "pattern": "^billingAccounts\/[^\/]+$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "updateMask": {
+              "description": "Optional. Field mask identifying which fields from settings should be updated. A field will be overwritten if and only if it is in the update mask. Output only fields cannot be updated.See FieldMask for more information.For example: \"updateMask=kmsKeyName\"",
+              "location": "query",
+              "type": "string",
+              "format": "google-fieldmask"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "request": {
+            "$ref": "Settings"
+          },
+          "response": {
+            "$ref": "Settings"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/logging.admin"
+          ],
+          "description": "Updates the Log Router settings for the given resource.Note: Settings for the Log Router can currently only be configured for Google Cloud organizations. Once configured, it applies to all projects and folders in the Google Cloud organization.UpdateSettings will fail if 1) kms_key_name is invalid, or 2) the associated service account does not have the required roles\/cloudkms.cryptoKeyEncrypterDecrypter role assigned for the key, or 3) access to the key is disabled. 4) location_id is not supported by Logging. 5) location_id violate OrgPolicy.See Enabling CMEK for Log Router (https:\/\/cloud.google.com\/logging\/docs\/routing\/managed-encryption) for more information."
         }
       }
       ,
       "resources": {
-        "operations": {
-          "methods": {
-            "get": {
-              "id": "logging.billingAccounts.operations.get",
-              "path": "v2/{+name}",
-              "flatPath": "v2/billingAccounts/{billingAccountsId}/operations/{operationsId}",
-              "httpMethod": "GET",
-              "parameters": {
-                "name": {
-                  "description": "The name of the operation resource.",
-                  "pattern": "^billingAccounts\/[^\/]+\/operations\/[^\/]+$",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "name"
-              ],
-              "response": {
-                "$ref": "Operation"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/cloud-platform.read-only",
-                "https://www.googleapis.com/auth/logging.admin",
-                "https://www.googleapis.com/auth/logging.read"
-              ],
-              "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
-            }
-          }
-        },
-        "buckets": {
-          "methods": {
-            "get": {
-              "id": "logging.billingAccounts.buckets.get",
-              "path": "v2/{+name}",
-              "flatPath": "v2/billingAccounts/{billingAccountsId}/buckets/{bucketsId}",
-              "httpMethod": "GET",
-              "parameters": {
-                "name": {
-                  "description": "Required. The resource name of the bucket: \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" For example:\"projects\/my-project\/locations\/global\/buckets\/my-bucket\"",
-                  "pattern": "^billingAccounts\/[^\/]+\/buckets\/[^\/]+$",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "name"
-              ],
-              "response": {
-                "$ref": "LogBucket"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/cloud-platform.read-only",
-                "https://www.googleapis.com/auth/logging.admin",
-                "https://www.googleapis.com/auth/logging.read"
-              ],
-              "description": "Gets a log bucket."
-            }
-          }
-          ,
-          "resources": {
-            "views": {
-              "methods": {
-                "get": {
-                  "id": "logging.billingAccounts.buckets.views.get",
-                  "path": "v2/{+name}",
-                  "flatPath": "v2/billingAccounts/{billingAccountsId}/buckets/{bucketsId}/views/{viewsId}",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "name": {
-                      "description": "Required. The resource name of the policy: \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID]\" For example:\"projects\/my-project\/locations\/global\/buckets\/my-bucket\/views\/my-view\"",
-                      "pattern": "^billingAccounts\/[^\/]+\/buckets\/[^\/]+\/views\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "response": {
-                    "$ref": "LogView"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform",
-                    "https://www.googleapis.com/auth/cloud-platform.read-only",
-                    "https://www.googleapis.com/auth/logging.admin",
-                    "https://www.googleapis.com/auth/logging.read"
-                  ],
-                  "description": "Gets a view on a log bucket.."
-                }
-              }
-            },
-            "links": {
-              "methods": {
-                "get": {
-                  "id": "logging.billingAccounts.buckets.links.get",
-                  "path": "v2/{+name}",
-                  "flatPath": "v2/billingAccounts/{billingAccountsId}/buckets/{bucketsId}/links/{linksId}",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "name": {
-                      "description": "Required. The resource name of the link:\"projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/links\/LINK_ID\" \"organizations\/ORGANIZATION_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/links\/LINK_ID\" \"billingAccounts\/BILLING_ACCOUNT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/links\/LINK_ID\" \"folders\/FOLDER_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/links\/LINK_ID",
-                      "pattern": "^billingAccounts\/[^\/]+\/buckets\/[^\/]+\/links\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "response": {
-                    "$ref": "Link"
-                  },
-                  "description": "Gets a link."
-                }
-              }
-            }
-          }
-        },
         "sinks": {
           "methods": {
             "list": {
@@ -7501,6 +7446,34 @@
                   ],
                   "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns UNIMPLEMENTED.NOTE: the name binding allows API services to override the binding to use different resource name schemes, such as users\/*\/operations. To override the binding, API services can add a binding such as \"\/v1\/{name=users\/*}\/operations\" to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
                 },
+                "get": {
+                  "id": "logging.billingAccounts.locations.operations.get",
+                  "path": "v2/{+name}",
+                  "flatPath": "v2/billingAccounts/{billingAccountsId}/locations/{locationsId}/operations/{operationsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation resource.",
+                      "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/cloud-platform.read-only",
+                    "https://www.googleapis.com/auth/logging.admin",
+                    "https://www.googleapis.com/auth/logging.read"
+                  ],
+                  "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
+                },
                 "cancel": {
                   "id": "logging.billingAccounts.locations.operations.cancel",
                   "path": "v2/{+name}:cancel",
@@ -7572,6 +7545,34 @@
                     "https://www.googleapis.com/auth/logging.read"
                   ],
                   "description": "Lists log buckets."
+                },
+                "get": {
+                  "id": "logging.billingAccounts.locations.buckets.get",
+                  "path": "v2/{+name}",
+                  "flatPath": "v2/billingAccounts/{billingAccountsId}/locations/{locationsId}/buckets/{bucketsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The resource name of the bucket: \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" For example:\"projects\/my-project\/locations\/global\/buckets\/my-bucket\"",
+                      "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "LogBucket"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/cloud-platform.read-only",
+                    "https://www.googleapis.com/auth/logging.admin",
+                    "https://www.googleapis.com/auth/logging.read"
+                  ],
+                  "description": "Gets a log bucket."
                 },
                 "create": {
                   "id": "logging.billingAccounts.locations.buckets.create",
@@ -7740,6 +7741,34 @@
                         "https://www.googleapis.com/auth/logging.read"
                       ],
                       "description": "Lists views on a log bucket."
+                    },
+                    "get": {
+                      "id": "logging.billingAccounts.locations.buckets.views.get",
+                      "path": "v2/{+name}",
+                      "flatPath": "v2/billingAccounts/{billingAccountsId}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The resource name of the policy: \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID]\" For example:\"projects\/my-project\/locations\/global\/buckets\/my-bucket\/views\/my-view\"",
+                          "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+\/views\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "LogView"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/cloud-platform.read-only",
+                        "https://www.googleapis.com/auth/logging.admin",
+                        "https://www.googleapis.com/auth/logging.read"
+                      ],
+                      "description": "Gets a view on a log bucket.."
                     },
                     "create": {
                       "id": "logging.billingAccounts.locations.buckets.views.create",
@@ -7976,6 +8005,28 @@
                         "$ref": "ListLinksResponse"
                       },
                       "description": "Lists links."
+                    },
+                    "get": {
+                      "id": "logging.billingAccounts.locations.buckets.links.get",
+                      "path": "v2/{+name}",
+                      "flatPath": "v2/billingAccounts/{billingAccountsId}/locations/{locationsId}/buckets/{bucketsId}/links/{linksId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The resource name of the link:\"projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/links\/LINK_ID\" \"organizations\/ORGANIZATION_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/links\/LINK_ID\" \"billingAccounts\/BILLING_ACCOUNT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/links\/LINK_ID\" \"folders\/FOLDER_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/links\/LINK_ID",
+                          "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+\/links\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Link"
+                      },
+                      "description": "Gets a link."
                     }
                   }
                 }

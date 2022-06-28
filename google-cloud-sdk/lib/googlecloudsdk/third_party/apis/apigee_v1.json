@@ -3807,6 +3807,20 @@
         "grpcOperationGroup": {
           "description": "Configuration used to group Apigee proxies with gRPC services and method names. This grouping allows us to set quota for a particular gRPC proxy and method name for a particular gRPC proxy request. If a method name is not set, this implies quota and authorization are applied to all gRPC methods implemented by that proxy.",
           "$ref": "GoogleCloudApigeeV1GrpcOperationGroup"
+        },
+        "quotaCounterScope": {
+          "description": "Scope of the quota decides how the quota counter gets applied and evaluate for quota violation. If the Scope is set as PROXY, then all the operations defined for the APIproduct that are associated with the same proxy will share the same quota counter set at the APIproduct level, making it a global counter at a proxy level. If the Scope is set as OPERATION, then each operations get the counter set at the API product dedicated, making it a local counter. Note that, the QuotaCounterScope applies only when an operation does not have dedicated quota set for itself.",
+          "type": "string",
+          "enumDescriptions": [
+            "When quota is not explicitly defined for each operation(REST\/GraphQL), the limits set at product level will be used as a local counter for quota evaluation by all the operations, independent of proxy association.",
+            "When quota is not explicitly defined for each operation(REST\/GraphQL), set at product level will be used as a global counter for quota evaluation by all the operations associated with a particular proxy.",
+            "When quota is not explicitly defined for each operation(REST\/GraphQL), the limits set at product level will be used as a local counter for quota evaluation by all the operations, independent of proxy association. This behavior mimics the same as QUOTA_COUNTER_SCOPE_UNSPECIFIED."
+          ],
+          "enum": [
+            "QUOTA_COUNTER_SCOPE_UNSPECIFIED",
+            "PROXY",
+            "OPERATION"
+          ]
         }
       }
     },
@@ -5719,7 +5733,10 @@
           "description": "List of points. First value of each inner list is a timestamp.",
           "type": "array",
           "items": {
-            "type": "any"
+            "type": "array",
+            "items": {
+              "type": "any"
+            }
           }
         }
       }

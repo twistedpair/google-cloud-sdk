@@ -1990,8 +1990,9 @@ class ImportCryptoKeyVersionRequest(_messages.Message):
       exactly if the CryptoKeyVersion has ever contained key material.
     importJob: Required. The name of the ImportJob that was used to wrap this
       key material.
-    rsaAesWrappedKey: Wrapped key material produced with
-      RSA_OAEP_3072_SHA1_AES_256 or RSA_OAEP_4096_SHA1_AES_256. This field
+    rsaAesWrappedKey: Optional. Wrapped key material produced with
+      RSA_OAEP_3072_SHA1_AES_256 or RSA_OAEP_4096_SHA1_AES_256 or
+      RSA_OAEP_3072_SHA256_AES_256 or RSA_OAEP_4096_SHA256_AES_256. This field
       contains the concatenation of two wrapped keys: 1. An ephemeral AES-256
       wrapping key wrapped with the public_key using RSAES-OAEP with
       SHA-1/SHA-256, MGF1 with SHA-1/SHA-256, and an empty label. 2. The key
@@ -2001,6 +2002,21 @@ class ImportCryptoKeyVersionRequest(_messages.Message):
       material, it is expected that the unwrapped key is in PKCS#8-encoded DER
       format (the PrivateKeyInfo structure from RFC 5208). This format is the
       same as the format produced by PKCS#11 mechanism CKM_RSA_AES_KEY_WRAP.
+    wrappedKey: Optional. Wrapped key material produced with
+      (RSA_OAEP_3072_SHA1_AES_256 or RSA_OAEP_4096_SHA1_AES_256 or
+      RSA_OAEP_3072_SHA256_AES_256 or RSA_OAEP_4096_SHA256_AES_256) for which,
+      this field contains the concatenation of: 1. An ephemeral AES-256
+      wrapping key wrapped with the public_key using RSAES-OAEP with
+      SHA-1/SHA-256, MGF1 with SHA-1/SHA-256, and an empty label. 2. The key
+      to be imported, wrapped with the ephemeral AES-256 key using AES-KWP
+      (RFC 5649), or (RSA_OAEP_3072_SHA256 or RSA_OAEP_4096_SHA256) for which,
+      this field contains the key to be imported, wrapped with the public_key
+      using RSAES-OAEP with SHA-256, MGF1 with SHA-256, and an empty label. If
+      importing symmetric key material, it is expected that the unwrapped key
+      contains plain bytes. If importing asymmetric key material, it is
+      expected that the unwrapped key is in PKCS#8-encoded DER format (the
+      PrivateKeyInfo structure from RFC 5208). This format is the same as the
+      format produced by PKCS#11 mechanism CKM_RSA_AES_KEY_WRAP.
   """
 
   class AlgorithmValueValuesEnum(_messages.Enum):
@@ -2077,6 +2093,7 @@ class ImportCryptoKeyVersionRequest(_messages.Message):
   cryptoKeyVersion = _messages.StringField(2)
   importJob = _messages.StringField(3)
   rsaAesWrappedKey = _messages.BytesField(4)
+  wrappedKey = _messages.BytesField(5)
 
 
 class ImportJob(_messages.Message):
@@ -2153,10 +2170,36 @@ class ImportJob(_messages.Message):
         RSA key. For more details, see [RSA AES key wrap
         mechanism](http://docs.oasis-open.org/pkcs11/pkcs11-curr/v2.40/cos01/p
         kcs11-curr-v2.40-cos01.html#_Toc408226908).
+      RSA_OAEP_3072_SHA256_AES_256: This ImportMethod represents the
+        CKM_RSA_AES_KEY_WRAP key wrapping scheme defined in the PKCS #11
+        standard. In summary, this involves wrapping the raw key with an
+        ephemeral AES key, and wrapping the ephemeral AES key with a 3072 bit
+        RSA key. For more details, see [RSA AES key wrap
+        mechanism](http://docs.oasis-open.org/pkcs11/pkcs11-curr/v2.40/cos01/p
+        kcs11-curr-v2.40-cos01.html#_Toc408226908).
+      RSA_OAEP_4096_SHA256_AES_256: This ImportMethod represents the
+        CKM_RSA_AES_KEY_WRAP key wrapping scheme defined in the PKCS #11
+        standard. In summary, this involves wrapping the raw key with an
+        ephemeral AES key, and wrapping the ephemeral AES key with a 4096 bit
+        RSA key. For more details, see [RSA AES key wrap
+        mechanism](http://docs.oasis-open.org/pkcs11/pkcs11-curr/v2.40/cos01/p
+        kcs11-curr-v2.40-cos01.html#_Toc408226908).
+      RSA_OAEP_3072_SHA256: This ImportMethod represents RSAES-OAEP with a
+        3072 bit RSA key. The key material to be imported is wrapped directly
+        with the RSA key. Due to technical limitations of RSA wrapping, this
+        method cannot be used to wrap RSA keys for import.
+      RSA_OAEP_4096_SHA256: This ImportMethod represents RSAES-OAEP with a
+        4096 bit RSA key. The key material to be imported is wrapped directly
+        with the RSA key. Due to technical limitations of RSA wrapping, this
+        method cannot be used to wrap RSA keys for import.
     """
     IMPORT_METHOD_UNSPECIFIED = 0
     RSA_OAEP_3072_SHA1_AES_256 = 1
     RSA_OAEP_4096_SHA1_AES_256 = 2
+    RSA_OAEP_3072_SHA256_AES_256 = 3
+    RSA_OAEP_4096_SHA256_AES_256 = 4
+    RSA_OAEP_3072_SHA256 = 5
+    RSA_OAEP_4096_SHA256 = 6
 
   class ProtectionLevelValueValuesEnum(_messages.Enum):
     r"""Required. Immutable. The protection level of the ImportJob. This must

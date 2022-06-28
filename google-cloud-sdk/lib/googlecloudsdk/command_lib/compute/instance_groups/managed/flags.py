@@ -342,3 +342,30 @@ def ValidateRegionalMigFlagsUsage(args, regional_flags_dests, igm_ref):
                        'groups only.') % flag_name
       raise exceptions.InvalidArgumentException(
           parameter_name=flag_name, message=error_message)
+
+
+LIST_MANAGED_INSTANCES_RESULTS_CHOICES = {
+    'PAGELESS':
+        'Pagination is disabled for the group\'s listManagedInstances API '
+        'method. maxResults and pageToken query parameters are ignored and all '
+        'instances are returned in a single response.',
+    'PAGINATED':
+        'Pagination is enabled for the group\'s listManagedInstances API '
+        'method. maxResults and pageToken query parameters are respected.',
+}
+
+
+def AddMigListManagedInstancesResultsFlag(parser):
+  """Add --list-managed-instances-results flag to the parser."""
+  help_text = """\
+      Pagination behavior for the group's listManagedInstances API method.
+      This flag does not affect the group's gcloud or console list-instances
+      behavior. By default it is set to PAGELESS.
+    """
+
+  parser.add_argument(
+      '--list-managed-instances-results',
+      metavar='MODE',
+      type=lambda x: x.upper(),
+      choices=LIST_MANAGED_INSTANCES_RESULTS_CHOICES,
+      help=help_text)

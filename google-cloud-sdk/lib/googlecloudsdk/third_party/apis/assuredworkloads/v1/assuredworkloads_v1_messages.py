@@ -125,6 +125,24 @@ class AssuredworkloadsOrganizationsLocationsWorkloadsPatchRequest(_messages.Mess
   updateMask = _messages.StringField(3)
 
 
+class AssuredworkloadsOrganizationsLocationsWorkloadsRestrictAllowedResourcesRequest(_messages.Message):
+  r"""A AssuredworkloadsOrganizationsLocationsWorkloadsRestrictAllowedResource
+  sRequest object.
+
+  Fields:
+    googleCloudAssuredworkloadsV1RestrictAllowedResourcesRequest: A
+      GoogleCloudAssuredworkloadsV1RestrictAllowedResourcesRequest resource to
+      be passed as the request body.
+    name: Required. The resource name of the Workload. This is the workloads's
+      relative path in the API, formatted as "organizations/{organization_id}/
+      locations/{location_id}/workloads/{workload_id}". For example,
+      "organizations/123/locations/us-east1/workloads/assured-workload-1".
+  """
+
+  googleCloudAssuredworkloadsV1RestrictAllowedResourcesRequest = _messages.MessageField('GoogleCloudAssuredworkloadsV1RestrictAllowedResourcesRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class GoogleCloudAssuredworkloadsV1CreateWorkloadOperationMetadata(_messages.Message):
   r"""Operation metadata to give request details of CreateWorkload.
 
@@ -188,6 +206,43 @@ class GoogleCloudAssuredworkloadsV1ListWorkloadsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   workloads = _messages.MessageField('GoogleCloudAssuredworkloadsV1Workload', 2, repeated=True)
+
+
+class GoogleCloudAssuredworkloadsV1RestrictAllowedResourcesRequest(_messages.Message):
+  r"""Request for restricting list of available resources in Workload
+  environment.
+
+  Enums:
+    RestrictionTypeValueValuesEnum: Required. The type of restriction for
+      using gcp products in the Workload environment.
+
+  Fields:
+    restrictionType: Required. The type of restriction for using gcp products
+      in the Workload environment.
+  """
+
+  class RestrictionTypeValueValuesEnum(_messages.Enum):
+    r"""Required. The type of restriction for using gcp products in the
+    Workload environment.
+
+    Values:
+      RESTRICTION_TYPE_UNSPECIFIED: Unknown restriction type.
+      ALLOW_ALL_GCP_RESOURCES: Allow the use all of all gcp products,
+        irrespective of the compliance posture. This effectively removes
+        gcp.restrictServiceUsage OrgPolicy on the AssuredWorkloads Folder.
+      ALLOW_COMPLIANT_RESOURCES: Based on Workload's compliance regime,
+        allowed list changes. See - https://cloud.google.com/assured-
+        workloads/docs/supported-products for the list of supported resources.
+    """
+    RESTRICTION_TYPE_UNSPECIFIED = 0
+    ALLOW_ALL_GCP_RESOURCES = 1
+    ALLOW_COMPLIANT_RESOURCES = 2
+
+  restrictionType = _messages.EnumField('RestrictionTypeValueValuesEnum', 1)
+
+
+class GoogleCloudAssuredworkloadsV1RestrictAllowedResourcesResponse(_messages.Message):
+  r"""Response for restricting the list of allowed resources."""
 
 
 class GoogleCloudAssuredworkloadsV1Workload(_messages.Message):
@@ -967,6 +1022,7 @@ class GoogleCloudAssuredworkloadsVersioningV1mainWorkload(_messages.Message):
       resources needed for CJIS.
     complianceRegime: Required. Immutable. Compliance Regime associated with
       this workload.
+    complianceStatus: Output only. Count of active Violations in the Workload.
     createTime: Output only. Immutable. The Workload creation timestamp.
     displayName: Required. The user-assigned display name of the Workload.
       When present it must be between 4 to 30 characters. Allowed characters
@@ -1083,21 +1139,22 @@ class GoogleCloudAssuredworkloadsVersioningV1mainWorkload(_messages.Message):
   billingAccount = _messages.StringField(1)
   cjisSettings = _messages.MessageField('GoogleCloudAssuredworkloadsVersioningV1mainWorkloadCJISSettings', 2)
   complianceRegime = _messages.EnumField('ComplianceRegimeValueValuesEnum', 3)
-  createTime = _messages.StringField(4)
-  displayName = _messages.StringField(5)
-  enableSovereignControls = _messages.BooleanField(6)
-  etag = _messages.StringField(7)
-  fedrampHighSettings = _messages.MessageField('GoogleCloudAssuredworkloadsVersioningV1mainWorkloadFedrampHighSettings', 8)
-  fedrampModerateSettings = _messages.MessageField('GoogleCloudAssuredworkloadsVersioningV1mainWorkloadFedrampModerateSettings', 9)
-  il4Settings = _messages.MessageField('GoogleCloudAssuredworkloadsVersioningV1mainWorkloadIL4Settings', 10)
-  kajEnrollmentState = _messages.EnumField('KajEnrollmentStateValueValuesEnum', 11)
-  kmsSettings = _messages.MessageField('GoogleCloudAssuredworkloadsVersioningV1mainWorkloadKMSSettings', 12)
-  labels = _messages.MessageField('LabelsValue', 13)
-  name = _messages.StringField(14)
-  provisionedResourcesParent = _messages.StringField(15)
-  resourceSettings = _messages.MessageField('GoogleCloudAssuredworkloadsVersioningV1mainWorkloadResourceSettings', 16, repeated=True)
-  resources = _messages.MessageField('GoogleCloudAssuredworkloadsVersioningV1mainWorkloadResourceInfo', 17, repeated=True)
-  saaEnrollmentResponse = _messages.MessageField('GoogleCloudAssuredworkloadsVersioningV1mainWorkloadSaaEnrollmentResponse', 18)
+  complianceStatus = _messages.MessageField('GoogleCloudAssuredworkloadsVersioningV1mainWorkloadComplianceStatus', 4)
+  createTime = _messages.StringField(5)
+  displayName = _messages.StringField(6)
+  enableSovereignControls = _messages.BooleanField(7)
+  etag = _messages.StringField(8)
+  fedrampHighSettings = _messages.MessageField('GoogleCloudAssuredworkloadsVersioningV1mainWorkloadFedrampHighSettings', 9)
+  fedrampModerateSettings = _messages.MessageField('GoogleCloudAssuredworkloadsVersioningV1mainWorkloadFedrampModerateSettings', 10)
+  il4Settings = _messages.MessageField('GoogleCloudAssuredworkloadsVersioningV1mainWorkloadIL4Settings', 11)
+  kajEnrollmentState = _messages.EnumField('KajEnrollmentStateValueValuesEnum', 12)
+  kmsSettings = _messages.MessageField('GoogleCloudAssuredworkloadsVersioningV1mainWorkloadKMSSettings', 13)
+  labels = _messages.MessageField('LabelsValue', 14)
+  name = _messages.StringField(15)
+  provisionedResourcesParent = _messages.StringField(16)
+  resourceSettings = _messages.MessageField('GoogleCloudAssuredworkloadsVersioningV1mainWorkloadResourceSettings', 17, repeated=True)
+  resources = _messages.MessageField('GoogleCloudAssuredworkloadsVersioningV1mainWorkloadResourceInfo', 18, repeated=True)
+  saaEnrollmentResponse = _messages.MessageField('GoogleCloudAssuredworkloadsVersioningV1mainWorkloadSaaEnrollmentResponse', 19)
 
 
 class GoogleCloudAssuredworkloadsVersioningV1mainWorkloadCJISSettings(_messages.Message):
@@ -1109,6 +1166,17 @@ class GoogleCloudAssuredworkloadsVersioningV1mainWorkloadCJISSettings(_messages.
   """
 
   kmsSettings = _messages.MessageField('GoogleCloudAssuredworkloadsVersioningV1mainWorkloadKMSSettings', 1)
+
+
+class GoogleCloudAssuredworkloadsVersioningV1mainWorkloadComplianceStatus(_messages.Message):
+  r"""Represents the Compliance Status of this workload
+
+  Fields:
+    activeViolationCount: Optional. Count of active Violations in the
+      Workload.
+  """
+
+  activeViolationCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudAssuredworkloadsVersioningV1mainWorkloadFedrampHighSettings(_messages.Message):

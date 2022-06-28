@@ -480,33 +480,6 @@ class StreamV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def Rollout(self, request, global_params=None):
-      r"""Roll out an service instance with the content of a user-specified version in the instance deployment realms. The returned Operation can be used to track the rollout status by polling operations.get. The Operation will complete when the rollout is complete. Returns [StreamInstance] in the Operation.response field on successful completion.
-
-      Args:
-        request: (StreamProjectsLocationsStreamInstancesRolloutRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Rollout')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Rollout.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/streamInstances/{streamInstancesId}:rollout',
-        http_method='POST',
-        method_id='stream.projects.locations.streamInstances.rollout',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha1/{+name}:rollout',
-        request_field='rolloutStreamInstanceRequest',
-        request_type_name='StreamProjectsLocationsStreamInstancesRolloutRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 

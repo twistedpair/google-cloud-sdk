@@ -23,12 +23,14 @@ from googlecloudsdk.api_lib.beyondcorp.app import util as api_util
 from googlecloudsdk.command_lib.beyondcorp.app import util as command_util
 from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 
 APP_ENDPOINT_PARSE_ERROR = ('Error parsing application endpoint [{}]: endpoint '
                             'must be prefixed of the form <host>:<port>.')
 
 CONNECTOR_RESOURCE_NAME = ('projects/{}/locations/{}/connectors/{}')
+APPCONNECTOR_RESOURCE_NAME = ('projects/{}/locations/{}/appConnectors/{}')
 
 
 class ApplicationEndpointParseError(exceptions.Error):
@@ -45,6 +47,41 @@ def ValidateAndParseAppEndpoint(unused_ref, args, request):
       arguments set by user.
     request:
       create connection request raised by framework.
+
+  Returns:
+    request with modified application endpoint host and port argument.
+
+  Raises:
+    ApplicationEndpointParseError:
+  """
+  if args.IsSpecified('application_endpoint'):
+    endpoint_array = args.application_endpoint.split(':')
+    if len(endpoint_array) == 2 and endpoint_array[1].isdigit():
+      messages = api_util.GetMessagesModule(
+          args.calliope_command.ReleaseTrack())
+      app_connection = request.googleCloudBeyondcorpAppconnectionsV1alphaAppConnection
+      if app_connection is None:
+        app_connection = messages.GoogleCloudBeyondcorpAppconnectionsV1alphaAppConnection(
+        )
+      if app_connection.applicationEndpoint is None:
+        app_connection.applicationEndpoint = messages.GoogleCloudBeyondcorpAppconnectionsV1alphaAppConnectionApplicationEndpoint(
+        )
+      app_connection.applicationEndpoint.host = endpoint_array[0]
+      app_connection.applicationEndpoint.port = int(endpoint_array[1])
+      request.googleCloudBeyondcorpAppconnectionsV1alphaAppConnection = app_connection
+    else:
+      raise ApplicationEndpointParseError(
+          APP_ENDPOINT_PARSE_ERROR.format(args.application_endpoint))
+  return request
+
+
+def ValidateAndParseLegacyAppEndpoint(unused_ref, args, request):
+  """Validates app endpoint format and sets endpoint host and port after parsing.
+
+  Args:
+    unused_ref: The unused request URL.
+    args: arguments set by user.
+    request: create connection request raised by framework.
 
   Returns:
     request with modified application endpoint host and port argument.
@@ -88,6 +125,30 @@ def SetConnectors(unused_ref, args, request):
   if args.IsSpecified('connectors'):
     if not args.IsSpecified('project'):
       args.project = properties.VALUES.core.project.Get()
+    for index, connector in enumerate(
+        request.googleCloudBeyondcorpAppconnectionsV1alphaAppConnection
+        .connectors):
+      request.googleCloudBeyondcorpAppconnectionsV1alphaAppConnection.connectors[
+          index] = APPCONNECTOR_RESOURCE_NAME.format(args.project,
+                                                     args.location, connector)
+  return request
+
+
+def SetLegacyConnectors(unused_ref, args, request):
+  """Set the connectors to legacy resource based string format.
+
+  Args:
+    unused_ref: The unused request URL.
+    args: arguments set by user.
+    request: create connection request raised by framework.
+
+  Returns:
+    request with modified connectors argument.
+  """
+
+  if args.IsSpecified('connectors'):
+    if not args.IsSpecified('project'):
+      args.project = properties.VALUES.core.project.Get()
     for index, connector in enumerate(request.connection.connectors):
       request.connection.connectors[index] = CONNECTOR_RESOURCE_NAME.format(
           args.project, args.location, connector)
@@ -110,8 +171,8 @@ def CheckFieldsSpecified(unused_ref, args, patch_request):
       'Must specify at least one field to update. Try --help.')
 
 
-def UpdateLabels(unused_ref, args, patch_request):
-  """Updates labels of connection."""
+def UpdateLegacyLabels(unused_ref, args, patch_request):
+  """Updates labels of legacy connection."""
   labels_diff = labels_util.Diff.FromUpdateArgs(args)
   if labels_diff.MayHaveUpdates():
     patch_request = command_util.AddFieldToUpdateMask('labels', patch_request)
@@ -122,6 +183,24 @@ def UpdateLabels(unused_ref, args, patch_request):
                                    patch_request.connection.labels).GetOrNone()
     if new_labels:
       patch_request.connection.labels = new_labels
+  return patch_request
+
+
+def UpdateLabels(unused_ref, args, patch_request):
+  """Updates labels of connection."""
+  labels_diff = labels_util.Diff.FromUpdateArgs(args)
+  if labels_diff.MayHaveUpdates():
+    patch_request = command_util.AddFieldToUpdateMask('labels', patch_request)
+    messages = api_util.GetMessagesModule(args.calliope_command.ReleaseTrack())
+    app_connection = patch_request.googleCloudBeyondcorpAppconnectionsV1alphaAppConnection
+    if app_connection is None:
+      app_connection = messages.GoogleCloudBeyondcorpAppconnectionsV1alphaAppConnection(
+      )
+    new_labels = labels_diff.Apply(
+        messages.GoogleCloudBeyondcorpAppconnectionsV1alphaAppConnection
+        .LabelsValue, app_connection.labels).GetOrNone()
+    if new_labels:
+      app_connection.labels = new_labels
   return patch_request
 
 
@@ -136,3 +215,12 @@ def UpdateApplicationEndpointMask(unused_ref, args, patch_request):
 def UpdateLabelsFlags():
   """Defines flags for updating labels."""
   return command_util.UpdateLabelsFlags()
+
+
+def PrintMessageInResponse(response, unused_args):
+  """Adds direction to use legacy to manage the old connector resources."""
+  log.status.Print(
+      'These commands now manage new app connector and connection resources. '
+      "For old resources, please add 'legacy' in the command.\n"
+      'e.g. gcloud alpha beyondcorp app legacy connections')
+  return response

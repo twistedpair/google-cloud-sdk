@@ -106,6 +106,8 @@ def _PipelineTaskTransform(pipeline_task):
 
   if "taskSpec" in pipeline_task:
     popped_task_spec = pipeline_task.pop("taskSpec")
+    for param_spec in popped_task_spec.get("params", []):
+      input_util.ParamSpecTransform(param_spec)
     pipeline_task["taskSpec"] = {}
     pipeline_task["taskSpec"]["taskSpec"] = popped_task_spec
   elif "taskRef" in pipeline_task:

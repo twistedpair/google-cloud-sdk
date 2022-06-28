@@ -307,6 +307,33 @@ class DomainsV1alpha2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Import(self, request, global_params=None):
+      r"""Imports a domain name from [Google Domains](https://domains.google/) for use in Cloud Domains. To transfer a domain from another registrar, use the `TransferDomain` method instead. Since individual users can own domains in Google Domains, the calling user must have ownership permission on the domain.
+
+      Args:
+        request: (DomainsProjectsLocationsRegistrationsImportRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Import')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Import.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/registrations:import',
+        http_method='POST',
+        method_id='domains.projects.locations.registrations.import',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1alpha2/{+parent}/registrations:import',
+        request_field='importDomainRequest',
+        request_type_name='DomainsProjectsLocationsRegistrationsImportRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists the `Registration` resources in a project.
 
@@ -442,6 +469,33 @@ class DomainsV1alpha2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def RetrieveImportableDomains(self, request, global_params=None):
+      r"""Lists domain names from [Google Domains](https://domains.google/) that can be imported to Cloud Domains using the `ImportDomain` method. Since individual users can own domains in Google Domains, the list of domains returned depends on the individual user making the call. Domains supported by Google Domains, but not supported by Cloud Domains, are not returned.
+
+      Args:
+        request: (DomainsProjectsLocationsRegistrationsRetrieveImportableDomainsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RetrieveImportableDomainsResponse) The response message.
+      """
+      config = self.GetMethodConfig('RetrieveImportableDomains')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RetrieveImportableDomains.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/registrations:retrieveImportableDomains',
+        http_method='GET',
+        method_id='domains.projects.locations.registrations.retrieveImportableDomains',
+        ordered_params=['location'],
+        path_params=['location'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha2/{+location}/registrations:retrieveImportableDomains',
+        request_field='',
+        request_type_name='DomainsProjectsLocationsRegistrationsRetrieveImportableDomainsRequest',
+        response_type_name='RetrieveImportableDomainsResponse',
+        supports_download=False,
+    )
+
     def RetrieveRegisterParameters(self, request, global_params=None):
       r"""Gets parameters needed to register a new domain name, including price and up-to-date availability. Use the returned values to call `RegisterDomain`.
 
@@ -470,7 +524,7 @@ class DomainsV1alpha2(base_api.BaseApiClient):
     )
 
     def RetrieveTransferParameters(self, request, global_params=None):
-      r"""Gets parameters needed to transfer a domain name from another registrar to Cloud Domains. For domains managed by Google Domains, transferring to Cloud Domains is not supported. Use the returned values to call `TransferDomain`.
+      r"""Gets parameters needed to transfer a domain name from another registrar to Cloud Domains. For domains already managed by [Google Domains](https://domains.google/), use `ImportDomain` instead. Use the returned values to call `TransferDomain`.
 
       Args:
         request: (DomainsProjectsLocationsRegistrationsRetrieveTransferParametersRequest) input message
@@ -578,7 +632,7 @@ class DomainsV1alpha2(base_api.BaseApiClient):
     )
 
     def Transfer(self, request, global_params=None):
-      r"""Transfers a domain name from another registrar to Cloud Domains. For domains managed by Google Domains, transferring to Cloud Domains is not supported. Before calling this method, go to the domain's current registrar to unlock the domain for transfer and retrieve the domain's transfer authorization code. Then call `RetrieveTransferParameters` to confirm that the domain is unlocked and to get values needed to build a call to this method. A successful call creates a `Registration` resource in state `TRANSFER_PENDING`. It can take several days to complete the transfer process. The registrant can often speed up this process by approving the transfer through the current registrar, either by clicking a link in an email from the registrar or by visiting the registrar's website. A few minutes after transfer approval, the resource transitions to state `ACTIVE`, indicating that the transfer was successful. If the transfer is rejected or the request expires without being approved, the resource can end up in state `TRANSFER_FAILED`. If transfer fails, you can safely delete the resource and retry the transfer.
+      r"""Transfers a domain name from another registrar to Cloud Domains. For domains already managed by [Google Domains](https://domains.google/), use `ImportDomain` instead. Before calling this method, go to the domain's current registrar to unlock the domain for transfer and retrieve the domain's transfer authorization code. Then call `RetrieveTransferParameters` to confirm that the domain is unlocked and to get values needed to build a call to this method. A successful call creates a `Registration` resource in state `TRANSFER_PENDING`. It can take several days to complete the transfer process. The registrant can often speed up this process by approving the transfer through the current registrar, either by clicking a link in an email from the registrar or by visiting the registrar's website. A few minutes after transfer approval, the resource transitions to state `ACTIVE`, indicating that the transfer was successful. If the transfer is rejected or the request expires without being approved, the resource can end up in state `TRANSFER_FAILED`. If transfer fails, you can safely delete the resource and retry the transfer.
 
       Args:
         request: (DomainsProjectsLocationsRegistrationsTransferRequest) input message

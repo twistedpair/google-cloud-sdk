@@ -731,7 +731,6 @@ def _Load(account,
 
 
 def Refresh(credentials,
-            http_client=None,
             is_impersonated_credential=False,
             include_email=False,
             gce_token_format='standard',
@@ -745,9 +744,6 @@ def Refresh(credentials,
   Args:
     credentials: oauth2client.client.Credentials or
       google.auth.credentials.Credentials, The credentials to refresh.
-    http_client: The http transport to refresh with. httplib2.Http when
-      refreshing oauth2client credentials. google.auth.transport.Request when
-      refreshing google-auth credentials.
     is_impersonated_credential: bool, True treat provided credential as an
       impersonated service account credential. If False, treat as service
       account or user credential. Needed to avoid circular dependency on
@@ -766,21 +762,20 @@ def Refresh(credentials,
     TokenRefreshReauthError: If the credentials fail to refresh due to reauth.
   """
   if c_creds.IsOauth2ClientCredentials(credentials):
-    _Refresh(credentials, http_client, is_impersonated_credential,
+    _Refresh(credentials, is_impersonated_credential,
              include_email, gce_token_format, gce_include_license)
   else:
-    _RefreshGoogleAuth(credentials, http_client, is_impersonated_credential,
+    _RefreshGoogleAuth(credentials, is_impersonated_credential,
                        include_email, gce_token_format, gce_include_license)
 
 
 def _Refresh(credentials,
-             http_client,
              is_impersonated_credential=False,
              include_email=False,
              gce_token_format='standard',
              gce_include_license=False):
   """Refreshes oauth2client credentials."""
-  http_client = http_client or http.Http(response_encoding=transport.ENCODING)
+  http_client = http.Http(response_encoding=transport.ENCODING)
   try:
     credentials.refresh(http_client)
     id_token = None
@@ -842,7 +837,6 @@ def HandleGoogleAuthCredentialsRefreshError(for_adc=False):
 
 
 def _RefreshGoogleAuth(credentials,
-                       http_client,
                        is_impersonated_credential=False,
                        include_email=False,
                        gce_token_format='standard',
@@ -852,8 +846,6 @@ def _RefreshGoogleAuth(credentials,
   Args:
     credentials: google.auth.credentials.Credentials, A google-auth credentials
       to refresh.
-    http_client: google.auth.transport.Request, The http transport to refresh
-      with.
     is_impersonated_credential: bool, True treat provided credential as an
       impersonated service account credential. If False, treat as service
       account or user credential. Needed to avoid circular dependency on
@@ -877,7 +869,7 @@ def _RefreshGoogleAuth(credentials,
   # pylint: disable=g-import-not-at-top
   from google.oauth2 import service_account as google_auth_service_account
   # pylint: enable=g-import-not-at-top
-  request_client = http_client or requests.GoogleAuthRequest()
+  request_client = requests.GoogleAuthRequest()
   with HandleGoogleAuthCredentialsRefreshError():
     credentials.refresh(request_client)
 
@@ -933,7 +925,6 @@ def RefreshIfExpireWithinWindow(credentials, window):
   else:
     expiry = credentials.expiry
   almost_expire = (not expiry) or _TokenExpiresWithinWindow(window, expiry)
-
   if almost_expire:
     Refresh(credentials)
 

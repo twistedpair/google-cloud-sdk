@@ -52,7 +52,11 @@ AWS_CLUSTER_ARGS_TO_UPDATE_MASKS = {
     'ssh_ec2_key_pair':
         'control_plane.ssh_config.ec2_key_pair',
     'clear_ssh_ec2_key_pair':
-        'control_plane.ssh_config.ec2_key_pair'
+        'control_plane.ssh_config.ec2_key_pair',
+    'iam_instance_profile':
+        'control_plane.iam_instance_profile',
+    'logging':
+        'logging_config.component_config.enable_components',
 }
 
 AWS_NODEPOOL_ARGS_TO_UPDATE_MASKS = {
@@ -70,7 +74,8 @@ AWS_NODEPOOL_ARGS_TO_UPDATE_MASKS = {
     'proxy_secret_arn': 'config.proxy_config.secret_arn',
     'proxy_secret_version_id': 'config.proxy_config.secret_version',
     'ssh_ec2_key_pair': 'config.ssh_config.ec2_key_pair',
-    'clear_ssh_ec2_key_pair': 'config.ssh_config.ec2_key_pair'
+    'clear_ssh_ec2_key_pair': 'config.ssh_config.ec2_key_pair',
+    'iam_instance_profile': 'config.iam_instance_profile'
 }
 
 AZURE_CLUSTER_ARGS_TO_UPDATE_MASKS = {
@@ -78,6 +83,8 @@ AZURE_CLUSTER_ARGS_TO_UPDATE_MASKS = {
     'cluster_version': 'control_plane.version',
     'vm_size': 'control_plane.vm_size',
     'admin_users': 'authorization.admin_users',
+    'ssh_public_key': 'control_plane.ssh_config.authorized_key',
+    'logging': 'logging_config.component_config.enable_components',
 }
 
 AZURE_NODEPOOL_ARGS_TO_UPDATE_MASKS = {

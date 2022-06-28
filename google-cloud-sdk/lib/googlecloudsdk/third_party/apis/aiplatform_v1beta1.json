@@ -688,7 +688,7 @@
           "type": "string"
         },
         "problemType": {
-          "description": "Required. LINT.IfChange Problem type of the SavedQuery. Allowed values: * IMAGE_CLASSIFICATION_SINGLE_LABEL * IMAGE_CLASSIFICATION_MULTI_LABEL * IMAGE_BOUNDING_POLY * IMAGE_BOUNDING_BOX * IMAGE_POLYLINE * IMAGE_SEGMENTATION * TEXT_CLASSIFICATION_SINGLE_LABEL * TEXT_CLASSIFICATION_MULTI_LABEL * TEXT_EXTRACTION * TEXT_SENTIMENT * VIDEO_CLASSIFICATION * VIDEO_OBJECT_TRACKING * VIDEO_ACTION_RECOGNITION",
+          "description": "Required. Problem type of the SavedQuery. Allowed values: * IMAGE_CLASSIFICATION_SINGLE_LABEL * IMAGE_CLASSIFICATION_MULTI_LABEL * IMAGE_BOUNDING_POLY * IMAGE_BOUNDING_BOX * IMAGE_POLYLINE * IMAGE_SEGMENTATION * TEXT_CLASSIFICATION_SINGLE_LABEL * TEXT_CLASSIFICATION_MULTI_LABEL * TEXT_EXTRACTION * TEXT_SENTIMENT * VIDEO_CLASSIFICATION * VIDEO_OBJECT_TRACKING * VIDEO_ACTION_RECOGNITION",
           "type": "string"
         },
         "annotationSpecCount": {
@@ -825,142 +825,40 @@
         }
       }
     },
-    "GoogleCloudAiplatformV1beta1Endpoint": {
-      "id": "GoogleCloudAiplatformV1beta1Endpoint",
-      "description": "Models are deployed into it, and afterwards Endpoint is called to obtain predictions and explanations.",
+    "GoogleCloudAiplatformV1beta1CreateDeploymentResourcePoolRequest": {
+      "id": "GoogleCloudAiplatformV1beta1CreateDeploymentResourcePoolRequest",
+      "description": "Request message for CreateDeploymentResourcePool method.",
       "type": "object",
       "properties": {
-        "name": {
-          "description": "Output only. The resource name of the Endpoint.",
-          "readOnly": true,
+        "deploymentResourcePool": {
+          "description": "Required. The DeploymentResourcePool to create.",
+          "$ref": "GoogleCloudAiplatformV1beta1DeploymentResourcePool"
+        },
+        "deploymentResourcePoolId": {
+          "description": "Required. The ID to use for the DeploymentResourcePool, which will become the final component of the DeploymentResourcePool's resource name. The maximum length is 63 characters, and valid characters are \/^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$\/.",
           "type": "string"
-        },
-        "displayName": {
-          "description": "Required. The display name of the Endpoint. The name can be up to 128 characters long and can be consist of any UTF-8 characters.",
-          "type": "string"
-        },
-        "description": {
-          "description": "The description of the Endpoint.",
-          "type": "string"
-        },
-        "deployedModels": {
-          "description": "Output only. The models deployed in this Endpoint. To add or remove DeployedModels use EndpointService.DeployModel and EndpointService.UndeployModel respectively.",
-          "readOnly": true,
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudAiplatformV1beta1DeployedModel"
-          }
-        },
-        "trafficSplit": {
-          "description": "A map from a DeployedModel's ID to the percentage of this Endpoint's traffic that should be forwarded to that DeployedModel. If a DeployedModel's ID is not listed in this map, then it receives no traffic. The traffic percentage values must add up to 100, or map must be empty if the Endpoint is to not accept any traffic at a moment.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "integer",
-            "format": "int32"
-          }
-        },
-        "etag": {
-          "description": "Used to perform consistent read-modify-write updates. If not set, a blind \"overwrite\" update happens.",
-          "type": "string"
-        },
-        "labels": {
-          "description": "The labels with user-defined metadata to organize your Endpoints. Label keys and values can be no longer than 64 characters (Unicode codepoints), can only contain lowercase letters, numeric characters, underscores and dashes. International characters are allowed. See https:\/\/goo.gl\/xmQnxf for more information and examples of labels.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        },
-        "createTime": {
-          "description": "Output only. Timestamp when this Endpoint was created.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "updateTime": {
-          "description": "Output only. Timestamp when this Endpoint was last updated.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "encryptionSpec": {
-          "description": "Customer-managed encryption key spec for an Endpoint. If set, this Endpoint and all sub-resources of this Endpoint will be secured by this key.",
-          "$ref": "GoogleCloudAiplatformV1beta1EncryptionSpec"
-        },
-        "network": {
-          "description": "The full name of the Google Compute Engine [network](https:\/\/cloud.google.com\/\/compute\/docs\/networks-and-firewalls#networks) to which the Endpoint should be peered. Private services access must already be configured for the network. If left unspecified, the Endpoint is not peered with any network. Only one of the fields, network or enable_private_service_connect, can be set. [Format](https:\/\/cloud.google.com\/compute\/docs\/reference\/rest\/v1\/networks\/insert): `projects\/{project}\/global\/networks\/{network}`. Where `{project}` is a project number, as in `12345`, and `{network}` is network name.",
-          "type": "string"
-        },
-        "enablePrivateServiceConnect": {
-          "description": "Deprecated: If true, expose the Endpoint via private service connect. Only one of the fields, network or enable_private_service_connect, can be set.",
-          "type": "boolean"
-        },
-        "modelDeploymentMonitoringJob": {
-          "description": "Output only. Resource name of the Model Monitoring job associated with this Endpoint if monitoring is enabled by CreateModelDeploymentMonitoringJob. Format: `projects\/{project}\/locations\/{location}\/modelDeploymentMonitoringJobs\/{model_deployment_monitoring_job}`",
-          "readOnly": true,
-          "type": "string"
-        },
-        "predictRequestResponseLoggingConfig": {
-          "description": "Configures the request-response logging for online prediction.",
-          "$ref": "GoogleCloudAiplatformV1beta1PredictRequestResponseLoggingConfig"
         }
       }
     },
-    "GoogleCloudAiplatformV1beta1DeployedModel": {
-      "id": "GoogleCloudAiplatformV1beta1DeployedModel",
-      "description": "A deployment of a Model. Endpoints contain one or more DeployedModels.",
+    "GoogleCloudAiplatformV1beta1DeploymentResourcePool": {
+      "id": "GoogleCloudAiplatformV1beta1DeploymentResourcePool",
+      "description": "A description of resources that can be shared by multiple DeployedModels, whose underlying specification consists of a DedicatedResources.",
       "type": "object",
       "properties": {
-        "dedicatedResources": {
-          "description": "A description of resources that are dedicated to the DeployedModel, and that need a higher degree of manual configuration.",
-          "$ref": "GoogleCloudAiplatformV1beta1DedicatedResources"
-        },
-        "automaticResources": {
-          "description": "A description of resources that to large degree are decided by Vertex AI, and require only a modest additional configuration.",
-          "$ref": "GoogleCloudAiplatformV1beta1AutomaticResources"
-        },
-        "id": {
-          "description": "Immutable. The ID of the DeployedModel. If not provided upon deployment, Vertex AI will generate a value for this ID. This value should be 1-10 characters, and valid characters are \/[0-9]\/.",
-          "type": "string"
-        },
-        "model": {
-          "description": "Required. The resource name of the Model that this is the deployment of. Note that the Model may be in a different location than the DeployedModel's Endpoint. The resource name may contain version id or version alias to specify the version, if no version is specified, the default version will be deployed.",
-          "type": "string"
-        },
-        "modelVersionId": {
-          "description": "Output only. The version ID of the model that is deployed.",
+        "name": {
+          "description": "Output only. The resource name of the DeploymentResourcePool. Format: projects\/{project}\/locations\/{location}\/deploymentResourcePools\/{deployment_resource_pool}",
           "readOnly": true,
           "type": "string"
         },
-        "displayName": {
-          "description": "The display name of the DeployedModel. If not provided upon creation, the Model's display_name is used.",
-          "type": "string"
+        "dedicatedResources": {
+          "description": "Required. The underlying DedicatedResources that the DeploymentResourcePool uses.",
+          "$ref": "GoogleCloudAiplatformV1beta1DedicatedResources"
         },
         "createTime": {
-          "description": "Output only. Timestamp when the DeployedModel was created.",
+          "description": "Output only. Timestamp when this DeploymentResourcePool was created.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
-        },
-        "explanationSpec": {
-          "description": "Explanation configuration for this DeployedModel. When deploying a Model using EndpointService.DeployModel, this value overrides the value of Model.explanation_spec. All fields of explanation_spec are optional in the request. If a field of explanation_spec is not populated, the value of the same field of Model.explanation_spec is inherited. If the corresponding Model.explanation_spec is not populated, all fields of the explanation_spec will be used for the explanation configuration.",
-          "$ref": "GoogleCloudAiplatformV1beta1ExplanationSpec"
-        },
-        "serviceAccount": {
-          "description": "The service account that the DeployedModel's container runs as. Specify the email address of the service account. If this service account is not specified, the container runs as a service account that doesn't have access to the resource project. Users deploying the Model must have the `iam.serviceAccounts.actAs` permission on this service account.",
-          "type": "string"
-        },
-        "enableContainerLogging": {
-          "description": "If true, the container of the DeployedModel instances will send `stderr` and `stdout` streams to Stackdriver Logging. Only supported for custom-trained Models and AutoML Tabular Models.",
-          "type": "boolean"
-        },
-        "enableAccessLogging": {
-          "description": "These logs are like standard server access logs, containing information like timestamp and latency for each prediction request. Note that Stackdriver logs may incur a cost, especially if your project receives prediction requests at a high queries per second rate (QPS). Estimate your costs before enabling this option.",
-          "type": "boolean"
-        },
-        "privateEndpoints": {
-          "description": "Output only. Provide paths for users to send predict\/explain\/health requests directly to the deployed model services running on Cloud via private services access. This field is populated if network is configured.",
-          "readOnly": true,
-          "$ref": "GoogleCloudAiplatformV1beta1PrivateEndpoints"
         }
       }
     },
@@ -1047,6 +945,112 @@
           "description": "The target resource utilization in percentage (1% - 100%) for the given metric; once the real usage deviates from the target by a certain percentage, the machine replicas change. The default value is 60 (representing 60%) if not provided.",
           "type": "integer",
           "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1ListDeploymentResourcePoolsResponse": {
+      "id": "GoogleCloudAiplatformV1beta1ListDeploymentResourcePoolsResponse",
+      "description": "Response message for ListDeploymentResourcePools method.",
+      "type": "object",
+      "properties": {
+        "deploymentResourcePools": {
+          "description": "The DeploymentResourcePools from the specified location.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1DeploymentResourcePool"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1QueryDeployedModelsResponse": {
+      "id": "GoogleCloudAiplatformV1beta1QueryDeployedModelsResponse",
+      "description": "Response message for QueryDeployedModels method.",
+      "type": "object",
+      "properties": {
+        "deployedModels": {
+          "description": "DEPRECATED Use deployed_model_refs instead.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1DeployedModel"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "type": "string"
+        },
+        "deployedModelRefs": {
+          "description": "References to the DeployedModels that share the specified deploymentResourcePool.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1DeployedModelRef"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1DeployedModel": {
+      "id": "GoogleCloudAiplatformV1beta1DeployedModel",
+      "description": "A deployment of a Model. Endpoints contain one or more DeployedModels.",
+      "type": "object",
+      "properties": {
+        "dedicatedResources": {
+          "description": "A description of resources that are dedicated to the DeployedModel, and that need a higher degree of manual configuration.",
+          "$ref": "GoogleCloudAiplatformV1beta1DedicatedResources"
+        },
+        "automaticResources": {
+          "description": "A description of resources that to large degree are decided by Vertex AI, and require only a modest additional configuration.",
+          "$ref": "GoogleCloudAiplatformV1beta1AutomaticResources"
+        },
+        "sharedResources": {
+          "description": "The resource name of the shared DeploymentResourcePool to deploy on. Format: projects\/{project}\/locations\/{location}\/deploymentResourcePools\/{deployment_resource_pool}",
+          "type": "string"
+        },
+        "id": {
+          "description": "Immutable. The ID of the DeployedModel. If not provided upon deployment, Vertex AI will generate a value for this ID. This value should be 1-10 characters, and valid characters are \/[0-9]\/.",
+          "type": "string"
+        },
+        "model": {
+          "description": "Required. The resource name of the Model that this is the deployment of. Note that the Model may be in a different location than the DeployedModel's Endpoint. The resource name may contain version id or version alias to specify the version, if no version is specified, the default version will be deployed.",
+          "type": "string"
+        },
+        "modelVersionId": {
+          "description": "Output only. The version ID of the model that is deployed.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The display name of the DeployedModel. If not provided upon creation, the Model's display_name is used.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. Timestamp when the DeployedModel was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "explanationSpec": {
+          "description": "Explanation configuration for this DeployedModel. When deploying a Model using EndpointService.DeployModel, this value overrides the value of Model.explanation_spec. All fields of explanation_spec are optional in the request. If a field of explanation_spec is not populated, the value of the same field of Model.explanation_spec is inherited. If the corresponding Model.explanation_spec is not populated, all fields of the explanation_spec will be used for the explanation configuration.",
+          "$ref": "GoogleCloudAiplatformV1beta1ExplanationSpec"
+        },
+        "serviceAccount": {
+          "description": "The service account that the DeployedModel's container runs as. Specify the email address of the service account. If this service account is not specified, the container runs as a service account that doesn't have access to the resource project. Users deploying the Model must have the `iam.serviceAccounts.actAs` permission on this service account.",
+          "type": "string"
+        },
+        "enableContainerLogging": {
+          "description": "If true, the container of the DeployedModel instances will send `stderr` and `stdout` streams to Stackdriver Logging. Only supported for custom-trained Models and AutoML Tabular Models.",
+          "type": "boolean"
+        },
+        "enableAccessLogging": {
+          "description": "These logs are like standard server access logs, containing information like timestamp and latency for each prediction request. Note that Stackdriver logs may incur a cost, especially if your project receives prediction requests at a high queries per second rate (QPS). Estimate your costs before enabling this option.",
+          "type": "boolean"
+        },
+        "privateEndpoints": {
+          "description": "Output only. Provide paths for users to send predict\/explain\/health requests directly to the deployed model services running on Cloud via private services access. This field is populated if network is configured.",
+          "readOnly": true,
+          "$ref": "GoogleCloudAiplatformV1beta1PrivateEndpoints"
         }
       }
     },
@@ -1562,6 +1566,101 @@
         }
       }
     },
+    "GoogleCloudAiplatformV1beta1DeployedModelRef": {
+      "id": "GoogleCloudAiplatformV1beta1DeployedModelRef",
+      "description": "Points to a DeployedModel.",
+      "type": "object",
+      "properties": {
+        "endpoint": {
+          "description": "Immutable. A resource name of an Endpoint.",
+          "type": "string"
+        },
+        "deployedModelId": {
+          "description": "Immutable. An ID of a DeployedModel in the above Endpoint.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1Endpoint": {
+      "id": "GoogleCloudAiplatformV1beta1Endpoint",
+      "description": "Models are deployed into it, and afterwards Endpoint is called to obtain predictions and explanations.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The resource name of the Endpoint.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "displayName": {
+          "description": "Required. The display name of the Endpoint. The name can be up to 128 characters long and can be consist of any UTF-8 characters.",
+          "type": "string"
+        },
+        "description": {
+          "description": "The description of the Endpoint.",
+          "type": "string"
+        },
+        "deployedModels": {
+          "description": "Output only. The models deployed in this Endpoint. To add or remove DeployedModels use EndpointService.DeployModel and EndpointService.UndeployModel respectively.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1DeployedModel"
+          }
+        },
+        "trafficSplit": {
+          "description": "A map from a DeployedModel's ID to the percentage of this Endpoint's traffic that should be forwarded to that DeployedModel. If a DeployedModel's ID is not listed in this map, then it receives no traffic. The traffic percentage values must add up to 100, or map must be empty if the Endpoint is to not accept any traffic at a moment.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "etag": {
+          "description": "Used to perform consistent read-modify-write updates. If not set, a blind \"overwrite\" update happens.",
+          "type": "string"
+        },
+        "labels": {
+          "description": "The labels with user-defined metadata to organize your Endpoints. Label keys and values can be no longer than 64 characters (Unicode codepoints), can only contain lowercase letters, numeric characters, underscores and dashes. International characters are allowed. See https:\/\/goo.gl\/xmQnxf for more information and examples of labels.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "createTime": {
+          "description": "Output only. Timestamp when this Endpoint was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. Timestamp when this Endpoint was last updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "encryptionSpec": {
+          "description": "Customer-managed encryption key spec for an Endpoint. If set, this Endpoint and all sub-resources of this Endpoint will be secured by this key.",
+          "$ref": "GoogleCloudAiplatformV1beta1EncryptionSpec"
+        },
+        "network": {
+          "description": "The full name of the Google Compute Engine [network](https:\/\/cloud.google.com\/\/compute\/docs\/networks-and-firewalls#networks) to which the Endpoint should be peered. Private services access must already be configured for the network. If left unspecified, the Endpoint is not peered with any network. Only one of the fields, network or enable_private_service_connect, can be set. [Format](https:\/\/cloud.google.com\/compute\/docs\/reference\/rest\/v1\/networks\/insert): `projects\/{project}\/global\/networks\/{network}`. Where `{project}` is a project number, as in `12345`, and `{network}` is network name.",
+          "type": "string"
+        },
+        "enablePrivateServiceConnect": {
+          "description": "Deprecated: If true, expose the Endpoint via private service connect. Only one of the fields, network or enable_private_service_connect, can be set.",
+          "type": "boolean"
+        },
+        "modelDeploymentMonitoringJob": {
+          "description": "Output only. Resource name of the Model Monitoring job associated with this Endpoint if monitoring is enabled by CreateModelDeploymentMonitoringJob. Format: `projects\/{project}\/locations\/{location}\/modelDeploymentMonitoringJobs\/{model_deployment_monitoring_job}`",
+          "readOnly": true,
+          "type": "string"
+        },
+        "predictRequestResponseLoggingConfig": {
+          "description": "Configures the request-response logging for online prediction.",
+          "$ref": "GoogleCloudAiplatformV1beta1PredictRequestResponseLoggingConfig"
+        }
+      }
+    },
     "GoogleCloudAiplatformV1beta1PredictRequestResponseLoggingConfig": {
       "id": "GoogleCloudAiplatformV1beta1PredictRequestResponseLoggingConfig",
       "description": "Configuration for logging request-response to a BigQuery table.",
@@ -1836,7 +1935,7 @@
       "type": "object",
       "properties": {
         "values": {
-          "description": "A list of bool values.",
+          "description": "A list of double values.",
           "type": "array",
           "items": {
             "type": "number",
@@ -3866,7 +3965,7 @@
           ]
         },
         "observationNoise": {
-          "description": "The observation noise level of the study. Currently only supported by the Vertex AI Vizier service. Not supported by HyperparamterTuningJob or TrainingPipeline.",
+          "description": "The observation noise level of the study. Currently only supported by the Vertex AI Vizier service. Not supported by HyperparameterTuningJob or TrainingPipeline.",
           "type": "string",
           "enumDescriptions": [
             "The default noise level chosen by Vertex AI.",
@@ -4068,7 +4167,7 @@
           "format": "double"
         },
         "defaultValue": {
-          "description": "A default value for a `DOUBLE` parameter that is assumed to be a relatively good starting point. Unset value signals that there is no offered starting point. Currently only supported by the Vertex AI Vizier service. Not supported by HyperparamterTuningJob or TrainingPipeline.",
+          "description": "A default value for a `DOUBLE` parameter that is assumed to be a relatively good starting point. Unset value signals that there is no offered starting point. Currently only supported by the Vertex AI Vizier service. Not supported by HyperparameterTuningJob or TrainingPipeline.",
           "type": "number",
           "format": "double"
         }
@@ -4090,7 +4189,7 @@
           "format": "int64"
         },
         "defaultValue": {
-          "description": "A default value for an `INTEGER` parameter that is assumed to be a relatively good starting point. Unset value signals that there is no offered starting point. Currently only supported by the Vertex AI Vizier service. Not supported by HyperparamterTuningJob or TrainingPipeline.",
+          "description": "A default value for an `INTEGER` parameter that is assumed to be a relatively good starting point. Unset value signals that there is no offered starting point. Currently only supported by the Vertex AI Vizier service. Not supported by HyperparameterTuningJob or TrainingPipeline.",
           "type": "string",
           "format": "int64"
         }
@@ -4109,7 +4208,7 @@
           }
         },
         "defaultValue": {
-          "description": "A default value for a `CATEGORICAL` parameter that is assumed to be a relatively good starting point. Unset value signals that there is no offered starting point. Currently only supported by the Vizier service. Not supported by HyperparamterTuningJob or TrainingPipeline.",
+          "description": "A default value for a `CATEGORICAL` parameter that is assumed to be a relatively good starting point. Unset value signals that there is no offered starting point. Currently only supported by the Vertex AI Vizier service. Not supported by HyperparameterTuningJob or TrainingPipeline.",
           "type": "string"
         }
       }
@@ -4128,7 +4227,7 @@
           }
         },
         "defaultValue": {
-          "description": "A default value for a `DISCRETE` parameter that is assumed to be a relatively good starting point. Unset value signals that there is no offered starting point. It automatically rounds to the nearest feasible discrete point. Currently only supported by the Vizier service. Not supported by HyperparamterTuningJob or TrainingPipeline.",
+          "description": "A default value for a `DISCRETE` parameter that is assumed to be a relatively good starting point. Unset value signals that there is no offered starting point. It automatically rounds to the nearest feasible discrete point. Currently only supported by the Vertex AI Vizier service. Not supported by HyperparameterTuningJob or TrainingPipeline.",
           "type": "number",
           "format": "double"
         }
@@ -5081,6 +5180,10 @@
           "additionalProperties": {
             "$ref": "GoogleCloudAiplatformV1beta1ThresholdConfig"
           }
+        },
+        "defaultSkewThreshold": {
+          "description": "Skew anomaly detection threshold used by all features. When the per-feature thresholds are not set, this field can be used to specify a threshold for all features.",
+          "$ref": "GoogleCloudAiplatformV1beta1ThresholdConfig"
         }
       }
     },
@@ -5114,6 +5217,10 @@
           "additionalProperties": {
             "$ref": "GoogleCloudAiplatformV1beta1ThresholdConfig"
           }
+        },
+        "defaultDriftThreshold": {
+          "description": "Drift anomaly detection threshold used by all features. When the per-feature thresholds are not set, this field can be used to specify a threshold for all features.",
+          "$ref": "GoogleCloudAiplatformV1beta1ThresholdConfig"
         }
       }
     },
@@ -6418,12 +6525,14 @@
             "enumDescriptions": [
               "Should not be used.",
               "Resources that are dedicated to the DeployedModel, and that need a higher degree of manual configuration.",
-              "Resources that to large degree are decided by Vertex AI, and require only a modest additional configuration."
+              "Resources that to large degree are decided by Vertex AI, and require only a modest additional configuration.",
+              "Resources that can be shared by multiple DeployedModels. A pre-configured DeploymentResourcePool is required."
             ],
             "enum": [
               "DEPLOYMENT_RESOURCES_TYPE_UNSPECIFIED",
               "DEDICATED_RESOURCES",
-              "AUTOMATIC_RESOURCES"
+              "AUTOMATIC_RESOURCES",
+              "SHARED_RESOURCES"
             ]
           }
         },
@@ -6522,21 +6631,6 @@
         "model": {
           "description": "Output only. The resource name of the Model this Model is a copy of, including the revision. Format: `projects\/{project}\/locations\/{location}\/models\/{model_id}@{version_id}`",
           "readOnly": true,
-          "type": "string"
-        }
-      }
-    },
-    "GoogleCloudAiplatformV1beta1DeployedModelRef": {
-      "id": "GoogleCloudAiplatformV1beta1DeployedModelRef",
-      "description": "Points to a DeployedModel.",
-      "type": "object",
-      "properties": {
-        "endpoint": {
-          "description": "Immutable. A resource name of an Endpoint.",
-          "type": "string"
-        },
-        "deployedModelId": {
-          "description": "Immutable. An ID of a DeployedModel in the above Endpoint.",
           "type": "string"
         }
       }
@@ -9465,6 +9559,10 @@
         "automaticResources": {
           "description": "A description of resources that to large degree are decided by Vertex AI, and require only a modest additional configuration.",
           "$ref": "GoogleCloudAiplatformInternalAutomaticResources"
+        },
+        "sharedResources": {
+          "description": "The resource name of the shared DeploymentResourcePool to deploy on. Format: projects\/{project}\/locations\/{location}\/deploymentResourcePools\/{deployment_resource_pool}",
+          "type": "string"
         },
         "id": {
           "description": "Immutable. The ID of the DeployedModel. If not provided upon deployment, Vertex AI will generate a value for this ID. This value should be 1-10 characters, and valid characters are \/[0-9]\/.",
@@ -12540,6 +12638,10 @@
           "description": "A description of resources that to large degree are decided by Vertex AI, and require only a modest additional configuration.",
           "$ref": "GoogleCloudAiplatformUiAutomaticResources"
         },
+        "sharedResources": {
+          "description": "The resource name of the shared DeploymentResourcePool to deploy on. Format: projects\/{project}\/locations\/{location}\/deploymentResourcePools\/{deployment_resource_pool}",
+          "type": "string"
+        },
         "id": {
           "description": "Immutable. The ID of the DeployedModel. If not provided upon deployment, Vertex AI will generate a value for this ID. This value should be 1-10 characters, and valid characters are \/[0-9]\/.",
           "type": "string"
@@ -13359,6 +13461,10 @@
           "additionalProperties": {
             "$ref": "GoogleCloudAiplatformUiThresholdConfig"
           }
+        },
+        "defaultSkewThreshold": {
+          "description": "Skew anomaly detection threshold used by all features. When the per-feature thresholds are not set, this field can be used to specify a threshold for all features.",
+          "$ref": "GoogleCloudAiplatformUiThresholdConfig"
         }
       }
     },
@@ -13392,6 +13498,10 @@
           "additionalProperties": {
             "$ref": "GoogleCloudAiplatformUiThresholdConfig"
           }
+        },
+        "defaultDriftThreshold": {
+          "description": "Drift anomaly detection threshold used by all features. When the per-feature thresholds are not set, this field can be used to specify a threshold for all features.",
+          "$ref": "GoogleCloudAiplatformUiThresholdConfig"
         }
       }
     },
@@ -24721,7 +24831,7 @@
           ]
         },
         "observationNoise": {
-          "description": "The observation noise level of the study. Currently only supported by the Vertex AI Vizier service. Not supported by HyperparamterTuningJob or TrainingPipeline.",
+          "description": "The observation noise level of the study. Currently only supported by the Vertex AI Vizier service. Not supported by HyperparameterTuningJob or TrainingPipeline.",
           "type": "string",
           "enumDescriptions": [
             "The default noise level chosen by Vertex AI.",
@@ -24893,7 +25003,7 @@
           "format": "double"
         },
         "defaultValue": {
-          "description": "A default value for a `DOUBLE` parameter that is assumed to be a relatively good starting point. Unset value signals that there is no offered starting point. Currently only supported by the Vertex AI Vizier service. Not supported by HyperparamterTuningJob or TrainingPipeline.",
+          "description": "A default value for a `DOUBLE` parameter that is assumed to be a relatively good starting point. Unset value signals that there is no offered starting point. Currently only supported by the Vertex AI Vizier service. Not supported by HyperparameterTuningJob or TrainingPipeline.",
           "type": "number",
           "format": "double"
         }
@@ -24915,7 +25025,7 @@
           "format": "int64"
         },
         "defaultValue": {
-          "description": "A default value for an `INTEGER` parameter that is assumed to be a relatively good starting point. Unset value signals that there is no offered starting point. Currently only supported by the Vertex AI Vizier service. Not supported by HyperparamterTuningJob or TrainingPipeline.",
+          "description": "A default value for an `INTEGER` parameter that is assumed to be a relatively good starting point. Unset value signals that there is no offered starting point. Currently only supported by the Vertex AI Vizier service. Not supported by HyperparameterTuningJob or TrainingPipeline.",
           "type": "string",
           "format": "int64"
         }
@@ -24934,7 +25044,7 @@
           }
         },
         "defaultValue": {
-          "description": "A default value for a `CATEGORICAL` parameter that is assumed to be a relatively good starting point. Unset value signals that there is no offered starting point. Currently only supported by the Vizier service. Not supported by HyperparamterTuningJob or TrainingPipeline.",
+          "description": "A default value for a `CATEGORICAL` parameter that is assumed to be a relatively good starting point. Unset value signals that there is no offered starting point. Currently only supported by the Vertex AI Vizier service. Not supported by HyperparameterTuningJob or TrainingPipeline.",
           "type": "string"
         }
       }
@@ -24953,7 +25063,7 @@
           }
         },
         "defaultValue": {
-          "description": "A default value for a `DISCRETE` parameter that is assumed to be a relatively good starting point. Unset value signals that there is no offered starting point. It automatically rounds to the nearest feasible discrete point. Currently only supported by the Vizier service. Not supported by HyperparamterTuningJob or TrainingPipeline.",
+          "description": "A default value for a `DISCRETE` parameter that is assumed to be a relatively good starting point. Unset value signals that there is no offered starting point. It automatically rounds to the nearest feasible discrete point. Currently only supported by the Vertex AI Vizier service. Not supported by HyperparameterTuningJob or TrainingPipeline.",
           "type": "number",
           "format": "double"
         }
@@ -27549,161 +27659,6 @@
                 }
               }
             },
-            "deploymentResourcePools": {
-              "resources": {
-                "operations": {
-                  "methods": {
-                    "list": {
-                      "id": "aiplatform.projects.locations.deploymentResourcePools.operations.list",
-                      "path": "v1beta1/{+name}/operations",
-                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/deploymentResourcePools/{deploymentResourcePoolsId}/operations",
-                      "httpMethod": "GET",
-                      "parameters": {
-                        "name": {
-                          "description": "The name of the operation's parent resource.",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deploymentResourcePools\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "filter": {
-                          "description": "The standard list filter.",
-                          "location": "query",
-                          "type": "string"
-                        },
-                        "pageSize": {
-                          "description": "The standard list page size.",
-                          "location": "query",
-                          "type": "integer",
-                          "format": "int32"
-                        },
-                        "pageToken": {
-                          "description": "The standard list page token.",
-                          "location": "query",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "response": {
-                        "$ref": "GoogleLongrunningListOperationsResponse"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
-                    },
-                    "get": {
-                      "id": "aiplatform.projects.locations.deploymentResourcePools.operations.get",
-                      "path": "v1beta1/{+name}",
-                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/deploymentResourcePools/{deploymentResourcePoolsId}/operations/{operationsId}",
-                      "httpMethod": "GET",
-                      "parameters": {
-                        "name": {
-                          "description": "The name of the operation resource.",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deploymentResourcePools\/[^\/]+\/operations\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "response": {
-                        "$ref": "GoogleLongrunningOperation"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
-                    },
-                    "delete": {
-                      "id": "aiplatform.projects.locations.deploymentResourcePools.operations.delete",
-                      "path": "v1beta1/{+name}",
-                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/deploymentResourcePools/{deploymentResourcePoolsId}/operations/{operationsId}",
-                      "httpMethod": "DELETE",
-                      "parameters": {
-                        "name": {
-                          "description": "The name of the operation resource to be deleted.",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deploymentResourcePools\/[^\/]+\/operations\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "response": {
-                        "$ref": "GoogleProtobufEmpty"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`."
-                    },
-                    "cancel": {
-                      "id": "aiplatform.projects.locations.deploymentResourcePools.operations.cancel",
-                      "path": "v1beta1/{+name}:cancel",
-                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/deploymentResourcePools/{deploymentResourcePoolsId}/operations/{operationsId}:cancel",
-                      "httpMethod": "POST",
-                      "parameters": {
-                        "name": {
-                          "description": "The name of the operation resource to be cancelled.",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deploymentResourcePools\/[^\/]+\/operations\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "response": {
-                        "$ref": "GoogleProtobufEmpty"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`."
-                    },
-                    "wait": {
-                      "id": "aiplatform.projects.locations.deploymentResourcePools.operations.wait",
-                      "path": "v1beta1/{+name}:wait",
-                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/deploymentResourcePools/{deploymentResourcePoolsId}/operations/{operationsId}:wait",
-                      "httpMethod": "POST",
-                      "parameters": {
-                        "name": {
-                          "description": "The name of the operation resource to wait on.",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deploymentResourcePools\/[^\/]+\/operations\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "timeout": {
-                          "description": "The maximum duration to wait before timing out. If left blank, the wait will be at most the time permitted by the underlying HTTP\/RPC protocol. If RPC context deadline is also specified, the shorter one will be used.",
-                          "location": "query",
-                          "type": "string",
-                          "format": "google-duration"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "response": {
-                        "$ref": "GoogleLongrunningOperation"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Waits until the specified long-running operation is done or reaches at most a specified timeout, returning the latest state. If the operation is already done, the latest state is immediately returned. If the timeout specified is greater than the default HTTP\/RPC timeout, the HTTP\/RPC timeout is used. If the server does not support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Note that this method is on a best-effort basis. It may return the latest state before the specified timeout (including immediately), meaning even an immediate response is no guarantee that the operation is done."
-                    }
-                  }
-                }
-              }
-            },
             "edgeDevices": {
               "resources": {
                 "operations": {
@@ -29057,6 +29012,348 @@
                           "description": "Waits until the specified long-running operation is done or reaches at most a specified timeout, returning the latest state. If the operation is already done, the latest state is immediately returned. If the timeout specified is greater than the default HTTP\/RPC timeout, the HTTP\/RPC timeout is used. If the server does not support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Note that this method is on a best-effort basis. It may return the latest state before the specified timeout (including immediately), meaning even an immediate response is no guarantee that the operation is done."
                         }
                       }
+                    }
+                  }
+                }
+              }
+            },
+            "deploymentResourcePools": {
+              "methods": {
+                "create": {
+                  "id": "aiplatform.projects.locations.deploymentResourcePools.create",
+                  "path": "v1beta1/{+parent}/deploymentResourcePools",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/deploymentResourcePools",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent location resource where this DeploymentResourcePool will be created. Format: projects\/{project}\/locations\/{location}",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "GoogleCloudAiplatformV1beta1CreateDeploymentResourcePoolRequest"
+                  },
+                  "response": {
+                    "$ref": "GoogleLongrunningOperation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Create a DeploymentResourcePool."
+                },
+                "get": {
+                  "id": "aiplatform.projects.locations.deploymentResourcePools.get",
+                  "path": "v1beta1/{+name}",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/deploymentResourcePools/{deploymentResourcePoolsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the DeploymentResourcePool to retrieve. Format: projects\/{project}\/locations\/{location}\/deploymentResourcePools\/{deployment_resource_pool}",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deploymentResourcePools\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "GoogleCloudAiplatformV1beta1DeploymentResourcePool"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Get a DeploymentResourcePool."
+                },
+                "list": {
+                  "id": "aiplatform.projects.locations.deploymentResourcePools.list",
+                  "path": "v1beta1/{+parent}/deploymentResourcePools",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/deploymentResourcePools",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent Location which owns this collection of DeploymentResourcePools. Format: projects\/{project}\/locations\/{location}",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The maximum number of DeploymentResourcePools to return. The service may return fewer than this value.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "A page token, received from a previous `ListDeploymentResourcePools` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListDeploymentResourcePools` must match the call that provided the page token.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "GoogleCloudAiplatformV1beta1ListDeploymentResourcePoolsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "List DeploymentResourcePools in a location."
+                },
+                "patch": {
+                  "id": "aiplatform.projects.locations.deploymentResourcePools.patch",
+                  "path": "v1beta1/{+name}",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/deploymentResourcePools/{deploymentResourcePoolsId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Output only. The resource name of the DeploymentResourcePool. Format: projects\/{project}\/locations\/{location}\/deploymentResourcePools\/{deployment_resource_pool}",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deploymentResourcePools\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Required. The list of fields to update.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "GoogleCloudAiplatformV1beta1DeploymentResourcePool"
+                  },
+                  "response": {
+                    "$ref": "GoogleLongrunningOperation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Update a DeploymentResourcePool."
+                },
+                "delete": {
+                  "id": "aiplatform.projects.locations.deploymentResourcePools.delete",
+                  "path": "v1beta1/{+name}",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/deploymentResourcePools/{deploymentResourcePoolsId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the DeploymentResourcePool to delete. Format: projects\/{project}\/locations\/{location}\/deploymentResourcePools\/{deployment_resource_pool}",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deploymentResourcePools\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "GoogleLongrunningOperation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Delete a DeploymentResourcePool."
+                },
+                "queryDeployedModels": {
+                  "id": "aiplatform.projects.locations.deploymentResourcePools.queryDeployedModels",
+                  "path": "v1beta1/{+deploymentResourcePool}:queryDeployedModels",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/deploymentResourcePools/{deploymentResourcePoolsId}:queryDeployedModels",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "deploymentResourcePool": {
+                      "description": "Required. The name of the target DeploymentResourcePool to query. Format: projects\/{project}\/locations\/{location}\/deploymentResourcePools\/{deployment_resource_pool}",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deploymentResourcePools\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The maximum number of DeployedModels to return. The service may return fewer than this value.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "A page token, received from a previous `QueryDeployedModels` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `QueryDeployedModels` must match the call that provided the page token.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "deploymentResourcePool"
+                  ],
+                  "response": {
+                    "$ref": "GoogleCloudAiplatformV1beta1QueryDeployedModelsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "List DeployedModels that have been deployed on this DeploymentResourcePool."
+                }
+              }
+              ,
+              "resources": {
+                "operations": {
+                  "methods": {
+                    "list": {
+                      "id": "aiplatform.projects.locations.deploymentResourcePools.operations.list",
+                      "path": "v1beta1/{+name}/operations",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/deploymentResourcePools/{deploymentResourcePoolsId}/operations",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation's parent resource.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deploymentResourcePools\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "filter": {
+                          "description": "The standard list filter.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "The standard list page size.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "The standard list page token.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleLongrunningListOperationsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                    },
+                    "get": {
+                      "id": "aiplatform.projects.locations.deploymentResourcePools.operations.get",
+                      "path": "v1beta1/{+name}",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/deploymentResourcePools/{deploymentResourcePoolsId}/operations/{operationsId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation resource.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deploymentResourcePools\/[^\/]+\/operations\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleLongrunningOperation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
+                    },
+                    "delete": {
+                      "id": "aiplatform.projects.locations.deploymentResourcePools.operations.delete",
+                      "path": "v1beta1/{+name}",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/deploymentResourcePools/{deploymentResourcePoolsId}/operations/{operationsId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation resource to be deleted.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deploymentResourcePools\/[^\/]+\/operations\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleProtobufEmpty"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`."
+                    },
+                    "cancel": {
+                      "id": "aiplatform.projects.locations.deploymentResourcePools.operations.cancel",
+                      "path": "v1beta1/{+name}:cancel",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/deploymentResourcePools/{deploymentResourcePoolsId}/operations/{operationsId}:cancel",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation resource to be cancelled.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deploymentResourcePools\/[^\/]+\/operations\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleProtobufEmpty"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`."
+                    },
+                    "wait": {
+                      "id": "aiplatform.projects.locations.deploymentResourcePools.operations.wait",
+                      "path": "v1beta1/{+name}:wait",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/deploymentResourcePools/{deploymentResourcePoolsId}/operations/{operationsId}:wait",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation resource to wait on.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deploymentResourcePools\/[^\/]+\/operations\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "timeout": {
+                          "description": "The maximum duration to wait before timing out. If left blank, the wait will be at most the time permitted by the underlying HTTP\/RPC protocol. If RPC context deadline is also specified, the shorter one will be used.",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-duration"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleLongrunningOperation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Waits until the specified long-running operation is done or reaches at most a specified timeout, returning the latest state. If the operation is already done, the latest state is immediately returned. If the timeout specified is greater than the default HTTP\/RPC timeout, the HTTP\/RPC timeout is used. If the server does not support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Note that this method is on a best-effort basis. It may return the latest state before the specified timeout (including immediately), meaning even an immediate response is no guarantee that the operation is done."
                     }
                   }
                 }
@@ -33360,7 +33657,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Copies an already existing in Vertex AI Model into this Location. The source Model must exist in the same Project. If Model has a custom ID which is already taken at the destination location, then \"-\" is appended to it, with NOW_TIMESTAMP being in yyyyMMddHHmmss format. (Note: the ID may be taken by another Model that is not visible at the moment (e.g. being created))."
+                  "description": "Copies an already existing in Vertex AI Model into this Location. The source Model must exist in the same Project. If Model has a custom ID which is already taken at the destination location, then \"-\" is appended to it, with NOW_TIMESTAMP being in yyyyMMddHHmmss format. (Note: the ID may be taken by another Model that is not visible at the moment (e.g. being created)). When copying custom Models, the users themselves are responsible for Model.metadata content to be region-agnostic, as well as making sure that any resources (e.g. files) it depends on remain accessible."
                 }
               }
               ,

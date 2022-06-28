@@ -211,7 +211,7 @@ class BatchV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""List all Jobs for a project.
+      r"""List all Jobs for a project within a region.
 
       Args:
         request: (BatchProjectsLocationsJobsListRequest) input message

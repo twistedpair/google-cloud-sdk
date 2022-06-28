@@ -229,6 +229,33 @@ class AlloydbV1beta(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Createsecondary(self, request, global_params=None):
+      r"""Creates a new SECONDARY Instance in a given project and location.
+
+      Args:
+        request: (AlloydbProjectsLocationsClustersInstancesCreatesecondaryRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Createsecondary')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Createsecondary.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/instances:createsecondary',
+        http_method='POST',
+        method_id='alloydb.projects.locations.clusters.instances.createsecondary',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['instanceId', 'requestId', 'validateOnly'],
+        relative_path='v1beta/{+parent}/instances:createsecondary',
+        request_field='instance',
+        request_type_name='AlloydbProjectsLocationsClustersInstancesCreatesecondaryRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       r"""Deletes a single Instance.
 

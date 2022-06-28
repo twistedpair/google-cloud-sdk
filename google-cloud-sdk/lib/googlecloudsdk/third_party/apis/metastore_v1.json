@@ -372,14 +372,10 @@
           "type": "string",
           "enumDescriptions": [
             "The metastore type is not set.",
-            "The backend metastore is Dataplex.",
-            "The backend metastore is BigQuery.",
             "The backend metastore is Dataproc Metastore."
           ],
           "enum": [
             "METASTORE_TYPE_UNSPECIFIED",
-            "DATAPLEX",
-            "BIGQUERY",
             "DATAPROC_METASTORE"
           ]
         }
@@ -536,6 +532,10 @@
         "encryptionConfig": {
           "description": "Immutable. Information used to configure the Dataproc Metastore service to encrypt customer data at rest. Cannot be updated.",
           "$ref": "EncryptionConfig"
+        },
+        "networkConfig": {
+          "description": "Immutable. The configuration specifying the network settings for the Dataproc Metastore service.",
+          "$ref": "NetworkConfig"
         },
         "databaseType": {
           "description": "Immutable. The database type that the Metastore service stores its data.",
@@ -792,6 +792,36 @@
       "properties": {
         "kmsKey": {
           "description": "The fully qualified customer provided Cloud KMS key name to use for customer data encryption, in the following form:projects\/{project_number}\/locations\/{location_id}\/keyRings\/{key_ring_id}\/cryptoKeys\/{crypto_key_id}.",
+          "type": "string"
+        }
+      }
+    },
+    "NetworkConfig": {
+      "id": "NetworkConfig",
+      "description": "Network configuration for the Dataproc Metastore service.",
+      "type": "object",
+      "properties": {
+        "consumers": {
+          "description": "Immutable. The consumer-side network configuration for the Dataproc Metastore instance.",
+          "type": "array",
+          "items": {
+            "$ref": "Consumer"
+          }
+        }
+      }
+    },
+    "Consumer": {
+      "id": "Consumer",
+      "description": "Contains information of the customer's network configurations.",
+      "type": "object",
+      "properties": {
+        "subnetwork": {
+          "description": "The subnetwork of the customer project from which an IP address is reserved and used as the Dataproc Metastore service's endpoint. It is accessible to hosts in the subnet and to all hosts in a subnet in the same region and same network. There must be at least one IP address available in the subnet's primary range. The subnet is specified in the following form:`projects\/{project_number}\/regions\/{region_id}\/subnetworks\/{subnetwork_id}",
+          "type": "string"
+        },
+        "endpointUri": {
+          "description": "Output only. The URI of the endpoint used to access the metastore service.",
+          "readOnly": true,
           "type": "string"
         }
       }

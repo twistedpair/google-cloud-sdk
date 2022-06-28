@@ -1062,6 +1062,87 @@
           "type": "string"
         }
       }
+    },
+    "DeploymentOperationMetadata": {
+      "id": "DeploymentOperationMetadata",
+      "description": "Operation metadata for Deployment.Create. Next tag: 8",
+      "type": "object",
+      "properties": {
+        "createTime": {
+          "description": "The time this operation was created.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "The time this operation ended or empty if it is still active.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "target": {
+          "description": "Resource path for the target resource of the operation.",
+          "type": "string"
+        },
+        "verb": {
+          "description": "The verb associated with the API method which triggered this operation.",
+          "type": "string"
+        },
+        "cancelRequested": {
+          "description": "Is cancelation requested for this operation.",
+          "type": "boolean"
+        },
+        "apiVersion": {
+          "description": "The API version which triggered this operation.",
+          "type": "string"
+        },
+        "resourceStatus": {
+          "description": "The ongoinging state of resources that are being deployed. Order is not guaranteed to be stable between multiple reads of the same ongoing operation.",
+          "type": "array",
+          "items": {
+            "$ref": "ResourceDeploymentStatus"
+          }
+        }
+      }
+    },
+    "ResourceDeploymentStatus": {
+      "id": "ResourceDeploymentStatus",
+      "description": "Message decribing the status of a resource being deployed. Next tag: 4",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Name of the resource.",
+          "$ref": "TypedName"
+        },
+        "state": {
+          "description": "Current status of the resource.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value indicating the state is unknown.",
+            "Resource queued for deployment.",
+            "Deployment in progress.",
+            "Deployment completed."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "NOT_STARTED",
+            "RUNNING",
+            "FINISHED"
+          ]
+        },
+        "operation": {
+          "description": "Operation to be performed on the resource .",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value indicating the operation is unknown.",
+            "Apply configuration to resource.",
+            "Destroy resource."
+          ],
+          "enum": [
+            "OPERATION_UNSPECIFIED",
+            "APPLY",
+            "DESTROY"
+          ]
+        }
+      }
     }
   },
   "resources": {

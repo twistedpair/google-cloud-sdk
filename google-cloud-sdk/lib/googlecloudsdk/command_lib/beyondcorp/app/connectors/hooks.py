@@ -23,6 +23,7 @@ from googlecloudsdk.api_lib.beyondcorp.app import util as api_util
 from googlecloudsdk.command_lib.beyondcorp.app import util as command_util
 from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core import log
 
 
 def CheckFieldsSpecified(unused_ref, args, patch_request):
@@ -39,7 +40,7 @@ def CheckFieldsSpecified(unused_ref, args, patch_request):
       'Must specify at least one field to update. Try --help.')
 
 
-def UpdateLabels(unused_ref, args, patch_request):
+def UpdateLegacyLabels(unused_ref, args, patch_request):
   """Updates labels of connector."""
   labels_diff = labels_util.Diff.FromUpdateArgs(args)
   if labels_diff.MayHaveUpdates():
@@ -54,6 +55,24 @@ def UpdateLabels(unused_ref, args, patch_request):
   return patch_request
 
 
+def UpdateLabels(unused_ref, args, patch_request):
+  """Updates labels of appConnector."""
+  labels_diff = labels_util.Diff.FromUpdateArgs(args)
+  if labels_diff.MayHaveUpdates():
+    patch_request = command_util.AddFieldToUpdateMask('labels', patch_request)
+    messages = api_util.GetMessagesModule(args.calliope_command.ReleaseTrack())
+    app_connector_msg = patch_request.googleCloudBeyondcorpAppconnectorsV1alphaAppConnector
+    if app_connector_msg is None:
+      app_connector_msg = messages.GoogleCloudBeyondcorpAppconnectorsV1alphaAppConnector(
+      )
+    new_labels = labels_diff.Apply(
+        messages.GoogleCloudBeyondcorpAppconnectorsV1alphaAppConnector
+        .LabelsValue, app_connector_msg.labels).GetOrNone()
+    if new_labels:
+      app_connector_msg.labels = new_labels
+  return patch_request
+
+
 def UpdateLabelsFlags():
   """Defines flags for updating labels."""
   return command_util.UpdateLabelsFlags()
@@ -65,4 +84,13 @@ def HideDetailsBeforeDescribing(response, args):
     return response
   response.resourceInfo.resource = None
   response.resourceInfo.sub.clear()
+  return response
+
+
+def PrintMessageInResponse(response, unused_args):
+  """Adds direction to use legacy to manage the old connector resources."""
+  log.status.Print(
+      'These commands now manage new app connector and connection resources. '
+      "For old resources, please add 'legacy' in the command.\n"
+      'e.g. gcloud alpha beyondcorp app legacy connectors')
   return response

@@ -5272,6 +5272,35 @@ class UpdateDatabaseDdlRequest(_messages.Message):
   statements = _messages.StringField(2, repeated=True)
 
 
+class UpdateDatabaseMetadata(_messages.Message):
+  r"""Metadata type for the operation returned by UpdateDatabase.
+
+  Fields:
+    cancelTime: The time at which this operation was cancelled. If set, this
+      operation is in the process of undoing itself (which is best-effort).
+    progress: The progress of the UpdateDatabase operation.
+    request: The request for UpdateDatabase.
+  """
+
+  cancelTime = _messages.StringField(1)
+  progress = _messages.MessageField('OperationProgress', 2)
+  request = _messages.MessageField('UpdateDatabaseRequest', 3)
+
+
+class UpdateDatabaseRequest(_messages.Message):
+  r"""The request for UpdateDatabase.
+
+  Fields:
+    database: Required. The database to update. The `name` field of the
+      database is of the form `projects//instances//databases/`.
+    updateMask: Required. The list of fields to update. Currently, only
+      `enable_drop_protection` field can be updated.
+  """
+
+  database = _messages.MessageField('Database', 1)
+  updateMask = _messages.StringField(2)
+
+
 class UpdateInstanceConfigMetadata(_messages.Message):
   r"""Metadata type for the operation returned by UpdateInstanceConfig.
 

@@ -7,7 +7,7 @@
   "version": "v1alpha1",
   "revision": "0",
   "title": "Network Connectivity API",
-  "description": "The Network Connectivity API provides access to Network Connectivity Center.",
+  "description": "This API enables connectivity with and between Google Cloud resources.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {
@@ -458,13 +458,15 @@
             "No state information available",
             "The resource's create operation is in progress",
             "The resource is active",
-            "The resource's Delete operation is in progress"
+            "The resource's Delete operation is in progress",
+            "The resource's Update operation is in progress"
           ],
           "enum": [
             "STATE_UNSPECIFIED",
             "CREATING",
             "ACTIVE",
-            "DELETING"
+            "DELETING",
+            "UPDATING"
           ]
         }
       }
@@ -562,13 +564,15 @@
             "No state information available",
             "The resource's create operation is in progress",
             "The resource is active",
-            "The resource's Delete operation is in progress"
+            "The resource's Delete operation is in progress",
+            "The resource's Update operation is in progress"
           ],
           "enum": [
             "STATE_UNSPECIFIED",
             "CREATING",
             "ACTIVE",
-            "DELETING"
+            "DELETING",
+            "UPDATING"
           ]
         }
       }
@@ -1702,7 +1706,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Lists Hubs in a given project and location."
+                      "description": "Lists the Network Connectivity Center hubs associated with a given project."
                     },
                     "get": {
                       "id": "networkconnectivity.projects.locations.global.hubs.get",
@@ -1727,7 +1731,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Gets details of a single Hub."
+                      "description": "Gets details about a Network Connectivity Center hub."
                     },
                     "create": {
                       "id": "networkconnectivity.projects.locations.global.hubs.create",
@@ -1765,7 +1769,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Creates a new Hub in a given project and location."
+                      "description": "Creates a new Network Connectivity Center hub in the specified project."
                     },
                     "patch": {
                       "id": "networkconnectivity.projects.locations.global.hubs.patch",
@@ -1804,7 +1808,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Updates the parameters of a single Hub."
+                      "description": "Updates the description and\/or labels of a Network Connectivity Center hub."
                     },
                     "delete": {
                       "id": "networkconnectivity.projects.locations.global.hubs.delete",
@@ -1834,7 +1838,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Deletes a single Hub."
+                      "description": "Deletes a Network Connectivity Center hub."
                     },
                     "setIamPolicy": {
                       "id": "networkconnectivity.projects.locations.global.hubs.setIamPolicy",
@@ -1973,7 +1977,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Lists Spokes in a given project and location."
+                  "description": "Lists the Network Connectivity Center spokes in a specified project and location."
                 },
                 "get": {
                   "id": "networkconnectivity.projects.locations.spokes.get",
@@ -1998,7 +2002,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Gets details of a single Spoke."
+                  "description": "Gets details about a Network Connectivity Center spoke."
                 },
                 "create": {
                   "id": "networkconnectivity.projects.locations.spokes.create",
@@ -2036,7 +2040,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Creates a new Spoke in a given project and location."
+                  "description": "Creates a Network Connectivity Center spoke."
                 },
                 "patch": {
                   "id": "networkconnectivity.projects.locations.spokes.patch",
@@ -2075,7 +2079,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Updates the parameters of a single Spoke."
+                  "description": "Updates the parameters of a Network Connectivity Center spoke."
                 },
                 "delete": {
                   "id": "networkconnectivity.projects.locations.spokes.delete",
@@ -2105,7 +2109,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Deletes a single Spoke."
+                  "description": "Deletes a Network Connectivity Center spoke."
                 },
                 "setIamPolicy": {
                   "id": "networkconnectivity.projects.locations.spokes.setIamPolicy",

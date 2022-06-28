@@ -18,7 +18,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import traceback
 from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.services import enable_api
 from googlecloudsdk.api_lib.services import exceptions
@@ -47,9 +46,5 @@ def Check(instance_ref, release_track):
           )
   except (exceptions.GetServicePermissionDeniedException,
           apitools_exceptions.HttpError) as err:
-    response_message += (
-        'Unknown\n'
-        'The troubleshooter encountered ' + type(err).__name__ + ' while'
-        ' checking your instance.\n\n' + traceback.format_exc()
-        )
+    response_message += utils.UnknownMessage(err)
   return utils.Response(continue_flag, response_message)

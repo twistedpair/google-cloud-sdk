@@ -4596,7 +4596,7 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def ListManagedInstances(self, request, global_params=None):
-      r"""Lists all of the instances in the managed instance group. Each instance in the list has a currentAction, which indicates the action that the managed instance group is performing on the instance. For example, if the group is still creating an instance, the currentAction is CREATING. If a previous action failed, the list displays the errors for that failed action. The orderBy query parameter is not supported.
+      r"""Lists all of the instances in the managed instance group. Each instance in the list has a currentAction, which indicates the action that the managed instance group is performing on the instance. For example, if the group is still creating an instance, the currentAction is CREATING. If a previous action failed, the list displays the errors for that failed action. The orderBy query parameter is not supported. The `pageToken` query parameter is supported only in the alpha and beta API and only if the group's `listManagedInstancesResults` field is set to `PAGINATED`.
 
       Args:
         request: (ComputeInstanceGroupManagersListManagedInstancesRequest) input message
@@ -11438,7 +11438,7 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def ListManagedInstances(self, request, global_params=None):
-      r"""Lists the instances in the managed instance group and instances that are scheduled to be created. The list includes any current actions that the group has scheduled for its instances. The orderBy query parameter is not supported.
+      r"""Lists the instances in the managed instance group and instances that are scheduled to be created. The list includes any current actions that the group has scheduled for its instances. The orderBy query parameter is not supported. The `pageToken` query parameter is supported only in the alpha and beta API and only if the group's `listManagedInstancesResults` field is set to `PAGINATED`.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersListManagedInstancesRequest) input message

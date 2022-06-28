@@ -2060,6 +2060,168 @@ class AiplatformV1beta1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Create(self, request, global_params=None):
+      r"""Create a DeploymentResourcePool.
+
+      Args:
+        request: (AiplatformProjectsLocationsDeploymentResourcePoolsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/deploymentResourcePools',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.deploymentResourcePools.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1beta1/{+parent}/deploymentResourcePools',
+        request_field='googleCloudAiplatformV1beta1CreateDeploymentResourcePoolRequest',
+        request_type_name='AiplatformProjectsLocationsDeploymentResourcePoolsCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Delete a DeploymentResourcePool.
+
+      Args:
+        request: (AiplatformProjectsLocationsDeploymentResourcePoolsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/deploymentResourcePools/{deploymentResourcePoolsId}',
+        http_method='DELETE',
+        method_id='aiplatform.projects.locations.deploymentResourcePools.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsDeploymentResourcePoolsDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Get a DeploymentResourcePool.
+
+      Args:
+        request: (AiplatformProjectsLocationsDeploymentResourcePoolsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1DeploymentResourcePool) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/deploymentResourcePools/{deploymentResourcePoolsId}',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.deploymentResourcePools.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsDeploymentResourcePoolsGetRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1DeploymentResourcePool',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List DeploymentResourcePools in a location.
+
+      Args:
+        request: (AiplatformProjectsLocationsDeploymentResourcePoolsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1ListDeploymentResourcePoolsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/deploymentResourcePools',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.deploymentResourcePools.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/deploymentResourcePools',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsDeploymentResourcePoolsListRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1ListDeploymentResourcePoolsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Update a DeploymentResourcePool.
+
+      Args:
+        request: (AiplatformProjectsLocationsDeploymentResourcePoolsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/deploymentResourcePools/{deploymentResourcePoolsId}',
+        http_method='PATCH',
+        method_id='aiplatform.projects.locations.deploymentResourcePools.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1beta1/{+name}',
+        request_field='googleCloudAiplatformV1beta1DeploymentResourcePool',
+        request_type_name='AiplatformProjectsLocationsDeploymentResourcePoolsPatchRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def QueryDeployedModels(self, request, global_params=None):
+      r"""List DeployedModels that have been deployed on this DeploymentResourcePool.
+
+      Args:
+        request: (AiplatformProjectsLocationsDeploymentResourcePoolsQueryDeployedModelsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1QueryDeployedModelsResponse) The response message.
+      """
+      config = self.GetMethodConfig('QueryDeployedModels')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    QueryDeployedModels.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/deploymentResourcePools/{deploymentResourcePoolsId}:queryDeployedModels',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.deploymentResourcePools.queryDeployedModels',
+        ordered_params=['deploymentResourcePool'],
+        path_params=['deploymentResourcePool'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1beta1/{+deploymentResourcePool}:queryDeployedModels',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsDeploymentResourcePoolsQueryDeployedModelsRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1QueryDeployedModelsResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsEdgeDevicesOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_edgeDevices_operations resource."""
 
@@ -6789,7 +6951,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
           }
 
     def Copy(self, request, global_params=None):
-      r"""Copies an already existing in Vertex AI Model into this Location. The source Model must exist in the same Project. If Model has a custom ID which is already taken at the destination location, then "-" is appended to it, with NOW_TIMESTAMP being in yyyyMMddHHmmss format. (Note: the ID may be taken by another Model that is not visible at the moment (e.g. being created)).
+      r"""Copies an already existing in Vertex AI Model into this Location. The source Model must exist in the same Project. If Model has a custom ID which is already taken at the destination location, then "-" is appended to it, with NOW_TIMESTAMP being in yyyyMMddHHmmss format. (Note: the ID may be taken by another Model that is not visible at the moment (e.g. being created)). When copying custom Models, the users themselves are responsible for Model.metadata content to be region-agnostic, as well as making sure that any resources (e.g. files) it depends on remain accessible.
 
       Args:
         request: (AiplatformProjectsLocationsModelsCopyRequest) input message

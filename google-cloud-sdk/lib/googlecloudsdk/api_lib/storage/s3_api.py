@@ -319,7 +319,6 @@ class S3Api(cloud_api.CloudApi):
                   should_deep_copy_metadata=False,
                   progress_callback=None):
     """See super class."""
-    del should_deep_copy_metadata  # Unsupported for S3.
     del progress_callback  # TODO(b/161900052): Waiting for resumable copies.
 
     source_kwargs = {'Bucket': source_resource.storage_url.bucket_name,
@@ -330,6 +329,15 @@ class S3Api(cloud_api.CloudApi):
     kwargs = {'Bucket': destination_resource.storage_url.bucket_name,
               'Key': destination_resource.storage_url.object_name,
               'CopySource': source_kwargs}
+
+    if should_deep_copy_metadata:
+      kwargs['MetadataDirective'] = 'REPLACE'
+      s3_metadata_util.copy_object_metadata(
+          s3_metadata_util.copy_object_metadata(
+              destination_resource.metadata,
+              source_resource.metadata,
+          ), kwargs)
+
     kwargs.update(
         s3_metadata_util.get_object_metadata_dict_from_request_config(
             request_config))
@@ -501,6 +509,24 @@ class S3Api(cloud_api.CloudApi):
 
     return s3_metadata_util.get_object_resource_from_s3_response(
         object_dict, bucket_name, object_name)
+
+  @_catch_client_error_raise_s3_api_error()
+  def patch_object_metadata(self,
+                            bucket_name,
+                            object_name,
+                            object_resource,
+                            request_config,
+                            fields_scope=None,
+                            generation=None):
+    """See super class."""
+    del fields_scope  # Unused.
+    source_resource = self.get_object_metadata(
+        bucket_name, object_name, generation=generation)
+    return self.copy_object(
+        source_resource=source_resource,
+        destination_resource=object_resource,
+        request_config=request_config,
+        should_deep_copy_metadata=True)
 
   def _upload_using_managed_transfer_utility(self, source_stream,
                                              destination_resource, extra_args):

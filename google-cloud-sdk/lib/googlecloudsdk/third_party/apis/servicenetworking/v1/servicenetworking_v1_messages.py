@@ -1826,11 +1826,6 @@ class MetricRule(_messages.Message):
   metric's configured quota behaviors to apply to the method call.
 
   Messages:
-    DynamicMetricCostsValue: Metrics to update when the selected methods are
-      called. The key of the map is the metric name, the value is the
-      DynamicCostType to specify how to calculate the cost from the request.
-      The cost amount will be increased for the metric against which the quota
-      limits are defined. It is only implemented in CloudESF(go/cloudesf)
     MetricCostsValue: Metrics to update when the selected methods are called,
       and the associated cost applied to each metric. The key of the map is
       the metric name, and the values are the amount increased for the metric
@@ -1838,11 +1833,6 @@ class MetricRule(_messages.Message):
       negative.
 
   Fields:
-    dynamicMetricCosts: Metrics to update when the selected methods are
-      called. The key of the map is the metric name, the value is the
-      DynamicCostType to specify how to calculate the cost from the request.
-      The cost amount will be increased for the metric against which the quota
-      limits are defined. It is only implemented in CloudESF(go/cloudesf)
     metricCosts: Metrics to update when the selected methods are called, and
       the associated cost applied to each metric. The key of the map is the
       metric name, and the values are the amount increased for the metric
@@ -1851,57 +1841,6 @@ class MetricRule(_messages.Message):
     selector: Selects the methods to which this rule applies. Refer to
       selector for syntax details.
   """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class DynamicMetricCostsValue(_messages.Message):
-    r"""Metrics to update when the selected methods are called. The key of the
-    map is the metric name, the value is the DynamicCostType to specify how to
-    calculate the cost from the request. The cost amount will be increased for
-    the metric against which the quota limits are defined. It is only
-    implemented in CloudESF(go/cloudesf)
-
-    Messages:
-      AdditionalProperty: An additional property for a DynamicMetricCostsValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type
-        DynamicMetricCostsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a DynamicMetricCostsValue object.
-
-      Enums:
-        ValueValueValuesEnum:
-
-      Fields:
-        key: Name of the additional property.
-        value: A ValueValueValuesEnum attribute.
-      """
-
-      class ValueValueValuesEnum(_messages.Enum):
-        r"""ValueValueValuesEnum enum type.
-
-        Values:
-          DYNAMIC_COST_TYPE_UNSPECIFIED: Unspecified dynamic cost type.
-          REQUEST_BODY_BYTES: Cost is the request body bytes
-          REQUEST_BODY_AND_HEADER_BYTES: Cost is the request body and HTTP
-            header bytes
-          RESPONSE_BODY_BYTES: Cost is the response body bytes
-          RESPONSE_BODY_AND_HEADER_BYTES: Cost is the response body and header
-            bytes
-        """
-        DYNAMIC_COST_TYPE_UNSPECIFIED = 0
-        REQUEST_BODY_BYTES = 1
-        REQUEST_BODY_AND_HEADER_BYTES = 2
-        RESPONSE_BODY_BYTES = 3
-        RESPONSE_BODY_AND_HEADER_BYTES = 4
-
-      key = _messages.StringField(1)
-      value = _messages.EnumField('ValueValueValuesEnum', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetricCostsValue(_messages.Message):
@@ -1931,9 +1870,8 @@ class MetricRule(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  dynamicMetricCosts = _messages.MessageField('DynamicMetricCostsValue', 1)
-  metricCosts = _messages.MessageField('MetricCostsValue', 2)
-  selector = _messages.StringField(3)
+  metricCosts = _messages.MessageField('MetricCostsValue', 1)
+  selector = _messages.StringField(2)
 
 
 class Mixin(_messages.Message):

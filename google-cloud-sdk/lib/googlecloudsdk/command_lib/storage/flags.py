@@ -102,37 +102,32 @@ def add_object_metadata_flags(parser, allow_patch=False):
         help='Clears object custom time.')
 
 
-def add_encryption_flags(parser, allow_patch=False):
+def add_encryption_flags(parser, allow_patch=False, hidden=True):
   """Adds flags for encryption and decryption keys."""
   parser.add_argument(
       '--encryption-key',
-      hidden=True,
+      hidden=hidden,
       help=(
           'A customer-supplied encryption key (An RFC 4648 section'
           ' 4 base64-encoded AES256 string), or customer-managed encryption key'
           ' of the form `projects/{project}/locations/{location}/keyRings/'
           '{key-ring}/cryptoKeys/{crypto-key}`. This key will be'
-          ' used for all data written to Google Cloud Storage.'
-      )
-  )
+          ' used for all data written to Google Cloud Storage.'))
   parser.add_argument(
       '--decryption-keys',
       type=arg_parsers.ArgList(),
       metavar='DECRYPTION_KEY',
-      hidden=True,
-      help=(
-          'A comma separated list of customer-supplied encryption keys'
-          ' (RFC 4648 section 4 base64-encoded AES256 strings) that will'
-          ' be used to decrypt Google Cloud Storage objects. Data encrypted'
-          ' with a customer-managed encryption key (CMEK) is decrypted'
-          ' automatically, so CMEKs do not need to be listed here.'
-      )
-  )
+      hidden=hidden,
+      help=('A comma separated list of customer-supplied encryption keys'
+            ' (RFC 4648 section 4 base64-encoded AES256 strings) that will'
+            ' be used to decrypt Google Cloud Storage objects. Data encrypted'
+            ' with a customer-managed encryption key (CMEK) is decrypted'
+            ' automatically, so CMEKs do not need to be listed here.'))
   if allow_patch:
     parser.add_argument(
         '--clear-encryption-key',
         action='store_true',
-        hidden=True,
+        hidden=hidden,
         help='Clears encryption key associated with an object.')
 
 

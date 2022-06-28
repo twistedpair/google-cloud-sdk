@@ -1670,7 +1670,7 @@ class ConfigServiceV2RestTransport(ConfigServiceV2Transport):
             },
 {
                 'method': 'get',
-                'uri': '/v2/{name=billingAccounts/*/buckets/*}',
+                'uri': '/v2/{name=billingAccounts/*/locations/*/buckets/*}',
             },
             ]
             request, metadata = self._interceptor.pre_get_bucket(request, metadata)
@@ -2185,7 +2185,7 @@ class ConfigServiceV2RestTransport(ConfigServiceV2Transport):
             },
 {
                 'method': 'get',
-                'uri': '/v2/{name=billingAccounts/*/buckets/*/views/*}',
+                'uri': '/v2/{name=billingAccounts/*/locations/*/buckets/*/views/*}',
             },
             ]
             request, metadata = self._interceptor.pre_get_view(request, metadata)
@@ -3077,12 +3077,22 @@ class ConfigServiceV2RestTransport(ConfigServiceV2Transport):
             },
 {
                 'method': 'patch',
+                'uri': '/v2/{name=projects/*}/settings',
+                'body': 'settings',
+            },
+{
+                'method': 'patch',
                 'uri': '/v2/{name=organizations/*}/settings',
                 'body': 'settings',
             },
 {
                 'method': 'patch',
                 'uri': '/v2/{name=folders/*}/settings',
+                'body': 'settings',
+            },
+{
+                'method': 'patch',
+                'uri': '/v2/{name=billingAccounts/*}/settings',
                 'body': 'settings',
             },
             ]

@@ -1357,6 +1357,32 @@ class SqladminV1beta4(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Get(self, request, global_params=None):
+      r"""Retrieves a resource containing information about a user.
+
+      Args:
+        request: (SqlUsersGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (User) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='sql.users.get',
+        ordered_params=['project', 'instance', 'name'],
+        path_params=['instance', 'name', 'project'],
+        query_params=[],
+        relative_path='sql/v1beta4/projects/{project}/instances/{instance}/users/{name}',
+        request_field='',
+        request_type_name='SqlUsersGetRequest',
+        response_type_name='User',
+        supports_download=False,
+    )
+
     def Insert(self, request, global_params=None):
       r"""Creates a new user in a Cloud SQL instance.
 

@@ -528,6 +528,20 @@
         "diskType": {
           "description": "Type of the disk to use.",
           "type": "string"
+        },
+        "reclaimPolicy": {
+          "description": "What should happen to the disk after the Workstation is deleted. Defaults to DELETE.",
+          "type": "string",
+          "enumDescriptions": [
+            "",
+            "The persistent disk will be deleted with the Workstation.",
+            "The persistent disk will be remain after the workstation is deleted, and the administrator must manually delete the disk."
+          ],
+          "enum": [
+            "RECLAIM_POLICY_UNSPECIFIED",
+            "DELETE",
+            "RETAIN"
+          ]
         }
       }
     },

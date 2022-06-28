@@ -192,7 +192,7 @@
     },
     "Function": {
       "id": "Function",
-      "description": "Describes a Cloud Function that contains user computation executed in response to an event. It encapsulate function and triggers configurations.",
+      "description": "Describes a Cloud Function that contains user computation executed in response to an event. It encapsulates function and trigger configurations.",
       "type": "object",
       "properties": {
         "name": {

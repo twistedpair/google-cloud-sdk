@@ -253,6 +253,33 @@ class AssuredworkloadsV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def RestrictAllowedResources(self, request, global_params=None):
+      r"""Restrict the list of resources allowed in the Workload environment. The current list of allowed products can be found at https://cloud.google.com/assured-workloads/docs/supported-products In addition to assuredworkloads.workload.update permission, the user should also have orgpolicy.policy.set permission on the folder resource to use this functionality.
+
+      Args:
+        request: (AssuredworkloadsOrganizationsLocationsWorkloadsRestrictAllowedResourcesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAssuredworkloadsV1RestrictAllowedResourcesResponse) The response message.
+      """
+      config = self.GetMethodConfig('RestrictAllowedResources')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RestrictAllowedResources.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/locations/{locationsId}/workloads/{workloadsId}:restrictAllowedResources',
+        http_method='POST',
+        method_id='assuredworkloads.organizations.locations.workloads.restrictAllowedResources',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:restrictAllowedResources',
+        request_field='googleCloudAssuredworkloadsV1RestrictAllowedResourcesRequest',
+        request_type_name='AssuredworkloadsOrganizationsLocationsWorkloadsRestrictAllowedResourcesRequest',
+        response_type_name='GoogleCloudAssuredworkloadsV1RestrictAllowedResourcesResponse',
+        supports_download=False,
+    )
+
   class OrganizationsLocationsService(base_api.BaseApiService):
     """Service class for the organizations_locations resource."""
 

@@ -32,7 +32,7 @@ class BgpPeer(_messages.Message):
   session.
 
   Fields:
-    interface: A string attribute.
+    interface: Name of the RouterInterface the BGP peer is associated with.
     interfaceIpv4Cidr: IP range of the interface within Google.
     name: Name of this BGP peer. Unique within the Zones resource.
     peerAsn: Peer BGP Autonomous System Number (ASN). Each BGP interface may
@@ -774,16 +774,16 @@ class InterconnectAttachment(_messages.Message):
       created.
     description: Optional. A free-text description of the resource. Max length
       1024 characters.
-    interconnect: The canonical name of underlying Interconnect object that
-      this attachment's traffic will traverse through. The name is in the form
-      of projects/{project}/locations/{location}/zones/{zone}/interconnects/{i
-      nterconnect}.
+    interconnect: Required. The canonical name of underlying Interconnect
+      object that this attachment's traffic will traverse through. The name is
+      in the form of projects/{project}/locations/{location}/zones/{zone}/inte
+      rconnects/{interconnect}.
     labels: Labels associated with this resource.
     mtu: IP (L3) MTU value of the virtual edge cloud. Valid values are: 1500
       and 9000. Default to 1500 if not set.
     name: Required. The canonical resource name of the interconnect
       attachment.
-    router: The canonical Router name in the form of
+    router: Required. The canonical Router name in the form of
       projects/{project}/locations/{location}/zones/{zone}/routers/{router}.
     state: Output only. Current stage of the resource to the device by config
       push.
@@ -1442,8 +1442,8 @@ class Router(_messages.Message):
     interface: Router interfaces.
     labels: Labels associated with this resource.
     name: Required. The canonical resource name of the router.
-    network: The canonical name of the network to which this router belongs.
-      The name is in the form of
+    network: Required. The canonical name of the network to which this router
+      belongs. The name is in the form of
       projects/{project}/locations/{location}/zones/{zone}/networks/{network}.
     state: Output only. Current stage of the resource to the device by config
       push.
@@ -1650,7 +1650,7 @@ class Subnet(_messages.Message):
     ipv6Cidr: The ranges of ipv6 addresses that are owned by this subnetwork.
     labels: Labels associated with this resource.
     name: Required. The canonical resource name of the subnet.
-    network: The network that this subnetwork belongs to.
+    network: Required. The network that this subnetwork belongs to.
     state: Output only. Current stage of the resource to the device by config
       push.
     updateTime: Output only. The time when the subnet was last updated.

@@ -541,7 +541,7 @@
             "The resource is healthy.",
             "The resource is unhealthy.",
             "The resource is unresponsive.",
-            "The resource is some sub-resources are UNHEALTHY."
+            "Some sub-resources are UNHEALTHY."
           ],
           "enum": [
             "HEALTH_STATUS_UNSPECIFIED",
@@ -618,7 +618,7 @@
       "type": "object",
       "properties": {
         "pubsubNotification": {
-          "description": "Pub\/Sub topic for AppConnector to subscribe and receive notifications from `projects\/{project}\/topics\/{pubsub_topic}`",
+          "description": "Cloud Pub\/Sub Configuration to receive notifications.",
           "$ref": "GoogleCloudBeyondcorpAppconnectorsV1alphaNotificationConfigCloudPubSubNotificationConfig"
         }
       }
@@ -640,11 +640,11 @@
       "type": "object",
       "properties": {
         "targetImage": {
-          "description": "The initial image the remote agent will attempt to run for the control plane.",
+          "description": "The initial image the remote agent will attempt to run for the control plane. Format would be a gcr image path, e.g.: gcr.io\/PROJECT-ID\/my-image:tag1",
           "type": "string"
         },
         "stableImage": {
-          "description": "The stable image that the remote agent will fallback to if the target image fails.",
+          "description": "The stable image that the remote agent will fallback to if the target image fails. Format would be a gcr image path, e.g.: gcr.io\/PROJECT-ID\/my-image:tag1",
           "type": "string"
         }
       }
@@ -1377,7 +1377,7 @@
             "The resource is healthy.",
             "The resource is unhealthy.",
             "The resource is unresponsive.",
-            "The resource is some sub-resources are UNHEALTHY."
+            "Some sub-resources are UNHEALTHY."
           ],
           "enum": [
             "HEALTH_STATUS_UNSPECIFIED",
@@ -1768,50 +1768,6 @@
         }
       }
     },
-    "GoogleCloudBeyondcorpAppconnectionsV1AppConnectionOperationMetadata": {
-      "id": "GoogleCloudBeyondcorpAppconnectionsV1AppConnectionOperationMetadata",
-      "description": "Represents the metadata of the long-running operation.",
-      "type": "object",
-      "properties": {
-        "createTime": {
-          "description": "Output only. The time the operation was created.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "endTime": {
-          "description": "Output only. The time the operation finished running.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "target": {
-          "description": "Output only. Server-defined resource path for the target of the operation.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "verb": {
-          "description": "Output only. Name of the verb executed by the operation.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "statusMessage": {
-          "description": "Output only. Human-readable status of the operation, if any.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "requestedCancellation": {
-          "description": "Output only. Identifies whether the user has requested cancellation of the operation. Operations that have successfully been cancelled have Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.",
-          "readOnly": true,
-          "type": "boolean"
-        },
-        "apiVersion": {
-          "description": "Output only. API version used to start the operation.",
-          "readOnly": true,
-          "type": "string"
-        }
-      }
-    },
     "GoogleCloudBeyondcorpAppconnectorsV1alphaAppConnectorOperationMetadata": {
       "id": "GoogleCloudBeyondcorpAppconnectorsV1alphaAppConnectorOperationMetadata",
       "description": "Represents the metadata of the long-running operation.",
@@ -1856,96 +1812,8 @@
         }
       }
     },
-    "GoogleCloudBeyondcorpAppconnectorsV1AppConnectorOperationMetadata": {
-      "id": "GoogleCloudBeyondcorpAppconnectorsV1AppConnectorOperationMetadata",
-      "description": "Represents the metadata of the long-running operation.",
-      "type": "object",
-      "properties": {
-        "createTime": {
-          "description": "Output only. The time the operation was created.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "endTime": {
-          "description": "Output only. The time the operation finished running.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "target": {
-          "description": "Output only. Server-defined resource path for the target of the operation.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "verb": {
-          "description": "Output only. Name of the verb executed by the operation.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "statusMessage": {
-          "description": "Output only. Human-readable status of the operation, if any.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "requestedCancellation": {
-          "description": "Output only. Identifies whether the user has requested cancellation of the operation. Operations that have successfully been cancelled have Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.",
-          "readOnly": true,
-          "type": "boolean"
-        },
-        "apiVersion": {
-          "description": "Output only. API version used to start the operation.",
-          "readOnly": true,
-          "type": "string"
-        }
-      }
-    },
     "AppGatewayOperationMetadata": {
       "id": "AppGatewayOperationMetadata",
-      "description": "Represents the metadata of the long-running operation.",
-      "type": "object",
-      "properties": {
-        "createTime": {
-          "description": "Output only. The time the operation was created.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "endTime": {
-          "description": "Output only. The time the operation finished running.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "target": {
-          "description": "Output only. Server-defined resource path for the target of the operation.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "verb": {
-          "description": "Output only. Name of the verb executed by the operation.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "statusMessage": {
-          "description": "Output only. Human-readable status of the operation, if any.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "requestedCancellation": {
-          "description": "Output only. Identifies whether the user has requested cancellation of the operation. Operations that have successfully been cancelled have Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.",
-          "readOnly": true,
-          "type": "boolean"
-        },
-        "apiVersion": {
-          "description": "Output only. API version used to start the operation.",
-          "readOnly": true,
-          "type": "string"
-        }
-      }
-    },
-    "GoogleCloudBeyondcorpAppgatewaysV1AppGatewayOperationMetadata": {
-      "id": "GoogleCloudBeyondcorpAppgatewaysV1AppGatewayOperationMetadata",
       "description": "Represents the metadata of the long-running operation.",
       "type": "object",
       "properties": {
@@ -2071,96 +1939,8 @@
         }
       }
     },
-    "GoogleCloudBeyondcorpConnectorsV1ConnectorOperationMetadata": {
-      "id": "GoogleCloudBeyondcorpConnectorsV1ConnectorOperationMetadata",
-      "description": "Represents the metadata of the long-running operation.",
-      "type": "object",
-      "properties": {
-        "createTime": {
-          "description": "Output only. The time the operation was created.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "endTime": {
-          "description": "Output only. The time the operation finished running.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "target": {
-          "description": "Output only. Server-defined resource path for the target of the operation.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "verb": {
-          "description": "Output only. Name of the verb executed by the operation.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "statusMessage": {
-          "description": "Output only. Human-readable status of the operation, if any.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "requestedCancellation": {
-          "description": "Output only. Identifies whether the user has requested cancellation of the operation. Operations that have successfully been cancelled have Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.",
-          "readOnly": true,
-          "type": "boolean"
-        },
-        "apiVersion": {
-          "description": "Output only. API version used to start the operation.",
-          "readOnly": true,
-          "type": "string"
-        }
-      }
-    },
     "ConnectionOperationMetadata": {
       "id": "ConnectionOperationMetadata",
-      "description": "Represents the metadata of the long-running operation.",
-      "type": "object",
-      "properties": {
-        "createTime": {
-          "description": "Output only. The time the operation was created.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "endTime": {
-          "description": "Output only. The time the operation finished running.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "target": {
-          "description": "Output only. Server-defined resource path for the target of the operation.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "verb": {
-          "description": "Output only. Name of the verb executed by the operation.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "statusMessage": {
-          "description": "Output only. Human-readable status of the operation, if any.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "requestedCancellation": {
-          "description": "Output only. Identifies whether the user has requested cancellation of the operation. Operations that have successfully been cancelled have Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.",
-          "readOnly": true,
-          "type": "boolean"
-        },
-        "apiVersion": {
-          "description": "Output only. API version used to start the operation.",
-          "readOnly": true,
-          "type": "string"
-        }
-      }
-    },
-    "GoogleCloudBeyondcorpConnectionsV1ConnectionOperationMetadata": {
-      "id": "GoogleCloudBeyondcorpConnectionsV1ConnectionOperationMetadata",
       "description": "Represents the metadata of the long-running operation.",
       "type": "object",
       "properties": {
@@ -2247,96 +2027,8 @@
         }
       }
     },
-    "GoogleCloudBeyondcorpClientconnectorservicesV1ClientConnectorServiceOperationMetadata": {
-      "id": "GoogleCloudBeyondcorpClientconnectorservicesV1ClientConnectorServiceOperationMetadata",
-      "description": "Represents the metadata of the long-running operation.",
-      "type": "object",
-      "properties": {
-        "createTime": {
-          "description": "Output only. The time the operation was created.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "endTime": {
-          "description": "Output only. The time the operation finished running.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "target": {
-          "description": "Output only. Server-defined resource path for the target of the operation.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "verb": {
-          "description": "Output only. Name of the verb executed by the operation.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "statusMessage": {
-          "description": "Output only. Human-readable status of the operation, if any.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "requestedCancellation": {
-          "description": "Output only. Identifies whether the user has requested cancellation of the operation. Operations that have successfully been cancelled have Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.",
-          "readOnly": true,
-          "type": "boolean"
-        },
-        "apiVersion": {
-          "description": "Output only. API version used to start the operation.",
-          "readOnly": true,
-          "type": "string"
-        }
-      }
-    },
     "ClientGatewayOperationMetadata": {
       "id": "ClientGatewayOperationMetadata",
-      "description": "Represents the metadata of the long-running operation.",
-      "type": "object",
-      "properties": {
-        "createTime": {
-          "description": "Output only. The time the operation was created.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "endTime": {
-          "description": "Output only. The time the operation finished running.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "target": {
-          "description": "Output only. Server-defined resource path for the target of the operation.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "verb": {
-          "description": "Output only. Name of the verb executed by the operation.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "statusMessage": {
-          "description": "Output only. Human-readable status of the operation, if any.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "requestedCancellation": {
-          "description": "Output only. Identifies whether the user has requested cancellation of the operation. Operations that have been cancelled successfully have Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.",
-          "readOnly": true,
-          "type": "boolean"
-        },
-        "apiVersion": {
-          "description": "Output only. API version used to start the operation.",
-          "readOnly": true,
-          "type": "string"
-        }
-      }
-    },
-    "GoogleCloudBeyondcorpClientgatewaysV1ClientGatewayOperationMetadata": {
-      "id": "GoogleCloudBeyondcorpClientgatewaysV1ClientGatewayOperationMetadata",
       "description": "Represents the metadata of the long-running operation.",
       "type": "object",
       "properties": {
@@ -2386,41 +2078,8 @@
       "properties": {
       }
     },
-    "GoogleCloudBeyondcorpConnectorsV1RemoteAgentDetails": {
-      "id": "GoogleCloudBeyondcorpConnectorsV1RemoteAgentDetails",
-      "description": "RemoteAgentDetails reflects the details of a remote agent.",
-      "type": "object",
-      "properties": {
-      }
-    },
     "ContainerHealthDetails": {
       "id": "ContainerHealthDetails",
-      "description": "ContainerHealthDetails reflects the health details of a container.",
-      "type": "object",
-      "properties": {
-        "expectedConfigVersion": {
-          "description": "The version of the expected config.",
-          "type": "string"
-        },
-        "currentConfigVersion": {
-          "description": "The version of the current config.",
-          "type": "string"
-        },
-        "extendedStatus": {
-          "description": "The extended status. Such as ExitCode, StartedAt, FinishedAt, etc.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        },
-        "errorMsg": {
-          "description": "The latest error message.",
-          "type": "string"
-        }
-      }
-    },
-    "GoogleCloudBeyondcorpConnectorsV1ContainerHealthDetails": {
-      "id": "GoogleCloudBeyondcorpConnectorsV1ContainerHealthDetails",
       "description": "ContainerHealthDetails reflects the health details of a container.",
       "type": "object",
       "properties": {
@@ -2861,7 +2520,7 @@
                       "type": "string"
                     },
                     "appConnectionId": {
-                      "description": "Optional. User-settable AppConnection resource ID. * Must start with a letter. * Must contain between 4-63 characters from (\/a-z-\/). * Must end with a number or a letter.",
+                      "description": "Optional. User-settable AppConnection resource ID. * Must start with a letter. * Must contain between 4-63 characters from `\/a-z-\/`. * Must end with a number or a letter.",
                       "location": "query",
                       "type": "string"
                     },
@@ -3191,7 +2850,7 @@
                       "type": "string"
                     },
                     "appConnectorId": {
-                      "description": "Optional. User-settable AppConnector resource ID. * Must start with a letter. * Must contain between 4-63 characters from (\/a-z-\/). * Must end with a number or a letter.",
+                      "description": "Optional. User-settable AppConnector resource ID. * Must start with a letter. * Must contain between 4-63 characters from `\/a-z-\/`. * Must end with a number or a letter.",
                       "location": "query",
                       "type": "string"
                     },
@@ -3528,7 +3187,7 @@
                       "type": "string"
                     },
                     "appGatewayId": {
-                      "description": "Optional. User-settable AppGateway resource ID. * Must start with a letter. * Must contain between 4-63 characters from (\/a-z-\/). * Must end with a number or a letter.",
+                      "description": "Optional. User-settable AppGateway resource ID. * Must start with a letter. * Must contain between 4-63 characters from `\/a-z-\/`. * Must end with a number or a letter.",
                       "location": "query",
                       "type": "string"
                     },
@@ -3768,7 +3427,7 @@
                       "type": "string"
                     },
                     "clientConnectorServiceId": {
-                      "description": "Optional. User-settable client connector service resource ID. * Must start with a letter. * Must contain between 4-63 characters from (\/a-z-\/). * Must end with a number or a letter. A random system generated name will be assigned if not specified by the user.",
+                      "description": "Optional. User-settable client connector service resource ID. * Must start with a letter. * Must contain between 4-63 characters from `\/a-z-\/`. * Must end with a number or a letter. A random system generated name will be assigned if not specified by the user.",
                       "location": "query",
                       "type": "string"
                     },
@@ -4057,7 +3716,7 @@
                       "type": "string"
                     },
                     "clientGatewayId": {
-                      "description": "Optional. User-settable client gateway resource ID. * Must start with a letter. * Must contain between 4-63 characters from (\/a-z-\/). * Must end with a number or a letter.",
+                      "description": "Optional. User-settable client gateway resource ID. * Must start with a letter. * Must contain between 4-63 characters from `\/a-z-\/`. * Must end with a number or a letter.",
                       "location": "query",
                       "type": "string"
                     },
@@ -4297,7 +3956,7 @@
                       "type": "string"
                     },
                     "connectionId": {
-                      "description": "Optional. User-settable connection resource ID. * Must start with a letter. * Must contain between 4-63 characters from (\/a-z-\/). * Must end with a number or a letter.",
+                      "description": "Optional. User-settable connection resource ID. * Must start with a letter. * Must contain between 4-63 characters from `\/a-z-\/`. * Must end with a number or a letter.",
                       "location": "query",
                       "type": "string"
                     },
@@ -4627,7 +4286,7 @@
                       "type": "string"
                     },
                     "connectorId": {
-                      "description": "Optional. User-settable connector resource ID. * Must start with a letter. * Must contain between 4-63 characters from (\/a-z-\/). * Must end with a number or a letter.",
+                      "description": "Optional. User-settable connector resource ID. * Must start with a letter. * Must contain between 4-63 characters from `\/a-z-\/`. * Must end with a number or a letter.",
                       "location": "query",
                       "type": "string"
                     },

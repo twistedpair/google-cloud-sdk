@@ -187,7 +187,7 @@ class BeyondcorpProjectsLocationsAppConnectionsCreateRequest(_messages.Message):
   Fields:
     appConnectionId: Optional. User-settable AppConnection resource ID. * Must
       start with a letter. * Must contain between 4-63 characters from
-      (/a-z-/). * Must end with a number or a letter.
+      `/a-z-/`. * Must end with a number or a letter.
     googleCloudBeyondcorpAppconnectionsV1alphaAppConnection: A
       GoogleCloudBeyondcorpAppconnectionsV1alphaAppConnection resource to be
       passed as the request body.
@@ -406,7 +406,7 @@ class BeyondcorpProjectsLocationsAppConnectorsCreateRequest(_messages.Message):
   Fields:
     appConnectorId: Optional. User-settable AppConnector resource ID. * Must
       start with a letter. * Must contain between 4-63 characters from
-      (/a-z-/). * Must end with a number or a letter.
+      `/a-z-/`. * Must end with a number or a letter.
     googleCloudBeyondcorpAppconnectorsV1alphaAppConnector: A
       GoogleCloudBeyondcorpAppconnectorsV1alphaAppConnector resource to be
       passed as the request body.
@@ -625,7 +625,7 @@ class BeyondcorpProjectsLocationsAppGatewaysCreateRequest(_messages.Message):
   Fields:
     appGateway: A AppGateway resource to be passed as the request body.
     appGatewayId: Optional. User-settable AppGateway resource ID. * Must start
-      with a letter. * Must contain between 4-63 characters from (/a-z-/). *
+      with a letter. * Must contain between 4-63 characters from `/a-z-/`. *
       Must end with a number or a letter.
     parent: Required. The resource project name of the AppGateway location
       using the form: `projects/{project_id}/locations/{location_id}`
@@ -843,7 +843,7 @@ class BeyondcorpProjectsLocationsClientConnectorServicesCreateRequest(_messages.
       the request body.
     clientConnectorServiceId: Optional. User-settable client connector service
       resource ID. * Must start with a letter. * Must contain between 4-63
-      characters from (/a-z-/). * Must end with a number or a letter. A random
+      characters from `/a-z-/`. * Must end with a number or a letter. A random
       system generated name will be assigned if not specified by the user.
     parent: Required. Value for parent.
     requestId: Optional. An optional request ID to identify requests. Specify
@@ -1032,7 +1032,7 @@ class BeyondcorpProjectsLocationsClientGatewaysCreateRequest(_messages.Message):
     clientGateway: A ClientGateway resource to be passed as the request body.
     clientGatewayId: Optional. User-settable client gateway resource ID. *
       Must start with a letter. * Must contain between 4-63 characters from
-      (/a-z-/). * Must end with a number or a letter.
+      `/a-z-/`. * Must end with a number or a letter.
     parent: Required. Value for parent.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
@@ -1177,7 +1177,7 @@ class BeyondcorpProjectsLocationsConnectionsCreateRequest(_messages.Message):
   Fields:
     connection: A Connection resource to be passed as the request body.
     connectionId: Optional. User-settable connection resource ID. * Must start
-      with a letter. * Must contain between 4-63 characters from (/a-z-/). *
+      with a letter. * Must contain between 4-63 characters from `/a-z-/`. *
       Must end with a number or a letter.
     parent: Required. The resource project name of the connection location
       using the form: `projects/{project_id}/locations/{location_id}`
@@ -1392,7 +1392,7 @@ class BeyondcorpProjectsLocationsConnectorsCreateRequest(_messages.Message):
   Fields:
     connector: A Connector resource to be passed as the request body.
     connectorId: Optional. User-settable connector resource ID. * Must start
-      with a letter. * Must contain between 4-63 characters from (/a-z-/). *
+      with a letter. * Must contain between 4-63 characters from `/a-z-/`. *
       Must end with a number or a letter.
     parent: Required. The resource project name of the connector location
       using the form: `projects/{project_id}/locations/{location_id}`
@@ -2365,33 +2365,6 @@ class Gateway(_messages.Message):
   userPort = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
-class GoogleCloudBeyondcorpAppconnectionsV1AppConnectionOperationMetadata(_messages.Message):
-  r"""Represents the metadata of the long-running operation.
-
-  Fields:
-    apiVersion: Output only. API version used to start the operation.
-    createTime: Output only. The time the operation was created.
-    endTime: Output only. The time the operation finished running.
-    requestedCancellation: Output only. Identifies whether the user has
-      requested cancellation of the operation. Operations that have
-      successfully been cancelled have Operation.error value with a
-      google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
-    statusMessage: Output only. Human-readable status of the operation, if
-      any.
-    target: Output only. Server-defined resource path for the target of the
-      operation.
-    verb: Output only. Name of the verb executed by the operation.
-  """
-
-  apiVersion = _messages.StringField(1)
-  createTime = _messages.StringField(2)
-  endTime = _messages.StringField(3)
-  requestedCancellation = _messages.BooleanField(4)
-  statusMessage = _messages.StringField(5)
-  target = _messages.StringField(6)
-  verb = _messages.StringField(7)
-
-
 class GoogleCloudBeyondcorpAppconnectionsV1alphaAppConnection(_messages.Message):
   r"""A BeyondCorp AppConnection resource represents a BeyondCorp protected
   AppConnection to a remote application. It creates all the necessary GCP
@@ -2612,33 +2585,6 @@ class GoogleCloudBeyondcorpAppconnectionsV1alphaResolveAppConnectionsResponseApp
   recentMigVms = _messages.StringField(2, repeated=True)
 
 
-class GoogleCloudBeyondcorpAppconnectorsV1AppConnectorOperationMetadata(_messages.Message):
-  r"""Represents the metadata of the long-running operation.
-
-  Fields:
-    apiVersion: Output only. API version used to start the operation.
-    createTime: Output only. The time the operation was created.
-    endTime: Output only. The time the operation finished running.
-    requestedCancellation: Output only. Identifies whether the user has
-      requested cancellation of the operation. Operations that have
-      successfully been cancelled have Operation.error value with a
-      google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
-    statusMessage: Output only. Human-readable status of the operation, if
-      any.
-    target: Output only. Server-defined resource path for the target of the
-      operation.
-    verb: Output only. Name of the verb executed by the operation.
-  """
-
-  apiVersion = _messages.StringField(1)
-  createTime = _messages.StringField(2)
-  endTime = _messages.StringField(3)
-  requestedCancellation = _messages.BooleanField(4)
-  statusMessage = _messages.StringField(5)
-  target = _messages.StringField(6)
-  verb = _messages.StringField(7)
-
-
 class GoogleCloudBeyondcorpAppconnectorsV1alphaAppConnector(_messages.Message):
   r"""A BeyondCorp connector resource that represents an application facing
   component deployed proximal to and with direct access to the application
@@ -2826,9 +2772,11 @@ class GoogleCloudBeyondcorpAppconnectorsV1alphaImageConfig(_messages.Message):
 
   Fields:
     stableImage: The stable image that the remote agent will fallback to if
-      the target image fails.
+      the target image fails. Format would be a gcr image path, e.g.:
+      gcr.io/PROJECT-ID/my-image:tag1
     targetImage: The initial image the remote agent will attempt to run for
-      the control plane.
+      the control plane. Format would be a gcr image path, e.g.:
+      gcr.io/PROJECT-ID/my-image:tag1
   """
 
   stableImage = _messages.StringField(1)
@@ -2854,8 +2802,7 @@ class GoogleCloudBeyondcorpAppconnectorsV1alphaNotificationConfig(_messages.Mess
   r"""NotificationConfig defines the mechanisms to notify instance agent.
 
   Fields:
-    pubsubNotification: Pub/Sub topic for AppConnector to subscribe and
-      receive notifications from `projects/{project}/topics/{pubsub_topic}`
+    pubsubNotification: Cloud Pub/Sub Configuration to receive notifications.
   """
 
   pubsubNotification = _messages.MessageField('GoogleCloudBeyondcorpAppconnectorsV1alphaNotificationConfigCloudPubSubNotificationConfig', 1)
@@ -2941,7 +2888,7 @@ class GoogleCloudBeyondcorpAppconnectorsV1alphaResourceInfo(_messages.Message):
       HEALTHY: The resource is healthy.
       UNHEALTHY: The resource is unhealthy.
       UNRESPONSIVE: The resource is unresponsive.
-      DEGRADED: The resource is some sub-resources are UNHEALTHY.
+      DEGRADED: Some sub-resources are UNHEALTHY.
     """
     HEALTH_STATUS_UNSPECIFIED = 0
     HEALTHY = 1
@@ -2981,33 +2928,6 @@ class GoogleCloudBeyondcorpAppconnectorsV1alphaResourceInfo(_messages.Message):
   time = _messages.StringField(5)
 
 
-class GoogleCloudBeyondcorpAppgatewaysV1AppGatewayOperationMetadata(_messages.Message):
-  r"""Represents the metadata of the long-running operation.
-
-  Fields:
-    apiVersion: Output only. API version used to start the operation.
-    createTime: Output only. The time the operation was created.
-    endTime: Output only. The time the operation finished running.
-    requestedCancellation: Output only. Identifies whether the user has
-      requested cancellation of the operation. Operations that have
-      successfully been cancelled have Operation.error value with a
-      google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
-    statusMessage: Output only. Human-readable status of the operation, if
-      any.
-    target: Output only. Server-defined resource path for the target of the
-      operation.
-    verb: Output only. Name of the verb executed by the operation.
-  """
-
-  apiVersion = _messages.StringField(1)
-  createTime = _messages.StringField(2)
-  endTime = _messages.StringField(3)
-  requestedCancellation = _messages.BooleanField(4)
-  statusMessage = _messages.StringField(5)
-  target = _messages.StringField(6)
-  verb = _messages.StringField(7)
-
-
 class GoogleCloudBeyondcorpApplicationsV1alphaApplicationOperationMetadata(_messages.Message):
   r"""Represents the metadata of the long-running operation.
 
@@ -3031,164 +2951,6 @@ class GoogleCloudBeyondcorpApplicationsV1alphaApplicationOperationMetadata(_mess
   statusMessage = _messages.StringField(4)
   target = _messages.StringField(5)
   verb = _messages.StringField(6)
-
-
-class GoogleCloudBeyondcorpClientconnectorservicesV1ClientConnectorServiceOperationMetadata(_messages.Message):
-  r"""Represents the metadata of the long-running operation.
-
-  Fields:
-    apiVersion: Output only. API version used to start the operation.
-    createTime: Output only. The time the operation was created.
-    endTime: Output only. The time the operation finished running.
-    requestedCancellation: Output only. Identifies whether the user has
-      requested cancellation of the operation. Operations that have
-      successfully been cancelled have Operation.error value with a
-      google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
-    statusMessage: Output only. Human-readable status of the operation, if
-      any.
-    target: Output only. Server-defined resource path for the target of the
-      operation.
-    verb: Output only. Name of the verb executed by the operation.
-  """
-
-  apiVersion = _messages.StringField(1)
-  createTime = _messages.StringField(2)
-  endTime = _messages.StringField(3)
-  requestedCancellation = _messages.BooleanField(4)
-  statusMessage = _messages.StringField(5)
-  target = _messages.StringField(6)
-  verb = _messages.StringField(7)
-
-
-class GoogleCloudBeyondcorpClientgatewaysV1ClientGatewayOperationMetadata(_messages.Message):
-  r"""Represents the metadata of the long-running operation.
-
-  Fields:
-    apiVersion: Output only. API version used to start the operation.
-    createTime: Output only. The time the operation was created.
-    endTime: Output only. The time the operation finished running.
-    requestedCancellation: Output only. Identifies whether the user has
-      requested cancellation of the operation. Operations that have been
-      cancelled successfully have Operation.error value with a
-      google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
-    statusMessage: Output only. Human-readable status of the operation, if
-      any.
-    target: Output only. Server-defined resource path for the target of the
-      operation.
-    verb: Output only. Name of the verb executed by the operation.
-  """
-
-  apiVersion = _messages.StringField(1)
-  createTime = _messages.StringField(2)
-  endTime = _messages.StringField(3)
-  requestedCancellation = _messages.BooleanField(4)
-  statusMessage = _messages.StringField(5)
-  target = _messages.StringField(6)
-  verb = _messages.StringField(7)
-
-
-class GoogleCloudBeyondcorpConnectionsV1ConnectionOperationMetadata(_messages.Message):
-  r"""Represents the metadata of the long-running operation.
-
-  Fields:
-    apiVersion: Output only. API version used to start the operation.
-    createTime: Output only. The time the operation was created.
-    endTime: Output only. The time the operation finished running.
-    requestedCancellation: Output only. Identifies whether the user has
-      requested cancellation of the operation. Operations that have
-      successfully been cancelled have Operation.error value with a
-      google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
-    statusMessage: Output only. Human-readable status of the operation, if
-      any.
-    target: Output only. Server-defined resource path for the target of the
-      operation.
-    verb: Output only. Name of the verb executed by the operation.
-  """
-
-  apiVersion = _messages.StringField(1)
-  createTime = _messages.StringField(2)
-  endTime = _messages.StringField(3)
-  requestedCancellation = _messages.BooleanField(4)
-  statusMessage = _messages.StringField(5)
-  target = _messages.StringField(6)
-  verb = _messages.StringField(7)
-
-
-class GoogleCloudBeyondcorpConnectorsV1ConnectorOperationMetadata(_messages.Message):
-  r"""Represents the metadata of the long-running operation.
-
-  Fields:
-    apiVersion: Output only. API version used to start the operation.
-    createTime: Output only. The time the operation was created.
-    endTime: Output only. The time the operation finished running.
-    requestedCancellation: Output only. Identifies whether the user has
-      requested cancellation of the operation. Operations that have
-      successfully been cancelled have Operation.error value with a
-      google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
-    statusMessage: Output only. Human-readable status of the operation, if
-      any.
-    target: Output only. Server-defined resource path for the target of the
-      operation.
-    verb: Output only. Name of the verb executed by the operation.
-  """
-
-  apiVersion = _messages.StringField(1)
-  createTime = _messages.StringField(2)
-  endTime = _messages.StringField(3)
-  requestedCancellation = _messages.BooleanField(4)
-  statusMessage = _messages.StringField(5)
-  target = _messages.StringField(6)
-  verb = _messages.StringField(7)
-
-
-class GoogleCloudBeyondcorpConnectorsV1ContainerHealthDetails(_messages.Message):
-  r"""ContainerHealthDetails reflects the health details of a container.
-
-  Messages:
-    ExtendedStatusValue: The extended status. Such as ExitCode, StartedAt,
-      FinishedAt, etc.
-
-  Fields:
-    currentConfigVersion: The version of the current config.
-    errorMsg: The latest error message.
-    expectedConfigVersion: The version of the expected config.
-    extendedStatus: The extended status. Such as ExitCode, StartedAt,
-      FinishedAt, etc.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class ExtendedStatusValue(_messages.Message):
-    r"""The extended status. Such as ExitCode, StartedAt, FinishedAt, etc.
-
-    Messages:
-      AdditionalProperty: An additional property for a ExtendedStatusValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type ExtendedStatusValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a ExtendedStatusValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  currentConfigVersion = _messages.StringField(1)
-  errorMsg = _messages.StringField(2)
-  expectedConfigVersion = _messages.StringField(3)
-  extendedStatus = _messages.MessageField('ExtendedStatusValue', 4)
-
-
-class GoogleCloudBeyondcorpConnectorsV1RemoteAgentDetails(_messages.Message):
-  r"""RemoteAgentDetails reflects the details of a remote agent."""
 
 
 class GoogleCloudLocationListLocationsResponse(_messages.Message):
@@ -3948,7 +3710,7 @@ class ResourceInfo(_messages.Message):
       HEALTHY: The resource is healthy.
       UNHEALTHY: The resource is unhealthy.
       UNRESPONSIVE: The resource is unresponsive.
-      DEGRADED: The resource is some sub-resources are UNHEALTHY.
+      DEGRADED: Some sub-resources are UNHEALTHY.
     """
     HEALTH_STATUS_UNSPECIFIED = 0
     HEALTHY = 1

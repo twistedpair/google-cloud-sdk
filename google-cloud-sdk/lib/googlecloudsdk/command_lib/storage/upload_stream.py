@@ -62,11 +62,52 @@ class UploadStream:
 
     self._start_byte = 0
 
+  def _get_absolute_position(self):
+    """Returns absolute position in the stream.
+
+    Hashing and progress reporting logic relies on absolute positions. Since
+    child classes overwrite `tell` to make it return relative positions, we need
+    to write hashing and progress reporting in a way that does not reference
+    `self.tell`, which this function makes possible.
+    """
+    return self._stream.tell()
+
+  def _update_absolute_position(self, offset):
+    """Seeks to a position in the underlying stream.
+
+    Catching up digesters sometimes requires seeking to a specific position in
+    self._stream. Child classes wrap streams which are not seekable, and have
+    different strategies to make it appear that a seek has occured, which can
+    be supported by overriding this method.
+
+    Args:
+      offset (int): the position to seek to.
+
+    Returns:
+      the new position in the stream.
+    """
+    return self._stream.seek(offset)
+
+  def _get_data(self, size=-1):
+    """Reads bytes from the underlying stream.
+
+    Child classes do not always read directly from the stream. Progress
+    reporting and hashing logic can be reused by overriding only this method.
+
+    Args:
+      size (int): the number of bytes to read. If less than 0, all bytes are
+          returned.
+
+    Returns:
+      bytes from self._stream.
+    """
+    return self._stream.read(size)
+
   def _save_digesters_checkpoint(self):
     """Updates checkpoint that holds old hashes to optimize backwards seeks."""
     if not self._digesters:
       return
-    self._checkpoint_absolute_index = self._stream.tell()
+    self._checkpoint_absolute_index = self._get_absolute_position()
     self._checkpoint_digesters = hash_util.copy_digesters(self._digesters)
 
   def _catch_up_digesters(self, new_absolute_index):
@@ -75,13 +116,20 @@ class UploadStream:
       return
     if new_absolute_index < self._checkpoint_absolute_index:
       # Case 1: New position < Checkpoint position < Old position.
-      self._stream.seek(self._start_byte)
+      self._update_absolute_position(self._start_byte)
       hash_util.reset_digesters(self._digesters)
-    elif new_absolute_index < self._stream.tell():
+    elif new_absolute_index < self._get_absolute_position():
       # Case 2: Checkpoint position < New position < Old position.
-      self._stream.seek(self._checkpoint_absolute_index)
-      self._digesters = hash_util.copy_digesters(self._checkpoint_digesters)
-    elif new_absolute_index == self._stream.tell():
+      self._update_absolute_position(self._checkpoint_absolute_index)
+
+      # The instantiator of this class expects the digesters dictionary it
+      # passes to the initializer to contain updated digests. To handle backward
+      # seeks we replace the current digester in that dictionary with their
+      # values at the last checkpoint.
+      self._digesters.update(self._checkpoint_digesters)
+      self._checkpoint_digesters = hash_util.copy_digesters(
+          self._checkpoint_digesters)
+    elif new_absolute_index == self._get_absolute_position():
       # Case 3: Old position == New position.
       return
     # Case 4: Old position < New position.
@@ -89,8 +137,8 @@ class UploadStream:
 
     self._save_digesters_checkpoint()
     while True:
-      data = self._stream.read(
-          min(new_absolute_index - self._stream.tell(),
+      data = self._get_data(
+          min(new_absolute_index - self._get_absolute_position(),
               installers.WRITE_BUFFER_SIZE))
       if not data:
         break
@@ -98,12 +146,12 @@ class UploadStream:
 
   def tell(self):
     """Returns the current position in the stream."""
-    return self._stream.tell()
+    return self._get_absolute_position()
 
   def read(self, size=-1):
     """Returns `size` bytes from the underlying stream."""
     self._save_digesters_checkpoint()
-    data = self._stream.read(size)
+    data = self._get_data(size)
     if data:
       hash_util.update_digesters(self._digesters, data)
       if self._progress_callback:
@@ -111,7 +159,7 @@ class UploadStream:
         if (self._bytes_read_since_last_progress_callback >=
             _PROGRESS_CALLBACK_THRESHOLD):
           self._bytes_read_since_last_progress_callback = 0
-          current_pos = self._stream.tell()
+          current_pos = self._get_absolute_position()
           self._progress_callback(current_pos)
           self._progress_updated_with_end_byte = current_pos == self._length
 
@@ -136,18 +184,18 @@ class UploadStream:
         raise errors.Error(
             'SEEK_END is not supported if the length of the stream is unknown.')
     elif whence == os.SEEK_CUR:
-      new_absolute_index = self._stream.tell() + offset
+      new_absolute_index = self._get_absolute_position() + offset
     else:
       new_absolute_index = offset
 
     self._catch_up_digesters(new_absolute_index)
     # Above may perform seek, but repeating is harmless.
-    return self._stream.seek(new_absolute_index)
+    return self._update_absolute_position(new_absolute_index)
 
   def close(self):
     """Closes the underlying stream."""
     if (self._progress_callback and not self._progress_updated_with_end_byte):
-      self._progress_callback(self._stream.tell())
+      self._progress_callback(self._get_absolute_position())
       self._progress_updated_with_end_byte = True
     return self._stream.close()
 

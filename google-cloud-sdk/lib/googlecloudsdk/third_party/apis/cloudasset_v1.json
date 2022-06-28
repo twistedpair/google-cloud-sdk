@@ -1184,7 +1184,7 @@
           }
         },
         "externalResources": {
-          "description": "A list of external resources that are allowed to be accessed. A request matches if it contains an external resource in this list (Example: s3:\/\/bucket\/path). Currently '*' is not allowed.",
+          "description": "A list of external resources that are allowed to be accessed. Only AWS and Azure resources are supported. For Amazon S3, the supported format is s3:\/\/BUCKET_NAME. For Azure Storage, the supported format is azure:\/\/myaccount.blob.core.windows.net\/CONTAINER_NAME. A request matches if it contains an external resource in this list (Example: s3:\/\/bucket\/path). Currently '*' is not allowed.",
           "type": "array",
           "items": {
             "type": "string"
@@ -2912,7 +2912,7 @@
           "$ref": "AnalyzerOrgPolicyConstraint"
         },
         "nextPageToken": {
-          "description": "The page token to fetch the next page for AnalyzeOrgPolicyResponse.org_policy_results.",
+          "description": "The page token to fetch the next page for AnalyzeOrgPoliciesResponse.org_policy_results.",
           "type": "string"
         }
       }
@@ -2927,7 +2927,7 @@
           "$ref": "AnalyzerOrgPolicy"
         },
         "policyBundle": {
-          "description": "The ordered list of all organization policies from the scope to the AnalyzeOrgPoliciesResponse.OrgPolicyResult.consolidated_policy.attached_resource. Default organization policies are also included.",
+          "description": "The ordered list of all organization policies from the AnalyzeOrgPoliciesResponse.OrgPolicyResult.consolidated_policy.attached_resource. to the scope specified in the request.",
           "type": "array",
           "items": {
             "$ref": "AnalyzerOrgPolicy"
@@ -3167,7 +3167,7 @@
           "$ref": "AnalyzerOrgPolicyConstraint"
         },
         "nextPageToken": {
-          "description": "The page token to fetch the next page for AnalyzeOrgPolicyResponse.governed_containers.",
+          "description": "The page token to fetch the next page for AnalyzeOrgPolicyGovernedContainersResponse.governed_containers.",
           "type": "string"
         }
       }
@@ -3190,7 +3190,7 @@
           "$ref": "AnalyzerOrgPolicy"
         },
         "policyBundle": {
-          "description": "The ordered list of all organization policies impacting this resource from the scope to the target resource. Default organization policies are also included.",
+          "description": "The ordered list of all organization policies from the AnalyzeOrgPoliciesResponse.OrgPolicyResult.consolidated_policy.attached_resource. to the scope specified in the request.",
           "type": "array",
           "items": {
             "$ref": "AnalyzerOrgPolicy"
@@ -3215,7 +3215,7 @@
           "$ref": "AnalyzerOrgPolicyConstraint"
         },
         "nextPageToken": {
-          "description": "The page token to fetch the next page for AnalyzeOrgPolicyResponse.governed_resources.",
+          "description": "The page token to fetch the next page for AnalyzeOrgPolicyGovernedResourcesResponse.governed_resources.",
           "type": "string"
         }
       }
@@ -3238,7 +3238,7 @@
           "$ref": "AnalyzerOrgPolicy"
         },
         "policyBundle": {
-          "description": "The ordered list of all organization policies impacting this resource from the scope to the target resource. Default organization policies are also included.",
+          "description": "The ordered list of all organization policies from the AnalyzeOrgPoliciesResponse.OrgPolicyResult.consolidated_policy.attached_resource. to the scope specified in the request.",
           "type": "array",
           "items": {
             "$ref": "AnalyzerOrgPolicy"
@@ -3893,17 +3893,17 @@
               "type": "string"
             },
             "constraint": {
-              "description": "Required. The name of the constraint to analyze organization policies for. The response only contains analyzed organization policies for the provided constraint. (e.g. \"cloudbuild.allowedWorkerPools\").",
+              "description": "Required. The name of the constraint to analyze organization policies for. The response only contains analyzed organization policies for the provided constraint.",
               "location": "query",
               "type": "string"
             },
             "filter": {
-              "description": "The expression to filter the consolidated organization policies in result.",
+              "description": "The expression to filter AnalyzeOrgPoliciesResponse.org_policy_results. The only supported field is `consolidated_policy.attached_resource`, and the only supported operator is `=`. Example: consolidated_policy.attached_resource=\"\/\/cloudresourcemanager.googleapis.com\/folders\/001\" will return the org policy results of\"folders\/001\".",
               "location": "query",
               "type": "string"
             },
             "pageSize": {
-              "description": "The maximum number of items to return per page. If unspecified, AnalyzeOrgPolicyResponse.defined_org_policies will contain 20 items with a maximum of 200.",
+              "description": "The maximum number of items to return per page. If unspecified, AnalyzeOrgPoliciesResponse.org_policy_results will contain 20 items with a maximum of 200.",
               "location": "query",
               "type": "integer",
               "format": "int32"
@@ -3939,17 +3939,17 @@
               "type": "string"
             },
             "constraint": {
-              "description": "Required. The name of the constraint to analyze governed containers for. The analysis only contains organization policies for the provided constraint. (e.g. \"cloudbuild.allowedWorkerPools\").",
+              "description": "Required. The name of the constraint to analyze governed containers for. The analysis only contains organization policies for the provided constraint.",
               "location": "query",
               "type": "string"
             },
             "filter": {
-              "description": "The expression to filter the governed containers in result. The only supported comparison operator is `=`, and supported field is `parent`. Example: parent=\"\/\/cloudresourcemanager.googleapis.com\/folders\/001\" will return all containers under \"folders\/001\".",
+              "description": "The expression to filter the governed containers in result. The only supported field is `parent`, and the only supported operator is `=`. Example: parent=\"\/\/cloudresourcemanager.googleapis.com\/folders\/001\" will return all containers under \"folders\/001\".",
               "location": "query",
               "type": "string"
             },
             "pageSize": {
-              "description": "The maximum number of items to return per page. If unspecified, AnalyzeOrgPolicyResponse.governed_containers will contain 100 items with a maximum of 200.",
+              "description": "The maximum number of items to return per page. If unspecified, AnalyzeOrgPolicyGovernedContainersResponse.governed_containers will contain 100 items with a maximum of 200.",
               "location": "query",
               "type": "integer",
               "format": "int32"
@@ -3985,17 +3985,17 @@
               "type": "string"
             },
             "constraint": {
-              "description": "Required. The name of the constraint to analyze governed resources for. The analysis only contains analyzed organization policies for the provided constraint. (e.g. \"cloudbuild.allowedWorkerPools\").",
+              "description": "Required. The name of the constraint to analyze governed resources for. The analysis only contains analyzed organization policies for the provided constraint.",
               "location": "query",
               "type": "string"
             },
             "filter": {
-              "description": "The expression to filter the governed resources in result. The only supported comparison operator is `=`, and supported field is `project`, `folders` and `organization`. Example: project=\"project\/12345678\" filter will return all governed resources under project\/12345678 including the project ifself, if applicable.",
+              "description": "The expression to filter the governed resources in result. The only supported field is `project` and `folders`, and the only supported operator is `=`. Example: project=\"projects\/12345678\" filter will return all governed resources under projects\/12345678 including the project ifself, if applicable.",
               "location": "query",
               "type": "string"
             },
             "pageSize": {
-              "description": "The maximum number of items to return per page. If unspecified, AnalyzeOrgPolicyResponse.governed_resources will contain 100 items with a maximum of 200.",
+              "description": "The maximum number of items to return per page. If unspecified, AnalyzeOrgPolicyGovernedResourcesResponse.governed_resources will contain 100 items with a maximum of 200.",
               "location": "query",
               "type": "integer",
               "format": "int32"

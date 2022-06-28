@@ -219,10 +219,10 @@ def GetVMSize(args):
   return getattr(args, 'vm_size', None)
 
 
-def AddSSHPublicKey(parser):
+def AddSSHPublicKey(parser, required=True):
   parser.add_argument(
       '--ssh-public-key',
-      required=True,
+      required=required,
       help='SSH public key to use for authentication.')
 
 

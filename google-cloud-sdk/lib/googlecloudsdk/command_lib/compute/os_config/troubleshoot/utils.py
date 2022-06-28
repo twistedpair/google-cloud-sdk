@@ -18,6 +18,31 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.core import properties
+
+
+def UnknownMessage(exception):
+  return (
+      'Unknown\n'
+      'The troubleshooter encountered ' + type(exception).__name__ + ' while '
+      'checking your instance.\n'
+  )
+
+
+def GetProject(client, project):
+  return client.MakeRequests(
+      [(client.apitools_client.projects, 'Get',
+        client.messages.ComputeProjectsGetRequest(
+            project=project or
+            properties.VALUES.core.project.Get(required=True),))])[0]
+
+
+def GetInstance(client, instance_ref):
+  request = client.messages.ComputeInstancesGetRequest(
+      **instance_ref.AsDict())
+  return client.MakeRequests([
+      (client.apitools_client.instances, 'Get', request)])[0]
+
 
 class Response:
   """Represents a response returned by each of the prerequisite checks."""

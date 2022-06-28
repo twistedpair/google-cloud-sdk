@@ -2249,6 +2249,7 @@ class PolicyControllerHubConfig(_messages.Message):
       the lifecycle state of the feature observed by the Hub feature
       controller that is reported in the feature state.
     logDeniesEnabled: Logs all denies and dry run failures.
+    monitoring: Monitoring specifies the configuration of monitoring.
     referentialRulesEnabled: Enables the ability to use Constraint Templates
       that reference to objects other than the object currently being
       evaluated.
@@ -2278,8 +2279,9 @@ class PolicyControllerHubConfig(_messages.Message):
   exemptableNamespaces = _messages.StringField(2, repeated=True)
   installSpec = _messages.EnumField('InstallSpecValueValuesEnum', 3)
   logDeniesEnabled = _messages.BooleanField(4)
-  referentialRulesEnabled = _messages.BooleanField(5)
-  templateLibraryConfig = _messages.MessageField('PolicyControllerTemplateLibraryConfig', 6)
+  monitoring = _messages.MessageField('PolicyControllerMonitoringConfig', 5)
+  referentialRulesEnabled = _messages.BooleanField(6)
+  templateLibraryConfig = _messages.MessageField('PolicyControllerTemplateLibraryConfig', 7)
 
 
 class PolicyControllerHubState(_messages.Message):
@@ -2444,6 +2446,35 @@ class PolicyControllerMembershipState(_messages.Message):
   membershipSpec = _messages.MessageField('PolicyControllerMembershipSpec', 2)
   policyControllerHubState = _messages.MessageField('PolicyControllerHubState', 3)
   state = _messages.EnumField('StateValueValuesEnum', 4)
+
+
+class PolicyControllerMonitoringConfig(_messages.Message):
+  r"""MonitoringConfig specifies the backends Policy Controller should export
+  metrics to. For example, to specify metrics should be exported to Cloud
+  Monitoring and Prometheus, specify backends: ["cloudmonitoring",
+  "prometheus"]
+
+  Enums:
+    BackendsValueListEntryValuesEnum:
+
+  Fields:
+    backends: Specifies the list of backends Policy Controller will export to.
+      An empty list would effectively disable metrics export.
+  """
+
+  class BackendsValueListEntryValuesEnum(_messages.Enum):
+    r"""BackendsValueListEntryValuesEnum enum type.
+
+    Values:
+      MONITORING_BACKEND_UNSPECIFIED: Backend cannot be determined
+      PROMETHEUS: Prometheus backend for monitoring
+      CLOUD_MONITORING: Stackdriver/Cloud Monitoring backend for monitoring
+    """
+    MONITORING_BACKEND_UNSPECIFIED = 0
+    PROMETHEUS = 1
+    CLOUD_MONITORING = 2
+
+  backends = _messages.EnumField('BackendsValueListEntryValuesEnum', 1, repeated=True)
 
 
 class PolicyControllerTemplateLibraryConfig(_messages.Message):

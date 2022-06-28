@@ -134,6 +134,10 @@ class FileWildcardIterator(WildcardIterator):
     self._ignore_symlinks = ignore_symlinks
 
   def __iter__(self):
+    # Files named '-' will not be copied, as that string makes is_stream true.
+    if self._url.is_stream:
+      yield resource_reference.FileObjectResource(self._url)
+
     recursion_needed = '**' in self._path
     normal_file_iterator = glob.iglob(self._path, recursive=recursion_needed)
     if recursion_needed:

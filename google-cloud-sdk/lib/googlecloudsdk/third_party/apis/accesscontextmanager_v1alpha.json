@@ -508,7 +508,7 @@
     },
     "ServicePerimeter": {
       "id": "ServicePerimeter",
-      "description": "`ServicePerimeter` describes a set of Google Cloud resources which can freely import and export data amongst themselves, but not export outside of the `ServicePerimeter`. If a request with a source within this `ServicePerimeter` has a target outside of the `ServicePerimeter`, the request will be blocked. Otherwise the request is allowed. There are two types of Service Perimeter - Regular and Bridge. Regular Service Perimeters cannot overlap, a single Google Cloud project can only belong to a single regular Service Perimeter. Service Perimeter Bridges can contain only Google Cloud projects as members, a single Google Cloud project may belong to multiple Service Perimeter Bridges.",
+      "description": "`ServicePerimeter` describes a set of Google Cloud resources which can freely import and export data amongst themselves, but not export outside of the `ServicePerimeter`. If a request with a source within this `ServicePerimeter` has a target outside of the `ServicePerimeter`, the request is blocked. Otherwise the request is allowed. There are two types of service perimeter: regular and bridge. Regular perimeters cannot overlap, a single A Google Cloud project or VPC can only belong to a single regular perimeter. Perimeter bridges can contain only Google Cloud projects as members, a single Google Cloud project might belong to multiple Service perimeter bridges.",
       "type": "object",
       "properties": {
         "name": {
@@ -524,7 +524,7 @@
           "type": "string"
         },
         "perimeterType": {
-          "description": "Perimeter type indicator. A single project is allowed to be a member of single regular perimeter, but multiple service perimeter bridges. A project cannot be a included in a perimeter bridge without being included in regular perimeter. For perimeter bridges, the restricted service list as well as access level lists must be empty.",
+          "description": "Perimeter type indicator. A single project or VPC is allowed to be a member of single regular perimeter, but a project can be in multiple service perimeter bridges. A project cannot be a included in a perimeter bridge without being included in regular perimeter. For perimeter bridges, the restricted service list as well as access level lists must be empty.",
           "type": "string",
           "enumDescriptions": [
             "Regular Perimeter.",
@@ -555,7 +555,7 @@
       "type": "object",
       "properties": {
         "resources": {
-          "description": "A list of Google Cloud resources that are inside of the service perimeter. Currently only projects are allowed. Format: `projects\/{project_number}`",
+          "description": "A list Google Cloud resources that are inside of the service perimeter. Only projects and VPCs are allowed. Project format: `projects\/{project_number}`. VPC format: `\/\/compute.googleapis.com\/projects\/{PROJECT_NUMBER}\/locations\/global\/networks\/{NAME}`.",
           "type": "array",
           "items": {
             "type": "string"
@@ -675,7 +675,7 @@
           "type": "string"
         },
         "resource": {
-          "description": "A Google Cloud resource that is allowed to ingress the perimeter. Requests from these resources will be allowed to access perimeter data. Currently only projects are allowed. Format: `projects\/{project_number}` The project may be in any Google Cloud organization, not just the organization that the perimeter is defined in. `*` is not allowed, the case of allowing all Google Cloud resources only is not supported.",
+          "description": "A Google Cloud resource that is allowed to ingress the perimeter. Requests from these resources are allowed to access perimeter data. Only projects and VPCs are allowed. Project format: `projects\/{project_number}`. VPC format: `\/\/compute.googleapis.com\/projects\/{PROJECT_NUMBER}\/locations\/global\/networks\/{NAME}`. The resource might be in any Google Cloud organization, not just the organization that the perimeter is defined in. `*` is not allowed, the case of allowing all Google Cloud resources only is not supported.",
           "type": "string"
         }
       }

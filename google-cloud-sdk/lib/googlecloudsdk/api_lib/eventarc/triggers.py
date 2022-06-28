@@ -284,12 +284,31 @@ class _TriggersClient(_BaseTriggersClient):
         project_id, destination_workflow_location, destination_workflow)
     return self._messages.Destination(workflow=workflow_message)
 
+  def BuildFunctionDestinationMessage(self, project_id, destination_function,
+                                      destination_function_location):
+    """Builds a Function Destination message with the given data.
+
+    Args:
+      project_id: the ID of the project.
+      destination_function: str or None, the Trigger's destination Function ID.
+      destination_function_location: str or None, the location of the Trigger's
+        destination Function. It defaults to the Trigger's location.
+
+    Returns:
+      A Destination message with a Function destination.
+    """
+
+    function_message = 'projects/{}/locations/{}/functions/{}'.format(
+        project_id, destination_function_location, destination_function)
+    return self._messages.Destination(cloudFunction=function_message)
+
   def BuildUpdateMask(self, event_filters, event_filters_path_pattern,
                       service_account, destination_run_service,
                       destination_run_job, destination_run_path,
                       destination_run_region, destination_gke_namespace,
                       destination_gke_service, destination_gke_path,
-                      destination_workflow, destination_workflow_location):
+                      destination_workflow, destination_workflow_location,
+                      destination_function, destination_function_location):
     """Builds an update mask for updating a Cloud Run trigger.
 
     Args:
@@ -313,6 +332,9 @@ class _TriggersClient(_BaseTriggersClient):
       destination_workflow: bool, whether to update the destination workflow.
       destination_workflow_location: bool, whether to update the destination
         workflow location.
+      destination_function: bool, whether to update the destination function.
+      destination_function_location: bool, whether to update the destination
+        function location.
 
     Returns:
       The update mask as a string.
@@ -337,6 +359,8 @@ class _TriggersClient(_BaseTriggersClient):
       update_mask.append('destination.gke.path')
     if destination_workflow or destination_workflow_location:
       update_mask.append('destination.workflow')
+    if destination_function or destination_function_location:
+      update_mask.append('destination.cloudFunction')
     if event_filters or event_filters_path_pattern:
       update_mask.append('eventFilters')
     if service_account:
@@ -390,8 +414,7 @@ class _TriggersClientBeta(_BaseTriggersClient):
         transport=transport)
 
   def BuildCloudRunDestinationMessage(self, destination_run_service,
-                                      destination_run_job,
-                                      destination_run_path,
+                                      destination_run_job, destination_run_path,
                                       destination_run_region):
     """Builds a Destination message for a destination Cloud Run service.
 

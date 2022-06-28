@@ -66,6 +66,13 @@ class Collections(enum.Enum):
       ['project', 'instance', 'sha1Fingerprint'],
       True
   )
+  USERS = (
+      'users',
+      'projects/{project}/instances/{instance}/users/{name}',
+      {},
+      ['project', 'instance', 'name'],
+      True
+  )
   PROJECTS = (
       'projects',
       'projects/{project}',

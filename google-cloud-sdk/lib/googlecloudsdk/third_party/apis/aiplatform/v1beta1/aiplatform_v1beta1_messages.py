@@ -913,6 +913,68 @@ class AiplatformProjectsLocationsDatasetsSavedQueriesOperationsWaitRequest(_mess
   timeout = _messages.StringField(2)
 
 
+class AiplatformProjectsLocationsDeploymentResourcePoolsCreateRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsDeploymentResourcePoolsCreateRequest
+  object.
+
+  Fields:
+    googleCloudAiplatformV1beta1CreateDeploymentResourcePoolRequest: A
+      GoogleCloudAiplatformV1beta1CreateDeploymentResourcePoolRequest resource
+      to be passed as the request body.
+    parent: Required. The parent location resource where this
+      DeploymentResourcePool will be created. Format:
+      projects/{project}/locations/{location}
+  """
+
+  googleCloudAiplatformV1beta1CreateDeploymentResourcePoolRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1CreateDeploymentResourcePoolRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class AiplatformProjectsLocationsDeploymentResourcePoolsDeleteRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsDeploymentResourcePoolsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The name of the DeploymentResourcePool to delete. Format:
+      projects/{project}/locations/{location}/deploymentResourcePools/{deploym
+      ent_resource_pool}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsDeploymentResourcePoolsGetRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsDeploymentResourcePoolsGetRequest object.
+
+  Fields:
+    name: Required. The name of the DeploymentResourcePool to retrieve.
+      Format: projects/{project}/locations/{location}/deploymentResourcePools/
+      {deployment_resource_pool}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsDeploymentResourcePoolsListRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsDeploymentResourcePoolsListRequest object.
+
+  Fields:
+    pageSize: The maximum number of DeploymentResourcePools to return. The
+      service may return fewer than this value.
+    pageToken: A page token, received from a previous
+      `ListDeploymentResourcePools` call. Provide this to retrieve the
+      subsequent page. When paginating, all other parameters provided to
+      `ListDeploymentResourcePools` must match the call that provided the page
+      token.
+    parent: Required. The parent Location which owns this collection of
+      DeploymentResourcePools. Format: projects/{project}/locations/{location}
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class AiplatformProjectsLocationsDeploymentResourcePoolsOperationsCancelRequest(_messages.Message):
   r"""A
   AiplatformProjectsLocationsDeploymentResourcePoolsOperationsCancelRequest
@@ -981,6 +1043,46 @@ class AiplatformProjectsLocationsDeploymentResourcePoolsOperationsWaitRequest(_m
 
   name = _messages.StringField(1, required=True)
   timeout = _messages.StringField(2)
+
+
+class AiplatformProjectsLocationsDeploymentResourcePoolsPatchRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsDeploymentResourcePoolsPatchRequest object.
+
+  Fields:
+    googleCloudAiplatformV1beta1DeploymentResourcePool: A
+      GoogleCloudAiplatformV1beta1DeploymentResourcePool resource to be passed
+      as the request body.
+    name: Output only. The resource name of the DeploymentResourcePool.
+      Format: projects/{project}/locations/{location}/deploymentResourcePools/
+      {deployment_resource_pool}
+    updateMask: Required. The list of fields to update.
+  """
+
+  googleCloudAiplatformV1beta1DeploymentResourcePool = _messages.MessageField('GoogleCloudAiplatformV1beta1DeploymentResourcePool', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class AiplatformProjectsLocationsDeploymentResourcePoolsQueryDeployedModelsRequest(_messages.Message):
+  r"""A
+  AiplatformProjectsLocationsDeploymentResourcePoolsQueryDeployedModelsRequest
+  object.
+
+  Fields:
+    deploymentResourcePool: Required. The name of the target
+      DeploymentResourcePool to query. Format: projects/{project}/locations/{l
+      ocation}/deploymentResourcePools/{deployment_resource_pool}
+    pageSize: The maximum number of DeployedModels to return. The service may
+      return fewer than this value.
+    pageToken: A page token, received from a previous `QueryDeployedModels`
+      call. Provide this to retrieve the subsequent page. When paginating, all
+      other parameters provided to `QueryDeployedModels` must match the call
+      that provided the page token.
+  """
+
+  deploymentResourcePool = _messages.StringField(1, required=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
 
 
 class AiplatformProjectsLocationsEdgeDevicesOperationsCancelRequest(_messages.Message):
@@ -6235,6 +6337,9 @@ class GoogleCloudAiplatformInternalDeployedModel(_messages.Message):
       account that doesn't have access to the resource project. Users
       deploying the Model must have the `iam.serviceAccounts.actAs` permission
       on this service account.
+    sharedResources: The resource name of the shared DeploymentResourcePool to
+      deploy on. Format: projects/{project}/locations/{location}/deploymentRes
+      ourcePools/{deployment_resource_pool}
   """
 
   automaticResources = _messages.MessageField('GoogleCloudAiplatformInternalAutomaticResources', 1)
@@ -6247,6 +6352,7 @@ class GoogleCloudAiplatformInternalDeployedModel(_messages.Message):
   model = _messages.StringField(8)
   modelVersionId = _messages.StringField(9)
   serviceAccount = _messages.StringField(10)
+  sharedResources = _messages.StringField(11)
 
 
 class GoogleCloudAiplatformInternalDocumentCriteria(_messages.Message):
@@ -9136,6 +9242,9 @@ class GoogleCloudAiplatformUiDeployedModel(_messages.Message):
       account that doesn't have access to the resource project. Users
       deploying the Model must have the `iam.serviceAccounts.actAs` permission
       on this service account.
+    sharedResources: The resource name of the shared DeploymentResourcePool to
+      deploy on. Format: projects/{project}/locations/{location}/deploymentRes
+      ourcePools/{deployment_resource_pool}
     uiState: Output only. The state of the model deployment. Different from
       public API, BEING_DEPLOYED and FAILED deployment state model will also
       be returned in Ui ListEndpoints.
@@ -9179,7 +9288,8 @@ class GoogleCloudAiplatformUiDeployedModel(_messages.Message):
   modelVersionId = _messages.StringField(14)
   privateEndpoints = _messages.MessageField('GoogleCloudAiplatformUiPrivateEndpoints', 15)
   serviceAccount = _messages.StringField(16)
-  uiState = _messages.EnumField('UiStateValueValuesEnum', 17)
+  sharedResources = _messages.StringField(17)
+  uiState = _messages.EnumField('UiStateValueValuesEnum', 18)
 
 
 class GoogleCloudAiplatformUiExamples(_messages.Message):
@@ -10885,6 +10995,9 @@ class GoogleCloudAiplatformUiModelMonitoringObjectiveConfigPredictionDriftDetect
     attributionScoreDriftThresholds: Key is the feature name and value is the
       threshold. The threshold here is against attribution score distance
       between different time windows.
+    defaultDriftThreshold: Drift anomaly detection threshold used by all
+      features. When the per-feature thresholds are not set, this field can be
+      used to specify a threshold for all features.
     driftThresholds: Key is the feature name and value is the threshold. If a
       feature needs to be monitored for drift, a value threshold must be
       configured for that feature. The threshold here is against feature
@@ -10948,7 +11061,8 @@ class GoogleCloudAiplatformUiModelMonitoringObjectiveConfigPredictionDriftDetect
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   attributionScoreDriftThresholds = _messages.MessageField('AttributionScoreDriftThresholdsValue', 1)
-  driftThresholds = _messages.MessageField('DriftThresholdsValue', 2)
+  defaultDriftThreshold = _messages.MessageField('GoogleCloudAiplatformUiThresholdConfig', 2)
+  driftThresholds = _messages.MessageField('DriftThresholdsValue', 3)
 
 
 class GoogleCloudAiplatformUiModelMonitoringObjectiveConfigTrainingDataset(_messages.Message):
@@ -10996,6 +11110,9 @@ class GoogleCloudAiplatformUiModelMonitoringObjectiveConfigTrainingPredictionSke
     attributionScoreSkewThresholds: Key is the feature name and value is the
       threshold. The threshold here is against attribution score distance
       between the training and prediction feature.
+    defaultSkewThreshold: Skew anomaly detection threshold used by all
+      features. When the per-feature thresholds are not set, this field can be
+      used to specify a threshold for all features.
     skewThresholds: Key is the feature name and value is the threshold. If a
       feature needs to be monitored for skew, a value threshold must be
       configured for that feature. The threshold here is against feature
@@ -11060,7 +11177,8 @@ class GoogleCloudAiplatformUiModelMonitoringObjectiveConfigTrainingPredictionSke
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   attributionScoreSkewThresholds = _messages.MessageField('AttributionScoreSkewThresholdsValue', 1)
-  skewThresholds = _messages.MessageField('SkewThresholdsValue', 2)
+  defaultSkewThreshold = _messages.MessageField('GoogleCloudAiplatformUiThresholdConfig', 2)
+  skewThresholds = _messages.MessageField('SkewThresholdsValue', 3)
 
 
 class GoogleCloudAiplatformUiMutateDeployedIndexOperationMetadata(_messages.Message):
@@ -17535,7 +17653,7 @@ class GoogleCloudAiplatformV1StudySpec(_messages.Message):
       selection type will be used
     ObservationNoiseValueValuesEnum: The observation noise level of the study.
       Currently only supported by the Vertex AI Vizier service. Not supported
-      by HyperparamterTuningJob or TrainingPipeline.
+      by HyperparameterTuningJob or TrainingPipeline.
 
   Fields:
     algorithm: The search algorithm specified for the Study.
@@ -17550,7 +17668,7 @@ class GoogleCloudAiplatformV1StudySpec(_messages.Message):
     metrics: Required. Metric specs for the Study.
     observationNoise: The observation noise level of the study. Currently only
       supported by the Vertex AI Vizier service. Not supported by
-      HyperparamterTuningJob or TrainingPipeline.
+      HyperparameterTuningJob or TrainingPipeline.
     parameters: Required. The set of parameters to tune.
   """
 
@@ -17586,7 +17704,7 @@ class GoogleCloudAiplatformV1StudySpec(_messages.Message):
 
   class ObservationNoiseValueValuesEnum(_messages.Enum):
     r"""The observation noise level of the study. Currently only supported by
-    the Vertex AI Vizier service. Not supported by HyperparamterTuningJob or
+    the Vertex AI Vizier service. Not supported by HyperparameterTuningJob or
     TrainingPipeline.
 
     Values:
@@ -17776,7 +17894,7 @@ class GoogleCloudAiplatformV1StudySpecParameterSpecCategoricalValueSpec(_message
     defaultValue: A default value for a `CATEGORICAL` parameter that is
       assumed to be a relatively good starting point. Unset value signals that
       there is no offered starting point. Currently only supported by the
-      Vizier service. Not supported by HyperparamterTuningJob or
+      Vertex AI Vizier service. Not supported by HyperparameterTuningJob or
       TrainingPipeline.
     values: Required. The list of possible categories.
   """
@@ -17846,8 +17964,9 @@ class GoogleCloudAiplatformV1StudySpecParameterSpecDiscreteValueSpec(_messages.M
     defaultValue: A default value for a `DISCRETE` parameter that is assumed
       to be a relatively good starting point. Unset value signals that there
       is no offered starting point. It automatically rounds to the nearest
-      feasible discrete point. Currently only supported by the Vizier service.
-      Not supported by HyperparamterTuningJob or TrainingPipeline.
+      feasible discrete point. Currently only supported by the Vertex AI
+      Vizier service. Not supported by HyperparameterTuningJob or
+      TrainingPipeline.
     values: Required. A list of possible values. The list should be in
       increasing order and at least 1e-10 apart. For instance, this parameter
       might have possible settings of 1.5, 2.5, and 4.0. This list should not
@@ -17865,7 +17984,7 @@ class GoogleCloudAiplatformV1StudySpecParameterSpecDoubleValueSpec(_messages.Mes
     defaultValue: A default value for a `DOUBLE` parameter that is assumed to
       be a relatively good starting point. Unset value signals that there is
       no offered starting point. Currently only supported by the Vertex AI
-      Vizier service. Not supported by HyperparamterTuningJob or
+      Vizier service. Not supported by HyperparameterTuningJob or
       TrainingPipeline.
     maxValue: Required. Inclusive maximum value of the parameter.
     minValue: Required. Inclusive minimum value of the parameter.
@@ -17883,7 +18002,7 @@ class GoogleCloudAiplatformV1StudySpecParameterSpecIntegerValueSpec(_messages.Me
     defaultValue: A default value for an `INTEGER` parameter that is assumed
       to be a relatively good starting point. Unset value signals that there
       is no offered starting point. Currently only supported by the Vertex AI
-      Vizier service. Not supported by HyperparamterTuningJob or
+      Vizier service. Not supported by HyperparameterTuningJob or
       TrainingPipeline.
     maxValue: Required. Inclusive maximum value of the parameter.
     minValue: Required. Inclusive minimum value of the parameter.
@@ -21608,6 +21727,22 @@ class GoogleCloudAiplatformV1beta1CreateDeploymentResourcePoolOperationMetadata(
   genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)
 
 
+class GoogleCloudAiplatformV1beta1CreateDeploymentResourcePoolRequest(_messages.Message):
+  r"""Request message for CreateDeploymentResourcePool method.
+
+  Fields:
+    deploymentResourcePool: Required. The DeploymentResourcePool to create.
+    deploymentResourcePoolId: Required. The ID to use for the
+      DeploymentResourcePool, which will become the final component of the
+      DeploymentResourcePool's resource name. The maximum length is 63
+      characters, and valid characters are
+      /^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$/.
+  """
+
+  deploymentResourcePool = _messages.MessageField('GoogleCloudAiplatformV1beta1DeploymentResourcePool', 1)
+  deploymentResourcePoolId = _messages.StringField(2)
+
+
 class GoogleCloudAiplatformV1beta1CreateEndpointOperationMetadata(_messages.Message):
   r"""Runtime operation information for EndpointService.CreateEndpoint.
 
@@ -22731,6 +22866,9 @@ class GoogleCloudAiplatformV1beta1DeployedModel(_messages.Message):
       account that doesn't have access to the resource project. Users
       deploying the Model must have the `iam.serviceAccounts.actAs` permission
       on this service account.
+    sharedResources: The resource name of the shared DeploymentResourcePool to
+      deploy on. Format: projects/{project}/locations/{location}/deploymentRes
+      ourcePools/{deployment_resource_pool}
   """
 
   automaticResources = _messages.MessageField('GoogleCloudAiplatformV1beta1AutomaticResources', 1)
@@ -22745,6 +22883,7 @@ class GoogleCloudAiplatformV1beta1DeployedModel(_messages.Message):
   modelVersionId = _messages.StringField(10)
   privateEndpoints = _messages.MessageField('GoogleCloudAiplatformV1beta1PrivateEndpoints', 11)
   serviceAccount = _messages.StringField(12)
+  sharedResources = _messages.StringField(13)
 
 
 class GoogleCloudAiplatformV1beta1DeployedModelRef(_messages.Message):
@@ -22758,6 +22897,26 @@ class GoogleCloudAiplatformV1beta1DeployedModelRef(_messages.Message):
 
   deployedModelId = _messages.StringField(1)
   endpoint = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1beta1DeploymentResourcePool(_messages.Message):
+  r"""A description of resources that can be shared by multiple
+  DeployedModels, whose underlying specification consists of a
+  DedicatedResources.
+
+  Fields:
+    createTime: Output only. Timestamp when this DeploymentResourcePool was
+      created.
+    dedicatedResources: Required. The underlying DedicatedResources that the
+      DeploymentResourcePool uses.
+    name: Output only. The resource name of the DeploymentResourcePool.
+      Format: projects/{project}/locations/{location}/deploymentResourcePools/
+      {deployment_resource_pool}
+  """
+
+  createTime = _messages.StringField(1)
+  dedicatedResources = _messages.MessageField('GoogleCloudAiplatformV1beta1DedicatedResources', 2)
+  name = _messages.StringField(3)
 
 
 class GoogleCloudAiplatformV1beta1DestinationFeatureSetting(_messages.Message):
@@ -22791,7 +22950,7 @@ class GoogleCloudAiplatformV1beta1DoubleArray(_messages.Message):
   r"""A list of double values.
 
   Fields:
-    values: A list of bool values.
+    values: A list of double values.
   """
 
   values = _messages.FloatField(1, repeated=True)
@@ -25790,6 +25949,20 @@ class GoogleCloudAiplatformV1beta1ListDatasetsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class GoogleCloudAiplatformV1beta1ListDeploymentResourcePoolsResponse(_messages.Message):
+  r"""Response message for ListDeploymentResourcePools method.
+
+  Fields:
+    deploymentResourcePools: The DeploymentResourcePools from the specified
+      location.
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+  """
+
+  deploymentResourcePools = _messages.MessageField('GoogleCloudAiplatformV1beta1DeploymentResourcePool', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class GoogleCloudAiplatformV1beta1ListEndpointsResponse(_messages.Message):
   r"""Response message for EndpointService.ListEndpoints.
 
@@ -26724,10 +26897,13 @@ class GoogleCloudAiplatformV1beta1Model(_messages.Message):
         and that need a higher degree of manual configuration.
       AUTOMATIC_RESOURCES: Resources that to large degree are decided by
         Vertex AI, and require only a modest additional configuration.
+      SHARED_RESOURCES: Resources that can be shared by multiple
+        DeployedModels. A pre-configured DeploymentResourcePool is required.
     """
     DEPLOYMENT_RESOURCES_TYPE_UNSPECIFIED = 0
     DEDICATED_RESOURCES = 1
     AUTOMATIC_RESOURCES = 2
+    SHARED_RESOURCES = 3
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -27508,6 +27684,9 @@ class GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigPredictionDriftD
     attributionScoreDriftThresholds: Key is the feature name and value is the
       threshold. The threshold here is against attribution score distance
       between different time windows.
+    defaultDriftThreshold: Drift anomaly detection threshold used by all
+      features. When the per-feature thresholds are not set, this field can be
+      used to specify a threshold for all features.
     driftThresholds: Key is the feature name and value is the threshold. If a
       feature needs to be monitored for drift, a value threshold must be
       configured for that feature. The threshold here is against feature
@@ -27571,7 +27750,8 @@ class GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigPredictionDriftD
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   attributionScoreDriftThresholds = _messages.MessageField('AttributionScoreDriftThresholdsValue', 1)
-  driftThresholds = _messages.MessageField('DriftThresholdsValue', 2)
+  defaultDriftThreshold = _messages.MessageField('GoogleCloudAiplatformV1beta1ThresholdConfig', 2)
+  driftThresholds = _messages.MessageField('DriftThresholdsValue', 3)
 
 
 class GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigTrainingDataset(_messages.Message):
@@ -27619,6 +27799,9 @@ class GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigTrainingPredicti
     attributionScoreSkewThresholds: Key is the feature name and value is the
       threshold. The threshold here is against attribution score distance
       between the training and prediction feature.
+    defaultSkewThreshold: Skew anomaly detection threshold used by all
+      features. When the per-feature thresholds are not set, this field can be
+      used to specify a threshold for all features.
     skewThresholds: Key is the feature name and value is the threshold. If a
       feature needs to be monitored for skew, a value threshold must be
       configured for that feature. The threshold here is against feature
@@ -27683,7 +27866,8 @@ class GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigTrainingPredicti
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   attributionScoreSkewThresholds = _messages.MessageField('AttributionScoreSkewThresholdsValue', 1)
-  skewThresholds = _messages.MessageField('SkewThresholdsValue', 2)
+  defaultSkewThreshold = _messages.MessageField('GoogleCloudAiplatformV1beta1ThresholdConfig', 2)
+  skewThresholds = _messages.MessageField('SkewThresholdsValue', 3)
 
 
 class GoogleCloudAiplatformV1beta1ModelMonitoringStatsAnomalies(_messages.Message):
@@ -28798,6 +28982,22 @@ class GoogleCloudAiplatformV1beta1PythonPackageSpec(_messages.Message):
   pythonModule = _messages.StringField(5)
 
 
+class GoogleCloudAiplatformV1beta1QueryDeployedModelsResponse(_messages.Message):
+  r"""Response message for QueryDeployedModels method.
+
+  Fields:
+    deployedModelRefs: References to the DeployedModels that share the
+      specified deploymentResourcePool.
+    deployedModels: DEPRECATED Use deployed_model_refs instead.
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+  """
+
+  deployedModelRefs = _messages.MessageField('GoogleCloudAiplatformV1beta1DeployedModelRef', 1, repeated=True)
+  deployedModels = _messages.MessageField('GoogleCloudAiplatformV1beta1DeployedModel', 2, repeated=True)
+  nextPageToken = _messages.StringField(3)
+
+
 class GoogleCloudAiplatformV1beta1RawPredictRequest(_messages.Message):
   r"""Request message for PredictionService.RawPredict.
 
@@ -29040,13 +29240,12 @@ class GoogleCloudAiplatformV1beta1SavedQuery(_messages.Message):
       a blind "overwrite" update happens.
     metadata: Some additional information about the SavedQuery.
     name: Output only. Resource name of the SavedQuery.
-    problemType: Required. LINT.IfChange Problem type of the SavedQuery.
-      Allowed values: * IMAGE_CLASSIFICATION_SINGLE_LABEL *
-      IMAGE_CLASSIFICATION_MULTI_LABEL * IMAGE_BOUNDING_POLY *
-      IMAGE_BOUNDING_BOX * IMAGE_POLYLINE * IMAGE_SEGMENTATION *
-      TEXT_CLASSIFICATION_SINGLE_LABEL * TEXT_CLASSIFICATION_MULTI_LABEL *
-      TEXT_EXTRACTION * TEXT_SENTIMENT * VIDEO_CLASSIFICATION *
-      VIDEO_OBJECT_TRACKING * VIDEO_ACTION_RECOGNITION
+    problemType: Required. Problem type of the SavedQuery. Allowed values: *
+      IMAGE_CLASSIFICATION_SINGLE_LABEL * IMAGE_CLASSIFICATION_MULTI_LABEL *
+      IMAGE_BOUNDING_POLY * IMAGE_BOUNDING_BOX * IMAGE_POLYLINE *
+      IMAGE_SEGMENTATION * TEXT_CLASSIFICATION_SINGLE_LABEL *
+      TEXT_CLASSIFICATION_MULTI_LABEL * TEXT_EXTRACTION * TEXT_SENTIMENT *
+      VIDEO_CLASSIFICATION * VIDEO_OBJECT_TRACKING * VIDEO_ACTION_RECOGNITION
     supportAutomlTraining: Output only. If the Annotations belonging to the
       SavedQuery can be used for AutoML training.
     updateTime: Output only. Timestamp when SavedQuery was last updated.
@@ -32149,7 +32348,7 @@ class GoogleCloudAiplatformV1beta1StudySpec(_messages.Message):
       selection type will be used
     ObservationNoiseValueValuesEnum: The observation noise level of the study.
       Currently only supported by the Vertex AI Vizier service. Not supported
-      by HyperparamterTuningJob or TrainingPipeline.
+      by HyperparameterTuningJob or TrainingPipeline.
 
   Fields:
     algorithm: The search algorithm specified for the Study.
@@ -32166,7 +32365,7 @@ class GoogleCloudAiplatformV1beta1StudySpec(_messages.Message):
     metrics: Required. Metric specs for the Study.
     observationNoise: The observation noise level of the study. Currently only
       supported by the Vertex AI Vizier service. Not supported by
-      HyperparamterTuningJob or TrainingPipeline.
+      HyperparameterTuningJob or TrainingPipeline.
     parameters: Required. The set of parameters to tune.
   """
 
@@ -32202,7 +32401,7 @@ class GoogleCloudAiplatformV1beta1StudySpec(_messages.Message):
 
   class ObservationNoiseValueValuesEnum(_messages.Enum):
     r"""The observation noise level of the study. Currently only supported by
-    the Vertex AI Vizier service. Not supported by HyperparamterTuningJob or
+    the Vertex AI Vizier service. Not supported by HyperparameterTuningJob or
     TrainingPipeline.
 
     Values:
@@ -32430,7 +32629,7 @@ class GoogleCloudAiplatformV1beta1StudySpecParameterSpecCategoricalValueSpec(_me
     defaultValue: A default value for a `CATEGORICAL` parameter that is
       assumed to be a relatively good starting point. Unset value signals that
       there is no offered starting point. Currently only supported by the
-      Vizier service. Not supported by HyperparamterTuningJob or
+      Vertex AI Vizier service. Not supported by HyperparameterTuningJob or
       TrainingPipeline.
     values: Required. The list of possible categories.
   """
@@ -32500,8 +32699,9 @@ class GoogleCloudAiplatformV1beta1StudySpecParameterSpecDiscreteValueSpec(_messa
     defaultValue: A default value for a `DISCRETE` parameter that is assumed
       to be a relatively good starting point. Unset value signals that there
       is no offered starting point. It automatically rounds to the nearest
-      feasible discrete point. Currently only supported by the Vizier service.
-      Not supported by HyperparamterTuningJob or TrainingPipeline.
+      feasible discrete point. Currently only supported by the Vertex AI
+      Vizier service. Not supported by HyperparameterTuningJob or
+      TrainingPipeline.
     values: Required. A list of possible values. The list should be in
       increasing order and at least 1e-10 apart. For instance, this parameter
       might have possible settings of 1.5, 2.5, and 4.0. This list should not
@@ -32519,7 +32719,7 @@ class GoogleCloudAiplatformV1beta1StudySpecParameterSpecDoubleValueSpec(_message
     defaultValue: A default value for a `DOUBLE` parameter that is assumed to
       be a relatively good starting point. Unset value signals that there is
       no offered starting point. Currently only supported by the Vertex AI
-      Vizier service. Not supported by HyperparamterTuningJob or
+      Vizier service. Not supported by HyperparameterTuningJob or
       TrainingPipeline.
     maxValue: Required. Inclusive maximum value of the parameter.
     minValue: Required. Inclusive minimum value of the parameter.
@@ -32537,7 +32737,7 @@ class GoogleCloudAiplatformV1beta1StudySpecParameterSpecIntegerValueSpec(_messag
     defaultValue: A default value for an `INTEGER` parameter that is assumed
       to be a relatively good starting point. Unset value signals that there
       is no offered starting point. Currently only supported by the Vertex AI
-      Vizier service. Not supported by HyperparamterTuningJob or
+      Vizier service. Not supported by HyperparameterTuningJob or
       TrainingPipeline.
     maxValue: Required. Inclusive maximum value of the parameter.
     minValue: Required. Inclusive minimum value of the parameter.

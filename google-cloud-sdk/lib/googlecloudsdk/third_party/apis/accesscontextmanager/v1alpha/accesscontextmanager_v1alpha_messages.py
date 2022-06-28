@@ -1164,12 +1164,13 @@ class IngressSource(_messages.Message):
       `accessPolicies/MY_POLICY/accessLevels/MY_LEVEL`. If a single `*` is
       specified for `access_level`, then all IngressSources will be allowed.
     resource: A Google Cloud resource that is allowed to ingress the
-      perimeter. Requests from these resources will be allowed to access
-      perimeter data. Currently only projects are allowed. Format:
-      `projects/{project_number}` The project may be in any Google Cloud
-      organization, not just the organization that the perimeter is defined
-      in. `*` is not allowed, the case of allowing all Google Cloud resources
-      only is not supported.
+      perimeter. Requests from these resources are allowed to access perimeter
+      data. Only projects and VPCs are allowed. Project format:
+      `projects/{project_number}`. VPC format: `//compute.googleapis.com/proje
+      cts/{PROJECT_NUMBER}/locations/global/networks/{NAME}`. The resource
+      might be in any Google Cloud organization, not just the organization
+      that the perimeter is defined in. `*` is not allowed, the case of
+      allowing all Google Cloud resources only is not supported.
   """
 
   accessLevel = _messages.StringField(1)
@@ -1559,20 +1560,20 @@ class ServicePerimeter(_messages.Message):
   freely import and export data amongst themselves, but not export outside of
   the `ServicePerimeter`. If a request with a source within this
   `ServicePerimeter` has a target outside of the `ServicePerimeter`, the
-  request will be blocked. Otherwise the request is allowed. There are two
-  types of Service Perimeter - Regular and Bridge. Regular Service Perimeters
-  cannot overlap, a single Google Cloud project can only belong to a single
-  regular Service Perimeter. Service Perimeter Bridges can contain only Google
-  Cloud projects as members, a single Google Cloud project may belong to
-  multiple Service Perimeter Bridges.
+  request is blocked. Otherwise the request is allowed. There are two types of
+  service perimeter: regular and bridge. Regular perimeters cannot overlap, a
+  single A Google Cloud project or VPC can only belong to a single regular
+  perimeter. Perimeter bridges can contain only Google Cloud projects as
+  members, a single Google Cloud project might belong to multiple Service
+  perimeter bridges.
 
   Enums:
     PerimeterTypeValueValuesEnum: Perimeter type indicator. A single project
-      is allowed to be a member of single regular perimeter, but multiple
-      service perimeter bridges. A project cannot be a included in a perimeter
-      bridge without being included in regular perimeter. For perimeter
-      bridges, the restricted service list as well as access level lists must
-      be empty.
+      or VPC is allowed to be a member of single regular perimeter, but a
+      project can be in multiple service perimeter bridges. A project cannot
+      be a included in a perimeter bridge without being included in regular
+      perimeter. For perimeter bridges, the restricted service list as well as
+      access level lists must be empty.
 
   Fields:
     description: Description of the `ServicePerimeter` and its use. Does not
@@ -1581,11 +1582,12 @@ class ServicePerimeter(_messages.Message):
       component must begin with a letter and only include alphanumeric and
       '_'. Format:
       `accessPolicies/{access_policy}/servicePerimeters/{service_perimeter}
-    perimeterType: Perimeter type indicator. A single project is allowed to be
-      a member of single regular perimeter, but multiple service perimeter
-      bridges. A project cannot be a included in a perimeter bridge without
-      being included in regular perimeter. For perimeter bridges, the
-      restricted service list as well as access level lists must be empty.
+    perimeterType: Perimeter type indicator. A single project or VPC is
+      allowed to be a member of single regular perimeter, but a project can be
+      in multiple service perimeter bridges. A project cannot be a included in
+      a perimeter bridge without being included in regular perimeter. For
+      perimeter bridges, the restricted service list as well as access level
+      lists must be empty.
     spec: Proposed (or dry run) ServicePerimeter configuration. This
       configuration allows to specify and test ServicePerimeter configuration
       without enforcing actual access restrictions. Only allowed to be set
@@ -1608,11 +1610,11 @@ class ServicePerimeter(_messages.Message):
   """
 
   class PerimeterTypeValueValuesEnum(_messages.Enum):
-    r"""Perimeter type indicator. A single project is allowed to be a member
-    of single regular perimeter, but multiple service perimeter bridges. A
-    project cannot be a included in a perimeter bridge without being included
-    in regular perimeter. For perimeter bridges, the restricted service list
-    as well as access level lists must be empty.
+    r"""Perimeter type indicator. A single project or VPC is allowed to be a
+    member of single regular perimeter, but a project can be in multiple
+    service perimeter bridges. A project cannot be a included in a perimeter
+    bridge without being included in regular perimeter. For perimeter bridges,
+    the restricted service list as well as access level lists must be empty.
 
     Values:
       PERIMETER_TYPE_REGULAR: Regular Perimeter.
@@ -1652,9 +1654,10 @@ class ServicePerimeterConfig(_messages.Message):
       perimeter may have multiple IngressPolicies, each of which is evaluated
       separately. Access is granted if any Ingress Policy grants it. Must be
       empty for a perimeter bridge.
-    resources: A list of Google Cloud resources that are inside of the service
-      perimeter. Currently only projects are allowed. Format:
-      `projects/{project_number}`
+    resources: A list Google Cloud resources that are inside of the service
+      perimeter. Only projects and VPCs are allowed. Project format:
+      `projects/{project_number}`. VPC format: `//compute.googleapis.com/proje
+      cts/{PROJECT_NUMBER}/locations/global/networks/{NAME}`.
     restrictedServices: Google Cloud services that are subject to the Service
       Perimeter restrictions. For example, if `storage.googleapis.com` is
       specified, access to the storage buckets inside the perimeter must meet

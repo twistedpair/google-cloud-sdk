@@ -447,6 +447,14 @@ class Collections(enum.Enum):
       ['project', 'region', 'instanceGroup'],
       True
   )
+  REGIONINSTANCETEMPLATES = (
+      'regionInstanceTemplates',
+      'projects/{project}/regions/{region}/instanceTemplates/'
+      '{instanceTemplate}',
+      {},
+      ['project', 'region', 'instanceTemplate'],
+      True
+  )
   REGIONINSTANTSNAPSHOTS = (
       'regionInstantSnapshots',
       'projects/{project}/regions/{region}/instantSnapshots/{instantSnapshot}',

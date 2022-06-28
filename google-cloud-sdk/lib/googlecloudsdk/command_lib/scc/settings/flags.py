@@ -56,6 +56,7 @@ def AddServiceArgument(parser):
           'container-threat-detection',
           'event-threat-detection',
           'security-health-analytics',
+          'virtual-machine-threat-detection',
           'web-security-scanner',
       ],
       default='none',

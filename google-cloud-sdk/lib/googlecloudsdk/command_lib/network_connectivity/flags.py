@@ -137,7 +137,7 @@ def GetRegionResourceSpec(location_arguments):
 
 def GetResourceLocationArguments(vpc_spoke_only_command):
   if not vpc_spoke_only_command:
-    return [REGION_ARGUMENT]
+    return [GLOBAL_ARGUMENT, REGION_ARGUMENT]
   else:
     return [GLOBAL_ARGUMENT]
 

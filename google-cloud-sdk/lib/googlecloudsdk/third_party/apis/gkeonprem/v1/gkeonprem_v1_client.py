@@ -712,33 +712,6 @@ class GkeonpremV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
-    def Enroll(self, request, global_params=None):
-      r"""Enrolls an existing VMware Admin Cluster to the GKE on-prem API within a given project and location. Through enrollment, an existing admin cluster will become GKE on-prem API managed. The corresponding GCP resources will be created and all future modifications to the cluster will be expected to be performed through the API.
-
-      Args:
-        request: (GkeonpremProjectsLocationsVmwareAdminClustersEnrollRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Enroll')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Enroll.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/vmwareAdminClusters:enroll',
-        http_method='POST',
-        method_id='gkeonprem.projects.locations.vmwareAdminClusters.enroll',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=[],
-        relative_path='v1/{+parent}/vmwareAdminClusters:enroll',
-        request_field='enrollVmwareAdminClusterRequest',
-        request_type_name='GkeonpremProjectsLocationsVmwareAdminClustersEnrollRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
     def GetIamPolicy(self, request, global_params=None):
       r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
 

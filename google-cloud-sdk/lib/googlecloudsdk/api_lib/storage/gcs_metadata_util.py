@@ -179,15 +179,16 @@ def get_object_resource_from_metadata(metadata):
       generation=generation)
 
   if metadata.customerEncryption:
-    key_hash = metadata.customerEncryption.keySha256
+    decryption_key_hash = metadata.customerEncryption.keySha256
   else:
-    key_hash = None
+    decryption_key_hash = None
 
   return gcs_resource_reference.GcsObjectResource(
       url,
       content_type=metadata.contentType,
       creation_time=metadata.timeCreated,
-      decryption_key_hash=key_hash,
+      decryption_key_hash=decryption_key_hash,
+      kms_key=metadata.kmsKeyName,
       etag=metadata.etag,
       crc32c_hash=metadata.crc32c,
       md5_hash=metadata.md5Hash,

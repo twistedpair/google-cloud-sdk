@@ -39,9 +39,6 @@ class LoggingV2(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
-    self.billingAccounts_buckets_links = self.BillingAccountsBucketsLinksService(self)
-    self.billingAccounts_buckets_views = self.BillingAccountsBucketsViewsService(self)
-    self.billingAccounts_buckets = self.BillingAccountsBucketsService(self)
     self.billingAccounts_exclusions = self.BillingAccountsExclusionsService(self)
     self.billingAccounts_locations_buckets_links = self.BillingAccountsLocationsBucketsLinksService(self)
     self.billingAccounts_locations_buckets_views_logs = self.BillingAccountsLocationsBucketsViewsLogsService(self)
@@ -50,7 +47,6 @@ class LoggingV2(base_api.BaseApiClient):
     self.billingAccounts_locations_operations = self.BillingAccountsLocationsOperationsService(self)
     self.billingAccounts_locations = self.BillingAccountsLocationsService(self)
     self.billingAccounts_logs = self.BillingAccountsLogsService(self)
-    self.billingAccounts_operations = self.BillingAccountsOperationsService(self)
     self.billingAccounts_sinks = self.BillingAccountsSinksService(self)
     self.billingAccounts = self.BillingAccountsService(self)
     self.entries = self.EntriesService(self)
@@ -95,117 +91,6 @@ class LoggingV2(base_api.BaseApiClient):
     self.projects = self.ProjectsService(self)
     self.sinks = self.SinksService(self)
     self.v2 = self.V2Service(self)
-
-  class BillingAccountsBucketsLinksService(base_api.BaseApiService):
-    """Service class for the billingAccounts_buckets_links resource."""
-
-    _NAME = 'billingAccounts_buckets_links'
-
-    def __init__(self, client):
-      super(LoggingV2.BillingAccountsBucketsLinksService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Get(self, request, global_params=None):
-      r"""Gets a link.
-
-      Args:
-        request: (LoggingBillingAccountsBucketsLinksGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Link) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/billingAccounts/{billingAccountsId}/buckets/{bucketsId}/links/{linksId}',
-        http_method='GET',
-        method_id='logging.billingAccounts.buckets.links.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v2/{+name}',
-        request_field='',
-        request_type_name='LoggingBillingAccountsBucketsLinksGetRequest',
-        response_type_name='Link',
-        supports_download=False,
-    )
-
-  class BillingAccountsBucketsViewsService(base_api.BaseApiService):
-    """Service class for the billingAccounts_buckets_views resource."""
-
-    _NAME = 'billingAccounts_buckets_views'
-
-    def __init__(self, client):
-      super(LoggingV2.BillingAccountsBucketsViewsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Get(self, request, global_params=None):
-      r"""Gets a view on a log bucket..
-
-      Args:
-        request: (LoggingBillingAccountsBucketsViewsGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (LogView) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/billingAccounts/{billingAccountsId}/buckets/{bucketsId}/views/{viewsId}',
-        http_method='GET',
-        method_id='logging.billingAccounts.buckets.views.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v2/{+name}',
-        request_field='',
-        request_type_name='LoggingBillingAccountsBucketsViewsGetRequest',
-        response_type_name='LogView',
-        supports_download=False,
-    )
-
-  class BillingAccountsBucketsService(base_api.BaseApiService):
-    """Service class for the billingAccounts_buckets resource."""
-
-    _NAME = 'billingAccounts_buckets'
-
-    def __init__(self, client):
-      super(LoggingV2.BillingAccountsBucketsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Get(self, request, global_params=None):
-      r"""Gets a log bucket.
-
-      Args:
-        request: (LoggingBillingAccountsBucketsGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (LogBucket) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/billingAccounts/{billingAccountsId}/buckets/{bucketsId}',
-        http_method='GET',
-        method_id='logging.billingAccounts.buckets.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v2/{+name}',
-        request_field='',
-        request_type_name='LoggingBillingAccountsBucketsGetRequest',
-        response_type_name='LogBucket',
-        supports_download=False,
-    )
 
   class BillingAccountsExclusionsService(base_api.BaseApiService):
     """Service class for the billingAccounts_exclusions resource."""
@@ -416,6 +301,33 @@ class LoggingV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Get(self, request, global_params=None):
+      r"""Gets a link.
+
+      Args:
+        request: (LoggingBillingAccountsLocationsBucketsLinksGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Link) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/billingAccounts/{billingAccountsId}/locations/{locationsId}/buckets/{bucketsId}/links/{linksId}',
+        http_method='GET',
+        method_id='logging.billingAccounts.locations.buckets.links.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='LoggingBillingAccountsLocationsBucketsLinksGetRequest',
+        response_type_name='Link',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists links.
 
@@ -544,6 +456,33 @@ class LoggingV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Get(self, request, global_params=None):
+      r"""Gets a view on a log bucket..
+
+      Args:
+        request: (LoggingBillingAccountsLocationsBucketsViewsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (LogView) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/billingAccounts/{billingAccountsId}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}',
+        http_method='GET',
+        method_id='logging.billingAccounts.locations.buckets.views.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='LoggingBillingAccountsLocationsBucketsViewsGetRequest',
+        response_type_name='LogView',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists views on a log bucket.
 
@@ -662,6 +601,33 @@ class LoggingV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Get(self, request, global_params=None):
+      r"""Gets a log bucket.
+
+      Args:
+        request: (LoggingBillingAccountsLocationsBucketsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (LogBucket) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/billingAccounts/{billingAccountsId}/locations/{locationsId}/buckets/{bucketsId}',
+        http_method='GET',
+        method_id='logging.billingAccounts.locations.buckets.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='LoggingBillingAccountsLocationsBucketsGetRequest',
+        response_type_name='LogBucket',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists log buckets.
 
@@ -777,6 +743,33 @@ class LoggingV2(base_api.BaseApiClient):
         request_field='cancelOperationRequest',
         request_type_name='LoggingBillingAccountsLocationsOperationsCancelRequest',
         response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
+
+      Args:
+        request: (LoggingBillingAccountsLocationsOperationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/billingAccounts/{billingAccountsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='logging.billingAccounts.locations.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='LoggingBillingAccountsLocationsOperationsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -932,43 +925,6 @@ class LoggingV2(base_api.BaseApiClient):
         request_field='',
         request_type_name='LoggingBillingAccountsLogsListRequest',
         response_type_name='ListLogsResponse',
-        supports_download=False,
-    )
-
-  class BillingAccountsOperationsService(base_api.BaseApiService):
-    """Service class for the billingAccounts_operations resource."""
-
-    _NAME = 'billingAccounts_operations'
-
-    def __init__(self, client):
-      super(LoggingV2.BillingAccountsOperationsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Get(self, request, global_params=None):
-      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
-
-      Args:
-        request: (LoggingBillingAccountsOperationsGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/billingAccounts/{billingAccountsId}/operations/{operationsId}',
-        http_method='GET',
-        method_id='logging.billingAccounts.operations.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v2/{+name}',
-        request_field='',
-        request_type_name='LoggingBillingAccountsOperationsGetRequest',
-        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1204,6 +1160,33 @@ class LoggingV2(base_api.BaseApiClient):
         relative_path='v2/{+name}/settings',
         request_field='',
         request_type_name='LoggingBillingAccountsGetSettingsRequest',
+        response_type_name='Settings',
+        supports_download=False,
+    )
+
+    def UpdateSettings(self, request, global_params=None):
+      r"""Updates the Log Router settings for the given resource.Note: Settings for the Log Router can currently only be configured for Google Cloud organizations. Once configured, it applies to all projects and folders in the Google Cloud organization.UpdateSettings will fail if 1) kms_key_name is invalid, or 2) the associated service account does not have the required roles/cloudkms.cryptoKeyEncrypterDecrypter role assigned for the key, or 3) access to the key is disabled. 4) location_id is not supported by Logging. 5) location_id violate OrgPolicy.See Enabling CMEK for Log Router (https://cloud.google.com/logging/docs/routing/managed-encryption) for more information.
+
+      Args:
+        request: (LoggingBillingAccountsUpdateSettingsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Settings) The response message.
+      """
+      config = self.GetMethodConfig('UpdateSettings')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateSettings.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/billingAccounts/{billingAccountsId}/settings',
+        http_method='PATCH',
+        method_id='logging.billingAccounts.updateSettings',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}/settings',
+        request_field='settings',
+        request_type_name='LoggingBillingAccountsUpdateSettingsRequest',
         response_type_name='Settings',
         supports_download=False,
     )
@@ -5621,6 +5604,33 @@ class LoggingV2(base_api.BaseApiClient):
         relative_path='v2/{+name}/settings',
         request_field='',
         request_type_name='LoggingProjectsGetSettingsRequest',
+        response_type_name='Settings',
+        supports_download=False,
+    )
+
+    def UpdateSettings(self, request, global_params=None):
+      r"""Updates the Log Router settings for the given resource.Note: Settings for the Log Router can currently only be configured for Google Cloud organizations. Once configured, it applies to all projects and folders in the Google Cloud organization.UpdateSettings will fail if 1) kms_key_name is invalid, or 2) the associated service account does not have the required roles/cloudkms.cryptoKeyEncrypterDecrypter role assigned for the key, or 3) access to the key is disabled. 4) location_id is not supported by Logging. 5) location_id violate OrgPolicy.See Enabling CMEK for Log Router (https://cloud.google.com/logging/docs/routing/managed-encryption) for more information.
+
+      Args:
+        request: (LoggingProjectsUpdateSettingsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Settings) The response message.
+      """
+      config = self.GetMethodConfig('UpdateSettings')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateSettings.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/settings',
+        http_method='PATCH',
+        method_id='logging.projects.updateSettings',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}/settings',
+        request_field='settings',
+        request_type_name='LoggingProjectsUpdateSettingsRequest',
         response_type_name='Settings',
         supports_download=False,
     )

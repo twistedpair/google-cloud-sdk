@@ -45,6 +45,7 @@ class ServicedirectoryV1beta1(base_api.BaseApiClient):
     self.projects_locations_namespaces_workloadGroups = self.ProjectsLocationsNamespacesWorkloadGroupsService(self)
     self.projects_locations_namespaces_workloads = self.ProjectsLocationsNamespacesWorkloadsService(self)
     self.projects_locations_namespaces = self.ProjectsLocationsNamespacesService(self)
+    self.projects_locations_registrationPolicies = self.ProjectsLocationsRegistrationPoliciesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
 
@@ -190,6 +191,33 @@ class ServicedirectoryV1beta1(base_api.BaseApiClient):
         request_field='serviceWorkload',
         request_type_name='ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsPatchRequest',
         response_type_name='ServiceWorkload',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Tests IAM permissions for a resource (namespace, service or service workload only).
+
+      Args:
+        request: (ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/serviceWorkloads/{serviceWorkloadsId}:testIamPermissions',
+        http_method='POST',
+        method_id='servicedirectory.projects.locations.namespaces.serviceWorkloads.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1beta1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
@@ -565,7 +593,7 @@ class ServicedirectoryV1beta1(base_api.BaseApiClient):
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Tests IAM permissions for a resource (namespace or service only).
+      r"""Tests IAM permissions for a resource (namespace, service or service workload only).
 
       Args:
         request: (ServicedirectoryProjectsLocationsNamespacesServicesTestIamPermissionsRequest) input message
@@ -1081,7 +1109,7 @@ class ServicedirectoryV1beta1(base_api.BaseApiClient):
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Tests IAM permissions for a resource (namespace or service only).
+      r"""Tests IAM permissions for a resource (namespace, service or service workload only).
 
       Args:
         request: (ServicedirectoryProjectsLocationsNamespacesTestIamPermissionsRequest) input message
@@ -1104,6 +1132,151 @@ class ServicedirectoryV1beta1(base_api.BaseApiClient):
         request_field='testIamPermissionsRequest',
         request_type_name='ServicedirectoryProjectsLocationsNamespacesTestIamPermissionsRequest',
         response_type_name='TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsRegistrationPoliciesService(base_api.BaseApiService):
+    """Service class for the projects_locations_registrationPolicies resource."""
+
+    _NAME = 'projects_locations_registrationPolicies'
+
+    def __init__(self, client):
+      super(ServicedirectoryV1beta1.ProjectsLocationsRegistrationPoliciesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a Registration Policy, and returns the new registration policy.
+
+      Args:
+        request: (ServicedirectoryProjectsLocationsRegistrationPoliciesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RegistrationPolicy) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/registrationPolicies',
+        http_method='POST',
+        method_id='servicedirectory.projects.locations.registrationPolicies.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['registrationPolicyId'],
+        relative_path='v1beta1/{+parent}/registrationPolicies',
+        request_field='registrationPolicy',
+        request_type_name='ServicedirectoryProjectsLocationsRegistrationPoliciesCreateRequest',
+        response_type_name='RegistrationPolicy',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a registration policy.
+
+      Args:
+        request: (ServicedirectoryProjectsLocationsRegistrationPoliciesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/registrationPolicies/{registrationPoliciesId}',
+        http_method='DELETE',
+        method_id='servicedirectory.projects.locations.registrationPolicies.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='ServicedirectoryProjectsLocationsRegistrationPoliciesDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a registration policy.
+
+      Args:
+        request: (ServicedirectoryProjectsLocationsRegistrationPoliciesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RegistrationPolicy) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/registrationPolicies/{registrationPoliciesId}',
+        http_method='GET',
+        method_id='servicedirectory.projects.locations.registrationPolicies.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='ServicedirectoryProjectsLocationsRegistrationPoliciesGetRequest',
+        response_type_name='RegistrationPolicy',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all registration policies.
+
+      Args:
+        request: (ServicedirectoryProjectsLocationsRegistrationPoliciesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListRegistrationPoliciesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/registrationPolicies',
+        http_method='GET',
+        method_id='servicedirectory.projects.locations.registrationPolicies.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/registrationPolicies',
+        request_field='',
+        request_type_name='ServicedirectoryProjectsLocationsRegistrationPoliciesListRequest',
+        response_type_name='ListRegistrationPoliciesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a registration policy.
+
+      Args:
+        request: (ServicedirectoryProjectsLocationsRegistrationPoliciesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RegistrationPolicy) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/registrationPolicies/{registrationPoliciesId}',
+        http_method='PATCH',
+        method_id='servicedirectory.projects.locations.registrationPolicies.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['allowMissing', 'updateMask'],
+        relative_path='v1beta1/{+name}',
+        request_field='registrationPolicy',
+        request_type_name='ServicedirectoryProjectsLocationsRegistrationPoliciesPatchRequest',
+        response_type_name='RegistrationPolicy',
         supports_download=False,
     )
 

@@ -214,15 +214,11 @@ class RequestParam(enum.Enum):
       kwargs[self.arg_name] = value
 
 
-def GoogleAuthRequest(http=None):
+def GoogleAuthRequest():
   """A Request object for google-auth library.
-
-  Args:
-    http: httplib2.Http client object configured with all the required settings
-    for gcloud.
 
   Returns:
     A http request which implements google.auth.transport.Request and uses
       gcloud's http object in the core.
   """
-  return google_auth_httplib2.Request(http or Http())
+  return google_auth_httplib2.Request(Http())

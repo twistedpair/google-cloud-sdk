@@ -767,6 +767,15 @@ MAP = {
                 default_version=True,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
+        'v2':
+            APIDef(
+                ApitoolsClientDef(
+                    class_path='googlecloudsdk.third_party.apis.cloudfunctions.v2',
+                    client_classpath='cloudfunctions_v2_client.CloudfunctionsV2',
+                    messages_modulepath='cloudfunctions_v2_messages'),
+                default_version=False,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
         'v2alpha':
             APIDef(
                 ApitoolsClientDef(

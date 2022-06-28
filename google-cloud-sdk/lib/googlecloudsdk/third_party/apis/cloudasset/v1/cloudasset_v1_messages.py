@@ -108,7 +108,7 @@ class AnalyzeOrgPoliciesResponse(_messages.Message):
   Fields:
     constraint: The definition of the constraint in the request.
     nextPageToken: The page token to fetch the next page for
-      AnalyzeOrgPolicyResponse.org_policy_results.
+      AnalyzeOrgPoliciesResponse.org_policy_results.
     orgPolicyResults: The organization policies under the
       AnalyzeOrgPoliciesRequest.scope with the
       AnalyzeOrgPoliciesRequest.constraint.
@@ -127,7 +127,7 @@ class AnalyzeOrgPolicyGovernedContainersResponse(_messages.Message):
     constraint: The definition of the constraint in the request.
     governedContainers: The list of the analyzed governed containers.
     nextPageToken: The page token to fetch the next page for
-      AnalyzeOrgPolicyResponse.governed_containers.
+      AnalyzeOrgPolicyGovernedContainersResponse.governed_containers.
   """
 
   constraint = _messages.MessageField('AnalyzerOrgPolicyConstraint', 1)
@@ -142,7 +142,7 @@ class AnalyzeOrgPolicyGovernedResourcesResponse(_messages.Message):
     constraint: The definition of the constraint in the request.
     governedResources: The list of the analyzed governed resources.
     nextPageToken: The page token to fetch the next page for
-      AnalyzeOrgPolicyResponse.governed_resources.
+      AnalyzeOrgPolicyGovernedResourcesResponse.governed_resources.
   """
 
   constraint = _messages.MessageField('AnalyzerOrgPolicyConstraint', 1)
@@ -693,11 +693,15 @@ class CloudassetAnalyzeOrgPoliciesRequest(_messages.Message):
   Fields:
     constraint: Required. The name of the constraint to analyze organization
       policies for. The response only contains analyzed organization policies
-      for the provided constraint. (e.g. "cloudbuild.allowedWorkerPools").
-    filter: The expression to filter the consolidated organization policies in
-      result.
+      for the provided constraint.
+    filter: The expression to filter
+      AnalyzeOrgPoliciesResponse.org_policy_results. The only supported field
+      is `consolidated_policy.attached_resource`, and the only supported
+      operator is `=`. Example: consolidated_policy.attached_resource="//cloud
+      resourcemanager.googleapis.com/folders/001" will return the org policy
+      results of"folders/001".
     pageSize: The maximum number of items to return per page. If unspecified,
-      AnalyzeOrgPolicyResponse.defined_org_policies will contain 20 items with
+      AnalyzeOrgPoliciesResponse.org_policy_results will contain 20 items with
       a maximum of 200.
     pageToken: The pagination token to retrieve the next page.
     scope: Required. The project/folder/organization to scope the request.
@@ -721,15 +725,14 @@ class CloudassetAnalyzeOrgPolicyGovernedContainersRequest(_messages.Message):
   Fields:
     constraint: Required. The name of the constraint to analyze governed
       containers for. The analysis only contains organization policies for the
-      provided constraint. (e.g. "cloudbuild.allowedWorkerPools").
+      provided constraint.
     filter: The expression to filter the governed containers in result. The
-      only supported comparison operator is `=`, and supported field is
-      `parent`. Example:
-      parent="//cloudresourcemanager.googleapis.com/folders/001" will return
-      all containers under "folders/001".
+      only supported field is `parent`, and the only supported operator is
+      `=`. Example: parent="//cloudresourcemanager.googleapis.com/folders/001"
+      will return all containers under "folders/001".
     pageSize: The maximum number of items to return per page. If unspecified,
-      AnalyzeOrgPolicyResponse.governed_containers will contain 100 items with
-      a maximum of 200.
+      AnalyzeOrgPolicyGovernedContainersResponse.governed_containers will
+      contain 100 items with a maximum of 200.
     pageToken: The pagination token to retrieve the next page.
     scope: Required. The project/folder/organization to scope the request.
       Only organization policies within the scope will be analyzed. The output
@@ -753,15 +756,15 @@ class CloudassetAnalyzeOrgPolicyGovernedResourcesRequest(_messages.Message):
   Fields:
     constraint: Required. The name of the constraint to analyze governed
       resources for. The analysis only contains analyzed organization policies
-      for the provided constraint. (e.g. "cloudbuild.allowedWorkerPools").
+      for the provided constraint.
     filter: The expression to filter the governed resources in result. The
-      only supported comparison operator is `=`, and supported field is
-      `project`, `folders` and `organization`. Example:
-      project="project/12345678" filter will return all governed resources
-      under project/12345678 including the project ifself, if applicable.
+      only supported field is `project` and `folders`, and the only supported
+      operator is `=`. Example: project="projects/12345678" filter will return
+      all governed resources under projects/12345678 including the project
+      ifself, if applicable.
     pageSize: The maximum number of items to return per page. If unspecified,
-      AnalyzeOrgPolicyResponse.governed_resources will contain 100 items with
-      a maximum of 200.
+      AnalyzeOrgPolicyGovernedResourcesResponse.governed_resources will
+      contain 100 items with a maximum of 200.
     pageToken: The pagination token to retrieve the next page.
     scope: Required. The project/folder/organization to scope the request.
       Only organization policies within the scope will be analyzed. The output
@@ -2024,9 +2027,9 @@ class GoogleCloudAssetV1GovernedContainer(_messages.Message):
     parent: The [full resource name] (https://cloud.google.com/asset-
       inventory/docs/resource-name-format) of the parent of AnalyzeOrgPolicyGo
       vernedContainersResponse.GovernedContainer.full_resource_name.
-    policyBundle: The ordered list of all organization policies impacting this
-      resource from the scope to the target resource. Default organization
-      policies are also included.
+    policyBundle: The ordered list of all organization policies from the Analy
+      zeOrgPoliciesResponse.OrgPolicyResult.consolidated_policy.attached_resou
+      rce. to the scope specified in the request.
   """
 
   consolidatedPolicy = _messages.MessageField('AnalyzerOrgPolicy', 1)
@@ -2058,9 +2061,9 @@ class GoogleCloudAssetV1GovernedResource(_messages.Message):
     parent: The [full resource name] (https://cloud.google.com/asset-
       inventory/docs/resource-name-format) of the parent of AnalyzeOrgPolicyGo
       vernedContainersResponse.GovernedContainer.full_resource_name.
-    policyBundle: The ordered list of all organization policies impacting this
-      resource from the scope to the target resource. Default organization
-      policies are also included.
+    policyBundle: The ordered list of all organization policies from the Analy
+      zeOrgPoliciesResponse.OrgPolicyResult.consolidated_policy.attached_resou
+      rce. to the scope specified in the request.
     project: The project that this resource belongs to, in the form of
       projects/{PROJECT_NUMBER}. This field is available when the resource
       belongs to a project.
@@ -2909,8 +2912,11 @@ class GoogleIdentityAccesscontextmanagerV1EgressTo(_messages.Message):
 
   Fields:
     externalResources: A list of external resources that are allowed to be
-      accessed. A request matches if it contains an external resource in this
-      list (Example: s3://bucket/path). Currently '*' is not allowed.
+      accessed. Only AWS and Azure resources are supported. For Amazon S3, the
+      supported format is s3://BUCKET_NAME. For Azure Storage, the supported
+      format is azure://myaccount.blob.core.windows.net/CONTAINER_NAME. A
+      request matches if it contains an external resource in this list
+      (Example: s3://bucket/path). Currently '*' is not allowed.
     operations: A list of ApiOperations allowed to be performed by the sources
       specified in the corresponding EgressFrom. A request matches if it uses
       an operation/service in this list.
@@ -3908,9 +3914,9 @@ class OrgPolicyResult(_messages.Message):
       will respect the organization policy [hierarchy
       rules](https://cloud.google.com/resource-manager/docs/organization-
       policy/understanding-hierarchy).
-    policyBundle: The ordered list of all organization policies from the scope
-      to the AnalyzeOrgPoliciesResponse.OrgPolicyResult.consolidated_policy.at
-      tached_resource. Default organization policies are also included.
+    policyBundle: The ordered list of all organization policies from the Analy
+      zeOrgPoliciesResponse.OrgPolicyResult.consolidated_policy.attached_resou
+      rce. to the scope specified in the request.
   """
 
   consolidatedPolicy = _messages.MessageField('AnalyzerOrgPolicy', 1)

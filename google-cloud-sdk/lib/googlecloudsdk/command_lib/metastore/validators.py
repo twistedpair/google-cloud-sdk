@@ -98,19 +98,35 @@ def ValidateServiceMutexConfig(unused_ref, unused_args, req):
     )
 
   if (req.service.hiveMetastoreConfig and
+      req.service.hiveMetastoreConfig.auxiliaryVersions and
+      _IsNetworkConfigPresentInService(req.service)):
+    raise exceptions.BadArgumentException(
+        '--auxiliary-versions',
+        'Auxiliary versions configuration cannot be used in conjunction with --network-config-from-file or --consumer-subnetworks.'
+    )
+
+  return ValidateServiceMutexConfigForV1(unused_ref, unused_args, req)
+
+
+def ValidateServiceMutexConfigForV1(unused_ref, unused_args, req):
+  """Validates exclusively for V1 fields that the mutual exclusive configurations of Dataproc Metastore service are not set at the same time.
+
+  Args:
+    req: A request with `service` field.
+
+  Returns:
+    A request without service mutex configuration conflicts.
+  Raises:
+    BadArgumentException: when mutual exclusive configurations of service are
+    set at the same time.
+  """
+  if (req.service.hiveMetastoreConfig and
       req.service.hiveMetastoreConfig.kerberosConfig and
       req.service.hiveMetastoreConfig.kerberosConfig.principal and
       _IsNetworkConfigPresentInService(req.service)):
     raise exceptions.BadArgumentException(
         '--kerberos-principal',
         'Kerberos configuration cannot be used in conjunction with --network-config-from-file or --consumer-subnetworks.'
-    )
-  if (req.service.hiveMetastoreConfig and
-      req.service.hiveMetastoreConfig.auxiliaryVersions and
-      _IsNetworkConfigPresentInService(req.service)):
-    raise exceptions.BadArgumentException(
-        '--auxiliary-versions',
-        'Auxiliary versions configuration cannot be used in conjunction with --network-config-from-file or --consumer-subnetworks.'
     )
   return req
 

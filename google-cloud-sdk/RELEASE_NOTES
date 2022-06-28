@@ -5,6 +5,113 @@ Copyright 2014-2022 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 392.0.0 (2022-06-28)
+
+### Anthos Multi-Cloud
+
+*   Added `--iam-instance-profile` flag to `gcloud container aws clusters
+    update` and `gcloud container aws node-pools update` to update the name or
+    ARN of the IAM instance profile associated with control plane or node pool.
+*   Added `--ssh-public-key` flag to `gcloud container azure clusters update` to
+    update the SSH public key for the Azure control plane.
+*   Added `--logging` flag to `gcloud container aws clusters update` and `gcloud container azure clusters update` to update the logging config.
+
+### App Engine
+
+* Updated the Java SDK to version 1.9.97.
+  Please visit the following release notes for details:
+  <https://cloud.google.com/appengine/docs/java/release-notes>.
+
+### CLOUD SDK
+
+*   Updated login flow initiated by `gcloud auth login --no-launch-browser` and
+    `gcloud auth application-default login --no-launch-browser` to address a
+    security issue.
+
+### Certificate Authority Service
+
+* Added `--unconstrained-chain-length` flag to `gcloud privateca subordinates create`
+to allow creation of a subordinate CA with unconstrained chain length.
+* Added `--unconstrained-chain-length` flag to `gcloud privateca roots create`
+to allow creation of a root CA with unconstrained chain length.
+* Added `--unconstrained-chain-length` flag to `gcloud privateca certificates create`
+to allow creation of a CA with unconstrained chain length.
+
+### Certificate Manager
+
+* Promoted `gcloud certificate-manager` to GA.
+* Allowed using project number in `gcloud certificate-manager` commands.
+
+### Cloud Bigtable
+
+*  Promoted `gcloud bigtable instances tables undelete` to beta and GA.
+*  Added `--autoscaling-storage-target` flags to
+`gcloud bigtable clusters create` for alpha, beta and GA to let users create
+ autoscaling clusters with configurable storage target.
+*  Added key `autoscaling-storage-target` to `--cluster-config` flag of
+ `gcloud bigtable instances create` for alpha, beta and GA to let users create
+ autoscaling clusters with configurable storage target.
+*  Added `--autoscaling-storage-target` flag to
+ `gcloud bigtable clusters update` for alpha, beta and GA to let users configure
+ autoscaling storage target when updating clusters.
+
+### Cloud Deploy
+
+* Added new command `gcloud deploy releases abandon` to prevent new rollouts on a Cloud Deploy release.
+* Added `suspended` field to the Delivery Pipeline resource. If this field is set, activity on a pipeline is prevented. The field can be set or unset in the Delivery Pipeline definition,  and then applied using `gcloud deploy apply`.
+
+### Cloud TPU
+
+* Fixed an issue with connection to TPU VMs when the
+  'compute.disableGuestAttributesAccess' Organization Policy Constraint is
+  enforced.
+
+### Compute Engine
+
+* Added `--list-managed-instances-results` flag to `gcloud beta compute instance-groups managed create` and `gcloud beta compute instance-groups managed update`.
+* Promoted `--certificate-map` of 'compute target-https-proxies insert|update` to GA.
+* Promoted `--certificate-map` of 'compute target-ssl-proxies insert|update` to GA.
+
+### Dataproc Metastore
+
+* Promoted `--network-config-from-file` and `--consumer-subnetworks` flag to
+`gcloud beta metastore services create` to specify the subnetworks from which
+the Dataproc Metastore service can be accessed to GA.
+
+### Eventarc
+
+* Added `gcloud eventarc google-channels` command group.
+* Added `gcloud eventarc channels update` command to configure crypto keys on
+    a channel.
+* Added `--crypto-key` flag to `gcloud eventarc channels create` to configure
+    crypto keys on a new channel.
+
+### Kubernetes Engine
+
+* Promoted `--enable-cost-allocation` flag of `gcloud container clusters create` to beta.
+* Promoted `--enable-cost-allocation` flag of `gcloud container clusters update` to beta.
+* Renamed `--enable-cost-management` flag of `gcloud container clusters create` to `--enable-cost-allocation`.
+* Renamed `--enable-cost-management` flag of `gcloud container clusters update` to `--enable-cost-allocation`.
+* Added `--stack-type` and `--ipv6-access-type` arguments to
+`gcloud container clusters create` command to support dual stack GKE clusters.
+
+### Terraform
+
+*   Added support for the following resources in CAI-based policies:
+    *   `google_access_context_manager_access_policy`
+*   TF -> CAI resource conversion compiled against
+    [`google` provider version 4.24.0](https://github.com/hashicorp/terraform-provider-google/releases/tag/v4.24.0).
+*   Fixed the ancestry used for resources that do not exist within a project.
+    Users may need `folders.get` access to folders that have resources included
+    in the plan.
+*   Simplified converter error messages and added resource address.
+*   Added support for `ancestries`/`excludedAncestries` match parameters for
+    CAI-based constraints.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 391.0.0 (2022-06-22)
 
 ### Breaking Changes

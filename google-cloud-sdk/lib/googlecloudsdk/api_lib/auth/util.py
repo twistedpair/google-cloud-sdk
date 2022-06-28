@@ -280,7 +280,6 @@ def DoInstalledAppBrowserFlowGoogleAuth(scopes,
                                         no_launch_browser=False,
                                         no_browser=False,
                                         remote_bootstrap=None,
-                                        remote_login_with_auth_proxy=False,
                                         redirect_uri=None):
   """Launches a 3LO oauth2 flow to get google-auth credentials.
 
@@ -296,8 +295,6 @@ def DoInstalledAppBrowserFlowGoogleAuth(scopes,
     remote_bootstrap: str, The auth parameters specified by --remote-bootstrap
       flag. Once used, it means the command is to help authorize another
       gcloud (i.e. gcloud without access to browser).
-    remote_login_with_auth_proxy: bool, True if remote login with auth proxy
-      flow needs to be used instead of OOB for --no-launch-browser flag.
     redirect_uri: str, The uri where OAuth service will redirect the user to
       once the authentication is complete.
   Returns:
@@ -319,12 +316,8 @@ def DoInstalledAppBrowserFlowGoogleAuth(scopes,
     user_creds = NoBrowserHelperRunner(
         scopes, client_config).Run(partial_auth_url=remote_bootstrap)
   elif no_launch_browser:
-    if remote_login_with_auth_proxy:
-      user_creds = RemoteLoginWithAuthProxyFlowRunner(scopes,
-                                                      client_config,
-                                                      redirect_uri).Run()
-    else:
-      user_creds = OobFlowRunner(scopes, client_config).Run()
+    user_creds = RemoteLoginWithAuthProxyFlowRunner(scopes, client_config,
+                                                    redirect_uri).Run()
   elif not can_launch_browser:
     user_creds = NoBrowserFlowRunner(scopes, client_config).Run()
   else:

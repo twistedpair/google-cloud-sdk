@@ -7089,6 +7089,34 @@ class ComputeAddressesListRequest(_messages.Message):
   returnPartialSuccess = _messages.BooleanField(7)
 
 
+class ComputeAddressesMoveRequest(_messages.Message):
+  r"""A ComputeAddressesMoveRequest object.
+
+  Fields:
+    address: Name of the address resource to move.
+    project: Source project ID which the Address is moved from.
+    region: Name of the region for this request.
+    regionAddressesMoveRequest: A RegionAddressesMoveRequest resource to be
+      passed as the request body.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+  """
+
+  address = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  regionAddressesMoveRequest = _messages.MessageField('RegionAddressesMoveRequest', 4)
+  requestId = _messages.StringField(5)
+
+
 class ComputeAddressesSetLabelsRequest(_messages.Message):
   r"""A ComputeAddressesSetLabelsRequest object.
 
@@ -10252,6 +10280,32 @@ class ComputeGlobalAddressesListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   returnPartialSuccess = _messages.BooleanField(6)
+
+
+class ComputeGlobalAddressesMoveRequest(_messages.Message):
+  r"""A ComputeGlobalAddressesMoveRequest object.
+
+  Fields:
+    address: Name of the address resource to move.
+    globalAddressesMoveRequest: A GlobalAddressesMoveRequest resource to be
+      passed as the request body.
+    project: Source project ID which the Address is moved from.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+  """
+
+  address = _messages.StringField(1, required=True)
+  globalAddressesMoveRequest = _messages.MessageField('GlobalAddressesMoveRequest', 2)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
 
 
 class ComputeGlobalAddressesSetLabelsRequest(_messages.Message):
@@ -23407,6 +23461,139 @@ class ComputeRegionInstanceGroupsTestIamPermissionsRequest(_messages.Message):
   testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
 
 
+class ComputeRegionInstanceTemplatesDeleteRequest(_messages.Message):
+  r"""A ComputeRegionInstanceTemplatesDeleteRequest object.
+
+  Fields:
+    instanceTemplate: The name of the instance template to delete.
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+  """
+
+  instanceTemplate = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class ComputeRegionInstanceTemplatesGetRequest(_messages.Message):
+  r"""A ComputeRegionInstanceTemplatesGetRequest object.
+
+  Fields:
+    instanceTemplate: The name of the instance template.
+    project: Project ID for this request.
+    region: The name of the region for this request.
+  """
+
+  instanceTemplate = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+
+
+class ComputeRegionInstanceTemplatesInsertRequest(_messages.Message):
+  r"""A ComputeRegionInstanceTemplatesInsertRequest object.
+
+  Fields:
+    instanceTemplate: A InstanceTemplate resource to be passed as the request
+      body.
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+  """
+
+  instanceTemplate = _messages.MessageField('InstanceTemplate', 1)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class ComputeRegionInstanceTemplatesListRequest(_messages.Message):
+  r"""A ComputeRegionInstanceTemplatesListRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      Most Compute resources support two types of filter expressions:
+      expressions that support regular expressions and expressions that follow
+      API improvement proposal AIP-160. If you want to use AIP-160, your
+      expression must specify the field name, an operator, and the value that
+      you want to use for filtering. The value must be a string, a number, or
+      a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
+      or `:`. For example, if you are filtering Compute Engine instances, you
+      can exclude instances named `example-instance` by specifying `name !=
+      example-instance`. The `:` operator can be used with string fields to
+      match substrings. For non-string fields it is equivalent to the `=`
+      operator. The `:*` comparison can be used to test whether a key has been
+      defined. For example, to find all objects with `owner` label use: ```
+      labels.owner:* ``` You can also filter nested fields. For example, you
+      could specify `scheduling.automaticRestart = false` to include instances
+      only if they are not scheduled for automatic restarts. You can use
+      filtering on nested fields to filter based on resource labels. To filter
+      on multiple expressions, provide each separate expression within
+      parentheses. For example: ``` (scheduling.automaticRestart = true)
+      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
+      `AND` expression. However, you can include `AND` and `OR` expressions
+      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
+      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
+      true) ``` If you want to use a regular expression, use the `eq` (equal)
+      or `ne` (not equal) operator against a single un-parenthesized
+      expression with or without quotes or against multiple parenthesized
+      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
+      'single quoted literal'` `fieldname eq "double quoted literal"`
+      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
+      interpreted as a regular expression using Google RE2 library syntax. The
+      literal value must match the entire field. For example, to filter for
+      instances that do not end with name "instance", you would use `name ne
+      .*instance`.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than
+      `maxResults`, Compute Engine returns a `nextPageToken` that can be used
+      to get the next page of results in subsequent list requests. Acceptable
+      values are `0` to `500`, inclusive. (Default: `500`)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name. You can
+      also sort results in descending order based on the creation timestamp
+      using `orderBy="creationTimestamp desc"`. This sorts results based on
+      the `creationTimestamp` field in reverse chronological order (newest
+      result first). Use this to sort resources like operations so that the
+      newest operation is returned first. Currently, only sorting by `name` or
+      `creationTimestamp desc` is supported.
+    pageToken: Specifies a page token to use. Set `pageToken` to the
+      `nextPageToken` returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    region: The name of the regions for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+  region = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
+
+
 class ComputeRegionInstancesBulkInsertRequest(_messages.Message):
   r"""A ComputeRegionInstancesBulkInsertRequest object.
 
@@ -34363,6 +34550,81 @@ class Duration(_messages.Message):
   seconds = _messages.IntegerField(2)
 
 
+class ErrorInfo(_messages.Message):
+  r"""Describes the cause of the error with structured details. Example of an
+  error when contacting the "pubsub.googleapis.com" API when it is not
+  enabled: { "reason": "API_DISABLED" "domain": "googleapis.com" "metadata": {
+  "resource": "projects/123", "service": "pubsub.googleapis.com" } } This
+  response indicates that the pubsub.googleapis.com API is not enabled.
+  Example of an error that is returned when attempting to create a Spanner
+  instance in a region that is out of stock: { "reason": "STOCKOUT" "domain":
+  "spanner.googleapis.com", "metadata": { "availableRegions": "us-central1,us-
+  east2" } }
+
+  Messages:
+    MetadatasValue: Additional structured details about this error. Keys
+      should match /[a-zA-Z0-9-_]/ and be limited to 64 characters in length.
+      When identifying the current value of an exceeded limit, the units
+      should be contained in the key, not the value. For example, rather than
+      {"instanceLimit": "100/request"}, should be returned as,
+      {"instanceLimitPerRequest": "100"}, if the client exceeds the number of
+      instances that can be created in a single (batch) request.
+
+  Fields:
+    domain: The logical grouping to which the "reason" belongs. The error
+      domain is typically the registered service name of the tool or product
+      that generates the error. Example: "pubsub.googleapis.com". If the error
+      is generated by some common infrastructure, the error domain must be a
+      globally unique value that identifies the infrastructure. For Google API
+      infrastructure, the error domain is "googleapis.com".
+    metadatas: Additional structured details about this error. Keys should
+      match /[a-zA-Z0-9-_]/ and be limited to 64 characters in length. When
+      identifying the current value of an exceeded limit, the units should be
+      contained in the key, not the value. For example, rather than
+      {"instanceLimit": "100/request"}, should be returned as,
+      {"instanceLimitPerRequest": "100"}, if the client exceeds the number of
+      instances that can be created in a single (batch) request.
+    reason: The reason of the error. This is a constant value that identifies
+      the proximate cause of the error. Error reasons are unique within a
+      particular domain of errors. This should be at most 63 characters and
+      match /[A-Z0-9_]+/.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetadatasValue(_messages.Message):
+    r"""Additional structured details about this error. Keys should match
+    /[a-zA-Z0-9-_]/ and be limited to 64 characters in length. When
+    identifying the current value of an exceeded limit, the units should be
+    contained in the key, not the value. For example, rather than
+    {"instanceLimit": "100/request"}, should be returned as,
+    {"instanceLimitPerRequest": "100"}, if the client exceeds the number of
+    instances that can be created in a single (batch) request.
+
+    Messages:
+      AdditionalProperty: An additional property for a MetadatasValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type MetadatasValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MetadatasValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  domain = _messages.StringField(1)
+  metadatas = _messages.MessageField('MetadatasValue', 2)
+  reason = _messages.StringField(3)
+
+
 class ExchangedPeeringRoute(_messages.Message):
   r"""A ExchangedPeeringRoute object.
 
@@ -35632,6 +35894,11 @@ class FirewallPolicyRule(_messages.Message):
       identifier and can be updated.
     ruleTupleCount: [Output Only] Calculation of the complexity of a single
       firewall policy rule.
+    securityProfileGroup: A fully-qualified URL of a SecurityProfile resource
+      instance. Example: https://networksecurity.googleapis.com/v1/projects/{p
+      roject}/locations/{location}/securityProfileGroups/my-security-profile-
+      group Must be specified if action = 'apply_profile_group' and cannot be
+      specified for other actions.
     targetResources: A list of network resource URLs to which this rule
       applies. This field allows you to control which network's VMs get this
       rule. If this field is left blank, all VMs within the organization will
@@ -35669,9 +35936,10 @@ class FirewallPolicyRule(_messages.Message):
   priority = _messages.IntegerField(8, variant=_messages.Variant.INT32)
   ruleName = _messages.StringField(9)
   ruleTupleCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  targetResources = _messages.StringField(11, repeated=True)
-  targetSecureTags = _messages.MessageField('FirewallPolicyRuleSecureTag', 12, repeated=True)
-  targetServiceAccounts = _messages.StringField(13, repeated=True)
+  securityProfileGroup = _messages.StringField(11)
+  targetResources = _messages.StringField(12, repeated=True)
+  targetSecureTags = _messages.MessageField('FirewallPolicyRuleSecureTag', 13, repeated=True)
+  targetServiceAccounts = _messages.StringField(14, repeated=True)
 
 
 class FirewallPolicyRuleMatcher(_messages.Message):
@@ -35816,8 +36084,7 @@ class ForwardingRule(_messages.Message):
       features](https://cloud.google.com/load-balancing/docs/features#protocol
       s_from_the_load_balancer_to_the_backends).
     IpVersionValueValuesEnum: The IP Version that will be used by this
-      forwarding rule. Valid options are IPV4 or IPV6. This can only be
-      specified for an external global forwarding rule.
+      forwarding rule. Valid options are IPV4 or IPV6.
     LoadBalancingSchemeValueValuesEnum: Specifies the forwarding rule type.
       For more information about forwarding rules, refer to Forwarding rule
       concepts.
@@ -35895,8 +36162,7 @@ class ForwardingRule(_messages.Message):
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     ipVersion: The IP Version that will be used by this forwarding rule. Valid
-      options are IPV4 or IPV6. This can only be specified for an external
-      global forwarding rule.
+      options are IPV4 or IPV6.
     isMirroringCollector: Indicates whether or not this load balancer can be
       used as a collector for packet mirroring. To prevent mirroring loops,
       instances behind this load balancer will not have their traffic mirrored
@@ -36048,8 +36314,7 @@ class ForwardingRule(_messages.Message):
 
   class IpVersionValueValuesEnum(_messages.Enum):
     r"""The IP Version that will be used by this forwarding rule. Valid
-    options are IPV4 or IPV6. This can only be specified for an external
-    global forwarding rule.
+    options are IPV4 or IPV6.
 
     Values:
       IPV4: <no description>
@@ -36111,15 +36376,19 @@ class ForwardingRule(_messages.Message):
       ACCEPTED: The connection has been accepted by the producer.
       CLOSED: The connection has been closed by the producer and will not
         serve traffic going forward.
+      NEEDS_ATTENTION: The connection has been accepted by the producer, but
+        the producer needs to take further action before the forwarding rule
+        can serve traffic.
       PENDING: The connection is pending acceptance by the producer.
       REJECTED: The connection has been rejected by the producer.
       STATUS_UNSPECIFIED: <no description>
     """
     ACCEPTED = 0
     CLOSED = 1
-    PENDING = 2
-    REJECTED = 3
-    STATUS_UNSPECIFIED = 4
+    NEEDS_ATTENTION = 2
+    PENDING = 3
+    REJECTED = 4
+    STATUS_UNSPECIFIED = 5
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -37396,6 +37665,25 @@ class GetOwnerInstanceResponse(_messages.Message):
   """
 
   instance = _messages.StringField(1)
+
+
+class GlobalAddressesMoveRequest(_messages.Message):
+  r"""A GlobalAddressesMoveRequest object.
+
+  Fields:
+    description: An optional destination address description if intended to be
+      different from the source.
+    destinationAddress: The URL of the destination address to move to. This
+      can be a full or partial URL. For example, the following are all valid
+      URLs to a address: -
+      https://www.googleapis.com/compute/v1/projects/project
+      /global/addresses/address - projects/project/global/addresses/address
+      Note that destination project must be different from the source project.
+      So /global/addresses/address is not valid partial url.
+  """
+
+  description = _messages.StringField(1)
+  destinationAddress = _messages.StringField(2)
 
 
 class GlobalNetworkEndpointGroupsAttachEndpointsRequest(_messages.Message):
@@ -39334,6 +39622,32 @@ class HealthStatusForNetworkEndpoint(_messages.Message):
   healthCheck = _messages.MessageField('HealthCheckReference', 3)
   healthCheckService = _messages.MessageField('HealthCheckServiceReference', 4)
   healthState = _messages.EnumField('HealthStateValueValuesEnum', 5)
+
+
+class Help(_messages.Message):
+  r"""Provides links to documentation or for performing an out of band action.
+  For example, if a quota check failed with an error indicating the calling
+  project hasn't enabled the accessed service, this can contain a URL pointing
+  directly to the right place in the developer console to flip the bit.
+
+  Fields:
+    links: URL(s) pointing to additional information on handling the current
+      error.
+  """
+
+  links = _messages.MessageField('HelpLink', 1, repeated=True)
+
+
+class HelpLink(_messages.Message):
+  r"""Describes a URL link.
+
+  Fields:
+    description: Describes what the link offers.
+    url: The URL of the link.
+  """
+
+  description = _messages.StringField(1)
+  url = _messages.StringField(2)
 
 
 class HostRule(_messages.Message):
@@ -44879,6 +45193,8 @@ class InstanceTemplate(_messages.Message):
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
     properties: The instance properties for this instance template.
+    region: [Output Only] URL of the region where the instance template
+      resides. Only applicable for regional resources.
     selfLink: [Output Only] The URL for this instance template. The server
       defines this URL.
     selfLinkWithId: [Output Only] Server-defined URL for this resource with
@@ -44898,10 +45214,11 @@ class InstanceTemplate(_messages.Message):
   kind = _messages.StringField(4, default='compute#instanceTemplate')
   name = _messages.StringField(5)
   properties = _messages.MessageField('InstanceProperties', 6)
-  selfLink = _messages.StringField(7)
-  selfLinkWithId = _messages.StringField(8)
-  sourceInstance = _messages.StringField(9)
-  sourceInstanceParams = _messages.MessageField('SourceInstanceParams', 10)
+  region = _messages.StringField(7)
+  selfLink = _messages.StringField(8)
+  selfLinkWithId = _messages.StringField(9)
+  sourceInstance = _messages.StringField(10)
+  sourceInstanceParams = _messages.MessageField('SourceInstanceParams', 11)
 
 
 class InstanceTemplateList(_messages.Message):
@@ -49124,6 +49441,21 @@ class LocalDisk(_messages.Message):
   diskType = _messages.StringField(3)
 
 
+class LocalizedMessage(_messages.Message):
+  r"""Provides a localized error message that is safe to return to the user
+  which can be attached to an RPC error.
+
+  Fields:
+    locale: The locale used following the specification defined at
+      http://www.rfc-editor.org/rfc/bcp/bcp47.txt. Examples are: "en-US", "fr-
+      CH", "es-MX"
+    message: The localized error message in the above locale.
+  """
+
+  locale = _messages.StringField(1)
+  message = _messages.StringField(2)
+
+
 class LocationPolicy(_messages.Message):
   r"""Configuration for location policy among multiple possible locations
   (e.g. preferences for zone selection among zones in a single region).
@@ -50465,16 +50797,40 @@ class ManagedInstanceLastAttempt(_messages.Message):
     class ErrorsValueListEntry(_messages.Message):
       r"""A ErrorsValueListEntry object.
 
+      Messages:
+        ErrorDetailsValueListEntry: A ErrorDetailsValueListEntry object.
+
       Fields:
         code: [Output Only] The error type identifier for this error.
+        errorDetails: [Output Only] An optional list of messages that contain
+          the error details. There is a set of defined message types to use
+          for providing details.The syntax depends on the error code. For
+          example, QuotaExceededInfo will have details when the error code is
+          QUOTA_EXCEEDED.
         location: [Output Only] Indicates the field in the request that caused
           the error. This property is optional.
         message: [Output Only] An optional, human-readable error message.
       """
 
+      class ErrorDetailsValueListEntry(_messages.Message):
+        r"""A ErrorDetailsValueListEntry object.
+
+        Fields:
+          errorInfo: A ErrorInfo attribute.
+          help: A Help attribute.
+          localizedMessage: A LocalizedMessage attribute.
+          quotaInfo: A QuotaExceededInfo attribute.
+        """
+
+        errorInfo = _messages.MessageField('ErrorInfo', 1)
+        help = _messages.MessageField('Help', 2)
+        localizedMessage = _messages.MessageField('LocalizedMessage', 3)
+        quotaInfo = _messages.MessageField('QuotaExceededInfo', 4)
+
       code = _messages.StringField(1)
-      location = _messages.StringField(2)
-      message = _messages.StringField(3)
+      errorDetails = _messages.MessageField('ErrorDetailsValueListEntry', 2, repeated=True)
+      location = _messages.StringField(3)
+      message = _messages.StringField(4)
 
     errors = _messages.MessageField('ErrorsValueListEntry', 1, repeated=True)
 
@@ -55584,16 +55940,40 @@ class Operation(_messages.Message):
     class ErrorsValueListEntry(_messages.Message):
       r"""A ErrorsValueListEntry object.
 
+      Messages:
+        ErrorDetailsValueListEntry: A ErrorDetailsValueListEntry object.
+
       Fields:
         code: [Output Only] The error type identifier for this error.
+        errorDetails: [Output Only] An optional list of messages that contain
+          the error details. There is a set of defined message types to use
+          for providing details.The syntax depends on the error code. For
+          example, QuotaExceededInfo will have details when the error code is
+          QUOTA_EXCEEDED.
         location: [Output Only] Indicates the field in the request that caused
           the error. This property is optional.
         message: [Output Only] An optional, human-readable error message.
       """
 
+      class ErrorDetailsValueListEntry(_messages.Message):
+        r"""A ErrorDetailsValueListEntry object.
+
+        Fields:
+          errorInfo: A ErrorInfo attribute.
+          help: A Help attribute.
+          localizedMessage: A LocalizedMessage attribute.
+          quotaInfo: A QuotaExceededInfo attribute.
+        """
+
+        errorInfo = _messages.MessageField('ErrorInfo', 1)
+        help = _messages.MessageField('Help', 2)
+        localizedMessage = _messages.MessageField('LocalizedMessage', 3)
+        quotaInfo = _messages.MessageField('QuotaExceededInfo', 4)
+
       code = _messages.StringField(1)
-      location = _messages.StringField(2)
-      message = _messages.StringField(3)
+      errorDetails = _messages.MessageField('ErrorDetailsValueListEntry', 2, repeated=True)
+      location = _messages.StringField(3)
+      message = _messages.StringField(4)
 
     errors = _messages.MessageField('ErrorsValueListEntry', 1, repeated=True)
 
@@ -59140,6 +59520,50 @@ class Quota(_messages.Message):
   usage = _messages.FloatField(4)
 
 
+class QuotaExceededInfo(_messages.Message):
+  r"""Additional details for quota exceeded error for resource quota.
+
+  Messages:
+    DimensionsValue: The map holding related quota dimensions.
+
+  Fields:
+    dimensions: The map holding related quota dimensions.
+    limit: Current effective quota limit. The limit's unit depends on the
+      quota type or metric.
+    limitName: The name of the quota limit.
+    metricName: The Compute Engine quota metric name.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DimensionsValue(_messages.Message):
+    r"""The map holding related quota dimensions.
+
+    Messages:
+      AdditionalProperty: An additional property for a DimensionsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type DimensionsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DimensionsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  dimensions = _messages.MessageField('DimensionsValue', 1)
+  limit = _messages.FloatField(2)
+  limitName = _messages.StringField(3)
+  metricName = _messages.StringField(4)
+
+
 class RbacPolicy(_messages.Message):
   r"""A RbacPolicy object.
 
@@ -59223,6 +59647,25 @@ class Region(_messages.Message):
   status = _messages.EnumField('StatusValueValuesEnum', 10)
   supportsPzs = _messages.BooleanField(11)
   zones = _messages.StringField(12, repeated=True)
+
+
+class RegionAddressesMoveRequest(_messages.Message):
+  r"""A RegionAddressesMoveRequest object.
+
+  Fields:
+    description: An optional destination address description if intended to be
+      different from the source.
+    destinationAddress: The URL of the destination address to move to. This
+      can be a full or partial URL. For example, the following are all valid
+      URLs to a address: -
+      https://www.googleapis.com/compute/v1/projects/project/regions/region
+      /addresses/address - projects/project/regions/region/addresses/address
+      Note that destination project must be different from the source project.
+      So /regions/region/addresses/address is not valid partial url.
+  """
+
+  description = _messages.StringField(1)
+  destinationAddress = _messages.StringField(2)
 
 
 class RegionAutoscalerList(_messages.Message):
@@ -66404,6 +66847,8 @@ class SecurityPolicyRuleRateLimitOptions(_messages.Message):
       "deny(status)", where valid values for status are 403, 404, 429, and
       502, and "redirect" where the redirect parameters come from
       exceedRedirectOptions below.
+    exceedActionRpcStatus: Specified gRPC response status for proxyless gRPC
+      requests that are above the configured rate limit threshold
     exceedRedirectOptions: Parameters defining the redirect action that is
       used as the exceed action. Cannot be specified if the exceed action is
       not redirect.
@@ -66449,8 +66894,21 @@ class SecurityPolicyRuleRateLimitOptions(_messages.Message):
   enforceOnKey = _messages.EnumField('EnforceOnKeyValueValuesEnum', 4)
   enforceOnKeyName = _messages.StringField(5)
   exceedAction = _messages.StringField(6)
-  exceedRedirectOptions = _messages.MessageField('SecurityPolicyRuleRedirectOptions', 7)
-  rateLimitThreshold = _messages.MessageField('SecurityPolicyRuleRateLimitOptionsThreshold', 8)
+  exceedActionRpcStatus = _messages.MessageField('SecurityPolicyRuleRateLimitOptionsRpcStatus', 7)
+  exceedRedirectOptions = _messages.MessageField('SecurityPolicyRuleRedirectOptions', 8)
+  rateLimitThreshold = _messages.MessageField('SecurityPolicyRuleRateLimitOptionsThreshold', 9)
+
+
+class SecurityPolicyRuleRateLimitOptionsRpcStatus(_messages.Message):
+  r"""Simplified google.rpc.Status type (omitting details).
+
+  Fields:
+    code: The status code, which should be an enum value of google.rpc.Code.
+    message: A developer-facing error message, which should be in English.
+  """
+
+  code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  message = _messages.StringField(2)
 
 
 class SecurityPolicyRuleRateLimitOptionsThreshold(_messages.Message):
@@ -66947,15 +67405,19 @@ class ServiceAttachmentConnectedEndpoint(_messages.Message):
     Values:
       ACCEPTED: The connection has been accepted by the producer.
       CLOSED: The connection has been closed by the producer.
+      NEEDS_ATTENTION: The connection has been accepted by the producer, but
+        the producer needs to take further action before the forwarding rule
+        can serve traffic.
       PENDING: The connection is pending acceptance by the producer.
       REJECTED: The consumer is still connected but not using the connection.
       STATUS_UNSPECIFIED: <no description>
     """
     ACCEPTED = 0
     CLOSED = 1
-    PENDING = 2
-    REJECTED = 3
-    STATUS_UNSPECIFIED = 4
+    NEEDS_ATTENTION = 2
+    PENDING = 3
+    REJECTED = 4
+    STATUS_UNSPECIFIED = 5
 
   endpoint = _messages.StringField(1)
   pscConnectionId = _messages.IntegerField(2, variant=_messages.Variant.UINT64)

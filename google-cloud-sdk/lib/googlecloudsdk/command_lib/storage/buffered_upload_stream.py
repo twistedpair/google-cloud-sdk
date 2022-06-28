@@ -23,6 +23,7 @@ import collections
 import os
 
 from googlecloudsdk.command_lib.storage import errors
+from googlecloudsdk.command_lib.storage import hash_util
 from googlecloudsdk.command_lib.storage import upload_stream
 
 
@@ -58,9 +59,13 @@ class BufferedUploadStream(upload_stream.UploadStream):
     self._position = 0
     self._buffer_end = 0
 
-  def tell(self):
-    """Returns the current position in the stream."""
+    self._checkpoint_digesters = hash_util.copy_digesters(self._digesters)
+
+  def _get_absolute_position(self):
     return self._position
+
+  def _update_absolute_position(self, offset):
+    self._position = offset
 
   def _read_from_buffer(self, amount):
     """Get any buffered data required to complete a read.
@@ -95,9 +100,18 @@ class BufferedUploadStream(upload_stream.UploadStream):
           buffered_data.append(data[offset_from_position:offset_from_position +
                                     read_size])
           bytes_remaining -= read_size
+          self._position += read_size
         position_in_buffer += len(data)
-        self._position += read_size
     return b''.join(buffered_data)
+
+  def _save_digesters_checkpoint(self):
+    """Disables parent class digester checkpointing behavior.
+
+    To guarantee that seeks within the buffer are possible, we need to ensure
+    that the checkpoint is aligned with the buffer's start_byte. This is not
+    possible if we save digester checkpoints when the parent class does so.
+    """
+    pass
 
   def _store_data(self, data):
     """Adds data to the buffer, respecting max_buffer_size.
@@ -128,7 +142,14 @@ class BufferedUploadStream(upload_stream.UploadStream):
             self._buffer.appendleft(oldest_data[-refill_amount:])
             self._buffer_start -= refill_amount
 
-  def read(self, size=-1):
+          # Ensure checkpoint digesters always start at the beginning of the
+          # buffer.
+          hash_util.update_digesters(
+              self._checkpoint_digesters,
+              oldest_data[:len(oldest_data) - refill_amount])
+          self._checkpoint_absolute_index = self._buffer_start
+
+  def _get_data(self, size=-1):
     """Reads from the wrapped stream.
 
     Args:
@@ -149,9 +170,9 @@ class BufferedUploadStream(upload_stream.UploadStream):
     bytes_remaining -= len(data)
 
     if read_all_bytes:
-      new_data = super(__class__, self).read(-1)
+      new_data = super(__class__, self)._get_data(-1)
     elif bytes_remaining:
-      new_data = super(__class__, self).read(bytes_remaining)
+      new_data = super(__class__, self)._get_data(bytes_remaining)
     else:
       new_data = b''
 
@@ -169,19 +190,22 @@ class BufferedUploadStream(upload_stream.UploadStream):
             ' is available for streaming uploads. Offset {} was requested, but'
             ' only data from {} to {} is buffered.'.format(
                 offset, self._buffer_start, self._buffer_end))
-      self._position = offset
+      new_position = offset
     elif whence == os.SEEK_END:
-      if offset > self._max_buffer_size:
+      # Offset is typically negative with SEEK_END, as it sets the position left
+      # of the end of the stream.
+      if abs(offset) > self._max_buffer_size:
         raise errors.Error(
             'Invalid SEEK_END offset {} on streaming upload. Only {} bytes'
             ' can be buffered.'.format(offset, self._max_buffer_size))
 
       while self.read(self._max_buffer_size):
         pass
-      self._position -= offset
+      new_position = self._position + offset
     else:
       raise errors.Error(
           'Invalid seek mode on streaming upload. Mode: {}, offset: {}'.format(
               whence, offset))
-    self._catch_up_digesters(self._position)
+    self._catch_up_digesters(new_position)
+    self._position = new_position
 

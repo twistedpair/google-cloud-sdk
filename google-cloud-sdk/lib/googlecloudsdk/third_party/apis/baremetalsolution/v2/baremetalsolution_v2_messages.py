@@ -1908,6 +1908,33 @@ class Operation(_messages.Message):
   response = _messages.MessageField('ResponseValue', 5)
 
 
+class OperationMetadata(_messages.Message):
+  r"""Represents the metadata from a long-running operation.
+
+  Fields:
+    apiVersion: Output only. API version used with the operation.
+    createTime: Output only. The time the operation was created.
+    endTime: Output only. The time the operation finished running.
+    requestedCancellation: Output only. Identifies whether the user requested
+      the cancellation of the operation. Operations that have been
+      successfully cancelled have Operation.error value with a
+      google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
+    statusMessage: Output only. Human-readable status of the operation, if
+      any.
+    target: Output only. Server-defined resource path for the target of the
+      operation.
+    verb: Output only. Name of the action executed by the operation.
+  """
+
+  apiVersion = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  endTime = _messages.StringField(3)
+  requestedCancellation = _messages.BooleanField(4)
+  statusMessage = _messages.StringField(5)
+  target = _messages.StringField(6)
+  verb = _messages.StringField(7)
+
+
 class ProvisioningConfig(_messages.Message):
   r"""A provisioning configuration.
 
@@ -1927,6 +1954,7 @@ class ProvisioningConfig(_messages.Message):
     name: Output only. The name of the provisioning config.
     networks: Networks to be created.
     state: Output only. State of ProvisioningConfig.
+    statusMessage: Optional status messages associated with the FAILED state.
     ticketId: A generated ticket id to track provisioning request.
     updateTime: Output only. Last update timestamp.
     volumes: Volumes to be created.
@@ -1949,6 +1977,7 @@ class ProvisioningConfig(_messages.Message):
       VALIDATED: ProvisioningConfig was validated. A validation tool will be
         run to set this state.
       CANCELLED: ProvisioningConfig was canceled.
+      FAILED: The request is submitted for provisioning, with error return.
     """
     STATE_UNSPECIFIED = 0
     DRAFT = 1
@@ -1957,6 +1986,7 @@ class ProvisioningConfig(_messages.Message):
     PROVISIONED = 4
     VALIDATED = 5
     CANCELLED = 6
+    FAILED = 7
 
   cloudConsoleUri = _messages.StringField(1)
   email = _messages.StringField(2)
@@ -1966,10 +1996,11 @@ class ProvisioningConfig(_messages.Message):
   name = _messages.StringField(6)
   networks = _messages.MessageField('NetworkConfig', 7, repeated=True)
   state = _messages.EnumField('StateValueValuesEnum', 8)
-  ticketId = _messages.StringField(9)
-  updateTime = _messages.StringField(10)
-  volumes = _messages.MessageField('VolumeConfig', 11, repeated=True)
-  vpcScEnabled = _messages.BooleanField(12)
+  statusMessage = _messages.StringField(9)
+  ticketId = _messages.StringField(10)
+  updateTime = _messages.StringField(11)
+  volumes = _messages.MessageField('VolumeConfig', 12, repeated=True)
+  vpcScEnabled = _messages.BooleanField(13)
 
 
 class ProvisioningQuota(_messages.Message):

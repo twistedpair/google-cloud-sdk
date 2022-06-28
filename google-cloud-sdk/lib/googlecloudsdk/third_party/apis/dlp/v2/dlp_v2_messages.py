@@ -2678,7 +2678,15 @@ class GooglePrivacyDlpV2CharacterMaskConfig(_messages.Message):
       have a length of 1. If not supplied, this value defaults to `*` for
       strings, and `0` for digits.
     numberToMask: Number of characters to mask. If not set, all matching chars
-      will be masked. Skipped characters do not count towards this tally.
+      will be masked. Skipped characters do not count towards this tally. If
+      `number_to_mask` is negative, this denotes inverse masking. Cloud DLP
+      masks all but a number of characters. For example, suppose you have the
+      following values: - `masking_character` is `*` - `number_to_mask` is
+      `-4` - `reverse_order` is `false` - `CharsToIgnore` includes `-` - Input
+      string is `1234-5678-9012-3456` The resulting de-identified string is
+      `****-****-****-3456`. Cloud DLP masks all but the last four characters.
+      If `reverse_order` is `true`, all but the first four characters are
+      masked as `1234-****-****-****`.
     reverseOrder: Mask characters in reverse order. For example, if
       `masking_character` is `0`, `number_to_mask` is `14`, and
       `reverse_order` is `false`, then the input string `1234-5678-9012-3456`
@@ -4574,6 +4582,163 @@ class GooglePrivacyDlpV2InfoType(_messages.Message):
   version = _messages.StringField(2)
 
 
+class GooglePrivacyDlpV2InfoTypeCategory(_messages.Message):
+  r"""Classification of infoTypes to organize them according to geographic
+  location, industry, and data type.
+
+  Enums:
+    IndustryCategoryValueValuesEnum: The group of relevant businesses where
+      this infoType is commonly used
+    LocationCategoryValueValuesEnum: The region or country that issued the ID
+      or document represented by the infoType.
+    TypeCategoryValueValuesEnum: The class of identifiers where this infoType
+      belongs
+
+  Fields:
+    industryCategory: The group of relevant businesses where this infoType is
+      commonly used
+    locationCategory: The region or country that issued the ID or document
+      represented by the infoType.
+    typeCategory: The class of identifiers where this infoType belongs
+  """
+
+  class IndustryCategoryValueValuesEnum(_messages.Enum):
+    r"""The group of relevant businesses where this infoType is commonly used
+
+    Values:
+      INDUSTRY_UNSPECIFIED: Unused industry
+      FINANCE: The infoType is typically used in the finance industry.
+      HEALTH: The infoType is typically used in the health industry.
+      TELECOMMUNICATIONS: The infoType is typically used in the
+        telecommunications industry.
+    """
+    INDUSTRY_UNSPECIFIED = 0
+    FINANCE = 1
+    HEALTH = 2
+    TELECOMMUNICATIONS = 3
+
+  class LocationCategoryValueValuesEnum(_messages.Enum):
+    r"""The region or country that issued the ID or document represented by
+    the infoType.
+
+    Values:
+      LOCATION_UNSPECIFIED: Unused location
+      GLOBAL: The infoType is not issued by or tied to a specific region, but
+        is used almost everywhere.
+      ARGENTINA: The infoType is typically used in Argentina.
+      AUSTRALIA: The infoType is typically used in Australia.
+      BELGIUM: The infoType is typically used in Belgium.
+      BRAZIL: The infoType is typically used in Brazil.
+      CANADA: The infoType is typically used in Canada.
+      CHILE: The infoType is typically used in Chile.
+      CHINA: The infoType is typically used in China.
+      COLOMBIA: The infoType is typically used in Colombia.
+      DENMARK: The infoType is typically used in Denmark.
+      FRANCE: The infoType is typically used in France.
+      FINLAND: The infoType is typically used in Finland.
+      GERMANY: The infoType is typically used in Germany.
+      HONG_KONG: The infoType is typically used in Hong Kong.
+      INDIA: The infoType is typically used in India.
+      INDONESIA: The infoType is typically used in Indonesia.
+      IRELAND: The infoType is typically used in Ireland.
+      ISRAEL: The infoType is typically used in Israel.
+      ITALY: The infoType is typically used in Italy.
+      JAPAN: The infoType is typically used in Japan.
+      KOREA: The infoType is typically used in Korea.
+      MEXICO: The infoType is typically used in Mexico.
+      THE_NETHERLANDS: The infoType is typically used in the Netherlands.
+      NORWAY: The infoType is typically used in Norway.
+      PARAGUAY: The infoType is typically used in Paraguay.
+      PERU: The infoType is typically used in Peru.
+      POLAND: The infoType is typically used in Poland.
+      PORTUGAL: The infoType is typically used in Portugal.
+      SINGAPORE: The infoType is typically used in Singapore.
+      SOUTH_AFRICA: The infoType is typically used in South Africa.
+      SPAIN: The infoType is typically used in Spain.
+      SWEDEN: The infoType is typically used in Sweden.
+      TAIWAN: The infoType is typically used in Taiwan.
+      THAILAND: The infoType is typically used in Thailand.
+      TURKEY: The infoType is typically used in Turkey.
+      UNITED_KINGDOM: The infoType is typically used in the United Kingdom.
+      UNITED_STATES: The infoType is typically used in the United States.
+      URUGUAY: The infoType is typically used in Uruguay.
+      VENEZUELA: The infoType is typically used in Venezuela.
+      INTERNAL: The infoType is typically used in Google internally.
+    """
+    LOCATION_UNSPECIFIED = 0
+    GLOBAL = 1
+    ARGENTINA = 2
+    AUSTRALIA = 3
+    BELGIUM = 4
+    BRAZIL = 5
+    CANADA = 6
+    CHILE = 7
+    CHINA = 8
+    COLOMBIA = 9
+    DENMARK = 10
+    FRANCE = 11
+    FINLAND = 12
+    GERMANY = 13
+    HONG_KONG = 14
+    INDIA = 15
+    INDONESIA = 16
+    IRELAND = 17
+    ISRAEL = 18
+    ITALY = 19
+    JAPAN = 20
+    KOREA = 21
+    MEXICO = 22
+    THE_NETHERLANDS = 23
+    NORWAY = 24
+    PARAGUAY = 25
+    PERU = 26
+    POLAND = 27
+    PORTUGAL = 28
+    SINGAPORE = 29
+    SOUTH_AFRICA = 30
+    SPAIN = 31
+    SWEDEN = 32
+    TAIWAN = 33
+    THAILAND = 34
+    TURKEY = 35
+    UNITED_KINGDOM = 36
+    UNITED_STATES = 37
+    URUGUAY = 38
+    VENEZUELA = 39
+    INTERNAL = 40
+
+  class TypeCategoryValueValuesEnum(_messages.Enum):
+    r"""The class of identifiers where this infoType belongs
+
+    Values:
+      TYPE_UNSPECIFIED: Unused type
+      PII: Personally identifiable information, for example, a name or phone
+        number
+      SPII: Personally identifiable information that is especially sensitive,
+        for example, a passport number.
+      DEMOGRAPHIC: Attributes that can partially identify someone, especially
+        in combination with other attributes, like age, height, and gender.
+      CREDENTIAL: Confidential or secret information, for example, a password.
+      GOVERNMENT_ID: An identification document issued by a government.
+      DOCUMENT: A document, for example, a resume or source code.
+      CONTEXTUAL_INFORMATION: Information that is not sensitive on its own,
+        but provides details about the circumstances surrounding an entity or
+        an event.
+    """
+    TYPE_UNSPECIFIED = 0
+    PII = 1
+    SPII = 2
+    DEMOGRAPHIC = 3
+    CREDENTIAL = 4
+    GOVERNMENT_ID = 5
+    DOCUMENT = 6
+    CONTEXTUAL_INFORMATION = 7
+
+  industryCategory = _messages.EnumField('IndustryCategoryValueValuesEnum', 1)
+  locationCategory = _messages.EnumField('LocationCategoryValueValuesEnum', 2)
+  typeCategory = _messages.EnumField('TypeCategoryValueValuesEnum', 3)
+
+
 class GooglePrivacyDlpV2InfoTypeDescription(_messages.Message):
   r"""InfoType description.
 
@@ -4581,6 +4746,7 @@ class GooglePrivacyDlpV2InfoTypeDescription(_messages.Message):
     SupportedByValueListEntryValuesEnum:
 
   Fields:
+    categories: The category of the infoType.
     description: Description of the infotype. Translated when language is
       provided in the request.
     displayName: Human readable form of the infoType name.
@@ -4600,10 +4766,11 @@ class GooglePrivacyDlpV2InfoTypeDescription(_messages.Message):
     INSPECT = 1
     RISK_ANALYSIS = 2
 
-  description = _messages.StringField(1)
-  displayName = _messages.StringField(2)
-  name = _messages.StringField(3)
-  supportedBy = _messages.EnumField('SupportedByValueListEntryValuesEnum', 4, repeated=True)
+  categories = _messages.MessageField('GooglePrivacyDlpV2InfoTypeCategory', 1, repeated=True)
+  description = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  name = _messages.StringField(4)
+  supportedBy = _messages.EnumField('SupportedByValueListEntryValuesEnum', 5, repeated=True)
 
 
 class GooglePrivacyDlpV2InfoTypeLimit(_messages.Message):

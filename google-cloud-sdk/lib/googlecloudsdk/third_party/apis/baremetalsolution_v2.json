@@ -1498,7 +1498,8 @@
             "ProvisioningConfig was in the provisioning state. Initially this state comes from the work order table in big query when SNOW is used. Later this field can be set by the work order API.",
             "ProvisioningConfig was provisioned, meaning the resources exist.",
             "ProvisioningConfig was validated. A validation tool will be run to set this state.",
-            "ProvisioningConfig was canceled."
+            "ProvisioningConfig was canceled.",
+            "The request is submitted for provisioning, with error return."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
@@ -1507,7 +1508,8 @@
             "PROVISIONING",
             "PROVISIONED",
             "VALIDATED",
-            "CANCELLED"
+            "CANCELLED",
+            "FAILED"
           ]
         },
         "location": {
@@ -1528,6 +1530,10 @@
         "vpcScEnabled": {
           "description": "If true, VPC SC is enabled for the cluster.",
           "type": "boolean"
+        },
+        "statusMessage": {
+          "description": "Optional status messages associated with the FAILED state.",
+          "type": "string"
         }
       }
     },
@@ -2034,6 +2040,50 @@
             "type": "any",
             "description": "Properties of the object. Contains field @type with type URL."
           }
+        }
+      }
+    },
+    "OperationMetadata": {
+      "id": "OperationMetadata",
+      "description": "Represents the metadata from a long-running operation.",
+      "type": "object",
+      "properties": {
+        "createTime": {
+          "description": "Output only. The time the operation was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "Output only. The time the operation finished running.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "target": {
+          "description": "Output only. Server-defined resource path for the target of the operation.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "verb": {
+          "description": "Output only. Name of the action executed by the operation.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "statusMessage": {
+          "description": "Output only. Human-readable status of the operation, if any.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "requestedCancellation": {
+          "description": "Output only. Identifies whether the user requested the cancellation of the operation. Operations that have been successfully cancelled have Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.",
+          "readOnly": true,
+          "type": "boolean"
+        },
+        "apiVersion": {
+          "description": "Output only. API version used with the operation.",
+          "readOnly": true,
+          "type": "string"
         }
       }
     }

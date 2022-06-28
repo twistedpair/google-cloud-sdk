@@ -1091,7 +1091,7 @@ class CloudresourcemanagerV3(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new TagKey. If another request with the same parameters is sent while the original request is in process, the second request will receive an error. A maximum of 300 TagKeys can exist under a parent at any given time.
+      r"""Creates a new TagKey. If another request with the same parameters is sent while the original request is in process, the second request will receive an error. A maximum of 1000 TagKeys can exist under a parent at any given time.
 
       Args:
         request: (CloudresourcemanagerTagKeysCreateRequest) input message
@@ -1406,7 +1406,7 @@ class CloudresourcemanagerV3(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a TagValue as a child of the specified TagKey. If a another request with the same parameters is sent while the original request is in process the second request will receive an error. A maximum of 300 TagValues can exist under a TagKey at any given time.
+      r"""Creates a TagValue as a child of the specified TagKey. If a another request with the same parameters is sent while the original request is in process the second request will receive an error. A maximum of 1000 TagValues can exist under a TagKey at any given time.
 
       Args:
         request: (CloudresourcemanagerTagValuesCreateRequest) input message

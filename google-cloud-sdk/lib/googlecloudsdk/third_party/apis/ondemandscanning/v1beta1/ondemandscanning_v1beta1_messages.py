@@ -1050,6 +1050,19 @@ class Jwt(_messages.Message):
   compactJwt = _messages.StringField(1)
 
 
+class LanguagePackageDependency(_messages.Message):
+  r"""Indicates a language package available between this package and the
+  customer's resource artifact.
+
+  Fields:
+    package: A string attribute.
+    version: A string attribute.
+  """
+
+  package = _messages.StringField(1)
+  version = _messages.StringField(2)
+
+
 class Layer(_messages.Message):
   r"""Layer holds metadata specific to a layer of a Docker image.
 
@@ -1502,6 +1515,10 @@ class PackageData(_messages.Message):
     cpeUri: The cpe_uri in [cpe format] (https://cpe.mitre.org/specification/)
       in which the vulnerability may manifest. Examples include distro or
       storage location for vulnerable jar.
+    dependencyChain: The dependency chain between this package and the user's
+      artifact. List in order from the customer's package under review first,
+      to the current package last. Inclusive of the original package and the
+      current package.
     fileLocation: The path to the jar file / go binary file.
     hashDigest: HashDigest stores the SHA512 hash digest of the jar file if
       the package is of type Maven. This field will be unset for non Maven
@@ -1535,15 +1552,16 @@ class PackageData(_messages.Message):
     GO_STDLIB = 4
 
   cpeUri = _messages.StringField(1)
-  fileLocation = _messages.MessageField('FileLocation', 2, repeated=True)
-  hashDigest = _messages.StringField(3)
-  os = _messages.StringField(4)
-  osVersion = _messages.StringField(5)
-  package = _messages.StringField(6)
-  packageType = _messages.EnumField('PackageTypeValueValuesEnum', 7)
-  patchedCve = _messages.StringField(8, repeated=True)
-  unused = _messages.StringField(9)
-  version = _messages.StringField(10)
+  dependencyChain = _messages.MessageField('LanguagePackageDependency', 2, repeated=True)
+  fileLocation = _messages.MessageField('FileLocation', 3, repeated=True)
+  hashDigest = _messages.StringField(4)
+  os = _messages.StringField(5)
+  osVersion = _messages.StringField(6)
+  package = _messages.StringField(7)
+  packageType = _messages.EnumField('PackageTypeValueValuesEnum', 8)
+  patchedCve = _messages.StringField(9, repeated=True)
+  unused = _messages.StringField(10)
+  version = _messages.StringField(11)
 
 
 class PackageIssue(_messages.Message):

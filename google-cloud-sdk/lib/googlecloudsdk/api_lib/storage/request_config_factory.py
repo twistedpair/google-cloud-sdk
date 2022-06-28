@@ -34,25 +34,20 @@ from googlecloudsdk.core.util import debug_output
 DEFAULT_CONTENT_TYPE = 'application/octet-stream'
 
 
-# Bucket update fields and corresponding flags unsupported by S3.
-S3_REQUEST_ERROR_FLAGS = {
-    'gzip_settings': [
-        '--gzip-in-flight-all', '-J', '--gzip-in-flight', '-j',
-        '--gzip-local-all', '-Z', '--gzip-local', '-z'
-    ],
+# Bucket update fields and corresponding features unsupported by S3.
+S3_REQUEST_ERROR_FIELDS = {
+    'gzip_settings': 'Gzip Transforms',
 }
-S3_RESOURCE_ERROR_FLAGS = {
-    'public_access_prevention': [
-        '--[no-]public-access-prevention', '--[no-]pap'
-    ],
+S3_RESOURCE_ERROR_FIELDS = {
+    'public_access_prevention': 'Public Access Prevention',
 }
-S3_RESOURCE_WARNING_FLAGS = {
-    'default_encryption_key': ['--default-encryption-key', '-k'],
-    'default_event_based_hold': ['--default-event-based-hold'],
-    'default_storage_class': ['--default-event-based-hold', '-c', '-s'],
-    'preserve_acl': ['--preserve-acl', '-p'],
-    'retention_period': ['--retention-period'],
-    'uniform_bucket_level_access': ['--[no-]uniform-bucket-level-access', '-b'],
+S3_RESOURCE_WARNING_FIELDS = {
+    'default_encryption_key': 'Setting Default Encryption Key',
+    'default_event_based_hold': 'Setting Default Event Based Hold',
+    'default_storage_class': 'Setting Default Storage Class',
+    'preserve_acl': 'Preserving ACLs',
+    'retention_period': 'Setting Retention Period',
+    'uniform_bucket_level_access': 'Setting Uniform Bucket Level Access',
 }
 
 
@@ -215,8 +210,9 @@ class _ObjectConfig(object):
     custom_metadata (dict|None): Custom metadata fields set by user.
     decryption_key (encryption_util.EncryptionKey): The key that should be used
       to decrypt information in GCS.
-    encryption_key (encryption_util.EncryptionKey): The key that should be used
-      to encrypt information in GCS.
+    encryption_key (encryption_util.EncryptionKey|None|str): The key that should
+      be used to encrypt information in GCS or clear encryptions (the string
+      user_request_args_factory.CLEAR).
     md5_hash (str|None): MD5 digest to use for validation.
     preserve_acl (bool): Whether or not to preserve existing ACLs on an object
       during a copy or other operation.
@@ -411,33 +407,32 @@ class _S3RequestConfig(_RequestConfig):
   """
 
 
-def _extract_unsupported_flags_from_user_args(user_args,
-                                              unsupported_fields_and_flags):
-  """Takes user_args object and unsupported info dict and returns flag list."""
-  unsupported_flags = []
-  for field in unsupported_fields_and_flags:
+def _extract_unsupported_features_from_user_args(user_args, unsupported_fields):
+  """Takes user_args and unsupported_fields and returns feature list."""
+  result = []
+  for field in unsupported_fields:
     if getattr(user_args, field, None) is not None:
-      unsupported_flags.extend(unsupported_fields_and_flags[field])
-  return unsupported_flags
+      result.append(unsupported_fields[field])
+  return sorted(result)
 
 
-def _check_for_unsupported_s3_flags(user_request_args):
-  """Raises error or logs warning if unsupported S3 flag present."""
+def _check_for_unsupported_s3_fields(user_request_args):
+  """Raises error or logs warning if unsupported S3 field present."""
   user_resource_args = getattr(user_request_args, 'resource_args', None)
-  error_flags_present = (
-      _extract_unsupported_flags_from_user_args(user_request_args,
-                                                S3_REQUEST_ERROR_FLAGS) +
-      _extract_unsupported_flags_from_user_args(user_resource_args,
-                                                S3_RESOURCE_ERROR_FLAGS))
-  if error_flags_present:
-    raise ValueError('Flags disallowed for S3: {}'.format(', '.join(
-        sorted(error_flags_present))))
+  error_fields_present = (
+      _extract_unsupported_features_from_user_args(user_request_args,
+                                                   S3_REQUEST_ERROR_FIELDS) +
+      _extract_unsupported_features_from_user_args(user_resource_args,
+                                                   S3_RESOURCE_ERROR_FIELDS))
+  if error_fields_present:
+    raise ValueError('Features disallowed for S3: {}'.format(
+        ', '.join(error_fields_present)))
 
-  warning_flags_present = _extract_unsupported_flags_from_user_args(
-      user_resource_args, S3_RESOURCE_WARNING_FLAGS)
-  if warning_flags_present:
-    log.warning('Some flags do not have S3 support: {}'.format(', '.join(
-        sorted(warning_flags_present))))
+  warning_fields_present = _extract_unsupported_features_from_user_args(
+      user_resource_args, S3_RESOURCE_WARNING_FIELDS)
+  if warning_fields_present:
+    log.warning('Some features do not have S3 support: {}'.format(
+        ', '.join(warning_fields_present)))
 
 
 def _get_request_config_resource_args(url,
@@ -474,7 +469,7 @@ def _get_request_config_resource_args(url,
 
       elif url.scheme == storage_url.ProviderPrefix.S3:
         new_resource_args = _S3BucketConfig()
-        _check_for_unsupported_s3_flags(user_request_args)
+        _check_for_unsupported_s3_fields(user_request_args)
 
     else:
       new_resource_args = _BucketConfig()
@@ -511,7 +506,7 @@ def _get_request_config_resource_args(url,
 
     elif url.scheme == storage_url.ProviderPrefix.S3:
       new_resource_args = _S3ObjectConfig()
-      _check_for_unsupported_s3_flags(user_request_args)
+      _check_for_unsupported_s3_fields(user_request_args)
 
     else:
       new_resource_args = _ObjectConfig()

@@ -567,7 +567,7 @@ class Expr(_messages.Message):
 
 class Function(_messages.Message):
   r"""Describes a Cloud Function that contains user computation executed in
-  response to an event. It encapsulate function and triggers configurations.
+  response to an event. It encapsulates function and trigger configurations.
 
   Enums:
     EnvironmentValueValuesEnum: Describe whether the function is gen1 or gen2.

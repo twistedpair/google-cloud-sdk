@@ -971,6 +971,21 @@ class DateShiftConfig(_messages.Message):
   kmsWrapped = _messages.MessageField('KmsWrappedCryptoKey', 2)
 
 
+class DeidentifiedStoreDestination(_messages.Message):
+  r"""Contains configuration for streaming de-identified FHIR export.
+
+  Fields:
+    config: The configuration to use when de-identifying resources that are
+      added to this store.
+    store: The full resource name of a Cloud Healthcare FHIR store, for
+      example, `projects/{project_id}/locations/{location_id}/datasets/{datase
+      t_id}/fhirStores/{fhir_store_id}`.
+  """
+
+  config = _messages.MessageField('DeidentifyConfig', 1)
+  store = _messages.StringField(2)
+
+
 class DeidentifyConfig(_messages.Message):
   r"""Configures de-id options specific to different types of content. Each
   submessage customizes the handling of an https://tools.ietf.org/html/rfc6838
@@ -1075,12 +1090,15 @@ class DeidentifyFhirStoreRequest(_messages.Message):
       specified.
     resourceFilter: A filter specifying the resources to include in the
       output. If not specified, all resources are included in the output.
+    skipModifiedResources: If true, skips resources that are created or
+      modified after the de-identify operation is created.
   """
 
   config = _messages.MessageField('DeidentifyConfig', 1)
   destinationStore = _messages.StringField(2)
   gcsConfigUri = _messages.StringField(3)
   resourceFilter = _messages.MessageField('FhirFilter', 4)
+  skipModifiedResources = _messages.BooleanField(5)
 
 
 class DeidentifyOperationMetadata(_messages.Message):
@@ -7432,6 +7450,24 @@ class StreamConfig(_messages.Message):
       duplicates. If a resource mutation cannot be streamed to BigQuery,
       errors will be logged to Cloud Logging (see [Viewing error logs in Cloud
       Logging](https://cloud.google.com/healthcare/docs/how-tos/logging)).
+    deidentifiedStoreDestination: The destination FHIR store for de-identified
+      resources. After this field is added, all subsequent
+      creates/updates/patches to the source store will be de-identified using
+      the provided configuration and applied to the destination store.
+      Importing resources to the source store will not trigger the streaming.
+      If the source store already contains resources when this option is
+      enabled, those resources will not be copied to the destination store
+      unless they are subsequently updated. This may result in invalid
+      references in the destination store. Before adding this config, you must
+      grant the healthcare.fhirResources.update permission on the destination
+      store to your project's **Cloud Healthcare Service Agent** [service
+      account](https://cloud.google.com/healthcare/docs/how-tos/permissions-
+      healthcare-api-gcp-products#the_cloud_healthcare_service_agent). The
+      destination store must set enable_update_create to true. The destination
+      store must have disable_referential_integrity set to true. If a resource
+      cannot be de-identified, errors will be logged to Cloud Logging (see
+      [Viewing error logs in Cloud
+      Logging](https://cloud.google.com/healthcare/docs/how-tos/logging)).
     resourceTypes: Supply a FHIR resource type (such as "Patient" or
       "Observation"). See https://www.hl7.org/fhir/valueset-resource-
       types.html for a list of all FHIR resource types. The server treats an
@@ -7440,7 +7476,8 @@ class StreamConfig(_messages.Message):
   """
 
   bigqueryDestination = _messages.MessageField('GoogleCloudHealthcareV1beta1FhirBigQueryDestination', 1)
-  resourceTypes = _messages.StringField(2, repeated=True)
+  deidentifiedStoreDestination = _messages.MessageField('DeidentifiedStoreDestination', 2)
+  resourceTypes = _messages.StringField(3, repeated=True)
 
 
 class TagFilterList(_messages.Message):

@@ -27,14 +27,6 @@ DEFAULT_LIST_FORMAT = """\
       name,
       proxyHeader,
       service.basename(),
-      sslCertificates.map().basename().list():label=SSL_CERTIFICATES
-    )"""
-
-DEFAULT_BETA_LIST_FORMAT = """\
-    table(
-      name,
-      proxyHeader,
-      service.basename(),
       sslCertificates.map().basename().list():label=SSL_CERTIFICATES,
       certificateMap.basename()
     )"""

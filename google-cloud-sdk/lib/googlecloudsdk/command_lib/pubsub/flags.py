@@ -46,19 +46,21 @@ def AddAckIdFlag(parser, action, add_deprecated=False):
   """Adds parsing and help text for ack_id flag."""
 
   help_text = (
-      'One or more ACK_ID to {} An ACK_ID is a [string that is returned to '
+      'One or more ACK_IDs to {} An ACK_ID is a [string that is returned to '
       'subscribers](https://cloud.google.com/pubsub/docs/reference/rpc/google.pubsub.v1#google.pubsub.v1.ReceivedMessage).'
       ' along with the message. The ACK_ID is different from the [message '
       'ID](https://cloud.google.com/pubsub/docs/reference/rpc/google.pubsub.v1#google.pubsub.v1.PubsubMessage).'
   ).format(action)
+  group = parser
   if add_deprecated:
-    parser.add_argument(
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument(
         'ack_id', nargs='*', help=help_text,
         action=actions.DeprecationAction(
             'ACK_ID',
             show_message=lambda _: False,  # See ParseAckIdsArgs for reason.
             warn=DEPRECATION_FORMAT_STR.format('ACK_ID', '--ack-ids')))
-  parser.add_argument(
+  group.add_argument(
       '--ack-ids',
       metavar='ACK_ID',
       required=not add_deprecated,
@@ -88,17 +90,12 @@ def ParseAckIdsArgs(args):
   Returns:
     list[str]: List of ack ids.
   """
-  if args.ack_id and args.ack_ids:
-    raise exceptions.ConflictingArgumentsException('ACK_ID', '--ack-ids')
-  elif not (args.ack_id or args.ack_ids):
-    raise exceptions.MinimumArgumentException(['ACK_ID', '--ack-ids'])
-  else:
-    if args.ack_id:
-      log.warning(DEPRECATION_FORMAT_STR.format('ACK_ID', '--ack-ids'))
-    ack_ids = args.ack_id or args.ack_ids
-    if not isinstance(ack_ids, list):
-      ack_ids = [ack_ids]
-    return ack_ids
+  if args.ack_id:
+    log.warning(DEPRECATION_FORMAT_STR.format('ACK_ID', '--ack-ids'))
+  ack_ids = args.ack_id or args.ack_ids
+  if not isinstance(ack_ids, list):
+    ack_ids = [ack_ids]
+  return ack_ids
 
 
 def AddIamPolicyFileFlag(parser):

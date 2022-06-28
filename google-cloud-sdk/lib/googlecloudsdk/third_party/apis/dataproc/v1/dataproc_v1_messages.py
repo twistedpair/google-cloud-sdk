@@ -766,6 +766,7 @@ class ClusterOperationMetadata(_messages.Message):
     LabelsValue: Output only. Labels associated with the operation
 
   Fields:
+    childOperationIds: Output only. Child operation ids
     clusterName: Output only. Name of the cluster for the operation.
     clusterUuid: Output only. Cluster UUID for the operation.
     description: Output only. Short description of operation.
@@ -800,14 +801,15 @@ class ClusterOperationMetadata(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  clusterName = _messages.StringField(1)
-  clusterUuid = _messages.StringField(2)
-  description = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  operationType = _messages.StringField(5)
-  status = _messages.MessageField('ClusterOperationStatus', 6)
-  statusHistory = _messages.MessageField('ClusterOperationStatus', 7, repeated=True)
-  warnings = _messages.StringField(8, repeated=True)
+  childOperationIds = _messages.StringField(1, repeated=True)
+  clusterName = _messages.StringField(2)
+  clusterUuid = _messages.StringField(3)
+  description = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  operationType = _messages.StringField(6)
+  status = _messages.MessageField('ClusterOperationStatus', 7)
+  statusHistory = _messages.MessageField('ClusterOperationStatus', 8, repeated=True)
+  warnings = _messages.StringField(9, repeated=True)
 
 
 class ClusterOperationStatus(_messages.Message):
@@ -928,6 +930,7 @@ class ClusterStatus(_messages.Message):
       STOPPING: The cluster is being stopped. It cannot be used.
       STOPPED: The cluster is currently stopped. It is not ready for use.
       STARTING: The cluster is being started. It is not ready for use.
+      REPAIRING: The cluster is being repaired. It is not ready for use.
     """
     UNKNOWN = 0
     CREATING = 1
@@ -939,6 +942,7 @@ class ClusterStatus(_messages.Message):
     STOPPING = 7
     STOPPED = 8
     STARTING = 9
+    REPAIRING = 10
 
   class SubstateValueValuesEnum(_messages.Enum):
     r"""Output only. Additional state information that includes status
@@ -978,7 +982,7 @@ class DataprocMetricConfig(_messages.Message):
   r"""Dataproc metric config.
 
   Fields:
-    metrics: Required. Metrics to enable.
+    metrics: Required. Metrics sources to enable.
   """
 
   metrics = _messages.MessageField('Metric', 1, repeated=True)
@@ -2450,13 +2454,14 @@ class DiskConfig(_messages.Message):
       "scsi"). Valid values: "scsi" (Small Computer System Interface), "nvme"
       (Non-Volatile Memory Express). See local SSD performance
       (https://cloud.google.com/compute/docs/disks/local-ssd#performance).
-    numLocalSsds: Optional. Number of attached SSDs, from 0 to 4 (default is
+    numLocalSsds: Optional. Number of attached SSDs, from 0 to 8 (default is
       0). If SSDs are not attached, the boot disk is used to store runtime
       logs and HDFS
       (https://hadoop.apache.org/docs/r1.2.1/hdfs_user_guide.html) data. If
       one or more SSDs are attached, this runtime bulk data is spread across
       them, and the boot disk contains only basic config and installed
-      binaries.
+      binaries.Note: Local SSD options may vary by machine type and number of
+      vCPUs selected.
   """
 
   bootDiskSizeGb = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -2922,11 +2927,11 @@ class GkeNodeConfig(_messages.Message):
     accelerators: Optional. A list of hardware accelerators
       (https://cloud.google.com/compute/docs/gpus) to attach to each node.
     bootDiskKmsKey: Optional. The Customer Managed Encryption Key (CMEK)
-      (https://cloud.google.com/compute/docs/disks/customer-managed-
-      encryption) used to encrypt the boot disk attached to each node in the
-      node pool. Specify the key using the following format:
-      projects/KEY_PROJECT_ID
-      /locations/LOCATION/keyRings/RING_NAME/cryptoKeys/KEY_NAME.
+      (https://cloud.google.com/kubernetes-engine/docs/how-to/using-cmek) used
+      to encrypt the boot disk attached to each node in the node pool. Specify
+      the key using the following format:
+      projects/KEY_PROJECT_ID/locations/LOCATION
+      /keyRings/RING_NAME/cryptoKeys/KEY_NAME.
     localSsdCount: Optional. The number of local SSD disks to attach to the
       node, which is limited by the maximum number of disks allowable per zone
       (see Adding Local SSDs
@@ -4254,26 +4259,50 @@ class MetastoreConfig(_messages.Message):
 
 
 class Metric(_messages.Message):
-  r"""The metric source to enable, with any optional metrics, to override
-  Dataproc default metrics.
+  r"""A Dataproc OSS metric.
 
   Enums:
-    MetricSourceValueValuesEnum: Required. MetricSource to enable.
+    MetricSourceValueValuesEnum: Required. Default metrics are collected
+      unless metricOverrides are specified for the metric source (see
+      Available OSS metrics (https://cloud.google.com/dataproc/docs/guides/mon
+      itoring#available_oss_metrics) for more information).
 
   Fields:
-    metricOverrides: Optional. Optional Metrics to override the Dataproc
-      default metrics configured for the metric source.
-    metricSource: Required. MetricSource to enable.
+    metricOverrides: Optional. Specify one or more available OSS metrics (http
+      s://cloud.google.com/dataproc/docs/guides/monitoring#available_oss_metri
+      cs) to collect for the metric course (for the SPARK metric source, any
+      Spark metric
+      (https://spark.apache.org/docs/latest/monitoring.html#metrics) can be
+      specified).Provide metrics in the following format: METRIC_SOURCE:
+      INSTANCE:GROUP:METRIC Use camelcase as appropriate.Examples:
+      yarn:ResourceManager:QueueMetrics:AppsCompleted
+      spark:driver:DAGScheduler:job.allJobs
+      sparkHistoryServer:JVM:Memory:NonHeapMemoryUsage.committed
+      hiveserver2:JVM:Memory:NonHeapMemoryUsage.used Notes: Only the specified
+      overridden metrics will be collected for the metric source. For example,
+      if one or more spark:executive metrics are listed as metric overrides,
+      other SPARK metrics will not be collected. The collection of the default
+      metrics for other OSS metric sources is unaffected. For example, if both
+      SPARK andd YARN metric sources are enabled, and overrides are provided
+      for Spark metrics only, all default YARN metrics will be collected.
+    metricSource: Required. Default metrics are collected unless
+      metricOverrides are specified for the metric source (see Available OSS
+      metrics (https://cloud.google.com/dataproc/docs/guides/monitoring#availa
+      ble_oss_metrics) for more information).
   """
 
   class MetricSourceValueValuesEnum(_messages.Enum):
-    r"""Required. MetricSource to enable.
+    r"""Required. Default metrics are collected unless metricOverrides are
+    specified for the metric source (see Available OSS metrics (https://cloud.
+    google.com/dataproc/docs/guides/monitoring#available_oss_metrics) for more
+    information).
 
     Values:
       METRIC_SOURCE_UNSPECIFIED: Required unspecified metric source.
-      MONITORING_AGENT_DEFAULTS: Default monitoring agent metrics, which are
-        published with an agent.googleapis.com prefix when Dataproc enables
-        the monitoring agent in Compute Engine.
+      MONITORING_AGENT_DEFAULTS: Default monitoring agent metrics. If this
+        source is enabled, Dataproc enables the monitoring agent in Compute
+        Engine, and collects default monitoring agent metrics, which are
+        published with an agent.googleapis.com prefix.
       HDFS: HDFS metric source.
       SPARK: Spark metric source.
       YARN: YARN metric source.

@@ -1888,6 +1888,8 @@ class Operation(_messages.Message):
       START_EXTERNAL_SYNC: Starts external sync of a Cloud SQL EM replica to
         an external primary instance.
       LOG_CLEANUP: Recovers logs from an instance's old data disk.
+      AUTO_RESTART: Performs auto-restart of an HA-enabled Cloud SQL database
+        for auto recovery.
     """
     SQL_OPERATION_TYPE_UNSPECIFIED = 0
     IMPORT = 1
@@ -1925,6 +1927,7 @@ class Operation(_messages.Message):
     RESCHEDULE_MAINTENANCE = 33
     START_EXTERNAL_SYNC = 34
     LOG_CLEANUP = 35
+    AUTO_RESTART = 36
 
   class StatusValueValuesEnum(_messages.Enum):
     r"""The status of an operation.
@@ -3347,6 +3350,21 @@ class SqlUsersDeleteRequest(_messages.Message):
   instance = _messages.StringField(2, required=True)
   name = _messages.StringField(3)
   project = _messages.StringField(4, required=True)
+
+
+class SqlUsersGetRequest(_messages.Message):
+  r"""A SqlUsersGetRequest object.
+
+  Fields:
+    instance: Database instance ID. This does not include the project ID.
+    name: User of the instance. If the database user has a host, this is
+      specified as {username}@{host} else as {username}.
+    project: Project ID of the project that contains the instance.
+  """
+
+  instance = _messages.StringField(1, required=True)
+  name = _messages.StringField(2, required=True)
+  project = _messages.StringField(3, required=True)
 
 
 class SqlUsersListRequest(_messages.Message):

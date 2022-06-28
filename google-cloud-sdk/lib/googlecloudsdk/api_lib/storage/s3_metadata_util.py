@@ -30,6 +30,16 @@ from googlecloudsdk.command_lib.storage.resources import resource_reference
 from googlecloudsdk.command_lib.storage.resources import s3_resource_reference
 from googlecloudsdk.core import log
 
+_COMMON_S3_METADATA_FIELDS = frozenset([
+    'ACL',
+    'CacheControl',
+    'ContentDisposition',
+    'ContentEncoding',
+    'ContentLanguage',
+    'ContentType',
+    'Metadata',
+    'StorageClass',
+])
 _GCS_TO_S3_PREDEFINED_ACL_TRANSLATION_DICT = {
     'authenticatedRead': 'authenticated-read',
     'bucketOwnerFullControl': 'bucket-owner-full-control',
@@ -40,6 +50,14 @@ _GCS_TO_S3_PREDEFINED_ACL_TRANSLATION_DICT = {
 }
 # Determines whether an etag is a valid MD5.
 MD5_REGEX = re.compile(r'^[a-fA-F0-9]{32}$')
+
+
+def copy_object_metadata(source_metadata_dict, destination_metadata_dict):
+  """Copies common S3 fields from one metadata dict to another."""
+  for field in _COMMON_S3_METADATA_FIELDS:
+    if field in source_metadata_dict:
+      destination_metadata_dict[field] = source_metadata_dict[field]
+  return destination_metadata_dict
 
 
 def translate_predefined_acl_string_to_s3(predefined_acl_string):

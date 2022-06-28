@@ -41,11 +41,11 @@ def GetVpcId(args):
   return getattr(args, 'vpc_id', None)
 
 
-def AddIamInstanceProfile(parser, kind='cluster'):
+def AddIamInstanceProfile(parser, kind='cluster', required=True):
   """Adds the --iam-instance-profile flag."""
   parser.add_argument(
       '--iam-instance-profile',
-      required=True,
+      required=required,
       help='Name or ARN of the IAM instance profile associated with the {}.'
       .format(kind))
 

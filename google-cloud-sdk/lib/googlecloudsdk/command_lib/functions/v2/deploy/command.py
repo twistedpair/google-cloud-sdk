@@ -95,6 +95,7 @@ _LATEST_REVISION_TRAFFIC_WARNING_MESSAGE = (
     'confirm your expected traffic settings.')
 
 _LEGACY_V1_FLAGS = [
+    ('docker_registry', '--docker-registry'),
     ('security_level', '--security-level'),
 ]
 _LEGACY_V1_FLAG_ERROR = '`%s` is only supported in Cloud Functions V1.'

@@ -109,7 +109,7 @@ class RequestWrapper(transport.CredentialWrappingMixin,
       if (response.status_code in REFRESH_STATUS_CODES and
           credential_refresh_state['attempt'] < MAX_REFRESH_ATTEMPTS):
         credential_refresh_state['attempt'] += 1
-        creds.refresh(auth_request)
+        creds.refresh(requests.GoogleAuthRequest())
         response = orig_request(
             method, url, data=data, headers=headers or {}, **kwargs)
 

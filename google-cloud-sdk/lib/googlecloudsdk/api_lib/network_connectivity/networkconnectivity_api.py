@@ -93,3 +93,16 @@ class SpokesClient(object):
         self.messages.NetworkconnectivityProjectsLocationsSpokesCreateRequest(
             parent=parent, requestId=request_id, spoke=spoke, spokeId=spoke_id))
     return self.spoke_service.Create(create_req)
+
+  def UpdateVPCSpoke(self, spoke_ref, spoke, update_mask, request_id=None):
+    """Call API to update a existing spoke."""
+    name = spoke_ref.RelativeName()
+    update_mask_string = ','.join(update_mask)
+
+    update_req = (
+        self.messages.NetworkconnectivityProjectsLocationsSpokesPatchRequest(
+            name=name,
+            requestId=request_id,
+            spoke=spoke,
+            updateMask=update_mask_string))
+    return self.spoke_service.Patch(update_req)

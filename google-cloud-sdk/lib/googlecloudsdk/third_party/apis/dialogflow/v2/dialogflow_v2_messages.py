@@ -6081,7 +6081,9 @@ class GoogleCloudDialogflowCxV3WebhookGenericWebService(_messages.Message):
 
 class GoogleCloudDialogflowCxV3WebhookRequest(_messages.Message):
   r"""The request message for a webhook call. The request is sent as a JSON
-  object and the field names will be presented in camel cases.
+  object and the field names will be presented in camel cases. You may see
+  undocumented fields in an actual request. These fields are used internally
+  by Dialogflow and should be ignored.
 
   Messages:
     PayloadValue: Custom data set in QueryParameters.payload.
@@ -8199,7 +8201,9 @@ class GoogleCloudDialogflowCxV3beta1WebhookGenericWebService(_messages.Message):
 
 class GoogleCloudDialogflowCxV3beta1WebhookRequest(_messages.Message):
   r"""The request message for a webhook call. The request is sent as a JSON
-  object and the field names will be presented in camel cases.
+  object and the field names will be presented in camel cases. You may see
+  undocumented fields in an actual request. These fields are used internally
+  by Dialogflow and should be ignored.
 
   Messages:
     PayloadValue: Custom data set in QueryParameters.payload.
@@ -12930,7 +12934,10 @@ class GoogleCloudDialogflowV2QueryResult(_messages.Message):
       have been collected, or if the matched intent doesn't contain any
       required parameters.
     cancelsSlotFilling: Indicates whether the conversational query triggers a
-      cancellation for slot filling.
+      cancellation for slot filling. For more information, see the [cancel
+      slot filling
+      documentation](https://cloud.google.com/dialogflow/es/docs/intents-
+      actions-parameters#cancel).
     diagnosticInfo: Free-form diagnostic information for the associated detect
       intent request. The fields of this data can change without notice, so
       you should not write code that depends on its structure. The data may
@@ -13700,7 +13707,9 @@ class GoogleCloudDialogflowV2SynthesizeSpeechConfig(_messages.Message):
 
 
 class GoogleCloudDialogflowV2TextInput(_messages.Message):
-  r"""Represents the natural language text to be processed.
+  r"""========================================================================
+  ==== Auxiliary proto messages. Represents the natural language text to be
+  processed.
 
   Fields:
     languageCode: Required. The language of this conversational query. See
@@ -16091,7 +16100,10 @@ class GoogleCloudDialogflowV2beta1QueryResult(_messages.Message):
       have been collected, or if the matched intent doesn't contain any
       required parameters.
     cancelsSlotFilling: Indicates whether the conversational query triggers a
-      cancellation for slot filling.
+      cancellation for slot filling. For more information, see the [cancel
+      slot filling
+      documentation](https://cloud.google.com/dialogflow/es/docs/intents-
+      actions-parameters#cancel).
     diagnosticInfo: Free-form diagnostic information for the associated detect
       intent request. The fields of this data can change without notice, so
       you should not write code that depends on its structure. The data may

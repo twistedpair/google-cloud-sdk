@@ -648,7 +648,7 @@
     },
     "Instance": {
       "id": "Instance",
-      "description": "An Instance is a computing unit that an end customer can connect to. It's the main unit of computing resources in AlloyDB. NEXT ID: 19",
+      "description": "An Instance is a computing unit that an end customer can connect to. It's the main unit of computing resources in AlloyDB. NEXT ID: 21",
       "type": "object",
       "properties": {
         "name": {
@@ -721,12 +721,14 @@
           "enumDescriptions": [
             "The type of the instance is unknown.",
             "PRIMARY instances support read and write operations.",
-            "READ POOL instances support read operations only. Each read pool instance consists of one or more homogeneous nodes. * Read pool of size 1 can only have zonal availability. * Read pools with node count of 2 or more can have regional availability (nodes are present in 2 or more zones in a region)."
+            "READ POOL instances support read operations only. Each read pool instance consists of one or more homogeneous nodes. * Read pool of size 1 can only have zonal availability. * Read pools with node count of 2 or more can have regional availability (nodes are present in 2 or more zones in a region).",
+            "SECONDARY instances support read operations only. SECONDARY instance is a cross-region read replica"
           ],
           "enum": [
             "INSTANCE_TYPE_UNSPECIFIED",
             "PRIMARY",
-            "READ_POOL"
+            "READ_POOL",
+            "SECONDARY"
           ]
         },
         "machineConfig": {
@@ -752,10 +754,23 @@
           "type": "string"
         },
         "databaseFlags": {
-          "description": "Database flags. Set at instance level. * They are copied from primary instance on read instance creation. * Read instances can set new or override existing flags that are relevant for reads, e.g. for enabling columnar cache on a read instance. Flags set on read instance may or may not be present on primary. ",
+          "description": "Database flags. Set at instance level. * They are copied from primary instance on read instance creation. * Read instances can set new or override existing flags that are relevant for reads, e.g. for enabling columnar cache on a read instance. Flags set on read instance may or may not be present on primary. This is a list of \"key\": \"value\" pairs. \"key\": The name of the flag. These flags are passed at instance setup time, so include both server options and system variables for Postgres. Flags are specified with underscores, not hyphens. \"value\": The value of the flag. Booleans are set to **on** for true and **off** for false. This field must be omitted if the flag doesn't take a value.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
+          }
+        },
+        "writableNode": {
+          "description": "Output only. This is set for the read-write VM of the PRIMARY instance only.",
+          "readOnly": true,
+          "$ref": "Node"
+        },
+        "nodes": {
+          "description": "Output only. List of available read-only VMs in this instance, including the standby for a PRIMARY instance.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "Node"
           }
         },
         "readPoolConfig": {
@@ -794,6 +809,17 @@
           "description": "The number of CPU's in the VM instance.",
           "type": "integer",
           "format": "int32"
+        }
+      }
+    },
+    "Node": {
+      "id": "Node",
+      "description": "Details of a single node in the instance.",
+      "type": "object",
+      "properties": {
+        "zoneId": {
+          "description": "The Compute Engine zone of the VM e.g. \"us-central1-b\".",
+          "type": "string"
         }
       }
     },
@@ -1828,6 +1854,49 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Creates a new Instance in a given project and location."
+                    },
+                    "createsecondary": {
+                      "id": "alloydb.projects.locations.clusters.instances.createsecondary",
+                      "path": "v1beta/{+parent}/instances:createsecondary",
+                      "flatPath": "v1beta/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/instances:createsecondary",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The name of the parent resource. For the required format, see the comment on the Instance.name field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "instanceId": {
+                          "description": "Required. Id of the requesting object If auto-generating Id server-side, remove this field and instance_id from the method_signature of Create RPC",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "requestId": {
+                          "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "validateOnly": {
+                          "description": "Optional. If set, performs request validation (e.g. permission checks and any other type of validation), but do not actually execute the create request.",
+                          "location": "query",
+                          "type": "boolean"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "Instance"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Creates a new SECONDARY Instance in a given project and location."
                     },
                     "patch": {
                       "id": "alloydb.projects.locations.clusters.instances.patch",

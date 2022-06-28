@@ -2418,6 +2418,10 @@
         "templateLibraryConfig": {
           "description": "Configures the library templates to install along with Policy Controller.",
           "$ref": "TemplateLibraryConfig"
+        },
+        "monitoring": {
+          "description": "Monitoring specifies the configuration of monitoring.",
+          "$ref": "PolicyControllerMonitoringConfig"
         }
       }
     },
@@ -2429,6 +2433,30 @@
         "included": {
           "description": "Whether the standard template library should be installed or not.",
           "type": "boolean"
+        }
+      }
+    },
+    "PolicyControllerMonitoringConfig": {
+      "id": "PolicyControllerMonitoringConfig",
+      "description": "PolicyControllerMonitoringConfig specifies the backends Policy Controller should export metrics to. For example, to specify metrics should be exported to Cloud Monitoring and Prometheus, specify backends: [\"prometheus\", \"cloudmonitoring\"]",
+      "type": "object",
+      "properties": {
+        "backends": {
+          "description": "Specifies the list of backends Policy Controller will export to. An empty list would effectively disable metrics export.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enumDescriptions": [
+              "Backend cannot be determined",
+              "Prometheus backend for monitoring",
+              "Stackdriver\/Cloud Monitoring backend for monitoring"
+            ],
+            "enum": [
+              "MONITORING_BACKEND_UNSPECIFIED",
+              "PROMETHEUS",
+              "CLOUD_MONITORING"
+            ]
+          }
         }
       }
     },

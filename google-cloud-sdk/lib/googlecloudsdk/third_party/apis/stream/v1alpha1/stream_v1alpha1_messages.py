@@ -408,46 +408,6 @@ class RealmConfig(_messages.Message):
   realm = _messages.EnumField('RealmValueValuesEnum', 3)
 
 
-class RolloutStreamInstanceRequest(_messages.Message):
-  r"""A RolloutStreamInstanceRequest object.
-
-  Enums:
-    RealmsValueListEntryValuesEnum:
-
-  Fields:
-    contentVersionTag: Required. The user-specified version tag of the content
-      to be served by the instance after rollout.
-    realms: Required. Realms of the instance rollout.
-    requestId: Optional. A unique identifier for this request. Restricted to
-      36 ASCII characters. A random UUID is recommended. This request is only
-      idempotent if a `request_id` is provided."
-  """
-
-  class RealmsValueListEntryValuesEnum(_messages.Enum):
-    r"""RealmsValueListEntryValuesEnum enum type.
-
-    Values:
-      REALM_UNSPECIFIED: realm not specified
-      REALM_NA_CENTRAL: us-central1
-      REALM_NA_EAST: us-east[1|4]
-      REALM_NA_WEST: us-west[1|2|4]
-      REALM_ASIA_NORTHEAST: asia-northeast[1|3]
-      REALM_ASIA_SOUTHEAST: asia-southeast[1|2]
-      REALM_EU_WEST: europe-west[1-4]
-    """
-    REALM_UNSPECIFIED = 0
-    REALM_NA_CENTRAL = 1
-    REALM_NA_EAST = 2
-    REALM_NA_WEST = 3
-    REALM_ASIA_NORTHEAST = 4
-    REALM_ASIA_SOUTHEAST = 5
-    REALM_EU_WEST = 6
-
-  contentVersionTag = _messages.StringField(1)
-  realms = _messages.EnumField('RealmsValueListEntryValuesEnum', 2, repeated=True)
-  requestId = _messages.StringField(3)
-
-
 class StandardQueryParameters(_messages.Message):
   r"""Query parameters accepted by all methods.
 
@@ -986,19 +946,6 @@ class StreamProjectsLocationsStreamInstancesPatchRequest(_messages.Message):
   requestId = _messages.StringField(2)
   streamInstance = _messages.MessageField('StreamInstance', 3)
   updateMask = _messages.StringField(4)
-
-
-class StreamProjectsLocationsStreamInstancesRolloutRequest(_messages.Message):
-  r"""A StreamProjectsLocationsStreamInstancesRolloutRequest object.
-
-  Fields:
-    name: Required. Canonical resource name of the instance.
-    rolloutStreamInstanceRequest: A RolloutStreamInstanceRequest resource to
-      be passed as the request body.
-  """
-
-  name = _messages.StringField(1, required=True)
-  rolloutStreamInstanceRequest = _messages.MessageField('RolloutStreamInstanceRequest', 2)
 
 
 encoding.AddCustomJsonFieldMapping(

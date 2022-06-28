@@ -277,6 +277,13 @@
           "items": {
             "type": "string"
           }
+        },
+        "dependencyChain": {
+          "description": "The dependency chain between this package and the user's artifact. List in order from the customer's package under review first, to the current package last. Inclusive of the original package and the current package.",
+          "type": "array",
+          "items": {
+            "$ref": "LanguagePackageDependency"
+          }
         }
       }
     },
@@ -287,6 +294,19 @@
       "properties": {
         "filePath": {
           "description": "For jars that are contained inside .war files, this filepath can indicate the path to war file combined with the path to jar file.",
+          "type": "string"
+        }
+      }
+    },
+    "LanguagePackageDependency": {
+      "id": "LanguagePackageDependency",
+      "description": "Indicates a language package available between this package and the customer's resource artifact.",
+      "type": "object",
+      "properties": {
+        "package": {
+          "type": "string"
+        },
+        "version": {
           "type": "string"
         }
       }

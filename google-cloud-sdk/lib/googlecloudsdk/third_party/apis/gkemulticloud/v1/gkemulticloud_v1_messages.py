@@ -137,8 +137,7 @@ class GkemulticloudProjectsLocationsAwsClustersAwsNodePoolsPatchRequest(_message
       `config.proxy_config.secret_arn`. *
       `config.proxy_config.secret_version`. * `config.ssh_config`. *
       `config.ssh_config.ec2_key_pair`. * `config.instance_placement.tenancy`.
-      * `config.instance_type`. * `config.iam_instance_profile`. *
-      `config.labels`.
+      * `config.iam_instance_profile`. * `config.labels`.
     validateOnly: If set, only validate the request, but don't actually update
       the node pool.
   """
@@ -506,7 +505,7 @@ class GkemulticloudProjectsLocationsAzureClustersAzureNodePoolsPatchRequest(_mes
       supplied in this field. The elements of the repeated paths field can
       only include these fields from AzureNodePool: *. `annotations`. *
       `version`. * `autoscaling.min_node_count`. *
-      `autoscaling.max_node_count`. * `config.vm_size`.
+      `autoscaling.max_node_count`.
     validateOnly: If set, only validate the request, but don't actually update
       the node pool.
   """

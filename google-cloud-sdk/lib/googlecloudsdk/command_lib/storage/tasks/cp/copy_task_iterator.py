@@ -384,6 +384,10 @@ class CopyTaskIterator:
     )
 
     if completion_is_necessary:
+      if (isinstance(source.expanded_url, storage_url.FileUrl) and
+          source.expanded_url.is_stream):
+        raise errors.Error(
+            'Destination object name needed when source is a stream.')
       return self._complete_destination(raw_destination, source)
     else:
       return raw_destination

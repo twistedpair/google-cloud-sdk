@@ -263,7 +263,8 @@ class ExternalAccessRule(_messages.Message):
       address in these ranges. The specified IP addresses must have reserved
       external IP addresses in the scope of the parent network policy. To
       match all external IP addresses in the scope of the parent network
-      policy, specify `0.0.0.0/0`.
+      policy, specify `0.0.0.0/0`. To match a specific external IP address,
+      specify it using the `IpRange.external_address` property.
     destinationPorts: A list of destination ports to which the external access
       rule applies. This field is only applicable for the UDP or TCP protocol.
       Each entry must be either an integer or a range. For example: `["22"]`,
@@ -278,11 +279,13 @@ class ExternalAccessRule(_messages.Message):
       `projects/my-project/locations/us-west1/networkPolicies/my-
       policy/externalAccessRules/my-rule`
     priority: External access rule priority, which determines the external
-      access rule to use when multiple rules apply. The external access rule
-      priority is an integer from 100 to 4096, both inclusive. Priorities must
-      be unique for a rule within the parent network policy. Lower integers
-      indicate higher precedence. For example, a rule with priority `100` has
-      higher precedence than a rule with priority `101`.
+      access rule to use when multiple rules apply. If multiple rules have the
+      same priority, their ordering is non-deterministic. If specific ordering
+      is required, assign unique priorities to enforce such ordering. The
+      external access rule priority is an integer from 100 to 4096, both
+      inclusive. Lower integers indicate higher precedence. For example, a
+      rule with priority `100` has higher precedence than a rule with priority
+      `101`.
     sourceIpRanges: If source ranges are specified, the external access rule
       applies only to traffic that has a source IP address in these ranges.
       These ranges can either be expressed in the CIDR format or as an IP
@@ -2360,8 +2363,8 @@ class VmwareengineProjectsLocationsNetworkPoliciesFetchExternalAddressesRequest(
     pageToken: A page token, received from a previous
       `FetchNetworkPolicyExternalAddresses` call. Provide this to retrieve the
       subsequent page. When paginating, all parameters provided to
-      `FetchNetworkPolicyExternalAddresses`, except for page_size and
-      page_token, must match the call that provided the page token.
+      `FetchNetworkPolicyExternalAddresses`, except for `page_size` and
+      `page_token`, must match the call that provided the page token.
   """
 
   networkPolicy = _messages.StringField(1, required=True)

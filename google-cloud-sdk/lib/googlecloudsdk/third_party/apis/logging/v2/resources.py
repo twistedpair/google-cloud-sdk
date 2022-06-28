@@ -31,38 +31,6 @@ class Collections(enum.Enum):
       ['billingAccountsId'],
       True
   )
-  BILLINGACCOUNTS_BUCKETS = (
-      'billingAccounts.buckets',
-      '{+name}',
-      {
-          '':
-              'billingAccounts/{billingAccountsId}/buckets/{bucketsId}',
-      },
-      ['name'],
-      True
-  )
-  BILLINGACCOUNTS_BUCKETS_LINKS = (
-      'billingAccounts.buckets.links',
-      '{+name}',
-      {
-          '':
-              'billingAccounts/{billingAccountsId}/buckets/{bucketsId}/links/'
-              '{linksId}',
-      },
-      ['name'],
-      True
-  )
-  BILLINGACCOUNTS_BUCKETS_VIEWS = (
-      'billingAccounts.buckets.views',
-      '{+name}',
-      {
-          '':
-              'billingAccounts/{billingAccountsId}/buckets/{bucketsId}/views/'
-              '{viewsId}',
-      },
-      ['name'],
-      True
-  )
   BILLINGACCOUNTS_EXCLUSIONS = (
       'billingAccounts.exclusions',
       '{+name}',
@@ -83,12 +51,46 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  BILLINGACCOUNTS_OPERATIONS = (
-      'billingAccounts.operations',
+  BILLINGACCOUNTS_LOCATIONS_BUCKETS = (
+      'billingAccounts.locations.buckets',
       '{+name}',
       {
           '':
-              'billingAccounts/{billingAccountsId}/operations/{operationsId}',
+              'billingAccounts/{billingAccountsId}/locations/{locationsId}/'
+              'buckets/{bucketsId}',
+      },
+      ['name'],
+      True
+  )
+  BILLINGACCOUNTS_LOCATIONS_BUCKETS_LINKS = (
+      'billingAccounts.locations.buckets.links',
+      '{+name}',
+      {
+          '':
+              'billingAccounts/{billingAccountsId}/locations/{locationsId}/'
+              'buckets/{bucketsId}/links/{linksId}',
+      },
+      ['name'],
+      True
+  )
+  BILLINGACCOUNTS_LOCATIONS_BUCKETS_VIEWS = (
+      'billingAccounts.locations.buckets.views',
+      '{+name}',
+      {
+          '':
+              'billingAccounts/{billingAccountsId}/locations/{locationsId}/'
+              'buckets/{bucketsId}/views/{viewsId}',
+      },
+      ['name'],
+      True
+  )
+  BILLINGACCOUNTS_LOCATIONS_OPERATIONS = (
+      'billingAccounts.locations.operations',
+      '{+name}',
+      {
+          '':
+              'billingAccounts/{billingAccountsId}/locations/{locationsId}/'
+              'operations/{operationsId}',
       },
       ['name'],
       True

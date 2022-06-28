@@ -745,7 +745,7 @@
           "type": "string"
         },
         "priority": {
-          "description": "External access rule priority, which determines the external access rule to use when multiple rules apply. The external access rule priority is an integer from 100 to 4096, both inclusive. Priorities must be unique for a rule within the parent network policy. Lower integers indicate higher precedence. For example, a rule with priority `100` has higher precedence than a rule with priority `101`.",
+          "description": "External access rule priority, which determines the external access rule to use when multiple rules apply. If multiple rules have the same priority, their ordering is non-deterministic. If specific ordering is required, assign unique priorities to enforce such ordering. The external access rule priority is an integer from 100 to 4096, both inclusive. Lower integers indicate higher precedence. For example, a rule with priority `100` has higher precedence than a rule with priority `101`.",
           "type": "integer",
           "format": "int32"
         },
@@ -782,7 +782,7 @@
           }
         },
         "destinationIpRanges": {
-          "description": "If destination ranges are specified, the external access rule applies only to the traffic that has a destination IP address in these ranges. The specified IP addresses must have reserved external IP addresses in the scope of the parent network policy. To match all external IP addresses in the scope of the parent network policy, specify `0.0.0.0\/0`.",
+          "description": "If destination ranges are specified, the external access rule applies only to the traffic that has a destination IP address in these ranges. The specified IP addresses must have reserved external IP addresses in the scope of the parent network policy. To match all external IP addresses in the scope of the parent network policy, specify `0.0.0.0\/0`. To match a specific external IP address, specify it using the `IpRange.external_address` property.",
           "type": "array",
           "items": {
             "$ref": "IpRange"
@@ -3004,7 +3004,7 @@
                       "format": "int32"
                     },
                     "pageToken": {
-                      "description": "A page token, received from a previous `FetchNetworkPolicyExternalAddresses` call. Provide this to retrieve the subsequent page. When paginating, all parameters provided to `FetchNetworkPolicyExternalAddresses`, except for page_size and page_token, must match the call that provided the page token.",
+                      "description": "A page token, received from a previous `FetchNetworkPolicyExternalAddresses` call. Provide this to retrieve the subsequent page. When paginating, all parameters provided to `FetchNetworkPolicyExternalAddresses`, except for `page_size` and `page_token`, must match the call that provided the page token.",
                       "location": "query",
                       "type": "string"
                     }

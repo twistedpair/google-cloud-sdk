@@ -343,7 +343,7 @@
           "type": "string"
         },
         "manBlock": {
-          "description": "Master Authorized Network. Allows access to the k8s master from this block.",
+          "description": "Master Authorized Network. Allows access to the k8s master from this block. It cannot be set at the same time with the field master_authorized_networks_config.",
           "type": "string"
         },
         "clusterCidrBlock": {
@@ -360,6 +360,39 @@
         },
         "servicesNamedRange": {
           "description": "The name of the existing secondary range in the cluster's subnetwork to use for service ClusterIPs. Alternatively, services_cidr_block can be used to automatically create a GKE-managed one.",
+          "type": "string"
+        },
+        "masterAuthorizedNetworksConfig": {
+          "description": "Master Authorized Network that supports multiple CIDR blocks. Allows access to the k8s master from multiple blocks. It cannot be set at the same time with the field man_block.",
+          "$ref": "MasterAuthorizedNetworksConfig"
+        }
+      }
+    },
+    "MasterAuthorizedNetworksConfig": {
+      "id": "MasterAuthorizedNetworksConfig",
+      "description": "Configuration of the Master Authorized Network that support multiple CIDRs",
+      "type": "object",
+      "properties": {
+        "cidrBlocks": {
+          "description": "cidr_blocks define up to 50 external networks that could access Kubernetes master through HTTPS.",
+          "type": "array",
+          "items": {
+            "$ref": "CidrBlock"
+          }
+        }
+      }
+    },
+    "CidrBlock": {
+      "id": "CidrBlock",
+      "description": "CidrBlock contains an optional name and one CIDR block.",
+      "type": "object",
+      "properties": {
+        "displayName": {
+          "description": "Optional. display_name is an optional field for users to identify CIDR blocks.",
+          "type": "string"
+        },
+        "cidrBlock": {
+          "description": "Optional. cidr_block must be specified in CIDR notation when using master_authorized_networks_config. Currently, the user could still use the deprecated man_block field, so this field is currently optional, but will be required in the future.",
           "type": "string"
         }
       }
@@ -382,7 +415,7 @@
           "type": "string"
         },
         "manBlock": {
-          "description": "Master Authorized Network. Allows access to the k8s master from this block.",
+          "description": "Master Authorized Network. Allows access to the k8s master from this block. It cannot be set at the same time with the field master_authorized_networks_config.",
           "type": "string"
         },
         "clusterCidrBlock": {
@@ -400,6 +433,10 @@
         "servicesNamedRange": {
           "description": "The name of the existing secondary range in the cluster's subnetwork to use for service ClusterIPs. Alternatively, services_cidr_block can be used to automatically create a GKE-managed one.",
           "type": "string"
+        },
+        "masterAuthorizedNetworksConfig": {
+          "description": "Master Authorized Network that supports multiple CIDR blocks. Allows access to the k8s master from multiple blocks. It cannot be set at the same time with the field man_block.",
+          "$ref": "MasterAuthorizedNetworksConfig"
         }
       }
     },

@@ -62,10 +62,17 @@ def BuildShareSettings(messages, args):
         args.share_setting)
     raise exceptions.InvalidArgumentException('--share-with', msg)
   if args.share_setting == 'projects':
+    additional_properties = []
+    for project in args.share_with:
+      additional_properties.append(
+          messages.ShareSettings.ProjectMapValue.AdditionalProperty(
+              key=project,
+              value=messages.ShareSettingsProjectConfig(projectId=project)))
     return messages.ShareSettings(
         shareType=(
             messages.ShareSettings.ShareTypeValueValuesEnum.SPECIFIC_PROJECTS),
-        projects=args.share_with)
+        projectMap=messages.ShareSettings.ProjectMapValue(
+            additionalProperties=additional_properties))
   elif args.share_setting == 'organization':
     return messages.ShareSettings(
         shareType=(

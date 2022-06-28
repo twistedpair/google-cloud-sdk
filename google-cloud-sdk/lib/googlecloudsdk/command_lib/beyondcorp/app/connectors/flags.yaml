@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-service_account:
+legacy_service_account:
   api_field: connector.principalInfo.serviceAccount.email
   arg_name: member
   required: true
@@ -20,8 +20,23 @@ service_account:
   help_text: |-
     Connector service account email in form of 'serviceAccount:email'.
 
-display_name:
+legacy_display_name:
   api_field: connector.displayName
+  arg_name: display-name
+  required: false
+  help_text: |-
+    An arbitrary user-provided name for the connector. Cannot exceed 64 characters.
+
+service_account:
+  api_field: googleCloudBeyondcorpAppconnectorsV1alphaAppConnector.principalInfo.serviceAccount.email
+  arg_name: member
+  required: true
+  processor: googlecloudsdk.command_lib.beyondcorp.app.util:MemberProcessor
+  help_text: |-
+    Connector service account email in form of 'serviceAccount:email'.
+
+display_name:
+  api_field: googleCloudBeyondcorpAppconnectorsV1alphaAppConnector.displayName
   arg_name: display-name
   required: false
   help_text: |-

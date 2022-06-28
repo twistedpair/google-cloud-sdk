@@ -382,30 +382,30 @@ class AssuredworkloadsV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def RestrictAllowedServices(self, request, global_params=None):
-      r"""Restrict the list of services allowed in the Workload environment. The current list of allowed services can be found at https://cloud.google.com/assured-workloads/docs/supported-products In addition to assuredworkloads.workload.update permission, the user should also have orgpolicy.policy.set permission on the folder resource to use this functionality.
+    def RestrictAllowedResources(self, request, global_params=None):
+      r"""Restrict the list of resources allowed in the Workload environment. The current list of allowed products can be found at https://cloud.google.com/assured-workloads/docs/supported-products In addition to assuredworkloads.workload.update permission, the user should also have orgpolicy.policy.set permission on the folder resource to use this functionality.
 
       Args:
-        request: (AssuredworkloadsOrganizationsLocationsWorkloadsRestrictAllowedServicesRequest) input message
+        request: (AssuredworkloadsOrganizationsLocationsWorkloadsRestrictAllowedResourcesRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (GoogleCloudAssuredworkloadsV1beta1RestrictAllowedServicesResponse) The response message.
+        (GoogleCloudAssuredworkloadsV1beta1RestrictAllowedResourcesResponse) The response message.
       """
-      config = self.GetMethodConfig('RestrictAllowedServices')
+      config = self.GetMethodConfig('RestrictAllowedResources')
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    RestrictAllowedServices.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta1/organizations/{organizationsId}/locations/{locationsId}/workloads/{workloadsId}:restrictAllowedServices',
+    RestrictAllowedResources.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/organizations/{organizationsId}/locations/{locationsId}/workloads/{workloadsId}:restrictAllowedResources',
         http_method='POST',
-        method_id='assuredworkloads.organizations.locations.workloads.restrictAllowedServices',
+        method_id='assuredworkloads.organizations.locations.workloads.restrictAllowedResources',
         ordered_params=['name'],
         path_params=['name'],
         query_params=[],
-        relative_path='v1beta1/{+name}:restrictAllowedServices',
-        request_field='googleCloudAssuredworkloadsV1beta1RestrictAllowedServicesRequest',
-        request_type_name='AssuredworkloadsOrganizationsLocationsWorkloadsRestrictAllowedServicesRequest',
-        response_type_name='GoogleCloudAssuredworkloadsV1beta1RestrictAllowedServicesResponse',
+        relative_path='v1beta1/{+name}:restrictAllowedResources',
+        request_field='googleCloudAssuredworkloadsV1beta1RestrictAllowedResourcesRequest',
+        request_type_name='AssuredworkloadsOrganizationsLocationsWorkloadsRestrictAllowedResourcesRequest',
+        response_type_name='GoogleCloudAssuredworkloadsV1beta1RestrictAllowedResourcesResponse',
         supports_download=False,
     )
 

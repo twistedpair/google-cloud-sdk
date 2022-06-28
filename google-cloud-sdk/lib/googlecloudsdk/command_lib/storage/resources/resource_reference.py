@@ -185,7 +185,8 @@ class ObjectResource(CloudResource):
     storage_url (StorageUrl): A StorageUrl object representing the object.
     content_type (str|None): A MIME type describing the object's content.
     creation_time (datetime|None): Time the object was created.
-    decryption_key_hash (str): The hash of a customer supplied encryption key.
+    decryption_key_hash (str|Nne): Digest of a customer-supplied encryption key.
+    kms_key (str|None): Resource identifier of a Google-managed encryption key.
     etag (str|None): HTTP version identifier.
     crc32c_hash (str|None): Base64-encoded digest of crc32c hash.
     md5_hash (str|None): Base64-encoded digest of md5 hash.
@@ -206,6 +207,7 @@ class ObjectResource(CloudResource):
                content_type=None,
                creation_time=None,
                decryption_key_hash=None,
+               kms_key=None,
                etag=None,
                crc32c_hash=None,
                md5_hash=None,
@@ -218,6 +220,7 @@ class ObjectResource(CloudResource):
     self.content_type = content_type
     self.creation_time = creation_time
     self.decryption_key_hash = decryption_key_hash
+    self.kms_key = kms_key
     self.etag = etag
     self.crc32c_hash = crc32c_hash
     self.md5_hash = md5_hash
@@ -242,7 +245,8 @@ class ObjectResource(CloudResource):
     return (super(ObjectResource, self).__eq__(other) and
             self.content_type == other.content_type and
             self.decryption_key_hash == other.decryption_key_hash and
-            self.etag == other.etag and self.generation == other.generation and
+            self.kms_key == other.kms_key and self.etag == other.etag and
+            self.generation == other.generation and
             self.crc32c_hash == other.crc32c_hash and
             self.md5_hash == other.md5_hash and
             self.metadata == other.metadata and

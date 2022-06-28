@@ -96,6 +96,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     self.regionHealthChecks = self.RegionHealthChecksService(self)
     self.regionInstanceGroupManagers = self.RegionInstanceGroupManagersService(self)
     self.regionInstanceGroups = self.RegionInstanceGroupsService(self)
+    self.regionInstanceTemplates = self.RegionInstanceTemplatesService(self)
     self.regionInstances = self.RegionInstancesService(self)
     self.regionInstantSnapshots = self.RegionInstantSnapshotsService(self)
     self.regionNetworkEndpointGroups = self.RegionNetworkEndpointGroupsService(self)
@@ -360,6 +361,32 @@ class ComputeAlpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='ComputeAddressesListRequest',
         response_type_name='AddressList',
+        supports_download=False,
+    )
+
+    def Move(self, request, global_params=None):
+      r"""Moves the specified address resource.
+
+      Args:
+        request: (ComputeAddressesMoveRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Move')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Move.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.addresses.move',
+        ordered_params=['project', 'region', 'address'],
+        path_params=['address', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/addresses/{address}/move',
+        request_field='regionAddressesMoveRequest',
+        request_type_name='ComputeAddressesMoveRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -3307,6 +3334,32 @@ class ComputeAlpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Move(self, request, global_params=None):
+      r"""Moves the specified address resource from one project to another project.
+
+      Args:
+        request: (ComputeGlobalAddressesMoveRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Move')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Move.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.globalAddresses.move',
+        ordered_params=['project', 'address'],
+        path_params=['address', 'project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/addresses/{address}/move',
+        request_field='globalAddressesMoveRequest',
+        request_type_name='ComputeGlobalAddressesMoveRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def SetLabels(self, request, global_params=None):
       r"""Sets the labels on a GlobalAddress. To learn more about labels, read the Labeling Resources documentation.
 
@@ -5482,7 +5535,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def ListManagedInstances(self, request, global_params=None):
-      r"""Lists all of the instances in the managed instance group. Each instance in the list has a currentAction, which indicates the action that the managed instance group is performing on the instance. For example, if the group is still creating an instance, the currentAction is CREATING. If a previous action failed, the list displays the errors for that failed action. The orderBy query parameter is not supported.
+      r"""Lists all of the instances in the managed instance group. Each instance in the list has a currentAction, which indicates the action that the managed instance group is performing on the instance. For example, if the group is still creating an instance, the currentAction is CREATING. If a previous action failed, the list displays the errors for that failed action. The orderBy query parameter is not supported. The `pageToken` query parameter is supported only in the alpha and beta API and only if the group's `listManagedInstancesResults` field is set to `PAGINATED`.
 
       Args:
         request: (ComputeInstanceGroupManagersListManagedInstancesRequest) input message
@@ -14242,7 +14295,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def ListManagedInstances(self, request, global_params=None):
-      r"""Lists the instances in the managed instance group and instances that are scheduled to be created. The list includes any current actions that the group has scheduled for its instances. The orderBy query parameter is not supported.
+      r"""Lists the instances in the managed instance group and instances that are scheduled to be created. The list includes any current actions that the group has scheduled for its instances. The orderBy query parameter is not supported. The `pageToken` query parameter is supported only in the alpha and beta API and only if the group's `listManagedInstancesResults` field is set to `PAGINATED`.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersListManagedInstancesRequest) input message
@@ -14820,6 +14873,120 @@ class ComputeAlpha(base_api.BaseApiClient):
         request_field='testPermissionsRequest',
         request_type_name='ComputeRegionInstanceGroupsTestIamPermissionsRequest',
         response_type_name='TestPermissionsResponse',
+        supports_download=False,
+    )
+
+  class RegionInstanceTemplatesService(base_api.BaseApiService):
+    """Service class for the regionInstanceTemplates resource."""
+
+    _NAME = 'regionInstanceTemplates'
+
+    def __init__(self, client):
+      super(ComputeAlpha.RegionInstanceTemplatesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified instance template. Deleting an instance template is permanent and cannot be undone.
+
+      Args:
+        request: (ComputeRegionInstanceTemplatesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='DELETE',
+        method_id='compute.regionInstanceTemplates.delete',
+        ordered_params=['project', 'region', 'instanceTemplate'],
+        path_params=['instanceTemplate', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/instanceTemplates/{instanceTemplate}',
+        request_field='',
+        request_type_name='ComputeRegionInstanceTemplatesDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Returns the specified instance template. Gets a list of available instance templates by making a list() request.
+
+      Args:
+        request: (ComputeRegionInstanceTemplatesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InstanceTemplate) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.regionInstanceTemplates.get',
+        ordered_params=['project', 'region', 'instanceTemplate'],
+        path_params=['instanceTemplate', 'project', 'region'],
+        query_params=[],
+        relative_path='projects/{project}/regions/{region}/instanceTemplates/{instanceTemplate}',
+        request_field='',
+        request_type_name='ComputeRegionInstanceTemplatesGetRequest',
+        response_type_name='InstanceTemplate',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      r"""Creates an instance template in the specified project and region using the global instance template whose URL is included in the request.
+
+      Args:
+        request: (ComputeRegionInstanceTemplatesInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionInstanceTemplates.insert',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/instanceTemplates',
+        request_field='instanceTemplate',
+        request_type_name='ComputeRegionInstanceTemplatesInsertRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Retrieves a list of instance templates that are contained within the specified project and region.
+
+      Args:
+        request: (ComputeRegionInstanceTemplatesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InstanceTemplateList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.regionInstanceTemplates.list',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/regions/{region}/instanceTemplates',
+        request_field='',
+        request_type_name='ComputeRegionInstanceTemplatesListRequest',
+        response_type_name='InstanceTemplateList',
         supports_download=False,
     )
 

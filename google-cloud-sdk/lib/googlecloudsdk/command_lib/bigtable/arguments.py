@@ -352,13 +352,15 @@ class ArgAdder(object):
                 'autoscaling-min-nodes': int,
                 'autoscaling-max-nodes': int,
                 'autoscaling-cpu-target': int,
+                'autoscaling-storage-target': int,
             },
             required_keys=['id', 'zone'],
-            max_length=7),
+            max_length=8),
         metavar='id=ID,zone=ZONE,nodes=NODES,kms-key=KMS_KEY,'
         'autoscaling-min-nodes=AUTOSCALING_MIN_NODES,'
         'autoscaling-max-nodes=AUTOSCALING_MAX_NODES,'
-        'autoscaling-cpu-target=AUTOSCALING_CPU_TARGET',
+        'autoscaling-cpu-target=AUTOSCALING_CPU_TARGET,'
+        'autoscaling-storage-target=AUTOSCALING_STORAGE_TARGET',
         help=textwrap.dedent("""\
         *Repeatable*. Specify cluster config as a key-value dictionary.
 
@@ -374,6 +376,14 @@ class ArgAdder(object):
 
           *kms-key*: The Cloud KMS (Key Management Service) cryptokey that will be used to protect the cluster.
 
+          *autoscaling-min-nodes*: The minimum number of nodes for autoscaling.
+
+          *autoscaling-max-nodes*: The maximum number of nodes for autoscaling.
+
+          *autoscaling-cpu-target*: The target CPU utilization percentage for autoscaling. Accepted values are from 10 to 80.
+
+          *autoscaling-storage-target*: The target storage utilization gibibytes per node for autoscaling. Accepted values are from 2560 to 5120 for SSD clusters and 8192 to 16384 for HDD clusters.
+
         If this argument is specified, the deprecated arguments for configuring a single cluster will be ignored, including *--cluster*, *--cluster-zone*, *--cluster-num-nodes*.
 
         See *EXAMPLES* section.
@@ -386,7 +396,7 @@ class ArgAdder(object):
                      num_nodes_required=False,
                      num_nodes_default=None,
                      add_disable_autoscaling=False,
-                     require_all_autoscaling_args=False):
+                     require_all_essential_autoscaling_args=False):
     """Add scaling related arguments."""
     scaling_group = self.parser.add_mutually_exclusive_group(required=required)
     manual_scaling_group = scaling_group.add_group('Manual Scaling')
@@ -411,23 +421,30 @@ class ArgAdder(object):
         '--autoscaling-min-nodes',
         help='The minimum number of nodes for autoscaling.',
         default=None,
-        required=require_all_autoscaling_args,
+        required=require_all_essential_autoscaling_args,
         type=int,
         metavar='AUTOSCALING_MIN_NODES')
     autoscaling_group.add_argument(
         '--autoscaling-max-nodes',
         help='The maximum number of nodes for autoscaling.',
         default=None,
-        required=require_all_autoscaling_args,
+        required=require_all_essential_autoscaling_args,
         type=int,
         metavar='AUTOSCALING_MAX_NODES')
     autoscaling_group.add_argument(
         '--autoscaling-cpu-target',
-        help='The target CPU utilization percent for autoscaling. Accepted values are from 10 to 80.',
+        help='The target CPU utilization percentage for autoscaling. Accepted values are from 10 to 80.',
         default=None,
-        required=require_all_autoscaling_args,
+        required=require_all_essential_autoscaling_args,
         type=int,
         metavar='AUTOSCALING_CPU_TARGET')
+    autoscaling_group.add_argument(
+        '--autoscaling-storage-target',
+        help='The target storage utilization gibibytes per node for autoscaling. Accepted values are from 2560 to 5120 for SSD clusters and 8192 to 16384 for HDD clusters.',
+        default=None,
+        required=False,
+        type=int,
+        metavar='AUTOSCALING_STORAGE_TARGET')
     return self
 
   def AddScalingArgsForClusterUpdate(self):
@@ -438,7 +455,7 @@ class ArgAdder(object):
   def AddScalingArgsForClusterCreate(self):
     """Add scaling related arguments."""
     return self.AddScalingArgs(num_nodes_default=3,
-                               require_all_autoscaling_args=True)
+                               require_all_essential_autoscaling_args=True)
 
 
 def InstanceAttributeConfig():

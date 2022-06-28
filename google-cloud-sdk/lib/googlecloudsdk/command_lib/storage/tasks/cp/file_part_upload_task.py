@@ -170,13 +170,9 @@ class FilePartUploadTask(file_part_task.FilePartTask):
             tracker_file_util.TrackerFileType.UPLOAD,
             component_number=self._component_number)
 
-        encryption_key = encryption_util.get_encryption_key()
-        if encryption_key:
-          encryption_key_hash = encryption_key.sha256
-        else:
-          encryption_key_hash = None
-
         complete = False
+        encryption_key_hash = getattr(encryption_util.get_encryption_key(),
+                                      'sha256', None)
         tracker_callback = functools.partial(
             tracker_file_util.write_resumable_upload_tracker_file,
             tracker_file_path, complete, encryption_key_hash)

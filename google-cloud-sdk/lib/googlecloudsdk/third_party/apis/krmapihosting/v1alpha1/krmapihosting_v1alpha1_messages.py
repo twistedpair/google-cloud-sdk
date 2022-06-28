@@ -159,6 +159,22 @@ class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
 
+class CidrBlock(_messages.Message):
+  r"""CidrBlock contains an optional name and one CIDR block.
+
+  Fields:
+    cidrBlock: Optional. cidr_block must be specified in CIDR notation when
+      using master_authorized_networks_config. Currently, the user could still
+      use the deprecated man_block field, so this field is currently optional,
+      but will be required in the future.
+    displayName: Optional. display_name is an optional field for users to
+      identify CIDR blocks.
+  """
+
+  cidrBlock = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+
+
 class ConfigControllerConfig(_messages.Message):
   r"""Configuration options for the Config Controller bundle.
 
@@ -233,7 +249,11 @@ class FullManagementConfig(_messages.Message):
       cluster_cidr_block can be used to automatically create a GKE-managed
       one.
     manBlock: Master Authorized Network. Allows access to the k8s master from
-      this block.
+      this block. It cannot be set at the same time with the field
+      master_authorized_networks_config.
+    masterAuthorizedNetworksConfig: Master Authorized Network that supports
+      multiple CIDR blocks. Allows access to the k8s master from multiple
+      blocks. It cannot be set at the same time with the field man_block.
     masterIpv4CidrBlock: The /28 network that the masters will use.
     network: Existing VPC Network to put the GKE cluster and nodes in.
     servicesCidrBlock: The IP address range for the cluster service IPs. Set
@@ -254,11 +274,12 @@ class FullManagementConfig(_messages.Message):
   clusterCidrBlock = _messages.StringField(1)
   clusterNamedRange = _messages.StringField(2)
   manBlock = _messages.StringField(3)
-  masterIpv4CidrBlock = _messages.StringField(4)
-  network = _messages.StringField(5)
-  servicesCidrBlock = _messages.StringField(6)
-  servicesNamedRange = _messages.StringField(7)
-  subnet = _messages.StringField(8)
+  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 4)
+  masterIpv4CidrBlock = _messages.StringField(5)
+  network = _messages.StringField(6)
+  servicesCidrBlock = _messages.StringField(7)
+  servicesNamedRange = _messages.StringField(8)
+  subnet = _messages.StringField(9)
 
 
 class KrmApiHost(_messages.Message):
@@ -777,6 +798,18 @@ class ManagementConfig(_messages.Message):
   standardManagementConfig = _messages.MessageField('StandardManagementConfig', 2)
 
 
+class MasterAuthorizedNetworksConfig(_messages.Message):
+  r"""Configuration of the Master Authorized Network that support multiple
+  CIDRs
+
+  Fields:
+    cidrBlocks: cidr_blocks define up to 50 external networks that could
+      access Kubernetes master through HTTPS.
+  """
+
+  cidrBlocks = _messages.MessageField('CidrBlock', 1, repeated=True)
+
+
 class Operation(_messages.Message):
   r"""This resource represents a long-running operation that is the result of
   a network API call.
@@ -1015,7 +1048,11 @@ class StandardManagementConfig(_messages.Message):
       cluster_cidr_block can be used to automatically create a GKE-managed
       one.
     manBlock: Master Authorized Network. Allows access to the k8s master from
-      this block.
+      this block. It cannot be set at the same time with the field
+      master_authorized_networks_config.
+    masterAuthorizedNetworksConfig: Master Authorized Network that supports
+      multiple CIDR blocks. Allows access to the k8s master from multiple
+      blocks. It cannot be set at the same time with the field man_block.
     masterIpv4CidrBlock: The /28 network that the masters will use.
     network: Existing VPC Network to put the GKE cluster and nodes in.
     servicesCidrBlock: The IP address range for the cluster service IPs. Set
@@ -1036,11 +1073,12 @@ class StandardManagementConfig(_messages.Message):
   clusterCidrBlock = _messages.StringField(1)
   clusterNamedRange = _messages.StringField(2)
   manBlock = _messages.StringField(3)
-  masterIpv4CidrBlock = _messages.StringField(4)
-  network = _messages.StringField(5)
-  servicesCidrBlock = _messages.StringField(6)
-  servicesNamedRange = _messages.StringField(7)
-  subnet = _messages.StringField(8)
+  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 4)
+  masterIpv4CidrBlock = _messages.StringField(5)
+  network = _messages.StringField(6)
+  servicesCidrBlock = _messages.StringField(7)
+  servicesNamedRange = _messages.StringField(8)
+  subnet = _messages.StringField(9)
 
 
 class StandardQueryParameters(_messages.Message):

@@ -260,38 +260,39 @@ def AddInlineX509ParametersFlags(parser,
       None, no default max path length will be added.
   """
   resource_name = 'CA' if is_ca_command else 'certificate'
-  group = base.ArgumentGroup()
-  group.AddArgument(
-      base.Argument(
-          '--key-usages',
-          metavar='KEY_USAGES',
-          help='The list of key usages for this {}. This can only be provided if `--use-preset-profile` is not provided.'
-          .format(resource_name),
-          type=arg_parsers.ArgList(
-              element_type=_StripVal, choices=_VALID_KEY_USAGES)))
-  group.AddArgument(
-      base.Argument(
-          '--extended-key-usages',
-          metavar='EXTENDED_KEY_USAGES',
-          help='The list of extended key usages for this {}. This can only be provided if `--use-preset-profile` is not provided.'
-          .format(resource_name),
-          type=arg_parsers.ArgList(
-              element_type=_StripVal, choices=_VALID_EXTENDED_KEY_USAGES)))
-  group.AddArgument(
-      base.Argument(
-          '--max-chain-length',
-          help='Maximum depth of subordinate CAs allowed under this CA for a CA certificate. This can only be provided if `--use-preset-profile` is not provided.',
-          default=default_max_chain_length))
+  group = parser.add_group()
+  base.Argument(
+      '--key-usages',
+      metavar='KEY_USAGES',
+      help='The list of key usages for this {}. This can only be provided if `--use-preset-profile` is not provided.'
+      .format(resource_name),
+      type=arg_parsers.ArgList(
+          element_type=_StripVal, choices=_VALID_KEY_USAGES)).AddToParser(group)
+  base.Argument(
+      '--extended-key-usages',
+      metavar='EXTENDED_KEY_USAGES',
+      help='The list of extended key usages for this {}. This can only be provided if `--use-preset-profile` is not provided.'
+      .format(resource_name),
+      type=arg_parsers.ArgList(
+          element_type=_StripVal,
+          choices=_VALID_EXTENDED_KEY_USAGES)).AddToParser(group)
+  chain_length_group = group.add_group(mutex=True)
+  base.Argument(
+      '--max-chain-length',
+      help='Maximum depth of subordinate CAs allowed under this CA for a CA certificate. This can only be provided if neither `--use-preset-profile` nor `--unconstrained-chain-length` are provided.',
+      default=default_max_chain_length).AddToParser(chain_length_group)
+  base.Argument(
+      '--unconstrained-chain-length',
+      help='If set, allows an unbounded number of subordinate CAs under this newly issued CA certificate. This can only be provided if neither `--use-preset-profile` nor `--max-chain-length` are provided.',
+      action='store_true').AddToParser(chain_length_group)
 
   if not is_ca_command:
-    group.AddArgument(
-        base.Argument(
-            '--is-ca-cert',
-            help='Whether this certificate is for a CertificateAuthority or not. Indicates the Certificate Authority field in the x509 basic constraints extension.',
-            required=False,
-            default=False,
-            action='store_true'))
-  group.AddToParser(parser)
+    base.Argument(
+        '--is-ca-cert',
+        help='Whether this certificate is for a CertificateAuthority or not. Indicates the Certificate Authority field in the x509 basic constraints extension.',
+        required=False,
+        default=False,
+        action='store_true').AddToParser(group)
 
 
 def AddIdentityConstraintsFlags(parser, require_passthrough_flags=True):
@@ -313,7 +314,7 @@ def AddIdentityConstraintsFlags(parser, require_passthrough_flags=True):
       '--copy-subject',
       help=('If this is specified, the Subject from the certificate request '
             'will be copied into the signed certificate. Specify '
-            '--no-copy-subject to drop any caller-specifed subjects from the '
+            '--no-copy-subject to drop any caller-specified subjects from the '
             'certificate request.'),
       action='store_true',
       required=require_passthrough_flags).AddToParser(parser)
@@ -867,22 +868,28 @@ def ParseX509Parameters(args, is_ca_command):
     An X509Parameters object.
   """
   preset_profile_set = args.IsKnownAndSpecified('use_preset_profile')
+
+  inline_args = [
+      'key_usages', 'extended_key_usages', 'max_chain_length', 'is_ca_cert',
+      'unconstrained_chain_length'
+  ]
+
   # TODO(b/183243757): Change to args.IsSpecified once --use-preset-profile flag
   # is registered.
-  has_inline_values = any([
-      args.IsKnownAndSpecified(flag) for flag in
-      ['key_usages', 'extended_key_usages', 'max_chain_length', 'is_ca_cert']
-  ])
+  has_inline_values = any(
+      [args.IsKnownAndSpecified(flag) for flag in inline_args])
 
   if preset_profile_set and has_inline_values:
     raise exceptions.InvalidArgumentException(
         '--use-preset-profile',
         '--use-preset-profile may not be specified if one or more of '
-        '--key-usages, --extended-key-usages or --max-chain-length are '
-        'specified.')
+        '--key-usages, --extended-key-usages, --unconstrained_chain_length or '
+        '--max-chain-length are specified.')
   if preset_profile_set:
     return preset_profiles.GetPresetX509Parameters(args.use_preset_profile)
 
+  if args.unconstrained_chain_length:
+    args.max_chain_length = None
   base_key_usages = args.key_usages or []
   is_ca = is_ca_command or (args.IsKnownAndSpecified('is_ca_cert') and
                             args.is_ca_cert)
@@ -917,6 +924,6 @@ def X509ConfigFlagsAreSpecified(args):
   return any([
       flag in vars(args) and args.IsSpecified(flag) for flag in [
           'use_preset_profile', 'key_usages', 'extended_key_usages',
-          'max_chain_length', 'is_ca_cert'
+          'max_chain_length', 'unconstrained_chain_length', 'is_ca_cert'
       ]
   ])

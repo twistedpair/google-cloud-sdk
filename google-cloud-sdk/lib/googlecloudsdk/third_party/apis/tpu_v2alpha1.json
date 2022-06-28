@@ -631,7 +631,8 @@
             "TPU v2 pod.",
             "TPU v3 single device.",
             "TPU v3 pod.",
-            "TPU v4 pod."
+            "TPU v4 pod.",
+            "TPU v4."
           ],
           "enum": [
             "TYPE_UNSPECIFIED",
@@ -639,7 +640,8 @@
             "V2_POD",
             "V3",
             "V3_POD",
-            "V4_POD"
+            "V4_POD",
+            "V4"
           ]
         },
         "topology": {

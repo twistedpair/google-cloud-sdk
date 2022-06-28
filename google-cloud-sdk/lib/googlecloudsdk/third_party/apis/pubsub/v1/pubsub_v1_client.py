@@ -138,6 +138,33 @@ class PubsubV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def DeleteRevision(self, request, global_params=None):
+      r"""Deletes a specific schema revision.
+
+      Args:
+        request: (PubsubProjectsSchemasDeleteRevisionRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Schema) The response message.
+      """
+      config = self.GetMethodConfig('DeleteRevision')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DeleteRevision.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/schemas/{schemasId}:deleteRevision',
+        http_method='DELETE',
+        method_id='pubsub.projects.schemas.deleteRevision',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['revisionId'],
+        relative_path='v1/{+name}:deleteRevision',
+        request_field='',
+        request_type_name='PubsubProjectsSchemasDeleteRevisionRequest',
+        response_type_name='Schema',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets a schema.
 

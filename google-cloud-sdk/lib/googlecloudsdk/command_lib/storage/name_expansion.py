@@ -140,6 +140,13 @@ class NameExpansionIterator:
           'The following URLs matched no objects or files:\n-{}'.format(
               '\n-'.join(non_matching_urls)))
 
+  def _raise_error_if_multiple_sources_include_stdin(self, expanded_url):
+    if (self._has_multiple_top_level_resources and isinstance(
+        expanded_url, storage_url.FileUrl) and expanded_url.is_stream):
+      raise errors.Error(
+          'Multiple URL strings are not supported when transferring from'
+          ' stdin.')
+
   def __iter__(self):
     """Iterates over each URL in self._urls_iterator and yield the expanded result.
 
@@ -152,6 +159,10 @@ class NameExpansionIterator:
     self._has_multiple_top_level_resources = self._top_level_iterator.is_plural(
     )
     for input_url, name_expansion_result in self._top_level_iterator:
+
+      self._raise_error_if_multiple_sources_include_stdin(
+          name_expansion_result.expanded_url)
+
       should_return_bucket = self._include_buckets and isinstance(
           name_expansion_result.resource, resource_reference.BucketResource)
       if not name_expansion_result.resource.is_container() or (

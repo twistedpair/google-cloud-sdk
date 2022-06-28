@@ -1061,27 +1061,6 @@
             "type": "string",
             "format": "int64"
           }
-        },
-        "dynamicMetricCosts": {
-          "description": "Metrics to update when the selected methods are called. The key of the map is the metric name, the value is the DynamicCostType to specify how to calculate the cost from the request. The cost amount will be increased for the metric against which the quota limits are defined. It is only implemented in CloudESF(go\/cloudesf)",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string",
-            "enumDescriptions": [
-              "Unspecified dynamic cost type.",
-              "Cost is the request body bytes",
-              "Cost is the request body and HTTP header bytes",
-              "Cost is the response body bytes",
-              "Cost is the response body and header bytes"
-            ],
-            "enum": [
-              "DYNAMIC_COST_TYPE_UNSPECIFIED",
-              "REQUEST_BODY_BYTES",
-              "REQUEST_BODY_AND_HEADER_BYTES",
-              "RESPONSE_BODY_BYTES",
-              "RESPONSE_BODY_AND_HEADER_BYTES"
-            ]
-          }
         }
       }
     },
@@ -2867,6 +2846,13 @@
           "description": "Resource name of a service config. It must have the following format: \"services\/{service name}\/configs\/{config id}\".",
           "type": "string"
         }
+      }
+    },
+    "EnableServiceResponse": {
+      "id": "EnableServiceResponse",
+      "description": "Operation payload for EnableService method.",
+      "type": "object",
+      "properties": {
       }
     },
     "OperationMetadata": {

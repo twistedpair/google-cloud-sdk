@@ -349,6 +349,7 @@ def AddCreateDestinationArgs(parser, release_track, required=False):
   if release_track == base.ReleaseTrack.GA:
     _AddCreateGKEDestinationArgs(dest_group)
     _AddCreateWorkflowDestinationArgs(dest_group, hidden=True)
+    _AddCreateFunctionDestinationArgs(dest_group, hidden=True)
 
 
 def _AddCreateCloudRunDestinationArgs(parser, release_track, required=False):
@@ -390,6 +391,16 @@ def _AddCreateWorkflowDestinationArgs(parser, required=False, hidden=False):
   _AddDestinationWorkflowLocationArg(workflow_group)
 
 
+def _AddCreateFunctionDestinationArgs(parser, required=False, hidden=False):
+  """Adds arguments related to trigger's Function destination for create operation."""
+  function_group = parser.add_group(
+      required=required,
+      hidden=hidden,
+      help='Flags for specifying a Function destination.')
+  _AddDestinationFunctionArg(function_group, required=True)
+  _AddDestinationFunctionLocationArg(function_group)
+
+
 def AddUpdateDestinationArgs(parser, release_track, required=False):
   """Adds arguments related to trigger's destination for update operations."""
   dest_group = parser.add_mutually_exclusive_group(
@@ -399,6 +410,7 @@ def AddUpdateDestinationArgs(parser, release_track, required=False):
   if release_track == base.ReleaseTrack.GA:
     _AddUpdateGKEDestinationArgs(dest_group)
     _AddUpdateWorkflowDestinationArgs(dest_group, hidden=True)
+    _AddUpdateFunctionDestinationArgs(dest_group, hidden=True)
 
 
 def _AddUpdateCloudRunDestinationArgs(parser, release_track, required=False):
@@ -439,6 +451,16 @@ def _AddUpdateWorkflowDestinationArgs(parser, required=False, hidden=False):
       help='Flags for updating a Workflow destination.')
   _AddDestinationWorkflowArg(workflow_group)
   _AddDestinationWorkflowLocationArg(workflow_group)
+
+
+def _AddUpdateFunctionDestinationArgs(parser, required=False, hidden=False):
+  """Adds arguments related to trigger's Function destination for update operations."""
+  function_group = parser.add_group(
+      required=required,
+      hidden=hidden,
+      help='Flags for updating a Function destination.')
+  _AddDestinationFunctionArg(function_group)
+  _AddDestinationFunctionLocationArg(function_group)
 
 
 def AddDestinationRunServiceArg(parser):
@@ -543,6 +565,25 @@ def _AddDestinationWorkflowLocationArg(parser, required=False):
       required=required,
       help='Location that the destination Workflow is running in. '
       'If not specified, it is assumed that the Workflow is in the same '
+      'location as the trigger.')
+
+
+def _AddDestinationFunctionArg(parser, required=False):
+  """Adds an argument for the trigger's destination Function."""
+  parser.add_argument(
+      '--destination-function',
+      required=required,
+      help='ID of the Function that receives the events for the trigger. '
+      'The Function must be in the same project as the trigger.')
+
+
+def _AddDestinationFunctionLocationArg(parser, required=False):
+  """Adds an argument for the trigger's destination Function location."""
+  parser.add_argument(
+      '--destination-function-location',
+      required=required,
+      help='Location that the destination Function is running in. '
+      'If not specified, it is assumed that the Function is in the same '
       'location as the trigger.')
 
 

@@ -100,32 +100,6 @@ class Empty(_messages.Message):
 
 
 
-class EnrollVmwareAdminClusterRequest(_messages.Message):
-  r"""Message for enrolling an existing VMware Admin Cluster to the GKE on-
-  prem API.
-
-  Fields:
-    localName: The object name of the VMware OnPremAdminCluster custom
-      resource on the associated admin cluster. This field is used to support
-      conflicting resource names when enrolling existing clusters to the API.
-      When not provided, this field will resolve to the
-      vmware_admin_cluster_id. Otherwise, it must match the object name of the
-      VMware OnPremAdminCluster custom resource. It is not modifiable outside
-      / beyond the enrollment operation.
-    membership: Required. This is the full resource name of this admin
-      cluster's hub membership.
-    vmwareAdminClusterId: User provided OnePlatform identifier that is used as
-      part of the resource name. This must be unique among all GKE on-prem
-      clusters within a project and location and will return a 409 if the
-      cluster already exists. This value must be up to 40 characters and
-      follow RFC-1123 (https://tools.ietf.org/html/rfc1123) format.
-  """
-
-  localName = _messages.StringField(1)
-  membership = _messages.StringField(2)
-  vmwareAdminClusterId = _messages.StringField(3)
-
-
 class EnrollVmwareClusterRequest(_messages.Message):
   r"""Message for enrolling an existing VMware Cluster to the GKE on-prem API.
 
@@ -549,21 +523,6 @@ class GkeonpremProjectsLocationsOperationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
-
-
-class GkeonpremProjectsLocationsVmwareAdminClustersEnrollRequest(_messages.Message):
-  r"""A GkeonpremProjectsLocationsVmwareAdminClustersEnrollRequest object.
-
-  Fields:
-    enrollVmwareAdminClusterRequest: A EnrollVmwareAdminClusterRequest
-      resource to be passed as the request body.
-    parent: Required. The parent of the project and location that we are
-      Enrolling this cluster in. Format:
-      "projects/{project}/locations/{location}"
-  """
-
-  enrollVmwareAdminClusterRequest = _messages.MessageField('EnrollVmwareAdminClusterRequest', 1)
-  parent = _messages.StringField(2, required=True)
 
 
 class GkeonpremProjectsLocationsVmwareAdminClustersGetIamPolicyRequest(_messages.Message):

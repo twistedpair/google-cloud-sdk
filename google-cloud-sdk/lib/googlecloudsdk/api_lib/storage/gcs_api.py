@@ -47,6 +47,7 @@ from googlecloudsdk.command_lib.storage import gzip_util
 from googlecloudsdk.command_lib.storage import posix_util
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage import tracker_file_util
+from googlecloudsdk.command_lib.storage import user_request_args_factory
 from googlecloudsdk.command_lib.storage.resources import resource_reference
 from googlecloudsdk.command_lib.storage.tasks.cp import copy_util
 from googlecloudsdk.command_lib.storage.tasks.cp import download_util
@@ -172,7 +173,8 @@ class _StorageStreamResponseHandler(requests.ResponseHandler):
 
 
 def _get_encryption_headers(key):
-  if key and key.type == encryption_util.KeyType.CSEK:
+  if (key and key != user_request_args_factory.CLEAR and
+      key.type == encryption_util.KeyType.CSEK):
     return {
         'x-goog-encryption-algorithm': 'AES256',
         'x-goog-encryption-key': key.key,
@@ -539,17 +541,18 @@ class GcsApi(cloud_api.CloudApi):
     projection = self._get_projection(fields_scope,
                                       self.messages.StorageObjectsPatchRequest)
 
-    # Assume parameters are only for identifying what needs to be patched, and
-    # the resource contains the desired patched metadata values.
-    patched_metadata = object_resource.metadata
-    if not patched_metadata:
-      object_resource.metadata = gcs_metadata_util.get_apitools_metadata_from_url(
+    object_metadata = object_resource.metadata
+    if not object_metadata:
+      object_metadata = gcs_metadata_util.get_apitools_metadata_from_url(
           object_resource.storage_url)
+
+    gcs_metadata_util.update_object_metadata_from_request_config(
+        object_metadata, request_config)
 
     request = self.messages.StorageObjectsPatchRequest(
         bucket=bucket_name,
         object=object_name,
-        objectResource=object_resource.metadata,
+        objectResource=object_metadata,
         generation=generation,
         ifGenerationMatch=request_config.precondition_generation_match,
         ifMetagenerationMatch=request_config.precondition_metageneration_match,
@@ -635,7 +638,9 @@ class GcsApi(cloud_api.CloudApi):
 
         encryption_key = getattr(
             request_config.resource_args, 'encryption_key', None)
-        if encryption_key and encryption_key.type == encryption_util.KeyType.CMEK:
+        if (encryption_key and
+            encryption_key != user_request_args_factory.CLEAR and
+            encryption_key.type == encryption_util.KeyType.CMEK):
           # This key is also provided in destination_metadata.kmsKeyName by
           # update_object_metadata_from_request_config. This has no effect on
           # the copy object request, which references the field below, and is a
@@ -858,7 +863,9 @@ class GcsApi(cloud_api.CloudApi):
 
     if request_config.resource_args:
       encryption_key = request_config.resource_args.encryption_key
-      if encryption_key and encryption_key.type == encryption_util.KeyType.CMEK:
+      if (encryption_key and
+          encryption_key != user_request_args_factory.CLEAR and
+          encryption_key.type == encryption_util.KeyType.CMEK):
         compose_request.kmsKeyName = encryption_key.key
 
     if request_config.predefined_acl_string is not None:

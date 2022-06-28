@@ -541,16 +541,16 @@ class EndpointAttributes(_messages.Message):
   r"""Attributes associated with endpoints.
 
   Enums:
-    KubernetesResourceTypeValueValuesEnum: Kubernetes resource-type associated
-      with this endpoint
+    KubernetesResourceTypeValueValuesEnum: Optional. Kubernetes resource-type
+      associated with this endpoint
 
   Fields:
     gcpFleetMembership: Optional. Membership URI (scheme-less URI) for
       resources registered to Google Cloud Fleet. Currently populated only for
       kubernetes resources. Sample URI: `//gkehub.googleapis.com/projects/my-
       project/locations/global/memberships/my-membership`
-    kubernetesResourceType: Kubernetes resource-type associated with this
-      endpoint
+    kubernetesResourceType: Optional. Kubernetes resource-type associated with
+      this endpoint
     managedRegistration: Output only. Indicates whether a GCP product or
       service manages this resource. When a resource is fully managed by
       another GCP product or system the information in Service Directory is
@@ -568,7 +568,7 @@ class EndpointAttributes(_messages.Message):
   """
 
   class KubernetesResourceTypeValueValuesEnum(_messages.Enum):
-    r"""Kubernetes resource-type associated with this endpoint
+    r"""Optional. Kubernetes resource-type associated with this endpoint
 
     Values:
       KUBERNETES_RESOURCE_TYPE_UNSPECIFIED: Not a Kubernetes workload.
@@ -697,6 +697,19 @@ class ListNamespacesResponse(_messages.Message):
 
   namespaces = _messages.MessageField('Namespace', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+
+
+class ListRegistrationPoliciesResponse(_messages.Message):
+  r"""The response message for RegistrationService.ListRegistrationPolicies.
+
+  Fields:
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+    registrationPolicies: The list of registration policies.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  registrationPolicies = _messages.MessageField('RegistrationPolicy', 2, repeated=True)
 
 
 class ListServiceWorkloadsResponse(_messages.Message):
@@ -1008,6 +1021,26 @@ class Policy(_messages.Message):
   version = _messages.IntegerField(5, variant=_messages.Variant.INT32)
 
 
+class RegistrationPolicy(_messages.Message):
+  r"""An individual RegistrationPolicy. A list of policies that can be applied
+  to a Service Directory project in order to register the Service Workloads
+  associated with the resources in the policies.
+
+  Fields:
+    name: Required. Immutable. The resource name for the Registration Policy
+      in the format `projects/*/locations/*/registrationPolicies/*`.
+    namespace: Optional. Service Directory Namespace name to which the
+      Registration Policy is applied. Only one Registration Policy is allowed
+      for a given namespace. Default Namespace is goog-sdrp-default.
+    resourcePolicies: Required. The list of ResourcePolicy which are
+      applicable to the Registration Policy.
+  """
+
+  name = _messages.StringField(1)
+  namespace = _messages.StringField(2)
+  resourcePolicies = _messages.MessageField('ResourcePolicy', 3, repeated=True)
+
+
 class ResolveServiceRequest(_messages.Message):
   r"""The request message for LookupService.ResolveService. Looks up a service
   by its name, returns the service and its endpoints.
@@ -1054,6 +1087,39 @@ class ResolveServiceResponse(_messages.Message):
   """
 
   service = _messages.MessageField('Service', 1)
+
+
+class ResourcePolicy(_messages.Message):
+  r"""Resource Policies applied to the Registration Policy.
+
+  Enums:
+    KindValueValuesEnum: Required. The type of resource which needs to be
+      registered to the Service Workload.
+
+  Fields:
+    kind: Required. The type of resource which needs to be registered to the
+      Service Workload.
+    selector: Required. The selector used to specify resources. Only applies
+      to those in the same project and region as the Service Directory
+      registration policy. Following fields can be selected for MIGs: name,
+      zone, region. Example - 'zone == us-east-c && name != my-secret-mig'
+      selects all zonal MIGs in us-east1-c except those named my-secret-mig.
+      Represents CEL expression.
+  """
+
+  class KindValueValuesEnum(_messages.Enum):
+    r"""Required. The type of resource which needs to be registered to the
+    Service Workload.
+
+    Values:
+      KIND_UNSPECIFIED: Default. Should not be used.
+      KIND_MIG: GCP Managed Instance Group resource.
+    """
+    KIND_UNSPECIFIED = 0
+    KIND_MIG = 1
+
+  kind = _messages.EnumField('KindValueValuesEnum', 1)
+  selector = _messages.MessageField('Expr', 2)
 
 
 class Rule(_messages.Message):
@@ -1614,6 +1680,23 @@ class ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsPatchRequest(_m
   updateMask = _messages.StringField(4)
 
 
+class ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsTestIamPermissionsRequest(_messages.Message):
+  r"""A ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsTestIamPerm
+  issionsRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
 class ServicedirectoryProjectsLocationsNamespacesServicesCreateRequest(_messages.Message):
   r"""A ServicedirectoryProjectsLocationsNamespacesServicesCreateRequest
   object.
@@ -2141,6 +2224,111 @@ class ServicedirectoryProjectsLocationsNamespacesWorkloadsPatchRequest(_messages
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
   workload = _messages.MessageField('Workload', 4)
+
+
+class ServicedirectoryProjectsLocationsRegistrationPoliciesCreateRequest(_messages.Message):
+  r"""A ServicedirectoryProjectsLocationsRegistrationPoliciesCreateRequest
+  object.
+
+  Fields:
+    parent: Required. The resource name of the namespace this registration
+      policy will belong to.
+    registrationPolicy: A RegistrationPolicy resource to be passed as the
+      request body.
+    registrationPolicyId: Required. The Resource ID must be 1-63 characters
+      long, and comply with [RFC 1035](https://www.ietf.org/rfc/rfc1035.txt).
+      Specifically, the name must be 1-63 characters long and match the
+      regular expression `[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?` which means the
+      first character must be a lowercase letter, and all following characters
+      must be a dash, lowercase letter, or digit, except the last character,
+      which cannot be a dash.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  registrationPolicy = _messages.MessageField('RegistrationPolicy', 2)
+  registrationPolicyId = _messages.StringField(3)
+
+
+class ServicedirectoryProjectsLocationsRegistrationPoliciesDeleteRequest(_messages.Message):
+  r"""A ServicedirectoryProjectsLocationsRegistrationPoliciesDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The name of the registration policy to delete.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ServicedirectoryProjectsLocationsRegistrationPoliciesGetRequest(_messages.Message):
+  r"""A ServicedirectoryProjectsLocationsRegistrationPoliciesGetRequest
+  object.
+
+  Fields:
+    name: Required. The name of the registration policy to get.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ServicedirectoryProjectsLocationsRegistrationPoliciesListRequest(_messages.Message):
+  r"""A ServicedirectoryProjectsLocationsRegistrationPoliciesListRequest
+  object.
+
+  Fields:
+    filter: Optional. The filter to list results by. General `filter` string
+      syntax: ` ()` * `` can be any field name on the RegistrationPolicy
+      proto. For example: `name`, `namespace`, or `resource_policies` * `` can
+      be `<`, `>`, `<=`, `>=`, `!=`, `=`, `:`. Of which `:` means `HAS`, and
+      is roughly the same as `=` * `` must be the same data type as field * ``
+      can be `AND`, `OR`, `NOT` Examples of valid filters: *
+      `resource.kind:MIG` returns all the registration policies with MIGs
+      associated with them * `name>projects/my-project/locations/us-
+      east1/registrationPolicies/registration-policy-c` returns registration
+      policies that have names that are alphabetically later than the string,
+      so "registration-policy-e" is returned but "registration-policy-a" is
+      not For more information about filtering, see [API
+      Filtering](https://aip.dev/160).
+    orderBy: Optional. The order to list results by. General `order_by` string
+      syntax: ` () (,)` * `` allows values: `name`, `namespace` * `` ascending
+      or descending order by ``. If this is left blank, `asc` is used Note
+      that an empty `order_by` string results in default order, which is order
+      by `name` in ascending order.
+    pageSize: Optional. The maximum number of items to return. maximum default
+      page size is 10000 for unfiltered queries and 25 for filtered queries
+    pageToken: Optional. The next_page_token value returned from a previous
+      List request, if any.
+    parent: Required. The resource name of the namespace whose service
+      workloads you'd like to list.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class ServicedirectoryProjectsLocationsRegistrationPoliciesPatchRequest(_messages.Message):
+  r"""A ServicedirectoryProjectsLocationsRegistrationPoliciesPatchRequest
+  object.
+
+  Fields:
+    allowMissing: If set to true, and the registration policy is not found, a
+      new registration policy will be created. -- Will remain GOOGLE_INTERNAL
+      visibility post-launch.
+    name: Required. Immutable. The resource name for the Registration Policy
+      in the format `projects/*/locations/*/registrationPolicies/*`.
+    registrationPolicy: A RegistrationPolicy resource to be passed as the
+      request body.
+    updateMask: Required. List of fields to be updated in this request.
+      Allowable fields: `resource_policies'
+  """
+
+  allowMissing = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
+  registrationPolicy = _messages.MessageField('RegistrationPolicy', 3)
+  updateMask = _messages.StringField(4)
 
 
 class SetIamPolicyRequest(_messages.Message):

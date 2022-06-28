@@ -937,6 +937,20 @@
         "sessionAffinity": {
           "description": "Enable session affinity. Only applicable in the App Engine flexible environment.",
           "type": "boolean"
+        },
+        "instanceIpMode": {
+          "description": "The IP mode for instances. Only applicable in the App Engine flexible environment.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified is treated as EXTERNAL.",
+            "Instances are created with both internal and external IP addresses.",
+            "Instances are created with internal IP addresses only."
+          ],
+          "enum": [
+            "INSTANCE_IP_MODE_UNSPECIFIED",
+            "EXTERNAL",
+            "INTERNAL"
+          ]
         }
       }
     },

@@ -516,16 +516,37 @@ class GceRegionalPersistentDisk(_messages.Message):
   r"""A PersistentDirectory backed by a Compute Engine regional persistent
   disk.
 
+  Enums:
+    ReclaimPolicyValueValuesEnum: What should happen to the disk after the
+      Workstation is deleted. Defaults to DELETE.
+
   Fields:
     diskType: Type of the disk to use.
     fsType: Type of file system that the disk should be formatted with. The
       Workstation image must support this file system type.
+    reclaimPolicy: What should happen to the disk after the Workstation is
+      deleted. Defaults to DELETE.
     sizeGb: Size of the disk in GB.
   """
 
+  class ReclaimPolicyValueValuesEnum(_messages.Enum):
+    r"""What should happen to the disk after the Workstation is deleted.
+    Defaults to DELETE.
+
+    Values:
+      RECLAIM_POLICY_UNSPECIFIED: <no description>
+      DELETE: The persistent disk will be deleted with the Workstation.
+      RETAIN: The persistent disk will be remain after the workstation is
+        deleted, and the administrator must manually delete the disk.
+    """
+    RECLAIM_POLICY_UNSPECIFIED = 0
+    DELETE = 1
+    RETAIN = 2
+
   diskType = _messages.StringField(1)
   fsType = _messages.StringField(2)
-  sizeGb = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  reclaimPolicy = _messages.EnumField('ReclaimPolicyValueValuesEnum', 3)
+  sizeGb = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
 class GenerateAccessTokenRequest(_messages.Message):

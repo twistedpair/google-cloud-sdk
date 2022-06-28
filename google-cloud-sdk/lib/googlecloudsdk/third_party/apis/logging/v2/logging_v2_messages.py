@@ -1727,50 +1727,6 @@ class LogView(_messages.Message):
   updateTime = _messages.StringField(6)
 
 
-class LoggingBillingAccountsBucketsGetRequest(_messages.Message):
-  r"""A LoggingBillingAccountsBucketsGetRequest object.
-
-  Fields:
-    name: Required. The resource name of the bucket:
-      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" "org
-      anizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]
-      " "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/
-      [BUCKET_ID]"
-      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" For
-      example:"projects/my-project/locations/global/buckets/my-bucket"
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class LoggingBillingAccountsBucketsLinksGetRequest(_messages.Message):
-  r"""A LoggingBillingAccountsBucketsLinksGetRequest object.
-
-  Fields:
-    name: Required. The resource name of the link:"projects/PROJECT_ID/locatio
-      ns/LOCATION_ID/buckets/BUCKET_ID/links/LINK_ID" "organizations/ORGANIZAT
-      ION_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/LINK_ID" "billingAc
-      counts/BILLING_ACCOUNT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/
-      LINK_ID"
-      "folders/FOLDER_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/LINK_ID
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class LoggingBillingAccountsBucketsViewsGetRequest(_messages.Message):
-  r"""A LoggingBillingAccountsBucketsViewsGetRequest object.
-
-  Fields:
-    name: Required. The resource name of the policy: "projects/[PROJECT_ID]/lo
-      cations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]" For
-      example:"projects/my-project/locations/global/buckets/my-
-      bucket/views/my-view"
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
 class LoggingBillingAccountsExclusionsCreateRequest(_messages.Message):
   r"""A LoggingBillingAccountsExclusionsCreateRequest object.
 
@@ -1932,6 +1888,22 @@ class LoggingBillingAccountsLocationsBucketsDeleteRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class LoggingBillingAccountsLocationsBucketsGetRequest(_messages.Message):
+  r"""A LoggingBillingAccountsLocationsBucketsGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the bucket:
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" "org
+      anizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]
+      " "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/
+      [BUCKET_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" For
+      example:"projects/my-project/locations/global/buckets/my-bucket"
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class LoggingBillingAccountsLocationsBucketsLinksCreateRequest(_messages.Message):
   r"""A LoggingBillingAccountsLocationsBucketsLinksCreateRequest object.
 
@@ -1963,6 +1935,21 @@ class LoggingBillingAccountsLocationsBucketsLinksDeleteRequest(_messages.Message
       _ID" "billingAccounts/BILLING_ACCOUNT_ID/locations/LOCATION_ID/buckets/B
       UCKET_ID/links/LINK_ID" "folders/FOLDER_ID/locations/LOCATION_ID/buckets
       /BUCKET_ID/links/LINK_ID"
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class LoggingBillingAccountsLocationsBucketsLinksGetRequest(_messages.Message):
+  r"""A LoggingBillingAccountsLocationsBucketsLinksGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the link:"projects/PROJECT_ID/locatio
+      ns/LOCATION_ID/buckets/BUCKET_ID/links/LINK_ID" "organizations/ORGANIZAT
+      ION_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/LINK_ID" "billingAc
+      counts/BILLING_ACCOUNT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/
+      LINK_ID"
+      "folders/FOLDER_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/LINK_ID
   """
 
   name = _messages.StringField(1, required=True)
@@ -2088,6 +2075,19 @@ class LoggingBillingAccountsLocationsBucketsViewsDeleteRequest(_messages.Message
   name = _messages.StringField(1, required=True)
 
 
+class LoggingBillingAccountsLocationsBucketsViewsGetRequest(_messages.Message):
+  r"""A LoggingBillingAccountsLocationsBucketsViewsGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the policy: "projects/[PROJECT_ID]/lo
+      cations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]" For
+      example:"projects/my-project/locations/global/buckets/my-
+      bucket/views/my-view"
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class LoggingBillingAccountsLocationsBucketsViewsListRequest(_messages.Message):
   r"""A LoggingBillingAccountsLocationsBucketsViewsListRequest object.
 
@@ -2205,6 +2205,16 @@ class LoggingBillingAccountsLocationsOperationsCancelRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
 
 
+class LoggingBillingAccountsLocationsOperationsGetRequest(_messages.Message):
+  r"""A LoggingBillingAccountsLocationsOperationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class LoggingBillingAccountsLocationsOperationsListRequest(_messages.Message):
   r"""A LoggingBillingAccountsLocationsOperationsListRequest object.
 
@@ -2267,16 +2277,6 @@ class LoggingBillingAccountsLogsListRequest(_messages.Message):
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
   resourceNames = _messages.StringField(4, repeated=True)
-
-
-class LoggingBillingAccountsOperationsGetRequest(_messages.Message):
-  r"""A LoggingBillingAccountsOperationsGetRequest object.
-
-  Fields:
-    name: The name of the operation resource.
-  """
-
-  name = _messages.StringField(1, required=True)
 
 
 class LoggingBillingAccountsSinksCreateRequest(_messages.Message):
@@ -2433,6 +2433,28 @@ class LoggingBillingAccountsSinksUpdateRequest(_messages.Message):
   sinkName = _messages.StringField(2, required=True)
   uniqueWriterIdentity = _messages.BooleanField(3)
   updateMask = _messages.StringField(4)
+
+
+class LoggingBillingAccountsUpdateSettingsRequest(_messages.Message):
+  r"""A LoggingBillingAccountsUpdateSettingsRequest object.
+
+  Fields:
+    name: Required. The resource name for the settings to update.
+      "organizations/[ORGANIZATION_ID]/settings" For
+      example:"organizations/12345/settings"Note: Settings for the Log Router
+      can currently only be configured for Google Cloud organizations. Once
+      configured, it applies to all projects and folders in the Google Cloud
+      organization.
+    settings: A Settings resource to be passed as the request body.
+    updateMask: Optional. Field mask identifying which fields from settings
+      should be updated. A field will be overwritten if and only if it is in
+      the update mask. Output only fields cannot be updated.See FieldMask for
+      more information.For example: "updateMask=kmsKeyName"
+  """
+
+  name = _messages.StringField(1, required=True)
+  settings = _messages.MessageField('Settings', 2)
+  updateMask = _messages.StringField(3)
 
 
 class LoggingExclusionsCreateRequest(_messages.Message):
@@ -5238,6 +5260,28 @@ class LoggingProjectsSinksUpdateRequest(_messages.Message):
   updateMask = _messages.StringField(4)
 
 
+class LoggingProjectsUpdateSettingsRequest(_messages.Message):
+  r"""A LoggingProjectsUpdateSettingsRequest object.
+
+  Fields:
+    name: Required. The resource name for the settings to update.
+      "organizations/[ORGANIZATION_ID]/settings" For
+      example:"organizations/12345/settings"Note: Settings for the Log Router
+      can currently only be configured for Google Cloud organizations. Once
+      configured, it applies to all projects and folders in the Google Cloud
+      organization.
+    settings: A Settings resource to be passed as the request body.
+    updateMask: Optional. Field mask identifying which fields from settings
+      should be updated. A field will be overwritten if and only if it is in
+      the update mask. Output only fields cannot be updated.See FieldMask for
+      more information.For example: "updateMask=kmsKeyName"
+  """
+
+  name = _messages.StringField(1, required=True)
+  settings = _messages.MessageField('Settings', 2)
+  updateMask = _messages.StringField(3)
+
+
 class LoggingSinksCreateRequest(_messages.Message):
   r"""A LoggingSinksCreateRequest object.
 
@@ -6609,9 +6653,11 @@ class WriteLogEntriesRequest(_messages.Message):
     partialSuccess: Optional. Whether a batch's valid entries should be
       written even if some other entry failed due to a permanent error such as
       INVALID_ARGUMENT or PERMISSION_DENIED. If any entry failed, then the
-      response status is the response status is the status of one of the
-      failed entries. The response will include error details keyed by the
-      entries' zero-based index in the entries.write method.
+      response status is the response status of one of the failed entries. The
+      response will include error details in
+      WriteLogEntriesPartialErrors.log_entry_errors keyed by the entries'
+      zero-based index in the entries. Failed requests for which no entries
+      are written will not include per-entry errors.
     resource: Optional. A default monitored resource object that is assigned
       to all log entries in entries that do not specify a value for resource.
       Example: { "type": "gce_instance", "labels": { "zone": "us-central1-a",

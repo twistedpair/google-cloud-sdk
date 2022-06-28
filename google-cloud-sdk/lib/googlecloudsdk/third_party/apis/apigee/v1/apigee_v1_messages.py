@@ -4494,6 +4494,17 @@ class GoogleCloudApigeeV1ApiCategoryData(_messages.Message):
 class GoogleCloudApigeeV1ApiProduct(_messages.Message):
   r"""A GoogleCloudApigeeV1ApiProduct object.
 
+  Enums:
+    QuotaCounterScopeValueValuesEnum: Scope of the quota decides how the quota
+      counter gets applied and evaluate for quota violation. If the Scope is
+      set as PROXY, then all the operations defined for the APIproduct that
+      are associated with the same proxy will share the same quota counter set
+      at the APIproduct level, making it a global counter at a proxy level. If
+      the Scope is set as OPERATION, then each operations get the counter set
+      at the API product dedicated, making it a local counter. Note that, the
+      QuotaCounterScope applies only when an operation does not have dedicated
+      quota set for itself.
+
   Fields:
     apiResources: A string attribute.
     approvalType: Flag that specifies how API keys are approved to access the
@@ -4577,6 +4588,15 @@ class GoogleCloudApigeeV1ApiProduct(_messages.Message):
       for the specified `quotaInterval` and `quotaTimeUnit`. For example, a
       `quota` of 50, for a `quotaInterval` of 12 and a `quotaTimeUnit` of
       hours means 50 requests are allowed every 12 hours.
+    quotaCounterScope: Scope of the quota decides how the quota counter gets
+      applied and evaluate for quota violation. If the Scope is set as PROXY,
+      then all the operations defined for the APIproduct that are associated
+      with the same proxy will share the same quota counter set at the
+      APIproduct level, making it a global counter at a proxy level. If the
+      Scope is set as OPERATION, then each operations get the counter set at
+      the API product dedicated, making it a local counter. Note that, the
+      QuotaCounterScope applies only when an operation does not have dedicated
+      quota set for itself.
     quotaInterval: Time interval over which the number of request messages is
       calculated.
     quotaTimeUnit: Time unit defined for the `quotaInterval`. Valid values
@@ -4586,6 +4606,36 @@ class GoogleCloudApigeeV1ApiProduct(_messages.Message):
       match the scopes defined in the OAuth policy associated with the API
       product.
   """
+
+  class QuotaCounterScopeValueValuesEnum(_messages.Enum):
+    r"""Scope of the quota decides how the quota counter gets applied and
+    evaluate for quota violation. If the Scope is set as PROXY, then all the
+    operations defined for the APIproduct that are associated with the same
+    proxy will share the same quota counter set at the APIproduct level,
+    making it a global counter at a proxy level. If the Scope is set as
+    OPERATION, then each operations get the counter set at the API product
+    dedicated, making it a local counter. Note that, the QuotaCounterScope
+    applies only when an operation does not have dedicated quota set for
+    itself.
+
+    Values:
+      QUOTA_COUNTER_SCOPE_UNSPECIFIED: When quota is not explicitly defined
+        for each operation(REST/GraphQL), the limits set at product level will
+        be used as a local counter for quota evaluation by all the operations,
+        independent of proxy association.
+      PROXY: When quota is not explicitly defined for each
+        operation(REST/GraphQL), set at product level will be used as a global
+        counter for quota evaluation by all the operations associated with a
+        particular proxy.
+      OPERATION: When quota is not explicitly defined for each
+        operation(REST/GraphQL), the limits set at product level will be used
+        as a local counter for quota evaluation by all the operations,
+        independent of proxy association. This behavior mimics the same as
+        QUOTA_COUNTER_SCOPE_UNSPECIFIED.
+    """
+    QUOTA_COUNTER_SCOPE_UNSPECIFIED = 0
+    PROXY = 1
+    OPERATION = 2
 
   apiResources = _messages.StringField(1, repeated=True)
   approvalType = _messages.StringField(2)
@@ -4601,9 +4651,10 @@ class GoogleCloudApigeeV1ApiProduct(_messages.Message):
   operationGroup = _messages.MessageField('GoogleCloudApigeeV1OperationGroup', 12)
   proxies = _messages.StringField(13, repeated=True)
   quota = _messages.StringField(14)
-  quotaInterval = _messages.StringField(15)
-  quotaTimeUnit = _messages.StringField(16)
-  scopes = _messages.StringField(17, repeated=True)
+  quotaCounterScope = _messages.EnumField('QuotaCounterScopeValueValuesEnum', 15)
+  quotaInterval = _messages.StringField(16)
+  quotaTimeUnit = _messages.StringField(17)
+  scopes = _messages.StringField(18, repeated=True)
 
 
 class GoogleCloudApigeeV1ApiProductRef(_messages.Message):
@@ -8434,6 +8485,7 @@ class GoogleCloudApigeeV1QueryTimeSeriesStatsResponseSequence(_messages.Message)
   Messages:
     DimensionsValue: Map of dimensions and their values that uniquely
       identifies a time series sequence.
+    PointsValueListEntry: Single entry in a PointsValue.
 
   Fields:
     dimensions: Map of dimensions and their values that uniquely identifies a
@@ -8466,8 +8518,17 @@ class GoogleCloudApigeeV1QueryTimeSeriesStatsResponseSequence(_messages.Message)
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  class PointsValueListEntry(_messages.Message):
+    r"""Single entry in a PointsValue.
+
+    Fields:
+      entry: A extra_types.JsonValue attribute.
+    """
+
+    entry = _messages.MessageField('extra_types.JsonValue', 1, repeated=True)
+
   dimensions = _messages.MessageField('DimensionsValue', 1)
-  points = _messages.MessageField('extra_types.JsonValue', 2, repeated=True)
+  points = _messages.MessageField('PointsValueListEntry', 2, repeated=True)
 
 
 class GoogleCloudApigeeV1Quota(_messages.Message):

@@ -32,6 +32,7 @@ SERVICES_ENDPOINTS = {
     'container-threat-detection': 'containerThreatDetectionSettings',
     'event-threat-detection': 'eventThreatDetectionSettings',
     'security-health-analytics': 'securityHealthAnalyticsSettings',
+    'virtual-machine-threat-detection': 'virtualMachineThreatDetectionSettings',
     'web-security-scanner': 'webSecurityScannerSettings',
 }
 
@@ -131,6 +132,11 @@ class SettingsClient(object):
               name=path)
           return self.service_client.organizations.GetEventThreatDetectionSettings(
               request_message)
+        elif args.service == 'virtual-machine-threat-detection':
+          request_message = self.message_module.SecuritycenterOrganizationsGetVirtualMachineThreatDetectionSettingsRequest(
+              name=path)
+          return self.service_client.organizations.GetVirtualMachineThreatDetectionSettings(
+              request_message)
       elif args.project:
         if args.service == 'web-security-scanner':
           request_message = self.message_module.SecuritycenterProjectsGetWebSecurityScannerSettingsRequest(
@@ -152,6 +158,11 @@ class SettingsClient(object):
               name=path)
           return self.service_client.projects.GetEventThreatDetectionSettings(
               request_message)
+        elif args.service == 'virtual-machine-threat-detection':
+          request_message = self.message_module.SecuritycenterProjectsGetVirtualMachineThreatDetectionSettingsRequest(
+              name=path)
+          return self.service_client.projects.GetVirtualMachineThreatDetectionSettings(
+              request_message)
       elif args.folder:
         if args.service == 'web-security-scanner':
           request_message = self.message_module.SecuritycenterFoldersGetWebSecurityScannerSettingsRequest(
@@ -172,6 +183,11 @@ class SettingsClient(object):
           request_message = self.message_module.SecuritycenterFoldersGetEventThreatDetectionSettingsRequest(
               name=path)
           return self.service_client.folders.GetEventThreatDetectionSettings(
+              request_message)
+        elif args.service == 'virtual-machine-threat-detection':
+          request_message = self.message_module.SecuritycenterFoldersGetVirtualMachineThreatDetectionSettingsRequest(
+              name=path)
+          return self.service_client.folders.GetVirtualMachineThreatDetectionSettings(
               request_message)
     except exceptions.HttpError as err:
       if err.status_code == 404:
@@ -209,6 +225,11 @@ class SettingsClient(object):
               name=path)
           return self.service_client.organizations_eventThreatDetectionSettings.Calculate(
               request_message)
+        elif args.service == 'virtual-machine-threat-detection':
+          request_message = self.message_module.SecuritycenterOrganizationsVirtualMachineThreatDetectionSettingsCalculateRequest(
+              name=path)
+          return self.service_client.organizations_virtualMachineThreatDetectionSettings.Calculate(
+              request_message)
       elif args.project:
         if args.service == 'web-security-scanner':
           request_message = self.message_module.SecuritycenterProjectsWebSecurityScannerSettingsCalculateRequest(
@@ -230,6 +251,11 @@ class SettingsClient(object):
               name=path)
           return self.service_client.projects_eventThreatDetectionSettings.Calculate(
               request_message)
+        elif args.service == 'virtual-machine-threat-detection':
+          request_message = self.message_module.SecuritycenterProjectsVirtualMachineThreatDetectionSettingsCalculateRequest(
+              name=path)
+          return self.service_client.projects_virtualMachineThreatDetectionSettings.Calculate(
+              request_message)
       elif args.folder:
         if args.service == 'web-security-scanner':
           request_message = self.message_module.SecuritycenterFoldersWebSecurityScannerSettingsCalculateRequest(
@@ -250,6 +276,11 @@ class SettingsClient(object):
           request_message = self.message_module.SecuritycenterFoldersEventThreatDetectionSettingsCalculateRequest(
               name=path)
           return self.service_client.folders_eventThreatDetectionSettings.Calculate(
+              request_message)
+        elif args.service == 'virtual-machine-threat-detection':
+          request_message = self.message_module.SecuritycenterFoldersVirtualMachineThreatDetectionSettingsCalculateRequest(
+              name=path)
+          return self.service_client.folders_virtualMachineThreatDetectionSettings.Calculate(
               request_message)
     except exceptions.HttpNotFoundError:
       raise scc_exceptions.SecurityCenterSettingsException(
@@ -284,6 +315,14 @@ class SettingsClient(object):
           .ENABLED)
       return self._UpdateService(args, event_threat_detection_settings,
                                  SERVICE_STATUS_MASK)
+    elif args.service == 'virtual-machine-threat-detection':
+      virtual_machine_threat_detection_settings = self.message_module.VirtualMachineThreatDetectionSettings(
+          serviceEnablementState=self.message_module
+          .VirtualMachineThreatDetectionSettings
+          .ServiceEnablementStateValueValuesEnum.ENABLED)
+      return self._UpdateService(args,
+                                 virtual_machine_threat_detection_settings,
+                                 SERVICE_STATUS_MASK)
 
   def DisableService(self, args):
     """Disable service of organization/folder/project."""
@@ -314,6 +353,14 @@ class SettingsClient(object):
           .DISABLED)
       return self._UpdateService(args, event_threat_detection_settings,
                                  SERVICE_STATUS_MASK)
+    elif args.service == 'virtual-machine-threat-detection':
+      virtual_machine_threat_detection_settings = self.message_module.VirtualMachineThreatDetectionSettings(
+          serviceEnablementState=self.message_module
+          .VirtualMachineThreatDetectionSettings
+          .ServiceEnablementStateValueValuesEnum.DISABLED)
+      return self._UpdateService(args,
+                                 virtual_machine_threat_detection_settings,
+                                 SERVICE_STATUS_MASK)
 
   def InheritService(self, args):
     """Set service enablement state of folder/project to "inherited"."""
@@ -343,6 +390,14 @@ class SettingsClient(object):
           .EventThreatDetectionSettings.ServiceEnablementStateValueValuesEnum
           .INHERITED)
       return self._UpdateService(args, event_threat_detection_settings,
+                                 SERVICE_STATUS_MASK)
+    elif args.service == 'virtual-machine-threat-detection':
+      virtual_machine_threat_detection_settings = self.message_module.VirtualMachineThreatDetectionSettings(
+          serviceEnablementState=self.message_module
+          .VirtualMachineThreatDetectionSettings
+          .ServiceEnablementStateValueValuesEnum.INHERITED)
+      return self._UpdateService(args,
+                                 virtual_machine_threat_detection_settings,
                                  SERVICE_STATUS_MASK)
 
   def _UpdateService(self, args, service_settings, update_mask):
@@ -439,6 +494,28 @@ class SettingsClient(object):
             eventThreatDetectionSettings=service_settings)
         return self.service_client.projects.UpdateEventThreatDetectionSettings(
             request_message)
+    elif args.service == 'virtual-machine-threat-detection':
+      if args.organization:
+        request_message = self.message_module.SecuritycenterOrganizationsUpdateVirtualMachineThreatDetectionSettingsRequest(
+            name=path,
+            updateMask=update_mask,
+            virtualMachineThreatDetectionSettings=service_settings)
+        return self.service_client.organizations.UpdateVirtualMachineThreatDetectionSettings(
+            request_message)
+      if args.folder:
+        request_message = self.message_module.SecuritycenterFoldersUpdateVirtualMachineThreatDetectionSettingsRequest(
+            name=path,
+            updateMask=update_mask,
+            virtualMachineThreatDetectionSettings=service_settings)
+        return self.service_client.folders.UpdateVirtualMachineThreatDetectionSettings(
+            request_message)
+      if args.project:
+        request_message = self.message_module.SecuritycenterProjectsUpdateVirtualMachineThreatDetectionSettingsRequest(
+            name=path,
+            updateMask=update_mask,
+            virtualMachineThreatDetectionSettings=service_settings)
+        return self.service_client.projects.UpdateVirtualMachineThreatDetectionSettings(
+            request_message)
 
   def EnableModule(self, args):
     """Enable a module for a service of organization/folder/project."""
@@ -518,6 +595,16 @@ class SettingsClient(object):
                       value=self.message_module.Config(
                           moduleEnablementState=state, value=config))
               ]))
+    elif args.service == 'virtual-machine-threat-detection':
+      settings = self.message_module.VirtualMachineThreatDetectionSettings(
+          modules=self.message_module.VirtualMachineThreatDetectionSettings
+          .ModulesValue(additionalProperties=[
+              self.message_module.VirtualMachineThreatDetectionSettings
+              .ModulesValue.AdditionalProperty(
+                  key=args.module,
+                  value=self.message_module.Config(
+                      moduleEnablementState=state, value=config))
+          ]))
     if curr_modules is not None:
       unmodified_additional_properties = [
           p for p in curr_modules.additionalProperties if p.key != args.module

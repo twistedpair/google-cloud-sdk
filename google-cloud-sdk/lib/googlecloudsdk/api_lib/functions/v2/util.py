@@ -36,6 +36,7 @@ _API_NAME = 'cloudfunctions'
 
 _V2_ALPHA = 'v2alpha'
 _V2_BETA = 'v2beta'
+_V2_GA = 'v2'
 
 RELEASE_TRACK_TO_API_VERSION = {
     calliope_base.ReleaseTrack.ALPHA: 'v2alpha',
@@ -92,7 +93,7 @@ def GetMessagesModule(release_track):
 
 
 def GetStage(messages):
-  """Returns corresponding GoogleCloudFunctionsV2(alpha|beta)Stage."""
+  """Returns corresponding GoogleCloudFunctionsV2(alpha|beta|ga)Stage."""
   if messages is apis.GetMessagesModule(_API_NAME, _V2_ALPHA):
     return messages.GoogleCloudFunctionsV2alphaStage
   elif messages is apis.GetMessagesModule(_API_NAME, _V2_BETA):
@@ -102,13 +103,13 @@ def GetStage(messages):
 
 
 def GetStateMessage(messages):
-  """Returns corresponding GoogleCloudFunctionsV2(alpha|beta)stateMessage."""
+  """Returns corresponding GoogleCloudFunctionsV2(alpha|beta|ga)stateMessage."""
   if messages is apis.GetMessagesModule(_API_NAME, _V2_ALPHA):
     return messages.GoogleCloudFunctionsV2alphaStateMessage
   elif messages is apis.GetMessagesModule(_API_NAME, _V2_BETA):
     return messages.GoogleCloudFunctionsV2betaStateMessage
   else:
-    return messages.GoogleCloudFunctionsV2stateMessage
+    return messages.GoogleCloudFunctionsV2StateMessage
 
 
 def GetClientInstance(release_track):
@@ -129,11 +130,13 @@ def _GetStageName(name_enum):
 
 
 def _BuildOperationMetadata(messages):
-  """Returns corresponding GoogleCloudFunctionsV2(alpha|beta)OperationMetadata."""
+  """Returns corresponding GoogleCloudFunctionsV2(alpha|beta|ga)OperationMetadata."""
   if messages is apis.GetMessagesModule(_API_NAME, _V2_ALPHA):
     return messages.GoogleCloudFunctionsV2alphaOperationMetadata
   elif messages is apis.GetMessagesModule(_API_NAME, _V2_BETA):
     return messages.GoogleCloudFunctionsV2betaOperationMetadata
+  elif messages is apis.GetMessagesModule(_API_NAME, _V2_GA):
+    return messages.GoogleCloudFunctionsV2OperationMetadata
   else:
     raise NotImplementedError('Invalid messages module.')
 

@@ -3525,11 +3525,15 @@ class NamespaceLifecycleState(_messages.Message):
 class OnPremCluster(_messages.Message):
   r"""OnPremCluster contains information specific to GKE On-Prem clusters.
 
+  Enums:
+    ClusterTypeValueValuesEnum: Immutable. The on prem cluster's type.
+
   Fields:
     adminCluster: Immutable. Whether the cluster is an admin cluster.
     clusterMissing: Output only. If cluster_missing is set then it denotes
       that API(gkeonprem.googleapis.com) resource for this GKE On-Prem cluster
       no longer exists.
+    clusterType: Immutable. The on prem cluster's type.
     resourceLink: Immutable. Self-link of the GCP resource for the GKE On-Prem
       cluster. For example: //gkeonprem.googleapis.com/projects/my-
       project/locations/us-west1-a/vmwareClusters/my-cluster
@@ -3537,9 +3541,26 @@ class OnPremCluster(_messages.Message):
       west1-a/bareMetalClusters/my-cluster
   """
 
+  class ClusterTypeValueValuesEnum(_messages.Enum):
+    r"""Immutable. The on prem cluster's type.
+
+    Values:
+      CLUSTERTYPE_UNSPECIFIED: The ClusterType is not set.
+      BOOTSTRAP: The ClusterType is bootstrap cluster.
+      HYBRID: The ClusterType is baremetal hybrid cluster.
+      STANDALONE: The ClusterType is baremetal standalone cluster.
+      USER: The ClusterType is user cluster.
+    """
+    CLUSTERTYPE_UNSPECIFIED = 0
+    BOOTSTRAP = 1
+    HYBRID = 2
+    STANDALONE = 3
+    USER = 4
+
   adminCluster = _messages.BooleanField(1)
   clusterMissing = _messages.BooleanField(2)
-  resourceLink = _messages.StringField(3)
+  clusterType = _messages.EnumField('ClusterTypeValueValuesEnum', 3)
+  resourceLink = _messages.StringField(4)
 
 
 class Operation(_messages.Message):
@@ -3775,6 +3796,7 @@ class PolicyControllerHubConfig(_messages.Message):
       the lifecycle state of the feature observed by the Hub feature
       controller that is reported in the feature state.
     logDeniesEnabled: Logs all denies and dry run failures.
+    monitoring: Monitoring specifies the configuration of monitoring.
     mutationEnabled: Enables the ability to mutate resources using Policy
       Controller.
     referentialRulesEnabled: Enables the ability to use Constraint Templates
@@ -3806,9 +3828,10 @@ class PolicyControllerHubConfig(_messages.Message):
   exemptableNamespaces = _messages.StringField(2, repeated=True)
   installSpec = _messages.EnumField('InstallSpecValueValuesEnum', 3)
   logDeniesEnabled = _messages.BooleanField(4)
-  mutationEnabled = _messages.BooleanField(5)
-  referentialRulesEnabled = _messages.BooleanField(6)
-  templateLibraryConfig = _messages.MessageField('PolicyControllerTemplateLibraryConfig', 7)
+  monitoring = _messages.MessageField('PolicyControllerMonitoringConfig', 5)
+  mutationEnabled = _messages.BooleanField(6)
+  referentialRulesEnabled = _messages.BooleanField(7)
+  templateLibraryConfig = _messages.MessageField('PolicyControllerTemplateLibraryConfig', 8)
 
 
 class PolicyControllerHubState(_messages.Message):
@@ -3973,6 +3996,35 @@ class PolicyControllerMembershipState(_messages.Message):
   membershipSpec = _messages.MessageField('PolicyControllerMembershipSpec', 2)
   policyControllerHubState = _messages.MessageField('PolicyControllerHubState', 3)
   state = _messages.EnumField('StateValueValuesEnum', 4)
+
+
+class PolicyControllerMonitoringConfig(_messages.Message):
+  r"""MonitoringConfig specifies the backends Policy Controller should export
+  metrics to. For example, to specify metrics should be exported to Cloud
+  Monitoring and Prometheus, specify backends: ["cloudmonitoring",
+  "prometheus"]
+
+  Enums:
+    BackendsValueListEntryValuesEnum:
+
+  Fields:
+    backends: Specifies the list of backends Policy Controller will export to.
+      An empty list would effectively disable metrics export.
+  """
+
+  class BackendsValueListEntryValuesEnum(_messages.Enum):
+    r"""BackendsValueListEntryValuesEnum enum type.
+
+    Values:
+      MONITORING_BACKEND_UNSPECIFIED: Backend cannot be determined
+      PROMETHEUS: Prometheus backend for monitoring
+      CLOUD_MONITORING: Stackdriver/Cloud Monitoring backend for monitoring
+    """
+    MONITORING_BACKEND_UNSPECIFIED = 0
+    PROMETHEUS = 1
+    CLOUD_MONITORING = 2
+
+  backends = _messages.EnumField('BackendsValueListEntryValuesEnum', 1, repeated=True)
 
 
 class PolicyControllerTemplateLibraryConfig(_messages.Message):

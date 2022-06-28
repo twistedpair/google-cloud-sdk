@@ -22,7 +22,6 @@ from __future__ import unicode_literals
 import mimetypes
 import os
 import subprocess
-import sys
 import threading
 
 from googlecloudsdk.api_lib.storage import api_factory
@@ -164,7 +163,7 @@ def get_stream(source_resource,
   if task_status_queue:
     progress_callback = progress_callbacks.FilesAndBytesProgressCallback(
         status_queue=task_status_queue,
-        offset=offset,
+        offset=offset or 0,
         length=length,
         source_url=source_resource.storage_url,
         destination_url=destination_resource.storage_url,
@@ -178,7 +177,7 @@ def get_stream(source_resource,
     progress_callback = None
 
   if source_resource.storage_url.is_stream:
-    source_stream = sys.stdin
+    source_stream = os.fdopen(0, 'rb')
   else:
     source_stream = files.BinaryFileReader(
         source_resource.storage_url.object_name)

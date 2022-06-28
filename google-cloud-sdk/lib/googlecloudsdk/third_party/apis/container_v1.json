@@ -419,6 +419,10 @@
         "etag": {
           "description": "This checksum is computed by the server based on the value of cluster fields, and may be sent on update requests to ensure the client has an up-to-date value before proceeding.",
           "type": "string"
+        },
+        "managedConfig": {
+          "description": "ManagedConfig configuration for the cluster.",
+          "$ref": "ManagedConfig"
         }
       }
     },
@@ -569,6 +573,10 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "loggingConfig": {
+          "description": "Logging configuration.",
+          "$ref": "NodePoolLoggingConfig"
         }
       }
     },
@@ -852,6 +860,38 @@
         "enabled": {
           "description": "Whether Fast Socket features are enabled in the node pool.",
           "type": "boolean"
+        }
+      }
+    },
+    "NodePoolLoggingConfig": {
+      "id": "NodePoolLoggingConfig",
+      "description": "NodePoolLoggingConfig specifies logging configuration for nodepools.",
+      "type": "object",
+      "properties": {
+        "variantConfig": {
+          "description": "Logging variant configuration.",
+          "$ref": "LoggingVariantConfig"
+        }
+      }
+    },
+    "LoggingVariantConfig": {
+      "id": "LoggingVariantConfig",
+      "description": "LoggingVariantConfig specifies the behaviour of the logging component.",
+      "type": "object",
+      "properties": {
+        "variant": {
+          "description": "Logging variant deployed on nodes.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value. This shouldn't be used.",
+            "default logging variant.",
+            "maximum logging throughput variant."
+          ],
+          "enum": [
+            "VARIANT_UNSPECIFIED",
+            "DEFAULT",
+            "MAX_THROUGHPUT"
+          ]
         }
       }
     },
@@ -1161,7 +1201,7 @@
           "type": "string"
         },
         "loggingConfig": {
-          "description": "Logging configuration.",
+          "description": "Logging configuration for node pools. Deprecated; use config.logging_config instead.",
           "$ref": "NodePoolLoggingConfig"
         }
       }
@@ -1539,38 +1579,6 @@
         "greenPoolVersion": {
           "description": "Version of green pool.",
           "type": "string"
-        }
-      }
-    },
-    "NodePoolLoggingConfig": {
-      "id": "NodePoolLoggingConfig",
-      "description": "NodePoolLoggingConfig specifies logging configuration for nodepools.",
-      "type": "object",
-      "properties": {
-        "variantConfig": {
-          "description": "Logging variant configuration.",
-          "$ref": "LoggingVariantConfig"
-        }
-      }
-    },
-    "LoggingVariantConfig": {
-      "id": "LoggingVariantConfig",
-      "description": "LoggingVariantConfig specifies the behaviour of the logging component.",
-      "type": "object",
-      "properties": {
-        "variant": {
-          "description": "Logging variant deployed on nodes.",
-          "type": "string",
-          "enumDescriptions": [
-            "Default value. This shouldn't be used.",
-            "default logging variant.",
-            "maximum logging throughput variant."
-          ],
-          "enum": [
-            "VARIANT_UNSPECIFIED",
-            "DEFAULT",
-            "MAX_THROUGHPUT"
-          ]
         }
       }
     },
@@ -2381,7 +2389,7 @@
           "$ref": "NodeConfigDefaults"
         },
         "loggingConfig": {
-          "description": "Logging configuration for node pools.",
+          "description": "Logging configuration for node pools. Deprecated; use node_config_defaults.node_config.logging_config instead",
           "$ref": "NodePoolLoggingConfig"
         }
       }
@@ -2392,8 +2400,12 @@
       "type": "object",
       "properties": {
         "gcfsConfig": {
-          "description": "GCFS (Google Container File System, a.k.a Riptide) options.",
+          "description": "GCFS (Google Container File System, a.k.a. Riptide) options.",
           "$ref": "GcfsConfig"
+        },
+        "loggingConfig": {
+          "description": "Logging configuration for node pools.",
+          "$ref": "NodePoolLoggingConfig"
         }
       }
     },
@@ -2518,6 +2530,27 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "ManagedConfig": {
+      "id": "ManagedConfig",
+      "description": "ManagedConfig is used for enforcing set of cluster configurations that are conforming to strandards.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "The type of standard configurations to enforce for cluster.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value.",
+            "ManagedConfig is disabled.",
+            "Use ManagedConfig that is conforming to Autofleet requirements."
+          ],
+          "enum": [
+            "TYPE_UNSPECIFIED",
+            "DISABLED",
+            "AUTOFLEET"
+          ]
         }
       }
     },

@@ -5157,6 +5157,9 @@ class GoogleCloudAiplatformInternalDeployedModel(_messages.Message):
       account that doesn't have access to the resource project. Users
       deploying the Model must have the `iam.serviceAccounts.actAs` permission
       on this service account.
+    sharedResources: The resource name of the shared DeploymentResourcePool to
+      deploy on. Format: projects/{project}/locations/{location}/deploymentRes
+      ourcePools/{deployment_resource_pool}
   """
 
   automaticResources = _messages.MessageField('GoogleCloudAiplatformInternalAutomaticResources', 1)
@@ -5169,6 +5172,7 @@ class GoogleCloudAiplatformInternalDeployedModel(_messages.Message):
   model = _messages.StringField(8)
   modelVersionId = _messages.StringField(9)
   serviceAccount = _messages.StringField(10)
+  sharedResources = _messages.StringField(11)
 
 
 class GoogleCloudAiplatformInternalDocumentCriteria(_messages.Message):
@@ -8058,6 +8062,9 @@ class GoogleCloudAiplatformUiDeployedModel(_messages.Message):
       account that doesn't have access to the resource project. Users
       deploying the Model must have the `iam.serviceAccounts.actAs` permission
       on this service account.
+    sharedResources: The resource name of the shared DeploymentResourcePool to
+      deploy on. Format: projects/{project}/locations/{location}/deploymentRes
+      ourcePools/{deployment_resource_pool}
     uiState: Output only. The state of the model deployment. Different from
       public API, BEING_DEPLOYED and FAILED deployment state model will also
       be returned in Ui ListEndpoints.
@@ -8101,7 +8108,8 @@ class GoogleCloudAiplatformUiDeployedModel(_messages.Message):
   modelVersionId = _messages.StringField(14)
   privateEndpoints = _messages.MessageField('GoogleCloudAiplatformUiPrivateEndpoints', 15)
   serviceAccount = _messages.StringField(16)
-  uiState = _messages.EnumField('UiStateValueValuesEnum', 17)
+  sharedResources = _messages.StringField(17)
+  uiState = _messages.EnumField('UiStateValueValuesEnum', 18)
 
 
 class GoogleCloudAiplatformUiExamples(_messages.Message):
@@ -9807,6 +9815,9 @@ class GoogleCloudAiplatformUiModelMonitoringObjectiveConfigPredictionDriftDetect
     attributionScoreDriftThresholds: Key is the feature name and value is the
       threshold. The threshold here is against attribution score distance
       between different time windows.
+    defaultDriftThreshold: Drift anomaly detection threshold used by all
+      features. When the per-feature thresholds are not set, this field can be
+      used to specify a threshold for all features.
     driftThresholds: Key is the feature name and value is the threshold. If a
       feature needs to be monitored for drift, a value threshold must be
       configured for that feature. The threshold here is against feature
@@ -9870,7 +9881,8 @@ class GoogleCloudAiplatformUiModelMonitoringObjectiveConfigPredictionDriftDetect
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   attributionScoreDriftThresholds = _messages.MessageField('AttributionScoreDriftThresholdsValue', 1)
-  driftThresholds = _messages.MessageField('DriftThresholdsValue', 2)
+  defaultDriftThreshold = _messages.MessageField('GoogleCloudAiplatformUiThresholdConfig', 2)
+  driftThresholds = _messages.MessageField('DriftThresholdsValue', 3)
 
 
 class GoogleCloudAiplatformUiModelMonitoringObjectiveConfigTrainingDataset(_messages.Message):
@@ -9918,6 +9930,9 @@ class GoogleCloudAiplatformUiModelMonitoringObjectiveConfigTrainingPredictionSke
     attributionScoreSkewThresholds: Key is the feature name and value is the
       threshold. The threshold here is against attribution score distance
       between the training and prediction feature.
+    defaultSkewThreshold: Skew anomaly detection threshold used by all
+      features. When the per-feature thresholds are not set, this field can be
+      used to specify a threshold for all features.
     skewThresholds: Key is the feature name and value is the threshold. If a
       feature needs to be monitored for skew, a value threshold must be
       configured for that feature. The threshold here is against feature
@@ -9982,7 +9997,8 @@ class GoogleCloudAiplatformUiModelMonitoringObjectiveConfigTrainingPredictionSke
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   attributionScoreSkewThresholds = _messages.MessageField('AttributionScoreSkewThresholdsValue', 1)
-  skewThresholds = _messages.MessageField('SkewThresholdsValue', 2)
+  defaultSkewThreshold = _messages.MessageField('GoogleCloudAiplatformUiThresholdConfig', 2)
+  skewThresholds = _messages.MessageField('SkewThresholdsValue', 3)
 
 
 class GoogleCloudAiplatformUiMutateDeployedIndexOperationMetadata(_messages.Message):
@@ -16457,7 +16473,7 @@ class GoogleCloudAiplatformV1StudySpec(_messages.Message):
       selection type will be used
     ObservationNoiseValueValuesEnum: The observation noise level of the study.
       Currently only supported by the Vertex AI Vizier service. Not supported
-      by HyperparamterTuningJob or TrainingPipeline.
+      by HyperparameterTuningJob or TrainingPipeline.
 
   Fields:
     algorithm: The search algorithm specified for the Study.
@@ -16472,7 +16488,7 @@ class GoogleCloudAiplatformV1StudySpec(_messages.Message):
     metrics: Required. Metric specs for the Study.
     observationNoise: The observation noise level of the study. Currently only
       supported by the Vertex AI Vizier service. Not supported by
-      HyperparamterTuningJob or TrainingPipeline.
+      HyperparameterTuningJob or TrainingPipeline.
     parameters: Required. The set of parameters to tune.
   """
 
@@ -16508,7 +16524,7 @@ class GoogleCloudAiplatformV1StudySpec(_messages.Message):
 
   class ObservationNoiseValueValuesEnum(_messages.Enum):
     r"""The observation noise level of the study. Currently only supported by
-    the Vertex AI Vizier service. Not supported by HyperparamterTuningJob or
+    the Vertex AI Vizier service. Not supported by HyperparameterTuningJob or
     TrainingPipeline.
 
     Values:
@@ -16698,7 +16714,7 @@ class GoogleCloudAiplatformV1StudySpecParameterSpecCategoricalValueSpec(_message
     defaultValue: A default value for a `CATEGORICAL` parameter that is
       assumed to be a relatively good starting point. Unset value signals that
       there is no offered starting point. Currently only supported by the
-      Vizier service. Not supported by HyperparamterTuningJob or
+      Vertex AI Vizier service. Not supported by HyperparameterTuningJob or
       TrainingPipeline.
     values: Required. The list of possible categories.
   """
@@ -16768,8 +16784,9 @@ class GoogleCloudAiplatformV1StudySpecParameterSpecDiscreteValueSpec(_messages.M
     defaultValue: A default value for a `DISCRETE` parameter that is assumed
       to be a relatively good starting point. Unset value signals that there
       is no offered starting point. It automatically rounds to the nearest
-      feasible discrete point. Currently only supported by the Vizier service.
-      Not supported by HyperparamterTuningJob or TrainingPipeline.
+      feasible discrete point. Currently only supported by the Vertex AI
+      Vizier service. Not supported by HyperparameterTuningJob or
+      TrainingPipeline.
     values: Required. A list of possible values. The list should be in
       increasing order and at least 1e-10 apart. For instance, this parameter
       might have possible settings of 1.5, 2.5, and 4.0. This list should not
@@ -16787,7 +16804,7 @@ class GoogleCloudAiplatformV1StudySpecParameterSpecDoubleValueSpec(_messages.Mes
     defaultValue: A default value for a `DOUBLE` parameter that is assumed to
       be a relatively good starting point. Unset value signals that there is
       no offered starting point. Currently only supported by the Vertex AI
-      Vizier service. Not supported by HyperparamterTuningJob or
+      Vizier service. Not supported by HyperparameterTuningJob or
       TrainingPipeline.
     maxValue: Required. Inclusive maximum value of the parameter.
     minValue: Required. Inclusive minimum value of the parameter.
@@ -16805,7 +16822,7 @@ class GoogleCloudAiplatformV1StudySpecParameterSpecIntegerValueSpec(_messages.Me
     defaultValue: A default value for an `INTEGER` parameter that is assumed
       to be a relatively good starting point. Unset value signals that there
       is no offered starting point. Currently only supported by the Vertex AI
-      Vizier service. Not supported by HyperparamterTuningJob or
+      Vizier service. Not supported by HyperparameterTuningJob or
       TrainingPipeline.
     maxValue: Required. Inclusive maximum value of the parameter.
     minValue: Required. Inclusive minimum value of the parameter.
@@ -19343,7 +19360,7 @@ class GoogleCloudAiplatformV1alpha1DoubleArray(_messages.Message):
   r"""A list of double values.
 
   Fields:
-    values: A list of bool values.
+    values: A list of double values.
   """
 
   values = _messages.FloatField(1, repeated=True)
@@ -21950,10 +21967,13 @@ class GoogleCloudAiplatformV1alpha1Model(_messages.Message):
         and that need a higher degree of manual configuration.
       AUTOMATIC_RESOURCES: Resources that to large degree are decided by
         Vertex AI, and require only a modest additional configuration.
+      SHARED_RESOURCES: Resources that can be shared by multiple
+        DeployedModels. A pre-configured DeploymentResourcePool is required.
     """
     DEPLOYMENT_RESOURCES_TYPE_UNSPECIFIED = 0
     DEDICATED_RESOURCES = 1
     AUTOMATIC_RESOURCES = 2
+    SHARED_RESOURCES = 3
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -22682,6 +22702,9 @@ class GoogleCloudAiplatformV1alpha1ModelMonitoringObjectiveConfigPredictionDrift
     attributionScoreDriftThresholds: Key is the feature name and value is the
       threshold. The threshold here is against attribution score distance
       between different time windows.
+    defaultDriftThreshold: Drift anomaly detection threshold used by all
+      features. When the per-feature thresholds are not set, this field can be
+      used to specify a threshold for all features.
     driftThresholds: Key is the feature name and value is the threshold. If a
       feature needs to be monitored for drift, a value threshold must be
       configured for that feature. The threshold here is against feature
@@ -22745,7 +22768,8 @@ class GoogleCloudAiplatformV1alpha1ModelMonitoringObjectiveConfigPredictionDrift
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   attributionScoreDriftThresholds = _messages.MessageField('AttributionScoreDriftThresholdsValue', 1)
-  driftThresholds = _messages.MessageField('DriftThresholdsValue', 2)
+  defaultDriftThreshold = _messages.MessageField('GoogleCloudAiplatformV1alpha1ThresholdConfig', 2)
+  driftThresholds = _messages.MessageField('DriftThresholdsValue', 3)
 
 
 class GoogleCloudAiplatformV1alpha1ModelMonitoringObjectiveConfigTrainingDataset(_messages.Message):
@@ -22793,6 +22817,9 @@ class GoogleCloudAiplatformV1alpha1ModelMonitoringObjectiveConfigTrainingPredict
     attributionScoreSkewThresholds: Key is the feature name and value is the
       threshold. The threshold here is against attribution score distance
       between the training and prediction feature.
+    defaultSkewThreshold: Skew anomaly detection threshold used by all
+      features. When the per-feature thresholds are not set, this field can be
+      used to specify a threshold for all features.
     skewThresholds: Key is the feature name and value is the threshold. If a
       feature needs to be monitored for skew, a value threshold must be
       configured for that feature. The threshold here is against feature
@@ -22857,7 +22884,8 @@ class GoogleCloudAiplatformV1alpha1ModelMonitoringObjectiveConfigTrainingPredict
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   attributionScoreSkewThresholds = _messages.MessageField('AttributionScoreSkewThresholdsValue', 1)
-  skewThresholds = _messages.MessageField('SkewThresholdsValue', 2)
+  defaultSkewThreshold = _messages.MessageField('GoogleCloudAiplatformV1alpha1ThresholdConfig', 2)
+  skewThresholds = _messages.MessageField('SkewThresholdsValue', 3)
 
 
 class GoogleCloudAiplatformV1alpha1ModelMonitoringStatsAnomalies(_messages.Message):
@@ -24749,7 +24777,7 @@ class GoogleCloudAiplatformV1alpha1StudySpec(_messages.Message):
     AlgorithmValueValuesEnum: The search algorithm specified for the Study.
     ObservationNoiseValueValuesEnum: The observation noise level of the study.
       Currently only supported by the Vertex AI Vizier service. Not supported
-      by HyperparamterTuningJob or TrainingPipeline.
+      by HyperparameterTuningJob or TrainingPipeline.
 
   Fields:
     algorithm: The search algorithm specified for the Study.
@@ -24764,7 +24792,7 @@ class GoogleCloudAiplatformV1alpha1StudySpec(_messages.Message):
     metrics: Required. Metric specs for the Study.
     observationNoise: The observation noise level of the study. Currently only
       supported by the Vertex AI Vizier service. Not supported by
-      HyperparamterTuningJob or TrainingPipeline.
+      HyperparameterTuningJob or TrainingPipeline.
     parameters: Required. The set of parameters to tune.
   """
 
@@ -24787,7 +24815,7 @@ class GoogleCloudAiplatformV1alpha1StudySpec(_messages.Message):
 
   class ObservationNoiseValueValuesEnum(_messages.Enum):
     r"""The observation noise level of the study. Currently only supported by
-    the Vertex AI Vizier service. Not supported by HyperparamterTuningJob or
+    the Vertex AI Vizier service. Not supported by HyperparameterTuningJob or
     TrainingPipeline.
 
     Values:
@@ -25009,7 +25037,7 @@ class GoogleCloudAiplatformV1alpha1StudySpecParameterSpecCategoricalValueSpec(_m
     defaultValue: A default value for a `CATEGORICAL` parameter that is
       assumed to be a relatively good starting point. Unset value signals that
       there is no offered starting point. Currently only supported by the
-      Vizier service. Not supported by HyperparamterTuningJob or
+      Vertex AI Vizier service. Not supported by HyperparameterTuningJob or
       TrainingPipeline.
     values: Required. The list of possible categories.
   """
@@ -25025,8 +25053,9 @@ class GoogleCloudAiplatformV1alpha1StudySpecParameterSpecDiscreteValueSpec(_mess
     defaultValue: A default value for a `DISCRETE` parameter that is assumed
       to be a relatively good starting point. Unset value signals that there
       is no offered starting point. It automatically rounds to the nearest
-      feasible discrete point. Currently only supported by the Vizier service.
-      Not supported by HyperparamterTuningJob or TrainingPipeline.
+      feasible discrete point. Currently only supported by the Vertex AI
+      Vizier service. Not supported by HyperparameterTuningJob or
+      TrainingPipeline.
     values: Required. A list of possible values. The list should be in
       increasing order and at least 1e-10 apart. For instance, this parameter
       might have possible settings of 1.5, 2.5, and 4.0. This list should not
@@ -25044,7 +25073,7 @@ class GoogleCloudAiplatformV1alpha1StudySpecParameterSpecDoubleValueSpec(_messag
     defaultValue: A default value for a `DOUBLE` parameter that is assumed to
       be a relatively good starting point. Unset value signals that there is
       no offered starting point. Currently only supported by the Vertex AI
-      Vizier service. Not supported by HyperparamterTuningJob or
+      Vizier service. Not supported by HyperparameterTuningJob or
       TrainingPipeline.
     maxValue: Required. Inclusive maximum value of the parameter.
     minValue: Required. Inclusive minimum value of the parameter.
@@ -25062,7 +25091,7 @@ class GoogleCloudAiplatformV1alpha1StudySpecParameterSpecIntegerValueSpec(_messa
     defaultValue: A default value for an `INTEGER` parameter that is assumed
       to be a relatively good starting point. Unset value signals that there
       is no offered starting point. Currently only supported by the Vertex AI
-      Vizier service. Not supported by HyperparamterTuningJob or
+      Vizier service. Not supported by HyperparameterTuningJob or
       TrainingPipeline.
     maxValue: Required. Inclusive maximum value of the parameter.
     minValue: Required. Inclusive minimum value of the parameter.
@@ -26871,6 +26900,9 @@ class GoogleCloudAiplatformV1beta1DeployedModel(_messages.Message):
       account that doesn't have access to the resource project. Users
       deploying the Model must have the `iam.serviceAccounts.actAs` permission
       on this service account.
+    sharedResources: The resource name of the shared DeploymentResourcePool to
+      deploy on. Format: projects/{project}/locations/{location}/deploymentRes
+      ourcePools/{deployment_resource_pool}
   """
 
   automaticResources = _messages.MessageField('GoogleCloudAiplatformV1beta1AutomaticResources', 1)
@@ -26885,6 +26917,7 @@ class GoogleCloudAiplatformV1beta1DeployedModel(_messages.Message):
   modelVersionId = _messages.StringField(10)
   privateEndpoints = _messages.MessageField('GoogleCloudAiplatformV1beta1PrivateEndpoints', 11)
   serviceAccount = _messages.StringField(12)
+  sharedResources = _messages.StringField(13)
 
 
 class GoogleCloudAiplatformV1beta1DiskSpec(_messages.Message):
@@ -31458,7 +31491,7 @@ class GoogleCloudAiplatformV1beta1StudySpec(_messages.Message):
       selection type will be used
     ObservationNoiseValueValuesEnum: The observation noise level of the study.
       Currently only supported by the Vertex AI Vizier service. Not supported
-      by HyperparamterTuningJob or TrainingPipeline.
+      by HyperparameterTuningJob or TrainingPipeline.
 
   Fields:
     algorithm: The search algorithm specified for the Study.
@@ -31475,7 +31508,7 @@ class GoogleCloudAiplatformV1beta1StudySpec(_messages.Message):
     metrics: Required. Metric specs for the Study.
     observationNoise: The observation noise level of the study. Currently only
       supported by the Vertex AI Vizier service. Not supported by
-      HyperparamterTuningJob or TrainingPipeline.
+      HyperparameterTuningJob or TrainingPipeline.
     parameters: Required. The set of parameters to tune.
   """
 
@@ -31511,7 +31544,7 @@ class GoogleCloudAiplatformV1beta1StudySpec(_messages.Message):
 
   class ObservationNoiseValueValuesEnum(_messages.Enum):
     r"""The observation noise level of the study. Currently only supported by
-    the Vertex AI Vizier service. Not supported by HyperparamterTuningJob or
+    the Vertex AI Vizier service. Not supported by HyperparameterTuningJob or
     TrainingPipeline.
 
     Values:
@@ -31739,7 +31772,7 @@ class GoogleCloudAiplatformV1beta1StudySpecParameterSpecCategoricalValueSpec(_me
     defaultValue: A default value for a `CATEGORICAL` parameter that is
       assumed to be a relatively good starting point. Unset value signals that
       there is no offered starting point. Currently only supported by the
-      Vizier service. Not supported by HyperparamterTuningJob or
+      Vertex AI Vizier service. Not supported by HyperparameterTuningJob or
       TrainingPipeline.
     values: Required. The list of possible categories.
   """
@@ -31809,8 +31842,9 @@ class GoogleCloudAiplatformV1beta1StudySpecParameterSpecDiscreteValueSpec(_messa
     defaultValue: A default value for a `DISCRETE` parameter that is assumed
       to be a relatively good starting point. Unset value signals that there
       is no offered starting point. It automatically rounds to the nearest
-      feasible discrete point. Currently only supported by the Vizier service.
-      Not supported by HyperparamterTuningJob or TrainingPipeline.
+      feasible discrete point. Currently only supported by the Vertex AI
+      Vizier service. Not supported by HyperparameterTuningJob or
+      TrainingPipeline.
     values: Required. A list of possible values. The list should be in
       increasing order and at least 1e-10 apart. For instance, this parameter
       might have possible settings of 1.5, 2.5, and 4.0. This list should not
@@ -31828,7 +31862,7 @@ class GoogleCloudAiplatformV1beta1StudySpecParameterSpecDoubleValueSpec(_message
     defaultValue: A default value for a `DOUBLE` parameter that is assumed to
       be a relatively good starting point. Unset value signals that there is
       no offered starting point. Currently only supported by the Vertex AI
-      Vizier service. Not supported by HyperparamterTuningJob or
+      Vizier service. Not supported by HyperparameterTuningJob or
       TrainingPipeline.
     maxValue: Required. Inclusive maximum value of the parameter.
     minValue: Required. Inclusive minimum value of the parameter.
@@ -31846,7 +31880,7 @@ class GoogleCloudAiplatformV1beta1StudySpecParameterSpecIntegerValueSpec(_messag
     defaultValue: A default value for an `INTEGER` parameter that is assumed
       to be a relatively good starting point. Unset value signals that there
       is no offered starting point. Currently only supported by the Vertex AI
-      Vizier service. Not supported by HyperparamterTuningJob or
+      Vizier service. Not supported by HyperparameterTuningJob or
       TrainingPipeline.
     maxValue: Required. Inclusive maximum value of the parameter.
     minValue: Required. Inclusive minimum value of the parameter.

@@ -99,14 +99,10 @@ class BackendMetastore(_messages.Message):
 
     Values:
       METASTORE_TYPE_UNSPECIFIED: The metastore type is not set.
-      DATAPLEX: The backend metastore is Dataplex.
-      BIGQUERY: The backend metastore is BigQuery.
       DATAPROC_METASTORE: The backend metastore is Dataproc Metastore.
     """
     METASTORE_TYPE_UNSPECIFIED = 0
-    DATAPLEX = 1
-    BIGQUERY = 2
-    DATAPROC_METASTORE = 3
+    DATAPROC_METASTORE = 1
 
   metastoreType = _messages.EnumField('MetastoreTypeValueValuesEnum', 1)
   name = _messages.StringField(2)
@@ -211,6 +207,25 @@ class Binding(_messages.Message):
 
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
+
+
+class Consumer(_messages.Message):
+  r"""Contains information of the customer's network configurations.
+
+  Fields:
+    endpointUri: Output only. The URI of the endpoint used to access the
+      metastore service.
+    subnetwork: The subnetwork of the customer project from which an IP
+      address is reserved and used as the Dataproc Metastore service's
+      endpoint. It is accessible to hosts in the subnet and to all hosts in a
+      subnet in the same region and same network. There must be at least one
+      IP address available in the subnet's primary range. The subnet is
+      specified in the following form:`projects/{project_number}/regions/{regi
+      on_id}/subnetworks/{subnetwork_id}
+  """
+
+  endpointUri = _messages.StringField(1)
+  subnetwork = _messages.StringField(2)
 
 
 class DatabaseDump(_messages.Message):
@@ -1612,6 +1627,17 @@ class MetastoreProjectsLocationsServicesTestIamPermissionsRequest(_messages.Mess
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
+class NetworkConfig(_messages.Message):
+  r"""Network configuration for the Dataproc Metastore service.
+
+  Fields:
+    consumers: Immutable. The consumer-side network configuration for the
+      Dataproc Metastore instance.
+  """
+
+  consumers = _messages.MessageField('Consumer', 1, repeated=True)
+
+
 class Operation(_messages.Message):
   r"""This resource represents a long-running operation that is the result of
   a network API call.
@@ -1972,6 +1998,8 @@ class Service(_messages.Message):
     network: Immutable. The relative resource name of the VPC network on which
       the instance can be accessed. It is specified in the following
       form:projects/{project_number}/global/networks/{network_id}.
+    networkConfig: Immutable. The configuration specifying the network
+      settings for the Dataproc Metastore service.
     port: The TCP port at which the metastore service is reached. Default:
       9083.
     releaseChannel: Immutable. The release channel of the service. If
@@ -2093,13 +2121,14 @@ class Service(_messages.Message):
   metadataManagementActivity = _messages.MessageField('MetadataManagementActivity', 9)
   name = _messages.StringField(10)
   network = _messages.StringField(11)
-  port = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  releaseChannel = _messages.EnumField('ReleaseChannelValueValuesEnum', 13)
-  state = _messages.EnumField('StateValueValuesEnum', 14)
-  stateMessage = _messages.StringField(15)
-  tier = _messages.EnumField('TierValueValuesEnum', 16)
-  uid = _messages.StringField(17)
-  updateTime = _messages.StringField(18)
+  networkConfig = _messages.MessageField('NetworkConfig', 12)
+  port = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  releaseChannel = _messages.EnumField('ReleaseChannelValueValuesEnum', 14)
+  state = _messages.EnumField('StateValueValuesEnum', 15)
+  stateMessage = _messages.StringField(16)
+  tier = _messages.EnumField('TierValueValuesEnum', 17)
+  uid = _messages.StringField(18)
+  updateTime = _messages.StringField(19)
 
 
 class SetIamPolicyRequest(_messages.Message):

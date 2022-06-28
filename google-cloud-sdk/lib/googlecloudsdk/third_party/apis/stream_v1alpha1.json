@@ -526,45 +526,6 @@
         }
       }
     },
-    "RolloutStreamInstanceRequest": {
-      "id": "RolloutStreamInstanceRequest",
-      "type": "object",
-      "properties": {
-        "contentVersionTag": {
-          "description": "Required. The user-specified version tag of the content to be served by the instance after rollout.",
-          "type": "string"
-        },
-        "realms": {
-          "description": "Required. Realms of the instance rollout.",
-          "type": "array",
-          "items": {
-            "type": "string",
-            "enumDescriptions": [
-              "realm not specified",
-              "us-central1",
-              "us-east[1|4]",
-              "us-west[1|2|4]",
-              "asia-northeast[1|3]",
-              "asia-southeast[1|2]",
-              "europe-west[1-4]"
-            ],
-            "enum": [
-              "REALM_UNSPECIFIED",
-              "REALM_NA_CENTRAL",
-              "REALM_NA_EAST",
-              "REALM_NA_WEST",
-              "REALM_ASIA_NORTHEAST",
-              "REALM_ASIA_SOUTHEAST",
-              "REALM_EU_WEST"
-            ]
-          }
-        },
-        "requestId": {
-          "description": "Optional. A unique identifier for this request. Restricted to 36 ASCII characters. A random UUID is recommended. This request is only idempotent if a `request_id` is provided.\"",
-          "type": "string"
-        }
-      }
-    },
     "OperationMetadata": {
       "id": "OperationMetadata",
       "description": "Represents the metadata of the long-running operation.",
@@ -1196,34 +1157,6 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Deletes a single StreamInstance. This method tears down the streaming service of the associated StreamContent. The returned Operation can be used to track the deletion status by polling operations.get. The Operation will complete when the deletion is done. Returns Empty in the Operation.response field on successful completion."
-                },
-                "rollout": {
-                  "id": "stream.projects.locations.streamInstances.rollout",
-                  "path": "v1alpha1/{+name}:rollout",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/streamInstances/{streamInstancesId}:rollout",
-                  "httpMethod": "POST",
-                  "parameters": {
-                    "name": {
-                      "description": "Required. Canonical resource name of the instance.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/streamInstances\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "request": {
-                    "$ref": "RolloutStreamInstanceRequest"
-                  },
-                  "response": {
-                    "$ref": "Operation"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Roll out an service instance with the content of a user-specified version in the instance deployment realms. The returned Operation can be used to track the rollout status by polling operations.get. The Operation will complete when the rollout is complete. Returns [StreamInstance] in the Operation.response field on successful completion."
                 }
               }
             }

@@ -934,7 +934,7 @@
           "type": "string",
           "enumDescriptions": [
             "Unspecified purpose.",
-            "Purpose for Compute Engine firewalls. A corresponding purpose_data should be set for the network the tag is intended for. The key should be 'network' and the value should be in the format of the network url id string: http:\/\/compute.googleapis.com\/v1\/projects\/{project_number}\/global\/networks\/{network_id}"
+            "Purpose for Compute Engine firewalls. A corresponding purpose_data should be set for the network the tag is intended for. The key should be 'network' and the value should be in the format of the network url id string: https:\/\/compute.googleapis.com\/v1\/projects\/{project_number}\/global\/networks\/{network_id}"
           ],
           "enum": [
             "PURPOSE_UNSPECIFIED",
@@ -2489,7 +2489,7 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
           ],
-          "description": "Creates a new TagKey. If another request with the same parameters is sent while the original request is in process, the second request will receive an error. A maximum of 300 TagKeys can exist under a parent at any given time."
+          "description": "Creates a new TagKey. If another request with the same parameters is sent while the original request is in process, the second request will receive an error. A maximum of 1000 TagKeys can exist under a parent at any given time."
         },
         "patch": {
           "id": "cloudresourcemanager.tagKeys.patch",
@@ -2737,7 +2737,7 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
           ],
-          "description": "Creates a TagValue as a child of the specified TagKey. If a another request with the same parameters is sent while the original request is in process the second request will receive an error. A maximum of 300 TagValues can exist under a TagKey at any given time."
+          "description": "Creates a TagValue as a child of the specified TagKey. If a another request with the same parameters is sent while the original request is in process the second request will receive an error. A maximum of 1000 TagValues can exist under a TagKey at any given time."
         },
         "patch": {
           "id": "cloudresourcemanager.tagValues.patch",

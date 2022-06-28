@@ -662,6 +662,21 @@ class PubsubProjectsSchemasDeleteRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class PubsubProjectsSchemasDeleteRevisionRequest(_messages.Message):
+  r"""A PubsubProjectsSchemasDeleteRevisionRequest object.
+
+  Fields:
+    name: Required. The name of the schema revision to be deleted, with a
+      revision ID explicitly included. Example: projects/123/schemas/my-
+      schema@c7cfa2a8
+    revisionId: Required. The revision ID to roll back to. It must be a
+      revision of the same schema. Example: c7cfa2a8
+  """
+
+  name = _messages.StringField(1, required=True)
+  revisionId = _messages.StringField(2)
+
+
 class PubsubProjectsSchemasGetIamPolicyRequest(_messages.Message):
   r"""A PubsubProjectsSchemasGetIamPolicyRequest object.
 
