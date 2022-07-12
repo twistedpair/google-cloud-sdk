@@ -36,22 +36,12 @@ def CheckFieldsSpecifiedGA(unused_instance_ref, args, patch_request):
 
 def CheckFieldsSpecifiedBeta(unused_instance_ref, args, patch_request):
   """Checks if fields to update are registered for BETA track."""
-  additional_update_args = [
-      'persistence_mode',
-      'rdb_snapshot_period',
-      'rdb_snapshot_start_time',
-  ]
-  return CheckFieldsSpecifiedCommon(args, patch_request, additional_update_args)
+  return CheckFieldsSpecifiedCommon(args, patch_request, [])
 
 
 def CheckFieldsSpecifiedAlpha(unused_instance_ref, args, patch_request):
   """Checks if fields to update are registered for ALPHA track."""
-  additional_update_args = [
-      'persistence_mode',
-      'rdb_snapshot_period',
-      'rdb_snapshot_start_time',
-  ]
-  return CheckFieldsSpecifiedCommon(args, patch_request, additional_update_args)
+  return CheckFieldsSpecifiedCommon(args, patch_request, [])
 
 
 def CheckFieldsSpecifiedCommon(args, patch_request, additional_update_args):
@@ -68,6 +58,9 @@ def CheckFieldsSpecifiedCommon(args, patch_request, additional_update_args):
       'read_replicas_mode',
       'secondary_ip_range',
       'replica_count',
+      'persistence_mode',
+      'rdb_snapshot_period',
+      'rdb_snapshot_start_time',
       'maintenance_window_day',
       'maintenance_window_hour',
       'maintenance_window_any',

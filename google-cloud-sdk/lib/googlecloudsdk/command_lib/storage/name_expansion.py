@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import collections
+import enum
 
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.command_lib.storage import errors
@@ -28,6 +29,13 @@ from googlecloudsdk.command_lib.storage import wildcard_iterator
 from googlecloudsdk.command_lib.storage.resources import resource_reference
 from googlecloudsdk.core import log
 from googlecloudsdk.core.util import debug_output
+
+
+class RecursionSetting(enum.Enum):
+  """An enum saying whether or not recursion is requested."""
+  YES = '_yes'
+  NO = '_no'
+  NO_WITH_WARNING = '_no_with_warning'
 
 
 class NameExpansionIterator:
@@ -46,7 +54,7 @@ class NameExpansionIterator:
                fields_scope=cloud_api.FieldsScope.NO_ACL,
                ignore_symlinks=False,
                include_buckets=False,
-               recursion_requested=False):
+               recursion_requested=RecursionSetting.NO_WITH_WARNING):
     """Instantiates NameExpansionIterator.
 
     Args:
@@ -57,7 +65,8 @@ class NameExpansionIterator:
         returned by API.
       ignore_symlinks (bool): Skip over symlinks instead of following them.
       include_buckets (bool): True if buckets should be fetched.
-      recursion_requested (bool): True if recursion is requested, else False.
+      recursion_requested (RecursionSetting): Says whether or not recursion is
+        requested.
     """
     self.all_versions = all_versions
 
@@ -171,17 +180,19 @@ class NameExpansionIterator:
         yield name_expansion_result
 
       if name_expansion_result.resource.is_container():
-        if self._recursion_requested:
+        if self._recursion_requested is RecursionSetting.YES:
           for nested_name_expansion_result in self._get_nested_objects_iterator(
               name_expansion_result):
             self._url_found_match_tracker[input_url] = True
             yield nested_name_expansion_result
 
         elif not should_return_bucket:
-          # Does not warn about buckets processed above because it's confusing
-          # to warn about something that was successfully processed.
-          log.warning('Omitting {} because it is a container, and recursion'
-                      ' is not enabled.'.format(name_expansion_result.resource))
+          if self._recursion_requested is RecursionSetting.NO_WITH_WARNING:
+            # Does not warn about buckets processed above because it's confusing
+            # to warn about something that was successfully processed.
+            log.warning('Omitting {} because it is a container, and recursion'
+                        ' is not enabled.'.format(
+                            name_expansion_result.resource))
 
     self._raise_no_url_match_error_if_necessary()
 

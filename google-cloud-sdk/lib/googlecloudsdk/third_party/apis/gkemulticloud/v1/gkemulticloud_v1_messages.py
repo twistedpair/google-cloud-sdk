@@ -505,7 +505,7 @@ class GkemulticloudProjectsLocationsAzureClustersAzureNodePoolsPatchRequest(_mes
       supplied in this field. The elements of the repeated paths field can
       only include these fields from AzureNodePool: *. `annotations`. *
       `version`. * `autoscaling.min_node_count`. *
-      `autoscaling.max_node_count`.
+      `autoscaling.max_node_count`. * `config.ssh_config.authorized_key`.
     validateOnly: If set, only validate the request, but don't actually update
       the node pool.
   """
@@ -649,7 +649,7 @@ class GkemulticloudProjectsLocationsAzureClustersPatchRequest(_messages.Message)
       only include these fields from AzureCluster: * `description`. *
       `annotations`. * `azureClient`. * `authorization.admin_users`. *
       `control_plane.version`. * `control_plane.vm_size`. *
-      `control_plane.root_volume.size_gib`. * `control_plane.ssh_config`. *
+      `control_plane.root_volume.size_gib`. *
       `control_plane.ssh_config.authorized_key`. * `logging_config`
     validateOnly: If set, only validate the request, but do not actually
       update the cluster.

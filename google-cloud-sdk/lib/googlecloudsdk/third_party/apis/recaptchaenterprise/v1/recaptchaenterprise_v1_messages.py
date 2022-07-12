@@ -556,6 +556,20 @@ class GoogleCloudRecaptchaenterpriseV1RelatedAccountGroupMembership(_messages.Me
   name = _messages.StringField(2)
 
 
+class GoogleCloudRecaptchaenterpriseV1RetrieveLegacySecretKeyResponse(_messages.Message):
+  r"""Secret key used in legacy reCAPTCHA only. Should be used when
+  integrating with a 3rd party which is still using legacy reCAPTCHA.
+
+  Fields:
+    legacySecretKey: The secret key (also known as shared secret) authorizes
+      communication between your application backend and the reCAPTCHA
+      Enterprise server to create an assessment. The secret key needs to be
+      kept safe for security purposes.
+  """
+
+  legacySecretKey = _messages.StringField(1)
+
+
 class GoogleCloudRecaptchaenterpriseV1RiskAnalysis(_messages.Message):
   r"""Risk analysis result for an event.
 
@@ -1125,6 +1139,17 @@ class RecaptchaenterpriseProjectsKeysPatchRequest(_messages.Message):
   googleCloudRecaptchaenterpriseV1Key = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1Key', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
+
+
+class RecaptchaenterpriseProjectsKeysRetrieveLegacySecretKeyRequest(_messages.Message):
+  r"""A RecaptchaenterpriseProjectsKeysRetrieveLegacySecretKeyRequest object.
+
+  Fields:
+    key: Required. The public key name linked to the requested secret key , in
+      the format "projects/{project}/keys/{key}".
+  """
+
+  key = _messages.StringField(1, required=True)
 
 
 class RecaptchaenterpriseProjectsRelatedaccountgroupmembershipsSearchRequest(_messages.Message):

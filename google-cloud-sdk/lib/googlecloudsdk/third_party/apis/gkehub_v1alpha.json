@@ -351,6 +351,18 @@
           "description": "Output only. Whether the lifecycle of this membership is managed by a google cluster platform service.",
           "readOnly": true,
           "type": "boolean"
+        },
+        "mode": {
+          "description": "Immutable. The management mode of this membership.",
+          "type": "string",
+          "enumDescriptions": [
+            "The mode is not set.",
+            "Membership is being managed in autofleet mode."
+          ],
+          "enum": [
+            "MODE_UNSPECIFIED",
+            "AUTOFLEET"
+          ]
         }
       }
     },
@@ -737,6 +749,10 @@
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
+        },
+        "fleetDefaultMemberConfig": {
+          "description": "Optional. Feature configuration applicable to all memberships of the fleet.",
+          "$ref": "CommonFleetDefaultMemberConfigSpec"
         }
       }
     },
@@ -1247,7 +1263,7 @@
           "type": "boolean"
         },
         "mutationEnabled": {
-          "description": "Enable users to try out mutation for PolicyController.",
+          "description": "Enable or disable mutation in policy controller. If true, mutation CRDs, webhook and controller deployment will be deployed to the cluster.",
           "type": "boolean"
         },
         "monitoring": {
@@ -1895,7 +1911,7 @@
           "$ref": "HelloWorldMembershipState"
         },
         "metering": {
-          "description": "Metering-specific spec.",
+          "description": "Metering-specific state.",
           "$ref": "MeteringMembershipState"
         },
         "configmanagement": {
@@ -2973,6 +2989,17 @@
         },
         "stateDetails": {
           "type": "string"
+        }
+      }
+    },
+    "CommonFleetDefaultMemberConfigSpec": {
+      "id": "CommonFleetDefaultMemberConfigSpec",
+      "description": "CommonFleetDefaultMemberConfigSpec contains default configuration information for memberships of a fleet",
+      "type": "object",
+      "properties": {
+        "mesh": {
+          "description": "Anthos Service Mesh-specific spec",
+          "$ref": "ServiceMeshMembershipSpec"
         }
       }
     },

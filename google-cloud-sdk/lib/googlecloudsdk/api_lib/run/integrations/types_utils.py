@@ -22,20 +22,20 @@ from __future__ import unicode_literals
 from frozendict import frozendict
 from googlecloudsdk.command_lib.run import exceptions
 
-# TODO(b/233097220) Update this tuple to be only runapps once prod is setup
 BASELINE_APIS = (
-    'cloudbuild.googleapis.com',
-    'iam.googleapis.com',
-    'run.googleapis.com',
     'runapps.googleapis.com',
-    'storage.googleapis.com',
 )
 
+RESOURCE_TYPE = 'resource_type'
+INTEGRATION_TYPE = 'integration_type'
+REQUIRED_FIELD = 'required_field'
+
+# TODO(b/237328242) Convert this to class
 _INTEGRATION_TYPES = frozenset([
     frozendict({
-        'name':
+        INTEGRATION_TYPE:
             'custom-domain',
-        'resource_name':
+        RESOURCE_TYPE:
             'router',
         'description':
             'Configure a custom domain for Cloud Run services with Google Cloud '
@@ -45,36 +45,97 @@ _INTEGRATION_TYPES = frozenset([
             '--type=custom-domain --parameters=domain=example.com',
         'parameters':
             frozendict({
-                'domain': frozendict({
-                    'description':
-                        'The domain to configure for your Cloud Run service. This '
-                        'must be a domain you can configure DNS for.',
-                    'type': 'domain',
-                    'required': True,
-                    'update_allowed': False,
-                }),
-                'paths': frozendict({
-                    'description':
-                        'The paths at the domain for your Cloud Run service. '
-                        'Defaults to "/" if not specified. (e.g. "/foo/*" for '
-                        '"example.com/foo/*")',
-                    'type': 'path_matcher',
-                }),
-                'dns-zone': frozendict({
-                    'description':
-                        'The ID of the Cloud DNS Zone already configured for this '
-                        'domain. If not specified, manual DNS configuration is '
-                        'expected.',
-                    'type': 'string',
-                    'hidden': True,
-                }),
+                'domain':
+                    frozendict({
+                        'description':
+                            'The domain to configure for your Cloud Run service. This '
+                            'must be a domain you can configure DNS for.',
+                        'type': 'domain',
+                        'required': True,
+                        'update_allowed': False,
+                    }),
+                'paths':
+                    frozendict({
+                        'description':
+                            'The paths at the domain for your Cloud Run service. '
+                            'Defaults to "/" if not specified. (e.g. "/foo/*" for '
+                            '"example.com/foo/*")',
+                        'type': 'path_matcher',
+                    }),
+                'dns-zone':
+                    frozendict({
+                        'description':
+                            'The ID of the Cloud DNS Zone already configured for this '
+                            'domain. If not specified, manual DNS configuration is '
+                            'expected.',
+                        'type': 'string',
+                        'hidden': True,
+                    }),
             }),
-        'required_apis': frozenset({
-            'compute.googleapis.com'
-        }),
+        'required_apis':
+            frozenset({'compute.googleapis.com'}),
     }),
     frozendict({
-        'name':
+        INTEGRATION_TYPE:
+            'domain-routing',
+        RESOURCE_TYPE:
+            'router',
+        'singleton':
+            True,
+        'singleton_name':
+            'domain-routing',
+        REQUIRED_FIELD:
+            'domains',
+        'description':
+            'Configure a custom domain for Cloud Run services with Google Cloud '
+            'Load Balancer.',
+        'example_command':  # TODO(b/237330249): revisit this message.
+            '$ gcloud run integrations update domain-routing '
+            '--add-service=[SERVICE] --parameters=add-domain=example.com',
+        'parameters':
+            frozendict({
+                'domain':
+                    frozendict({
+                        'description':
+                            'The domain to target add or update services of.',
+                        'type':
+                            'domain',
+                    }),
+                'add-domain':
+                    frozendict({
+                        'description': 'The domain to be created.',
+                        'type': 'domain',
+                    }),
+                'remove-domain':
+                    frozendict({
+                        'description': 'The domain to be removed.',
+                        'type': 'domain',
+                    }),
+                'paths':
+                    frozendict({
+                        'description':
+                            'The paths at the domain for your Cloud Run service. '
+                            'Defaults to "/" if not specified. (e.g. "/foo/*" for '
+                            '"example.com/foo/*")',
+                        'type': 'path_matcher',
+                    }),
+            }),
+        'required_apis':
+            frozenset({'compute.googleapis.com'}),
+        'update_exclusive_groups':
+            frozenset({
+                frozendict({
+                    'params':
+                        frozenset({'domain', 'add-domain', 'remove-domain'}),
+                    'required':
+                        True
+                })
+            })
+    }),
+    frozendict({
+        INTEGRATION_TYPE:
+            'redis',
+        RESOURCE_TYPE:
             'redis',
         'description':
             'Configure a Redis instance (Cloud Memorystore) and connect it '
@@ -84,35 +145,36 @@ _INTEGRATION_TYPES = frozenset([
             '--type=redis --parameters=memory-size-gb=2',
         'parameters':
             frozendict({
-                'memory-size-gb': frozendict({
-                    'description': 'Memory capacity of the Redis instance.',
-                    'type': 'int',
-                    'default': 1,
-                }),
-                'tier': frozendict({
-                    'description':
-                        'The service tier of the instance. '
-                        'Supported options include BASIC for standalone '
-                        'instance and STANDARD_HA for highly available '
-                        'primary/replica instances.',
-                    'type': 'string',
-                    'hidden': True,
-                }),
-                'version': frozendict({
-                    'description':
-                        'The version of Redis software. If not '
-                        'provided, latest supported version will be used. '
-                        'Supported values include: REDIS_6_X, REDIS_5_0, '
-                        'REDIS_4_0 and REDIS_3_2.',
-                    'type': 'string',
-                    'update_allowed': False,
-                    'hidden': True,
-                }),
+                'memory-size-gb':
+                    frozendict({
+                        'description': 'Memory capacity of the Redis instance.',
+                        'type': 'int',
+                        'default': 1,
+                    }),
+                'tier':
+                    frozendict({
+                        'description':
+                            'The service tier of the instance. '
+                            'Supported options include BASIC for standalone '
+                            'instance and STANDARD_HA for highly available '
+                            'primary/replica instances.',
+                        'type': 'string',
+                        'hidden': True,
+                    }),
+                'version':
+                    frozendict({
+                        'description':
+                            'The version of Redis software. If not '
+                            'provided, latest supported version will be used. '
+                            'Supported values include: REDIS_6_X, REDIS_5_0, '
+                            'REDIS_4_0 and REDIS_3_2.',
+                        'type': 'string',
+                        'update_allowed': False,
+                        'hidden': True,
+                    }),
             }),
-        'required_apis': frozenset({
-            'redis.googleapis.com',
-            'vpcaccess.googleapis.com'
-        }),
+        'required_apis':
+            frozenset({'redis.googleapis.com', 'vpcaccess.googleapis.com'}),
     }),
 ])
 
@@ -144,24 +206,70 @@ def GetIntegration(integration_type):
     If the integration does not exist, then None is returned.
   """
   for integration in _INTEGRATION_TYPES:
-    if integration['name'] == integration_type:
+    if integration[INTEGRATION_TYPE] == integration_type:
       return integration
   return None
 
 
-def GetIntegrationType(resource_type):
+def GetResourceTypeFromConfig(resource_config):
+  """Gets the resource type.
+
+  The input is converted from proto with "oneof" property. Thus the dictionary
+  is expected to have only one key, matching the type of the matching oneof.
+
+  Args:
+    resource_config: dict, the resource configuration.
+
+  Returns:
+    str, the integration type.
+  """
+  if resource_config is None:
+    raise exceptions.ConfigurationError('resource config is none.')
+  keys = list(resource_config.keys())
+  if len(keys) != 1:
+    # We should never gets here, because having more than one key in a
+    # oneof field in not allowed in proto.
+    raise exceptions.ConfigurationError(
+        'resource config is invalid: {}.'.format(resource_config))
+  return keys[0]
+
+
+def GetIntegrationFromResource(resource_config):
+  """Returns the integration type definition associated to the given resource.
+
+  Args:
+    resource_config: dict, the resource configuration.
+
+  Returns:
+    The integration type definition.
+  """
+  resource_type = GetResourceTypeFromConfig(resource_config)
+  config = resource_config[resource_type]
+  match = None
+  for integration_type in _INTEGRATION_TYPES:
+    if integration_type.get(RESOURCE_TYPE, None) == resource_type:
+      must_have_field = integration_type.get(REQUIRED_FIELD, None)
+      if must_have_field:
+        if config.get(must_have_field, None):
+          return integration_type
+      else:
+        match = integration_type
+  return match
+
+
+def GetIntegrationType(resource_config):
   """Returns the integration type associated to the given resource type.
 
   Args:
-    resource_type: string, the resource type.
+    resource_config: dict, the resource configuration.
 
   Returns:
     The integration type.
   """
-  for t in _INTEGRATION_TYPES:
-    if t.get('resource_name', None) == resource_type:
-      return t['name']
-  return resource_type
+  type_def = GetIntegrationFromResource(resource_config)
+  if type_def is None:
+    return GetResourceTypeFromConfig(resource_config)
+  return type_def[INTEGRATION_TYPE]
 
 
 def CheckValidIntegrationType(integration_type):
@@ -172,7 +280,7 @@ def CheckValidIntegrationType(integration_type):
   Rasies: ArgumentError
   """
   if integration_type not in [
-      integration['name'] for integration in _INTEGRATION_TYPES
+      integration[INTEGRATION_TYPE] for integration in _INTEGRATION_TYPES
   ]:
     raise exceptions.ArgumentError(
         'Integration of type {} is not supported'.format(integration_type))

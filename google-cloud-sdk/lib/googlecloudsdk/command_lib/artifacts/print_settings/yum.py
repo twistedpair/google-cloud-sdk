@@ -20,28 +20,28 @@ from __future__ import unicode_literals
 
 
 DEFAULT_TEMPLATE = """\
-# To configure your package manager with this repository:
+# To configure your package manager with this repository, do the following:
 
-# Update Yum:
-sudo yum makecache
-
-# Install the Yum credential helper:
-sudo yum install yum-plugin-artifact-registry
+# Prepare you VM to access the repository using the following instructions:
+# https://cloud.google.com/artifact-registry/docs/os-packages/rpm/configure#prepare-yum
 
 # Configure your VM to access Artifact Registry packages using the following
 # command:
 
-sudo tee -a /etc/yum.repos.d/artifact-registry.repo << EOL
+sudo tee -a /etc/yum.repos.d/artifact-registry.repo << EOF
 [{repo}]
 name={repo}
 baseurl=https://{location}-yum.pkg.dev/projects/{repo_path}
 enabled=1
 repo_gpgcheck=0
 gpgcheck=0
-EOL
+EOF
 
 # Update Yum:
 sudo yum makecache
+
+# For complete setup information, see
+# https://cloud.google.com/artifact-registry/docs/os-packages/rpm/configure
 """
 
 
@@ -51,15 +51,18 @@ PUBLIC_TEMPLATE = """\
 # Configure your VM to access Artifact Registry packages using the following
 # command:
 
-sudo tee -a /etc/yum.repos.d/artifact-registry.repo << EOL
+sudo tee -a /etc/yum.repos.d/artifact-registry.repo << EOF
 [{repo}]
 name={repo}
 baseurl=https://{location}-yum.pkg.dev/projects/{repo_path}
 enabled=1
 repo_gpgcheck=0
 gpgcheck=0
-EOL
+EOF
 
 # Update Yum:
 sudo yum makecache
+
+# For complete setup information, see
+# https://cloud.google.com/artifact-registry/docs/os-packages/rpm/configure
 """

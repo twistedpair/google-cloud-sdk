@@ -309,6 +309,33 @@ class WorkstationsV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ListUsable(self, request, global_params=None):
+      r"""Returns all WorkstationConfigs in the specified cluster on which the caller has the "workstations.workstationConfigs.useReadOnly" permission.
+
+      Args:
+        request: (WorkstationsProjectsLocationsWorkstationClustersWorkstationConfigsListUsableRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListUsableWorkstationConfigsResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListUsable')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListUsable.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/workstationClusters/{workstationClustersId}/workstationConfigs:listUsable',
+        http_method='GET',
+        method_id='workstations.projects.locations.workstationClusters.workstationConfigs.listUsable',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/workstationConfigs:listUsable',
+        request_field='',
+        request_type_name='WorkstationsProjectsLocationsWorkstationClustersWorkstationConfigsListUsableRequest',
+        response_type_name='ListUsableWorkstationConfigsResponse',
+        supports_download=False,
+    )
+
     def Patch(self, request, global_params=None):
       r"""Updates an existing WorkstationConfig.
 
@@ -559,6 +586,33 @@ class WorkstationsV1alpha1(base_api.BaseApiClient):
         request_field='',
         request_type_name='WorkstationsProjectsLocationsWorkstationClustersWorkstationsListRequest',
         response_type_name='ListWorkstationsResponse',
+        supports_download=False,
+    )
+
+    def ListUsable(self, request, global_params=None):
+      r"""Returns all Workstations in the specified cluster on which the caller has the "workstations.workstations.use" permission.
+
+      Args:
+        request: (WorkstationsProjectsLocationsWorkstationClustersWorkstationsListUsableRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListUsableWorkstationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListUsable')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListUsable.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/workstationClusters/{workstationClustersId}/workstations:listUsable',
+        http_method='GET',
+        method_id='workstations.projects.locations.workstationClusters.workstations.listUsable',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/workstations:listUsable',
+        request_field='',
+        request_type_name='WorkstationsProjectsLocationsWorkstationClustersWorkstationsListUsableRequest',
+        response_type_name='ListUsableWorkstationsResponse',
         supports_download=False,
     )
 

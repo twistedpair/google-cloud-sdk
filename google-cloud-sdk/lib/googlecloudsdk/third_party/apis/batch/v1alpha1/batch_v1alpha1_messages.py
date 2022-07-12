@@ -1383,9 +1383,12 @@ class LocationPolicy(_messages.Message):
 
   Fields:
     allowedLocations: A list of allowed location names represented by internal
-      URLs, First location in the list must be a region. for example,
-      ["regions/us-central1"] allow VMs in region us-central1, ["regions/us-
-      central1", "zones/us-central1-a"] only allow VMs in zone us-central1-a.
+      URLs, only the first region is supported now. First location in the list
+      must be a region. for example, ["regions/us-central1"] allow VMs in
+      region us-central1, ["regions/us-central1", "zones/us-central1-a"] only
+      allow VMs in zone us-central1-a. ["regions/us-central1", "zones/us-
+      central1-a", "zones/us-central1-b", "regions/us-west1", "zones/us-
+      west1-a"] only allow VMs in zone us-central1-a or zones/us-central1-b.
     deniedLocations: A list of denied location names. Not yet implemented.
   """
 

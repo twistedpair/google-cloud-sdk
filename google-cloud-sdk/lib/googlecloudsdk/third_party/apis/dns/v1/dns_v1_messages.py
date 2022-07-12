@@ -2370,12 +2370,13 @@ class ResponsePolicyRule(_messages.Message):
     Values:
       behaviorUnspecified: <no description>
       bypassResponsePolicy: Skip a less-specific ResponsePolicyRule and
-        continue normal query logic. This can be used in conjunction with a
-        wildcard to exempt a subset of the wildcard ResponsePolicyRule from
-        the ResponsePolicy behavior and e.g., query the public internet
-        instead. For instance, if these rules exist: *.example.com -> 1.2.3.4
-        foo.example.com -> PASSTHRU Then a query for 'foo.example.com' skips
-        the wildcard.
+        continue normal query logic. This can be used with a less-specific
+        wildcard selector to exempt a subset of the wildcard
+        ResponsePolicyRule from the ResponsePolicy behavior and query the
+        public Internet instead. For instance, if these rules exist:
+        *.example.com -> LocalData 1.2.3.4 foo.example.com -> Behavior
+        'bypassResponsePolicy' Then a query for 'foo.example.com' skips the
+        wildcard.
     """
     behaviorUnspecified = 0
     bypassResponsePolicy = 1

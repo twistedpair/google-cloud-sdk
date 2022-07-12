@@ -50,6 +50,17 @@ def CreateUpdateRequest(release_track, ref, args):
     # Omit on False to make wired format cleaner.
     krm_api_host.usePrivateEndpoint = args.use_private_endpoint
 
+  # Populate man blocks if provided
+  multiple_cidr_blocks = []
+  if args.IsSpecified('man_block') and args.IsSpecified('man_blocks'):
+    raise Exception('man_block and man_blocks can not be set at the same time')
+  if args.IsSpecified('man_blocks'):
+    for cidr_block in args.man_blocks:
+      cur_cidr_block = messages.CidrBlock(cidrBlock=cidr_block)
+      multiple_cidr_blocks.append(cur_cidr_block)
+  man_blocks = messages.MasterAuthorizedNetworksConfig(
+      cidrBlocks=multiple_cidr_blocks)
+
   # The full-management flag is only available on the alpha command.
   if release_track == base.ReleaseTrack.ALPHA and args.full_management:
     full_mgmt_config = messages.FullManagementConfig(
@@ -61,10 +72,13 @@ def CreateUpdateRequest(release_track, ref, args):
         subnet=args.subnet,
         servicesCidrBlock=args.services_ipv4_cidr_block,
         servicesNamedRange=args.services_named_range)
+    if args.IsSpecified('man_blocks'):
+      full_mgmt_config.masterAuthorizedNetworksConfig = man_blocks
     mgmt_config = messages.ManagementConfig(
         fullManagementConfig=full_mgmt_config)
     krm_api_host.managementConfig = mgmt_config
   else:
+    # BUG(xiaoweim): moved the default value up to be a const
     # Default master ipv4 cidr block address if not provided
     master_ipv4_cidr_block = '172.16.0.128/28'
     if args.master_ipv4_cidr_block is not None:
@@ -78,6 +92,8 @@ def CreateUpdateRequest(release_track, ref, args):
         subnet=args.subnet,
         servicesCidrBlock=args.services_ipv4_cidr_block,
         servicesNamedRange=args.services_named_range)
+    if args.IsSpecified('man_blocks'):
+      std_mgmt_config.masterAuthorizedNetworksConfig = man_blocks
     mgmt_config = messages.ManagementConfig(
         standardManagementConfig=std_mgmt_config)
     krm_api_host.managementConfig = mgmt_config

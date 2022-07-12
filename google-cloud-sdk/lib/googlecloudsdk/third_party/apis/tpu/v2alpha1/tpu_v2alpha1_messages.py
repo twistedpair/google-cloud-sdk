@@ -30,20 +30,14 @@ class AcceleratorConfig(_messages.Message):
 
     Values:
       TYPE_UNSPECIFIED: Unspecified version.
-      V2: TPU v2 single device.
-      V2_POD: TPU v2 pod.
-      V3: TPU v3 single device.
-      V3_POD: TPU v3 pod.
-      V4_POD: TPU v4 pod.
+      V2: TPU v2.
+      V3: TPU v3.
       V4: TPU v4.
     """
     TYPE_UNSPECIFIED = 0
     V2 = 1
-    V2_POD = 2
-    V3 = 3
-    V3_POD = 4
-    V4_POD = 5
-    V4 = 6
+    V3 = 2
+    V4 = 3
 
   topology = _messages.StringField(1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)

@@ -82,13 +82,7 @@ class SessionPoller(dataproc_poller_base.AbstractOperationStreamerPoller):
           err_message += '.'
       raise exceptions.OperationError(err_message)
 
-    # Nothing to return, since the result is directly output to users.
-    return self._GetOutputUri(session)
-
-  def _GetOutputUri(self, session):
-    """See base class."""
-    if session and session.runtimeInfo and session.runtimeInfo.outputUri:
-      return session.runtimeInfo.outputUri
+    # Nothing to return.
     return None
 
   def _CheckStreamer(self, poll_result):

@@ -63,8 +63,6 @@ GOOGLE_OAUTH2_PROVIDER_AUTHORIZATION_URI = (
     'https://accounts.google.com/o/oauth2/auth')
 GOOGLE_OAUTH2_PROVIDER_REVOKE_URI = (
     'https://accounts.google.com/o/oauth2/revoke')
-GOOGLE_OAUTH2_PROVIDER_TOKEN_URI = (
-    'https://accounts.google.com/o/oauth2/token')
 _GRANT_TYPE = 'urn:ietf:params:oauth:grant-type:jwt-bearer'
 
 _CREDENTIALS_EXPIRY_WINDOW = '300s'
@@ -1157,7 +1155,7 @@ def Revoke(account=None):
 
 
 def AcquireFromToken(refresh_token,
-                     token_uri=GOOGLE_OAUTH2_PROVIDER_TOKEN_URI,
+                     token_uri=None,
                      revoke_uri=GOOGLE_OAUTH2_PROVIDER_REVOKE_URI,
                      use_google_auth=True):
   """Get credentials from an already-valid refresh token.
@@ -1179,6 +1177,12 @@ def AcquireFromToken(refresh_token,
     * google-auth is not globally disabled by auth/disable_load_google_auth.
   """
   use_google_auth = use_google_auth and (not GoogleAuthDisabledGlobally())
+  if token_uri is None:
+    if properties.VALUES.context_aware.use_client_certificate.GetBool():
+      token_uri = properties.VALUES.auth.mtls_token_host.Get(required=True)
+    else:
+      token_uri = properties.VALUES.auth.token_host.Get(required=True)
+
   if use_google_auth:
     # Import only when necessary to decrease the startup time. Move it to
     # global once google-auth is ready to replace oauth2client.

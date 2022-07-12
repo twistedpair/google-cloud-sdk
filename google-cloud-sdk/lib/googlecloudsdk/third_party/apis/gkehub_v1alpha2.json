@@ -351,6 +351,19 @@
           "description": "Output only. Whether the lifecycle of this membership is managed by a google cluster platform service.",
           "readOnly": true,
           "type": "boolean"
+        },
+        "mode": {
+          "description": "Output only. The management mode of this membership.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "The mode is not set.",
+            "Membership is being managed in autofleet mode."
+          ],
+          "enum": [
+            "MODE_UNSPECIFIED",
+            "AUTOFLEET"
+          ]
         }
       }
     },

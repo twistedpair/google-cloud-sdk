@@ -2767,6 +2767,52 @@ class GoogleCloudBeyondcorpAppconnectorsV1alphaAppConnectorPrincipalInfoServiceA
   email = _messages.StringField(1)
 
 
+class GoogleCloudBeyondcorpAppconnectorsV1alphaContainerHealthDetails(_messages.Message):
+  r"""ContainerHealthDetails reflects the health details of a container.
+
+  Messages:
+    ExtendedStatusValue: The extended status. Such as ExitCode, StartedAt,
+      FinishedAt, etc.
+
+  Fields:
+    currentConfigVersion: The version of the current config.
+    errorMsg: The latest error message.
+    expectedConfigVersion: The version of the expected config.
+    extendedStatus: The extended status. Such as ExitCode, StartedAt,
+      FinishedAt, etc.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ExtendedStatusValue(_messages.Message):
+    r"""The extended status. Such as ExitCode, StartedAt, FinishedAt, etc.
+
+    Messages:
+      AdditionalProperty: An additional property for a ExtendedStatusValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type ExtendedStatusValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ExtendedStatusValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  currentConfigVersion = _messages.StringField(1)
+  errorMsg = _messages.StringField(2)
+  expectedConfigVersion = _messages.StringField(3)
+  extendedStatus = _messages.MessageField('ExtendedStatusValue', 4)
+
+
 class GoogleCloudBeyondcorpAppconnectorsV1alphaImageConfig(_messages.Message):
   r"""ImageConfig defines the control plane images to run.
 
@@ -2817,6 +2863,10 @@ class GoogleCloudBeyondcorpAppconnectorsV1alphaNotificationConfigCloudPubSubNoti
   """
 
   pubsubSubscription = _messages.StringField(1)
+
+
+class GoogleCloudBeyondcorpAppconnectorsV1alphaRemoteAgentDetails(_messages.Message):
+  r"""RemoteAgentDetails reflects the details of a remote agent."""
 
 
 class GoogleCloudBeyondcorpAppconnectorsV1alphaReportStatusRequest(_messages.Message):

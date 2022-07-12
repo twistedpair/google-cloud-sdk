@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.kms import maps
@@ -244,7 +245,18 @@ def AddInputFileFlag(parser, help_action):
 def AddRsaAesWrappedKeyFileFlag(parser, help_action):
   parser.add_argument(
       '--rsa-aes-wrapped-key-file',
-      help='Path to the wrapped RSA AES key file {}.'.format(help_action))
+      help='Path to the wrapped RSA AES key file {}.'.format(help_action),
+      hidden=True,
+      action=actions.DeprecationAction(
+          '--rsa-aes-wrapped-key-file',
+          warn='The {flag_name} flag is deprecated but will continue to be '
+          'supported. Prefer to use the --wrapped-key-file flag instead.'))
+
+
+def AddWrappedKeyFileFlag(parser, help_action):
+  parser.add_argument(
+      '--wrapped-key-file',
+      help='Path to the RSA/RSA+AES wrapped key file {}.'.format(help_action))
 
 
 def AddOutputFileFlag(parser, help_action):
@@ -299,18 +311,17 @@ def AddRequiredImportMethodFlag(parser):
       required=True)
 
 
-def AddOptionalPublicKeyFileArgument(parser):
+def AddPublicKeyFileFlag(parser):
   parser.add_argument(
       '--public-key-file',
-      help='Optional path to the public key of the ImportJob, used to wrap the '
-      'key for import. If missing, the public key will be fetched on your '
-      'behalf.')
+      help='Path to the public key of the ImportJob, used to wrap the key for '
+      'import. If missing, the public key will be fetched on your behalf.')
 
 
-def AddOptionalTargetKeyFileArgument(parser):
+def AddTargetKeyFileFlag(parser):
   parser.add_argument(
       '--target-key-file',
-      help='Optional path to the unwrapped target key to import into a Cloud '
+      help='Path to the unwrapped target key to import into a Cloud '
       'KMS key version. If specified, the key will be securely wrapped before '
       'transmission to Google.')
 
@@ -374,8 +385,7 @@ def AddCryptoKeyBackendFlag(parser):
       'material for all CryptoKeyVersions associated with this CryptoKey '
       'reside and where all related cryptographic operations are performed. '
       'Currently only applicable for EXTERNAL_VPC and EkmConnection '
-      'resource names.'
-  )
+      'resource names.')
 
 
 def AddImportOnlyFlag(parser):

@@ -494,6 +494,24 @@
         }
       }
     },
+    "UploadGenericArtifactRequest": {
+      "id": "UploadGenericArtifactRequest",
+      "description": "The request to upload a generic artifact.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "UploadGenericArtifactMediaResponse": {
+      "id": "UploadGenericArtifactMediaResponse",
+      "description": "The response to upload a generic artifact.",
+      "type": "object",
+      "properties": {
+        "operation": {
+          "description": "Operation that will be returned to the user.",
+          "$ref": "Operation"
+        }
+      }
+    },
     "UploadGoModuleRequest": {
       "id": "UploadGoModuleRequest",
       "description": "The request to upload a Go module.",
@@ -563,7 +581,8 @@
             "YUM package format.",
             "Python package format.",
             "Kubeflow Pipelines package format.",
-            "GO package format."
+            "GO package format.",
+            "Generic package format."
           ],
           "enum": [
             "FORMAT_UNSPECIFIED",
@@ -574,7 +593,8 @@
             "YUM",
             "PYTHON",
             "KFP",
-            "GO"
+            "GO",
+            "GENERIC"
           ]
         },
         "description": {
@@ -618,6 +638,13 @@
             "REMOTE_REPOSITORY"
           ]
         },
+        "cleanupPolicies": {
+          "description": "Cleanup policies for this repository. Cleanup policies indicate when certain package versions can be automatically deleted. Map keys are policy IDs supplied by users during policy creation. They must unique within a repository and be under 128 characters in length.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "CleanupPolicy"
+          }
+        },
         "sizeBytes": {
           "description": "Output only. The size, in bytes, of all artifact storage in this repository. Repositories that are generally available or in public preview use this to calculate storage costs.",
           "readOnly": true,
@@ -658,8 +685,8 @@
       "properties": {
         "upstreamPolicies": {
           "description": "Policies that configure the upstream artifacts distributed by the Virtual Repository. Upstream policies cannot be set on a standard repository.",
-          "type": "object",
-          "additionalProperties": {
+          "type": "array",
+          "items": {
             "$ref": "UpstreamPolicy"
           }
         }
@@ -785,6 +812,33 @@
             "PUBLIC_REPOSITORY_UNSPECIFIED",
             "PYPI"
           ]
+        }
+      }
+    },
+    "CleanupPolicy": {
+      "id": "CleanupPolicy",
+      "description": "Artifact policy configuration for repository cleanup policies.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "The user-provided ID of the upstream policy.",
+          "type": "string"
+        },
+        "condition": {
+          "description": "Policy condition that indicates when versions should be deleted.",
+          "$ref": "CleanupPolicyCondition"
+        }
+      }
+    },
+    "CleanupPolicyCondition": {
+      "id": "CleanupPolicyCondition",
+      "description": "CleanupPolicyCondtion defines a set of conditions of a CleanupPolicy. If multiple entries are set, all must be satisfied for the condition to be satisfied.",
+      "type": "object",
+      "properties": {
+        "versionAge": {
+          "description": "Condition type which is satisfied if a version is older than the specified time.",
+          "type": "string",
+          "format": "google-duration"
         }
       }
     },
@@ -2294,6 +2348,50 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Directly uploads a Yum artifact. The returned Operation will complete once the resources are uploaded. Package, Version, and File resources are created based on the imported artifact. Imported artifacts that conflict with existing resources are ignored."
+                    }
+                  }
+                },
+                "genericArtifacts": {
+                  "methods": {
+                    "upload": {
+                      "id": "artifactregistry.projects.locations.repositories.genericArtifacts.upload",
+                      "path": "v1/{+parent}/genericArtifacts:create",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/genericArtifacts:create",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "The resource name of the repository where the generic artifact will be uploaded.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "supportsMediaUpload": true,
+                      "mediaUpload": {
+                        "accept": [
+                          "*/*"
+                        ],
+                        "protocols": {
+                          "simple": {
+                            "multipart": true,
+                            "path": "/upload/v1/{+parent}/genericArtifacts:create"
+                          }
+                        }
+                      },
+                      "request": {
+                        "$ref": "UploadGenericArtifactRequest"
+                      },
+                      "response": {
+                        "$ref": "UploadGenericArtifactMediaResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Directly uploads a Generic artifact. The returned Operation will complete once the resources are uploaded. Package, Version, and File resources are created based on the uploaded artifact. Uploaded artifacts that conflict with existing resources will raise an ALREADY_EXISTS error."
                     }
                   }
                 },

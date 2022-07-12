@@ -360,6 +360,7 @@ class _Sections(object):
       the Cloud SDK.
     gkebackup: Section, The section containing gkebackup properties for the
       Cloud SDK.
+    gkehub: Section, The section containing gkehub properties for the Cloud SDK.
     healthcare: Section, The section containing healthcare properties for the
       Cloud SDK.
     interactive: Section, The section containing interactive properties for the
@@ -458,6 +459,7 @@ class _Sections(object):
     self.functions = _SectionFunctions()
     self.game_services = _SectionGameServices()
     self.gcloudignore = _SectionGcloudignore()
+    self.gkehub = _SectionGkeHub()
     self.gkebackup = _SectionGkebackup()
     self.healthcare = _SectionHealthcare()
     self.interactive = _SectionInteractive()
@@ -1158,6 +1160,8 @@ class _SectionApiEndpointOverrides(_Section):
         'gkemulticloud',
         help_text=('Overrides API endpoint for `gcloud container aws` and '
                    '`gcloud container azure` command groups. '))
+    # TODO(b/236427906): Unhide after gcloud client releases to GA.
+    self.gkeonprem = self._Add('gkeonprem', hidden=True)
     self.healthcare = self._Add('healthcare', command='gcloud healthcare')
     self.iam = self._Add('iam', command='gcloud iam')
     self.iap = self._Add('iap', command='gcloud iap')
@@ -1792,6 +1796,11 @@ class _SectionContextAware(_Section):
         validator=ExistingAbsoluteFilepathValidator,
         help_text='File path for auto discovery configuration file.',
         hidden=True)
+    self.enterprise_certificate_config_file_path = self._Add(
+        'enterprise_certificate_config_file_path',
+        validator=ExistingAbsoluteFilepathValidator,
+        help_text='File path for enterprise certificate configuration file.',
+        hidden=True)
 
 
 class _SectionCore(_Section):
@@ -2412,6 +2421,18 @@ class _SectionGcloudignore(_Section):
             'If True, do not upload `.gcloudignore` files (see `$ gcloud topic '
             'gcloudignore`). If False, turn off the gcloudignore mechanism '
             'entirely and upload all files.'))
+
+
+class _SectionGkeHub(_Section):
+  """Contains the properties for the 'gkehub' section."""
+
+  def __init__(self):
+    super(_SectionGkeHub, self).__init__('gkehub')
+    self.location = self._Add(
+        'location',
+        default='global',
+        help_text='Please use the `--location` flag to set membership location.'
+    )
 
 
 class _SectionGkebackup(_Section):

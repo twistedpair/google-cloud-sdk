@@ -437,6 +437,26 @@ def AddStreamResourceArg(parser, verb, release_track, required=True):
        }
       ```
         """)
+  destination_config_parser_group.add_argument(
+      '--bigquery-destination-config',
+      help="""\
+      Path to a YAML (or JSON) file containing the configuration for Google BigQuery Destination Config.
+
+      The JSON file is formatted as follows:
+
+      ```
+      {
+        "source_hierarchy_datasets": {
+          "dataset_template": {
+            "location": "us-central1",
+            "dataset_id_prefix": "my_prefix",
+            "kms_key_name": "projects/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{cryptoKey}"
+          }
+        },
+        "data_freshness": 3600
+      }
+      ```
+        """)
 
   source_field = 'source'
   destination_field = 'destination'

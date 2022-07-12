@@ -835,7 +835,7 @@
           "$ref": "GoogleCloudAiplatformV1beta1DeploymentResourcePool"
         },
         "deploymentResourcePoolId": {
-          "description": "Required. The ID to use for the DeploymentResourcePool, which will become the final component of the DeploymentResourcePool's resource name. The maximum length is 63 characters, and valid characters are \/^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$\/.",
+          "description": "Required. The ID to use for the DeploymentResourcePool, which will become the final component of the DeploymentResourcePool's resource name. The maximum length is 63 characters, and valid characters are `\/^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$\/`.",
           "type": "string"
         }
       }
@@ -3306,7 +3306,7 @@
     },
     "GoogleCloudAiplatformV1beta1CustomJobSpec": {
       "id": "GoogleCloudAiplatformV1beta1CustomJobSpec",
-      "description": "Represents the spec of a CustomJob. Next Id: 14",
+      "description": "Represents the spec of a CustomJob. Next Id: 15",
       "type": "object",
       "properties": {
         "workerPoolSpecs": {
@@ -3325,7 +3325,7 @@
           "type": "string"
         },
         "network": {
-          "description": "The full name of the Compute Engine [network](\/compute\/docs\/networks-and-firewalls#networks) to which the Job should be peered. For example, `projects\/12345\/global\/networks\/myVPC`. [Format](\/compute\/docs\/reference\/rest\/v1\/networks\/insert) is of the form `projects\/{project}\/global\/networks\/{network}`. Where {project} is a project number, as in `12345`, and {network} is a network name. To specify this field, you must have already [configured VPC Network Peering for Vertex AI](https:\/\/cloud.google.com\/vertex-ai\/docs\/general\/vpc-peering). If this field is left unspecified, the job is not peered with any network.",
+          "description": "Optional. The full name of the Compute Engine [network](\/compute\/docs\/networks-and-firewalls#networks) to which the Job should be peered. For example, `projects\/12345\/global\/networks\/myVPC`. [Format](\/compute\/docs\/reference\/rest\/v1\/networks\/insert) is of the form `projects\/{project}\/global\/networks\/{network}`. Where {project} is a project number, as in `12345`, and {network} is a network name. To specify this field, you must have already [configured VPC Network Peering for Vertex AI](https:\/\/cloud.google.com\/vertex-ai\/docs\/general\/vpc-peering). If this field is left unspecified, the job is not peered with any network.",
           "type": "string"
         },
         "reservedIpRanges": {
@@ -4633,6 +4633,10 @@
         "encryptionSpec": {
           "description": "Customer-managed encryption key options for a BatchPredictionJob. If this is set, then all resources created by the BatchPredictionJob will be encrypted with the provided encryption key.",
           "$ref": "GoogleCloudAiplatformV1beta1EncryptionSpec"
+        },
+        "modelMonitoringConfig": {
+          "description": "Model monitoring config will be used for analysis model behaviors, based on the input and output to the batch prediction job, as well as the provided training dataset.",
+          "$ref": "GoogleCloudAiplatformV1beta1ModelMonitoringConfig"
         }
       }
     },
@@ -4870,6 +4874,240 @@
         }
       }
     },
+    "GoogleCloudAiplatformV1beta1ModelMonitoringConfig": {
+      "id": "GoogleCloudAiplatformV1beta1ModelMonitoringConfig",
+      "description": "Next ID: 5",
+      "type": "object",
+      "properties": {
+        "objectiveConfigs": {
+          "description": "Model monitoring objective config.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfig"
+          }
+        },
+        "alertConfig": {
+          "description": "Model monitoring alert config.",
+          "$ref": "GoogleCloudAiplatformV1beta1ModelMonitoringAlertConfig"
+        },
+        "analysisInstanceSchemaUri": {
+          "description": "YAML schema file uri in Cloud Storage describing the format of a single instance that you want Tensorflow Data Validation (TFDV) to analyze. If there are any data type differences between predict instance and TFDV instance, this field can be used to override the schema. For models trained with Vertex AI, this field must be set as all the fields in predict instance formatted as string.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfig": {
+      "id": "GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfig",
+      "description": "Next ID: 8",
+      "type": "object",
+      "properties": {
+        "trainingDataset": {
+          "description": "Training dataset for models. This field has to be set only if TrainingPredictionSkewDetectionConfig is specified.",
+          "$ref": "GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigTrainingDataset"
+        },
+        "trainingPredictionSkewDetectionConfig": {
+          "description": "The config for skew between training data and prediction data.",
+          "$ref": "GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigTrainingPredictionSkewDetectionConfig"
+        },
+        "predictionDriftDetectionConfig": {
+          "description": "The config for drift of prediction data.",
+          "$ref": "GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigPredictionDriftDetectionConfig"
+        },
+        "explanationConfig": {
+          "description": "The config for integrating with Vertex Explainable AI.",
+          "$ref": "GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigExplanationConfig"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigTrainingDataset": {
+      "id": "GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigTrainingDataset",
+      "description": "Training Dataset information.",
+      "type": "object",
+      "properties": {
+        "dataset": {
+          "description": "The resource name of the Dataset used to train this Model.",
+          "type": "string"
+        },
+        "gcsSource": {
+          "description": "The Google Cloud Storage uri of the unmanaged Dataset used to train this Model.",
+          "$ref": "GoogleCloudAiplatformV1beta1GcsSource"
+        },
+        "bigquerySource": {
+          "description": "The BigQuery table of the unmanaged Dataset used to train this Model.",
+          "$ref": "GoogleCloudAiplatformV1beta1BigQuerySource"
+        },
+        "dataFormat": {
+          "description": "Data format of the dataset, only applicable if the input is from Google Cloud Storage. The possible formats are: \"tf-record\" The source file is a TFRecord file. \"csv\" The source file is a CSV file. \"jsonl\" The source file is a JSONL file.",
+          "type": "string"
+        },
+        "targetField": {
+          "description": "The target field name the model is to predict. This field will be excluded when doing Predict and (or) Explain for the training data.",
+          "type": "string"
+        },
+        "loggingSamplingStrategy": {
+          "description": "Strategy to sample data from Training Dataset. If not set, we process the whole dataset.",
+          "$ref": "GoogleCloudAiplatformV1beta1SamplingStrategy"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SamplingStrategy": {
+      "id": "GoogleCloudAiplatformV1beta1SamplingStrategy",
+      "description": "Sampling Strategy for logging, can be for both training and prediction dataset. Next ID: 2",
+      "type": "object",
+      "properties": {
+        "randomSampleConfig": {
+          "description": "Random sample config. Will support more sampling strategies later.",
+          "$ref": "GoogleCloudAiplatformV1beta1SamplingStrategyRandomSampleConfig"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SamplingStrategyRandomSampleConfig": {
+      "id": "GoogleCloudAiplatformV1beta1SamplingStrategyRandomSampleConfig",
+      "description": "Requests are randomly selected.",
+      "type": "object",
+      "properties": {
+        "sampleRate": {
+          "description": "Sample rate (0, 1]",
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigTrainingPredictionSkewDetectionConfig": {
+      "id": "GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigTrainingPredictionSkewDetectionConfig",
+      "description": "The config for Training & Prediction data skew detection. It specifies the training dataset sources and the skew detection parameters.",
+      "type": "object",
+      "properties": {
+        "skewThresholds": {
+          "description": "Key is the feature name and value is the threshold. If a feature needs to be monitored for skew, a value threshold must be configured for that feature. The threshold here is against feature distribution distance between the training and prediction feature.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "GoogleCloudAiplatformV1beta1ThresholdConfig"
+          }
+        },
+        "attributionScoreSkewThresholds": {
+          "description": "Key is the feature name and value is the threshold. The threshold here is against attribution score distance between the training and prediction feature.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "GoogleCloudAiplatformV1beta1ThresholdConfig"
+          }
+        },
+        "defaultSkewThreshold": {
+          "description": "Skew anomaly detection threshold used by all features. When the per-feature thresholds are not set, this field can be used to specify a threshold for all features.",
+          "$ref": "GoogleCloudAiplatformV1beta1ThresholdConfig"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1ThresholdConfig": {
+      "id": "GoogleCloudAiplatformV1beta1ThresholdConfig",
+      "description": "The config for feature monitoring threshold. Next ID: 3",
+      "type": "object",
+      "properties": {
+        "value": {
+          "description": "Specify a threshold value that can trigger the alert. If this threshold config is for feature distribution distance: 1. For categorical feature, the distribution distance is calculated by L-inifinity norm. 2. For numerical feature, the distribution distance is calculated by Jensen\u2013Shannon divergence. Each feature must have a non-zero threshold if they need to be monitored. Otherwise no alert will be triggered for that feature.",
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigPredictionDriftDetectionConfig": {
+      "id": "GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigPredictionDriftDetectionConfig",
+      "description": "The config for Prediction data drift detection.",
+      "type": "object",
+      "properties": {
+        "driftThresholds": {
+          "description": "Key is the feature name and value is the threshold. If a feature needs to be monitored for drift, a value threshold must be configured for that feature. The threshold here is against feature distribution distance between different time windws.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "GoogleCloudAiplatformV1beta1ThresholdConfig"
+          }
+        },
+        "attributionScoreDriftThresholds": {
+          "description": "Key is the feature name and value is the threshold. The threshold here is against attribution score distance between different time windows.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "GoogleCloudAiplatformV1beta1ThresholdConfig"
+          }
+        },
+        "defaultDriftThreshold": {
+          "description": "Drift anomaly detection threshold used by all features. When the per-feature thresholds are not set, this field can be used to specify a threshold for all features.",
+          "$ref": "GoogleCloudAiplatformV1beta1ThresholdConfig"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigExplanationConfig": {
+      "id": "GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigExplanationConfig",
+      "description": "The config for integrating with Vertex Explainable AI. Only applicable if the Model has explanation_spec populated.",
+      "type": "object",
+      "properties": {
+        "enableFeatureAttributes": {
+          "description": "If want to analyze the Vertex Explainable AI feature attribute scores or not. If set to true, Vertex AI will log the feature attributions from explain response and do the skew\/drift detection for them.",
+          "type": "boolean"
+        },
+        "explanationBaseline": {
+          "description": "Predictions generated by the BatchPredictionJob using baseline dataset.",
+          "$ref": "GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigExplanationConfigExplanationBaseline"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigExplanationConfigExplanationBaseline": {
+      "id": "GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigExplanationConfigExplanationBaseline",
+      "description": "Output from BatchPredictionJob for Model Monitoring baseline dataset, which can be used to generate baseline attribution scores.",
+      "type": "object",
+      "properties": {
+        "gcs": {
+          "description": "Cloud Storage location for BatchExplain output.",
+          "$ref": "GoogleCloudAiplatformV1beta1GcsDestination"
+        },
+        "bigquery": {
+          "description": "BigQuery location for BatchExplain output.",
+          "$ref": "GoogleCloudAiplatformV1beta1BigQueryDestination"
+        },
+        "predictionFormat": {
+          "description": "The storage format of the predictions generated BatchPrediction job.",
+          "type": "string",
+          "enumDescriptions": [
+            "Should not be set.",
+            "Predictions are in JSONL files.",
+            "Predictions are in BigQuery."
+          ],
+          "enum": [
+            "PREDICTION_FORMAT_UNSPECIFIED",
+            "JSONL",
+            "BIGQUERY"
+          ]
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1ModelMonitoringAlertConfig": {
+      "id": "GoogleCloudAiplatformV1beta1ModelMonitoringAlertConfig",
+      "description": "Next ID: 3",
+      "type": "object",
+      "properties": {
+        "emailAlertConfig": {
+          "description": "Email alert config.",
+          "$ref": "GoogleCloudAiplatformV1beta1ModelMonitoringAlertConfigEmailAlertConfig"
+        },
+        "enableLogging": {
+          "description": "Dump the anomalies to Cloud Logging. The anomalies will be put to json payload encoded from proto google.cloud.aiplatform.logging.ModelMonitoringAnomaliesLogEntry. This can be further sinked to Pub\/Sub or any other services supported by Cloud Logging.",
+          "type": "boolean"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1ModelMonitoringAlertConfigEmailAlertConfig": {
+      "id": "GoogleCloudAiplatformV1beta1ModelMonitoringAlertConfigEmailAlertConfig",
+      "description": "The config for email alert.",
+      "type": "object",
+      "properties": {
+        "userEmails": {
+          "description": "The email addresses to send the alert.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "GoogleCloudAiplatformV1beta1ListBatchPredictionJobsResponse": {
       "id": "GoogleCloudAiplatformV1beta1ListBatchPredictionJobsResponse",
       "description": "Response message for JobService.ListBatchPredictionJobs",
@@ -5085,189 +5323,6 @@
         }
       }
     },
-    "GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfig": {
-      "id": "GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfig",
-      "description": "Next ID: 8",
-      "type": "object",
-      "properties": {
-        "trainingDataset": {
-          "description": "Training dataset for models. This field has to be set only if TrainingPredictionSkewDetectionConfig is specified.",
-          "$ref": "GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigTrainingDataset"
-        },
-        "trainingPredictionSkewDetectionConfig": {
-          "description": "The config for skew between training data and prediction data.",
-          "$ref": "GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigTrainingPredictionSkewDetectionConfig"
-        },
-        "predictionDriftDetectionConfig": {
-          "description": "The config for drift of prediction data.",
-          "$ref": "GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigPredictionDriftDetectionConfig"
-        },
-        "explanationConfig": {
-          "description": "The config for integrating with Vertex Explainable AI.",
-          "$ref": "GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigExplanationConfig"
-        }
-      }
-    },
-    "GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigTrainingDataset": {
-      "id": "GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigTrainingDataset",
-      "description": "Training Dataset information.",
-      "type": "object",
-      "properties": {
-        "dataset": {
-          "description": "The resource name of the Dataset used to train this Model.",
-          "type": "string"
-        },
-        "gcsSource": {
-          "description": "The Google Cloud Storage uri of the unmanaged Dataset used to train this Model.",
-          "$ref": "GoogleCloudAiplatformV1beta1GcsSource"
-        },
-        "bigquerySource": {
-          "description": "The BigQuery table of the unmanaged Dataset used to train this Model.",
-          "$ref": "GoogleCloudAiplatformV1beta1BigQuerySource"
-        },
-        "dataFormat": {
-          "description": "Data format of the dataset, only applicable if the input is from Google Cloud Storage. The possible formats are: \"tf-record\" The source file is a TFRecord file. \"csv\" The source file is a CSV file. \"jsonl\" The source file is a JSONL file.",
-          "type": "string"
-        },
-        "targetField": {
-          "description": "The target field name the model is to predict. This field will be excluded when doing Predict and (or) Explain for the training data.",
-          "type": "string"
-        },
-        "loggingSamplingStrategy": {
-          "description": "Strategy to sample data from Training Dataset. If not set, we process the whole dataset.",
-          "$ref": "GoogleCloudAiplatformV1beta1SamplingStrategy"
-        }
-      }
-    },
-    "GoogleCloudAiplatformV1beta1SamplingStrategy": {
-      "id": "GoogleCloudAiplatformV1beta1SamplingStrategy",
-      "description": "Sampling Strategy for logging, can be for both training and prediction dataset. Next ID: 2",
-      "type": "object",
-      "properties": {
-        "randomSampleConfig": {
-          "description": "Random sample config. Will support more sampling strategies later.",
-          "$ref": "GoogleCloudAiplatformV1beta1SamplingStrategyRandomSampleConfig"
-        }
-      }
-    },
-    "GoogleCloudAiplatformV1beta1SamplingStrategyRandomSampleConfig": {
-      "id": "GoogleCloudAiplatformV1beta1SamplingStrategyRandomSampleConfig",
-      "description": "Requests are randomly selected.",
-      "type": "object",
-      "properties": {
-        "sampleRate": {
-          "description": "Sample rate (0, 1]",
-          "type": "number",
-          "format": "double"
-        }
-      }
-    },
-    "GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigTrainingPredictionSkewDetectionConfig": {
-      "id": "GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigTrainingPredictionSkewDetectionConfig",
-      "description": "The config for Training & Prediction data skew detection. It specifies the training dataset sources and the skew detection parameters.",
-      "type": "object",
-      "properties": {
-        "skewThresholds": {
-          "description": "Key is the feature name and value is the threshold. If a feature needs to be monitored for skew, a value threshold must be configured for that feature. The threshold here is against feature distribution distance between the training and prediction feature.",
-          "type": "object",
-          "additionalProperties": {
-            "$ref": "GoogleCloudAiplatformV1beta1ThresholdConfig"
-          }
-        },
-        "attributionScoreSkewThresholds": {
-          "description": "Key is the feature name and value is the threshold. The threshold here is against attribution score distance between the training and prediction feature.",
-          "type": "object",
-          "additionalProperties": {
-            "$ref": "GoogleCloudAiplatformV1beta1ThresholdConfig"
-          }
-        },
-        "defaultSkewThreshold": {
-          "description": "Skew anomaly detection threshold used by all features. When the per-feature thresholds are not set, this field can be used to specify a threshold for all features.",
-          "$ref": "GoogleCloudAiplatformV1beta1ThresholdConfig"
-        }
-      }
-    },
-    "GoogleCloudAiplatformV1beta1ThresholdConfig": {
-      "id": "GoogleCloudAiplatformV1beta1ThresholdConfig",
-      "description": "The config for feature monitoring threshold. Next ID: 3",
-      "type": "object",
-      "properties": {
-        "value": {
-          "description": "Specify a threshold value that can trigger the alert. If this threshold config is for feature distribution distance: 1. For categorical feature, the distribution distance is calculated by L-inifinity norm. 2. For numerical feature, the distribution distance is calculated by Jensen\u2013Shannon divergence. Each feature must have a non-zero threshold if they need to be monitored. Otherwise no alert will be triggered for that feature.",
-          "type": "number",
-          "format": "double"
-        }
-      }
-    },
-    "GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigPredictionDriftDetectionConfig": {
-      "id": "GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigPredictionDriftDetectionConfig",
-      "description": "The config for Prediction data drift detection.",
-      "type": "object",
-      "properties": {
-        "driftThresholds": {
-          "description": "Key is the feature name and value is the threshold. If a feature needs to be monitored for drift, a value threshold must be configured for that feature. The threshold here is against feature distribution distance between different time windws.",
-          "type": "object",
-          "additionalProperties": {
-            "$ref": "GoogleCloudAiplatformV1beta1ThresholdConfig"
-          }
-        },
-        "attributionScoreDriftThresholds": {
-          "description": "Key is the feature name and value is the threshold. The threshold here is against attribution score distance between different time windows.",
-          "type": "object",
-          "additionalProperties": {
-            "$ref": "GoogleCloudAiplatformV1beta1ThresholdConfig"
-          }
-        },
-        "defaultDriftThreshold": {
-          "description": "Drift anomaly detection threshold used by all features. When the per-feature thresholds are not set, this field can be used to specify a threshold for all features.",
-          "$ref": "GoogleCloudAiplatformV1beta1ThresholdConfig"
-        }
-      }
-    },
-    "GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigExplanationConfig": {
-      "id": "GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigExplanationConfig",
-      "description": "The config for integrating with Vertex Explainable AI. Only applicable if the Model has explanation_spec populated.",
-      "type": "object",
-      "properties": {
-        "enableFeatureAttributes": {
-          "description": "If want to analyze the Vertex Explainable AI feature attribute scores or not. If set to true, Vertex AI will log the feature attributions from explain response and do the skew\/drift detection for them.",
-          "type": "boolean"
-        },
-        "explanationBaseline": {
-          "description": "Predictions generated by the BatchPredictionJob using baseline dataset.",
-          "$ref": "GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigExplanationConfigExplanationBaseline"
-        }
-      }
-    },
-    "GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigExplanationConfigExplanationBaseline": {
-      "id": "GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigExplanationConfigExplanationBaseline",
-      "description": "Output from BatchPredictionJob for Model Monitoring baseline dataset, which can be used to generate baseline attribution scores.",
-      "type": "object",
-      "properties": {
-        "gcs": {
-          "description": "Cloud Storage location for BatchExplain output.",
-          "$ref": "GoogleCloudAiplatformV1beta1GcsDestination"
-        },
-        "bigquery": {
-          "description": "BigQuery location for BatchExplain output.",
-          "$ref": "GoogleCloudAiplatformV1beta1BigQueryDestination"
-        },
-        "predictionFormat": {
-          "description": "The storage format of the predictions generated BatchPrediction job.",
-          "type": "string",
-          "enumDescriptions": [
-            "Should not be set.",
-            "Predictions are in JSONL files.",
-            "Predictions are in BigQuery."
-          ],
-          "enum": [
-            "PREDICTION_FORMAT_UNSPECIFIED",
-            "JSONL",
-            "BIGQUERY"
-          ]
-        }
-      }
-    },
     "GoogleCloudAiplatformV1beta1ModelDeploymentMonitoringScheduleConfig": {
       "id": "GoogleCloudAiplatformV1beta1ModelDeploymentMonitoringScheduleConfig",
       "description": "The config for scheduling monitoring job.",
@@ -5282,35 +5337,6 @@
           "description": "The time window of the prediction data being included in each prediction dataset. This window specifies how long the data should be collected from historical model results for each run. If not set, ModelDeploymentMonitoringScheduleConfig.monitor_interval will be used. e.g. If currently the cutoff time is 2022-01-08 14:30:00 and the monitor_window is set to be 3600, then data from 2022-01-08 13:30:00 to 2022-01-08 14:30:00 will be retrieved and aggregated to calculate the monitoring statistics.",
           "type": "string",
           "format": "google-duration"
-        }
-      }
-    },
-    "GoogleCloudAiplatformV1beta1ModelMonitoringAlertConfig": {
-      "id": "GoogleCloudAiplatformV1beta1ModelMonitoringAlertConfig",
-      "description": "Next ID: 3",
-      "type": "object",
-      "properties": {
-        "emailAlertConfig": {
-          "description": "Email alert config.",
-          "$ref": "GoogleCloudAiplatformV1beta1ModelMonitoringAlertConfigEmailAlertConfig"
-        },
-        "enableLogging": {
-          "description": "Dump the anomalies to Cloud Logging. The anomalies will be put to json payload encoded from proto google.cloud.aiplatform.logging.ModelMonitoringAnomaliesLogEntry. This can be further sinked to Pub\/Sub or any other services supported by Cloud Logging.",
-          "type": "boolean"
-        }
-      }
-    },
-    "GoogleCloudAiplatformV1beta1ModelMonitoringAlertConfigEmailAlertConfig": {
-      "id": "GoogleCloudAiplatformV1beta1ModelMonitoringAlertConfigEmailAlertConfig",
-      "description": "The config for email alert.",
-      "type": "object",
-      "properties": {
-        "userEmails": {
-          "description": "The email addresses to send the alert.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
         }
       }
     },
@@ -6893,21 +6919,17 @@
         }
       }
     },
-    "GoogleCloudAiplatformV1beta1ListModelEvaluationsResponse": {
-      "id": "GoogleCloudAiplatformV1beta1ListModelEvaluationsResponse",
-      "description": "Response message for ModelService.ListModelEvaluations.",
+    "GoogleCloudAiplatformV1beta1BatchImportModelEvaluationSlicesRequest": {
+      "id": "GoogleCloudAiplatformV1beta1BatchImportModelEvaluationSlicesRequest",
+      "description": "Request message for ModelService.BatchImportModelEvaluationSlices",
       "type": "object",
       "properties": {
-        "modelEvaluations": {
-          "description": "List of ModelEvaluations in the requested page.",
+        "modelEvaluationSlices": {
+          "description": "Required. Model evaluation slice resource to be imported.",
           "type": "array",
           "items": {
-            "$ref": "GoogleCloudAiplatformV1beta1ModelEvaluation"
+            "$ref": "GoogleCloudAiplatformV1beta1ModelEvaluationSlice"
           }
-        },
-        "nextPageToken": {
-          "description": "A token to retrieve next page of results. Pass to ListModelEvaluationsRequest.page_token to obtain that page.",
-          "type": "string"
         }
       }
     },
@@ -6957,6 +6979,39 @@
         "value": {
           "description": "Output only. The value of the dimension in this slice.",
           "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1BatchImportModelEvaluationSlicesResponse": {
+      "id": "GoogleCloudAiplatformV1beta1BatchImportModelEvaluationSlicesResponse",
+      "description": "Response message for ModelService.BatchImportModelEvaluationSlices",
+      "type": "object",
+      "properties": {
+        "importedModelEvaluationSlices": {
+          "description": "Output only. List of imported ModelEvaluationSlice.name.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1ListModelEvaluationsResponse": {
+      "id": "GoogleCloudAiplatformV1beta1ListModelEvaluationsResponse",
+      "description": "Response message for ModelService.ListModelEvaluations.",
+      "type": "object",
+      "properties": {
+        "modelEvaluations": {
+          "description": "List of ModelEvaluations in the requested page.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1ModelEvaluation"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token to retrieve next page of results. Pass to ListModelEvaluationsRequest.page_token to obtain that page.",
           "type": "string"
         }
       }
@@ -10311,7 +10366,7 @@
     },
     "GoogleCloudAiplatformInternalHumanInTheLoop": {
       "id": "GoogleCloudAiplatformInternalHumanInTheLoop",
-      "description": "A human in the loop configuration describing how to trigger a human labeling job in a prediction process and properties of the human labeling job. Next id: 28",
+      "description": "A human in the loop configuration describing how to trigger a human labeling job in a prediction process and properties of the human labeling job. Next id: 29",
       "type": "object",
       "properties": {
         "documentCriteria": {
@@ -10456,6 +10511,13 @@
           "description": "Maximum duration for operators to answer a question. This duration is applied to all questions in the HITL. Should be [10 minutes, 8 hours]. Default is 45 minutes.",
           "type": "string",
           "format": "google-duration"
+        },
+        "questionTypes": {
+          "description": "The question types in the HITL.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -21574,6 +21636,11 @@
           "description": "Required. The resource name of the Model that this is the deployment of. Note that the Model may be in a different location than the DeployedModel's Endpoint. The resource name may contain version id or version alias to specify the version, if no version is specified, the default version will be deployed.",
           "type": "string"
         },
+        "modelVersionId": {
+          "description": "Output only. The version ID of the model that is deployed.",
+          "readOnly": true,
+          "type": "string"
+        },
         "displayName": {
           "description": "The display name of the DeployedModel. If not provided upon creation, the Model's display_name is used.",
           "type": "string"
@@ -22921,6 +22988,11 @@
       "properties": {
         "model": {
           "description": "The name of the uploaded Model resource. Format: `projects\/{project}\/locations\/{location}\/models\/{model}`",
+          "type": "string"
+        },
+        "modelVersionId": {
+          "description": "Output only. The version ID of the model that is uploaded.",
+          "readOnly": true,
           "type": "string"
         }
       }
@@ -24494,7 +24566,7 @@
     },
     "GoogleCloudAiplatformV1CustomJobSpec": {
       "id": "GoogleCloudAiplatformV1CustomJobSpec",
-      "description": "Represents the spec of a CustomJob. Next Id: 14",
+      "description": "Represents the spec of a CustomJob. Next Id: 15",
       "type": "object",
       "properties": {
         "workerPoolSpecs": {
@@ -24513,7 +24585,7 @@
           "type": "string"
         },
         "network": {
-          "description": "The full name of the Compute Engine [network](\/compute\/docs\/networks-and-firewalls#networks) to which the Job should be peered. For example, `projects\/12345\/global\/networks\/myVPC`. [Format](\/compute\/docs\/reference\/rest\/v1\/networks\/insert) is of the form `projects\/{project}\/global\/networks\/{network}`. Where {project} is a project number, as in `12345`, and {network} is a network name. To specify this field, you must have already [configured VPC Network Peering for Vertex AI](https:\/\/cloud.google.com\/vertex-ai\/docs\/general\/vpc-peering). If this field is left unspecified, the job is not peered with any network.",
+          "description": "Optional. The full name of the Compute Engine [network](\/compute\/docs\/networks-and-firewalls#networks) to which the Job should be peered. For example, `projects\/12345\/global\/networks\/myVPC`. [Format](\/compute\/docs\/reference\/rest\/v1\/networks\/insert) is of the form `projects\/{project}\/global\/networks\/{network}`. Where {project} is a project number, as in `12345`, and {network} is a network name. To specify this field, you must have already [configured VPC Network Peering for Vertex AI](https:\/\/cloud.google.com\/vertex-ai\/docs\/general\/vpc-peering). If this field is left unspecified, the job is not peered with any network.",
           "type": "string"
         },
         "reservedIpRanges": {
@@ -30664,7 +30736,7 @@
                       "type": "string"
                     },
                     "filter": {
-                      "description": "The standard list filter. Supported fields: * `display_name` supports = and !=. * `state` supports = and !=. Some examples of using the filter are: * `state=\"JOB_STATE_SUCCEEDED\" AND display_name=\"my_job\"` * `state=\"JOB_STATE_RUNNING\" OR display_name=\"my_job\"` * `NOT display_name=\"my_job\"` * `state=\"JOB_STATE_FAILED\"`",
+                      "description": "The standard list filter. Supported fields: * `display_name` supports `=`, `!=` comparisons, and `:` wildcard. * `state` supports `=`, `!=` comparisons. * `create_time` supports `=`, `!=`,`<`, `<=`,`>`, `>=` comparisons. `create_time` must be in RFC 3339 format. Some examples of using the filter are: * `state=\"JOB_STATE_SUCCEEDED\" AND display_name:\"my_job_*\"` * `state!=\"JOB_STATE_FAILED\" OR display_name=\"my_job\"` * `NOT display_name=\"my_job\"` * `create_time>\"2021-05-18T00:00:00Z\"`",
                       "location": "query",
                       "type": "string"
                     },
@@ -30975,7 +31047,7 @@
                       "type": "string"
                     },
                     "filter": {
-                      "description": "The standard list filter. Supported fields: * `display_name` supports = and !=. * `state` supports = and !=. Some examples of using the filter are: * `state=\"JOB_STATE_SUCCEEDED\" AND display_name=\"my_job\"` * `state=\"JOB_STATE_RUNNING\" OR display_name=\"my_job\"` * `NOT display_name=\"my_job\"` * `state=\"JOB_STATE_FAILED\"`",
+                      "description": "The standard list filter. Supported fields: * `display_name` supports `=`, `!=` comparisons, and `:` wildcard. * `state` supports `=`, `!=` comparisons. * `create_time` supports `=`, `!=`,`<`, `<=`,`>`, `>=` comparisons. `create_time` must be in RFC 3339 format. Some examples of using the filter are: * `state=\"JOB_STATE_SUCCEEDED\" AND display_name:\"my_job_*\"` * `state!=\"JOB_STATE_FAILED\" OR display_name=\"my_job\"` * `NOT display_name=\"my_job\"` * `create_time>\"2021-05-18T00:00:00Z\"`",
                       "location": "query",
                       "type": "string"
                     },
@@ -31291,7 +31363,7 @@
                       "type": "string"
                     },
                     "filter": {
-                      "description": "The standard list filter. Supported fields: * `display_name` supports = and !=. * `state` supports = and !=. Some examples of using the filter are: * `state=\"JOB_STATE_SUCCEEDED\" AND display_name=\"my_job\"` * `state=\"JOB_STATE_RUNNING\" OR display_name=\"my_job\"` * `NOT display_name=\"my_job\"` * `state=\"JOB_STATE_FAILED\"`",
+                      "description": "The standard list filter. Supported fields: * `display_name` supports `=`, `!=` comparisons, and `:` wildcard. * `state` supports `=`, `!=` comparisons. * `create_time` supports `=`, `!=`,`<`, `<=`,`>`, `>=` comparisons. `create_time` must be in RFC 3339 format. Some examples of using the filter are: * `state=\"JOB_STATE_SUCCEEDED\" AND display_name:\"my_job_*\"` * `state!=\"JOB_STATE_FAILED\" OR display_name=\"my_job\"` * `NOT display_name=\"my_job\"` * `create_time>\"2021-05-18T00:00:00Z\"`",
                       "location": "query",
                       "type": "string"
                     },
@@ -31602,7 +31674,7 @@
                       "type": "string"
                     },
                     "filter": {
-                      "description": "The standard list filter. Supported fields: * `display_name` supports = and !=. * `state` supports = and !=. * `model_display_name` supports = and != Some examples of using the filter are: * `state=\"JOB_STATE_SUCCEEDED\" AND display_name=\"my_job\"` * `state=\"JOB_STATE_RUNNING\" OR display_name=\"my_job\"` * `NOT display_name=\"my_job\"` * `state=\"JOB_STATE_FAILED\"`",
+                      "description": "The standard list filter. Supported fields: * `display_name` supports `=`, `!=` comparisons, and `:` wildcard. * `model_display_name` supports `=`, `!=` comparisons. * `state` supports `=`, `!=` comparisons. * `create_time` supports `=`, `!=`,`<`, `<=`,`>`, `>=` comparisons. `create_time` must be in RFC 3339 format. Some examples of using the filter are: * `state=\"JOB_STATE_SUCCEEDED\" AND display_name:\"my_job_*\"` * `state!=\"JOB_STATE_FAILED\" OR display_name=\"my_job\"` * `NOT display_name=\"my_job\"` * `create_time>\"2021-05-18T00:00:00Z\"`",
                       "location": "query",
                       "type": "string"
                     },
@@ -31787,7 +31859,7 @@
                       "type": "string"
                     },
                     "filter": {
-                      "description": "The standard list filter.",
+                      "description": "The standard list filter. Supported fields: * `display_name` supports `=`, `!=` comparisons, and `:` wildcard. * `state` supports `=`, `!=` comparisons. * `create_time` supports `=`, `!=`,`<`, `<=`,`>`, `>=` comparisons. `create_time` must be in RFC 3339 format. Some examples of using the filter are: * `state=\"JOB_STATE_SUCCEEDED\" AND display_name:\"my_job_*\"` * `state!=\"JOB_STATE_FAILED\" OR display_name=\"my_job\"` * `NOT display_name=\"my_job\"` * `create_time>\"2021-05-18T00:00:00Z\"`",
                       "location": "query",
                       "type": "string"
                     },
@@ -34071,6 +34143,34 @@
                     },
                     "slices": {
                       "methods": {
+                        "batchImport": {
+                          "id": "aiplatform.projects.locations.models.evaluations.slices.batchImport",
+                          "path": "v1beta1/{+parent}/slices:batchImport",
+                          "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/models/{modelsId}/evaluations/{evaluationsId}/slices:batchImport",
+                          "httpMethod": "POST",
+                          "parameters": {
+                            "parent": {
+                              "description": "Required. The name of the parent ModelEvaluation resource. Format: `projects\/{project}\/locations\/{location}\/models\/{model}\/evaluations\/{evaluation}`",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/models\/[^\/]+\/evaluations\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "parent"
+                          ],
+                          "request": {
+                            "$ref": "GoogleCloudAiplatformV1beta1BatchImportModelEvaluationSlicesRequest"
+                          },
+                          "response": {
+                            "$ref": "GoogleCloudAiplatformV1beta1BatchImportModelEvaluationSlicesResponse"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Imports a list of externally generated ModelEvaluationSlice."
+                        },
                         "get": {
                           "id": "aiplatform.projects.locations.models.evaluations.slices.get",
                           "path": "v1beta1/{+name}",
@@ -34218,7 +34318,7 @@
                       "type": "string"
                     },
                     "filter": {
-                      "description": "The standard list filter. Supported fields: * `display_name` supports = and !=. * `state` supports = and !=. Some examples of using the filter are: * `state=\"PIPELINE_STATE_SUCCEEDED\" AND display_name=\"my_pipeline\"` * `state=\"PIPELINE_STATE_RUNNING\" OR display_name=\"my_pipeline\"` * `NOT display_name=\"my_pipeline\"` * `state=\"PIPELINE_STATE_FAILED\"`",
+                      "description": "The standard list filter. Supported fields: * `display_name` supports `=`, `!=` comparisons, and `:` wildcard. * `state` supports `=`, `!=` comparisons. * `training_task_definition` `=`, `!=` comparisons, and `:` wildcard. * `create_time` supports `=`, `!=`,`<`, `<=`,`>`, `>=` comparisons. `create_time` must be in RFC 3339 format. Some examples of using the filter are: * `state=\"PIPELINE_STATE_SUCCEEDED\" AND display_name:\"my_pipeline_*\"` * `state!=\"PIPELINE_STATE_FAILED\" OR display_name=\"my_pipeline\"` * `NOT display_name=\"my_pipeline\"` * `create_time>\"2021-05-18T00:00:00Z\"` * `training_task_definition:\"*automl_text_classification*\"`",
                       "location": "query",
                       "type": "string"
                     },

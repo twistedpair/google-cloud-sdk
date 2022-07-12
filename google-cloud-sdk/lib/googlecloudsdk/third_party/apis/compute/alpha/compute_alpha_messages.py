@@ -1819,6 +1819,11 @@ class AttachedDiskInitializeParams(_messages.Message):
     LabelsValue: Labels to apply to this disk. These can be later modified by
       the disks.setLabels method. This field is only applicable for persistent
       disks.
+    ResourceManagerTagsValue: Resource manager tags to be bound to the disk.
+      Tag keys and values have the same definition as resource manager tags.
+      Keys must be in the format `tagKeys/{tag_key_id}`, and values are in the
+      format `tagValues/456`. The field is ignored (both PUT & PATCH) when
+      empty.
 
   Fields:
     architecture: The architecture of the attached disk. Valid values are
@@ -1867,6 +1872,11 @@ class AttachedDiskInitializeParams(_messages.Message):
       Extreme persistent disk documentation.
     replicaZones: URLs of the zones where the disk should be replicated to.
       Only applicable for regional resources.
+    resourceManagerTags: Resource manager tags to be bound to the disk. Tag
+      keys and values have the same definition as resource manager tags. Keys
+      must be in the format `tagKeys/{tag_key_id}`, and values are in the
+      format `tagValues/456`. The field is ignored (both PUT & PATCH) when
+      empty.
     resourcePolicies: Resource policies applied to this disk for automatic
       snapshot creations. Specified using the full or partial URL. For
       instance template, specify only the resource policy name.
@@ -1975,6 +1985,35 @@ class AttachedDiskInitializeParams(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ResourceManagerTagsValue(_messages.Message):
+    r"""Resource manager tags to be bound to the disk. Tag keys and values
+    have the same definition as resource manager tags. Keys must be in the
+    format `tagKeys/{tag_key_id}`, and values are in the format
+    `tagValues/456`. The field is ignored (both PUT & PATCH) when empty.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        ResourceManagerTagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        ResourceManagerTagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ResourceManagerTagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   architecture = _messages.EnumField('ArchitectureValueValuesEnum', 1)
   description = _messages.StringField(2)
   diskName = _messages.StringField(3)
@@ -1989,12 +2028,13 @@ class AttachedDiskInitializeParams(_messages.Message):
   onUpdateAction = _messages.EnumField('OnUpdateActionValueValuesEnum', 12)
   provisionedIops = _messages.IntegerField(13)
   replicaZones = _messages.StringField(14, repeated=True)
-  resourcePolicies = _messages.StringField(15, repeated=True)
-  sourceImage = _messages.StringField(16)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 17)
-  sourceInstantSnapshot = _messages.StringField(18)
-  sourceSnapshot = _messages.StringField(19)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 20)
+  resourceManagerTags = _messages.MessageField('ResourceManagerTagsValue', 15)
+  resourcePolicies = _messages.StringField(16, repeated=True)
+  sourceImage = _messages.StringField(17)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 18)
+  sourceInstantSnapshot = _messages.StringField(19)
+  sourceSnapshot = _messages.StringField(20)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 21)
 
 
 class AuditConfig(_messages.Message):
@@ -3386,7 +3426,7 @@ class Backend(_messages.Message):
       balancing mode. Not available if the backend's balancingMode is
       CONNECTION.
     maxUtilization: Optional parameter to define a target capacity for the
-      UTILIZATIONbalancing mode. The valid range is [0.0, 1.0]. For usage
+      UTILIZATION balancing mode. The valid range is [0.0, 1.0]. For usage
       guidelines, see Utilization balancing mode.
   """
 
@@ -5757,7 +5797,8 @@ class BulkInsertInstanceResource(_messages.Message):
     instance: DEPRECATED: Please use instance_properties instead.
     instanceProperties: The instance properties defining the VM instances to
       be created. Required if sourceInstanceTemplate is not provided.
-    locationPolicy: Policy for chosing target zone.
+    locationPolicy: Policy for chosing target zone. For more information, see
+      Create VMs in bulk .
     minCount: The minimum number of instances to create. If no min_count is
       specified then count is used as the default value. If min_count
       instances cannot be created, then no instances will be created and
@@ -16012,6 +16053,100 @@ class ComputeInterconnectLocationsListRequest(_messages.Message):
 
 class ComputeInterconnectLocationsTestIamPermissionsRequest(_messages.Message):
   r"""A ComputeInterconnectLocationsTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name or id of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
+
+
+class ComputeInterconnectRemoteLocationsGetRequest(_messages.Message):
+  r"""A ComputeInterconnectRemoteLocationsGetRequest object.
+
+  Fields:
+    interconnectRemoteLocation: Name of the interconnect remote location to
+      return.
+    project: Project ID for this request.
+  """
+
+  interconnectRemoteLocation = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+
+
+class ComputeInterconnectRemoteLocationsListRequest(_messages.Message):
+  r"""A ComputeInterconnectRemoteLocationsListRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      Most Compute resources support two types of filter expressions:
+      expressions that support regular expressions and expressions that follow
+      API improvement proposal AIP-160. If you want to use AIP-160, your
+      expression must specify the field name, an operator, and the value that
+      you want to use for filtering. The value must be a string, a number, or
+      a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
+      or `:`. For example, if you are filtering Compute Engine instances, you
+      can exclude instances named `example-instance` by specifying `name !=
+      example-instance`. The `:` operator can be used with string fields to
+      match substrings. For non-string fields it is equivalent to the `=`
+      operator. The `:*` comparison can be used to test whether a key has been
+      defined. For example, to find all objects with `owner` label use: ```
+      labels.owner:* ``` You can also filter nested fields. For example, you
+      could specify `scheduling.automaticRestart = false` to include instances
+      only if they are not scheduled for automatic restarts. You can use
+      filtering on nested fields to filter based on resource labels. To filter
+      on multiple expressions, provide each separate expression within
+      parentheses. For example: ``` (scheduling.automaticRestart = true)
+      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
+      `AND` expression. However, you can include `AND` and `OR` expressions
+      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
+      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
+      true) ``` If you want to use a regular expression, use the `eq` (equal)
+      or `ne` (not equal) operator against a single un-parenthesized
+      expression with or without quotes or against multiple parenthesized
+      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
+      'single quoted literal'` `fieldname eq "double quoted literal"`
+      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
+      interpreted as a regular expression using Google RE2 library syntax. The
+      literal value must match the entire field. For example, to filter for
+      instances that do not end with name "instance", you would use `name ne
+      .*instance`.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than
+      `maxResults`, Compute Engine returns a `nextPageToken` that can be used
+      to get the next page of results in subsequent list requests. Acceptable
+      values are `0` to `500`, inclusive. (Default: `500`)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name. You can
+      also sort results in descending order based on the creation timestamp
+      using `orderBy="creationTimestamp desc"`. This sorts results based on
+      the `creationTimestamp` field in reverse chronological order (newest
+      result first). Use this to sort resources like operations so that the
+      newest operation is returned first. Currently, only sorting by `name` or
+      `creationTimestamp desc` is supported.
+    pageToken: Specifies a page token to use. Set `pageToken` to the
+      `nextPageToken` returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
+
+
+class ComputeInterconnectRemoteLocationsTestIamPermissionsRequest(_messages.Message):
+  r"""A ComputeInterconnectRemoteLocationsTestIamPermissionsRequest object.
 
   Fields:
     project: Project ID for this request.
@@ -32342,6 +32477,164 @@ class ComputeZoneOperationsWaitRequest(_messages.Message):
   zone = _messages.StringField(3, required=True)
 
 
+class ComputeZoneQueuedResourcesCancelRequest(_messages.Message):
+  r"""A ComputeZoneQueuedResourcesCancelRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    queuedResource: Name of the QueuedResource to cancel.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    zone: Name of the zone for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  queuedResource = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  zone = _messages.StringField(4, required=True)
+
+
+class ComputeZoneQueuedResourcesDeleteRequest(_messages.Message):
+  r"""A ComputeZoneQueuedResourcesDeleteRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    queuedResource: Name of the QueuedResource to delete.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    zone: Name of the zone for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  queuedResource = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  zone = _messages.StringField(4, required=True)
+
+
+class ComputeZoneQueuedResourcesGetRequest(_messages.Message):
+  r"""A ComputeZoneQueuedResourcesGetRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    queuedResource: Name of the QueuedResource resource to return.
+    zone: Name of the zone for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  queuedResource = _messages.StringField(2, required=True)
+  zone = _messages.StringField(3, required=True)
+
+
+class ComputeZoneQueuedResourcesInsertRequest(_messages.Message):
+  r"""A ComputeZoneQueuedResourcesInsertRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    queuedResource: A QueuedResource resource to be passed as the request
+      body.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    zone: Name of the zone for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  queuedResource = _messages.MessageField('QueuedResource', 2)
+  requestId = _messages.StringField(3)
+  zone = _messages.StringField(4, required=True)
+
+
+class ComputeZoneQueuedResourcesListRequest(_messages.Message):
+  r"""A ComputeZoneQueuedResourcesListRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      Most Compute resources support two types of filter expressions:
+      expressions that support regular expressions and expressions that follow
+      API improvement proposal AIP-160. If you want to use AIP-160, your
+      expression must specify the field name, an operator, and the value that
+      you want to use for filtering. The value must be a string, a number, or
+      a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
+      or `:`. For example, if you are filtering Compute Engine instances, you
+      can exclude instances named `example-instance` by specifying `name !=
+      example-instance`. The `:` operator can be used with string fields to
+      match substrings. For non-string fields it is equivalent to the `=`
+      operator. The `:*` comparison can be used to test whether a key has been
+      defined. For example, to find all objects with `owner` label use: ```
+      labels.owner:* ``` You can also filter nested fields. For example, you
+      could specify `scheduling.automaticRestart = false` to include instances
+      only if they are not scheduled for automatic restarts. You can use
+      filtering on nested fields to filter based on resource labels. To filter
+      on multiple expressions, provide each separate expression within
+      parentheses. For example: ``` (scheduling.automaticRestart = true)
+      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
+      `AND` expression. However, you can include `AND` and `OR` expressions
+      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
+      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
+      true) ``` If you want to use a regular expression, use the `eq` (equal)
+      or `ne` (not equal) operator against a single un-parenthesized
+      expression with or without quotes or against multiple parenthesized
+      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
+      'single quoted literal'` `fieldname eq "double quoted literal"`
+      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
+      interpreted as a regular expression using Google RE2 library syntax. The
+      literal value must match the entire field. For example, to filter for
+      instances that do not end with name "instance", you would use `name ne
+      .*instance`.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than
+      `maxResults`, Compute Engine returns a `nextPageToken` that can be used
+      to get the next page of results in subsequent list requests. Acceptable
+      values are `0` to `500`, inclusive. (Default: `500`)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name. You can
+      also sort results in descending order based on the creation timestamp
+      using `orderBy="creationTimestamp desc"`. This sorts results based on
+      the `creationTimestamp` field in reverse chronological order (newest
+      result first). Use this to sort resources like operations so that the
+      newest operation is returned first. Currently, only sorting by `name` or
+      `creationTimestamp desc` is supported.
+    pageToken: Specifies a page token to use. Set `pageToken` to the
+      `nextPageToken` returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false.
+    zone: Name of the zone for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
+  zone = _messages.StringField(7, required=True)
+
+
 class ComputeZonesGetRequest(_messages.Message):
   r"""A ComputeZonesGetRequest object.
 
@@ -32622,6 +32915,70 @@ class CorsPolicy(_messages.Message):
   maxAge = _messages.IntegerField(8, variant=_messages.Variant.INT32)
 
 
+class CustomErrorResponsePolicy(_messages.Message):
+  r"""Specifies the custom error response policy that must be applied when the
+  backend service or backend bucket responds with an error.
+
+  Fields:
+    errorResponseRules: Specifies rules for returning error responses. In a
+      given policy, if you specify rules for both a range of error codes as
+      well as rules for specific error codes then rules with specific error
+      codes have a higher priority. For example, assume that you configure a
+      rule for 401 (Un-authorized) code, and another for all 4 series error
+      codes (4XX). If the backend service returns a 401, then the rule for 401
+      will be applied. However if the backend service returns a 403, the rule
+      for 4xx takes effect.
+    errorService: The full or partial URL to the BackendBucket resource that
+      contains the custom error content. Examples are: - https://www.googleapi
+      s.com/compute/v1/projects/project/global/backendBuckets/myBackendBucket
+      - compute/v1/projects/project/global/backendBuckets/myBackendBucket -
+      global/backendBuckets/myBackendBucket If errorService is not specified
+      at lower levels like pathMatcher, pathRule and routeRule, an
+      errorService specified at a higher level in the UrlMap will be used. If
+      UrlMap.defaultCustomErrorResponsePolicy contains one or more
+      errorResponseRules[], it must specify errorService. If load balancer
+      cannot reach the backendBucket, a simple Not Found Error will be
+      returned, with the original response code (or overrideResponseCode if
+      configured). errorService is not supported for internal or regional
+      HTTP/HTTPS load balancers.
+  """
+
+  errorResponseRules = _messages.MessageField('CustomErrorResponsePolicyCustomErrorResponseRule', 1, repeated=True)
+  errorService = _messages.StringField(2)
+
+
+class CustomErrorResponsePolicyCustomErrorResponseRule(_messages.Message):
+  r"""Specifies the mapping between the response code that will be returned
+  along with the custom error content and the response code returned by the
+  backend service.
+
+  Fields:
+    matchResponseCodes: Valid values include: - A number between 400 and 599:
+      For example 401 or 503, in which case the load balancer applies the
+      policy if the error code exactly matches this value. - 5xx: Load
+      Balancer will apply the policy if the backend service responds with any
+      response code in the range of 500 to 599. - 4xx: Load Balancer will
+      apply the policy if the backend service responds with any response code
+      in the range of 400 to 499. Values must be unique within
+      matchResponseCodes and across all errorResponseRules of
+      CustomErrorResponsePolicy.
+    overrideResponseCode: The HTTP status code returned with the response
+      containing the custom error content. If overrideResponseCode is not
+      supplied, the same response code returned by the original backend bucket
+      or backend service is returned to the client.
+    path: The full path to a file within backendBucket . For example:
+      /errors/defaultError.html path must start with a leading slash. path
+      cannot have trailing slashes. If the file is not available in
+      backendBucket or the load balancer cannot reach the BackendBucket, a
+      simple Not Found Error is returned to the client. The value must be from
+      1 to 1024 characters
+  """
+
+  matchResponseCodes = _messages.StringField(1, repeated=True)
+  overrideResponseCode = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  path = _messages.StringField(3)
+
+
 class CustomerEncryptionKey(_messages.Message):
   r"""A CustomerEncryptionKey object.
 
@@ -32859,6 +33216,8 @@ class Disk(_messages.Message):
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
     options: Internal use only.
+    params: Input only. [Input Only] Additional params passed with the
+      request, but not persisted as part of resource payload.
     physicalBlockSizeBytes: Physical block size of the persistent disk, in
       bytes. If not present in a request, a default value is used. The
       currently supported size is 4096, other sizes may be added in the
@@ -33117,35 +33476,36 @@ class Disk(_messages.Message):
   multiWriter = _messages.BooleanField(20)
   name = _messages.StringField(21)
   options = _messages.StringField(22)
-  physicalBlockSizeBytes = _messages.IntegerField(23)
-  provisionedIops = _messages.IntegerField(24)
-  region = _messages.StringField(25)
-  replicaZones = _messages.StringField(26, repeated=True)
-  resourcePolicies = _messages.StringField(27, repeated=True)
-  resourceStatus = _messages.MessageField('DiskResourceStatus', 28)
-  satisfiesPzs = _messages.BooleanField(29)
-  selfLink = _messages.StringField(30)
-  selfLinkWithId = _messages.StringField(31)
-  sizeGb = _messages.IntegerField(32)
-  sourceConsistencyGroupPolicy = _messages.StringField(33)
-  sourceConsistencyGroupPolicyId = _messages.StringField(34)
-  sourceDisk = _messages.StringField(35)
-  sourceDiskId = _messages.StringField(36)
-  sourceImage = _messages.StringField(37)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 38)
-  sourceImageId = _messages.StringField(39)
-  sourceInstantSnapshot = _messages.StringField(40)
-  sourceInstantSnapshotId = _messages.StringField(41)
-  sourceSnapshot = _messages.StringField(42)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 43)
-  sourceSnapshotId = _messages.StringField(44)
-  sourceStorageObject = _messages.StringField(45)
-  status = _messages.EnumField('StatusValueValuesEnum', 46)
-  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 47)
-  type = _messages.StringField(48)
-  userLicenses = _messages.StringField(49, repeated=True)
-  users = _messages.StringField(50, repeated=True)
-  zone = _messages.StringField(51)
+  params = _messages.MessageField('DiskParams', 23)
+  physicalBlockSizeBytes = _messages.IntegerField(24)
+  provisionedIops = _messages.IntegerField(25)
+  region = _messages.StringField(26)
+  replicaZones = _messages.StringField(27, repeated=True)
+  resourcePolicies = _messages.StringField(28, repeated=True)
+  resourceStatus = _messages.MessageField('DiskResourceStatus', 29)
+  satisfiesPzs = _messages.BooleanField(30)
+  selfLink = _messages.StringField(31)
+  selfLinkWithId = _messages.StringField(32)
+  sizeGb = _messages.IntegerField(33)
+  sourceConsistencyGroupPolicy = _messages.StringField(34)
+  sourceConsistencyGroupPolicyId = _messages.StringField(35)
+  sourceDisk = _messages.StringField(36)
+  sourceDiskId = _messages.StringField(37)
+  sourceImage = _messages.StringField(38)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 39)
+  sourceImageId = _messages.StringField(40)
+  sourceInstantSnapshot = _messages.StringField(41)
+  sourceInstantSnapshotId = _messages.StringField(42)
+  sourceSnapshot = _messages.StringField(43)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 44)
+  sourceSnapshotId = _messages.StringField(45)
+  sourceStorageObject = _messages.StringField(46)
+  status = _messages.EnumField('StatusValueValuesEnum', 47)
+  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 48)
+  type = _messages.StringField(49)
+  userLicenses = _messages.StringField(50, repeated=True)
+  users = _messages.StringField(51, repeated=True)
+  zone = _messages.StringField(52)
 
 
 class DiskAggregatedList(_messages.Message):
@@ -33626,6 +33986,56 @@ class DiskMoveRequest(_messages.Message):
 
   destinationZone = _messages.StringField(1)
   targetDisk = _messages.StringField(2)
+
+
+class DiskParams(_messages.Message):
+  r"""Additional disk params.
+
+  Messages:
+    ResourceManagerTagsValue: Resource manager tags to be bound to the disk.
+      Tag keys and values have the same definition as resource manager tags.
+      Keys must be in the format `tagKeys/{tag_key_id}`, and values are in the
+      format `tagValues/456`. The field is ignored (both PUT & PATCH) when
+      empty.
+
+  Fields:
+    resourceManagerTags: Resource manager tags to be bound to the disk. Tag
+      keys and values have the same definition as resource manager tags. Keys
+      must be in the format `tagKeys/{tag_key_id}`, and values are in the
+      format `tagValues/456`. The field is ignored (both PUT & PATCH) when
+      empty.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ResourceManagerTagsValue(_messages.Message):
+    r"""Resource manager tags to be bound to the disk. Tag keys and values
+    have the same definition as resource manager tags. Keys must be in the
+    format `tagKeys/{tag_key_id}`, and values are in the format
+    `tagValues/456`. The field is ignored (both PUT & PATCH) when empty.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        ResourceManagerTagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        ResourceManagerTagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ResourceManagerTagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  resourceManagerTags = _messages.MessageField('ResourceManagerTagsValue', 1)
 
 
 class DiskResourceStatus(_messages.Message):
@@ -40283,6 +40693,32 @@ class HttpRouteRule(_messages.Message):
   corresponding routing action that load balancing proxies perform.
 
   Fields:
+    customErrorResponsePolicy: customErrorResponsePolicy specifies how the
+      Load Balancer returns error responses when BackendServiceor
+      BackendBucket responds with an error. If a policy for an error code is
+      not configured for the RouteRule, a policy for the error code configured
+      in pathMatcher.defaultCustomErrorResponsePolicy is applied. If one is
+      not specified in pathMatcher.defaultCustomErrorResponsePolicy, the
+      policy configured in UrlMap.defaultCustomErrorResponsePolicy takes
+      effect. For example, consider a UrlMap with the following configuration:
+      - UrlMap.defaultCustomErrorResponsePolicy are configured with policies
+      for 5xx and 4xx errors - A RouteRule for /coming_soon/ is configured for
+      the error code 404. If the request is for www.myotherdomain.com and a
+      404 is encountered, the policy under
+      UrlMap.defaultCustomErrorResponsePolicy takes effect. If a 404 response
+      is encountered for the request www.example.com/current_events/, the
+      pathMatcher's policy takes effect. If however, the request for
+      www.example.com/coming_soon/ encounters a 404, the policy in
+      RouteRule.customErrorResponsePolicy takes effect. If any of the requests
+      in this example encounter a 500 error code, the policy at
+      UrlMap.defaultCustomErrorResponsePolicy takes effect. When used in
+      conjunction with routeRules.routeAction.retryPolicy, retries take
+      precedence. Only once all retries are exhausted, the
+      customErrorResponsePolicy is applied. While attempting a retry, if load
+      balancer is successful in reaching the service, the
+      customErrorResponsePolicy is ignored and the response from the service
+      is returned to the client. customErrorResponsePolicy is supported only
+      for Global External HTTP(S) load balancing.
     description: The short description conveying the intent of this routeRule.
       The description can have a maximum length of 1024 characters.
     headerAction: Specifies changes to request and response headers that need
@@ -40348,15 +40784,16 @@ class HttpRouteRule(_messages.Message):
       a target gRPC proxy.
   """
 
-  description = _messages.StringField(1)
-  headerAction = _messages.MessageField('HttpHeaderAction', 2)
-  httpFilterConfigs = _messages.MessageField('HttpFilterConfig', 3, repeated=True)
-  httpFilterMetadata = _messages.MessageField('HttpFilterConfig', 4, repeated=True)
-  matchRules = _messages.MessageField('HttpRouteRuleMatch', 5, repeated=True)
-  priority = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  routeAction = _messages.MessageField('HttpRouteAction', 7)
-  service = _messages.StringField(8)
-  urlRedirect = _messages.MessageField('HttpRedirectAction', 9)
+  customErrorResponsePolicy = _messages.MessageField('CustomErrorResponsePolicy', 1)
+  description = _messages.StringField(2)
+  headerAction = _messages.MessageField('HttpHeaderAction', 3)
+  httpFilterConfigs = _messages.MessageField('HttpFilterConfig', 4, repeated=True)
+  httpFilterMetadata = _messages.MessageField('HttpFilterConfig', 5, repeated=True)
+  matchRules = _messages.MessageField('HttpRouteRuleMatch', 6, repeated=True)
+  priority = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  routeAction = _messages.MessageField('HttpRouteAction', 8)
+  service = _messages.StringField(9)
+  urlRedirect = _messages.MessageField('HttpRedirectAction', 10)
 
 
 class HttpRouteRuleMatch(_messages.Message):
@@ -48693,6 +49130,280 @@ class InterconnectOutageNotification(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 8)
 
 
+class InterconnectRemoteLocation(_messages.Message):
+  r"""Represents an Cross-Cloud Interconnect Remote Location resource. You can
+  use this resource to find remote location details about an Interconnect
+  attachment (VLAN).
+
+  Enums:
+    ContinentValueValuesEnum: [Output Only] Continent for this location, which
+      can take one of the following values: - AFRICA - ASIA_PAC - EUROPE -
+      NORTH_AMERICA - SOUTH_AMERICA
+    StatusValueValuesEnum: [Output Only] The status of this
+      InterconnectRemoteLocation, which can take one of the following values:
+      - CLOSED: The InterconnectRemoteLocation is closed and is unavailable
+      for provisioning new Cross-Cloud Interconnects. - AVAILABLE: The
+      InterconnectRemoteLocation is available for provisioning new Cross-Cloud
+      Interconnects.
+
+  Fields:
+    address: [Output Only] The postal address of the Point of Presence, each
+      line in the address is separated by a newline character.
+    city: [Output Only] Metropolitan area designator that indicates which city
+      an interconnect is located. For example: "Chicago, IL", "Amsterdam,
+      Netherlands".
+    continent: [Output Only] Continent for this location, which can take one
+      of the following values: - AFRICA - ASIA_PAC - EUROPE - NORTH_AMERICA -
+      SOUTH_AMERICA
+    creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
+      format.
+    description: [Output Only] An optional description of the resource.
+    facilityProvider: [Output Only] The name of the provider for this facility
+      (e.g., EQUINIX).
+    facilityProviderFacilityId: [Output Only] A provider-assigned Identifier
+      for this facility (e.g., Ashburn-DC1).
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    kind: [Output Only] Type of the resource. Always
+      compute#interconnectRemoteLocation for interconnect remote locations.
+    name: [Output Only] Name of the resource.
+    peeringdbFacilityId: [Output Only] The peeringdb identifier for this
+      facility (corresponding with a netfac type in peeringdb).
+    permittedConnections: [Output-only] Permitted connections.
+    remoteService: [Output Only] Indicates the service provider present at the
+      remote location. Example values: "Amazon Web Services", "Microsoft
+      Azure".
+    selfLink: [Output Only] Server-defined URL for the resource.
+    selfLinkWithId: [Output Only] Server-defined URL for this resource with
+      the resource id.
+    status: [Output Only] The status of this InterconnectRemoteLocation, which
+      can take one of the following values: - CLOSED: The
+      InterconnectRemoteLocation is closed and is unavailable for provisioning
+      new Cross-Cloud Interconnects. - AVAILABLE: The
+      InterconnectRemoteLocation is available for provisioning new Cross-Cloud
+      Interconnects.
+  """
+
+  class ContinentValueValuesEnum(_messages.Enum):
+    r"""[Output Only] Continent for this location, which can take one of the
+    following values: - AFRICA - ASIA_PAC - EUROPE - NORTH_AMERICA -
+    SOUTH_AMERICA
+
+    Values:
+      AFRICA: <no description>
+      ASIA_PAC: <no description>
+      EUROPE: <no description>
+      NORTH_AMERICA: <no description>
+      SOUTH_AMERICA: <no description>
+    """
+    AFRICA = 0
+    ASIA_PAC = 1
+    EUROPE = 2
+    NORTH_AMERICA = 3
+    SOUTH_AMERICA = 4
+
+  class StatusValueValuesEnum(_messages.Enum):
+    r"""[Output Only] The status of this InterconnectRemoteLocation, which can
+    take one of the following values: - CLOSED: The InterconnectRemoteLocation
+    is closed and is unavailable for provisioning new Cross-Cloud
+    Interconnects. - AVAILABLE: The InterconnectRemoteLocation is available
+    for provisioning new Cross-Cloud Interconnects.
+
+    Values:
+      AVAILABLE: The InterconnectRemoteLocation is available for provisioning
+        new Cross-Cloud Interconnects.
+      CLOSED: The InterconnectRemoteLocation is closed for provisioning new
+        Cross-Cloud Interconnects.
+    """
+    AVAILABLE = 0
+    CLOSED = 1
+
+  address = _messages.StringField(1)
+  city = _messages.StringField(2)
+  continent = _messages.EnumField('ContinentValueValuesEnum', 3)
+  creationTimestamp = _messages.StringField(4)
+  description = _messages.StringField(5)
+  facilityProvider = _messages.StringField(6)
+  facilityProviderFacilityId = _messages.StringField(7)
+  id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(9, default='compute#interconnectRemoteLocation')
+  name = _messages.StringField(10)
+  peeringdbFacilityId = _messages.StringField(11)
+  permittedConnections = _messages.MessageField('InterconnectRemoteLocationPermittedConnections', 12)
+  remoteService = _messages.StringField(13)
+  selfLink = _messages.StringField(14)
+  selfLinkWithId = _messages.StringField(15)
+  status = _messages.EnumField('StatusValueValuesEnum', 16)
+
+
+class InterconnectRemoteLocationList(_messages.Message):
+  r"""Response to the list request, and contains a list of interconnect remote
+  locations.
+
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
+
+  Fields:
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of InterconnectRemoteLocation resources.
+    kind: [Output Only] Type of resource. Always
+      compute#interconnectRemoteLocationList for lists of interconnect remote
+      locations.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
+  """
+
+  class WarningValue(_messages.Message):
+    r"""[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      r"""[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: Warning about failed cleanup of transient changes made
+          by a failed operation.
+        DEPRECATED_RESOURCE_USED: A link to a deprecated resource was created.
+        DEPRECATED_TYPE_USED: When deploying and at least one of the resources
+          has a type marked as deprecated
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: The user created a boot disk that is
+          larger than image size.
+        EXPERIMENTAL_TYPE_USED: When deploying and at least one of the
+          resources has a type marked as experimental
+        EXTERNAL_API_WARNING: Warning that is present in an external api call
+        FIELD_VALUE_OVERRIDEN: Warning that value of a field has been
+          overridden. Deprecated unused field.
+        INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
+          kernel, which is deprecated.
+        LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
+          exceedingly large number of resources
+        MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: The route's nextHopIp address is not
+          assigned to an instance on the network.
+        NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
+          forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
+        NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
+          an instance that does not exist.
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
+          refers to an instance that is not on the same network as the route.
+        NEXT_HOP_NOT_RUNNING: The route's next hop instance does not have a
+          status of RUNNING.
+        NOT_CRITICAL_ERROR: Error which is not critical. We decided to
+          continue the process despite the mentioned error.
+        NO_RESULTS_ON_PAGE: No results are present on a particular list page.
+        PARTIAL_SUCCESS: Success is reported, but some results may be missing
+          due to errors
+        REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
+          requires a TOS they have not accepted.
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
+          in use.
+        RESOURCE_NOT_DELETED: One or more of the resources set to auto-delete
+          could not be deleted because they were in use.
+        SCHEMA_VALIDATION_IGNORED: When a resource schema validation is
+          ignored.
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: Instance template used in instance
+          group manager is valid as such, but its application does not make a
+          lot of sense, because it allows only single instance in instance
+          group.
+        UNDECLARED_PROPERTIES: When undeclared properties in the schema are
+          present
+        UNREACHABLE: A given scope cannot be reached.
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      LARGE_DEPLOYMENT_WARNING = 8
+      MISSING_TYPE_DEPENDENCY = 9
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
+      NEXT_HOP_CANNOT_IP_FORWARD = 11
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
+
+    class DataValueListEntry(_messages.Message):
+      r"""A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('InterconnectRemoteLocation', 2, repeated=True)
+  kind = _messages.StringField(3, default='compute#interconnectRemoteLocationList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
+
+
+class InterconnectRemoteLocationPermittedConnections(_messages.Message):
+  r"""A InterconnectRemoteLocationPermittedConnections object.
+
+  Fields:
+    interconnectLocation: [Output-only] URL of an Interconnect location that
+      is permitted to connect to this Interconnect remote location.
+  """
+
+  interconnectLocation = _messages.StringField(1)
+
+
 class InterconnectsGetDiagnosticsResponse(_messages.Message):
   r"""Response for the InterconnectsGetDiagnosticsRequest.
 
@@ -49532,16 +50243,17 @@ class LocationPolicyLocation(_messages.Message):
   r"""A LocationPolicyLocation object.
 
   Enums:
-    PreferenceValueValuesEnum: Preference for a given location.
+    PreferenceValueValuesEnum: Preference for a given location. Set to either
+      ALLOW or DENY.
 
   Fields:
     constraints: Constraints that the caller requires on the result
       distribution in this zone.
-    preference: Preference for a given location.
+    preference: Preference for a given location. Set to either ALLOW or DENY.
   """
 
   class PreferenceValueValuesEnum(_messages.Enum):
-    r"""Preference for a given location.
+    r"""Preference for a given location. Set to either ALLOW or DENY.
 
     Values:
       ALLOW: Location is allowed for use.
@@ -57466,6 +58178,32 @@ class PathMatcher(_messages.Message):
   service is used.
 
   Fields:
+    defaultCustomErrorResponsePolicy: defaultCustomErrorResponsePolicy
+      specifies how the Load Balancer returns error responses when
+      BackendServiceor BackendBucket responds with an error. This policy takes
+      effect at the PathMatcher level and applies only when no policy has been
+      defined for the error code at lower levels like RouteRule and PathRule
+      within this PathMatcher. If an error code does not have a policy defined
+      in defaultCustomErrorResponsePolicy, then a policy defined for the error
+      code in UrlMap.defaultCustomErrorResponsePolicy takes effect. For
+      example, consider a UrlMap with the following configuration: -
+      UrlMap.defaultCustomErrorResponsePolicy is configured with policies for
+      5xx and 4xx errors - A RouteRule for /coming_soon/ is configured for the
+      error code 404. If the request is for www.myotherdomain.com and a 404 is
+      encountered, the policy under UrlMap.defaultCustomErrorResponsePolicy
+      takes effect. If a 404 response is encountered for the request
+      www.example.com/current_events/, the pathMatcher's policy takes effect.
+      If however, the request for www.example.com/coming_soon/ encounters a
+      404, the policy in RouteRule.customErrorResponsePolicy takes effect. If
+      any of the requests in this example encounter a 500 error code, the
+      policy at UrlMap.defaultCustomErrorResponsePolicy takes effect. When
+      used in conjunction with pathMatcher.defaultRouteAction.retryPolicy,
+      retries take precedence. Only once all retries are exhausted, the
+      defaultCustomErrorResponsePolicy is applied. While attempting a retry,
+      if load balancer is successful in reaching the service, the
+      defaultCustomErrorResponsePolicy is ignored and the response from the
+      service is returned to the client. defaultCustomErrorResponsePolicy is
+      supported only for Global External HTTP(S) load balancing.
     defaultRouteAction: defaultRouteAction takes effect when none of the
       pathRules or routeRules match. The load balancer performs advanced
       routing actions, such as URL rewrites and header transformations, before
@@ -57523,14 +58261,15 @@ class PathMatcher(_messages.Message):
       pathRules or routeRules.
   """
 
-  defaultRouteAction = _messages.MessageField('HttpRouteAction', 1)
-  defaultService = _messages.StringField(2)
-  defaultUrlRedirect = _messages.MessageField('HttpRedirectAction', 3)
-  description = _messages.StringField(4)
-  headerAction = _messages.MessageField('HttpHeaderAction', 5)
-  name = _messages.StringField(6)
-  pathRules = _messages.MessageField('PathRule', 7, repeated=True)
-  routeRules = _messages.MessageField('HttpRouteRule', 8, repeated=True)
+  defaultCustomErrorResponsePolicy = _messages.MessageField('CustomErrorResponsePolicy', 1)
+  defaultRouteAction = _messages.MessageField('HttpRouteAction', 2)
+  defaultService = _messages.StringField(3)
+  defaultUrlRedirect = _messages.MessageField('HttpRedirectAction', 4)
+  description = _messages.StringField(5)
+  headerAction = _messages.MessageField('HttpHeaderAction', 6)
+  name = _messages.StringField(7)
+  pathRules = _messages.MessageField('PathRule', 8, repeated=True)
+  routeRules = _messages.MessageField('HttpRouteRule', 9, repeated=True)
 
 
 class PathRule(_messages.Message):
@@ -57538,6 +58277,27 @@ class PathRule(_messages.Message):
   BackendService to handle the traffic arriving at this URL.
 
   Fields:
+    customErrorResponsePolicy: customErrorResponsePolicy specifies how the
+      Load Balancer returns error responses when BackendServiceor
+      BackendBucket responds with an error. If a policy for an error code is
+      not configured for the PathRule, a policy for the error code configured
+      in pathMatcher.defaultCustomErrorResponsePolicy is applied. If one is
+      not specified in pathMatcher.defaultCustomErrorResponsePolicy, the
+      policy configured in UrlMap.defaultCustomErrorResponsePolicy takes
+      effect. For example, consider a UrlMap with the following configuration:
+      - UrlMap.defaultCustomErrorResponsePolicy are configured with policies
+      for 5xx and 4xx errors - A PathRule for /coming_soon/ is configured for
+      the error code 404. If the request is for www.myotherdomain.com and a
+      404 is encountered, the policy under
+      UrlMap.defaultCustomErrorResponsePolicy takes effect. If a 404 response
+      is encountered for the request www.example.com/current_events/, the
+      pathMatcher's policy takes effect. If however, the request for
+      www.example.com/coming_soon/ encounters a 404, the policy in
+      PathRule.customErrorResponsePolicy takes effect. If any of the requests
+      in this example encounter a 500 error code, the policy at
+      UrlMap.defaultCustomErrorResponsePolicy takes effect.
+      customErrorResponsePolicy is supported only for Global External HTTP(S)
+      load balancing.
     paths: The list of path patterns to match. Each must start with / and the
       only place a * is allowed is at the end following a /. The string fed to
       the path matcher does not include any text after the first ? or #, and
@@ -57564,10 +58324,11 @@ class PathRule(_messages.Message):
       a target gRPC proxy.
   """
 
-  paths = _messages.StringField(1, repeated=True)
-  routeAction = _messages.MessageField('HttpRouteAction', 2)
-  service = _messages.StringField(3)
-  urlRedirect = _messages.MessageField('HttpRedirectAction', 4)
+  customErrorResponsePolicy = _messages.MessageField('CustomErrorResponsePolicy', 1)
+  paths = _messages.StringField(2, repeated=True)
+  routeAction = _messages.MessageField('HttpRouteAction', 3)
+  service = _messages.StringField(4)
+  urlRedirect = _messages.MessageField('HttpRedirectAction', 5)
 
 
 class PeerAuthenticationMethod(_messages.Message):
@@ -59209,6 +59970,326 @@ class PublicDelegatedPrefixesScopedList(_messages.Message):
 
   publicDelegatedPrefixes = _messages.MessageField('PublicDelegatedPrefix', 1, repeated=True)
   warning = _messages.MessageField('WarningValue', 2)
+
+
+class QueuedResource(_messages.Message):
+  r"""QueuedResource represents a request for future capacity. The capacity is
+  delivered in the form of other GCE resources, either Instances or
+  Reservations.
+
+  Enums:
+    StateValueValuesEnum: [Output only] High-level status of the request.
+
+  Fields:
+    bulkInsertInstanceResource: Specification of VM instances to create.
+    creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
+      format.
+    description: An optional description of this resource. Provide this
+      property when you create the resource.
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    kind: [Output Only] Type of the resource. Always compute#queuedResource
+      for QueuedResources.
+    name: Name of the resource. Provided by the client when the resource is
+      created. The name must be 1-63 characters long, and comply with RFC1035.
+      Specifically, the name must be 1-63 characters long and match the
+      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first
+      character must be a lowercase letter, and all following characters must
+      be a dash, lowercase letter, or digit, except the last character, which
+      cannot be a dash.
+    queuingPolicy: Queuing parameters for the requested capacity.
+    region: [Output Only] URL of the region where the resource resides. Only
+      applicable for regional resources. You must specify this field as part
+      of the HTTP request URL. It is not settable as a field in the request
+      body.
+    selfLink: [Output only] Server-defined URL for the resource.
+    selfLinkWithId: [Output Only] Server-defined URL for this resource with
+      the resource id.
+    state: [Output only] High-level status of the request.
+    status: [Output only] Result of queuing and provisioning based on deferred
+      capacity.
+    zone: [Output Only] URL of the zone where the resource resides. Only
+      applicable for zonal resources. You must specify this field as part of
+      the HTTP request URL. It is not settable as a field in the request body.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""[Output only] High-level status of the request.
+
+    Values:
+      ACCEPTED: The request was created successfully and was accepted for
+        provisioning when the capacity becomes available.
+      CANCELLED: The request was canceled by the user.
+      CREATING: QueuedResource is being created and may still fail creation.
+      DELETING: The request is being deleted.
+      FAILED: The request failed before or during provisioning.
+      PROVISIONING: The target resource(s) are being provisioned.
+      STATE_UNSPECIFIED: <no description>
+      SUCCEEDED: The request succeeded.
+    """
+    ACCEPTED = 0
+    CANCELLED = 1
+    CREATING = 2
+    DELETING = 3
+    FAILED = 4
+    PROVISIONING = 5
+    STATE_UNSPECIFIED = 6
+    SUCCEEDED = 7
+
+  bulkInsertInstanceResource = _messages.MessageField('BulkInsertInstanceResource', 1)
+  creationTimestamp = _messages.StringField(2)
+  description = _messages.StringField(3)
+  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(5, default='compute#queuedResource')
+  name = _messages.StringField(6)
+  queuingPolicy = _messages.MessageField('QueuingPolicy', 7)
+  region = _messages.StringField(8)
+  selfLink = _messages.StringField(9)
+  selfLinkWithId = _messages.StringField(10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  status = _messages.MessageField('QueuedResourceStatus', 12)
+  zone = _messages.StringField(13)
+
+
+class QueuedResourceList(_messages.Message):
+  r"""A QueuedResourceList object.
+
+  Messages:
+    WarningValue: Informational warning message.
+
+  Fields:
+    etag: A string attribute.
+    id: Unique identifier for the resource; defined by the server.
+    items: A list of QueuedResource resources.
+    kind: Type of resource.
+    nextPageToken: This token allows you to get the next page of results for
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output only] Server-defined URL for this resource.
+    unreachables: [Output only] Unreachable resources.
+    warning: Informational warning message.
+  """
+
+  class WarningValue(_messages.Message):
+    r"""Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      r"""[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: Warning about failed cleanup of transient changes made
+          by a failed operation.
+        DEPRECATED_RESOURCE_USED: A link to a deprecated resource was created.
+        DEPRECATED_TYPE_USED: When deploying and at least one of the resources
+          has a type marked as deprecated
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: The user created a boot disk that is
+          larger than image size.
+        EXPERIMENTAL_TYPE_USED: When deploying and at least one of the
+          resources has a type marked as experimental
+        EXTERNAL_API_WARNING: Warning that is present in an external api call
+        FIELD_VALUE_OVERRIDEN: Warning that value of a field has been
+          overridden. Deprecated unused field.
+        INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
+          kernel, which is deprecated.
+        LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
+          exceedingly large number of resources
+        MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: The route's nextHopIp address is not
+          assigned to an instance on the network.
+        NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
+          forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
+        NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
+          an instance that does not exist.
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
+          refers to an instance that is not on the same network as the route.
+        NEXT_HOP_NOT_RUNNING: The route's next hop instance does not have a
+          status of RUNNING.
+        NOT_CRITICAL_ERROR: Error which is not critical. We decided to
+          continue the process despite the mentioned error.
+        NO_RESULTS_ON_PAGE: No results are present on a particular list page.
+        PARTIAL_SUCCESS: Success is reported, but some results may be missing
+          due to errors
+        REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
+          requires a TOS they have not accepted.
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
+          in use.
+        RESOURCE_NOT_DELETED: One or more of the resources set to auto-delete
+          could not be deleted because they were in use.
+        SCHEMA_VALIDATION_IGNORED: When a resource schema validation is
+          ignored.
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: Instance template used in instance
+          group manager is valid as such, but its application does not make a
+          lot of sense, because it allows only single instance in instance
+          group.
+        UNDECLARED_PROPERTIES: When undeclared properties in the schema are
+          present
+        UNREACHABLE: A given scope cannot be reached.
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      LARGE_DEPLOYMENT_WARNING = 8
+      MISSING_TYPE_DEPENDENCY = 9
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
+      NEXT_HOP_CANNOT_IP_FORWARD = 11
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
+      NEXT_HOP_INSTANCE_NOT_FOUND = 13
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
+      NEXT_HOP_NOT_RUNNING = 15
+      NOT_CRITICAL_ERROR = 16
+      NO_RESULTS_ON_PAGE = 17
+      PARTIAL_SUCCESS = 18
+      REQUIRED_TOS_AGREEMENT = 19
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
+      RESOURCE_NOT_DELETED = 21
+      SCHEMA_VALIDATION_IGNORED = 22
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
+      UNDECLARED_PROPERTIES = 24
+      UNREACHABLE = 25
+
+    class DataValueListEntry(_messages.Message):
+      r"""A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
+  etag = _messages.StringField(1)
+  id = _messages.StringField(2)
+  items = _messages.MessageField('QueuedResource', 3, repeated=True)
+  kind = _messages.StringField(4, default='compute#queuedResourceList')
+  nextPageToken = _messages.StringField(5)
+  selfLink = _messages.StringField(6)
+  unreachables = _messages.StringField(7, repeated=True)
+  warning = _messages.MessageField('WarningValue', 8)
+
+
+class QueuedResourceStatus(_messages.Message):
+  r"""[Output only] Result of queuing and provisioning based on deferred
+  capacity.
+
+  Fields:
+    failedData: Additional status detail for the FAILED state.
+    provisioningOperations: [Output only] Fully qualified URL of the
+      provisioning GCE operation to track the provisioning along with
+      provisioning errors. The referenced operation may not exist after having
+      been deleted or expired.
+    queuingPolicy: Constraints for the time when the resource(s) start
+      provisioning. Always exposed as absolute times.
+  """
+
+  failedData = _messages.MessageField('QueuedResourceStatusFailedData', 1)
+  provisioningOperations = _messages.StringField(2, repeated=True)
+  queuingPolicy = _messages.MessageField('QueuingPolicy', 3)
+
+
+class QueuedResourceStatusFailedData(_messages.Message):
+  r"""Additional status detail for the FAILED state.
+
+  Messages:
+    ErrorValue: The error(s) that caused the QueuedResource to enter the
+      FAILED state.
+
+  Fields:
+    error: The error(s) that caused the QueuedResource to enter the FAILED
+      state.
+  """
+
+  class ErrorValue(_messages.Message):
+    r"""The error(s) that caused the QueuedResource to enter the FAILED state.
+
+    Messages:
+      ErrorsValueListEntry: A ErrorsValueListEntry object.
+
+    Fields:
+      errors: [Output Only] The array of errors encountered while processing
+        this operation.
+    """
+
+    class ErrorsValueListEntry(_messages.Message):
+      r"""A ErrorsValueListEntry object.
+
+      Messages:
+        ErrorDetailsValueListEntry: A ErrorDetailsValueListEntry object.
+
+      Fields:
+        code: [Output Only] The error type identifier for this error.
+        errorDetails: [Output Only] An optional list of messages that contain
+          the error details. There is a set of defined message types to use
+          for providing details.The syntax depends on the error code. For
+          example, QuotaExceededInfo will have details when the error code is
+          QUOTA_EXCEEDED.
+        location: [Output Only] Indicates the field in the request that caused
+          the error. This property is optional.
+        message: [Output Only] An optional, human-readable error message.
+      """
+
+      class ErrorDetailsValueListEntry(_messages.Message):
+        r"""A ErrorDetailsValueListEntry object.
+
+        Fields:
+          errorInfo: A ErrorInfo attribute.
+          help: A Help attribute.
+          localizedMessage: A LocalizedMessage attribute.
+          quotaInfo: A QuotaExceededInfo attribute.
+        """
+
+        errorInfo = _messages.MessageField('ErrorInfo', 1)
+        help = _messages.MessageField('Help', 2)
+        localizedMessage = _messages.MessageField('LocalizedMessage', 3)
+        quotaInfo = _messages.MessageField('QuotaExceededInfo', 4)
+
+      code = _messages.StringField(1)
+      errorDetails = _messages.MessageField('ErrorDetailsValueListEntry', 2, repeated=True)
+      location = _messages.StringField(3)
+      message = _messages.StringField(4)
+
+    errors = _messages.MessageField('ErrorsValueListEntry', 1, repeated=True)
+
+  error = _messages.MessageField('ErrorValue', 1)
 
 
 class QueuingPolicy(_messages.Message):
@@ -65420,6 +66501,8 @@ class SavedDisk(_messages.Message):
   r"""An instance-attached disk resource.
 
   Enums:
+    ArchitectureValueValuesEnum: [Output Only] The architecture of the
+      attached disk.
     StorageBytesStatusValueValuesEnum: [Output Only] An indicator whether
       storageBytes is in a stable state or it is being adjusted as a result of
       shared storage reallocation. This status can either be UPDATING, meaning
@@ -65427,6 +66510,7 @@ class SavedDisk(_messages.Message):
       size of the snapshot is up-to-date.
 
   Fields:
+    architecture: [Output Only] The architecture of the attached disk.
     kind: [Output Only] Type of the resource. Always compute#savedDisk for
       attached disks.
     sourceDisk: Specifies a URL of the disk attached to the source instance.
@@ -65438,6 +66522,19 @@ class SavedDisk(_messages.Message):
       the snapshot is being updated, or UP_TO_DATE, meaning the size of the
       snapshot is up-to-date.
   """
+
+  class ArchitectureValueValuesEnum(_messages.Enum):
+    r"""[Output Only] The architecture of the attached disk.
+
+    Values:
+      ARCHITECTURE_UNSPECIFIED: Default value indicating Architecture is not
+        set.
+      ARM64: Machines with architecture ARM64
+      X86_64: Machines with architecture X86_64
+    """
+    ARCHITECTURE_UNSPECIFIED = 0
+    ARM64 = 1
+    X86_64 = 2
 
   class StorageBytesStatusValueValuesEnum(_messages.Enum):
     r"""[Output Only] An indicator whether storageBytes is in a stable state
@@ -65452,10 +66549,11 @@ class SavedDisk(_messages.Message):
     UPDATING = 0
     UP_TO_DATE = 1
 
-  kind = _messages.StringField(1, default='compute#savedDisk')
-  sourceDisk = _messages.StringField(2)
-  storageBytes = _messages.IntegerField(3)
-  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 4)
+  architecture = _messages.EnumField('ArchitectureValueValuesEnum', 1)
+  kind = _messages.StringField(2, default='compute#savedDisk')
+  sourceDisk = _messages.StringField(3)
+  storageBytes = _messages.IntegerField(4)
+  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 5)
 
 
 class ScalingScheduleStatus(_messages.Message):
@@ -75484,6 +76582,30 @@ class UrlMap(_messages.Message):
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
+    defaultCustomErrorResponsePolicy: defaultCustomErrorResponsePolicy
+      specifies how the Load Balancer returns error responses when
+      BackendServiceor BackendBucket responds with an error. This policy takes
+      effect at the Load Balancer level and applies only when no policy has
+      been defined for the error code at lower levels like PathMatcher,
+      RouteRule and PathRule within this UrlMap. For example, consider a
+      UrlMap with the following configuration: -
+      defaultCustomErrorResponsePolicy containing policies for responding to
+      5xx and 4xx errors - A PathMatcher configured for *.example.com has
+      defaultCustomErrorResponsePolicy for 4xx. If a request for
+      http://www.example.com/ encounters a 404, the policy in
+      pathMatcher.defaultCustomErrorResponsePolicy will be enforced. When the
+      request for http://www.example.com/ encounters a 502, the policy in
+      UrlMap.defaultCustomErrorResponsePolicy will be enforced. When a request
+      that does not match any host in *.example.com such as
+      http://www.myotherexample.com/, encounters a 404,
+      UrlMap.defaultCustomErrorResponsePolicy takes effect. When used in
+      conjunction with defaultRouteAction.retryPolicy, retries take
+      precedence. Only once all retries are exhausted, the
+      defaultCustomErrorResponsePolicy is applied. While attempting a retry,
+      if load balancer is successful in reaching the service, the
+      defaultCustomErrorResponsePolicy is ignored and the response from the
+      service is returned to the client. defaultCustomErrorResponsePolicy is
+      supported only for Global External HTTP(S) load balancing.
     defaultRouteAction: defaultRouteAction takes effect when none of the
       hostRules match. The load balancer performs advanced routing actions,
       such as URL rewrites and header transformations, before forwarding the
@@ -75551,20 +76673,21 @@ class UrlMap(_messages.Message):
   """
 
   creationTimestamp = _messages.StringField(1)
-  defaultRouteAction = _messages.MessageField('HttpRouteAction', 2)
-  defaultService = _messages.StringField(3)
-  defaultUrlRedirect = _messages.MessageField('HttpRedirectAction', 4)
-  description = _messages.StringField(5)
-  fingerprint = _messages.BytesField(6)
-  headerAction = _messages.MessageField('HttpHeaderAction', 7)
-  hostRules = _messages.MessageField('HostRule', 8, repeated=True)
-  id = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(10, default='compute#urlMap')
-  name = _messages.StringField(11)
-  pathMatchers = _messages.MessageField('PathMatcher', 12, repeated=True)
-  region = _messages.StringField(13)
-  selfLink = _messages.StringField(14)
-  tests = _messages.MessageField('UrlMapTest', 15, repeated=True)
+  defaultCustomErrorResponsePolicy = _messages.MessageField('CustomErrorResponsePolicy', 2)
+  defaultRouteAction = _messages.MessageField('HttpRouteAction', 3)
+  defaultService = _messages.StringField(4)
+  defaultUrlRedirect = _messages.MessageField('HttpRedirectAction', 5)
+  description = _messages.StringField(6)
+  fingerprint = _messages.BytesField(7)
+  headerAction = _messages.MessageField('HttpHeaderAction', 8)
+  hostRules = _messages.MessageField('HostRule', 9, repeated=True)
+  id = _messages.IntegerField(10, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(11, default='compute#urlMap')
+  name = _messages.StringField(12)
+  pathMatchers = _messages.MessageField('PathMatcher', 13, repeated=True)
+  region = _messages.StringField(14)
+  selfLink = _messages.StringField(15)
+  tests = _messages.MessageField('UrlMapTest', 16, repeated=True)
 
 
 class UrlMapList(_messages.Message):

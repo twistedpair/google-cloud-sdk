@@ -31,7 +31,6 @@ from googlecloudsdk.command_lib.compute.tpus.tpu_vm import exceptions as tpu_exc
 from googlecloudsdk.command_lib.util.ssh import ssh
 from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
-
 import six
 
 SSH_KEYS_METADATA_KEY = 'ssh-keys'
@@ -47,7 +46,7 @@ Please check the following:
 """
 
 
-def AddTPUSSHArgs(parser, enable_iap):
+def AddTPUSSHArgs(parser, enable_iap, enable_batching=False):
   """Arguments that are common and specific to both TPU VM SSH and SCP."""
   parser.add_argument(
       '--worker',
@@ -63,6 +62,23 @@ def AddTPUSSHArgs(parser, enable_iap):
           with your private key prior to executing the gcloud command. Default:
           'ssh-add ~/.ssh/google_compute_engine'.
           """)
+  if enable_batching:
+    parser.add_argument(
+        '--batch-size',
+        default='all',
+        help="""\
+            Batch size for simultaneous command execution. When using a
+            comma-separated list (e.g. '1,4,6') or a range (e.g. '1-3') or
+            ``all`` keyword in `--worker` flag, it executes the command
+            concurrently in groups of the batch size. This flag takes a
+            value greater than 0 to specify the batch size to control the
+            concurrent connections that can be established with the TPU
+            workers, or the special keyword ``all`` to allow the concurrent
+            command executions on all the specified workers in `--worker` flag.
+            Maximum value of this flag should not be more than the number of
+            specified workers, otherwise the value will be treated as
+            ``--batch-size=all``.
+            """)
   if enable_iap:
     routing_group = parser.add_mutually_exclusive_group()
     routing_group.add_argument(
@@ -198,6 +214,43 @@ def ParseWorkerFlag(worker_flag, network_endpoints, use_internal_ips):
       ip_address = internal_address
     worker_ips[worker] = IPAddresses(ip_address, internal_address)
   return worker_ips
+
+
+def ParseBatchSize(batch_size_flag, worker_ips):
+  """Parses the --batch-size flag and validates the flag value.
+
+  Args:
+    batch_size_flag: str, batch-size flag argument.
+    worker_ips: dict[int, IPAddresses], worker number to ip-address mappings for
+      the ssh command execution.
+
+  Returns:
+    int, batch-size value capped at number of workers in worker_ips.
+
+  Raises:
+    InvalidArgumentException, if the batch_size_flag is neither a positive
+    integer nor equal to the `all` keyword.
+  """
+  if six.text_type(batch_size_flag).upper() == 'ALL':
+    if len(worker_ips) > 100:
+      log.warning('Executing ssh command on too many workers simultaneously is '
+                  'prone to error. Command may fail. Please consider using '
+                  '`--batch-size` flag if the command fails, for example, '
+                  '--batch-size=100.')
+    return len(worker_ips)
+  else:
+    try:
+      if int(batch_size_flag) > 0:
+        return min(int(batch_size_flag), len(worker_ips))
+      else:
+        raise ValueError()
+    except ValueError as error:
+      six.raise_from(
+          exceptions.InvalidArgumentException(
+              '--batch-size',
+              'unable to parse the batch size value {}. Please use a positive '
+              'integer not more than the number of TPU workers.'.format(
+                  batch_size_flag)), error)
 
 
 def _ParseHostKeySuffixes(guest_attributes):
@@ -370,6 +423,25 @@ def CreateSshTunnelArgs(args, track, project, zone, instance):
   res.instance = instance
 
   return res
+
+
+def WaitForBatchCompletion(ssh_threads, exit_statuses):
+  """Waits for all the running ssh threads to complete.
+
+  Exits with a nonzero code, if there are any non-zero exit status in ssh
+  command execution. This ensures that if any command failed on a worker,
+  we don't end up returning 0 for a value.
+
+  Args:
+    ssh_threads: List of ssh threads.
+    exit_statuses: List of exit status of each ssh execution.
+  """
+  for ssh_thread in ssh_threads:
+    ssh_thread.join()
+
+  for status in exit_statuses:
+    if status:
+      sys.exit(status)
 
 
 def AttemptRunWithRetries(command_name, worker, exit_statuses, cmd, env,

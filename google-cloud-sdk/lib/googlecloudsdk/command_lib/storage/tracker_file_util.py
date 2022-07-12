@@ -25,11 +25,14 @@ import json
 import os
 import re
 
+from googlecloudsdk.command_lib.storage import encryption_util
 from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import hashing
+from googlecloudsdk.core.util import scaled_integer
+
 
 # The maximum length of a file name can vary wildly between operating
 # systems, so always ensure that tracker files are less than 100 characters.
@@ -162,7 +165,7 @@ def get_tracker_file_path(destination_url,
   Returns:
     String file path to tracker file.
   """
-  if tracker_file_type == TrackerFileType.UPLOAD:
+  if tracker_file_type is TrackerFileType.UPLOAD:
     # TODO(b/190093425): Remove the branches below in favor of using final
     # destination resources in tracker paths for components.
     if component_number is not None:
@@ -175,29 +178,29 @@ def get_tracker_file_path(destination_url,
     # Encode the destination bucket and object name into the tracker file name.
     raw_result_tracker_file_name = 'resumable_upload__{}__{}__{}.url'.format(
         destination_url.bucket_name, object_name, destination_url.scheme.value)
-  elif tracker_file_type == TrackerFileType.DOWNLOAD:
+  elif tracker_file_type is TrackerFileType.DOWNLOAD:
     # Encode the fully-qualified destination file into the tracker file name.
     raw_result_tracker_file_name = 'resumable_download__{}__{}.etag'.format(
         os.path.realpath(destination_url.object_name),
         destination_url.scheme.value)
-  elif tracker_file_type == TrackerFileType.DOWNLOAD_COMPONENT:
+  elif tracker_file_type is TrackerFileType.DOWNLOAD_COMPONENT:
     # Encode the fully-qualified destination file name and the component number
     # into the tracker file name.
     raw_result_tracker_file_name = 'resumable_download__{}__{}__{}.etag'.format(
         os.path.realpath(destination_url.object_name),
         destination_url.scheme.value, component_number)
-  elif tracker_file_type == TrackerFileType.PARALLEL_UPLOAD:
+  elif tracker_file_type is TrackerFileType.PARALLEL_UPLOAD:
     # Encode the destination bucket and object names as well as the source file
     # into the tracker file name.
     raw_result_tracker_file_name = 'parallel_upload__{}__{}__{}__{}.url'.format(
         destination_url.bucket_name, destination_url.object_name, source_url,
         destination_url.scheme.value)
-  elif tracker_file_type == TrackerFileType.SLICED_DOWNLOAD:
+  elif tracker_file_type is TrackerFileType.SLICED_DOWNLOAD:
     # Encode the fully-qualified destination file into the tracker file name.
     raw_result_tracker_file_name = 'sliced_download__{}__{}.etag'.format(
         os.path.realpath(destination_url.object_name),
         destination_url.scheme.value)
-  elif tracker_file_type == TrackerFileType.REWRITE:
+  elif tracker_file_type is TrackerFileType.REWRITE:
     raw_result_tracker_file_name = 'rewrite__{}__{}__{}__{}__{}.token'.format(
         source_url.bucket_name, source_url.object_name,
         destination_url.bucket_name, destination_url.object_name,
@@ -271,13 +274,10 @@ def delete_download_tracker_files(destination_url):
       get_tracker_file_path(destination_url, TrackerFileType.DOWNLOAD))
 
 
-def hash_gcs_rewrite_parameters_for_tracker_file(
-    source_object_resource,
-    destination_object_resource,
-    destination_metadata=None,
-    request_config=None,
-    source_decyrption_key_sha256=None,
-    destination_encryption_key_sha256=None):
+def hash_gcs_rewrite_parameters_for_tracker_file(source_object_resource,
+                                                 destination_object_resource,
+                                                 destination_metadata=None,
+                                                 request_config=None):
   """Creates an MD5 hex digest of the parameters for GCS rewrite call.
 
   Resuming rewrites requires that the input parameters are identical, so the
@@ -286,18 +286,14 @@ def hash_gcs_rewrite_parameters_for_tracker_file(
   changed ACL, the hashes will not match, and we will restart the rewrite.
 
   Args:
-    source_object_resource (ObjectResource): Must include
-      bucket, name, etag, and metadata.
+    source_object_resource (ObjectResource): Must include bucket, name, etag,
+      and metadata.
     destination_object_resource (ObjectResource|UnknownResource): Must include
       bucket, name, and metadata.
     destination_metadata (messages.Object|None): Separated from
       destination_object_resource since UnknownResource does not have metadata.
     request_config (request_config_factory._RequestConfig|None): Contains a
       variety of API arguments.
-    source_decyrption_key_sha256 (str|None): Optional SHA256 hash string of
-      decryption key for source object.
-    destination_encryption_key_sha256 (str|None): Optional SHA256 hash string of
-      encryption key for destination object.
 
   Returns:
     MD5 hex digest (string) of the input parameters.
@@ -313,14 +309,28 @@ def hash_gcs_rewrite_parameters_for_tracker_file(
   if not all(mandatory_parameters):
     raise ValueError('Missing required parameter values.')
 
+  source_encryption = (
+      source_object_resource.decryption_key_hash or
+      source_object_resource.kms_key)
+  destination_encryption = None
+  if (request_config and request_config.resource_args and
+      isinstance(request_config.resource_args.encryption_key,
+                 encryption_util.EncryptionKey)):
+    key = request_config.resource_args.encryption_key
+    if key.type is encryption_util.KeyType.CSEK:
+      destination_encryption = key.sha256
+    elif key.type is encryption_util.KeyType.CMEK:
+      destination_encryption = key.key
+
   optional_parameters = (
       destination_metadata,
-      getattr(request_config, 'max_bytes_per_call', None),
+      scaled_integer.ParseInteger(
+          properties.VALUES.storage.copy_chunk_size.Get()),
       getattr(request_config, 'precondition_generation_match', None),
       getattr(request_config, 'precondition_metageneration_match', None),
       getattr(request_config, 'predefined_acl_string', None),
-      source_decyrption_key_sha256,
-      destination_encryption_key_sha256,
+      source_encryption,
+      destination_encryption,
   )
   all_parameters = mandatory_parameters + optional_parameters
   parameters_bytes = ''.join([str(parameter) for parameter in all_parameters
@@ -581,7 +591,8 @@ def read_or_create_download_tracker_file(source_object_resource,
   return tracker_file_path, False
 
 
-def read_rewrite_tracker_file(tracker_file_path, rewrite_parameters_hash):
+def get_rewrite_token_from_tracker_file(tracker_file_path,
+                                        rewrite_parameters_hash):
   """Attempts to read a rewrite tracker file.
 
   Args:
@@ -592,9 +603,12 @@ def read_rewrite_tracker_file(tracker_file_path, rewrite_parameters_hash):
   Returns:
     String token for resuming rewrites if a matching tracker file exists.
   """
+  if not os.path.exists(tracker_file_path):
+    return None
   with files.FileReader(tracker_file_path) as tracker_file:
     existing_hash, rewrite_token = [
         line.rstrip('\n') for line in tracker_file.readlines()
     ]
     if existing_hash == rewrite_parameters_hash:
       return rewrite_token
+  return None

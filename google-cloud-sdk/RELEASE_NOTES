@@ -5,6 +5,139 @@ Copyright 2014-2022 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 393.0.0 (2022-07-12)
+
+### Breaking Changes
+
+*   **(AlloyDB)** Updated `gcloud beta alloydb instances create` and `gcloud beta alloydb instances update` to remove the unused `--zone` flag.
+*   **(Cloud Datastore Emulator)** Removed support for running the Datastore emulator (`gcloud beta emulators datastore start`) in environment with Java versions prior to 11. Users can upgrade to Java 11 or above to continue using the latest Datastore emulator. Alternatively, users can use gcloud command-line tool with version before 392.0.0 to continue using the previous Datastore emulator with Java 8 support.
+*   **(Cloud Firestore Emulator)** Removed support for running the Firestore emulator (`gcloud beta emulators firestore start`) in environment with Java versions prior to 11. Users can upgrade to Java 11 or above to continue using the latest Firestore emulator. Alternatively, users can use gcloud command-line tool with version before 392.0.0 to continue using the previous Firestore emulator with Java 8 support.
+
+
+### AI
+
+* Added `gcloud ai models delete-version` which delete an existing Vertex AI model version.
+* Modified `gcloud ai models upload` to support model versioning. Use `--parent-model` flag to specify the parent model of the model version to be uploaded. When this flag is specified, a new version of the parent model will be uploaded. Use `--model-id` flag to specify the model ID for the uploaded model.
+* Fixed an issue for `gcloud ai custom-jobs create` that the value of the `--args` and `--command` flags are not passed when the `--worker-pool-spec` flag is left unspecified.
+
+### AlloyDB
+
+* Updated `gcloud beta alloydb instances create` and `gcloud beta alloydb instances update` to allow `--cpu-count` of 2.
+
+### Artifact Registry
+
+*  Fixed issue where `gcloud artifacts packages delete` requires the package id unescaped.
+
+### Cloud Dataproc
+
+*   Added `bootDiskKmsKey` key in `--pools` flag to `gcloud dataproc clusters
+    gke create` to allow creating Dataproc on GKE cluster with CMEK protected
+    node pool.
+
+### Cloud Datastream
+
+*   Added `--bigquery-destination-config` flag to `gcloud datastream streams <create/update>`.
+*   Added `bigquery` type to `--type` flag of `datastream connection-profiles <create/update>`.
+
+### Cloud Deploy
+
+* Added optional flags `--labels` and `--annotations` for users to add labels or annotations to apply to `gcloud deploy targets rollback` command.
+
+### Cloud Firestore Emulator
+
+* Release Cloud Firestore emulator v1.14.4
+  * Fix: Condition Normalization now correctly handles cartesian products and
+    flattening in certain edge cases.
+
+### Cloud Functions
+
+*   Promoted `--docker-registry` flag of `gcloud functions deploy` to GA.
+*   Move PHP 8.1 for Cloud Functions to GA.
+*   Added `gcloud functions runtimes list` which displays the supported runtimes
+    for both 1st & 2nd generation functions.
+
+### Cloud Key Management Service
+
+*   Promoted `--wrapped-key-file` flag of `gcloud kms keys versions import` to GA.
+*   Deprecated `--rsa-aes-wrapped-key-file` flag of `gcloud kms keys versions import`.
+    Use `--wrapped-key-file` instead.
+
+### Cloud Memorystore
+
+* Promoted `--persistence-mode`, `--rdb-snapshot-period` and
+  `--rdb-snapshot-start-time` flags of `gcloud redis instances create` to GA.
+* Promoted `--persistence-mode`, `--rdb-snapshot-period` and
+  `--rdb-snapshot-start-time` flags of `gcloud redis instances update` to GA.
+
+### Cloud SQL
+
+* Added flag `--password-policy-enable-password-verification` to `gcloud sql users create` and `gcloud sql users set-password-policy` for MySQL password validation.
+* Added flags `--discard-dual-password` and `--retain-password` to `gcloud sql users set-password` to allow control over MySQL's dual password.
+
+### Cloud Speech API
+
+* Added `latest_short` and `latest_long` options for
+  `gcloud ml speech <recognize | recognize-long-running> --model` flag.
+
+### Cloud TPU
+
+* Updated `tpus tpu-vm ssh` to return an error when users attempt
+to ssh into a TPU VM during a maintenance event.
+
+### Compute Engine
+
+* Promoted `--target-distribution-shape` flag of `gcloud compute instances bulk create` to GA.
+* Promoted `--key-revocation-action-type` flag to GA for `gcloud compute instance-templates create`.
+* Promoted explicit scope requirement for `gcloud compute security-policies` to beta.
+* Promoted `--network-ddos-protection` flag of `gcloud compute security-policies create` to beta.
+* Promoted `gcloud compute network-edge-security-services` to beta.
+* Promoted `--key-reservation-action-type` flag to GA for `gcloud compute instances create`.
+* Promoted `keyRevocationActionType` property of `gcloud compute instances update-from-file` to GA.
+
+### Compute Firewall Policies
+
+* Promoted `--src-region-codes` and `--dest-region-codes` flags to beta
+  in `gcloud compute firewall-policies rules create`
+  , `gcloud compute firewall-policies rules update`
+  , `gcloud compute network-firewall-policies rules create`
+  and `gcloud compute network-firewall-policies rules update` commands.
+* Promoted `--src-threat-intelligence` and `--dest-threat-intelligence` flags to
+  beta in `gcloud compute firewall-policies rules create`
+  , `gcloud compute firewall-policies rules update`
+  , `gcloud compute network-firewall-policies rules create`
+  and `gcloud compute network-firewall-policies rules update` commands.
+
+### Config Connector
+
+* Updated Google Cloud Config Connector to version 1.89.0.
+  See Config Connector Overview for more details [https://cloud.google.com/config-connector/docs/overview](https://cloud.google.com/config-connector/docs/overview).
+
+### Config Controller
+
+* Added `--man-blocks` flag to `gcloud anthos config controller create` to allow
+    specifying multiple master authorized network CIDR blocks for a CC instance.
+* Deprecated `--man-block` flag of `gcloud anthos config controller create`.
+    Use `--man-blocks` to set master authorized network CIDR block.
+
+### Kubernetes Engine
+
+*   Added `--binauthz-evaluation-mode` flag to
+    `gcloud container clusters create` command.
+*   Added `--binauthz-evaluation-mode` flag to
+    `gcloud container clusters create-auto` command.
+*   Added `--binauthz-evaluation-mode` flag to
+    `gcloud container clusters update` command.
+* Added `--total-max-nodes` and `--total-min-nodes` to `gcloud container cluster/node-pools create/update` that allow users to set total size limits for autoscaled nodepools. The limits are available in clusters with version 1.24+.
+* Added `--location-policy` to `gcloud container cluster/node-pools create/update` that allow users to set location policy for autoscaled nodepools. The location policy is available in clusters with version 1.24.1-gke.800+.
+
+### Transcoder
+
+* added support for `--labels` flag when creating a new job/job template.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 392.0.0 (2022-06-28)
 
 ### Anthos Multi-Cloud

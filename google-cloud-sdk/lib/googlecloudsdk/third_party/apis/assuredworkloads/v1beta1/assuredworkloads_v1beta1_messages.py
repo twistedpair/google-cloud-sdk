@@ -584,18 +584,6 @@ class GoogleCloudAssuredworkloadsV1WorkloadSaaEnrollmentResponse(_messages.Messa
   setupStatus = _messages.EnumField('SetupStatusValueValuesEnum', 2)
 
 
-class GoogleCloudAssuredworkloadsV1beta1AnalyzeWorkloadMoveResponse(_messages.Message):
-  r"""Response with the analysis if the source workload can be moved to the
-  target workload
-
-  Fields:
-    blockers: List of blockers that prevent moving the source workload to the
-      target workload
-  """
-
-  blockers = _messages.StringField(1, repeated=True)
-
-
 class GoogleCloudAssuredworkloadsV1beta1CreateWorkloadOperationMetadata(_messages.Message):
   r"""Operation metadata to give request details of CreateWorkload.
 

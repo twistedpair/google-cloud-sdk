@@ -395,7 +395,7 @@ def AddRuntimeFlag(parser):
           - `nodejs14`: Node.js 14
           - `nodejs16`: Node.js 16
           - `php74`: PHP 7.4
-          - `php81`: PHP 8.1 (preview)
+          - `php81`: PHP 8.1
           - `python37`: Python 3.7
           - `python38`: Python 3.8
           - `python39`: Python 3.9
@@ -803,12 +803,11 @@ def AddIgnoreFileFlag(parser):
 
 
 # Flags for Artifact Registry
-def AddDockerRegistryFlags(parser, track):
+def AddDockerRegistryFlags(parser):
   """Adds flags for selecting the Docker registry type for Cloud Function."""
   docker_registry_arg = base.ChoiceArgument(
       '--docker-registry',
       choices=sorted(DOCKER_REGISTRY_MAPPING.values()),
-      hidden=_ShouldHideV2Flags(track),
       help_str="""\
         Docker Registry to use for storing the function's Docker images.
         The option `container-registry` is used by default.

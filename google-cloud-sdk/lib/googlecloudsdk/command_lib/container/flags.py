@@ -295,8 +295,7 @@ Use 'None' to opt-out of any release channel.
       hidden=hidden)
 
 
-def AddClusterAutoscalingFlags(
-    parser, update_group=None, location_policy_present=False, hidden=False):
+def AddClusterAutoscalingFlags(parser, update_group=None, hidden=False):
   """Adds autoscaling related flags to parser.
 
   Autoscaling related flags are: --enable-autoscaling
@@ -306,7 +305,6 @@ def AddClusterAutoscalingFlags(
     parser: A given parser.
     update_group: An optional group of mutually exclusive flag options to which
       an --enable-autoscaling flag is added.
-    location_policy_present: If true location-policy is added to the group.
     hidden: If true, suppress help text for added options.
 
   Returns:
@@ -353,7 +351,7 @@ Maximum number of all nodes in the node pool.
 Maximum number of all nodes to which the node pool specified by --node-pool
 (or default node pool if unspecified) can scale. Ignored unless
 --enable-autoscaling is also specified.""",
-      hidden=True,
+      hidden=hidden,
       type=int)
   group.add_argument(
       '--total-min-nodes',
@@ -363,21 +361,32 @@ Minimum number of all nodes in the node pool.
 Minimum number of all nodes to which the node pool specified by --node-pool
 (or default node pool if unspecified) can scale. Ignored unless
 --enable-autoscaling is also specified.""",
-      hidden=True,
+      hidden=hidden,
       type=int)
-  if location_policy_present:
-    group.add_argument(
-        '--location-policy',
-        choices=api_adapter.LOCATION_POLICY_OPTIONS,
-        help="""\
+  group.add_argument(
+      '--location-policy',
+      choices=api_adapter.LOCATION_POLICY_OPTIONS,
+      help="""\
 Location policy specifies the algorithm used when scaling-up the node pool.
 
 * `BALANCED` - Is a best effort policy that aims to balance the sizes of available
   zones.
 * `ANY` - Instructs the cluster autoscaler to prioritize utilization of unused
   reservations, and reduces preemption risk for Spot VMs.""",
-        hidden=True)
+      hidden=hidden)
   return group
+
+
+def WarnForLocationPolicyDefault(args):
+  if not hasattr(args, 'location_policy'):
+    return
+  if not args.IsSpecified('location_policy'):
+    log.status.Print(
+        'Default change: During creation of nodepools or autoscaling '
+        'configuration changes for cluster versions greater than 1.24.1-gke.800 '
+        'a default location policy is applied. For Spot and PVM it defaults to '
+        'ANY, and for all other VM kinds a BALANCED policy is used. To change '
+        'the default values use the `--location-policy` flag.')
 
 
 def AddNodePoolAutoprovisioningFlag(parser, hidden=True):
@@ -808,7 +817,7 @@ Multiple locations can be specified, separated by commas.""",
           '--autoprovisioning-min-cpu-platform',
           warn='The `--autoprovisioning-min-cpu-platform` flag is deprecated and '
           'will be removed in an upcoming release. More info: https://cloud.google.com/kubernetes-engine/docs/release-notes#March_08_2022',
-          ),
+      ),
       hidden=hidden,
       metavar='PLATFORM',
       help="""\
@@ -817,16 +826,42 @@ specified CPU architecture or a newer one.
 """)
 
 
-def AddEnableBinAuthzFlag(parser, hidden=False):
-  """Adds a --enable-binauthz flag to parser."""
-  help_text = """Enable Binary Authorization for this cluster."""
-  parser.add_argument(
-      '--enable-binauthz',
-      action='store_true',
-      default=None,
-      help=help_text,
-      hidden=hidden,
-  )
+def AddBinauthzFlags(parser, api_version='v1', hidden=False, autopilot=False):
+  """Adds the --enable-binauthz  and --binauthz-evaluation-mode flags to parser."""
+  messages = apis.GetMessagesModule('container', api_version)
+  options = api_adapter.GetBinauthzEvaluationModeOptions(messages)
+
+  binauthz_group = parser.add_group(
+      mutex=False, help='Flags for Binary Authorization:')
+  if autopilot:
+    binauthz_group.add_argument(
+        '--binauthz-evaluation-mode',
+        choices=options,
+        default=None,
+        help='Enable Binary Authorization for this cluster.',
+        hidden=hidden,
+    )
+  else:
+    binauthz_enablement_group = binauthz_group.add_group(mutex=True)
+    # The --enable-binauthz flag is not exposed for autopilot clusters.
+    binauthz_enablement_group.add_argument(
+        '--enable-binauthz',
+        action=actions.DeprecationAction(
+            '--enable-binauthz',
+            warn='The `--enable-binauthz` flag is deprecated. Please use '
+            '`--binauthz-evaluation-mode` instead. ',
+            action='store_true'),
+        default=None,
+        help='Enable Binary Authorization for this cluster.',
+        hidden=hidden,
+    )
+    binauthz_enablement_group.add_argument(
+        '--binauthz-evaluation-mode',
+        choices=options,
+        default=None,
+        help='Enable Binary Authorization for this cluster.',
+        hidden=hidden,
+    )
 
 
 def AddZoneAndRegionFlags(parser):
@@ -1170,14 +1205,15 @@ def AddMonitoringFlag(parser, autopilot=False):
 
   help_text = """\
 Set the components that have monitoring enabled. Valid component values are:
-`SYSTEM`, `WORKLOAD` (Deprecated), `NONE`
+`SYSTEM`, `WORKLOAD` (Deprecated), `NONE`,`API_SERVER`, `CONTROLLER_MANAGER`,
+`SCHEDULER`
 
 For more information, look at
 https://cloud.google.com/stackdriver/docs/solutions/gke/installing#available-metrics
 
 Examples:
 
-  $ {command} --monitoring=SYSTEM
+  $ {command} --monitoring=SYSTEM,API_SERVER
   $ {command} --monitoring=NONE
 """
   parser.add_argument(
@@ -3296,9 +3332,7 @@ def AddStackTypeFlag(parser):
   """
   help_text = "IP stack type of the node VMs. Defaults to 'ipv4'"
   parser.add_argument(
-      '--stack-type',
-      help=help_text,
-      choices=['ipv4', 'ipv4-ipv6'])
+      '--stack-type', help=help_text, choices=['ipv4', 'ipv4-ipv6'])
 
 
 def AddIpv6AccessTypeFlag(parser):
@@ -3309,9 +3343,7 @@ def AddIpv6AccessTypeFlag(parser):
   """
   help_text = "IPv6 access type of the subnetwork. Defaults to 'external'"
   parser.add_argument(
-      '--ipv6-access-type',
-      help=help_text,
-      choices=['external', 'internal'])
+      '--ipv6-access-type', help=help_text, choices=['external', 'internal'])
 
 
 def AddEnableIntraNodeVisibilityFlag(parser, hidden=False):
@@ -4552,9 +4584,8 @@ def AddPodAutoscalingDirectMetricsOptInFlag(parser):
       action='store_true',
       hidden=True,
       help='When specified, the cluster will use the pod autoscaling direct '
-           'metrics collection feature. Otherwise the cluster will use '
-           'the feature or will not, depending on the cluster version.'
-  )
+      'metrics collection feature. Otherwise the cluster will use '
+      'the feature or will not, depending on the cluster version.')
 
 
 def VerifyGetCredentialsFlags(args):

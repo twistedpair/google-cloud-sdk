@@ -27,7 +27,7 @@ from googlecloudsdk.command_lib.compute.os_config.troubleshoot import utils
 def Check(instance_ref, release_track):
   """Checks if the OS Config API is enabled for the specified instance."""
   continue_flag = False
-  response_message = '> Is OS Config Service enabled? '
+  response_message = '> Is the OS Config API enabled? '
 
   try:
     service_enabled = enable_api.IsServiceEnabled(instance_ref.project,

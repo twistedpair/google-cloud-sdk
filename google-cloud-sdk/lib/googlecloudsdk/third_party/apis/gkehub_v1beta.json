@@ -586,6 +586,10 @@
           "description": "Logs all denies and dry run failures.",
           "type": "boolean"
         },
+        "mutationEnabled": {
+          "description": "Enable or disable mutation in policy controller. If true, mutation CRDs, webhook and controller deployment will be deployed to the cluster.",
+          "type": "boolean"
+        },
         "monitoring": {
           "description": "Monitoring specifies the configuration of monitoring.",
           "$ref": "ConfigManagementPolicyControllerMonitoring"
@@ -842,6 +846,10 @@
           "description": "Logs all denies and dry run failures.",
           "type": "boolean"
         },
+        "mutationEnabled": {
+          "description": "Enables the ability to mutate resources using Policy Controller.",
+          "type": "boolean"
+        },
         "templateLibraryConfig": {
           "description": "Configures the library templates to install along with Policy Controller.",
           "$ref": "PolicyControllerTemplateLibraryConfig"
@@ -1030,7 +1038,7 @@
           "$ref": "ServiceMeshMembershipState"
         },
         "metering": {
-          "description": "Metering-specific spec.",
+          "description": "Metering-specific state.",
           "$ref": "MeteringMembershipState"
         },
         "configmanagement": {

@@ -113,6 +113,100 @@
     }
   },
   "schemas": {
+    "GoogleIamV1SetIamPolicyRequest": {
+      "id": "GoogleIamV1SetIamPolicyRequest",
+      "description": "Request message for `SetIamPolicy` method.",
+      "type": "object",
+      "properties": {
+        "policy": {
+          "description": "REQUIRED: The complete policy to be applied to the `resource`. The size of the policy is limited to a few 10s of KB. An empty policy is a valid policy but certain Google Cloud services (such as Projects) might reject them.",
+          "$ref": "GoogleIamV1Policy"
+        }
+      }
+    },
+    "GoogleIamV1Policy": {
+      "id": "GoogleIamV1Policy",
+      "description": "An Identity and Access Management (IAM) policy, which specifies access controls for Google Cloud resources. A `Policy` is a collection of `bindings`. A `binding` binds one or more `members`, or principals, to a single `role`. Principals can be user accounts, service accounts, Google groups, and domains (such as G Suite). A `role` is a named list of permissions; each `role` can be an IAM predefined role or a user-created custom role. For some types of Google Cloud resources, a `binding` can also specify a `condition`, which is a logical expression that allows access to a resource only if the expression evaluates to `true`. A condition can add constraints based on attributes of the request, the resource, or both. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies). **JSON example:** { \"bindings\": [ { \"role\": \"roles\/resourcemanager.organizationAdmin\", \"members\": [ \"user:mike@example.com\", \"group:admins@example.com\", \"domain:google.com\", \"serviceAccount:my-project-id@appspot.gserviceaccount.com\" ] }, { \"role\": \"roles\/resourcemanager.organizationViewer\", \"members\": [ \"user:eve@example.com\" ], \"condition\": { \"title\": \"expirable access\", \"description\": \"Does not grant access after Sep 2020\", \"expression\": \"request.time < timestamp('2020-10-01T00:00:00.000Z')\", } } ], \"etag\": \"BwWWja0YfJA=\", \"version\": 3 } **YAML example:** bindings: - members: - user:mike@example.com - group:admins@example.com - domain:google.com - serviceAccount:my-project-id@appspot.gserviceaccount.com role: roles\/resourcemanager.organizationAdmin - members: - user:eve@example.com role: roles\/resourcemanager.organizationViewer condition: title: expirable access description: Does not grant access after Sep 2020 expression: request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA= version: 3 For a description of IAM and its features, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/docs\/).",
+      "type": "object",
+      "properties": {
+        "version": {
+          "description": "Specifies the format of the policy. Valid values are `0`, `1`, and `3`. Requests that specify an invalid value are rejected. Any operation that affects conditional role bindings must specify version `3`. This requirement applies to the following operations: * Getting a policy that includes a conditional role binding * Adding a conditional role binding to a policy * Changing a conditional role binding in a policy * Removing any role binding, with or without a condition, from a policy that includes conditions **Important:** If you use IAM Conditions, you must include the `etag` field whenever you call `setIamPolicy`. If you omit this field, then IAM allows you to overwrite a version `3` policy with a version `1` policy, and all of the conditions in the version `3` policy are lost. If a policy does not include any conditions, operations on that policy may specify any valid version or leave the field unset. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
+          "type": "integer",
+          "format": "int32"
+        },
+        "bindings": {
+          "description": "Associates a list of `members`, or principals, with a `role`. Optionally, may specify a `condition` that determines how and when the `bindings` are applied. Each of the `bindings` must contain at least one principal. The `bindings` in a `Policy` can refer to up to 1,500 principals; up to 250 of these principals can be Google groups. Each occurrence of a principal counts towards these limits. For example, if the `bindings` grant 50 different roles to `user:alice@example.com`, and not to any other principal, then you can add another 1,450 principals to the `bindings` in the `Policy`.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleIamV1Binding"
+          }
+        },
+        "etag": {
+          "description": "`etag` is used for optimistic concurrency control as a way to help prevent simultaneous updates of a policy from overwriting each other. It is strongly suggested that systems make use of the `etag` in the read-modify-write cycle to perform policy updates in order to avoid race conditions: An `etag` is returned in the response to `getIamPolicy`, and systems are expected to put that etag in the request to `setIamPolicy` to ensure that their change will be applied to the same version of the policy. **Important:** If you use IAM Conditions, you must include the `etag` field whenever you call `setIamPolicy`. If you omit this field, then IAM allows you to overwrite a version `3` policy with a version `1` policy, and all of the conditions in the version `3` policy are lost.",
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "GoogleIamV1Binding": {
+      "id": "GoogleIamV1Binding",
+      "description": "Associates `members`, or principals, with a `role`.",
+      "type": "object",
+      "properties": {
+        "role": {
+          "description": "Role that is assigned to the list of `members`, or principals. For example, `roles\/viewer`, `roles\/editor`, or `roles\/owner`.",
+          "type": "string"
+        },
+        "members": {
+          "description": "Specifies the principals requesting access for a Google Cloud resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "condition": {
+          "description": "The condition that is associated with this binding. If the condition evaluates to `true`, then this binding applies to the current request. If the condition evaluates to `false`, then this binding does not apply to the current request. However, a different role binding might grant the same role to one or more of the principals in this binding. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
+          "$ref": "GoogleTypeExpr"
+        }
+      }
+    },
+    "GoogleTypeExpr": {
+      "id": "GoogleTypeExpr",
+      "description": "Represents a textual expression in the Common Expression Language (CEL) syntax. CEL is a C-like expression language. The syntax and semantics of CEL are documented at https:\/\/github.com\/google\/cel-spec. Example (Comparison): title: \"Summary size limit\" description: \"Determines if a summary is less than 100 chars\" expression: \"document.summary.size() < 100\" Example (Equality): title: \"Requestor is owner\" description: \"Determines if requestor is the document owner\" expression: \"document.owner == request.auth.claims.email\" Example (Logic): title: \"Public documents\" description: \"Determine whether the document should be publicly visible\" expression: \"document.type != 'private' && document.type != 'internal'\" Example (Data Manipulation): title: \"Notification string\" description: \"Create a notification string with a timestamp.\" expression: \"'New message received at ' + string(document.create_time)\" The exact variables and functions that may be referenced within an expression are determined by the service that evaluates it. See the service documentation for additional information.",
+      "type": "object",
+      "properties": {
+        "expression": {
+          "description": "Textual representation of an expression in Common Expression Language syntax.",
+          "type": "string"
+        },
+        "title": {
+          "description": "Optional. Title for the expression, i.e. a short string describing its purpose. This can be used e.g. in UIs which allow to enter the expression.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Optional. Description of the expression. This is a longer text which describes the expression, e.g. when hovered over it in a UI.",
+          "type": "string"
+        },
+        "location": {
+          "description": "Optional. String indicating the location of the expression for error reporting, e.g. a file name and a position in the file.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleIamV1TestIamPermissionsResponse": {
+      "id": "GoogleIamV1TestIamPermissionsResponse",
+      "description": "Response message for `TestIamPermissions` method.",
+      "type": "object",
+      "properties": {
+        "permissions": {
+          "description": "A subset of `TestPermissionsRequest.permissions` that the caller is allowed.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "GoogleLongrunningListOperationsResponse": {
       "id": "GoogleLongrunningListOperationsResponse",
       "description": "The response message for Operations.ListOperations.",
@@ -428,6 +522,80 @@
         }
       }
     },
+    "GoogleCloudAiplatformV1ListSavedQueriesResponse": {
+      "id": "GoogleCloudAiplatformV1ListSavedQueriesResponse",
+      "description": "Response message for DatasetService.ListSavedQueries.",
+      "type": "object",
+      "properties": {
+        "savedQueries": {
+          "description": "A list of SavedQueries that matches the specified filter in the request.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1SavedQuery"
+          }
+        },
+        "nextPageToken": {
+          "description": "The standard List next-page token.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SavedQuery": {
+      "id": "GoogleCloudAiplatformV1SavedQuery",
+      "description": "A SavedQuery is a view of the dataset. It references a subset of annotations by problem type and filters.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. Resource name of the SavedQuery.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "displayName": {
+          "description": "Required. The user-defined name of the SavedQuery. The name can be up to 128 characters long and can be consist of any UTF-8 characters.",
+          "type": "string"
+        },
+        "metadata": {
+          "description": "Some additional information about the SavedQuery.",
+          "type": "any"
+        },
+        "createTime": {
+          "description": "Output only. Timestamp when this SavedQuery was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. Timestamp when SavedQuery was last updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "annotationFilter": {
+          "description": "Output only. Filters on the Annotations in the dataset.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "problemType": {
+          "description": "Required. Problem type of the SavedQuery. Allowed values: * IMAGE_CLASSIFICATION_SINGLE_LABEL * IMAGE_CLASSIFICATION_MULTI_LABEL * IMAGE_BOUNDING_POLY * IMAGE_BOUNDING_BOX * IMAGE_POLYLINE * IMAGE_SEGMENTATION * TEXT_CLASSIFICATION_SINGLE_LABEL * TEXT_CLASSIFICATION_MULTI_LABEL * TEXT_EXTRACTION * TEXT_SENTIMENT * VIDEO_CLASSIFICATION * VIDEO_OBJECT_TRACKING * VIDEO_ACTION_RECOGNITION",
+          "type": "string"
+        },
+        "annotationSpecCount": {
+          "description": "Output only. Number of AnnotationSpecs in the context of the SavedQuery.",
+          "readOnly": true,
+          "type": "integer",
+          "format": "int32"
+        },
+        "etag": {
+          "description": "Used to perform a consistent read-modify-write updates. If not set, a blind \"overwrite\" update happens.",
+          "type": "string"
+        },
+        "supportAutomlTraining": {
+          "description": "Output only. If the Annotations belonging to the SavedQuery can be used for AutoML training.",
+          "readOnly": true,
+          "type": "boolean"
+        }
+      }
+    },
     "GoogleCloudAiplatformV1AnnotationSpec": {
       "id": "GoogleCloudAiplatformV1AnnotationSpec",
       "description": "Identifies a concept with which DataItems may be annotated with.",
@@ -611,7 +779,7 @@
           "type": "string"
         },
         "enablePrivateServiceConnect": {
-          "description": "If true, expose the Endpoint via private service connect. Only one of the fields, network or enable_private_service_connect, can be set.",
+          "description": "Deprecated: If true, expose the Endpoint via private service connect. Only one of the fields, network or enable_private_service_connect, can be set.",
           "type": "boolean"
         },
         "modelDeploymentMonitoringJob": {
@@ -643,7 +811,7 @@
           "type": "string"
         },
         "model": {
-          "description": "Required. The name of the Model that this is the deployment of. Note that the Model may be in a different location than the DeployedModel's Endpoint.",
+          "description": "Required. The resource name of the Model that this is the deployment of. Note that the Model may be in a different location than the DeployedModel's Endpoint. The resource name may contain version id or version alias to specify the version, if no version is specified, the default version will be deployed.",
           "type": "string"
         },
         "modelVersionId": {
@@ -699,7 +867,7 @@
           "format": "int32"
         },
         "maxReplicaCount": {
-          "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If the requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, will use min_replica_count as the default value. The value of this field impacts the charge against Vertex CPU and GPU quotas. Specifically, you will be charged for max_replica_count * number of cores in the selected machine type) and (max_replica_count * number of GPUs per replica in the selected machine type).",
+          "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If the requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, will use min_replica_count as the default value. The value of this field impacts the charge against Vertex CPU and GPU quotas. Specifically, you will be charged for (max_replica_count * number of cores in the selected machine type) and (max_replica_count * number of GPUs per replica in the selected machine type).",
           "type": "integer",
           "format": "int32"
         },
@@ -970,6 +1138,10 @@
         "featureAttributionsSchemaUri": {
           "description": "Points to a YAML file stored on Google Cloud Storage describing the format of the feature attributions. The schema is defined as an OpenAPI 3.0.2 [Schema Object](https:\/\/github.com\/OAI\/OpenAPI-Specification\/blob\/main\/versions\/3.0.2.md#schemaObject). AutoML tabular Models always have this field populated by Vertex AI. Note: The URI given on output may be different, including the URI scheme, than the one given on input. The output URI will point to a location where the user only has a read access.",
           "type": "string"
+        },
+        "latentSpaceSource": {
+          "description": "Name of the source to generate embeddings for example based explanations.",
+          "type": "string"
         }
       }
     },
@@ -1230,7 +1402,7 @@
           "format": "double"
         },
         "bigqueryDestination": {
-          "description": "BigQuery table for logging. If only given project, a new dataset will be created with name `logging__` where will be made BigQuery-dataset-name compatible (e.g. most special characters will become underscores). If no table name is given, a new table will be created with name `request_response_logging`",
+          "description": "BigQuery table for logging. If only given a project, a new dataset will be created with name `logging__` where will be made BigQuery-dataset-name compatible (e.g. most special characters will become underscores). If no table name is given, a new table will be created with name `request_response_logging`",
           "$ref": "GoogleCloudAiplatformV1BigQueryDestination"
         }
       }
@@ -1421,7 +1593,7 @@
     },
     "GoogleCloudAiplatformV1FeatureValue": {
       "id": "GoogleCloudAiplatformV1FeatureValue",
-      "description": "Value for a feature. NEXT ID: 15",
+      "description": "Value for a feature.",
       "type": "object",
       "properties": {
         "boolValue": {
@@ -1489,7 +1661,7 @@
       "type": "object",
       "properties": {
         "values": {
-          "description": "A list of bool values.",
+          "description": "A list of double values.",
           "type": "array",
           "items": {
             "type": "number",
@@ -1636,6 +1808,27 @@
       "properties": {
         "fixedNodeCount": {
           "description": "The number of nodes for the online store. The number of nodes doesn't scale automatically, but you can manually update the number of nodes. If set to 0, the featurestore will not have an online store and cannot be used for online serving.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "scaling": {
+          "description": "Online serving scaling configuration. Only one of `fixed_node_count` and `scaling` can be set. Setting one will reset the other.",
+          "$ref": "GoogleCloudAiplatformV1FeaturestoreOnlineServingConfigScaling"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1FeaturestoreOnlineServingConfigScaling": {
+      "id": "GoogleCloudAiplatformV1FeaturestoreOnlineServingConfigScaling",
+      "description": "Online serving scaling configuration. If min_node_count and max_node_count are set to the same value, the cluster will be configured with the fixed number of node (no auto-scaling).",
+      "type": "object",
+      "properties": {
+        "minNodeCount": {
+          "description": "Required. The minimum number of nodes to scale down to. Must be greater than or equal to 1.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "maxNodeCount": {
+          "description": "The maximum number of nodes to scale up to. Must be greater than min_node_count, and less than or equal to 10 times of 'min_node_count'.",
           "type": "integer",
           "format": "int32"
         }
@@ -2456,7 +2649,7 @@
           "type": "string"
         },
         "enablePrivateServiceConnect": {
-          "description": "Optional. If true, expose the IndexEndpoint via private service connect. Only one of the fields, network or enable_private_service_connect, can be set.",
+          "description": "Optional. Deprecated: If true, expose the IndexEndpoint via private service connect. Only one of the fields, network or enable_private_service_connect, can be set.",
           "type": "boolean"
         }
       }
@@ -2714,7 +2907,7 @@
     },
     "GoogleCloudAiplatformV1CustomJobSpec": {
       "id": "GoogleCloudAiplatformV1CustomJobSpec",
-      "description": "Represents the spec of a CustomJob. Next Id: 14",
+      "description": "Represents the spec of a CustomJob. Next Id: 15",
       "type": "object",
       "properties": {
         "workerPoolSpecs": {
@@ -2733,7 +2926,7 @@
           "type": "string"
         },
         "network": {
-          "description": "The full name of the Compute Engine [network](\/compute\/docs\/networks-and-firewalls#networks) to which the Job should be peered. For example, `projects\/12345\/global\/networks\/myVPC`. [Format](\/compute\/docs\/reference\/rest\/v1\/networks\/insert) is of the form `projects\/{project}\/global\/networks\/{network}`. Where {project} is a project number, as in `12345`, and {network} is a network name. To specify this field, you must have already [configured VPC Network Peering for Vertex AI](https:\/\/cloud.google.com\/vertex-ai\/docs\/general\/vpc-peering). If this field is left unspecified, the job is not peered with any network.",
+          "description": "Optional. The full name of the Compute Engine [network](\/compute\/docs\/networks-and-firewalls#networks) to which the Job should be peered. For example, `projects\/12345\/global\/networks\/myVPC`. [Format](\/compute\/docs\/reference\/rest\/v1\/networks\/insert) is of the form `projects\/{project}\/global\/networks\/{network}`. Where {project} is a project number, as in `12345`, and {network} is a network name. To specify this field, you must have already [configured VPC Network Peering for Vertex AI](https:\/\/cloud.google.com\/vertex-ai\/docs\/general\/vpc-peering). If this field is left unspecified, the job is not peered with any network.",
           "type": "string"
         },
         "reservedIpRanges": {
@@ -3355,7 +3548,7 @@
           ]
         },
         "observationNoise": {
-          "description": "The observation noise level of the study. Currently only supported by the Vertex AI Vizier service. Not supported by HyperparamterTuningJob or TrainingPipeline.",
+          "description": "The observation noise level of the study. Currently only supported by the Vertex AI Vizier service. Not supported by HyperparameterTuningJob or TrainingPipeline.",
           "type": "string",
           "enumDescriptions": [
             "The default noise level chosen by Vertex AI.",
@@ -3527,7 +3720,7 @@
           "format": "double"
         },
         "defaultValue": {
-          "description": "A default value for a `DOUBLE` parameter that is assumed to be a relatively good starting point. Unset value signals that there is no offered starting point. Currently only supported by the Vertex AI Vizier service. Not supported by HyperparamterTuningJob or TrainingPipeline.",
+          "description": "A default value for a `DOUBLE` parameter that is assumed to be a relatively good starting point. Unset value signals that there is no offered starting point. Currently only supported by the Vertex AI Vizier service. Not supported by HyperparameterTuningJob or TrainingPipeline.",
           "type": "number",
           "format": "double"
         }
@@ -3549,7 +3742,7 @@
           "format": "int64"
         },
         "defaultValue": {
-          "description": "A default value for an `INTEGER` parameter that is assumed to be a relatively good starting point. Unset value signals that there is no offered starting point. Currently only supported by the Vertex AI Vizier service. Not supported by HyperparamterTuningJob or TrainingPipeline.",
+          "description": "A default value for an `INTEGER` parameter that is assumed to be a relatively good starting point. Unset value signals that there is no offered starting point. Currently only supported by the Vertex AI Vizier service. Not supported by HyperparameterTuningJob or TrainingPipeline.",
           "type": "string",
           "format": "int64"
         }
@@ -3568,7 +3761,7 @@
           }
         },
         "defaultValue": {
-          "description": "A default value for a `CATEGORICAL` parameter that is assumed to be a relatively good starting point. Unset value signals that there is no offered starting point. Currently only supported by the Vizier service. Not supported by HyperparamterTuningJob or TrainingPipeline.",
+          "description": "A default value for a `CATEGORICAL` parameter that is assumed to be a relatively good starting point. Unset value signals that there is no offered starting point. Currently only supported by the Vertex AI Vizier service. Not supported by HyperparameterTuningJob or TrainingPipeline.",
           "type": "string"
         }
       }
@@ -3587,7 +3780,7 @@
           }
         },
         "defaultValue": {
-          "description": "A default value for a `DISCRETE` parameter that is assumed to be a relatively good starting point. Unset value signals that there is no offered starting point. It automatically rounds to the nearest feasible discrete point. Currently only supported by the Vizier service. Not supported by HyperparamterTuningJob or TrainingPipeline.",
+          "description": "A default value for a `DISCRETE` parameter that is assumed to be a relatively good starting point. Unset value signals that there is no offered starting point. It automatically rounds to the nearest feasible discrete point. Currently only supported by the Vertex AI Vizier service. Not supported by HyperparameterTuningJob or TrainingPipeline.",
           "type": "number",
           "format": "double"
         }
@@ -3856,7 +4049,7 @@
           "type": "string"
         },
         "model": {
-          "description": "The name of the Model resoure that produces the predictions via this job, must share the same ancestor Location. Starting this job has no impact on any existing deployments of the Model and their resources. Exactly one of model and unmanaged_container_model must be set.",
+          "description": "The name of the Model resoure that produces the predictions via this job, must share the same ancestor Location. Starting this job has no impact on any existing deployments of the Model and their resources. Exactly one of model and unmanaged_container_model must be set. The model resource name may contain version id or version alias to specify the version, if no version is specified, the default version will be used.",
           "type": "string"
         },
         "modelVersionId": {
@@ -4154,7 +4347,7 @@
       "type": "object",
       "properties": {
         "batchSize": {
-          "description": "Immutable. The number of the records (e.g. instances) of the operation given in each batch to a machine replica. Machine type, and size of a single record should be considered when setting this parameter, higher value speeds up the batch operation's execution, but too high value will result in a whole batch not fitting in a machine's memory, and the whole operation will fail. The default value is 4.",
+          "description": "Immutable. The number of the records (e.g. instances) of the operation given in each batch to a machine replica. Machine type, and size of a single record should be considered when setting this parameter, higher value speeds up the batch operation's execution, but too high value will result in a whole batch not fitting in a machine's memory, and the whole operation will fail. The default value is 64.",
           "type": "integer",
           "format": "int32"
         }
@@ -4214,6 +4407,12 @@
         },
         "incompleteCount": {
           "description": "Output only. In cases when enough errors are encountered a job, pipeline, or operation may be failed as a whole. Below is the number of entities for which the processing had not been finished (either in successful or failed state). Set to -1 if the number is unknown (for example, the operation failed before the total entity number could be collected).",
+          "readOnly": true,
+          "type": "string",
+          "format": "int64"
+        },
+        "successfulForecastPointCount": {
+          "description": "Output only. The number of the successful forecast points that are generated by the forecasting model. This is ONLY used by the forecasting batch prediction.",
           "readOnly": true,
           "type": "string",
           "format": "int64"
@@ -4312,7 +4511,8 @@
           ]
         },
         "latestMonitoringPipelineMetadata": {
-          "description": "Latest triggered monitoring pipeline metadata.",
+          "description": "Output only. Latest triggered monitoring pipeline metadata.",
+          "readOnly": true,
           "$ref": "GoogleCloudAiplatformV1ModelDeploymentMonitoringJobLatestMonitoringPipelineMetadata"
         },
         "modelDeploymentMonitoringObjectiveConfigs": {
@@ -4475,7 +4675,7 @@
           "$ref": "GoogleCloudAiplatformV1BigQuerySource"
         },
         "dataFormat": {
-          "description": "Data format of the dataset, only applicable if the input is from Google Cloud Storage. The possible formats are: \"tf-record\" The source file is a TFRecord file. \"csv\" The source file is a CSV file.",
+          "description": "Data format of the dataset, only applicable if the input is from Google Cloud Storage. The possible formats are: \"tf-record\" The source file is a TFRecord file. \"csv\" The source file is a CSV file. \"jsonl\" The source file is a JSONL file.",
           "type": "string"
         },
         "targetField": {
@@ -4529,6 +4729,10 @@
           "additionalProperties": {
             "$ref": "GoogleCloudAiplatformV1ThresholdConfig"
           }
+        },
+        "defaultSkewThreshold": {
+          "description": "Skew anomaly detection threshold used by all features. When the per-feature thresholds are not set, this field can be used to specify a threshold for all features.",
+          "$ref": "GoogleCloudAiplatformV1ThresholdConfig"
         }
       }
     },
@@ -4562,6 +4766,10 @@
           "additionalProperties": {
             "$ref": "GoogleCloudAiplatformV1ThresholdConfig"
           }
+        },
+        "defaultDriftThreshold": {
+          "description": "Drift anomaly detection threshold used by all features. When the per-feature thresholds are not set, this field can be used to specify a threshold for all features.",
+          "$ref": "GoogleCloudAiplatformV1ThresholdConfig"
         }
       }
     },
@@ -4616,6 +4824,11 @@
       "properties": {
         "monitorInterval": {
           "description": "Required. The model monitoring job scheduling interval. It will be rounded up to next full hour. This defines how often the monitoring jobs are triggered.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "monitorWindow": {
+          "description": "The time window of the prediction data being included in each prediction dataset. This window specifies how long the data should be collected from historical model results for each run. If not set, ModelDeploymentMonitoringScheduleConfig.monitor_interval will be used. e.g. If currently the cutoff time is 2022-01-08 14:30:00 and the monitor_window is set to be 3600, then data from 2022-01-08 13:30:00 to 2022-01-08 14:30:00 will be retrieved and aggregated to calculate the monitoring statistics.",
           "type": "string",
           "format": "google-duration"
         }
@@ -5755,6 +5968,14 @@
       "description": "Request message for ModelService.UploadModel.",
       "type": "object",
       "properties": {
+        "parentModel": {
+          "description": "Optional. The resource name of the model into which to upload the version. Only specify this field when uploading a new version.",
+          "type": "string"
+        },
+        "modelId": {
+          "description": "Optional. The ID to use for the uploaded Model, which will become the final component of the model resource name. This value may be up to 63 characters, and valid characters are `[a-z0-9_-]`. The first character cannot be a number or hyphen.",
+          "type": "string"
+        },
         "model": {
           "description": "Required. The Model to create.",
           "$ref": "GoogleCloudAiplatformV1Model"
@@ -5770,12 +5991,40 @@
           "description": "The resource name of the Model.",
           "type": "string"
         },
+        "versionId": {
+          "description": "Output only. Immutable. The version ID of the model. A new version is committed when a new model version is uploaded or trained under an existing model id. It is an auto-incrementing decimal number in string representation.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "versionAliases": {
+          "description": "User provided version aliases so that a model version can be referenced via alias (i.e. projects\/{project}\/locations\/{location}\/models\/{model_id}@{version_alias} instead of auto-generated version id (i.e. projects\/{project}\/locations\/{location}\/models\/{model_id}@{version_id}). The format is a-z{0,126}[a-z0-9] to distinguish from version_id. A default version alias will be created for the first version of the model, and there must be exactly one default version alias for a model.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "versionCreateTime": {
+          "description": "Output only. Timestamp when this version was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "versionUpdateTime": {
+          "description": "Output only. Timestamp when this version was most recently updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
         "displayName": {
           "description": "Required. The display name of the Model. The name can be up to 128 characters long and can be consist of any UTF-8 characters.",
           "type": "string"
         },
         "description": {
           "description": "The description of the Model.",
+          "type": "string"
+        },
+        "versionDescription": {
+          "description": "The description of this version.",
           "type": "string"
         },
         "predictSchemata": {
@@ -5820,12 +6069,14 @@
             "enumDescriptions": [
               "Should not be used.",
               "Resources that are dedicated to the DeployedModel, and that need a higher degree of manual configuration.",
-              "Resources that to large degree are decided by Vertex AI, and require only a modest additional configuration."
+              "Resources that to large degree are decided by Vertex AI, and require only a modest additional configuration.",
+              "Resources that can be shared by multiple DeployedModels. A pre-configured DeploymentResourcePool is required."
             ],
             "enum": [
               "DEPLOYMENT_RESOURCES_TYPE_UNSPECIFIED",
               "DEDICATED_RESOURCES",
-              "AUTOMATIC_RESOURCES"
+              "AUTOMATIC_RESOURCES",
+              "SHARED_RESOURCES"
             ]
           }
         },
@@ -5949,6 +6200,38 @@
         }
       }
     },
+    "GoogleCloudAiplatformV1ListModelVersionsResponse": {
+      "id": "GoogleCloudAiplatformV1ListModelVersionsResponse",
+      "description": "Response message for ModelService.ListModelVersions",
+      "type": "object",
+      "properties": {
+        "models": {
+          "description": "List of Model versions in the requested page. In the returned Model name field, version ID instead of regvision tag will be included.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1Model"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token to retrieve the next page of results. Pass to ListModelVersionsRequest.page_token to obtain that page.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1MergeVersionAliasesRequest": {
+      "id": "GoogleCloudAiplatformV1MergeVersionAliasesRequest",
+      "description": "Request message for ModelService.MergeVersionAliases.",
+      "type": "object",
+      "properties": {
+        "versionAliases": {
+          "description": "Required. The set of version aliases to merge. The alias should be at most 128 characters, and match `a-z{0,126}[a-z-0-9]`. Add the `-` prefix to an alias means removing that alias from the version. `-` is NOT counted in the 128 characters. Example: `-golden` means removing the `golden` alias from the version. There is NO ordering in aliases, which means 1) The aliases returned from GetModel API might not have the exactly same order from this MergeVersionAliases API. 2) Adding and deleting the same alias in the request is not recommended, and the 2 operations will be cancelled out.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "GoogleCloudAiplatformV1ExportModelRequest": {
       "id": "GoogleCloudAiplatformV1ExportModelRequest",
       "description": "Request message for ModelService.ExportModel.",
@@ -6011,6 +6294,10 @@
           "readOnly": true,
           "type": "string"
         },
+        "displayName": {
+          "description": "The display name of the ModelEvaluation.",
+          "type": "string"
+        },
         "metricsSchemaUri": {
           "description": "Points to a YAML file stored on Google Cloud Storage describing the metrics of this ModelEvaluation. The schema is defined as an OpenAPI 3.0.2 [Schema Object](https:\/\/github.com\/OAI\/OpenAPI-Specification\/blob\/main\/versions\/3.0.2.md#schemaObject).",
           "type": "string"
@@ -6050,6 +6337,10 @@
           "items": {
             "$ref": "GoogleCloudAiplatformV1ModelEvaluationModelEvaluationExplanationSpec"
           }
+        },
+        "metadata": {
+          "description": "The metadata of the ModelEvaluation. For the ModelEvaluation uploaded from Managed Pipeline, metadata contains a structured value with keys of \"pipeline_job_id\", \"evaluation_dataset_type\", \"evaluation_dataset_path\".",
+          "type": "any"
         }
       }
     },
@@ -6131,21 +6422,17 @@
         }
       }
     },
-    "GoogleCloudAiplatformV1ListModelEvaluationsResponse": {
-      "id": "GoogleCloudAiplatformV1ListModelEvaluationsResponse",
-      "description": "Response message for ModelService.ListModelEvaluations.",
+    "GoogleCloudAiplatformV1BatchImportModelEvaluationSlicesRequest": {
+      "id": "GoogleCloudAiplatformV1BatchImportModelEvaluationSlicesRequest",
+      "description": "Request message for ModelService.BatchImportModelEvaluationSlices",
       "type": "object",
       "properties": {
-        "modelEvaluations": {
-          "description": "List of ModelEvaluations in the requested page.",
+        "modelEvaluationSlices": {
+          "description": "Required. Model evaluation slice resource to be imported.",
           "type": "array",
           "items": {
-            "$ref": "GoogleCloudAiplatformV1ModelEvaluation"
+            "$ref": "GoogleCloudAiplatformV1ModelEvaluationSlice"
           }
-        },
-        "nextPageToken": {
-          "description": "A token to retrieve next page of results. Pass to ListModelEvaluationsRequest.page_token to obtain that page.",
-          "type": "string"
         }
       }
     },
@@ -6195,6 +6482,39 @@
         "value": {
           "description": "Output only. The value of the dimension in this slice.",
           "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1BatchImportModelEvaluationSlicesResponse": {
+      "id": "GoogleCloudAiplatformV1BatchImportModelEvaluationSlicesResponse",
+      "description": "Response message for ModelService.BatchImportModelEvaluationSlices",
+      "type": "object",
+      "properties": {
+        "importedModelEvaluationSlices": {
+          "description": "Output only. List of imported ModelEvaluationSlice.name.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1ListModelEvaluationsResponse": {
+      "id": "GoogleCloudAiplatformV1ListModelEvaluationsResponse",
+      "description": "Response message for ModelService.ListModelEvaluations.",
+      "type": "object",
+      "properties": {
+        "modelEvaluations": {
+          "description": "List of ModelEvaluations in the requested page.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1ModelEvaluation"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token to retrieve next page of results. Pass to ListModelEvaluationsRequest.page_token to obtain that page.",
           "type": "string"
         }
       }
@@ -6251,6 +6571,14 @@
         "modelToUpload": {
           "description": "Describes the Model that may be uploaded (via ModelService.UploadModel) by this TrainingPipeline. The TrainingPipeline's training_task_definition should make clear whether this Model description should be populated, and if there are any special requirements regarding how it should be filled. If nothing is mentioned in the training_task_definition, then it should be assumed that this field should not be filled and the training task either uploads the Model without a need of this information, or that training task does not support uploading a Model as part of the pipeline. When the Pipeline's state becomes `PIPELINE_STATE_SUCCEEDED` and the trained Model had been uploaded into Vertex AI, then the model_to_upload's resource name is populated. The Model is always uploaded into the Project and Location in which this pipeline is.",
           "$ref": "GoogleCloudAiplatformV1Model"
+        },
+        "modelId": {
+          "description": "Optional. The ID to use for the uploaded Model, which will become the final component of the model resource name. This value may be up to 63 characters, and valid characters are `[a-z0-9_-]`. The first character cannot be a number or hyphen.",
+          "type": "string"
+        },
+        "parentModel": {
+          "description": "Optional. When specify this field, the `model_to_upload` will not be uploaded as a new model, instead, it will become a new version of this `parent_model`.",
+          "type": "string"
         },
         "state": {
           "description": "Output only. The detailed state of the pipeline.",
@@ -6364,6 +6692,10 @@
         },
         "annotationSchemaUri": {
           "description": "Applicable only to custom training with Datasets that have DataItems and Annotations. Cloud Storage URI that points to a YAML file describing the annotation schema. The schema is defined as an OpenAPI 3.0.2 [Schema Object](https:\/\/github.com\/OAI\/OpenAPI-Specification\/blob\/main\/versions\/3.0.2.md#schemaObject). The schema files that can be used here are found in gs:\/\/google-cloud-aiplatform\/schema\/dataset\/annotation\/ , note that the chosen schema must be consistent with metadata of the Dataset specified by dataset_id. Only Annotations that both match this schema and belong to DataItems not ignored by the split method are used in respectively training, validation or test role, depending on the role of the DataItem they are on. When used in conjunction with annotations_filter, the Annotations used for training are filtered by both annotations_filter and annotation_schema_uri.",
+          "type": "string"
+        },
+        "savedQueryId": {
+          "description": "Only applicable to Datasets that have SavedQueries. The ID of a SavedQuery (annotation set) under the Dataset specified by dataset_id used for filtering Annotations for training. Only Annotations that are associated with this SavedQuery are used in respectively training. When used in conjunction with annotations_filter, the Annotations used for training are filtered by both saved_query_id and annotations_filter. Only one of saved_query_id and annotation_schema_uri should be specified as both of them represent the same thing: problem type.",
           "type": "string"
         }
       }
@@ -6602,6 +6934,15 @@
         "network": {
           "description": "The full name of the Compute Engine [network](\/compute\/docs\/networks-and-firewalls#networks) to which the Pipeline Job's workload should be peered. For example, `projects\/12345\/global\/networks\/myVPC`. [Format](\/compute\/docs\/reference\/rest\/v1\/networks\/insert) is of the form `projects\/{project}\/global\/networks\/{network}`. Where {project} is a project number, as in `12345`, and {network} is a network name. Private services access must already be configured for the network. Pipeline job will apply the network configuration to the GCP resources being launched, if applied, such as Vertex AI Training or Dataflow job. If left unspecified, the workload is not peered with any network.",
           "type": "string"
+        },
+        "templateUri": {
+          "description": "A template uri from where the PipelineJob.pipeline_spec, if empty, will be downloaded.",
+          "type": "string"
+        },
+        "templateMetadata": {
+          "description": "Output only. Pipeline template metadata. Will fill up fields if PipelineJob.template_uri is from supported template registry.",
+          "readOnly": true,
+          "$ref": "GoogleCloudAiplatformV1PipelineTemplateMetadata"
         }
       }
     },
@@ -6870,6 +7211,20 @@
           "additionalProperties": {
             "type": "any"
           }
+        },
+        "failurePolicy": {
+          "description": "Represents the failure policy of a pipeline. Currently, the default of a pipeline is that the pipeline will continue to run until no more tasks can be executed, also known as PIPELINE_FAILURE_POLICY_FAIL_SLOW. However, if a pipeline is set to PIPELINE_FAILURE_POLICY_FAIL_FAST, it will stop scheduling any new tasks when a task has failed. Any scheduled tasks will continue to completion.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value, and follows fail slow behavior.",
+            "Indicates that the pipeline should continue to run until all possible tasks have been scheduled and completed.",
+            "Indicates that the pipeline should stop scheduling new tasks after a task has failed."
+          ],
+          "enum": [
+            "PIPELINE_FAILURE_POLICY_UNSPECIFIED",
+            "PIPELINE_FAILURE_POLICY_FAIL_SLOW",
+            "PIPELINE_FAILURE_POLICY_FAIL_FAST"
+          ]
         }
       }
     },
@@ -6890,6 +7245,17 @@
         },
         "stringValue": {
           "description": "A string value.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1PipelineTemplateMetadata": {
+      "id": "GoogleCloudAiplatformV1PipelineTemplateMetadata",
+      "description": "Pipeline template metadata if PipelineJob.template_uri is from supported template registry. Currently, the only supported registry is Artifact Registry.",
+      "type": "object",
+      "properties": {
+        "version": {
+          "description": "The version_name in artifact registry. Will always be presented in output if the PipelineJob.template_uri is from supported template registry. Format is \"sha256:abcdef123456...\".",
           "type": "string"
         }
       }
@@ -7046,6 +7412,10 @@
         "metadata": {
           "description": "The metadata to be overridden. If not specified, no metadata is overridden.",
           "$ref": "GoogleCloudAiplatformV1ExplanationMetadataOverride"
+        },
+        "examplesOverride": {
+          "description": "The example-based explanations parameter overrides.",
+          "$ref": "GoogleCloudAiplatformV1ExamplesOverride"
         }
       }
     },
@@ -7073,6 +7443,73 @@
           "type": "array",
           "items": {
             "type": "any"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1ExamplesOverride": {
+      "id": "GoogleCloudAiplatformV1ExamplesOverride",
+      "description": "Overrides for example-based explanations.",
+      "type": "object",
+      "properties": {
+        "neighborCount": {
+          "description": "The number of neighbors to return.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "crowdingCount": {
+          "description": "The number of neighbors to return that have the same crowding tag.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "restrictions": {
+          "description": "Restrict the resulting nearest neighbors to respect these constraints.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1ExamplesRestrictionsNamespace"
+          }
+        },
+        "returnEmbeddings": {
+          "description": "If true, return the embeddings instead of neighbors.",
+          "type": "boolean"
+        },
+        "dataFormat": {
+          "description": "The format of the data being provided with each call.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified format. Must not be used.",
+            "Provided data is a set of model inputs.",
+            "Provided data is a set of embeddings."
+          ],
+          "enum": [
+            "DATA_FORMAT_UNSPECIFIED",
+            "INSTANCES",
+            "EMBEDDINGS"
+          ]
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1ExamplesRestrictionsNamespace": {
+      "id": "GoogleCloudAiplatformV1ExamplesRestrictionsNamespace",
+      "description": "Restrictions namespace for example-based explanations overrides.",
+      "type": "object",
+      "properties": {
+        "namespaceName": {
+          "description": "The namespace name.",
+          "type": "string"
+        },
+        "allow": {
+          "description": "The list of allowed tags.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "deny": {
+          "description": "The list of deny tags.",
+          "type": "array",
+          "items": {
+            "type": "string"
           }
         }
       }
@@ -7114,6 +7551,32 @@
           "items": {
             "$ref": "GoogleCloudAiplatformV1Attribution"
           }
+        },
+        "neighbors": {
+          "description": "Output only. List of the nearest neighbors for example-based explanations. For models deployed with the examples explanations feature enabled, the attributions field is empty and instead the neighbors field is populated.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1Neighbor"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1Neighbor": {
+      "id": "GoogleCloudAiplatformV1Neighbor",
+      "description": "Neighbors for example-based explanations.",
+      "type": "object",
+      "properties": {
+        "neighborId": {
+          "description": "Output only. The neighbor id.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "neighborDistance": {
+          "description": "Output only. The neighbor distance.",
+          "readOnly": true,
+          "type": "number",
+          "format": "double"
         }
       }
     },
@@ -8606,7 +9069,7 @@
           "type": "string"
         },
         "monitoringConfig": {
-          "description": "Optional. The custom monitoring configuration for this Feature, if not set, use the monitoring_config defined for the EntityType this Feature belongs to. Only Features with type (Feature.ValueType) BOOL, STRING, DOUBLE or INT64 can enable monitoring. If this is populated with FeaturestoreMonitoringConfig.disabled = true, snapshot analysis monitoring is disabled; if FeaturestoreMonitoringConfig.monitoring_interval specified, snapshot analysis monitoring is enabled. Otherwise, snapshot analysis monitoring config is same as the EntityType's this Feature belongs to.",
+          "description": "Optional. Deprecated: The custom monitoring configuration for this Feature, if not set, use the monitoring_config defined for the EntityType this Feature belongs to. Only Features with type (Feature.ValueType) BOOL, STRING, DOUBLE or INT64 can enable monitoring. If this is populated with FeaturestoreMonitoringConfig.disabled = true, snapshot analysis monitoring is disabled; if FeaturestoreMonitoringConfig.monitoring_interval specified, snapshot analysis monitoring is enabled. Otherwise, snapshot analysis monitoring config is same as the EntityType's this Feature belongs to.",
           "$ref": "GoogleCloudAiplatformV1beta1FeaturestoreMonitoringConfig"
         },
         "disableMonitoring": {
@@ -8940,12 +9403,16 @@
           "description": "A description of resources that to large degree are decided by Vertex AI, and require only a modest additional configuration.",
           "$ref": "GoogleCloudAiplatformV1beta1AutomaticResources"
         },
+        "sharedResources": {
+          "description": "The resource name of the shared DeploymentResourcePool to deploy on. Format: projects\/{project}\/locations\/{location}\/deploymentResourcePools\/{deployment_resource_pool}",
+          "type": "string"
+        },
         "id": {
           "description": "Immutable. The ID of the DeployedModel. If not provided upon deployment, Vertex AI will generate a value for this ID. This value should be 1-10 characters, and valid characters are \/[0-9]\/.",
           "type": "string"
         },
         "model": {
-          "description": "Required. The name of the Model that this is the deployment of. Note that the Model may be in a different location than the DeployedModel's Endpoint.",
+          "description": "Required. The resource name of the Model that this is the deployment of. Note that the Model may be in a different location than the DeployedModel's Endpoint. The resource name may contain version id or version alias to specify the version, if no version is specified, the default version will be deployed.",
           "type": "string"
         },
         "modelVersionId": {
@@ -9001,7 +9468,7 @@
           "format": "int32"
         },
         "maxReplicaCount": {
-          "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If the requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, will use min_replica_count as the default value. The value of this field impacts the charge against Vertex CPU and GPU quotas. Specifically, you will be charged for max_replica_count * number of cores in the selected machine type) and (max_replica_count * number of GPUs per replica in the selected machine type).",
+          "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If the requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, will use min_replica_count as the default value. The value of this field impacts the charge against Vertex CPU and GPU quotas. Specifically, you will be charged for (max_replica_count * number of cores in the selected machine type) and (max_replica_count * number of GPUs per replica in the selected machine type).",
           "type": "integer",
           "format": "int32"
         },
@@ -9121,9 +9588,9 @@
           "description": "An attribution method that redistributes Integrated Gradients attribution to segmented regions, taking advantage of the model's fully differentiable structure. Refer to this paper for more details: https:\/\/arxiv.org\/abs\/1906.02825 XRAI currently performs better on natural images, like a picture of a house or an animal. If the images are taken in artificial environments, like a lab or manufacturing line, or from diagnostic equipment, like x-rays or quality-control cameras, use Integrated Gradients instead.",
           "$ref": "GoogleCloudAiplatformV1beta1XraiAttribution"
         },
-        "similarity": {
-          "description": "Similarity explainability that returns the nearest neighbors from the provided dataset.",
-          "$ref": "GoogleCloudAiplatformV1beta1Similarity"
+        "examples": {
+          "description": "Example-based explanations that returns the nearest neighbors from the provided dataset.",
+          "$ref": "GoogleCloudAiplatformV1beta1Examples"
         },
         "topK": {
           "description": "If populated, returns attributions for top K indices of outputs (defaults to 1). Only applies to Models that predicts more than one outputs (e,g, multi-class Models). When set to -1, returns explanations for all outputs.",
@@ -9254,18 +9721,62 @@
         }
       }
     },
-    "GoogleCloudAiplatformV1beta1Similarity": {
-      "id": "GoogleCloudAiplatformV1beta1Similarity",
-      "description": "Similarity explainability that returns the nearest neighbors from the provided dataset.",
+    "GoogleCloudAiplatformV1beta1Examples": {
+      "id": "GoogleCloudAiplatformV1beta1Examples",
+      "description": "Example-based explainability that returns the nearest neighbors from the provided dataset.",
       "type": "object",
       "properties": {
+        "nearestNeighborSearchConfig": {
+          "description": "The configuration for the generated index, the semantics are the same as metadata and should match NearestNeighborSearchConfig.",
+          "type": "any"
+        },
+        "presets": {
+          "description": "Preset config based on the desired query speed-precision trade-off and modality",
+          "$ref": "GoogleCloudAiplatformV1beta1Presets"
+        },
         "gcsSource": {
           "description": "The Cloud Storage location for the input instances.",
           "$ref": "GoogleCloudAiplatformV1beta1GcsSource"
         },
-        "nearestNeighborSearchConfig": {
-          "description": "The configuration for the generated index, the semantics are the same as metadata and should match NearestNeighborSearchConfig.",
-          "type": "any"
+        "neighborCount": {
+          "description": "The number of neighbors to return.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1Presets": {
+      "id": "GoogleCloudAiplatformV1beta1Presets",
+      "description": "Preset configuration for example-based explanations",
+      "type": "object",
+      "properties": {
+        "query": {
+          "description": "Preset option controlling parameters for query speed-precision trade-off",
+          "type": "string",
+          "enumDescriptions": [
+            "More precise neighbors as a trade-off against slower response. This is also the default value (field-number 0).",
+            "Faster response as a trade-off against less precise neighbors."
+          ],
+          "enum": [
+            "PRECISE",
+            "FAST"
+          ]
+        },
+        "modality": {
+          "description": "Preset option controlling parameters for different modalities",
+          "type": "string",
+          "enumDescriptions": [
+            "Should not be set. Added as a recommended best practice for enums",
+            "IMAGE modality",
+            "TEXT modality",
+            "TABULAR modality"
+          ],
+          "enum": [
+            "MODALITY_UNSPECIFIED",
+            "IMAGE",
+            "TEXT",
+            "TABULAR"
+          ]
         }
       }
     },
@@ -9304,6 +9815,10 @@
         },
         "featureAttributionsSchemaUri": {
           "description": "Points to a YAML file stored on Google Cloud Storage describing the format of the feature attributions. The schema is defined as an OpenAPI 3.0.2 [Schema Object](https:\/\/github.com\/OAI\/OpenAPI-Specification\/blob\/main\/versions\/3.0.2.md#schemaObject). AutoML tabular Models always have this field populated by Vertex AI. Note: The URI given on output may be different, including the URI scheme, than the one given on input. The output URI will point to a location where the user only has a read access.",
+          "type": "string"
+        },
+        "latentSpaceSource": {
+          "description": "Name of the source to generate embeddings for example based explanations.",
           "type": "string"
         }
       }
@@ -10258,6 +10773,24 @@
         }
       }
     },
+    "GoogleCloudAiplatformV1beta1UpdateExplanationDatasetOperationMetadata": {
+      "id": "GoogleCloudAiplatformV1beta1UpdateExplanationDatasetOperationMetadata",
+      "description": "Runtime operation information for ModelService.UpdateExplanationDataset.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The common part of the operation metadata.",
+          "$ref": "GoogleCloudAiplatformV1beta1GenericOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1UpdateExplanationDatasetResponse": {
+      "id": "GoogleCloudAiplatformV1beta1UpdateExplanationDatasetResponse",
+      "description": "Response message of ModelService.UpdateExplanationDataset operation.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "GoogleCloudAiplatformV1beta1UpdateFeaturestoreOperationMetadata": {
       "id": "GoogleCloudAiplatformV1beta1UpdateFeaturestoreOperationMetadata",
       "description": "Details of operations that perform update Featurestore.",
@@ -11072,6 +11605,21 @@
             "format": "double"
           }
         },
+        "hierarchyConfig": {
+          "description": "Configuration that defines the hierarchical relationship of time series and parameters for hierarchical forecasting strategies.",
+          "$ref": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionHierarchyConfig"
+        },
+        "windowConfig": {
+          "description": "Config containing strategy for generating sliding windows.",
+          "$ref": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionWindowConfig"
+        },
+        "holidayRegions": {
+          "description": "The geographical region based on which the holiday effect is applied in modeling by adding holiday categorical array feature that include all holidays matching the date. This option only allowed when data_granularity is day. By default, holiday effect modeling is disabled. To turn it on, specify the holiday region using this option.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "validationOptions": {
           "description": "Validation options for the data validation component. The available options are: * \"fail-pipeline\" - default, will validate against the validation and fail the pipeline if it fails. * \"ignore-validation\" - ignore the results of the validation and continue",
           "type": "string"
@@ -11188,6 +11736,56 @@
         "overrideExistingTable": {
           "description": "If true and an export destination is specified, then the contents of the destination are overwritten. Otherwise, if the export destination already exists, then the export operation fails.",
           "type": "boolean"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionHierarchyConfig": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionHierarchyConfig",
+      "description": "Configuration that defines the hierarchical relationship of time series and parameters for hierarchical forecasting strategies.",
+      "type": "object",
+      "properties": {
+        "groupColumns": {
+          "description": "A list of time series attribute column names that define the time series hierarchy. Only one level of hierarchy is supported, ex. \u2018region\u2019 for a hierarchy of stores or \u2018department\u2019 for a hierarchy of products. If multiple columns are specified, time series will be grouped by their combined values, ex. (\u2018blue\u2019, \u2018large\u2019) for \u2018color\u2019 and \u2018size\u2019, up to 5 columns are accepted. If no group columns are specified, all time series are considered to be part of the same group.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "groupTotalWeight": {
+          "description": "The weight of the loss for predictions aggregated over time series in the same group.",
+          "type": "number",
+          "format": "double"
+        },
+        "temporalTotalWeight": {
+          "description": "The weight of the loss for predictions aggregated over the horizon for a single time series.",
+          "type": "number",
+          "format": "double"
+        },
+        "groupTemporalTotalWeight": {
+          "description": "The weight of the loss for predictions aggregated over both the horizon and time series in the same hierarchy group.",
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionWindowConfig": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionWindowConfig",
+      "description": "Config that contains the strategy used to generate sliding windows in time series training. A window is a series of rows that comprise the context up to the time of prediction, and the horizon following. The corresponding row for each window marks the start of the forecast horizon. Each window is used as an input example for training\/evaluation.",
+      "type": "object",
+      "properties": {
+        "column": {
+          "description": "Name of the column that should be used to generate sliding windows. The column should contain either booleans or string booleans; if the value of the row is True, generate a sliding window with the horizon starting at that row. The column will not be used as a feature in training.",
+          "type": "string"
+        },
+        "strideLength": {
+          "description": "Stride length used to generate input examples. Within one time series, every {$STRIDE_LENGTH} rows will be used to generate a sliding window.",
+          "type": "string",
+          "format": "int64"
+        },
+        "maxCount": {
+          "description": "Maximum number of windows that should be generated across all time series.",
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -11333,6 +11931,10 @@
         "disableEarlyStopping": {
           "description": "Use the entire training budget. This disables the early stopping feature. When false the early stopping feature is enabled, which means that AutoML Image Object Detection might stop training before the entire training budget has been used.",
           "type": "boolean"
+        },
+        "uptrainBaseModelId": {
+          "description": "The ID of `base` model for upTraining. If it is specified, the new model will be upTrained based on the `base` model for upTraining. Otherwise, the new model will be trained from scratch. The `base` model for upTraining must be in the same Project and Location as the new Model to train, and have the same modelType.",
+          "type": "string"
         }
       }
     },
@@ -11827,7 +12429,7 @@
     },
     "GoogleCloudAiplatformV1beta1CustomJobSpec": {
       "id": "GoogleCloudAiplatformV1beta1CustomJobSpec",
-      "description": "Represents the spec of a CustomJob. Next Id: 14",
+      "description": "Represents the spec of a CustomJob. Next Id: 15",
       "type": "object",
       "properties": {
         "workerPoolSpecs": {
@@ -11846,7 +12448,7 @@
           "type": "string"
         },
         "network": {
-          "description": "The full name of the Compute Engine [network](\/compute\/docs\/networks-and-firewalls#networks) to which the Job should be peered. For example, `projects\/12345\/global\/networks\/myVPC`. [Format](\/compute\/docs\/reference\/rest\/v1\/networks\/insert) is of the form `projects\/{project}\/global\/networks\/{network}`. Where {project} is a project number, as in `12345`, and {network} is a network name. To specify this field, you must have already [configured VPC Network Peering for Vertex AI](https:\/\/cloud.google.com\/vertex-ai\/docs\/general\/vpc-peering). If this field is left unspecified, the job is not peered with any network.",
+          "description": "Optional. The full name of the Compute Engine [network](\/compute\/docs\/networks-and-firewalls#networks) to which the Job should be peered. For example, `projects\/12345\/global\/networks\/myVPC`. [Format](\/compute\/docs\/reference\/rest\/v1\/networks\/insert) is of the form `projects\/{project}\/global\/networks\/{network}`. Where {project} is a project number, as in `12345`, and {network} is a network name. To specify this field, you must have already [configured VPC Network Peering for Vertex AI](https:\/\/cloud.google.com\/vertex-ai\/docs\/general\/vpc-peering). If this field is left unspecified, the job is not peered with any network.",
           "type": "string"
         },
         "reservedIpRanges": {
@@ -11927,6 +12529,28 @@
           "items": {
             "type": "string"
           }
+        },
+        "env": {
+          "description": "Environment variables to be passed to the container. Maximum limit is 100.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1EnvVar"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1EnvVar": {
+      "id": "GoogleCloudAiplatformV1beta1EnvVar",
+      "description": "Represents an environment variable present in a Container or Python Module.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. Name of the environment variable. Must be a valid C identifier.",
+          "type": "string"
+        },
+        "value": {
+          "description": "Required. Variables that reference a $(VAR_NAME) are expanded using the previous defined environment variables in the container and any service environment variables. If a variable cannot be resolved, the reference in the input string will be unchanged. The $(VAR_NAME) syntax can be escaped with a double $$, ie: $$(VAR_NAME). Escaped references will never be expanded, regardless of whether the variable exists or not.",
+          "type": "string"
         }
       }
     },
@@ -11955,6 +12579,13 @@
           "type": "array",
           "items": {
             "type": "string"
+          }
+        },
+        "env": {
+          "description": "Environment variables to be passed to the python module. Maximum limit is 100.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1EnvVar"
           }
         }
       }
@@ -12125,7 +12756,7 @@
           ]
         },
         "observationNoise": {
-          "description": "The observation noise level of the study. Currently only supported by the Vertex AI Vizier service. Not supported by HyperparamterTuningJob or TrainingPipeline.",
+          "description": "The observation noise level of the study. Currently only supported by the Vertex AI Vizier service. Not supported by HyperparameterTuningJob or TrainingPipeline.",
           "type": "string",
           "enumDescriptions": [
             "The default noise level chosen by Vertex AI.",
@@ -12327,7 +12958,7 @@
           "format": "double"
         },
         "defaultValue": {
-          "description": "A default value for a `DOUBLE` parameter that is assumed to be a relatively good starting point. Unset value signals that there is no offered starting point. Currently only supported by the Vertex AI Vizier service. Not supported by HyperparamterTuningJob or TrainingPipeline.",
+          "description": "A default value for a `DOUBLE` parameter that is assumed to be a relatively good starting point. Unset value signals that there is no offered starting point. Currently only supported by the Vertex AI Vizier service. Not supported by HyperparameterTuningJob or TrainingPipeline.",
           "type": "number",
           "format": "double"
         }
@@ -12349,7 +12980,7 @@
           "format": "int64"
         },
         "defaultValue": {
-          "description": "A default value for an `INTEGER` parameter that is assumed to be a relatively good starting point. Unset value signals that there is no offered starting point. Currently only supported by the Vertex AI Vizier service. Not supported by HyperparamterTuningJob or TrainingPipeline.",
+          "description": "A default value for an `INTEGER` parameter that is assumed to be a relatively good starting point. Unset value signals that there is no offered starting point. Currently only supported by the Vertex AI Vizier service. Not supported by HyperparameterTuningJob or TrainingPipeline.",
           "type": "string",
           "format": "int64"
         }
@@ -12368,7 +12999,7 @@
           }
         },
         "defaultValue": {
-          "description": "A default value for a `CATEGORICAL` parameter that is assumed to be a relatively good starting point. Unset value signals that there is no offered starting point. Currently only supported by the Vizier service. Not supported by HyperparamterTuningJob or TrainingPipeline.",
+          "description": "A default value for a `CATEGORICAL` parameter that is assumed to be a relatively good starting point. Unset value signals that there is no offered starting point. Currently only supported by the Vertex AI Vizier service. Not supported by HyperparameterTuningJob or TrainingPipeline.",
           "type": "string"
         }
       }
@@ -12387,7 +13018,7 @@
           }
         },
         "defaultValue": {
-          "description": "A default value for a `DISCRETE` parameter that is assumed to be a relatively good starting point. Unset value signals that there is no offered starting point. It automatically rounds to the nearest feasible discrete point. Currently only supported by the Vizier service. Not supported by HyperparamterTuningJob or TrainingPipeline.",
+          "description": "A default value for a `DISCRETE` parameter that is assumed to be a relatively good starting point. Unset value signals that there is no offered starting point. It automatically rounds to the nearest feasible discrete point. Currently only supported by the Vertex AI Vizier service. Not supported by HyperparameterTuningJob or TrainingPipeline.",
           "type": "number",
           "format": "double"
         }
@@ -12470,6 +13101,239 @@
         },
         "bestTrialBackingCustomJob": {
           "description": "The resource name of the CustomJob that has been created to run the best Trial of this HyperparameterTuning task.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionSeq2SeqPlusForecasting": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionSeq2SeqPlusForecasting",
+      "description": "A TrainingJob that trains and uploads an AutoML Forecasting Model.",
+      "type": "object",
+      "properties": {
+        "inputs": {
+          "description": "The input parameters of this TrainingJob.",
+          "$ref": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputs"
+        },
+        "metadata": {
+          "description": "The metadata information.",
+          "$ref": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputs": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputs",
+      "type": "object",
+      "properties": {
+        "targetColumn": {
+          "description": "The name of the column that the Model is to predict values for. This column must be unavailable at forecast.",
+          "type": "string"
+        },
+        "timeSeriesIdentifierColumn": {
+          "description": "The name of the column that identifies the time series.",
+          "type": "string"
+        },
+        "timeColumn": {
+          "description": "The name of the column that identifies time order in the time series. This column must be available at forecast.",
+          "type": "string"
+        },
+        "transformations": {
+          "description": "Each transformation will apply transform function to given input column. And the result will be used for training. When creating transformation for BigQuery Struct column, the column should be flattened using \".\" as the delimiter.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformation"
+          }
+        },
+        "optimizationObjective": {
+          "description": "Objective function the model is optimizing towards. The training process creates a model that optimizes the value of the objective function over the validation set. The supported optimization objectives: * \"minimize-rmse\" (default) - Minimize root-mean-squared error (RMSE). * \"minimize-mae\" - Minimize mean-absolute error (MAE). * \"minimize-rmsle\" - Minimize root-mean-squared log error (RMSLE). * \"minimize-rmspe\" - Minimize root-mean-squared percentage error (RMSPE). * \"minimize-wape-mae\" - Minimize the combination of weighted absolute percentage error (WAPE) and mean-absolute-error (MAE). * \"minimize-quantile-loss\" - Minimize the quantile loss at the quantiles defined in `quantiles`. * \"minimize-mape\" - Minimize the mean absolute percentage error.",
+          "type": "string"
+        },
+        "trainBudgetMilliNodeHours": {
+          "description": "Required. The train budget of creating this model, expressed in milli node hours i.e. 1,000 value in this field means 1 node hour. The training cost of the model will not exceed this budget. The final cost will be attempted to be close to the budget, though may end up being (even) noticeably smaller - at the backend's discretion. This especially may happen when further model training ceases to provide any improvements. If the budget is set to a value known to be insufficient to train a model for the given dataset, the training won't be attempted and will error. The train budget must be between 1,000 and 72,000 milli node hours, inclusive.",
+          "type": "string",
+          "format": "int64"
+        },
+        "weightColumn": {
+          "description": "Column name that should be used as the weight column. Higher values in this column give more importance to the row during model training. The column must have numeric values between 0 and 10000 inclusively; 0 means the row is ignored for training. If weight column field is not set, then all rows are assumed to have equal weight of 1. This column must be available at forecast.",
+          "type": "string"
+        },
+        "timeSeriesAttributeColumns": {
+          "description": "Column names that should be used as attribute columns. The value of these columns does not vary as a function of time. For example, store ID or item color.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "unavailableAtForecastColumns": {
+          "description": "Names of columns that are unavailable when a forecast is requested. This column contains information for the given entity (identified by the time_series_identifier_column) that is unknown before the forecast For example, actual weather on a given day.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "availableAtForecastColumns": {
+          "description": "Names of columns that are available and provided when a forecast is requested. These columns contain information for the given entity (identified by the time_series_identifier_column column) that is known at forecast. For example, predicted weather for a specific day.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "dataGranularity": {
+          "description": "Expected difference in time granularity between rows in the data.",
+          "$ref": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsGranularity"
+        },
+        "forecastHorizon": {
+          "description": "The amount of time into the future for which forecasted values for the target are returned. Expressed in number of units defined by the `data_granularity` field.",
+          "type": "string",
+          "format": "int64"
+        },
+        "contextWindow": {
+          "description": "The amount of time into the past training and prediction data is used for model training and prediction respectively. Expressed in number of units defined by the `data_granularity` field.",
+          "type": "string",
+          "format": "int64"
+        },
+        "holidayRegions": {
+          "description": "The geographical region based on which the holiday effect is applied in modeling by adding holiday categorical array feature that include all holidays matching the date. This option only allowed when data_granularity is day. By default, holiday effect modeling is disabled. To turn it on, specify the holiday region using this option.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "exportEvaluatedDataItemsConfig": {
+          "description": "Configuration for exporting test set predictions to a BigQuery table. If this configuration is absent, then the export is not performed.",
+          "$ref": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionExportEvaluatedDataItemsConfig"
+        },
+        "windowConfig": {
+          "description": "Config containing strategy for generating sliding windows.",
+          "$ref": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionWindowConfig"
+        },
+        "quantiles": {
+          "description": "Quantiles to use for minimize-quantile-loss `optimization_objective`. Up to 5 quantiles are allowed of values between 0 and 1, exclusive. Required if the value of optimization_objective is minimize-quantile-loss. Represents the percent quantiles to use for that objective. Quantiles must be unique.",
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "validationOptions": {
+          "description": "Validation options for the data validation component. The available options are: * \"fail-pipeline\" - default, will validate against the validation and fail the pipeline if it fails. * \"ignore-validation\" - ignore the results of the validation and continue",
+          "type": "string"
+        },
+        "additionalExperiments": {
+          "description": "Additional experiment flags for the time series forcasting training.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "hierarchyConfig": {
+          "description": "Configuration that defines the hierarchical relationship of time series and parameters for hierarchical forecasting strategies.",
+          "$ref": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionHierarchyConfig"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformation": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformation",
+      "type": "object",
+      "properties": {
+        "auto": {
+          "$ref": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationAutoTransformation"
+        },
+        "numeric": {
+          "$ref": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationNumericTransformation"
+        },
+        "categorical": {
+          "$ref": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationCategoricalTransformation"
+        },
+        "timestamp": {
+          "$ref": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationTimestampTransformation"
+        },
+        "text": {
+          "$ref": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationTextTransformation"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationAutoTransformation": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationAutoTransformation",
+      "description": "Training pipeline will infer the proper transformation based on the statistic of dataset.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationNumericTransformation": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationNumericTransformation",
+      "description": "Training pipeline will perform following transformation functions. * The value converted to float32. * The z_score of the value. * log(value+1) when the value is greater than or equal to 0. Otherwise, this transformation is not applied and the value is considered a missing value. * z_score of log(value+1) when the value is greater than or equal to 0. Otherwise, this transformation is not applied and the value is considered a missing value.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationCategoricalTransformation": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationCategoricalTransformation",
+      "description": "Training pipeline will perform following transformation functions. * The categorical string as is--no change to case, punctuation, spelling, tense, and so on. * Convert the category name to a dictionary lookup index and generate an embedding for each index. * Categories that appear less than 5 times in the training dataset are treated as the \"unknown\" category. The \"unknown\" category gets its own special lookup index and resulting embedding.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationTimestampTransformation": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationTimestampTransformation",
+      "description": "Training pipeline will perform following transformation functions. * Apply the transformation functions for Numerical columns. * Determine the year, month, day,and weekday. Treat each value from the timestamp as a Categorical column. * Invalid numerical values (for example, values that fall outside of a typical timestamp range, or are extreme values) receive no special treatment and are not removed.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        },
+        "timeFormat": {
+          "description": "The format in which that time field is expressed. The time_format must either be one of: * `unix-seconds` * `unix-milliseconds` * `unix-microseconds` * `unix-nanoseconds` (for respectively number of seconds, milliseconds, microseconds and nanoseconds since start of the Unix epoch); or be written in `strftime` syntax. If time_format is not set, then the default format is RFC 3339 `date-time` format, where `time-offset` = `\"Z\"` (e.g. 1985-04-12T23:20:50.52Z)",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationTextTransformation": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationTextTransformation",
+      "description": "Training pipeline will perform following transformation functions. * The text as is--no change to case, punctuation, spelling, tense, and so on. * Convert the category name to a dictionary lookup index and generate an embedding for each index.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsGranularity": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsGranularity",
+      "description": "A duration of time expressed in time granularity units.",
+      "type": "object",
+      "properties": {
+        "unit": {
+          "description": "The time granularity unit of this time period. The supported units are: * \"minute\" * \"hour\" * \"day\" * \"week\" * \"month\" * \"year\"",
+          "type": "string"
+        },
+        "quantity": {
+          "description": "The number of granularity_units between data points in the training data. If `granularity_unit` is `minute`, can be 1, 5, 10, 15, or 30. For all other values of `granularity_unit`, must be 1.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingMetadata": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingMetadata",
+      "description": "Model metadata specific to Seq2Seq Plus Forecasting.",
+      "type": "object",
+      "properties": {
+        "trainCostMilliNodeHours": {
+          "description": "Output only. The actual training cost of the model, expressed in milli node hours, i.e. 1,000 value in this field means 1 node hour. Guaranteed to not exceed the train budget.",
+          "type": "string",
+          "format": "int64"
+        },
+        "evaluatedDataItemsBigqueryUri": {
+          "description": "BigQuery destination uri for exported evaluated examples.",
           "type": "string"
         }
       }
@@ -14768,6 +15632,21 @@
             "format": "double"
           }
         },
+        "hierarchyConfig": {
+          "description": "Configuration that defines the hierarchical relationship of time series and parameters for hierarchical forecasting strategies.",
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionHierarchyConfig"
+        },
+        "windowConfig": {
+          "description": "Config containing strategy for generating sliding windows.",
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionWindowConfig"
+        },
+        "holidayRegions": {
+          "description": "The geographical region based on which the holiday effect is applied in modeling by adding holiday categorical array feature that include all holidays matching the date. This option only allowed when data_granularity is day. By default, holiday effect modeling is disabled. To turn it on, specify the holiday region using this option.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "validationOptions": {
           "description": "Validation options for the data validation component. The available options are: * \"fail-pipeline\" - default, will validate against the validation and fail the pipeline if it fails. * \"ignore-validation\" - ignore the results of the validation and continue",
           "type": "string"
@@ -14884,6 +15763,56 @@
         "overrideExistingTable": {
           "description": "If true and an export destination is specified, then the contents of the destination are overwritten. Otherwise, if the export destination already exists, then the export operation fails.",
           "type": "boolean"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionHierarchyConfig": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionHierarchyConfig",
+      "description": "Configuration that defines the hierarchical relationship of time series and parameters for hierarchical forecasting strategies.",
+      "type": "object",
+      "properties": {
+        "groupColumns": {
+          "description": "A list of time series attribute column names that define the time series hierarchy. Only one level of hierarchy is supported, ex. \u2018region\u2019 for a hierarchy of stores or \u2018department\u2019 for a hierarchy of products. If multiple columns are specified, time series will be grouped by their combined values, ex. (\u2018blue\u2019, \u2018large\u2019) for \u2018color\u2019 and \u2018size\u2019, up to 5 columns are accepted. If no group columns are specified, all time series are considered to be part of the same group.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "groupTotalWeight": {
+          "description": "The weight of the loss for predictions aggregated over time series in the same group.",
+          "type": "number",
+          "format": "double"
+        },
+        "temporalTotalWeight": {
+          "description": "The weight of the loss for predictions aggregated over the horizon for a single time series.",
+          "type": "number",
+          "format": "double"
+        },
+        "groupTemporalTotalWeight": {
+          "description": "The weight of the loss for predictions aggregated over both the horizon and time series in the same hierarchy group.",
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionWindowConfig": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionWindowConfig",
+      "description": "Config that contains the strategy used to generate sliding windows in time series training. A window is a series of rows that comprise the context up to the time of prediction, and the horizon following. The corresponding row for each window marks the start of the forecast horizon. Each window is used as an input example for training\/evaluation.",
+      "type": "object",
+      "properties": {
+        "column": {
+          "description": "Name of the column that should be used to generate sliding windows. The column should contain either booleans or string booleans; if the value of the row is True, generate a sliding window with the horizon starting at that row. The column will not be used as a feature in training.",
+          "type": "string"
+        },
+        "strideLength": {
+          "description": "Stride length used to generate input examples. Within one time series, every {$STRIDE_LENGTH} rows will be used to generate a sliding window.",
+          "type": "string",
+          "format": "int64"
+        },
+        "maxCount": {
+          "description": "Maximum number of windows that should be generated across all time series.",
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -15029,6 +15958,10 @@
         "disableEarlyStopping": {
           "description": "Use the entire training budget. This disables the early stopping feature. When false the early stopping feature is enabled, which means that AutoML Image Object Detection might stop training before the entire training budget has been used.",
           "type": "boolean"
+        },
+        "uptrainBaseModelId": {
+          "description": "The ID of `base` model for upTraining. If it is specified, the new model will be upTrained based on the `base` model for upTraining. Otherwise, the new model will be trained from scratch. The `base` model for upTraining must be in the same Project and Location as the new Model to train, and have the same modelType.",
+          "type": "string"
         }
       }
     },
@@ -15585,6 +16518,239 @@
         },
         "bestTrialBackingCustomJob": {
           "description": "The resource name of the CustomJob that has been created to run the best Trial of this HyperparameterTuning task.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionSeq2SeqPlusForecasting": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionSeq2SeqPlusForecasting",
+      "description": "A TrainingJob that trains and uploads an AutoML Forecasting Model.",
+      "type": "object",
+      "properties": {
+        "inputs": {
+          "description": "The input parameters of this TrainingJob.",
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputs"
+        },
+        "metadata": {
+          "description": "The metadata information.",
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputs": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputs",
+      "type": "object",
+      "properties": {
+        "targetColumn": {
+          "description": "The name of the column that the Model is to predict values for. This column must be unavailable at forecast.",
+          "type": "string"
+        },
+        "timeSeriesIdentifierColumn": {
+          "description": "The name of the column that identifies the time series.",
+          "type": "string"
+        },
+        "timeColumn": {
+          "description": "The name of the column that identifies time order in the time series. This column must be available at forecast.",
+          "type": "string"
+        },
+        "transformations": {
+          "description": "Each transformation will apply transform function to given input column. And the result will be used for training. When creating transformation for BigQuery Struct column, the column should be flattened using \".\" as the delimiter.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformation"
+          }
+        },
+        "optimizationObjective": {
+          "description": "Objective function the model is optimizing towards. The training process creates a model that optimizes the value of the objective function over the validation set. The supported optimization objectives: * \"minimize-rmse\" (default) - Minimize root-mean-squared error (RMSE). * \"minimize-mae\" - Minimize mean-absolute error (MAE). * \"minimize-rmsle\" - Minimize root-mean-squared log error (RMSLE). * \"minimize-rmspe\" - Minimize root-mean-squared percentage error (RMSPE). * \"minimize-wape-mae\" - Minimize the combination of weighted absolute percentage error (WAPE) and mean-absolute-error (MAE). * \"minimize-quantile-loss\" - Minimize the quantile loss at the quantiles defined in `quantiles`. * \"minimize-mape\" - Minimize the mean absolute percentage error.",
+          "type": "string"
+        },
+        "trainBudgetMilliNodeHours": {
+          "description": "Required. The train budget of creating this model, expressed in milli node hours i.e. 1,000 value in this field means 1 node hour. The training cost of the model will not exceed this budget. The final cost will be attempted to be close to the budget, though may end up being (even) noticeably smaller - at the backend's discretion. This especially may happen when further model training ceases to provide any improvements. If the budget is set to a value known to be insufficient to train a model for the given dataset, the training won't be attempted and will error. The train budget must be between 1,000 and 72,000 milli node hours, inclusive.",
+          "type": "string",
+          "format": "int64"
+        },
+        "weightColumn": {
+          "description": "Column name that should be used as the weight column. Higher values in this column give more importance to the row during model training. The column must have numeric values between 0 and 10000 inclusively; 0 means the row is ignored for training. If weight column field is not set, then all rows are assumed to have equal weight of 1. This column must be available at forecast.",
+          "type": "string"
+        },
+        "timeSeriesAttributeColumns": {
+          "description": "Column names that should be used as attribute columns. The value of these columns does not vary as a function of time. For example, store ID or item color.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "unavailableAtForecastColumns": {
+          "description": "Names of columns that are unavailable when a forecast is requested. This column contains information for the given entity (identified by the time_series_identifier_column) that is unknown before the forecast For example, actual weather on a given day.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "availableAtForecastColumns": {
+          "description": "Names of columns that are available and provided when a forecast is requested. These columns contain information for the given entity (identified by the time_series_identifier_column column) that is known at forecast. For example, predicted weather for a specific day.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "dataGranularity": {
+          "description": "Expected difference in time granularity between rows in the data.",
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsGranularity"
+        },
+        "forecastHorizon": {
+          "description": "The amount of time into the future for which forecasted values for the target are returned. Expressed in number of units defined by the `data_granularity` field.",
+          "type": "string",
+          "format": "int64"
+        },
+        "contextWindow": {
+          "description": "The amount of time into the past training and prediction data is used for model training and prediction respectively. Expressed in number of units defined by the `data_granularity` field.",
+          "type": "string",
+          "format": "int64"
+        },
+        "holidayRegions": {
+          "description": "The geographical region based on which the holiday effect is applied in modeling by adding holiday categorical array feature that include all holidays matching the date. This option only allowed when data_granularity is day. By default, holiday effect modeling is disabled. To turn it on, specify the holiday region using this option.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "exportEvaluatedDataItemsConfig": {
+          "description": "Configuration for exporting test set predictions to a BigQuery table. If this configuration is absent, then the export is not performed.",
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionExportEvaluatedDataItemsConfig"
+        },
+        "windowConfig": {
+          "description": "Config containing strategy for generating sliding windows.",
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionWindowConfig"
+        },
+        "quantiles": {
+          "description": "Quantiles to use for minimize-quantile-loss `optimization_objective`. Up to 5 quantiles are allowed of values between 0 and 1, exclusive. Required if the value of optimization_objective is minimize-quantile-loss. Represents the percent quantiles to use for that objective. Quantiles must be unique.",
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "validationOptions": {
+          "description": "Validation options for the data validation component. The available options are: * \"fail-pipeline\" - default, will validate against the validation and fail the pipeline if it fails. * \"ignore-validation\" - ignore the results of the validation and continue",
+          "type": "string"
+        },
+        "additionalExperiments": {
+          "description": "Additional experiment flags for the time series forcasting training.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "hierarchyConfig": {
+          "description": "Configuration that defines the hierarchical relationship of time series and parameters for hierarchical forecasting strategies.",
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionHierarchyConfig"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformation": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformation",
+      "type": "object",
+      "properties": {
+        "auto": {
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationAutoTransformation"
+        },
+        "numeric": {
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationNumericTransformation"
+        },
+        "categorical": {
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationCategoricalTransformation"
+        },
+        "timestamp": {
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationTimestampTransformation"
+        },
+        "text": {
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationTextTransformation"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationAutoTransformation": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationAutoTransformation",
+      "description": "Training pipeline will infer the proper transformation based on the statistic of dataset.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationNumericTransformation": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationNumericTransformation",
+      "description": "Training pipeline will perform following transformation functions. * The value converted to float32. * The z_score of the value. * log(value+1) when the value is greater than or equal to 0. Otherwise, this transformation is not applied and the value is considered a missing value. * z_score of log(value+1) when the value is greater than or equal to 0. Otherwise, this transformation is not applied and the value is considered a missing value.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationCategoricalTransformation": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationCategoricalTransformation",
+      "description": "Training pipeline will perform following transformation functions. * The categorical string as is--no change to case, punctuation, spelling, tense, and so on. * Convert the category name to a dictionary lookup index and generate an embedding for each index. * Categories that appear less than 5 times in the training dataset are treated as the \"unknown\" category. The \"unknown\" category gets its own special lookup index and resulting embedding.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationTimestampTransformation": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationTimestampTransformation",
+      "description": "Training pipeline will perform following transformation functions. * Apply the transformation functions for Numerical columns. * Determine the year, month, day,and weekday. Treat each value from the timestamp as a Categorical column. * Invalid numerical values (for example, values that fall outside of a typical timestamp range, or are extreme values) receive no special treatment and are not removed.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        },
+        "timeFormat": {
+          "description": "The format in which that time field is expressed. The time_format must either be one of: * `unix-seconds` * `unix-milliseconds` * `unix-microseconds` * `unix-nanoseconds` (for respectively number of seconds, milliseconds, microseconds and nanoseconds since start of the Unix epoch); or be written in `strftime` syntax. If time_format is not set, then the default format is RFC 3339 `date-time` format, where `time-offset` = `\"Z\"` (e.g. 1985-04-12T23:20:50.52Z)",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationTextTransformation": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationTextTransformation",
+      "description": "Training pipeline will perform following transformation functions. * The text as is--no change to case, punctuation, spelling, tense, and so on. * Convert the category name to a dictionary lookup index and generate an embedding for each index.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsGranularity": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsGranularity",
+      "description": "A duration of time expressed in time granularity units.",
+      "type": "object",
+      "properties": {
+        "unit": {
+          "description": "The time granularity unit of this time period. The supported units are: * \"minute\" * \"hour\" * \"day\" * \"week\" * \"month\" * \"year\"",
+          "type": "string"
+        },
+        "quantity": {
+          "description": "The number of granularity_units between data points in the training data. If `granularity_unit` is `minute`, can be 1, 5, 10, 15, or 30. For all other values of `granularity_unit`, must be 1.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingMetadata": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingMetadata",
+      "description": "Model metadata specific to Seq2Seq Plus Forecasting.",
+      "type": "object",
+      "properties": {
+        "trainCostMilliNodeHours": {
+          "description": "Output only. The actual training cost of the model, expressed in milli node hours, i.e. 1,000 value in this field means 1 node hour. Guaranteed to not exceed the train budget.",
+          "type": "string",
+          "format": "int64"
+        },
+        "evaluatedDataItemsBigqueryUri": {
+          "description": "BigQuery destination uri for exported evaluated examples.",
           "type": "string"
         }
       }
@@ -16261,6 +17427,209 @@
     }
   },
   "resources": {
+    "ui": {
+      "resources": {
+        "projects": {
+          "resources": {
+            "locations": {
+              "resources": {
+                "featurestores": {
+                  "methods": {
+                    "setIamPolicy": {
+                      "id": "aiplatform.ui.projects.locations.featurestores.setIamPolicy",
+                      "path": "ui/{+resource}:setIamPolicy",
+                      "flatPath": "ui/projects/{projectsId}/locations/{locationsId}/featurestores/{featurestoresId}:setIamPolicy",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "resource": {
+                          "description": "REQUIRED: The resource for which the policy is being specified. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/featurestores\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "resource"
+                      ],
+                      "request": {
+                        "$ref": "GoogleIamV1SetIamPolicyRequest"
+                      },
+                      "response": {
+                        "$ref": "GoogleIamV1Policy"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors."
+                    },
+                    "getIamPolicy": {
+                      "id": "aiplatform.ui.projects.locations.featurestores.getIamPolicy",
+                      "path": "ui/{+resource}:getIamPolicy",
+                      "flatPath": "ui/projects/{projectsId}/locations/{locationsId}/featurestores/{featurestoresId}:getIamPolicy",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "resource": {
+                          "description": "REQUIRED: The resource for which the policy is being requested. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/featurestores\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "options.requestedPolicyVersion": {
+                          "description": "Optional. The maximum policy version that will be used to format the policy. Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected. Requests for policies with any conditional role bindings must specify version 3. Policies with no conditional role bindings may specify any valid value or leave the field unset. The policy in the response might use the policy version that you specified, or it might use a lower policy version. For example, if you specify version 3, but the policy has no conditional role bindings, the response uses version 1. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        }
+                      },
+                      "parameterOrder": [
+                        "resource"
+                      ],
+                      "response": {
+                        "$ref": "GoogleIamV1Policy"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set."
+                    },
+                    "testIamPermissions": {
+                      "id": "aiplatform.ui.projects.locations.featurestores.testIamPermissions",
+                      "path": "ui/{+resource}:testIamPermissions",
+                      "flatPath": "ui/projects/{projectsId}/locations/{locationsId}/featurestores/{featurestoresId}:testIamPermissions",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "resource": {
+                          "description": "REQUIRED: The resource for which the policy detail is being requested. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/featurestores\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "permissions": {
+                          "description": "The set of permissions to check for the `resource`. Permissions with wildcards (such as `*` or `storage.*`) are not allowed. For more information see [IAM Overview](https:\/\/cloud.google.com\/iam\/docs\/overview#permissions).",
+                          "location": "query",
+                          "repeated": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "resource"
+                      ],
+                      "response": {
+                        "$ref": "GoogleIamV1TestIamPermissionsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
+                    }
+                  }
+                  ,
+                  "resources": {
+                    "entityTypes": {
+                      "methods": {
+                        "setIamPolicy": {
+                          "id": "aiplatform.ui.projects.locations.featurestores.entityTypes.setIamPolicy",
+                          "path": "ui/{+resource}:setIamPolicy",
+                          "flatPath": "ui/projects/{projectsId}/locations/{locationsId}/featurestores/{featurestoresId}/entityTypes/{entityTypesId}:setIamPolicy",
+                          "httpMethod": "POST",
+                          "parameters": {
+                            "resource": {
+                              "description": "REQUIRED: The resource for which the policy is being specified. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/featurestores\/[^\/]+\/entityTypes\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "resource"
+                          ],
+                          "request": {
+                            "$ref": "GoogleIamV1SetIamPolicyRequest"
+                          },
+                          "response": {
+                            "$ref": "GoogleIamV1Policy"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors."
+                        },
+                        "getIamPolicy": {
+                          "id": "aiplatform.ui.projects.locations.featurestores.entityTypes.getIamPolicy",
+                          "path": "ui/{+resource}:getIamPolicy",
+                          "flatPath": "ui/projects/{projectsId}/locations/{locationsId}/featurestores/{featurestoresId}/entityTypes/{entityTypesId}:getIamPolicy",
+                          "httpMethod": "POST",
+                          "parameters": {
+                            "resource": {
+                              "description": "REQUIRED: The resource for which the policy is being requested. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/featurestores\/[^\/]+\/entityTypes\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            },
+                            "options.requestedPolicyVersion": {
+                              "description": "Optional. The maximum policy version that will be used to format the policy. Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected. Requests for policies with any conditional role bindings must specify version 3. Policies with no conditional role bindings may specify any valid value or leave the field unset. The policy in the response might use the policy version that you specified, or it might use a lower policy version. For example, if you specify version 3, but the policy has no conditional role bindings, the response uses version 1. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
+                              "location": "query",
+                              "type": "integer",
+                              "format": "int32"
+                            }
+                          },
+                          "parameterOrder": [
+                            "resource"
+                          ],
+                          "response": {
+                            "$ref": "GoogleIamV1Policy"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set."
+                        },
+                        "testIamPermissions": {
+                          "id": "aiplatform.ui.projects.locations.featurestores.entityTypes.testIamPermissions",
+                          "path": "ui/{+resource}:testIamPermissions",
+                          "flatPath": "ui/projects/{projectsId}/locations/{locationsId}/featurestores/{featurestoresId}/entityTypes/{entityTypesId}:testIamPermissions",
+                          "httpMethod": "POST",
+                          "parameters": {
+                            "resource": {
+                              "description": "REQUIRED: The resource for which the policy detail is being requested. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/featurestores\/[^\/]+\/entityTypes\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            },
+                            "permissions": {
+                              "description": "The set of permissions to check for the `resource`. Permissions with wildcards (such as `*` or `storage.*`) are not allowed. For more information see [IAM Overview](https:\/\/cloud.google.com\/iam\/docs\/overview#permissions).",
+                              "location": "query",
+                              "repeated": true,
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "resource"
+                          ],
+                          "response": {
+                            "$ref": "GoogleIamV1TestIamPermissionsResponse"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "projects": {
       "resources": {
         "locations": {
@@ -16762,6 +18131,62 @@
                     }
                   }
                 },
+                "savedQueries": {
+                  "methods": {
+                    "list": {
+                      "id": "aiplatform.projects.locations.datasets.savedQueries.list",
+                      "path": "v1/{+parent}/savedQueries",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/savedQueries",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The resource name of the Dataset to list SavedQueries from. Format: `projects\/{project}\/locations\/{location}\/datasets\/{dataset}`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "filter": {
+                          "description": "The standard list filter.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "The standard list page size.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "The standard list page token.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "readMask": {
+                          "description": "Mask specifying which fields to read.",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-fieldmask"
+                        },
+                        "orderBy": {
+                          "description": "A comma-separated list of fields to order by, sorted in ascending order. Use \"desc\" after a field name for descending.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "GoogleCloudAiplatformV1ListSavedQueriesResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Lists SavedQueries in a Dataset."
+                    }
+                  }
+                },
                 "annotationSpecs": {
                   "methods": {
                     "get": {
@@ -17238,7 +18663,7 @@
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "Field mask is used to specify the fields to be overwritten in the Featurestore resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then only the non-empty fields present in the request will be overwritten. Set the update_mask to `*` to override all fields. Updatable fields: * `labels` * `online_serving_config.fixed_node_count`",
+                      "description": "Field mask is used to specify the fields to be overwritten in the Featurestore resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then only the non-empty fields present in the request will be overwritten. Set the update_mask to `*` to override all fields. Updatable fields: * `labels` * `online_serving_config.fixed_node_count` * `online_serving_config.scaling`",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
@@ -18341,7 +19766,7 @@
                       "type": "string"
                     },
                     "filter": {
-                      "description": "The standard list filter. Supported fields: * `display_name` supports = and !=. * `state` supports = and !=. Some examples of using the filter are: * `state=\"JOB_STATE_SUCCEEDED\" AND display_name=\"my_job\"` * `state=\"JOB_STATE_RUNNING\" OR display_name=\"my_job\"` * `NOT display_name=\"my_job\"` * `state=\"JOB_STATE_FAILED\"`",
+                      "description": "The standard list filter. Supported fields: * `display_name` supports `=`, `!=` comparisons, and `:` wildcard. * `state` supports `=`, `!=` comparisons. * `create_time` supports `=`, `!=`,`<`, `<=`,`>`, `>=` comparisons. `create_time` must be in RFC 3339 format. Some examples of using the filter are: * `state=\"JOB_STATE_SUCCEEDED\" AND display_name:\"my_job_*\"` * `state!=\"JOB_STATE_FAILED\" OR display_name=\"my_job\"` * `NOT display_name=\"my_job\"` * `create_time>\"2021-05-18T00:00:00Z\"`",
                       "location": "query",
                       "type": "string"
                     },
@@ -18498,7 +19923,7 @@
                       "type": "string"
                     },
                     "filter": {
-                      "description": "The standard list filter. Supported fields: * `display_name` supports = and !=. * `state` supports = and !=. Some examples of using the filter are: * `state=\"JOB_STATE_SUCCEEDED\" AND display_name=\"my_job\"` * `state=\"JOB_STATE_RUNNING\" OR display_name=\"my_job\"` * `NOT display_name=\"my_job\"` * `state=\"JOB_STATE_FAILED\"`",
+                      "description": "The standard list filter. Supported fields: * `display_name` supports `=`, `!=` comparisons, and `:` wildcard. * `state` supports `=`, `!=` comparisons. * `create_time` supports `=`, `!=`,`<`, `<=`,`>`, `>=` comparisons. `create_time` must be in RFC 3339 format. Some examples of using the filter are: * `state=\"JOB_STATE_SUCCEEDED\" AND display_name:\"my_job_*\"` * `state!=\"JOB_STATE_FAILED\" OR display_name=\"my_job\"` * `NOT display_name=\"my_job\"` * `create_time>\"2021-05-18T00:00:00Z\"`",
                       "location": "query",
                       "type": "string"
                     },
@@ -18660,7 +20085,7 @@
                       "type": "string"
                     },
                     "filter": {
-                      "description": "The standard list filter. Supported fields: * `display_name` supports = and !=. * `state` supports = and !=. Some examples of using the filter are: * `state=\"JOB_STATE_SUCCEEDED\" AND display_name=\"my_job\"` * `state=\"JOB_STATE_RUNNING\" OR display_name=\"my_job\"` * `NOT display_name=\"my_job\"` * `state=\"JOB_STATE_FAILED\"`",
+                      "description": "The standard list filter. Supported fields: * `display_name` supports `=`, `!=` comparisons, and `:` wildcard. * `state` supports `=`, `!=` comparisons. * `create_time` supports `=`, `!=`,`<`, `<=`,`>`, `>=` comparisons. `create_time` must be in RFC 3339 format. Some examples of using the filter are: * `state=\"JOB_STATE_SUCCEEDED\" AND display_name:\"my_job_*\"` * `state!=\"JOB_STATE_FAILED\" OR display_name=\"my_job\"` * `NOT display_name=\"my_job\"` * `create_time>\"2021-05-18T00:00:00Z\"`",
                       "location": "query",
                       "type": "string"
                     },
@@ -18817,7 +20242,7 @@
                       "type": "string"
                     },
                     "filter": {
-                      "description": "The standard list filter. Supported fields: * `display_name` supports = and !=. * `state` supports = and !=. * `model_display_name` supports = and != Some examples of using the filter are: * `state=\"JOB_STATE_SUCCEEDED\" AND display_name=\"my_job\"` * `state=\"JOB_STATE_RUNNING\" OR display_name=\"my_job\"` * `NOT display_name=\"my_job\"` * `state=\"JOB_STATE_FAILED\"`",
+                      "description": "The standard list filter. Supported fields: * `display_name` supports `=`, `!=` comparisons, and `:` wildcard. * `model_display_name` supports `=`, `!=` comparisons. * `state` supports `=`, `!=` comparisons. * `create_time` supports `=`, `!=`,`<`, `<=`,`>`, `>=` comparisons. `create_time` must be in RFC 3339 format. Some examples of using the filter are: * `state=\"JOB_STATE_SUCCEEDED\" AND display_name:\"my_job_*\"` * `state!=\"JOB_STATE_FAILED\" OR display_name=\"my_job\"` * `NOT display_name=\"my_job\"` * `create_time>\"2021-05-18T00:00:00Z\"`",
                       "location": "query",
                       "type": "string"
                     },
@@ -19002,7 +20427,7 @@
                       "type": "string"
                     },
                     "filter": {
-                      "description": "The standard list filter.",
+                      "description": "The standard list filter. Supported fields: * `display_name` supports `=`, `!=` comparisons, and `:` wildcard. * `state` supports `=`, `!=` comparisons. * `create_time` supports `=`, `!=`,`<`, `<=`,`>`, `>=` comparisons. `create_time` must be in RFC 3339 format. Some examples of using the filter are: * `state=\"JOB_STATE_SUCCEEDED\" AND display_name:\"my_job_*\"` * `state!=\"JOB_STATE_FAILED\" OR display_name=\"my_job\"` * `NOT display_name=\"my_job\"` * `create_time>\"2021-05-18T00:00:00Z\"`",
                       "location": "query",
                       "type": "string"
                     },
@@ -20258,7 +21683,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. The name of the Model resource. Format: `projects\/{project}\/locations\/{location}\/models\/{model}`",
+                      "description": "Required. The name of the Model resource. Format: `projects\/{project}\/locations\/{location}\/models\/{model}` In order to retrieve a specific version of the model, also provide the version ID or version alias. Example: `projects\/{project}\/locations\/{location}\/models\/{model}@2` or `projects\/{project}\/locations\/{location}\/models\/{model}@golden` If no version ID or alias is specified, the \"default\" version will be returned. The \"default\" version alias is created for the first version of the model, and can be moved to other versions later on. There will be exactly one default version.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/models\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -20328,6 +21753,53 @@
                   ],
                   "description": "Lists Models in a Location."
                 },
+                "listVersions": {
+                  "id": "aiplatform.projects.locations.models.listVersions",
+                  "path": "v1/{+name}:listVersions",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/models/{modelsId}:listVersions",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the model to list versions for.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/models\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The standard list page size.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "The standard list page token. Typically obtained via ListModelVersionsResponse.next_page_token of the previous ModelService.ListModelversions call.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "An expression for filtering the results of the request. For field names both snake_case and camelCase are supported. * `labels` supports general map functions that is: * `labels.key=value` - key:value equality * `labels.key:* or labels:key - key existence * A key including a space must be quoted. `labels.\"a key\"`. Some examples: * `labels.myKey=\"myValue\"`",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "readMask": {
+                      "description": "Mask specifying which fields to read.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "GoogleCloudAiplatformV1ListModelVersionsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists versions of the specified model."
+                },
                 "patch": {
                   "id": "aiplatform.projects.locations.models.patch",
                   "path": "v1/{+name}",
@@ -20387,6 +21859,59 @@
                   ],
                   "description": "Deletes a Model. A model cannot be deleted if any Endpoint resource has a DeployedModel based on the model in its deployed_models field."
                 },
+                "deleteVersion": {
+                  "id": "aiplatform.projects.locations.models.deleteVersion",
+                  "path": "v1/{+name}:deleteVersion",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/models/{modelsId}:deleteVersion",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the model version to be deleted, with a version ID explicitly included. Example: `projects\/{project}\/locations\/{location}\/models\/{model}@1234`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/models\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "GoogleLongrunningOperation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a Model version. Model version can only be deleted if there are no DeployedModels created from it. Deleting the only version in the Model is not allowed. Use DeleteModel for deleting the Model instead."
+                },
+                "mergeVersionAliases": {
+                  "id": "aiplatform.projects.locations.models.mergeVersionAliases",
+                  "path": "v1/{+name}:mergeVersionAliases",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/models/{modelsId}:mergeVersionAliases",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the model version to merge aliases, with a version ID explicitly included. Example: `projects\/{project}\/locations\/{location}\/models\/{model}@1234`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/models\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "GoogleCloudAiplatformV1MergeVersionAliasesRequest"
+                  },
+                  "response": {
+                    "$ref": "GoogleCloudAiplatformV1Model"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Merges a set of aliases for a Model version."
+                },
                 "export": {
                   "id": "aiplatform.projects.locations.models.export",
                   "path": "v1/{+name}:export",
@@ -20394,7 +21919,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
-                      "description": "Required. The resource name of the Model to export.",
+                      "description": "Required. The resource name of the Model to export. The resource name may contain version id or version alias to specify the version, if no version is specified, the default version will be exported.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/models\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -20525,6 +22050,34 @@
                   "resources": {
                     "slices": {
                       "methods": {
+                        "batchImport": {
+                          "id": "aiplatform.projects.locations.models.evaluations.slices.batchImport",
+                          "path": "v1/{+parent}/slices:batchImport",
+                          "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/models/{modelsId}/evaluations/{evaluationsId}/slices:batchImport",
+                          "httpMethod": "POST",
+                          "parameters": {
+                            "parent": {
+                              "description": "Required. The name of the parent ModelEvaluation resource. Format: `projects\/{project}\/locations\/{location}\/models\/{model}\/evaluations\/{evaluation}`",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/models\/[^\/]+\/evaluations\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "parent"
+                          ],
+                          "request": {
+                            "$ref": "GoogleCloudAiplatformV1BatchImportModelEvaluationSlicesRequest"
+                          },
+                          "response": {
+                            "$ref": "GoogleCloudAiplatformV1BatchImportModelEvaluationSlicesResponse"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Imports a list of externally generated ModelEvaluationSlice."
+                        },
                         "get": {
                           "id": "aiplatform.projects.locations.models.evaluations.slices.get",
                           "path": "v1/{+name}",
@@ -20672,7 +22225,7 @@
                       "type": "string"
                     },
                     "filter": {
-                      "description": "The standard list filter. Supported fields: * `display_name` supports = and !=. * `state` supports = and !=. Some examples of using the filter are: * `state=\"PIPELINE_STATE_SUCCEEDED\" AND display_name=\"my_pipeline\"` * `state=\"PIPELINE_STATE_RUNNING\" OR display_name=\"my_pipeline\"` * `NOT display_name=\"my_pipeline\"` * `state=\"PIPELINE_STATE_FAILED\"`",
+                      "description": "The standard list filter. Supported fields: * `display_name` supports `=`, `!=` comparisons, and `:` wildcard. * `state` supports `=`, `!=` comparisons. * `training_task_definition` `=`, `!=` comparisons, and `:` wildcard. * `create_time` supports `=`, `!=`,`<`, `<=`,`>`, `>=` comparisons. `create_time` must be in RFC 3339 format. Some examples of using the filter are: * `state=\"PIPELINE_STATE_SUCCEEDED\" AND display_name:\"my_pipeline_*\"` * `state!=\"PIPELINE_STATE_FAILED\" OR display_name=\"my_pipeline\"` * `NOT display_name=\"my_pipeline\"` * `create_time>\"2021-05-18T00:00:00Z\"` * `training_task_definition:\"*automl_text_classification*\"`",
                       "location": "query",
                       "type": "string"
                     },
@@ -20834,7 +22387,7 @@
                       "type": "string"
                     },
                     "filter": {
-                      "description": "Lists the PipelineJobs that match the filter expression. The following fields are supported: * `pipeline_name`: Supports `=` and `!=` comparisons. * `display_name`: Supports `=`, `!=` comparisons, and `:` wildcard. * `pipeline_job_user_id`: Supports `=`, `!=` comparisons, and `:` wildcard. for example, can check if pipeline's display_name contains *step* by doing display_name:\\\"*step*\\\" * `state`: Supports `=` and `!=` comparisons. * `create_time`: Supports `=`, `!=`, `<`, `>`, `<=`, and `>=` comparisons. Values must be in RFC 3339 format. * `update_time`: Supports `=`, `!=`, `<`, `>`, `<=`, and `>=` comparisons. Values must be in RFC 3339 format. * `end_time`: Supports `=`, `!=`, `<`, `>`, `<=`, and `>=` comparisons. Values must be in RFC 3339 format. * `labels`: Supports key-value equality and key presence. * `template_uri`: Supports `=`, `!=` comparisons, and `:` wildcard. * `template_metadata.version_name`: Supports `=`, `!=` comparisons, and `:` wildcard. Filter expressions can be combined together using logical operators (`AND` & `OR`). For example: `pipeline_name=\"test\" AND create_time>\"2020-05-18T13:30:00Z\"`. The syntax to define filter expression is based on https:\/\/google.aip.dev\/160. Examples: * `create_time>\"2021-05-18T00:00:00Z\" OR update_time>\"2020-05-18T00:00:00Z\"` PipelineJobs created or updated after 2020-05-18 00:00:00 UTC. * `labels.env = \"prod\"` PipelineJobs with label \"env\" set to \"prod\".",
+                      "description": "Lists the PipelineJobs that match the filter expression. The following fields are supported: * `pipeline_name`: Supports `=` and `!=` comparisons. * `display_name`: Supports `=`, `!=` comparisons, and `:` wildcard. * `pipeline_job_user_id`: Supports `=`, `!=` comparisons, and `:` wildcard. for example, can check if pipeline's display_name contains *step* by doing display_name:\\\"*step*\\\" * `state`: Supports `=` and `!=` comparisons. * `create_time`: Supports `=`, `!=`, `<`, `>`, `<=`, and `>=` comparisons. Values must be in RFC 3339 format. * `update_time`: Supports `=`, `!=`, `<`, `>`, `<=`, and `>=` comparisons. Values must be in RFC 3339 format. * `end_time`: Supports `=`, `!=`, `<`, `>`, `<=`, and `>=` comparisons. Values must be in RFC 3339 format. * `labels`: Supports key-value equality and key presence. * `template_uri`: Supports `=`, `!=` comparisons, and `:` wildcard. * `template_metadata.version`: Supports `=`, `!=` comparisons, and `:` wildcard. Filter expressions can be combined together using logical operators (`AND` & `OR`). For example: `pipeline_name=\"test\" AND create_time>\"2020-05-18T13:30:00Z\"`. The syntax to define filter expression is based on https:\/\/google.aip.dev\/160. Examples: * `create_time>\"2021-05-18T00:00:00Z\" OR update_time>\"2020-05-18T00:00:00Z\"` PipelineJobs created or updated after 2020-05-18 00:00:00 UTC. * `labels.env = \"prod\"` PipelineJobs with label \"env\" set to \"prod\".",
                       "location": "query",
                       "type": "string"
                     },

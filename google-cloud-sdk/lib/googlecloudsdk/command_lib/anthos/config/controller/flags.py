@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 
@@ -62,6 +63,31 @@ def AddManBlockFlag(parser):
       help=("Master Authorized Network. "
             "Allows access to the Kubernetes control plane from this block. "
             "Defaults to '0.0.0.0/0' if flag is not provided."))
+
+
+def AddManBlockFlagDeprecated(parser):
+  """Adds --man-block flag."""
+  parser.add_argument(
+      "--man-block",
+      help=("Master Authorized Network. "
+            "Allows access to the Kubernetes control plane from this block. "
+            "Defaults to `0.0.0.0/0` if flag is not provided."),
+      action=actions.DeprecationAction(
+          "--man-block",
+          warn="The {flag_name} option is deprecated; use --man-blocks instead.",
+          removed=False))
+
+
+def AddManBlocksFlag(parser):
+  """Adds --man-blocks flag."""
+  parser.add_argument(
+      "--man-blocks",
+      type=arg_parsers.ArgList(),
+      metavar="BLOCK",
+      help=("Master Authorized Network. "
+            "Allows users to specify multiple blocks to access the Kubernetes"
+            "control plane from this block. "
+            "Defaults to `0.0.0.0/0` if flag is not provided."))
 
 
 def AddClusterIPv4CIDRBlock(parser):

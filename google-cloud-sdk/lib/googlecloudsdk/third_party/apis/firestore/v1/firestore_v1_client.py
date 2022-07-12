@@ -856,7 +856,7 @@ class FirestoreV1(base_api.BaseApiClient):
         method_id='firestore.projects.databases.create',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['databaseId', 'validateOnly'],
+        query_params=['databaseId'],
         relative_path='v1/{+parent}/databases',
         request_field='googleFirestoreAdminV1Database',
         request_type_name='FirestoreProjectsDatabasesCreateRequest',

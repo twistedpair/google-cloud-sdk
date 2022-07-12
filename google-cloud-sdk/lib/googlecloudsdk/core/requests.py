@@ -24,6 +24,7 @@ import collections
 import io
 
 from google.auth.transport import requests as google_auth_requests
+from google.auth.transport.requests import _MutualTlsOffloadAdapter
 from googlecloudsdk.core import context_aware
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
@@ -186,6 +187,10 @@ def GetProxyInfo():
                                proxy_port)
 
 
+def CreateMutualTlsOffloadAdapter(enterprise_certificate_config_file_path):
+  return _MutualTlsOffloadAdapter(enterprise_certificate_config_file_path)
+
+
 def Session(
     timeout=None,
     ca_certs=None,
@@ -230,19 +235,25 @@ def Session(
         ca_certs, client_certificate, client_key)
     client_side_certificate = ClientSideCertificate(
         client_certificate, client_key)
+    adapter = HTTPAdapter(client_side_certificate)
   else:
     ca_config = context_aware.Config()
     if ca_config:
-      log.debug('Using client certificate %s',
-                ca_config.encrypted_client_cert_path)
-      client_side_certificate = ClientSideCertificate(
-          ca_config.encrypted_client_cert_path,
-          ca_config.encrypted_client_cert_path,
-          ca_config.encrypted_client_cert_password)
+      if ca_config.config_type == context_aware.ConfigType.ENTERPRISE_CERTIFICATE:
+        adapter = CreateMutualTlsOffloadAdapter(
+            ca_config.enterprise_certificate_config_file_path)
+      elif ca_config.config_type == context_aware.ConfigType.ON_DISK_CERTIFICATE:
+        log.debug('Using client certificate %s',
+                  ca_config.encrypted_client_cert_path)
+        client_side_certificate = ClientSideCertificate(
+            ca_config.encrypted_client_cert_path,
+            ca_config.encrypted_client_cert_path,
+            ca_config.encrypted_client_cert_password)
+        adapter = HTTPAdapter(client_side_certificate)
+      else:
+        adapter = HTTPAdapter(None)
     else:
-      client_side_certificate = None
-
-  adapter = HTTPAdapter(client_side_certificate)
+      adapter = HTTPAdapter(None)
 
   if disable_ssl_certificate_validation:
     session.verify = False

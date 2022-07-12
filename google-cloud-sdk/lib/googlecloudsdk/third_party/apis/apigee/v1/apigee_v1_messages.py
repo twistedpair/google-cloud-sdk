@@ -4352,6 +4352,7 @@ class GoogleCloudApigeeV1AddonsConfig(_messages.Message):
 
   Fields:
     advancedApiOpsConfig: Configuration for the Advanced API Ops add-on.
+    apiSecurityConfig: Configuration for the API Security add-on.
     connectorsPlatformConfig: Configuration for the Connectors Platform add-
       on.
     integrationConfig: Configuration for the Integration add-on.
@@ -4359,9 +4360,10 @@ class GoogleCloudApigeeV1AddonsConfig(_messages.Message):
   """
 
   advancedApiOpsConfig = _messages.MessageField('GoogleCloudApigeeV1AdvancedApiOpsConfig', 1)
-  connectorsPlatformConfig = _messages.MessageField('GoogleCloudApigeeV1ConnectorsPlatformConfig', 2)
-  integrationConfig = _messages.MessageField('GoogleCloudApigeeV1IntegrationConfig', 3)
-  monetizationConfig = _messages.MessageField('GoogleCloudApigeeV1MonetizationConfig', 4)
+  apiSecurityConfig = _messages.MessageField('GoogleCloudApigeeV1ApiSecurityConfig', 2)
+  connectorsPlatformConfig = _messages.MessageField('GoogleCloudApigeeV1ConnectorsPlatformConfig', 3)
+  integrationConfig = _messages.MessageField('GoogleCloudApigeeV1IntegrationConfig', 4)
+  monetizationConfig = _messages.MessageField('GoogleCloudApigeeV1MonetizationConfig', 5)
 
 
 class GoogleCloudApigeeV1AdjustDeveloperBalanceRequest(_messages.Message):
@@ -4869,6 +4871,20 @@ class GoogleCloudApigeeV1ApiResponseWrapper(_messages.Message):
   message = _messages.StringField(2)
   requestId = _messages.StringField(3)
   status = _messages.StringField(4)
+
+
+class GoogleCloudApigeeV1ApiSecurityConfig(_messages.Message):
+  r"""Configurations of the API Security add-on.
+
+  Fields:
+    enabled: Flag that specifies whether the API security add-on is enabled.
+    expiresAt: Output only. Time at which the API Security add-on expires in
+      in milliseconds since epoch. If unspecified, the add-on will never
+      expire.
+  """
+
+  enabled = _messages.BooleanField(1)
+  expiresAt = _messages.IntegerField(2)
 
 
 class GoogleCloudApigeeV1App(_messages.Message):

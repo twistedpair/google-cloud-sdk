@@ -36,7 +36,7 @@ def CreateNetworkInterfaceMessage(resources,
                                   messages,
                                   network,
                                   private_ip,
-                                  region,
+                                  subnet_region,
                                   subnet,
                                   address,
                                   alias_ip_ranges_string=None,
@@ -53,7 +53,7 @@ def CreateNetworkInterfaceMessage(resources,
     messages: GCE API messages,
     network: network,
     private_ip: IPv4 internal IP address to assign to the instance.
-    region: region for subnetwork,
+    subnet_region: region for subnetwork,
     subnet: regional subnetwork,
     address: specify static address for instance template
                * None - no address,
@@ -85,7 +85,7 @@ def CreateNetworkInterfaceMessage(resources,
   network_interface = messages.NetworkInterface()
   if subnet is not None:
     subnet_ref = subnet_flags.SubnetworkResolver().ResolveResources(
-        [subnet], compute_scope.ScopeEnum.REGION, region, resources,
+        [subnet], compute_scope.ScopeEnum.REGION, subnet_region, resources,
         scope_lister=scope_lister)[0]
     network_interface.subnetwork = subnet_ref.SelfLink()
   if network is not None:
@@ -150,7 +150,7 @@ def CreateNetworkInterfaceMessage(resources,
 
 
 def CreateNetworkInterfaceMessages(resources, scope_lister, messages,
-                                   network_interface_arg, region):
+                                   network_interface_arg, subnet_region):
   """Create network interface messages.
 
   Args:
@@ -158,7 +158,7 @@ def CreateNetworkInterfaceMessages(resources, scope_lister, messages,
     scope_lister: function, provides scopes for prompting subnet region,
     messages: creates resources.
     network_interface_arg: CLI argument specifying network interfaces.
-    region: region of the subnetwork.
+    subnet_region: region of the subnetwork.
 
   Returns:
     list, items are NetworkInterfaceMessages.
@@ -181,7 +181,7 @@ def CreateNetworkInterfaceMessages(resources, scope_lister, messages,
               messages,
               interface.get('network', None),
               interface.get('private-network-ip', None),
-              region,
+              subnet_region,
               interface.get('subnet', None),
               address,
               interface.get('aliases', None),

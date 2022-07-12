@@ -627,20 +627,14 @@
           "type": "string",
           "enumDescriptions": [
             "Unspecified version.",
-            "TPU v2 single device.",
-            "TPU v2 pod.",
-            "TPU v3 single device.",
-            "TPU v3 pod.",
-            "TPU v4 pod.",
+            "TPU v2.",
+            "TPU v3.",
             "TPU v4."
           ],
           "enum": [
             "TYPE_UNSPECIFIED",
             "V2",
-            "V2_POD",
             "V3",
-            "V3_POD",
-            "V4_POD",
             "V4"
           ]
         },

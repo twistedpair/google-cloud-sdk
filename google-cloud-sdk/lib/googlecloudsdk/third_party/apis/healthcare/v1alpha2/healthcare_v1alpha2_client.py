@@ -1413,33 +1413,6 @@ class HealthcareV1alpha2(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def SetBlobStorageSettings(self, request, global_params=None):
-      r"""SetBlobStorageSettings sets the blob storage settings of the specified resources.
-
-      Args:
-        request: (HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesInstancesSetBlobStorageSettingsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('SetBlobStorageSettings')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    SetBlobStorageSettings.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/dicomStores/{dicomStoresId}/dicomWeb/studies/{studiesId}/series/{seriesId}/instances/{instancesId}:setBlobStorageSettings',
-        http_method='POST',
-        method_id='healthcare.projects.locations.datasets.dicomStores.dicomWeb.studies.series.instances.setBlobStorageSettings',
-        ordered_params=['resource'],
-        path_params=['resource'],
-        query_params=[],
-        relative_path='v1alpha2/{+resource}:setBlobStorageSettings',
-        request_field='setBlobStorageSettingsRequest',
-        request_type_name='HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesInstancesSetBlobStorageSettingsRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
   class ProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesService(base_api.BaseApiService):
     """Service class for the projects_locations_datasets_dicomStores_dicomWeb_studies_series resource."""
 

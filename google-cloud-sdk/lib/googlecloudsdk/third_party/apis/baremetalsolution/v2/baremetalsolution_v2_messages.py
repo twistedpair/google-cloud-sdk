@@ -1742,9 +1742,15 @@ class NfsShare(_messages.Message):
     Values:
       STATE_UNSPECIFIED: The share is in an unknown state.
       PROVISIONED: The share has been provisioned.
+      CREATING: The NFS Share is being created.
+      UPDATING: The NFS Share is being updated.
+      DELETING: The NFS Share has been requested to be deleted.
     """
     STATE_UNSPECIFIED = 0
     PROVISIONED = 1
+    CREATING = 2
+    UPDATING = 3
+    DELETING = 4
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):

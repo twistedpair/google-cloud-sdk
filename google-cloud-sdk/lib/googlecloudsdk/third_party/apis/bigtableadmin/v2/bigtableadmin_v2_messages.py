@@ -1813,6 +1813,7 @@ class Instance(_messages.Message):
       128 bytes.
     name: The unique name of the instance. Values are of the form
       `projects/{project}/instances/a-z+[a-z0-9]`.
+    satisfiesPzs: Output only. Reserved for future use.
     state: Output only. The current state of the instance.
     type: Required. The type of the instance. Defaults to `PRODUCTION`.
   """
@@ -1883,8 +1884,9 @@ class Instance(_messages.Message):
   displayName = _messages.StringField(2)
   labels = _messages.MessageField('LabelsValue', 3)
   name = _messages.StringField(4)
-  state = _messages.EnumField('StateValueValuesEnum', 5)
-  type = _messages.EnumField('TypeValueValuesEnum', 6)
+  satisfiesPzs = _messages.BooleanField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  type = _messages.EnumField('TypeValueValuesEnum', 7)
 
 
 class Intersection(_messages.Message):

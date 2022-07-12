@@ -429,6 +429,46 @@
         }
       }
     },
+    "RapidVulnerabilityDetectionSettings": {
+      "id": "RapidVulnerabilityDetectionSettings",
+      "description": "Resource capturing the settings for the Rapid Vulnerability Detection service.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The resource name of the RapidVulnerabilityDetectionSettings. Formats: * organizations\/{organization}\/rapidVulnerabilityDetectionSettings * folders\/{folder}\/rapidVulnerabilityDetectionSettings * projects\/{project}\/rapidVulnerabilityDetectionSettings",
+          "type": "string"
+        },
+        "serviceEnablementState": {
+          "description": "The state of enablement for the service at its level of the resource hierarchy. A DISABLED state will override all module enablement_states to DISABLED.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value. This value is unused.",
+            "State is inherited from the parent resource.",
+            "State is enabled.",
+            "State is disabled."
+          ],
+          "enum": [
+            "ENABLEMENT_STATE_UNSPECIFIED",
+            "INHERITED",
+            "ENABLED",
+            "DISABLED"
+          ]
+        },
+        "modules": {
+          "description": "The configurations including the state of enablement for the service's different modules. The absence of a module in the map implies its configuration is inherited from its parent's.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "Config"
+          }
+        },
+        "updateTime": {
+          "description": "Output only. The time the settings were last updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
     "WebSecurityScannerSettings": {
       "id": "WebSecurityScannerSettings",
       "description": "Resource capturing the settings for the Web Security Scanner service.",
@@ -2293,6 +2333,65 @@
           ],
           "description": "Update the VirtualMachineThreatDetectionSettings resource."
         },
+        "getRapidVulnerabilityDetectionSettings": {
+          "id": "securitycenter.organizations.getRapidVulnerabilityDetectionSettings",
+          "path": "v1beta2/{+name}",
+          "flatPath": "v1beta2/organizations/{organizationsId}/rapidVulnerabilityDetectionSettings",
+          "httpMethod": "GET",
+          "parameters": {
+            "name": {
+              "description": "Required. The name of the RapidVulnerabilityDetectionSettings to retrieve. Formats: * organizations\/{organization}\/rapidVulnerabilityDetectionSettings * folders\/{folder}\/rapidVulnerabilityDetectionSettings * projects\/{project}\/rapidVulnerabilityDetectionSettings",
+              "pattern": "^organizations\/[^\/]+\/rapidVulnerabilityDetectionSettings$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "RapidVulnerabilityDetectionSettings"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Get the RapidVulnerabilityDetectionSettings resource."
+        },
+        "updateRapidVulnerabilityDetectionSettings": {
+          "id": "securitycenter.organizations.updateRapidVulnerabilityDetectionSettings",
+          "path": "v1beta2/{+name}",
+          "flatPath": "v1beta2/organizations/{organizationsId}/rapidVulnerabilityDetectionSettings",
+          "httpMethod": "PATCH",
+          "parameters": {
+            "name": {
+              "description": "The resource name of the RapidVulnerabilityDetectionSettings. Formats: * organizations\/{organization}\/rapidVulnerabilityDetectionSettings * folders\/{folder}\/rapidVulnerabilityDetectionSettings * projects\/{project}\/rapidVulnerabilityDetectionSettings",
+              "pattern": "^organizations\/[^\/]+\/rapidVulnerabilityDetectionSettings$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "updateMask": {
+              "description": "The list of fields to be updated.",
+              "location": "query",
+              "type": "string",
+              "format": "google-fieldmask"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "request": {
+            "$ref": "RapidVulnerabilityDetectionSettings"
+          },
+          "response": {
+            "$ref": "RapidVulnerabilityDetectionSettings"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Update the RapidVulnerabilityDetectionSettings resource."
+        },
         "getWebSecurityScannerSettings": {
           "id": "securitycenter.organizations.getWebSecurityScannerSettings",
           "path": "v1beta2/{+name}",
@@ -2468,6 +2567,35 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Calculates the effective VirtualMachineThreatDetectionSettings based on its level in the resource hierarchy and its settings."
+            }
+          }
+        },
+        "rapidVulnerabilityDetectionSettings": {
+          "methods": {
+            "calculate": {
+              "id": "securitycenter.organizations.rapidVulnerabilityDetectionSettings.calculate",
+              "path": "v1beta2/{+name}:calculate",
+              "flatPath": "v1beta2/organizations/{organizationsId}/rapidVulnerabilityDetectionSettings:calculate",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Required. The name of the RapidVulnerabilityDetectionSettings to calculate. Formats: * organizations\/{organization}\/rapidVulnerabilityDetectionSettings * folders\/{folder}\/rapidVulnerabilityDetectionSettings * projects\/{project}\/rapidVulnerabilityDetectionSettings",
+                  "pattern": "^organizations\/[^\/]+\/rapidVulnerabilityDetectionSettings$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "RapidVulnerabilityDetectionSettings"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Calculates the effective RapidVulnerabilityDetectionSettings based on its level in the resource hierarchy and its settings."
             }
           }
         },
@@ -2790,6 +2918,65 @@
           ],
           "description": "Update the VirtualMachineThreatDetectionSettings resource."
         },
+        "getRapidVulnerabilityDetectionSettings": {
+          "id": "securitycenter.folders.getRapidVulnerabilityDetectionSettings",
+          "path": "v1beta2/{+name}",
+          "flatPath": "v1beta2/folders/{foldersId}/rapidVulnerabilityDetectionSettings",
+          "httpMethod": "GET",
+          "parameters": {
+            "name": {
+              "description": "Required. The name of the RapidVulnerabilityDetectionSettings to retrieve. Formats: * organizations\/{organization}\/rapidVulnerabilityDetectionSettings * folders\/{folder}\/rapidVulnerabilityDetectionSettings * projects\/{project}\/rapidVulnerabilityDetectionSettings",
+              "pattern": "^folders\/[^\/]+\/rapidVulnerabilityDetectionSettings$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "RapidVulnerabilityDetectionSettings"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Get the RapidVulnerabilityDetectionSettings resource."
+        },
+        "updateRapidVulnerabilityDetectionSettings": {
+          "id": "securitycenter.folders.updateRapidVulnerabilityDetectionSettings",
+          "path": "v1beta2/{+name}",
+          "flatPath": "v1beta2/folders/{foldersId}/rapidVulnerabilityDetectionSettings",
+          "httpMethod": "PATCH",
+          "parameters": {
+            "name": {
+              "description": "The resource name of the RapidVulnerabilityDetectionSettings. Formats: * organizations\/{organization}\/rapidVulnerabilityDetectionSettings * folders\/{folder}\/rapidVulnerabilityDetectionSettings * projects\/{project}\/rapidVulnerabilityDetectionSettings",
+              "pattern": "^folders\/[^\/]+\/rapidVulnerabilityDetectionSettings$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "updateMask": {
+              "description": "The list of fields to be updated.",
+              "location": "query",
+              "type": "string",
+              "format": "google-fieldmask"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "request": {
+            "$ref": "RapidVulnerabilityDetectionSettings"
+          },
+          "response": {
+            "$ref": "RapidVulnerabilityDetectionSettings"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Update the RapidVulnerabilityDetectionSettings resource."
+        },
         "getWebSecurityScannerSettings": {
           "id": "securitycenter.folders.getWebSecurityScannerSettings",
           "path": "v1beta2/{+name}",
@@ -2965,6 +3152,35 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Calculates the effective VirtualMachineThreatDetectionSettings based on its level in the resource hierarchy and its settings."
+            }
+          }
+        },
+        "rapidVulnerabilityDetectionSettings": {
+          "methods": {
+            "calculate": {
+              "id": "securitycenter.folders.rapidVulnerabilityDetectionSettings.calculate",
+              "path": "v1beta2/{+name}:calculate",
+              "flatPath": "v1beta2/folders/{foldersId}/rapidVulnerabilityDetectionSettings:calculate",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Required. The name of the RapidVulnerabilityDetectionSettings to calculate. Formats: * organizations\/{organization}\/rapidVulnerabilityDetectionSettings * folders\/{folder}\/rapidVulnerabilityDetectionSettings * projects\/{project}\/rapidVulnerabilityDetectionSettings",
+                  "pattern": "^folders\/[^\/]+\/rapidVulnerabilityDetectionSettings$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "RapidVulnerabilityDetectionSettings"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Calculates the effective RapidVulnerabilityDetectionSettings based on its level in the resource hierarchy and its settings."
             }
           }
         },
@@ -3287,6 +3503,65 @@
           ],
           "description": "Update the VirtualMachineThreatDetectionSettings resource."
         },
+        "getRapidVulnerabilityDetectionSettings": {
+          "id": "securitycenter.projects.getRapidVulnerabilityDetectionSettings",
+          "path": "v1beta2/{+name}",
+          "flatPath": "v1beta2/projects/{projectsId}/rapidVulnerabilityDetectionSettings",
+          "httpMethod": "GET",
+          "parameters": {
+            "name": {
+              "description": "Required. The name of the RapidVulnerabilityDetectionSettings to retrieve. Formats: * organizations\/{organization}\/rapidVulnerabilityDetectionSettings * folders\/{folder}\/rapidVulnerabilityDetectionSettings * projects\/{project}\/rapidVulnerabilityDetectionSettings",
+              "pattern": "^projects\/[^\/]+\/rapidVulnerabilityDetectionSettings$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "RapidVulnerabilityDetectionSettings"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Get the RapidVulnerabilityDetectionSettings resource."
+        },
+        "updateRapidVulnerabilityDetectionSettings": {
+          "id": "securitycenter.projects.updateRapidVulnerabilityDetectionSettings",
+          "path": "v1beta2/{+name}",
+          "flatPath": "v1beta2/projects/{projectsId}/rapidVulnerabilityDetectionSettings",
+          "httpMethod": "PATCH",
+          "parameters": {
+            "name": {
+              "description": "The resource name of the RapidVulnerabilityDetectionSettings. Formats: * organizations\/{organization}\/rapidVulnerabilityDetectionSettings * folders\/{folder}\/rapidVulnerabilityDetectionSettings * projects\/{project}\/rapidVulnerabilityDetectionSettings",
+              "pattern": "^projects\/[^\/]+\/rapidVulnerabilityDetectionSettings$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "updateMask": {
+              "description": "The list of fields to be updated.",
+              "location": "query",
+              "type": "string",
+              "format": "google-fieldmask"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "request": {
+            "$ref": "RapidVulnerabilityDetectionSettings"
+          },
+          "response": {
+            "$ref": "RapidVulnerabilityDetectionSettings"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Update the RapidVulnerabilityDetectionSettings resource."
+        },
         "getWebSecurityScannerSettings": {
           "id": "securitycenter.projects.getWebSecurityScannerSettings",
           "path": "v1beta2/{+name}",
@@ -3561,6 +3836,35 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Calculates the effective VirtualMachineThreatDetectionSettings based on its level in the resource hierarchy and its settings."
+            }
+          }
+        },
+        "rapidVulnerabilityDetectionSettings": {
+          "methods": {
+            "calculate": {
+              "id": "securitycenter.projects.rapidVulnerabilityDetectionSettings.calculate",
+              "path": "v1beta2/{+name}:calculate",
+              "flatPath": "v1beta2/projects/{projectsId}/rapidVulnerabilityDetectionSettings:calculate",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Required. The name of the RapidVulnerabilityDetectionSettings to calculate. Formats: * organizations\/{organization}\/rapidVulnerabilityDetectionSettings * folders\/{folder}\/rapidVulnerabilityDetectionSettings * projects\/{project}\/rapidVulnerabilityDetectionSettings",
+                  "pattern": "^projects\/[^\/]+\/rapidVulnerabilityDetectionSettings$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "RapidVulnerabilityDetectionSettings"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Calculates the effective RapidVulnerabilityDetectionSettings based on its level in the resource hierarchy and its settings."
             }
           }
         },

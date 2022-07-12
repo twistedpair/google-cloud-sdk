@@ -583,6 +583,10 @@ class Function(_messages.Message):
     environment: Describe whether the function is gen1 or gen2.
     eventTrigger: An Eventarc trigger managed by Google Cloud Functions that
       fires events in response to a condition in another service.
+    kmsKeyName: Resource name of a KMS crypto key (managed by the user) used
+      to encrypt/decrypt function resources. It must match the pattern `projec
+      ts/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto
+      _key}`.
     labels: Labels associated with this Cloud Function.
     name: A user-defined name of the function. Function names must be unique
       globally and match pattern `projects/*/locations/*/functions/*`
@@ -653,12 +657,13 @@ class Function(_messages.Message):
   description = _messages.StringField(2)
   environment = _messages.EnumField('EnvironmentValueValuesEnum', 3)
   eventTrigger = _messages.MessageField('EventTrigger', 4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  serviceConfig = _messages.MessageField('ServiceConfig', 7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
-  stateMessages = _messages.MessageField('GoogleCloudFunctionsV2alphaStateMessage', 9, repeated=True)
-  updateTime = _messages.StringField(10)
+  kmsKeyName = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  serviceConfig = _messages.MessageField('ServiceConfig', 8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  stateMessages = _messages.MessageField('GoogleCloudFunctionsV2alphaStateMessage', 10, repeated=True)
+  updateTime = _messages.StringField(11)
 
 
 class GenerateDownloadUrlRequest(_messages.Message):

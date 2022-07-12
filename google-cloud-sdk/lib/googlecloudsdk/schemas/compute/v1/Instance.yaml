@@ -124,6 +124,13 @@ properties:
     description: |-
       [Output Only] Last suspended timestamp in RFC3339 text format.
     type: string
+  keyRevocationActionType:
+    description: KeyRevocationActionType of the instance.
+    type: string
+    enum:
+    - NONE
+    - STOP
+    - KEY_REVOCATION_ACTION_TYPE_UNSPECIFIED
   machineType:
     description: |-
       Full or partial URL of the machine type resource to use for this

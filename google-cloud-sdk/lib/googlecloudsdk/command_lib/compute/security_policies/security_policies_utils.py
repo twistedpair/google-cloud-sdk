@@ -287,6 +287,23 @@ def CreateDdosProtectionConfig(client, args, existing_ddos_protection_config):
       existing_ddos_protection_config if existing_ddos_protection_config
       is not None else messages.SecurityPolicyDdosProtectionConfig())
 
+  if args.IsSpecified('network_ddos_protection'):
+    ddos_protection_config.ddosProtection = (
+        messages.SecurityPolicyDdosProtectionConfig
+        .DdosProtectionValueValuesEnum(args.network_ddos_protection))
+
+  return ddos_protection_config
+
+
+def CreateDdosProtectionConfigOld(client, args,
+                                  existing_ddos_protection_config):
+  """Returns a SecurityPolicyDdosProtectionConfig message."""
+
+  messages = client.messages
+  ddos_protection_config = (
+      existing_ddos_protection_config if existing_ddos_protection_config
+      is not None else messages.SecurityPolicyDdosProtectionConfig())
+
   if args.IsSpecified('ddos_protection'):
     ddos_protection_config.ddosProtection = (
         messages.SecurityPolicyDdosProtectionConfig

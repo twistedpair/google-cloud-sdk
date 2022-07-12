@@ -111,6 +111,17 @@ class RecognizeArgsToRequestMapper:
                 'or greater sampling rate.',
             'command_and_search':
                 'short queries such as voice commands or voice search.',
+            'latest_long':
+                'Use this model for any kind of long form content such as media '
+                'or spontaneous speech and conversations. Consider using this '
+                'model in place of the video model, especially if the video '
+                'model is not available in your target language. You can also '
+                'use this in place of the default model.',
+            'latest_short':
+                'Use this model for short utterances that are a few '
+                'seconds in length. It is useful for trying to capture commands '
+                'or other single shot directed speech use cases. Consider using '
+                'this model instead of the command and search model.',
             'medical_conversation':
                 'Best for audio that originated from a conversation between a '
                 'medical provider and patient.',

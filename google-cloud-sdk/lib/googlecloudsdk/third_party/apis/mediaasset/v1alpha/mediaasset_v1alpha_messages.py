@@ -1399,6 +1399,19 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
+class Facet(_messages.Message):
+  r"""Facet represents an aggregated buckets of search result items.
+
+  Fields:
+    key: Key of facet, equivalent to the key in FacetConfig in Video AssetType
+      creation.
+    values: List of facet values (buckets) representing the search results.
+  """
+
+  key = _messages.StringField(1)
+  values = _messages.MessageField('FacetValue', 2, repeated=True)
+
+
 class FacetConfig(_messages.Message):
   r"""FacetConfig allows for configuration of faceted search.
 
@@ -1410,6 +1423,19 @@ class FacetConfig(_messages.Message):
 
   maxValues = _messages.IntegerField(1)
   operators = _messages.StringField(2, repeated=True)
+
+
+class FacetValue(_messages.Message):
+  r"""FacetValue represents a single value result in a facet.
+
+  Fields:
+    count: Output only. Number of videos or segments corresponding to the
+      facet.
+    stringValue: A string attribute.
+  """
+
+  count = _messages.IntegerField(1)
+  stringValue = _messages.StringField(2)
 
 
 class GoogleIamV1AuditConfig(_messages.Message):
@@ -4162,6 +4188,7 @@ class SearchAssetTypeRequest(_messages.Message):
     TypeValueValuesEnum: By default, search at segment level.
 
   Fields:
+    facetSelections: Facets to be selected.
     pageSize: The maximum number of items to return. If unspecified, server
       will pick an appropriate default. Server may return fewer items than
       requested. A caller should only rely on response's next_page_token to
@@ -4186,22 +4213,26 @@ class SearchAssetTypeRequest(_messages.Message):
     SEARCH_REQUEST_TYPE_ASSET = 1
     SEARCH_REQUEST_TYPE_SEGMENT = 2
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  query = _messages.StringField(3)
-  type = _messages.EnumField('TypeValueValuesEnum', 4)
+  facetSelections = _messages.MessageField('Facet', 1, repeated=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  query = _messages.StringField(4)
+  type = _messages.EnumField('TypeValueValuesEnum', 5)
 
 
 class SearchAssetTypeResponse(_messages.Message):
   r"""Response message for AssetTypesService.Search.
 
   Fields:
+    facets: Returned facets from the search results, showing the aggregated
+      buckets.
     items: Returned search results.
     nextPageToken: The next-page continuation token.
   """
 
-  items = _messages.MessageField('SearchResultItem', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
+  facets = _messages.MessageField('Facet', 1, repeated=True)
+  items = _messages.MessageField('SearchResultItem', 2, repeated=True)
+  nextPageToken = _messages.StringField(3)
 
 
 class SearchResultItem(_messages.Message):

@@ -54,9 +54,7 @@ def MakeSourceInstanceArg():
       required=False,
       zonal_collection='compute.instances',
       short_help=('The name of the source instance that the instance template '
-                  'will be created from.\n\nYou can override machine type and '
-                  'labels. Values of other flags will be ignored and values '
-                  'from the source instance will be used instead.')
+                  'will be created from.')
   )
 
 

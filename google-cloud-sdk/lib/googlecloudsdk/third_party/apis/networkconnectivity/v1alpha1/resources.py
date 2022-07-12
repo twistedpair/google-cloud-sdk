@@ -84,6 +84,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_SERVICEIDENTIFIERS = (
+      'projects.locations.serviceIdentifiers',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'serviceIdentifiers/{serviceIdentifiersId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_SERVICEINSTANCES = (
       'projects.locations.serviceInstances',
       '{+name}',

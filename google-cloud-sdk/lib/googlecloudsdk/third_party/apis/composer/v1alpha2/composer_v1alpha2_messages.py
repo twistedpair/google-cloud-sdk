@@ -148,6 +148,17 @@ class CidrBlock(_messages.Message):
   displayName = _messages.StringField(2)
 
 
+class CloudDataLineageIntegration(_messages.Message):
+  r"""Configuration for Cloud Data Lineage integration.
+
+  Fields:
+    enabled: Optional. Whether or not Cloud Data Lineage integration is
+      enabled.
+  """
+
+  enabled = _messages.BooleanField(1)
+
+
 class ComposerProjectsLocationsEnvironmentsCheckUpgradeRequest(_messages.Message):
   r"""A ComposerProjectsLocationsEnvironmentsCheckUpgradeRequest object.
 
@@ -468,22 +479,23 @@ class ComposerProjectsLocationsEnvironmentsPatchRequest(_messages.Message):
       the number of nodes must be provided in the
       `config.softwareConfig.schedulerCount` field. Supported for Cloud
       Composer environments in versions composer-1.*.*-airflow-2.*.*. *
-      `config.databaseConfig.machineType` * Cloud SQL machine type used by
-      Airflow database. It has to be one of: db-n1-standard-2,
-      db-n1-standard-4, db-n1-standard-8 or db-n1-standard-16. Supported for
-      Cloud Composer environments in versions composer-1.*.*-airflow-*.*.*. *
-      `config.webServerConfig.machineType` * Machine type on which Airflow web
-      server is running. It has to be one of: composer-n1-webserver-2,
-      composer-n1-webserver-4 or composer-n1-webserver-8. Supported for Cloud
-      Composer environments in versions composer-1.*.*-airflow-*.*.*. *
-      `config.maintenanceWindow` * Maintenance window during which Cloud
-      Composer components may be under maintenance. * `config.workloadsConfig`
-      * The workloads configuration settings for the GKE cluster associated
-      with the Cloud Composer environment. Supported for Cloud Composer
-      environments in versions composer-2.*.*-airflow-*.*.* and newer. *
-      `config.environmentSize` * The size of the Cloud Composer environment.
-      Supported for Cloud Composer environments in versions
-      composer-2.*.*-airflow-*.*.* and newer.
+      `config.softwareConfig.cloudDataLineageIntegration` * Configuration for
+      Cloud Data Lineage integration. * `config.databaseConfig.machineType` *
+      Cloud SQL machine type used by Airflow database. It has to be one of:
+      db-n1-standard-2, db-n1-standard-4, db-n1-standard-8 or
+      db-n1-standard-16. Supported for Cloud Composer environments in versions
+      composer-1.*.*-airflow-*.*.*. * `config.webServerConfig.machineType` *
+      Machine type on which Airflow web server is running. It has to be one
+      of: composer-n1-webserver-2, composer-n1-webserver-4 or
+      composer-n1-webserver-8. Supported for Cloud Composer environments in
+      versions composer-1.*.*-airflow-*.*.*. * `config.maintenanceWindow` *
+      Maintenance window during which Cloud Composer components may be under
+      maintenance. * `config.workloadsConfig` * The workloads configuration
+      settings for the GKE cluster associated with the Cloud Composer
+      environment. Supported for Cloud Composer environments in versions
+      composer-2.*.*-airflow-*.*.* and newer. * `config.environmentSize` * The
+      size of the Cloud Composer environment. Supported for Cloud Composer
+      environments in versions composer-2.*.*-airflow-*.*.* and newer.
   """
 
   environment = _messages.MessageField('Environment', 1)
@@ -1187,10 +1199,10 @@ class LoadSnapshotRequest(_messages.Message):
   Fields:
     skipAirflowOverridesSetting: Whether or not to skip setting Airflow
       overrides when loading the environment's state.
-    skipCopyingGcsData: Whether or not to skip copying GCS data when loading
-      the environment's state.
     skipEnvironmentVariablesSetting: Whether or not to skip setting
       environment variables when loading the environment's state.
+    skipGcsDataCopying: Whether or not to skip copying Cloud Storage data when
+      loading the environment's state.
     skipPypiPackagesInstallation: Whether or not to skip installing Pypi
       packages when loading the environment's state.
     snapshotPath: A Cloud Storage path to a snapshot to load, e.g.: "gs://my-
@@ -1198,8 +1210,8 @@ class LoadSnapshotRequest(_messages.Message):
   """
 
   skipAirflowOverridesSetting = _messages.BooleanField(1)
-  skipCopyingGcsData = _messages.BooleanField(2)
-  skipEnvironmentVariablesSetting = _messages.BooleanField(3)
+  skipEnvironmentVariablesSetting = _messages.BooleanField(2)
+  skipGcsDataCopying = _messages.BooleanField(3)
   skipPypiPackagesInstallation = _messages.BooleanField(4)
   snapshotPath = _messages.StringField(5)
 
@@ -1741,6 +1753,8 @@ class SoftwareConfig(_messages.Message):
       tps://airflow.apache.org/code.html?highlight=executor#executors) by
       which task instances are run on Airflow. If this field is unspecified,
       the `airflowExecutorType` defaults to `celery`.
+    cloudDataLineageIntegration: Optional. The configuration for Cloud Data
+      Lineage integration.
     envVariables: Optional. Additional environment variables to provide to the
       Apache Airflow scheduler, worker, and webserver processes. Environment
       variable names must match the regular expression `a-zA-Z_*`. They cannot
@@ -1906,11 +1920,12 @@ class SoftwareConfig(_messages.Message):
 
   airflowConfigOverrides = _messages.MessageField('AirflowConfigOverridesValue', 1)
   airflowExecutorType = _messages.EnumField('AirflowExecutorTypeValueValuesEnum', 2)
-  envVariables = _messages.MessageField('EnvVariablesValue', 3)
-  imageVersion = _messages.StringField(4)
-  pypiPackages = _messages.MessageField('PypiPackagesValue', 5)
-  pythonVersion = _messages.StringField(6)
-  schedulerCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  cloudDataLineageIntegration = _messages.MessageField('CloudDataLineageIntegration', 3)
+  envVariables = _messages.MessageField('EnvVariablesValue', 4)
+  imageVersion = _messages.StringField(5)
+  pypiPackages = _messages.MessageField('PypiPackagesValue', 6)
+  pythonVersion = _messages.StringField(7)
+  schedulerCount = _messages.IntegerField(8, variant=_messages.Variant.INT32)
 
 
 class StandardQueryParameters(_messages.Message):

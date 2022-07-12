@@ -26,6 +26,7 @@ import string
 from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import http_wrapper
 from apitools.base.py import transfer
+from googlecloudsdk.api_lib.functions import api_enablement
 from googlecloudsdk.api_lib.functions import secrets as secrets_util
 from googlecloudsdk.api_lib.functions.v1 import util as api_util_v1
 from googlecloudsdk.api_lib.functions.v2 import client as api_client_v2
@@ -94,11 +95,20 @@ _LATEST_REVISION_TRAFFIC_WARNING_MESSAGE = (
     'Please see the associated Cloud Run service to '
     'confirm your expected traffic settings.')
 
-_LEGACY_V1_FLAGS = [
+_V1_ONLY_FLAGS = [
+    # Legacy flags
     ('docker_registry', '--docker-registry'),
     ('security_level', '--security-level'),
+
+    # Not yet supported flags
+    # TODO(b/235229081): GCF (2nd Gen) CMEK Support
+    ('clear_docker_repository', '--clear-docker-repository'),
+    ('clear_kms_key', '--clear-kms-key'),
+    ('docker_repository', '--docker-repository'),
+    ('kms_key', '--kms-key'),
 ]
-_LEGACY_V1_FLAG_ERROR = '`%s` is only supported in Cloud Functions V1.'
+_V1_ONLY_FLAG_ERROR = (
+    '`%s` is only supported in Cloud Functions (First generation).')
 
 _CLOUD_RUN_SERVICE_COLLECTION_K8S = 'run.namespaces.services'
 _CLOUD_RUN_SERVICE_COLLECTION_ONE_PLATFORM = 'run.projects.locations.services'
@@ -782,10 +792,10 @@ def _GetVpcAndVpcEgressSettings(args, messages, existing_function):
     return None, None, frozenset()
 
 
-def _ValidateLegacyV1Flags(args):
-  for flag_variable, flag_name in _LEGACY_V1_FLAGS:
+def _ValidateV1OnlyFlags(args):
+  for flag_variable, flag_name in _V1_ONLY_FLAGS:
     if args.IsSpecified(flag_variable):
-      raise exceptions.FunctionsError(_LEGACY_V1_FLAG_ERROR % flag_name)
+      raise exceptions.FunctionsError(_V1_ONLY_FLAG_ERROR % flag_name)
 
 
 def _GetLabels(args, messages, existing_function):
@@ -962,7 +972,7 @@ def Run(args, release_track):
 
   function_ref = args.CONCEPTS.name.Parse()
 
-  _ValidateLegacyV1Flags(args)
+  _ValidateV1OnlyFlags(args)
 
   existing_function = _GetFunction(client, messages, function_ref)
 
@@ -1011,6 +1021,8 @@ def Run(args, release_track):
       serviceConfig=service_config,
       labels=labels_value)
 
+  api_enablement.PromptToEnableApiIfDisabled('cloudbuild.googleapis.com')
+  api_enablement.PromptToEnableApiIfDisabled('artifactregistry.googleapis.com')
   if is_new_function:
     _CreateAndWait(client, messages, function_ref, function)
   else:

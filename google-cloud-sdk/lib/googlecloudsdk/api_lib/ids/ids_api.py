@@ -112,7 +112,7 @@ class Client:
                                                         project)
     return self._locations_client.List(req)
 
-  def GetOperationRef(self, operation, endpoint):
+  def GetOperationRef(self, operation):
     """Converts an Operation to a Resource that can be used with `waiter.WaitFor`."""
     return self._resource_parser.ParseRelativeName(
         operation.name, 'ids.projects.locations.operations')
@@ -148,3 +148,25 @@ class Client:
 
     return waiter.WaitFor(
         poller, operation_ref, message, max_wait_ms=max_wait.seconds * 1000)
+
+  def CancelOperations(self, name):
+    """Calls the CancelOperation API."""
+    req = self.messages.IdsProjectsLocationsOperationsCancelRequest(name=name)
+    return self._operations_client.Cancel(req)
+
+  def DescribeOperation(self, name):
+    """Calls the Operations API."""
+    req = self.messages.IdsProjectsLocationsOperationsGetRequest(name=name)
+    return self._operations_client.Get(req)
+
+  def ListOperations(self, name, limit=None, page_size=None, list_filter=None):
+    """Calls the ListOperations API."""
+    req = self.messages.IdsProjectsLocationsOperationsListRequest(
+        name=name, filter=list_filter)
+    return list_pager.YieldFromList(
+        self._operations_client,
+        req,
+        batch_size=page_size,
+        limit=limit,
+        field='operations',
+        batch_size_attribute='pageSize')

@@ -5518,7 +5518,7 @@ class ApigeeV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes an environment from an organization. **Note**: You must delete all key value maps and key value entries before you can delete an environment.
+      r"""Deletes an environment from an organization. **Warning: You must delete all key value maps and key value entries before you delete an environment.** Otherwise, if you re-create the environment the key value map entry operations will encounter encryption/decryption discrepancies.
 
       Args:
         request: (ApigeeOrganizationsEnvironmentsDeleteRequest) input message

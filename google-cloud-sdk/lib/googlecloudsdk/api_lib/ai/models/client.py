@@ -45,7 +45,9 @@ class ModelsClient(object):
                     container_ports=None,
                     container_predict_route=None,
                     container_health_route=None,
-                    explanation_spec=None):
+                    explanation_spec=None,
+                    parent_model=None,
+                    model_id=None):
     """Constructs, sends an UploadModel request and returns the LRO to be done."""
     container_spec = self.messages.GoogleCloudAiplatformV1beta1ModelContainerSpec(
         healthRoute=container_health_route,
@@ -77,7 +79,8 @@ class ModelsClient(object):
         self.messages.AiplatformProjectsLocationsModelsUploadRequest(
             parent=region_ref.RelativeName(),
             googleCloudAiplatformV1beta1UploadModelRequest=self.messages
-            .GoogleCloudAiplatformV1beta1UploadModelRequest(model=model)))
+            .GoogleCloudAiplatformV1beta1UploadModelRequest(
+                model=model, parentModel=parent_model, modelId=model_id)))
 
   def UploadV1(self,
                region_ref=None,
@@ -91,7 +94,9 @@ class ModelsClient(object):
                container_ports=None,
                container_predict_route=None,
                container_health_route=None,
-               explanation_spec=None):
+               explanation_spec=None,
+               parent_model=None,
+               model_id=None):
     """Constructs, sends an UploadModel request and returns the LRO to be done."""
     container_spec = self.messages.GoogleCloudAiplatformV1ModelContainerSpec(
         healthRoute=container_health_route,
@@ -123,7 +128,8 @@ class ModelsClient(object):
         self.messages.AiplatformProjectsLocationsModelsUploadRequest(
             parent=region_ref.RelativeName(),
             googleCloudAiplatformV1UploadModelRequest=self.messages
-            .GoogleCloudAiplatformV1UploadModelRequest(model=model)))
+            .GoogleCloudAiplatformV1UploadModelRequest(
+                model=model, parentModel=parent_model, modelId=model_id)))
 
   def Get(self, model_ref):
     request = self.messages.AiplatformProjectsLocationsModelsGetRequest(
@@ -134,6 +140,20 @@ class ModelsClient(object):
     request = self.messages.AiplatformProjectsLocationsModelsDeleteRequest(
         name=model_ref.RelativeName())
     return self._service.Delete(request)
+
+  def DeleteVersion(self, model_version_ref):
+    """Deletes the given model version.
+
+    Args:
+      model_version_ref: the resource reference for a given model version.
+
+    Returns:
+      Response from calling delete version with request containing given model
+      version.
+    """
+    request = self.messages.AiplatformProjectsLocationsModelsDeleteVersionRequest(
+        name='%s:deleteVersion' % model_version_ref.RelativeName())
+    return self._service.DeleteVersion(request)
 
   def List(self, limit=None, region_ref=None):
     return list_pager.YieldFromList(

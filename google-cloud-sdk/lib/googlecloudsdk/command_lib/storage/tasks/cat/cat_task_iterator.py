@@ -1,0 +1,45 @@
+# -*- coding: utf-8 -*- #
+# Copyright 2022 Google LLC. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+"""Implementation of CatTaskIterator for calling the StreamingDownloadTask."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
+import os
+
+from googlecloudsdk.command_lib.storage.tasks.cp import streaming_download_task
+
+
+def get_cat_task_iterator(source_iterator, show_url):
+  """An iterator that yields StreamingDownloadTasks for cat sources.
+
+  Given a list of strings that are object URLs ("gs://foo/object1"), yield a
+  StreamingDownloadTask.
+
+  Args:
+    source_iterator (NameExpansionIterator): Yields sources resources that
+      should be packaged in StreamingDownloadTasks.
+    show_url (bool): Says whether or not to print the header before each
+      object's content
+
+  Yields:
+    StreamingDownloadTask
+
+  """
+  stdout = os.fdopen(1, 'wb')
+  for item in source_iterator:
+    yield streaming_download_task.StreamingDownloadTask(
+        item.resource, stdout, show_url=show_url)

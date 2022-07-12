@@ -341,39 +341,7 @@ def _ExecAuthPlugin():
   Returns:
     dict, valid exec auth plugin config entry.
   """
-  bin_name = 'gke-gcloud-auth-plugin'
-  if platforms.OperatingSystem.IsWindows():
-    bin_name = 'gke-gcloud-auth-plugin.exe'
-  command = bin_name
-
-  # Check if command is in PATH and executable. Else, print critical(RED)
-  # warning as kubectl will break if command is not executable.
-  try:
-    subprocess.run([command, '--version'],
-                   timeout=5,
-                   check=False,
-                   stdout=subprocess.DEVNULL,
-                   stderr=subprocess.DEVNULL)
-  except Exception:  # pylint: disable=broad-except
-    # Provide SDK Full path if command is not in PATH. This helps work
-    # around scenarios where cloud-sdk install location is not in PATH
-    # as sdk was installed using other distributions methods Eg: brew
-    try:
-      # config.Paths().sdk_bin_path throws an exception in some test envs,
-      # but is commonly defined in prod environments
-      sdk_bin_path = config.Paths().sdk_bin_path
-      if sdk_bin_path is None:
-        log.critical(GKE_GCLOUD_AUTH_PLUGIN_NOT_FOUND)
-      else:
-        sdk_path_bin_name = os.path.join(sdk_bin_path, command)
-        subprocess.run([sdk_path_bin_name, '--version'],
-                       timeout=5,
-                       check=False,
-                       stdout=subprocess.DEVNULL,
-                       stderr=subprocess.DEVNULL)
-        command = sdk_path_bin_name  # update command if sdk_path_bin_name works
-    except Exception:  # pylint: disable=broad-except
-      log.critical(GKE_GCLOUD_AUTH_PLUGIN_NOT_FOUND)
+  command = _GetGkeGcloudPluginCommandAndPrintWarning()
 
   exec_cfg = {
       'command': command,
@@ -429,6 +397,13 @@ def _AuthProvider(name='gcp',
         log.error(SDK_BIN_PATH_NOT_FOUND)
         raise Error(SDK_BIN_PATH_NOT_FOUND)
       cmd_path = os.path.join(sdk_bin_path, bin_name)
+      try:
+        # Print warning if gke-gcloud-auth-plugin is not present or executable
+        _GetGkeGcloudPluginCommandAndPrintWarning()
+      except Exception:  # pylint: disable=broad-except
+        # Catch all exceptions to avoid any failures in this code path and
+        # ignore the exceptions, as no action needs to be taken.
+        pass
 
     cfg = {
         # Command for gcloud credential helper
@@ -450,6 +425,52 @@ def _AuthProvider(name='gcp',
     }
     provider['config'] = cfg
   return provider
+
+
+def _GetGkeGcloudPluginCommandAndPrintWarning():
+  """Get Gke Gcloud Plugin Command to be used.
+
+  Returns Gke Gcloud Plugin Command to be used. Also,
+  prints warning if plugin is not present or doesn't work correctly.
+
+  Returns:
+    string, Gke Gcloud Plugin Command to be used.
+  """
+  bin_name = 'gke-gcloud-auth-plugin'
+  if platforms.OperatingSystem.IsWindows():
+    bin_name = 'gke-gcloud-auth-plugin.exe'
+  command = bin_name
+
+  # Check if command is in PATH and executable. Else, print critical(RED)
+  # warning as kubectl will break if command is not executable.
+  try:
+    subprocess.run([command, '--version'],
+                   timeout=5,
+                   check=False,
+                   stdout=subprocess.DEVNULL,
+                   stderr=subprocess.DEVNULL)
+  except Exception:  # pylint: disable=broad-except
+    # Provide SDK Full path if command is not in PATH. This helps work
+    # around scenarios where cloud-sdk install location is not in PATH
+    # as sdk was installed using other distributions methods Eg: brew
+    try:
+      # config.Paths().sdk_bin_path throws an exception in some test envs,
+      # but is commonly defined in prod environments
+      sdk_bin_path = config.Paths().sdk_bin_path
+      if sdk_bin_path is None:
+        log.critical(GKE_GCLOUD_AUTH_PLUGIN_NOT_FOUND)
+      else:
+        sdk_path_bin_name = os.path.join(sdk_bin_path, command)
+        subprocess.run([sdk_path_bin_name, '--version'],
+                       timeout=5,
+                       check=False,
+                       stdout=subprocess.DEVNULL,
+                       stderr=subprocess.DEVNULL)
+        command = sdk_path_bin_name  # update command if sdk_path_bin_name works
+    except Exception:  # pylint: disable=broad-except
+      log.critical(GKE_GCLOUD_AUTH_PLUGIN_NOT_FOUND)
+
+  return command
 
 
 def Context(name, cluster, user):

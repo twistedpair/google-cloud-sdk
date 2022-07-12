@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import re
+
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
 
@@ -38,6 +40,7 @@ def AddPoolsArg(parser):
               'localSsdCount': int,
               'accelerators': str,
               'minCpuPlatform': str,
+              'bootDiskKmsKey': str,
               'locations': str,
               'min': int,
               'max': int,
@@ -51,25 +54,44 @@ def AddPoolsArg(parser):
         the virtual cluster. It is comprised of a CSV in the form
         `KEY=VALUE[;VALUE]`, where certain keys may have multiple values.
 
-        The following KEYs must be specified:
+The following KEYs must be specified:
 
-        KEY | Type | Example | Description
-        --- |  --- | --- | ---
-        name | string | `my-node-pool` | Name of the node pool.
-        roles | repeated string | `default;spark-driver` | Roles that this node pool should perform. Valid values are `default`, `controller`, `spark-driver`, `spark-executor`.
+        -----------------------------------------------------------------------------------------------------------
+        KEY    Type             Example                  Description
+        ------ ---------------- ------------------------ ----------------------------------------------------------
+        name   string           `my-node-pool`          Name of the node pool.
 
-        The following KEYs may be specified.
+        roles  repeated string  `default;spark-driver`  Roles that this node pool should perform. Valid values are
+                                                         `default`, `controller`, `spark-driver`, `spark-executor`.
+        -----------------------------------------------------------------------------------------------------------
 
-        KEY | Type | Example | Description
-        --- | --- | --- | ---
-        machineType | string | `n1-standard-8` | Compute Engine machine type to use.
-        preemptible | boolean | `false` | If true, then this node pool uses preemptible VMs. This cannot be true on the node pool with the `controllers` role (or `default` role if `controllers` role is not specified).
-        localSsdCount | int | `2` | The number of local SSDs to attach to each node.
-        accelerator | repeated string | `nvidia-tesla-a100=1` | Accelerators to attach to each node. In the format NAME=COUNT.
-        minCpuPlatform | string | `Intel Skylake` | Minimum CPU platform for each node.
-        locations | repeated string | `us-west1-a;us-west1-c` | Zones within the location of the GKE cluster. All `--pools` flags for a single Dataproc cluster must have identical locations.
-        min | int | `0` | Minimum number of nodes per zone that this node pool can scale down to.
-        max | int | `10` | Maximum number of nodes per zone that this node pool can scale up to.
+The following KEYs may be specified:
+
+        ----------------------------------------------------------------------------------------------------------------------------------------------------------------
+        KEY             Type             Example                                       Description
+        --------------- ---------------- --------------------------------------------- ---------------------------------------------------------------------------------
+        machineType     string           `n1-standard-8`                               Compute Engine machine type to use.
+
+        preemptible     boolean          `false`                                       If true, then this node pool uses preemptible VMs.
+                                                                                       This cannot be true on the node pool with the `controllers` role
+                                                                                       (or `default` role if `controllers` role is not specified).
+
+        localSsdCount   int              `2`                                           The number of local SSDs to attach to each node.
+
+        accelerator     repeated string  `nvidia-tesla-a100=1`                         Accelerators to attach to each node. In the format NAME=COUNT.
+
+        minCpuPlatform  string           `Intel Skylake`                               Minimum CPU platform for each node.
+
+        bootDiskKmsKey  string           `projects/project-id/locations/us-central1    The Customer Managed Encryption Key (CMEK) used to encrypt
+                                         /keyRings/keyRing-name/cryptoKeys/key-name`   the boot disk attached to each node in the node pool.
+
+        locations       repeated string  `us-west1-a;us-west1-c`                       Zones within the location of the GKE cluster.
+                                                                                       All `--pools` flags for a single Dataproc cluster must have identical locations.
+
+        min             int              `0`                                           Minimum number of nodes per zone that this node pool can scale down to.
+
+        max             int              `10`                                          Maximum number of nodes per zone that this node pool can scale up to.
+        ----------------------------------------------------------------------------------------------------------------------------------------------------------------
         """)
 
 
@@ -98,6 +120,7 @@ class GkeNodePoolTargetsParser():
     GkeNodePoolTargetsParser._ValidateUniqueNames(pools)
     GkeNodePoolTargetsParser._ValidateRoles(dataproc, pools)
     GkeNodePoolTargetsParser._ValidatePoolsHaveSameLocation(pools)
+    GkeNodePoolTargetsParser._ValidateBootDiskKmsKeyPattern(pools)
     return pools
 
   @staticmethod
@@ -149,6 +172,25 @@ class GkeNodePoolTargetsParser():
         elif initial_locations != locations:
           raise exceptions.InvalidArgumentException(
               '--pools', 'All pools must have identical locations.')
+
+  @staticmethod
+  def _ValidateBootDiskKmsKeyPattern(pools):
+    """Validates that the bootDiskKmsKey matches the correct pattern."""
+    if not pools:
+      return
+    boot_disk_kms_key_pattern = re.compile(
+        'projects/[^/]+/locations/[^/]+/keyRings/[^/]+/cryptoKeys/[^/]+')
+    for pool in pools:
+      if (pool.nodePoolConfig is
+          None) or (pool.nodePoolConfig.config is None) or (
+              pool.nodePoolConfig.config.bootDiskKmsKey is None):
+        continue
+      if not boot_disk_kms_key_pattern.match(
+          pool.nodePoolConfig.config.bootDiskKmsKey):
+        raise exceptions.InvalidArgumentException(
+            '--pools', 'bootDiskKmsKey must match pattern: '
+            'projects/[KEY_PROJECT_ID]/locations/[LOCATION]/keyRings/[RING_NAME]/cryptoKeys/[KEY_NAME]'
+        )
 
 
 class _GkeNodePoolTargetParser():
@@ -231,6 +273,8 @@ class _GkeNodePoolTargetParser():
           dataproc, arg_pool['accelerators'])
     if 'minCpuPlatform' in arg_pool:
       pool.minCpuPlatform = arg_pool['minCpuPlatform']
+    if 'bootDiskKmsKey' in arg_pool:
+      pool.bootDiskKmsKey = arg_pool['bootDiskKmsKey']
     if pool != dataproc.messages.GkeNodeConfig():
       return pool
     return None

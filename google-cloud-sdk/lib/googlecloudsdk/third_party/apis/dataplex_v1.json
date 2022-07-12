@@ -2047,6 +2047,10 @@
           "description": "Optional. The maximum duration after which the job execution is expired.",
           "type": "string",
           "format": "google-duration"
+        },
+        "kmsKey": {
+          "description": "Optional. The Cloud KMS key to use for encryption, of the form: projects\/{project_number}\/locations\/{location_id}\/keyRings\/{key-ring-name}\/cryptoKeys\/{key-name}",
+          "type": "string"
         }
       }
     },
@@ -2235,6 +2239,10 @@
       "description": "Container Image Runtime Configuration used with Batch execution.",
       "type": "object",
       "properties": {
+        "image": {
+          "description": "Optional. Container image to use.",
+          "type": "string"
+        },
         "javaJars": {
           "description": "Optional. A list of Java JARS to add to the classpath. Valid input includes Cloud Storage URIs to Jar binaries. For example, gs:\/\/bucket-name\/my\/path\/to\/file.jar",
           "type": "array",

@@ -140,6 +140,33 @@ class ServicedirectoryV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the IAM Policy for a resource (namespace or service only).
+
+      Args:
+        request: (ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/serviceWorkloads/{serviceWorkloadsId}:getIamPolicy',
+        http_method='POST',
+        method_id='servicedirectory.projects.locations.namespaces.serviceWorkloads.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1beta1/{+resource}:getIamPolicy',
+        request_field='getIamPolicyRequest',
+        request_type_name='ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsGetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists all service workloads.
 
@@ -191,6 +218,33 @@ class ServicedirectoryV1beta1(base_api.BaseApiClient):
         request_field='serviceWorkload',
         request_type_name='ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsPatchRequest',
         response_type_name='ServiceWorkload',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the IAM Policy for a resource (namespace or service only).
+
+      Args:
+        request: (ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/serviceWorkloads/{serviceWorkloadsId}:setIamPolicy',
+        http_method='POST',
+        method_id='servicedirectory.projects.locations.namespaces.serviceWorkloads.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1beta1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 

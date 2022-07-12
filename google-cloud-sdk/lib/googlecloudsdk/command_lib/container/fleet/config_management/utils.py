@@ -31,7 +31,8 @@ spec:
     policyDir:
     preventDrift: false
     httpsProxy:
-    secretType: none|ssh|cookiefile|token|gcenode
+    sourceType: git|oci
+    secretType: none|ssh|cookiefile|token|gcenode|gcpserviceaccount
     syncBranch: master
     syncRepo: URL
     syncWait: 15
@@ -56,6 +57,7 @@ POLICY_CONTROLLER = 'policyController'
 HNC = 'hierarchyController'
 PREVENT_DRIFT_VERSION = '1.10.0'
 MONITORING_VERSION = '1.12.0'
+OCI_SUPPORT_VERSION = '1.12.0'
 
 
 def versions_for_member(feature, membership):

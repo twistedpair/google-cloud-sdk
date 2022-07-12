@@ -70,6 +70,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     self.instantSnapshots = self.InstantSnapshotsService(self)
     self.interconnectAttachments = self.InterconnectAttachmentsService(self)
     self.interconnectLocations = self.InterconnectLocationsService(self)
+    self.interconnectRemoteLocations = self.InterconnectRemoteLocationsService(self)
     self.interconnects = self.InterconnectsService(self)
     self.licenseCodes = self.LicenseCodesService(self)
     self.licenses = self.LicensesService(self)
@@ -134,6 +135,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     self.vpnGateways = self.VpnGatewaysService(self)
     self.vpnTunnels = self.VpnTunnelsService(self)
     self.zoneOperations = self.ZoneOperationsService(self)
+    self.zoneQueuedResources = self.ZoneQueuedResourcesService(self)
     self.zones = self.ZonesService(self)
 
   class AcceleratorTypesService(base_api.BaseApiService):
@@ -6553,7 +6555,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def BulkInsert(self, request, global_params=None):
-      r"""Creates multiple instances. Count specifies the number of instances to create.
+      r"""Creates multiple instances. Count specifies the number of instances to create. For more information, see About bulk creation of VMs.
 
       Args:
         request: (ComputeInstancesBulkInsertRequest) input message
@@ -8372,6 +8374,94 @@ class ComputeAlpha(base_api.BaseApiClient):
         relative_path='projects/{project}/global/interconnectLocations/{resource}/testIamPermissions',
         request_field='testPermissionsRequest',
         request_type_name='ComputeInterconnectLocationsTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
+        supports_download=False,
+    )
+
+  class InterconnectRemoteLocationsService(base_api.BaseApiService):
+    """Service class for the interconnectRemoteLocations resource."""
+
+    _NAME = 'interconnectRemoteLocations'
+
+    def __init__(self, client):
+      super(ComputeAlpha.InterconnectRemoteLocationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Returns the details for the specified interconnect remote location. Gets a list of available interconnect remote locations by making a list() request.
+
+      Args:
+        request: (ComputeInterconnectRemoteLocationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InterconnectRemoteLocation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.interconnectRemoteLocations.get',
+        ordered_params=['project', 'interconnectRemoteLocation'],
+        path_params=['interconnectRemoteLocation', 'project'],
+        query_params=[],
+        relative_path='projects/{project}/global/interconnectRemoteLocations/{interconnectRemoteLocation}',
+        request_field='',
+        request_type_name='ComputeInterconnectRemoteLocationsGetRequest',
+        response_type_name='InterconnectRemoteLocation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Retrieves the list of interconnect remote locations available to the specified project.
+
+      Args:
+        request: (ComputeInterconnectRemoteLocationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InterconnectRemoteLocationList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.interconnectRemoteLocations.list',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/global/interconnectRemoteLocations',
+        request_field='',
+        request_type_name='ComputeInterconnectRemoteLocationsListRequest',
+        response_type_name='InterconnectRemoteLocationList',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeInterconnectRemoteLocationsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.interconnectRemoteLocations.testIamPermissions',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
+        query_params=[],
+        relative_path='projects/{project}/global/interconnectRemoteLocations/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeInterconnectRemoteLocationsTestIamPermissionsRequest',
         response_type_name='TestPermissionsResponse',
         supports_download=False,
     )
@@ -22689,6 +22779,146 @@ class ComputeAlpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='ComputeZoneOperationsWaitRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ZoneQueuedResourcesService(base_api.BaseApiService):
+    """Service class for the zoneQueuedResources resource."""
+
+    _NAME = 'zoneQueuedResources'
+
+    def __init__(self, client):
+      super(ComputeAlpha.ZoneQueuedResourcesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Cancel(self, request, global_params=None):
+      r"""Cancels a QueuedResource. Only a resource in ACCEPTED state may be cancelled.
+
+      Args:
+        request: (ComputeZoneQueuedResourcesCancelRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Cancel')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.zoneQueuedResources.cancel',
+        ordered_params=['project', 'zone', 'queuedResource'],
+        path_params=['project', 'queuedResource', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/queuedResources/{queuedResource}/cancel',
+        request_field='',
+        request_type_name='ComputeZoneQueuedResourcesCancelRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a QueuedResource. For a QueuedResource in ACCEPTED state, call cancel on the resource before deleting, to make sure no VMs have been provisioned and may require cleaning up. For a QueuedResource in PROVISIONING state the request to delete is registered for execution following the provisioning.
+
+      Args:
+        request: (ComputeZoneQueuedResourcesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='DELETE',
+        method_id='compute.zoneQueuedResources.delete',
+        ordered_params=['project', 'zone', 'queuedResource'],
+        path_params=['project', 'queuedResource', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/queuedResources/{queuedResource}',
+        request_field='',
+        request_type_name='ComputeZoneQueuedResourcesDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Returns the specified QueuedResource resource.
+
+      Args:
+        request: (ComputeZoneQueuedResourcesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (QueuedResource) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.zoneQueuedResources.get',
+        ordered_params=['project', 'zone', 'queuedResource'],
+        path_params=['project', 'queuedResource', 'zone'],
+        query_params=[],
+        relative_path='projects/{project}/zones/{zone}/queuedResources/{queuedResource}',
+        request_field='',
+        request_type_name='ComputeZoneQueuedResourcesGetRequest',
+        response_type_name='QueuedResource',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      r"""Creates a QueuedResource.
+
+      Args:
+        request: (ComputeZoneQueuedResourcesInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.zoneQueuedResources.insert',
+        ordered_params=['project', 'zone'],
+        path_params=['project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/queuedResources',
+        request_field='queuedResource',
+        request_type_name='ComputeZoneQueuedResourcesInsertRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Retrieves the list of QueuedResource resources.
+
+      Args:
+        request: (ComputeZoneQueuedResourcesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (QueuedResourceList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.zoneQueuedResources.list',
+        ordered_params=['project', 'zone'],
+        path_params=['project', 'zone'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/zones/{zone}/queuedResources',
+        request_field='',
+        request_type_name='ComputeZoneQueuedResourcesListRequest',
+        response_type_name='QueuedResourceList',
         supports_download=False,
     )
 

@@ -31,9 +31,7 @@ CUSTOM_JOB_COLLECTION = 'aiplatform.projects.locations.customJobs'
 
 def _ConstructSingleWorkerPoolSpec(aiplatform_client,
                                    spec,
-                                   python_package_uri=None,
-                                   args=None,
-                                   command=None):
+                                   python_package_uri=None):
   """Constructs the specification of a single worker pool.
 
   Args:
@@ -41,10 +39,6 @@ def _ConstructSingleWorkerPoolSpec(aiplatform_client,
     spec: A dict whose fields represent a worker pool config.
     python_package_uri: str, The common python package uris that will be used by
       executor image, supposedly derived from the gcloud command flags.
-    args: A list of arguments to be passed to containers or python packge,
-      supposedly derived from the gcloud command flags.
-    command: A list of commands to be passed to containers, supposedly derived
-      from the gcloud command flags.
 
   Returns:
     A WorkerPoolSpec message instance for setting a worker pool in a custom job.
@@ -69,19 +63,12 @@ def _ConstructSingleWorkerPoolSpec(aiplatform_client,
     container_spec_msg = aiplatform_client.GetMessage('ContainerSpec')
     worker_pool_spec.containerSpec = container_spec_msg(
         imageUri=container_image_uri)
-    if args is not None:
-      worker_pool_spec.containerSpec.args = args
-    if command is not None:
-      worker_pool_spec.containerSpec.command = command
-
   elif python_package_uri or executor_image_uri or python_module:
     python_package_spec_msg = aiplatform_client.GetMessage('PythonPackageSpec')
     worker_pool_spec.pythonPackageSpec = python_package_spec_msg(
         executorImageUri=executor_image_uri,
         packageUris=(python_package_uri or []),
         pythonModule=python_module)
-    if args is not None:
-      worker_pool_spec.pythonPackageSpec.args = args
 
   return worker_pool_spec
 
@@ -198,6 +185,8 @@ def ConstructCustomJobSpec(aiplatform_client,
                            service_account=None,
                            enable_web_access=None,
                            worker_pool_specs=None,
+                           args=None,
+                           command=None,
                            **kwargs):
   """Constructs the spec of a custom job to be used in job creation request.
 
@@ -212,6 +201,10 @@ def ConstructCustomJobSpec(aiplatform_client,
     enable_web_access: Whether to enable the interactive shell for the job.
     worker_pool_specs: A dict of worker pool specification, usually derived from
       the gcloud command argument values.
+    args: A list of arguments to be passed to containers or python packge,
+      supposedly derived from the gcloud command flags.
+    command: A list of commands to be passed to containers, supposedly derived
+      from the gcloud command flags.
     **kwargs: The keyword args to pass to construct the worker pool specs.
 
   Returns:
@@ -230,5 +223,19 @@ def ConstructCustomJobSpec(aiplatform_client,
   if worker_pool_specs:
     job_spec.workerPoolSpecs = _ConstructWorkerPoolSpecs(
         aiplatform_client, worker_pool_specs, **kwargs)
+  if args:
+    for worker_pool_spec in job_spec.workerPoolSpecs:
+      if worker_pool_spec.containerSpec:
+        worker_pool_spec.containerSpec.args = args
+      if worker_pool_spec.pythonPackageSpec:
+        worker_pool_spec.pythonPackageSpec.args = args
+  if command:
+    for worker_pool_spec in job_spec.workerPoolSpecs:
+      if worker_pool_spec.containerSpec:
+        worker_pool_spec.containerSpec.command = command
 
   return job_spec
+
+
+def _IsKwargsDefined(key, **kwargs):
+  return key in kwargs and bool(kwargs.get(key))

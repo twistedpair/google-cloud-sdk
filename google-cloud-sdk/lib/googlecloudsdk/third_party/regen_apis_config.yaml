@@ -883,6 +883,9 @@ apis:
     v1:
       discovery_doc: metastore_v1.json
       default: true
+  microservices:
+    v1alpha1:
+      discovery_doc: microservices_v1alpha1.json
   ml:
     v1:
       discovery_doc: ml_v1.json
@@ -1096,6 +1099,8 @@ apis:
         # We have to explicitly add this resource collection for bulk mute API.
         organizations.findings:
           path: organizations/{organizationsId}/findings/{findingId}
+        organizations.securityHealthAnalyticsSettings.customModules:
+          path: organizations/{organizationsId}/securityHealthAnalyticsSettings/customModules/{customModulesId}
       default: true
   serviceconsumermanagement:
     v1beta1:

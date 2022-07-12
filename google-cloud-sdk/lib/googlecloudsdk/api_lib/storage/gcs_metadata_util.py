@@ -331,6 +331,7 @@ def update_object_metadata_from_request_config(object_metadata,
       indicated by the system_posix_data field on request_config.
   """
   resource_args = request_config.resource_args
+  # Custom metadata & POSIX handling.
   if (resource_args and
       resource_args.custom_metadata is user_request_args_factory.CLEAR):
     object_metadata.metadata = None
@@ -357,6 +358,7 @@ def update_object_metadata_from_request_config(object_metadata,
       object_metadata.metadata = encoding_helper.DictToMessage(
           custom_metadata_dict, messages.Object.MetadataValue)
 
+  # Gzip handling.
   should_gzip_locally = gzip_util.should_gzip_locally(
       request_config.gzip_settings, file_path)
   if should_gzip_locally:
@@ -374,6 +376,17 @@ def update_object_metadata_from_request_config(object_metadata,
   if not resource_args:
     return
 
+  # Encryption handling.
+  if resource_args.encryption_key:
+    if (resource_args.encryption_key == user_request_args_factory.CLEAR or
+        resource_args.encryption_key.type is encryption_util.KeyType.CSEK):
+      object_metadata.kmsKeyName = None
+      # For CSEK, set the encryption in API request headers instead.
+      object_metadata.customerEncryption = None
+    elif resource_args.encryption_key.type is encryption_util.KeyType.CMEK:
+      object_metadata.kmsKeyName = resource_args.encryption_key.key
+
+  # General metadata handling.
   _process_value_or_clear_flag(object_metadata, 'contentDisposition',
                                resource_args.content_disposition)
   _process_value_or_clear_flag(object_metadata, 'contentLanguage',
@@ -387,11 +400,7 @@ def update_object_metadata_from_request_config(object_metadata,
   _process_value_or_clear_flag(object_metadata, 'storageClass',
                                resource_args.storage_class)
 
-  if resource_args.encryption_key:
-    if (resource_args.encryption_key == user_request_args_factory.CLEAR or
-        resource_args.encryption_key.type is encryption_util.KeyType.CSEK):
-      object_metadata.kmsKeyName = None
-      # For CSEK, set the encryption in API request headers instead.
-      object_metadata.customerEncryption = None
-    elif resource_args.encryption_key.type is encryption_util.KeyType.CMEK:
-      object_metadata.kmsKeyName = resource_args.encryption_key.key
+  if resource_args.event_based_hold is not None:
+    object_metadata.eventBasedHold = resource_args.event_based_hold
+  if resource_args.temporary_hold is not None:
+    object_metadata.temporaryHold = resource_args.temporary_hold

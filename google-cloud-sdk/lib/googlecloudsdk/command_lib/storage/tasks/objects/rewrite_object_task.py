@@ -68,8 +68,11 @@ class RewriteObjectTask(task.Task):
       encryption_changing = encryption_util.get_encryption_key() not in (
           None, user_request_args_factory.CLEAR)
 
-    storage_class_changing = existing_object_resource.storage_class != getattr(
-        request_config.resource_args, 'storage_class', None)
+    new_storage_class = getattr(request_config.resource_args, 'storage_class',
+                                None)
+    storage_class_changing = (
+        new_storage_class and
+        new_storage_class != existing_object_resource.storage_class)
 
     if not (encryption_changing or storage_class_changing):
       log.warning('Proposed encryption key and storage class for' +

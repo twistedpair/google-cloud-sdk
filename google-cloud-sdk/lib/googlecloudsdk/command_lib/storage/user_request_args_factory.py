@@ -147,9 +147,11 @@ class _UserObjectArgs:
       content_type=None,
       custom_metadata=None,
       custom_time=None,
+      event_based_hold=None,
       md5_hash=None,
       preserve_acl=None,
       storage_class=None,
+      temporary_hold=None,
   ):
     """Initializes class, binding flag values to it."""
     self.cache_control = cache_control
@@ -159,9 +161,11 @@ class _UserObjectArgs:
     self.content_type = content_type
     self.custom_metadata = custom_metadata
     self.custom_time = custom_time
+    self.event_based_hold = event_based_hold
     self.md5_hash = md5_hash
     self.preserve_acl = preserve_acl
     self.storage_class = storage_class
+    self.temporary_hold = temporary_hold
 
   def __eq__(self, other):
     if not isinstance(other, type(self)):
@@ -173,9 +177,11 @@ class _UserObjectArgs:
             self.content_type == other.content_type and
             self.custom_metadata == other.custom_metadata and
             self.custom_time == other.custom_time and
+            self.event_based_hold == other.event_based_hold and
             self.md5_hash == other.md5_hash and
             self.preserve_acl == other.preserve_acl and
-            self.storage_class == other.storage_class)
+            self.storage_class == other.storage_class and
+            self.temporary_hold == other.temporary_hold)
 
   def __repr__(self):
     return debug_output.generic_repr(self)
@@ -191,8 +197,7 @@ class _UserRequestArgs:
   def __init__(self,
                gzip_settings=None,
                manifest_path=None,
-               max_bytes_per_call=None,
-               no_clobber=False,
+               no_clobber=None,
                precondition_generation_match=None,
                precondition_metageneration_match=None,
                predefined_acl_string=None,
@@ -203,7 +208,6 @@ class _UserRequestArgs:
     self.gzip_settings = gzip_settings
     self.manifest_path = (
         os.path.expanduser(manifest_path) if manifest_path else None)
-    self.max_bytes_per_call = max_bytes_per_call
     self.no_clobber = no_clobber
     self.precondition_generation_match = precondition_generation_match
     self.precondition_metageneration_match = precondition_metageneration_match
@@ -217,7 +221,6 @@ class _UserRequestArgs:
       return NotImplemented
     return (self.gzip_settings == other.gzip_settings and
             self.manifest_path == other.manifest_path and
-            self.max_bytes_per_call == other.max_bytes_per_call and
             self.no_clobber == other.no_clobber and
             self.precondition_generation_match
             == other.precondition_generation_match and
@@ -311,8 +314,11 @@ def get_user_request_args_from_command_args(args, metadata_type=None):
                                                       'custom_metadata')
       custom_time = _get_clear_or_value_from_flag(args, 'clear_custom_time',
                                                   'custom_time')
-      preserve_acl = getattr(args, 'preserve_acl', False)
+
+      event_based_hold = getattr(args, 'event_based_hold', None)
+      preserve_acl = getattr(args, 'preserve_acl', None)
       storage_class = getattr(args, 'storage_class', None)
+      temporary_hold = getattr(args, 'temporary_hold', None)
 
       resource_args = _UserObjectArgs(
           cache_control=cache_control,
@@ -322,9 +328,11 @@ def get_user_request_args_from_command_args(args, metadata_type=None):
           content_type=content_type,
           custom_metadata=custom_metadata,
           custom_time=custom_time,
+          event_based_hold=event_based_hold,
           md5_hash=md5_hash,
           preserve_acl=preserve_acl,
-          storage_class=storage_class)
+          storage_class=storage_class,
+          temporary_hold=temporary_hold)
 
   gzip_settings = _get_gzip_settings_from_command_args(args)
   if getattr(args, 'preserve_posix', None):
@@ -335,7 +343,7 @@ def get_user_request_args_from_command_args(args, metadata_type=None):
   return _UserRequestArgs(
       gzip_settings=gzip_settings,
       manifest_path=getattr(args, 'manifest_path', None),
-      no_clobber=getattr(args, 'no_clobber', False),
+      no_clobber=getattr(args, 'no_clobber', None),
       precondition_generation_match=getattr(args, 'if_generation_match', None),
       precondition_metageneration_match=getattr(args, 'if_metageneration_match',
                                                 None),

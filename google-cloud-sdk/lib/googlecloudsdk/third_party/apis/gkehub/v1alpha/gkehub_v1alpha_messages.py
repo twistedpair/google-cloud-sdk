@@ -410,6 +410,17 @@ class CommonFeatureState(_messages.Message):
   state = _messages.MessageField('FeatureState', 5)
 
 
+class CommonFleetDefaultMemberConfigSpec(_messages.Message):
+  r"""CommonFleetDefaultMemberConfigSpec contains default configuration
+  information for memberships of a fleet
+
+  Fields:
+    mesh: Anthos Service Mesh-specific spec
+  """
+
+  mesh = _messages.MessageField('ServiceMeshMembershipSpec', 1)
+
+
 class ConfigManagementBinauthzConfig(_messages.Message):
   r"""Configuration for Binauthz
 
@@ -987,7 +998,9 @@ class ConfigManagementPolicyController(_messages.Message):
       cluster.
     logDeniesEnabled: Logs all denies and dry run failures.
     monitoring: Monitoring specifies the configuration of monitoring.
-    mutationEnabled: Enable users to try out mutation for PolicyController.
+    mutationEnabled: Enable or disable mutation in policy controller. If true,
+      mutation CRDs, webhook and controller deployment will be deployed to the
+      cluster.
     referentialRulesEnabled: Enables the ability to use Constraint Templates
       that reference to objects other than the object currently being
       evaluated.
@@ -1222,6 +1235,8 @@ class Feature(_messages.Message):
   Fields:
     createTime: Output only. When the Feature resource was created.
     deleteTime: Output only. When the Feature resource was deleted.
+    fleetDefaultMemberConfig: Optional. Feature configuration applicable to
+      all memberships of the fleet.
     labels: GCP labels for this Feature.
     membershipSpecs: Optional. Membership-specific configuration for this
       Feature. If this Feature does not support any per-Membership
@@ -1344,14 +1359,15 @@ class Feature(_messages.Message):
 
   createTime = _messages.StringField(1)
   deleteTime = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  membershipSpecs = _messages.MessageField('MembershipSpecsValue', 4)
-  membershipStates = _messages.MessageField('MembershipStatesValue', 5)
-  name = _messages.StringField(6)
-  resourceState = _messages.MessageField('FeatureResourceState', 7)
-  spec = _messages.MessageField('CommonFeatureSpec', 8)
-  state = _messages.MessageField('CommonFeatureState', 9)
-  updateTime = _messages.StringField(10)
+  fleetDefaultMemberConfig = _messages.MessageField('CommonFleetDefaultMemberConfigSpec', 3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  membershipSpecs = _messages.MessageField('MembershipSpecsValue', 5)
+  membershipStates = _messages.MessageField('MembershipStatesValue', 6)
+  name = _messages.StringField(7)
+  resourceState = _messages.MessageField('FeatureResourceState', 8)
+  spec = _messages.MessageField('CommonFeatureSpec', 9)
+  state = _messages.MessageField('CommonFeatureState', 10)
+  updateTime = _messages.StringField(11)
 
 
 class FeatureResourceState(_messages.Message):
@@ -3221,6 +3237,9 @@ class MembershipEndpoint(_messages.Message):
   r"""MembershipEndpoint contains information needed to contact a Kubernetes
   API, endpoint and any additional Kubernetes metadata.
 
+  Enums:
+    ModeValueValuesEnum: Immutable. The management mode of this membership.
+
   Fields:
     applianceCluster: Optional. Specific information for a GDC Edge Appliance
       cluster.
@@ -3235,6 +3254,7 @@ class MembershipEndpoint(_messages.Message):
       registered to one and only one Hub Membership. * Propagate Workload Pool
       Information available in the Membership Authority field. * Ensure proper
       initial configuration of default Hub Features.
+    mode: Immutable. The management mode of this membership.
     multiCloudCluster: Optional. Specific information for a GKE Multi-Cloud
       cluster.
     onPremCluster: Optional. Specific information for a GKE On-Prem cluster.
@@ -3242,14 +3262,25 @@ class MembershipEndpoint(_messages.Message):
       this field, it should have a nil "type" instead.
   """
 
+  class ModeValueValuesEnum(_messages.Enum):
+    r"""Immutable. The management mode of this membership.
+
+    Values:
+      MODE_UNSPECIFIED: The mode is not set.
+      AUTOFLEET: Membership is being managed in autofleet mode.
+    """
+    MODE_UNSPECIFIED = 0
+    AUTOFLEET = 1
+
   applianceCluster = _messages.MessageField('ApplianceCluster', 1)
   edgeCluster = _messages.MessageField('EdgeCluster', 2)
   gkeCluster = _messages.MessageField('GkeCluster', 3)
   googleManaged = _messages.BooleanField(4)
   kubernetesMetadata = _messages.MessageField('KubernetesMetadata', 5)
   kubernetesResource = _messages.MessageField('KubernetesResource', 6)
-  multiCloudCluster = _messages.MessageField('MultiCloudCluster', 7)
-  onPremCluster = _messages.MessageField('OnPremCluster', 8)
+  mode = _messages.EnumField('ModeValueValuesEnum', 7)
+  multiCloudCluster = _messages.MessageField('MultiCloudCluster', 8)
+  onPremCluster = _messages.MessageField('OnPremCluster', 9)
 
 
 class MembershipFeatureSpec(_messages.Message):
@@ -3293,7 +3324,7 @@ class MembershipFeatureState(_messages.Message):
     configmanagement: Config Management-specific state.
     helloworld: Hello World-specific state.
     identityservice: Identity Service-specific state.
-    metering: Metering-specific spec.
+    metering: Metering-specific state.
     policycontroller: Policycontroller-specific state.
     rbacrolebindingactuation: RBAC Role Binding Actuation membership state
     servicemesh: Service Mesh-specific state.

@@ -341,80 +341,11 @@ class BlobStorageInfo(_messages.Message):
   for the referenced resource. Note: Storage class is only valid for DICOM and
   hence will only be populated for DICOM resources.
 
-  Enums:
-    StorageClassValueValuesEnum: The Storage class in which the Blob data is
-      stored.
-
   Fields:
     sizeBytes: Size in bytes of data stored in Blob Storage.
-    storageClass: The Storage class in which the Blob data is stored.
-    storageClassUpdateTime: The time at which the storage class was updated.
-      This is used to compute early deletion fees of the resource.
   """
-
-  class StorageClassValueValuesEnum(_messages.Enum):
-    r"""The Storage class in which the Blob data is stored.
-
-    Values:
-      BLOB_STORAGE_CLASS_UNSPECIFIED: If unspecified in CreateDataset, the
-        StorageClass defaults to STANDARD. If unspecified in UpdateDataset and
-        the StorageClass is set in the field mask, an InvalidRequest error is
-        thrown.
-      STANDARD: Stores the Object in Blob Standard Storage:
-        https://cloud.google.com/storage/docs/storage-classes#standard
-      NEARLINE: Stores the Object in Blob Nearline Storage:
-        https://cloud.google.com/storage/docs/storage-classes#nearline
-      COLDLINE: Stores the Object in Blob Coldline Storage:
-        https://cloud.google.com/storage/docs/storage-classes#coldline
-      ARCHIVE: Stores the Object in Blob Archive Storage:
-        https://cloud.google.com/storage/docs/storage-classes#archive
-    """
-    BLOB_STORAGE_CLASS_UNSPECIFIED = 0
-    STANDARD = 1
-    NEARLINE = 2
-    COLDLINE = 3
-    ARCHIVE = 4
 
   sizeBytes = _messages.IntegerField(1)
-  storageClass = _messages.EnumField('StorageClassValueValuesEnum', 2)
-  storageClassUpdateTime = _messages.StringField(3)
-
-
-class BlobStorageSettings(_messages.Message):
-  r"""Settings for data stored in Blob storage.
-
-  Enums:
-    BlobStorageClassValueValuesEnum: The Storage class in which the Blob data
-      is stored.
-
-  Fields:
-    blobStorageClass: The Storage class in which the Blob data is stored.
-  """
-
-  class BlobStorageClassValueValuesEnum(_messages.Enum):
-    r"""The Storage class in which the Blob data is stored.
-
-    Values:
-      BLOB_STORAGE_CLASS_UNSPECIFIED: If unspecified in CreateDataset, the
-        StorageClass defaults to STANDARD. If unspecified in UpdateDataset and
-        the StorageClass is set in the field mask, an InvalidRequest error is
-        thrown.
-      STANDARD: Stores the Object in Blob Standard Storage:
-        https://cloud.google.com/storage/docs/storage-classes#standard
-      NEARLINE: Stores the Object in Blob Nearline Storage:
-        https://cloud.google.com/storage/docs/storage-classes#nearline
-      COLDLINE: Stores the Object in Blob Coldline Storage:
-        https://cloud.google.com/storage/docs/storage-classes#coldline
-      ARCHIVE: Stores the Object in Blob Archive Storage:
-        https://cloud.google.com/storage/docs/storage-classes#archive
-    """
-    BLOB_STORAGE_CLASS_UNSPECIFIED = 0
-    STANDARD = 1
-    NEARLINE = 2
-    COLDLINE = 3
-    ARCHIVE = 4
-
-  blobStorageClass = _messages.EnumField('BlobStorageClassValueValuesEnum', 1)
 
 
 class CancelOperationRequest(_messages.Message):
@@ -799,7 +730,6 @@ class Dataset(_messages.Message):
   Fields:
     name: Resource name of the dataset, of the form
       `projects/{project_id}/locations/{location_id}/datasets/{dataset_id}`.
-    storageOptions: StorageOptions defines the options for storing datasets.
     timeZone: The default timezone used by this dataset. Must be a either a
       valid IANA time zone name such as "America/New_York" or empty, which
       defaults to UTC. This is used for parsing times in resources, such as
@@ -807,8 +737,7 @@ class Dataset(_messages.Message):
   """
 
   name = _messages.StringField(1)
-  storageOptions = _messages.MessageField('StorageOptions', 2)
-  timeZone = _messages.StringField(3)
+  timeZone = _messages.StringField(2)
 
 
 class DateShiftConfig(_messages.Message):
@@ -3127,23 +3056,6 @@ class HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesInstanc
   resource = _messages.StringField(1, required=True)
 
 
-class HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesInstancesSetBlobStorageSettingsRequest(_messages.Message):
-  r"""A HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesIns
-  tancesSetBlobStorageSettingsRequest object.
-
-  Fields:
-    resource: Required. REQUIRED: The path of the resource to update the blob
-      storage settings e.g. in the format of `projects/{projectid}/datasets/{d
-      atasetid}/dicomStores/{dicomStoreID}/dicomWeb/studies/{studyUID}/series/
-      -/instances/-`
-    setBlobStorageSettingsRequest: A SetBlobStorageSettingsRequest resource to
-      be passed as the request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  setBlobStorageSettingsRequest = _messages.MessageField('SetBlobStorageSettingsRequest', 2)
-
-
 class HealthcareProjectsLocationsDatasetsDicomStoresExportRequest(_messages.Message):
   r"""A HealthcareProjectsLocationsDatasetsDicomStoresExportRequest object.
 
@@ -5103,24 +5015,6 @@ class SchemaConfig(_messages.Message):
   schemaType = _messages.EnumField('SchemaTypeValueValuesEnum', 2)
 
 
-class SetBlobStorageSettingsRequest(_messages.Message):
-  r"""Request message for `SetBlobStorageSettings` method.
-
-  Fields:
-    blobStorageSettings: The blob storage settings to update for the specified
-      resources. Only fields listed in `update_mask` are applied.
-  """
-
-  blobStorageSettings = _messages.MessageField('BlobStorageSettings', 1)
-
-
-class SetBlobStorageSettingsResponse(_messages.Message):
-  r"""Returns additional info in regards to a completed set blob storage
-  settings API.
-  """
-
-
-
 class SetIamPolicyRequest(_messages.Message):
   r"""Request message for `SetIamPolicy` method.
 
@@ -5315,45 +5209,6 @@ class StorageInfo(_messages.Message):
   blobStorageInfo = _messages.MessageField('BlobStorageInfo', 1)
   referencedResource = _messages.StringField(2)
   structuredStorageInfo = _messages.MessageField('StructuredStorageInfo', 3)
-
-
-class StorageOptions(_messages.Message):
-  r"""StorageOptions defines the options for storing datasets.
-
-  Enums:
-    DefaultBlobStorageClassValueValuesEnum: The default storage class for
-      Blobs stored in this dataset. Applies to DICOM objects only.
-
-  Fields:
-    defaultBlobStorageClass: The default storage class for Blobs stored in
-      this dataset. Applies to DICOM objects only.
-  """
-
-  class DefaultBlobStorageClassValueValuesEnum(_messages.Enum):
-    r"""The default storage class for Blobs stored in this dataset. Applies to
-    DICOM objects only.
-
-    Values:
-      BLOB_STORAGE_CLASS_UNSPECIFIED: If unspecified in CreateDataset, the
-        StorageClass defaults to STANDARD. If unspecified in UpdateDataset and
-        the StorageClass is set in the field mask, an InvalidRequest error is
-        thrown.
-      STANDARD: Stores the Object in Blob Standard Storage:
-        https://cloud.google.com/storage/docs/storage-classes#standard
-      NEARLINE: Stores the Object in Blob Nearline Storage:
-        https://cloud.google.com/storage/docs/storage-classes#nearline
-      COLDLINE: Stores the Object in Blob Coldline Storage:
-        https://cloud.google.com/storage/docs/storage-classes#coldline
-      ARCHIVE: Stores the Object in Blob Archive Storage:
-        https://cloud.google.com/storage/docs/storage-classes#archive
-    """
-    BLOB_STORAGE_CLASS_UNSPECIFIED = 0
-    STANDARD = 1
-    NEARLINE = 2
-    COLDLINE = 3
-    ARCHIVE = 4
-
-  defaultBlobStorageClass = _messages.EnumField('DefaultBlobStorageClassValueValuesEnum', 1)
 
 
 class StreamConfig(_messages.Message):

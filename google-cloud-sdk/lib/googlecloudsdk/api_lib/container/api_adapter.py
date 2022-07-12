@@ -19,16 +19,15 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import os
-
 import time
 
 from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import http_wrapper
-
 from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.container import constants as gke_constants
 from googlecloudsdk.api_lib.container import util
 from googlecloudsdk.api_lib.util import apis as core_apis
+from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.core import log
@@ -37,7 +36,6 @@ from googlecloudsdk.core import resources as cloud_resources
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.util import times
-
 import six
 from six.moves import range  # pylint: disable=redefined-builtin
 import six.moves.http_client
@@ -182,10 +180,6 @@ The ConfigConnector-on-GKE addon (--addons=ConfigConnector) requires workload id
 
 CLOUDBUILD_STACKDRIVER_KUBERNETES_DISABLED_ERROR_MSG = """\
 Cloud Build for Anthos (--addons=CloudBuild) requires System Logging and Monitoring to be enabled via the --monitoring=SYSTEM and --logging=SYSTEM flags.
-"""
-
-BACKUPRESTORE_WORKLOAD_IDENTITY_DISABLED_ERROR_MSG = """\
-The Backup & Restore addon (--addons=BackupRestore) requires workload identity to be enabled via the --workload-pool=WORKLOAD_POOL flag.
 """
 
 DEFAULT_MAX_PODS_PER_NODE_WITHOUT_IP_ALIAS_ERROR_MSG = """\
@@ -346,6 +340,17 @@ def CheckResponse(response):
   return http_wrapper.CheckResponse(response)
 
 
+def APIVersionFromReleaseTrack(release_track):
+  if release_track == base.ReleaseTrack.GA:
+    return 'v1'
+  elif release_track == base.ReleaseTrack.BETA:
+    return 'v1beta1'
+  elif release_track == base.ReleaseTrack.ALPHA:
+    return 'v1alpha1'
+  else:
+    raise ValueError('Unsupported Release Track: {}'.format(release_track))
+
+
 def NewAPIAdapter(api_version):
   if api_version == 'v1alpha1':
     return NewV1Alpha1APIAdapter()
@@ -433,7 +438,7 @@ def ExpandScopeURIs(scopes):
 
   Args:
     scopes: [str,] list of scope names. Can be short names ('compute-rw') or
-    full urls ('https://www.googleapis.com/auth/compute'). See SCOPES in
+      full urls ('https://www.googleapis.com/auth/compute'). See SCOPES in
       api_lib/container/constants.py & api_lib/compute/constants.py.
 
   Returns:
@@ -519,6 +524,7 @@ class CreateClusterOptions(object):
       services_secondary_range_name=None,
       accelerators=None,
       enable_binauthz=None,
+      binauthz_evaluation_mode=None,
       min_cpu_platform=None,
       workload_metadata=None,
       workload_metadata_from_node=None,
@@ -688,6 +694,7 @@ class CreateClusterOptions(object):
     self.services_secondary_range_name = services_secondary_range_name
     self.accelerators = accelerators
     self.enable_binauthz = enable_binauthz
+    self.binauthz_evaluation_mode = binauthz_evaluation_mode
     self.min_cpu_platform = min_cpu_platform
     self.workload_metadata = workload_metadata
     self.workload_metadata_from_node = workload_metadata_from_node
@@ -1575,6 +1582,11 @@ class APIAdapter(object):
       cluster.binaryAuthorization = self.messages.BinaryAuthorization(
           enabled=options.enable_binauthz)
 
+    if options.binauthz_evaluation_mode is not None:
+      cluster.binaryAuthorization = self.messages.BinaryAuthorization(
+          evaluationMode=self.messages.BinaryAuthorization
+          .EvaluationModeValueValuesEnum(options.binauthz_evaluation_mode))
+
     if options.maintenance_window is not None:
       cluster.maintenancePolicy = self.messages.MaintenancePolicy(
           window=self.messages.MaintenanceWindow(
@@ -1786,12 +1798,12 @@ class APIAdapter(object):
         cluster.protectConfig = self.messages.ProtectConfig()
       if options.enable_workload_vulnerability_scanning:
         cluster.protectConfig.workloadVulnerabilityMode = (
-            self.messages.ProtectConfig
-            .WorkloadVulnerabilityModeValueValuesEnum.BASIC)
+            self.messages.ProtectConfig.WorkloadVulnerabilityModeValueValuesEnum
+            .BASIC)
       else:
         cluster.protectConfig.workloadVulnerabilityMode = (
-            self.messages.ProtectConfig
-            .WorkloadVulnerabilityModeValueValuesEnum.DISABLED)
+            self.messages.ProtectConfig.WorkloadVulnerabilityModeValueValuesEnum
+            .DISABLED)
 
     if options.pod_autoscaling_direct_metrics_opt_in is not None:
       pod_autoscaling_config = self.messages.PodAutoscaling(
@@ -2649,6 +2661,12 @@ class APIAdapter(object):
           enabled=options.enable_binauthz)
       update = self.messages.ClusterUpdate(
           desiredBinaryAuthorization=binary_authorization)
+    elif options.binauthz_evaluation_mode is not None:
+      binary_authorization = self.messages.BinaryAuthorization(
+          evaluationMode=self.messages.BinaryAuthorization
+          .EvaluationModeValueValuesEnum(options.binauthz_evaluation_mode))
+      update = self.messages.ClusterUpdate(
+          desiredBinaryAuthorization=binary_authorization)
     elif options.enable_vertical_pod_autoscaling is not None:
       vertical_pod_autoscaling = self.messages.VerticalPodAutoscaling(
           enabled=options.enable_vertical_pod_autoscaling)
@@ -3390,12 +3408,16 @@ class APIAdapter(object):
         # clear limits and autoprovisioned when disabling autoscaling
         autoscaling.minNodeCount = 0
         autoscaling.maxNodeCount = 0
+        autoscaling.totalMinNodeCount = 0
+        autoscaling.totalMaxNodeCount = 0
         autoscaling.autoprovisioned = False
+        autoscaling.locationPolicy = self.messages.NodePoolAutoscaling.LocationPolicyValueValuesEnum.LOCATION_POLICY_UNSPECIFIED
     if options.enable_autoprovisioning is not None:
       autoscaling.autoprovisioned = options.enable_autoprovisioning
       if autoscaling.autoprovisioned:
         # clear min nodes limit when enabling autoprovisioning
         autoscaling.minNodeCount = 0
+        autoscaling.totalMinNodeCount = 0
     if options.max_nodes is not None:
       autoscaling.maxNodeCount = options.max_nodes
     if options.min_nodes is not None:
@@ -4133,8 +4155,6 @@ class V1Beta1Adapter(V1Adapter):
             enabled=True)
       # BackupRestore is disabled by default.
       if BACKUPRESTORE in options.addons:
-        if not options.workload_pool:
-          raise util.Error(BACKUPRESTORE_WORKLOAD_IDENTITY_DISABLED_ERROR_MSG)
         cluster.addonsConfig.gkeBackupAgentConfig = self.messages.GkeBackupAgentConfig(
             enabled=True)
       # Istio is disabled by default.
@@ -4658,8 +4678,6 @@ class V1Alpha1Adapter(V1Beta1Adapter):
             enabled=True)
       # BackupRestore is disabled by default.
       if BACKUPRESTORE in options.addons:
-        if not options.workload_pool:
-          raise util.Error(BACKUPRESTORE_WORKLOAD_IDENTITY_DISABLED_ERROR_MSG)
         cluster.addonsConfig.gkeBackupAgentConfig = self.messages.GkeBackupAgentConfig(
             enabled=True)
       # Istio is disabled by default
@@ -5620,3 +5638,10 @@ def ProjectLocationClusterNodePool(project, location, cluster, nodepool):
 
 def ProjectLocationOperation(project, location, operation):
   return ProjectLocation(project, location) + '/operations/' + operation
+
+
+def GetBinauthzEvaluationModeOptions(messages):
+  options = list(
+      messages.BinaryAuthorization.EvaluationModeValueValuesEnum.to_dict())
+  options.remove('EVALUATION_MODE_UNSPECIFIED')
+  return sorted(options)

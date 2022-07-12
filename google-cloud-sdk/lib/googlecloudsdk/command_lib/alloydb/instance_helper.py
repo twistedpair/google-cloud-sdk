@@ -53,7 +53,6 @@ def ConstructCreateRequestFromArgs(client, alloydb_messages, project_ref, args):
       args,
       alloydb_messages.Instance.DatabaseFlagsValue,
       labels_dest='database_flags')
-  instance_resource.gceZone = args.zone
   instance_resource.instanceType = _ParseInstanceType(alloydb_messages,
                                                       args.instance_type)
 
@@ -104,7 +103,6 @@ def ConstructInstanceAndMaskFromArgs(alloydb_messages, instance_ref, args):
   database_flags_path = 'databaseFlags'
   cpu_count_path = 'machineConfig.cpuCount'
   read_pool_node_count_path = 'readPoolConfig.nodeCount'
-  zone_path = 'gce_zone'
 
   instance_resource = alloydb_messages.Instance()
   paths = []
@@ -134,10 +132,6 @@ def ConstructInstanceAndMaskFromArgs(alloydb_messages, instance_ref, args):
     instance_resource.readPoolConfig = alloydb_messages.ReadPoolConfig(
         nodeCount=args.read_pool_node_count)
     paths.append(read_pool_node_count_path)
-
-  if args.zone:
-    instance_resource.gceZone = args.zone
-    paths.append(zone_path)
 
   mask = ','.join(paths) if paths else None
   return instance_resource, mask

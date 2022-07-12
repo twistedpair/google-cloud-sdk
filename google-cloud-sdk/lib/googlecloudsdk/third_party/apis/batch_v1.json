@@ -301,6 +301,10 @@
         "alwaysRun": {
           "description": "By default, after a Runnable fails, no further Runnable are executed. This flag indicates that this Runnable must be run even if the Task has already failed. This is useful for Runnables that copy output files off of the VM or for debugging. The always_run flag does not override the Task's overall max_run_duration. If the max_run_duration has expired then no further Runnables will execute, not even always_run Runnables.",
           "type": "boolean"
+        },
+        "environment": {
+          "description": "Environment variables for this Runnable (overrides variables set for the whole Task or TaskGroup).",
+          "$ref": "Environment"
         }
       }
     },
@@ -372,6 +376,20 @@
         "name": {
           "description": "Barriers are identified by their index in runnable list. Names are not required, but if present should be an identifier.",
           "type": "string"
+        }
+      }
+    },
+    "Environment": {
+      "id": "Environment",
+      "description": "An Environment describes a collection of environment variables to set when executing Tasks.",
+      "type": "object",
+      "properties": {
+        "variables": {
+          "description": "A map of environment variable names to values.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },
@@ -493,20 +511,6 @@
         }
       }
     },
-    "Environment": {
-      "id": "Environment",
-      "description": "An Environment describes a collection of environment variables to set when executing Tasks.",
-      "type": "object",
-      "properties": {
-        "variables": {
-          "description": "A map of environment variable names to values.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        }
-      }
-    },
     "AllocationPolicy": {
       "id": "AllocationPolicy",
       "description": "A Job's resource allocation policy describes when, where, and how compute resources should be allocated for the Job.",
@@ -541,7 +545,7 @@
       "type": "object",
       "properties": {
         "allowedLocations": {
-          "description": "A list of allowed location names represented by internal URLs, First location in the list must be a region. for example, [\"regions\/us-central1\"] allow VMs in region us-central1, [\"regions\/us-central1\", \"zones\/us-central1-a\"] only allow VMs in zone us-central1-a.",
+          "description": "A list of allowed location names represented by internal URLs, only the first region is supported now. for example, [\"regions\/us-central1\"] allow VMs in region us-central1, [\"regions\/us-central1\", \"zones\/us-central1-a\"] only allow VMs in zone us-central1-a. [\"regions\/us-central1\", \"zones\/us-central1-a\", \"zones\/us-central1-b\", \"regions\/us-west1\", \"zones\/us-west1-a\"] only allow VMs in zone us-central1-a or zones\/us-central1-b.",
           "type": "array",
           "items": {
             "type": "string"

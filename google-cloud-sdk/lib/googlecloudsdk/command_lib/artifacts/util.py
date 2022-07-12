@@ -567,11 +567,44 @@ def ConvertBytesToMB(response, unused_args):
   return response
 
 
-def SlashUnescapePackageNameHook(ref, args, req):
-  package = args.package if args.package else ref.packagesId
-  if "@" in package:
-    escaped_pkg_name = package.replace("/", "%2F")
-    req.name = req.name.replace(package, escaped_pkg_name)
+def SlashUnescapePackageNameHook(ref, unused_args, req):
+  """Unescapes slashes from request names."""
+  package = resources.REGISTRY.Create(
+      "artifactregistry.projects.locations.repositories.packages",
+      projectsId=ref.projectsId,
+      locationsId=ref.locationsId,
+      repositoriesId=ref.repositoriesId,
+      packagesId=ref.packagesId.replace("/", "%2F")
+  )
+  req.name = package.RelativeName()
+  return req
+
+
+def SlashUnescapeTagNameHook(ref, unused_args, req):
+  """Unescapes slashes from request names."""
+  tag = resources.REGISTRY.Create(
+      "artifactregistry.projects.locations.repositories.packages.tags",
+      projectsId=ref.projectsId,
+      locationsId=ref.locationsId,
+      repositoriesId=ref.repositoriesId,
+      packagesId=ref.packagesId.replace("/", "%2F"),
+      tagsId=ref.tagsId.replace("/", "%2F")
+  )
+  req.name = tag.RelativeName()
+  return req
+
+
+def SlashUnescapeVersionNameHook(ref, unused_args, req):
+  """Unescapes slashes from request names."""
+  tag = resources.REGISTRY.Create(
+      "artifactregistry.projects.locations.repositories.packages.versions",
+      projectsId=ref.projectsId,
+      locationsId=ref.locationsId,
+      repositoriesId=ref.repositoriesId,
+      packagesId=ref.packagesId.replace("/", "%2F"),
+      versionsId=ref.versionsId.replace("/", "%2F")
+  )
+  req.name = tag.RelativeName()
   return req
 
 

@@ -56,7 +56,6 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import requests
 from googlecloudsdk.core.credentials import transports
-from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import scaled_integer
 
 import six
@@ -583,12 +582,6 @@ class GcsApi(cloud_api.CloudApi):
     gcs_metadata_util.update_object_metadata_from_request_config(
         destination_metadata, request_config)
 
-    if request_config.max_bytes_per_call:
-      max_bytes_per_call = request_config.max_bytes_per_call
-    else:
-      max_bytes_per_call = scaled_integer.ParseInteger(
-          properties.VALUES.storage.copy_chunk_size.Get())
-
     if request_config.predefined_acl_string:
       predefined_acl = getattr(
           self.messages.StorageObjectsRewriteRequest
@@ -611,14 +604,17 @@ class GcsApi(cloud_api.CloudApi):
         destination_resource,
         destination_metadata,
         request_config=request_config)
-    try:
-      resume_rewrite_token = tracker_file_util.read_rewrite_tracker_file(
-          tracker_file_path, rewrite_parameters_hash)
+
+    resume_rewrite_token = (
+        tracker_file_util.get_rewrite_token_from_tracker_file(
+            tracker_file_path, rewrite_parameters_hash))
+    if resume_rewrite_token:
       log.debug('Found rewrite token. Resuming copy.')
-    except files.MissingFileError:
-      resume_rewrite_token = None
+    else:
       log.debug('No rewrite token found. Starting copy from scratch.')
 
+    max_bytes_per_call = scaled_integer.ParseInteger(
+        properties.VALUES.storage.copy_chunk_size.Get())
     with self._encryption_headers_for_rewrite_call_context(request_config):
       while True:
         request = self.messages.StorageObjectsRewriteRequest(

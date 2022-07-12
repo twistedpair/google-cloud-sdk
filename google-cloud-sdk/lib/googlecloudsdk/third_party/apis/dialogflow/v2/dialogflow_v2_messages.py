@@ -1364,6 +1364,10 @@ class DialogflowProjectsAnswerRecordsListRequest(_messages.Message):
   r"""A DialogflowProjectsAnswerRecordsListRequest object.
 
   Fields:
+    filter: Optional. Filters to restrict results to specific answer records.
+      Marked deprecated as it hasn't been, and isn't currently, supported. For
+      more information about filtering, see [API
+      Filtering](https://aip.dev/160).
     pageSize: Optional. The maximum number of records to return in a single
       page. The server may return fewer records than this. If unspecified, we
       use 10. The maximum is 100.
@@ -1374,9 +1378,10 @@ class DialogflowProjectsAnswerRecordsListRequest(_messages.Message):
       chronological order. Format: `projects//locations/`.
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class DialogflowProjectsAnswerRecordsPatchRequest(_messages.Message):
@@ -3289,6 +3294,10 @@ class DialogflowProjectsLocationsAnswerRecordsListRequest(_messages.Message):
   r"""A DialogflowProjectsLocationsAnswerRecordsListRequest object.
 
   Fields:
+    filter: Optional. Filters to restrict results to specific answer records.
+      Marked deprecated as it hasn't been, and isn't currently, supported. For
+      more information about filtering, see [API
+      Filtering](https://aip.dev/160).
     pageSize: Optional. The maximum number of records to return in a single
       page. The server may return fewer records than this. If unspecified, we
       use 10. The maximum is 100.
@@ -3299,9 +3308,10 @@ class DialogflowProjectsLocationsAnswerRecordsListRequest(_messages.Message):
       chronological order. Format: `projects//locations/`.
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class DialogflowProjectsLocationsAnswerRecordsPatchRequest(_messages.Message):

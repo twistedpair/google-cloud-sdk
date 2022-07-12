@@ -2020,6 +2020,17 @@ MAP = {
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },
+    'microservices': {
+        'v1alpha1':
+            APIDef(
+                ApitoolsClientDef(
+                    class_path='googlecloudsdk.third_party.apis.microservices.v1alpha1',
+                    client_classpath='microservices_v1alpha1_client.MicroservicesV1alpha1',
+                    messages_modulepath='microservices_v1alpha1_messages'),
+                default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+    },
     'ml': {
         'v1':
             APIDef(

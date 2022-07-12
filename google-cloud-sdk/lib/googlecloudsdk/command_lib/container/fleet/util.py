@@ -22,7 +22,14 @@ import base64
 import textwrap
 
 from googlecloudsdk.api_lib.cloudresourcemanager import projects_api
+from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files
+
+# Hub API environments
+UNKNOWN_API = 'unknown'
+AUTOPUSH_API = 'autopush'
+STAGING_API = 'staging'
+PROD_API = 'prod'
 
 # Table format for fleet list
 LIST_FORMAT = """
@@ -211,3 +218,24 @@ def ReleaseTrackCommandPrefix(release_track):
 def DefaultToGlobal():
   """Returns 'global' to be used as a fallthrough hook in resources.yaml."""
   return 'global'
+
+
+def APIEndpoint():
+  """Returns the current GKEHub API environment.
+
+  Assumes prod endpoint if override is unset, unknown endpoint if overrides has
+  unrecognized value.
+
+  Returns:
+    One of prod, staging, autopush, or unknown.
+  """
+  endpoint_overrides = properties.VALUES.api_endpoint_overrides.AllValues()
+  hub_endpoint_override = endpoint_overrides.get('gkehub', '')
+  if not hub_endpoint_override:
+    return PROD_API
+  elif 'staging-gkehub' in hub_endpoint_override:
+    return STAGING_API
+  elif 'autopush-gkehub' in hub_endpoint_override:
+    return AUTOPUSH_API
+  else:
+    return UNKNOWN_API

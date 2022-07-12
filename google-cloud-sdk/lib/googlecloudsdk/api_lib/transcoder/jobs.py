@@ -22,6 +22,8 @@ from apitools.base.py import encoding
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import base
+from googlecloudsdk.command_lib.transcoder import util
+from googlecloudsdk.command_lib.util.args import labels_util
 
 VERSION_MAP = {
     base.ReleaseTrack.ALPHA: 'v1beta1',
@@ -44,35 +46,37 @@ class JobsClient(object):
     self._service = self.client.projects_locations_jobs
     self._job_class = self.client.MESSAGES_MODULE.Job
 
-  def Create(self,
-             parent_ref,
-             job_json=None,
-             template_id=None,
-             input_uri=None,
-             output_uri=None):
+  def Create(self, parent_ref, args):
     """Create a job.
 
     Args:
       parent_ref: a Resource reference to a transcoder.projects.locations
         resource for the parent of this template.
-      job_json: job details in json format
-      template_id: template id associated. Default: preset/web-hd template
-      input_uri: input video location in Google Cloud Storage
-      output_uri: output directory (followed by a trailing forward slash) in
-        Google Cloud Storage
+      args: arguments to create a job.
 
     Returns:
       Job: Job created, including configuration and name.
     """
 
+    labels = labels_util.ParseCreateArgs(args, self.message.Job.LabelsValue)
+    input_uri = args.input_uri
+    output_uri = args.output_uri
+    template_id = args.template_id
+    job_json = None
+    if template_id is None:
+      job_json = util.GetContent(args.file, args.json)
+
     if job_json is None:
       job = self.message.Job(
-          inputUri=input_uri, outputUri=output_uri, templateId=template_id)
+          inputUri=input_uri,
+          outputUri=output_uri,
+          templateId=template_id,
+          labels=labels)
     else:
       job = encoding.JsonToMessage(self._job_class, job_json)
-      job.inputUri = input_uri
-      job.outputUri = output_uri
-
+      job.inputUri = input_uri or job.inputUri
+      job.outputUri = output_uri or job.outputUri
+      job.labels = labels or job.labels
     req = self.message.TranscoderProjectsLocationsJobsCreateRequest(
         parent=parent_ref.RelativeName(), job=job)
     return self._service.Create(req)

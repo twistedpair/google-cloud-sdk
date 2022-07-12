@@ -1599,6 +1599,23 @@ class ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsDeleteRequest(_
   name = _messages.StringField(2, required=True)
 
 
+class ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsGetIamPolicyRequest(_messages.Message):
+  r"""A ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsGetIamPolic
+  yRequest object.
+
+  Fields:
+    getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
 class ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsGetRequest(_messages.Message):
   r"""A ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsGetRequest
   object.
@@ -1678,6 +1695,23 @@ class ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsPatchRequest(_m
   name = _messages.StringField(2, required=True)
   serviceWorkload = _messages.MessageField('ServiceWorkload', 3)
   updateMask = _messages.StringField(4)
+
+
+class ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsSetIamPolicyRequest(_messages.Message):
+  r"""A ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsSetIamPolic
+  yRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
 
 
 class ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsTestIamPermissionsRequest(_messages.Message):

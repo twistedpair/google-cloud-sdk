@@ -1224,11 +1224,17 @@
           "type": "string",
           "enumDescriptions": [
             "The share is in an unknown state.",
-            "The share has been provisioned."
+            "The share has been provisioned.",
+            "The NFS Share is being created.",
+            "The NFS Share is being updated.",
+            "The NFS Share has been requested to be deleted."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
-            "PROVISIONED"
+            "PROVISIONED",
+            "CREATING",
+            "UPDATING",
+            "DELETING"
           ]
         },
         "volume": {

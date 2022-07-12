@@ -1355,7 +1355,8 @@
             "Docker cannot pull an image because a blob is missing in the repo. May be due to a bad\/incomplete image push or partial deletion of underlying blob layers.",
             "The docker volume specification is invalid (e.g. root).",
             "Docker failed to create OCI runtime because input root cannot be proc.",
-            "Docker failed to start OCI runtime because of file not found."
+            "Docker failed to start OCI runtime because of file not found.",
+            "Docker failed to run because the layerchain json was invalid (see b\/234782336)."
           ],
           "enum": [
             "OK",
@@ -1404,7 +1405,8 @@
             "DOCKER_MISSING_BLOB_IN_IMAGE",
             "DOCKER_INVALID_VOLUME",
             "DOCKER_CREATE_RUNTIME_CANNOT_MOUNT_TO_PROC",
-            "DOCKER_START_RUNTIME_FILE_NOT_FOUND"
+            "DOCKER_START_RUNTIME_FILE_NOT_FOUND",
+            "DOCKER_CREATE_INVALID_LAYERCHAIN_JSON"
           ]
         },
         "message": {

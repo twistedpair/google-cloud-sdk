@@ -524,7 +524,7 @@
       "type": "object",
       "properties": {
         "principals": {
-          "description": "Optional. List of peer identities to match for authorization. At least one principal should match. Each peer can be an exact match, or a prefix match (example, \"namespace\/*\") or a suffix match (example, \/\/ *\/service-account\") or a presence match \"*\". Authorization based on the principal name without certificate validation (configured by ServerTlsPolicy resource) is considered insecure.",
+          "description": "Optional. List of peer identities to match for authorization. At least one principal should match. Each peer can be an exact match, or a prefix match (example, \"namespace\/*\") or a suffix match (example, \"*\/service-account\") or a presence match \"*\". Authorization based on the principal name without certificate validation (configured by ServerTlsPolicy resource) is considered insecure.",
           "type": "array",
           "items": {
             "type": "string"
@@ -545,7 +545,7 @@
       "type": "object",
       "properties": {
         "hosts": {
-          "description": "Required. List of host names to match. Matched against the \":authority\" header in http requests. At least one host should match. Each host can be an exact match, or a prefix match (example \"mydomain.*\") or a suffix match (example \/\/ *.myorg.com\") or a presence(any) match \"*\".",
+          "description": "Required. List of host names to match. Matched against the \":authority\" header in http requests. At least one host should match. Each host can be an exact match, or a prefix match (example \"mydomain.*\") or a suffix match (example \"*.myorg.com\") or a presence (any) match \"*\".",
           "type": "array",
           "items": {
             "type": "string"
@@ -574,7 +574,7 @@
     },
     "HttpHeaderMatch": {
       "id": "HttpHeaderMatch",
-      "description": "Specification of HTTP header match atrributes.",
+      "description": "Specification of HTTP header match attributes.",
       "type": "object",
       "properties": {
         "regexMatch": {
@@ -691,7 +691,7 @@
       "type": "object",
       "properties": {
         "targetUri": {
-          "description": "Required. The target URI of the gRPC endpoint. Only UDS path is supported, and should start with \u201Cunix:\u201D.",
+          "description": "Required. The target URI of the gRPC endpoint. Only UDS path is supported, and should start with \"unix:\".",
           "type": "string"
         }
       }
@@ -2307,6 +2307,97 @@
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy detail is being requested. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clientTlsPolicies\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "request": {
+                    "$ref": "GoogleIamV1TestIamPermissionsRequest"
+                  },
+                  "response": {
+                    "$ref": "GoogleIamV1TestIamPermissionsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
+                }
+              }
+            },
+            "securityProfileGroups": {
+              "methods": {
+                "setIamPolicy": {
+                  "id": "networksecurity.projects.locations.securityProfileGroups.setIamPolicy",
+                  "path": "v1alpha1/{+resource}:setIamPolicy",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/securityProfileGroups/{securityProfileGroupsId}:setIamPolicy",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy is being specified. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/securityProfileGroups\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "request": {
+                    "$ref": "GoogleIamV1SetIamPolicyRequest"
+                  },
+                  "response": {
+                    "$ref": "GoogleIamV1Policy"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors."
+                },
+                "getIamPolicy": {
+                  "id": "networksecurity.projects.locations.securityProfileGroups.getIamPolicy",
+                  "path": "v1alpha1/{+resource}:getIamPolicy",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/securityProfileGroups/{securityProfileGroupsId}:getIamPolicy",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy is being requested. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/securityProfileGroups\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "options.requestedPolicyVersion": {
+                      "description": "Optional. The maximum policy version that will be used to format the policy. Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected. Requests for policies with any conditional role bindings must specify version 3. Policies with no conditional role bindings may specify any valid value or leave the field unset. The policy in the response might use the policy version that you specified, or it might use a lower policy version. For example, if you specify version 3, but the policy has no conditional role bindings, the response uses version 1. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "response": {
+                    "$ref": "GoogleIamV1Policy"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set."
+                },
+                "testIamPermissions": {
+                  "id": "networksecurity.projects.locations.securityProfileGroups.testIamPermissions",
+                  "path": "v1alpha1/{+resource}:testIamPermissions",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/securityProfileGroups/{securityProfileGroupsId}:testIamPermissions",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy detail is being requested. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/securityProfileGroups\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"

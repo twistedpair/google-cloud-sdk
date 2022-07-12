@@ -446,7 +446,7 @@ class AssuredworkloadsV1beta1(base_api.BaseApiClient):
         request: (AssuredworkloadsProjectsOrganizationsLocationsWorkloadsAnalyzeWorkloadMoveRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (GoogleCloudAssuredworkloadsV1beta1AnalyzeWorkloadMoveResponse) The response message.
+        (GoogleCloudAssuredworkloadsVersioningV1beta1AnalyzeWorkloadMoveResponse) The response message.
       """
       config = self.GetMethodConfig('AnalyzeWorkloadMove')
       return self._RunMethod(
@@ -462,7 +462,7 @@ class AssuredworkloadsV1beta1(base_api.BaseApiClient):
         relative_path='v1beta1/{+project}/{+target}:analyzeWorkloadMove',
         request_field='',
         request_type_name='AssuredworkloadsProjectsOrganizationsLocationsWorkloadsAnalyzeWorkloadMoveRequest',
-        response_type_name='GoogleCloudAssuredworkloadsV1beta1AnalyzeWorkloadMoveResponse',
+        response_type_name='GoogleCloudAssuredworkloadsVersioningV1beta1AnalyzeWorkloadMoveResponse',
         supports_download=False,
     )
 

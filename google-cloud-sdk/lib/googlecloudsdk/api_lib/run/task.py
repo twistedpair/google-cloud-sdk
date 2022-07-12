@@ -84,7 +84,7 @@ class Task(container_resource.ContainerResource):
   def ReadySymbolAndColor(self):
     """Return a tuple of ready_symbol and display color for this object."""
     encoding = console_attr.GetConsoleAttr().GetEncoding()
-    if self.running_state is None or self.running_state == 'Pending':
+    if self.running_state == 'Running':
       return self._PickSymbol('\N{HORIZONTAL ELLIPSIS}', '.',
                               encoding), 'yellow'
     elif self.running_state == 'Succeeded':
@@ -95,6 +95,7 @@ class Task(container_resource.ContainerResource):
       return '!', 'yellow'
     elif self.running_state == 'Abandoned':
       return '-', 'yellow'
+    return '.', 'yellow'
 
   @property
   def start_time(self):

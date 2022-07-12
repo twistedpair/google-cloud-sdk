@@ -24,13 +24,6 @@ DOCS_URL = 'https://cloud.google.com/security-command-center'
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
-  FOLDERS = (
-      'folders',
-      'folders/{foldersId}',
-      {},
-      ['foldersId'],
-      True
-  )
   FOLDERS_BIGQUERYEXPORTS = (
       'folders.bigQueryExports',
       '{+name}',
@@ -47,6 +40,35 @@ class Collections(enum.Enum):
       {
           '':
               'folders/{foldersId}/muteConfigs/{muteConfigsId}',
+      },
+      ['name'],
+      True
+  )
+  FOLDERS_SECURITYHEALTHANALYTICSSETTINGS = (
+      'folders.securityHealthAnalyticsSettings',
+      'folders/{foldersId}',
+      {},
+      ['foldersId'],
+      True
+  )
+  FOLDERS_SECURITYHEALTHANALYTICSSETTINGS_CUSTOMMODULES = (
+      'folders.securityHealthAnalyticsSettings.customModules',
+      '{+name}',
+      {
+          '':
+              'folders/{foldersId}/securityHealthAnalyticsSettings/'
+              'customModules/{customModulesId}',
+      },
+      ['name'],
+      True
+  )
+  FOLDERS_SECURITYHEALTHANALYTICSSETTINGS_EFFECTIVECUSTOMMODULES = (
+      'folders.securityHealthAnalyticsSettings.effectiveCustomModules',
+      '{+name}',
+      {
+          '':
+              'folders/{foldersId}/securityHealthAnalyticsSettings/'
+              'effectiveCustomModules/{effectiveCustomModulesId}',
       },
       ['name'],
       True
@@ -114,6 +136,30 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  ORGANIZATIONS_SECURITYHEALTHANALYTICSSETTINGS_CUSTOMMODULES = (
+      'organizations.securityHealthAnalyticsSettings.customModules',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/'
+              'securityHealthAnalyticsSettings/customModules/'
+              '{customModulesId}',
+      },
+      ['name'],
+      True
+  )
+  ORGANIZATIONS_SECURITYHEALTHANALYTICSSETTINGS_EFFECTIVECUSTOMMODULES = (
+      'organizations.securityHealthAnalyticsSettings.effectiveCustomModules',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/'
+              'securityHealthAnalyticsSettings/effectiveCustomModules/'
+              '{effectiveCustomModulesId}',
+      },
+      ['name'],
+      True
+  )
   ORGANIZATIONS_SOURCES = (
       'organizations.sources',
       '{+name}',
@@ -132,13 +178,6 @@ class Collections(enum.Enum):
       ['organizationsId', 'sourcesId', 'findingId'],
       True
   )
-  PROJECTS = (
-      'projects',
-      'projects/{projectsId}',
-      {},
-      ['projectsId'],
-      True
-  )
   PROJECTS_BIGQUERYEXPORTS = (
       'projects.bigQueryExports',
       '{+name}',
@@ -155,6 +194,35 @@ class Collections(enum.Enum):
       {
           '':
               'projects/{projectsId}/muteConfigs/{muteConfigsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_SECURITYHEALTHANALYTICSSETTINGS = (
+      'projects.securityHealthAnalyticsSettings',
+      'projects/{projectsId}',
+      {},
+      ['projectsId'],
+      True
+  )
+  PROJECTS_SECURITYHEALTHANALYTICSSETTINGS_CUSTOMMODULES = (
+      'projects.securityHealthAnalyticsSettings.customModules',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/securityHealthAnalyticsSettings/'
+              'customModules/{customModulesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_SECURITYHEALTHANALYTICSSETTINGS_EFFECTIVECUSTOMMODULES = (
+      'projects.securityHealthAnalyticsSettings.effectiveCustomModules',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/securityHealthAnalyticsSettings/'
+              'effectiveCustomModules/{effectiveCustomModulesId}',
       },
       ['name'],
       True

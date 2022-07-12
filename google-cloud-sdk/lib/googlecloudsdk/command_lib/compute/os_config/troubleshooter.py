@@ -19,7 +19,9 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from apitools.base.py import exceptions as apitools_exceptions
+from googlecloudsdk.command_lib.compute.os_config.troubleshoot import agent_freshness
 from googlecloudsdk.command_lib.compute.os_config.troubleshoot import metadata_setup
+from googlecloudsdk.command_lib.compute.os_config.troubleshoot import service_account
 from googlecloudsdk.command_lib.compute.os_config.troubleshoot import service_enablement
 from googlecloudsdk.command_lib.compute.os_config.troubleshoot import utils
 
@@ -53,6 +55,29 @@ def Troubleshoot(client, instance_ref, release_track):
   response_message += metadata_setup_response.response_message
 
   if not metadata_setup_response.continue_flag:
+    return response_message
+
+  # Agent freshness check.
+  agent_freshness_response = agent_freshness.Check(project, instance,
+                                                   instance_ref.zone,
+                                                   release_track)
+  response_message += agent_freshness_response.response_message
+
+  if not agent_freshness_response.continue_flag:
+    return response_message
+
+  # Service account existence check.
+  service_account_existence_response = service_account.CheckExistence(instance)
+  response_message += service_account_existence_response.response_message
+
+  if not service_account_existence_response.continue_flag:
+    return response_message
+
+  # Service account enablement check.
+  service_account_enablement_response = service_account.CheckEnablement(project)
+  response_message += service_account_enablement_response.response_message
+
+  if not service_account_enablement_response.continue_flag:
     return response_message
 
   return response_message

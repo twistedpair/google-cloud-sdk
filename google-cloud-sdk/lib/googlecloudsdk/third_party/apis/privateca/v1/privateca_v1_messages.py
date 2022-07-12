@@ -2573,7 +2573,15 @@ class PublishingOptions(_messages.Message):
   Certificates. The options set here apply to certificates issued by any
   CertificateAuthority in the CaPool.
 
+  Enums:
+    EncodingFormatValueValuesEnum: Optional. Specifies the encoding format of
+      each CertificateAuthority's CA certificate and CRLs. If this is omitted,
+      CA certificates and CRLs will be published in PEM.
+
   Fields:
+    encodingFormat: Optional. Specifies the encoding format of each
+      CertificateAuthority's CA certificate and CRLs. If this is omitted, CA
+      certificates and CRLs will be published in PEM.
     publishCaCert: Optional. When true, publishes each CertificateAuthority's
       CA certificate and includes its URL in the "Authority Information
       Access" X.509 extension in all issued Certificates. If this is false,
@@ -2588,8 +2596,26 @@ class PublishingOptions(_messages.Message):
       revoked.
   """
 
-  publishCaCert = _messages.BooleanField(1)
-  publishCrl = _messages.BooleanField(2)
+  class EncodingFormatValueValuesEnum(_messages.Enum):
+    r"""Optional. Specifies the encoding format of each CertificateAuthority's
+    CA certificate and CRLs. If this is omitted, CA certificates and CRLs will
+    be published in PEM.
+
+    Values:
+      ENCODING_FORMAT_UNSPECIFIED: Not specified. By default, PEM format will
+        be used.
+      PEM: The CertificateAuthority's CA certificate and CRLs will be
+        published in PEM format.
+      DER: The CertificateAuthority's CA certificate and CRLs will be
+        published in DER format.
+    """
+    ENCODING_FORMAT_UNSPECIFIED = 0
+    PEM = 1
+    DER = 2
+
+  encodingFormat = _messages.EnumField('EncodingFormatValueValuesEnum', 1)
+  publishCaCert = _messages.BooleanField(2)
+  publishCrl = _messages.BooleanField(3)
 
 
 class ReconciliationOperationMetadata(_messages.Message):

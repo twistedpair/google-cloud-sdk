@@ -1414,6 +1414,20 @@
         "publishCrl": {
           "description": "Optional. When true, publishes each CertificateAuthority's CRL and includes its URL in the \"CRL Distribution Points\" X.509 extension in all issued Certificates. If this is false, CRLs will not be published and the corresponding X.509 extension will not be written in issued certificates. CRLs will expire 7 days from their creation. However, we will rebuild daily. CRLs are also rebuilt shortly after a certificate is revoked.",
           "type": "boolean"
+        },
+        "encodingFormat": {
+          "description": "Optional. Specifies the encoding format of each CertificateAuthority's CA certificate and CRLs. If this is omitted, CA certificates and CRLs will be published in PEM.",
+          "type": "string",
+          "enumDescriptions": [
+            "Not specified. By default, PEM format will be used.",
+            "The CertificateAuthority's CA certificate and CRLs will be published in PEM format.",
+            "The CertificateAuthority's CA certificate and CRLs will be published in DER format."
+          ],
+          "enum": [
+            "ENCODING_FORMAT_UNSPECIFIED",
+            "PEM",
+            "DER"
+          ]
         }
       }
     },

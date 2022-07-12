@@ -224,6 +224,22 @@ class ArtifactregistryProjectsLocationsRepositoriesFilesListRequest(_messages.Me
   parent = _messages.StringField(5, required=True)
 
 
+class ArtifactregistryProjectsLocationsRepositoriesGenericArtifactsUploadRequest(_messages.Message):
+  r"""A
+  ArtifactregistryProjectsLocationsRepositoriesGenericArtifactsUploadRequest
+  object.
+
+  Fields:
+    parent: The resource name of the repository where the generic artifact
+      will be uploaded.
+    uploadGenericArtifactRequest: A UploadGenericArtifactRequest resource to
+      be passed as the request body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  uploadGenericArtifactRequest = _messages.MessageField('UploadGenericArtifactRequest', 2)
+
+
 class ArtifactregistryProjectsLocationsRepositoriesGetIamPolicyRequest(_messages.Message):
   r"""A ArtifactregistryProjectsLocationsRepositoriesGetIamPolicyRequest
   object.
@@ -743,6 +759,32 @@ class Binding(_messages.Message):
   condition = _messages.MessageField('Expr', 1)
   members = _messages.StringField(2, repeated=True)
   role = _messages.StringField(3)
+
+
+class CleanupPolicy(_messages.Message):
+  r"""Artifact policy configuration for repository cleanup policies.
+
+  Fields:
+    condition: Policy condition that indicates when versions should be
+      deleted.
+    id: The user-provided ID of the upstream policy.
+  """
+
+  condition = _messages.MessageField('CleanupPolicyCondition', 1)
+  id = _messages.StringField(2)
+
+
+class CleanupPolicyCondition(_messages.Message):
+  r"""CleanupPolicyCondtion defines a set of conditions of a CleanupPolicy. If
+  multiple entries are set, all must be satisfied for the condition to be
+  satisfied.
+
+  Fields:
+    versionAge: Condition type which is satisfied if a version is older than
+      the specified time.
+  """
+
+  versionAge = _messages.StringField(1)
 
 
 class DockerImage(_messages.Message):
@@ -1697,12 +1739,21 @@ class Repository(_messages.Message):
     ModeValueValuesEnum: The mode of the repository.
 
   Messages:
+    CleanupPoliciesValue: Cleanup policies for this repository. Cleanup
+      policies indicate when certain package versions can be automatically
+      deleted. Map keys are policy IDs supplied by users during policy
+      creation. They must unique within a repository and be under 128
+      characters in length.
     LabelsValue: Labels with user-defined metadata. This field may contain up
       to 64 entries. Label keys and values may be no longer than 63
       characters. Label keys must begin with a lowercase letter and may only
       contain lowercase letters, numeric characters, underscores, and dashes.
 
   Fields:
+    cleanupPolicies: Cleanup policies for this repository. Cleanup policies
+      indicate when certain package versions can be automatically deleted. Map
+      keys are policy IDs supplied by users during policy creation. They must
+      unique within a repository and be under 128 characters in length.
     createTime: The time when the repository was created.
     description: The user-provided description of the repository.
     format: The format of packages that are stored in the repository.
@@ -1741,6 +1792,7 @@ class Repository(_messages.Message):
       PYTHON: Python package format.
       KFP: Kubeflow Pipelines package format.
       GO: GO package format.
+      GENERIC: Generic package format.
     """
     FORMAT_UNSPECIFIED = 0
     DOCKER = 1
@@ -1751,6 +1803,7 @@ class Repository(_messages.Message):
     PYTHON = 6
     KFP = 7
     GO = 8
+    GENERIC = 9
 
   class ModeValueValuesEnum(_messages.Enum):
     r"""The mode of the repository.
@@ -1767,6 +1820,34 @@ class Repository(_messages.Message):
     STANDARD_REPOSITORY = 1
     VIRTUAL_REPOSITORY = 2
     REMOTE_REPOSITORY = 3
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class CleanupPoliciesValue(_messages.Message):
+    r"""Cleanup policies for this repository. Cleanup policies indicate when
+    certain package versions can be automatically deleted. Map keys are policy
+    IDs supplied by users during policy creation. They must unique within a
+    repository and be under 128 characters in length.
+
+    Messages:
+      AdditionalProperty: An additional property for a CleanupPoliciesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type CleanupPoliciesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a CleanupPoliciesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A CleanupPolicy attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('CleanupPolicy', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1795,18 +1876,19 @@ class Repository(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  description = _messages.StringField(2)
-  format = _messages.EnumField('FormatValueValuesEnum', 3)
-  kmsKeyName = _messages.StringField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  mavenConfig = _messages.MessageField('MavenRepositoryConfig', 6)
-  mode = _messages.EnumField('ModeValueValuesEnum', 7)
-  name = _messages.StringField(8)
-  remoteRepositoryConfig = _messages.MessageField('RemoteRepositoryConfig', 9)
-  sizeBytes = _messages.IntegerField(10)
-  updateTime = _messages.StringField(11)
-  virtualRepositoryConfig = _messages.MessageField('VirtualRepositoryConfig', 12)
+  cleanupPolicies = _messages.MessageField('CleanupPoliciesValue', 1)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  format = _messages.EnumField('FormatValueValuesEnum', 4)
+  kmsKeyName = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  mavenConfig = _messages.MessageField('MavenRepositoryConfig', 7)
+  mode = _messages.EnumField('ModeValueValuesEnum', 8)
+  name = _messages.StringField(9)
+  remoteRepositoryConfig = _messages.MessageField('RemoteRepositoryConfig', 10)
+  sizeBytes = _messages.IntegerField(11)
+  updateTime = _messages.StringField(12)
+  virtualRepositoryConfig = _messages.MessageField('VirtualRepositoryConfig', 13)
 
 
 class SetIamPolicyRequest(_messages.Message):
@@ -2010,6 +2092,20 @@ class UploadAptArtifactResponse(_messages.Message):
   aptArtifacts = _messages.MessageField('AptArtifact', 1, repeated=True)
 
 
+class UploadGenericArtifactMediaResponse(_messages.Message):
+  r"""The response to upload a generic artifact.
+
+  Fields:
+    operation: Operation that will be returned to the user.
+  """
+
+  operation = _messages.MessageField('Operation', 1)
+
+
+class UploadGenericArtifactRequest(_messages.Message):
+  r"""The request to upload a generic artifact."""
+
+
 class UploadGoModuleMediaResponse(_messages.Message):
   r"""The response to upload a Go module.
 
@@ -2136,46 +2232,13 @@ class Version(_messages.Message):
 class VirtualRepositoryConfig(_messages.Message):
   r"""Virtual repository configuration.
 
-  Messages:
-    UpstreamPoliciesValue: Policies that configure the upstream artifacts
-      distributed by the Virtual Repository. Upstream policies cannot be set
-      on a standard repository.
-
   Fields:
     upstreamPolicies: Policies that configure the upstream artifacts
       distributed by the Virtual Repository. Upstream policies cannot be set
       on a standard repository.
   """
 
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class UpstreamPoliciesValue(_messages.Message):
-    r"""Policies that configure the upstream artifacts distributed by the
-    Virtual Repository. Upstream policies cannot be set on a standard
-    repository.
-
-    Messages:
-      AdditionalProperty: An additional property for a UpstreamPoliciesValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type
-        UpstreamPoliciesValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a UpstreamPoliciesValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A UpstreamPolicy attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('UpstreamPolicy', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  upstreamPolicies = _messages.MessageField('UpstreamPoliciesValue', 1)
+  upstreamPolicies = _messages.MessageField('UpstreamPolicy', 1, repeated=True)
 
 
 class YumArtifact(_messages.Message):

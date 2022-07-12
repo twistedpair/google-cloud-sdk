@@ -301,6 +301,11 @@
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
+        },
+        "satisfiesPzs": {
+          "description": "Output only. Reserved for future use.",
+          "readOnly": true,
+          "type": "boolean"
         }
       }
     },

@@ -18,6 +18,8 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.core.util import times
 
 
 def GetMessagesModule(version='v2alpha1'):
@@ -41,6 +43,9 @@ def CreateNodeSpec(ref, args, request):
     node_spec.node = tpu_messages.Node()
     node_spec.node.acceleratorType = args.accelerator_type
     node_spec.node.runtimeVersion = args.runtime_version
+
+    node_spec.node.networkConfig = tpu_messages.NetworkConfig()
+    node_spec.node.networkConfig.enableExternalIps = not args.internal_ips
 
     request.queuedResource.tpu.nodeSpec.append(node_spec)
 
@@ -71,3 +76,39 @@ def SetGuaranteed(ref, args, request):
       request.queuedResource.guaranteed = tpu_messages.Guaranteed()
 
   return request
+
+
+def SetValidInterval(ref, args, request):
+  """Combine multiple timing constraints into a valid_interval."""
+  del ref  # unused
+  if ((args.valid_after_duration and args.valid_after_time) or
+      (args.valid_until_duration and args.valid_until_time)):
+    raise exceptions.ConflictingArgumentsException(
+        'Only one timing constraint for each of (start, end) time is permitted')
+  tpu_messages = GetMessagesModule()
+  current_time = times.Now()
+
+  start_time = None
+  if args.valid_after_time:
+    start_time = args.valid_after_time
+  elif args.valid_after_duration:
+    start_time = args.valid_after_duration.GetRelativeDateTime(current_time)
+
+  end_time = None
+  if args.valid_until_time:
+    end_time = args.valid_until_time
+  elif args.valid_until_duration:
+    end_time = args.valid_until_duration.GetRelativeDateTime(current_time)
+
+  if start_time and end_time:
+    valid_interval = tpu_messages.Interval()
+    valid_interval.startTime = times.FormatDateTime(start_time)
+    valid_interval.endTime = times.FormatDateTime(end_time)
+
+    if request.queuedResource is None:
+      request.queuedResource = tpu_messages.QueuedResource()
+    # clear all other queueing policies
+    request.queuedResource.queueingPolicy = tpu_messages.QueueingPolicy()
+    request.queuedResource.queueingPolicy.validInterval = valid_interval
+  return request
+

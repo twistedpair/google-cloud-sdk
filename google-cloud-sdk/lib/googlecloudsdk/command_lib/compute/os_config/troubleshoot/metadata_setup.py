@@ -71,7 +71,7 @@ def _GetMetadataValue(metadata, key):
 
 def Check(project, instance, release_track, exception=None):
   """Checks if the metadata is set up correctly."""
-  response_message = '> Is OS Config agent enabled? '
+  response_message = '> Is the OS Config agent enabled? '
 
   continue_flag = False
   enable_osconfig = None

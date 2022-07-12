@@ -828,6 +828,47 @@
         "query": {
           "description": "Search query.",
           "type": "string"
+        },
+        "facetSelections": {
+          "description": "Facets to be selected.",
+          "type": "array",
+          "items": {
+            "$ref": "Facet"
+          }
+        }
+      }
+    },
+    "Facet": {
+      "id": "Facet",
+      "description": "Facet represents an aggregated buckets of search result items.",
+      "type": "object",
+      "properties": {
+        "key": {
+          "description": "Key of facet, equivalent to the key in FacetConfig in Video AssetType creation.",
+          "type": "string"
+        },
+        "values": {
+          "description": "List of facet values (buckets) representing the search results.",
+          "type": "array",
+          "items": {
+            "$ref": "FacetValue"
+          }
+        }
+      }
+    },
+    "FacetValue": {
+      "id": "FacetValue",
+      "description": "FacetValue represents a single value result in a facet.",
+      "type": "object",
+      "properties": {
+        "stringValue": {
+          "type": "string"
+        },
+        "count": {
+          "description": "Output only. Number of videos or segments corresponding to the facet.",
+          "readOnly": true,
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -841,6 +882,13 @@
           "type": "array",
           "items": {
             "$ref": "SearchResultItem"
+          }
+        },
+        "facets": {
+          "description": "Returned facets from the search results, showing the aggregated buckets.",
+          "type": "array",
+          "items": {
+            "$ref": "Facet"
           }
         },
         "nextPageToken": {

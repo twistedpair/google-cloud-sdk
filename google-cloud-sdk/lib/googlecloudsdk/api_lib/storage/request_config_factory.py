@@ -42,11 +42,14 @@ S3_RESOURCE_ERROR_FIELDS = {
     'public_access_prevention': 'Public Access Prevention',
 }
 S3_RESOURCE_WARNING_FIELDS = {
+    'custom_time': 'Setting Custom Time',
     'default_encryption_key': 'Setting Default Encryption Key',
     'default_event_based_hold': 'Setting Default Event Based Hold',
     'default_storage_class': 'Setting Default Storage Class',
+    'event_based_hold': 'Setting Event-Based Holds',
     'preserve_acl': 'Preserving ACLs',
     'retention_period': 'Setting Retention Period',
+    'temporary_hold': 'Setting Temporary Holds',
     'uniform_bucket_level_access': 'Setting Uniform Bucket Level Access',
 }
 
@@ -272,7 +275,10 @@ class _GcsObjectConfig(_ObjectConfig):
   See super class for additional attributes.
 
   Attributes:
+    event_based_hold (bool|None): An event-based hold should be placed on an
+      object.
     custom_time (datetime|None): Custom time user can set.
+    temporary_hold (bool|None): A temporary hold should be placed on an object.
   """
   # pylint:enable=g-missing-from-attributes
 
@@ -286,8 +292,10 @@ class _GcsObjectConfig(_ObjectConfig):
                custom_time=None,
                decryption_key=None,
                encryption_key=None,
+               event_based_hold=None,
                md5_hash=None,
-               size=None):
+               size=None,
+               temporary_hold=None):
     super(_GcsObjectConfig, self).__init__(
         cache_control=cache_control,
         content_disposition=content_disposition,
@@ -300,12 +308,16 @@ class _GcsObjectConfig(_ObjectConfig):
         md5_hash=md5_hash,
         size=size)
     self.custom_time = custom_time
+    self.event_based_hold = event_based_hold
+    self.temporary_hold = temporary_hold
 
   def __eq__(self, other):
     if not isinstance(other, type(self)):
       return NotImplemented
     return (super(_GcsObjectConfig, self).__eq__(other) and
-            self.custom_time == other.custom_time)
+            self.custom_time == other.custom_time and
+            self.event_based_hold == other.event_based_hold and
+            self.temporary_hold == other.temporary_hold)
 
 
 class _S3ObjectConfig(_ObjectConfig):
@@ -357,8 +369,6 @@ class _GcsRequestConfig(_RequestConfig):
   Attributes:
     gzip_settings (user_request_args_factory.GzipSettings): Contains settings
       for gzipping uploaded files.
-    max_bytes_per_call (int|None): Integer describing maximum number of bytes to
-      write per service call.
     no_clobber (bool): Do not copy if destination resource already exists.
     precondition_generation_match (int|None): Perform request only if generation
       of target object matches the given integer. Ignored for bucket requests.
@@ -369,8 +379,7 @@ class _GcsRequestConfig(_RequestConfig):
 
   def __init__(self,
                gzip_settings=None,
-               max_bytes_per_call=None,
-               no_clobber=False,
+               no_clobber=None,
                precondition_generation_match=None,
                precondition_metageneration_match=None,
                predefined_acl_string=None,
@@ -381,7 +390,6 @@ class _GcsRequestConfig(_RequestConfig):
         predefined_default_acl_string=predefined_default_acl_string,
         resource_args=resource_args)
     self.gzip_settings = gzip_settings
-    self.max_bytes_per_call = max_bytes_per_call
     self.no_clobber = no_clobber
     self.precondition_generation_match = precondition_generation_match
     self.precondition_metageneration_match = precondition_metageneration_match
@@ -391,7 +399,6 @@ class _GcsRequestConfig(_RequestConfig):
       return NotImplemented
     return (super(_GcsRequestConfig, self).__eq__(other) and
             self.gzip_settings == other.gzip_settings and
-            self.max_bytes_per_call == other.max_bytes_per_call and
             self.no_clobber == other.no_clobber and
             self.precondition_generation_match
             == other.precondition_generation_match and
@@ -503,6 +510,8 @@ def _get_request_config_resource_args(url,
       new_resource_args = _GcsObjectConfig()
       if user_resource_args:
         new_resource_args.custom_time = user_resource_args.custom_time
+        new_resource_args.event_based_hold = user_resource_args.event_based_hold
+        new_resource_args.temporary_hold = user_resource_args.temporary_hold
 
     elif url.scheme == storage_url.ProviderPrefix.S3:
       new_resource_args = _S3ObjectConfig()
@@ -564,9 +573,6 @@ def get_request_config(url,
     request_config = _GcsRequestConfig(resource_args=resource_args)
     if user_request_args:
       request_config.gzip_settings = user_request_args.gzip_settings
-      if user_request_args.max_bytes_per_call:
-        request_config.max_bytes_per_call = int(
-            user_request_args.max_bytes_per_call)
       if user_request_args.no_clobber:
         request_config.no_clobber = user_request_args.no_clobber
       if user_request_args.precondition_generation_match:

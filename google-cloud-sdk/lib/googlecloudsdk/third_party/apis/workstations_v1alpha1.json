@@ -493,6 +493,10 @@
         "disablePublicIpAddresses": {
           "description": "Whether instances have no public IP address.",
           "type": "boolean"
+        },
+        "enableNestedVirtualization": {
+          "description": "Whether to enable nested virtualization on instances.",
+          "type": "boolean"
         }
       }
     },
@@ -611,6 +615,31 @@
         }
       }
     },
+    "ListUsableWorkstationConfigsResponse": {
+      "id": "ListUsableWorkstationConfigsResponse",
+      "description": "Response message for ListUsableWorkstationConfigs.",
+      "type": "object",
+      "properties": {
+        "workstationConfigs": {
+          "description": "The requested configs.",
+          "type": "array",
+          "items": {
+            "$ref": "WorkstationConfig"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results, or empty if there are no more results in the list.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Unreachable resources.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "Workstation": {
       "id": "Workstation",
       "description": "A single instance of a developer workstation with its own persistent storage.",
@@ -695,6 +724,31 @@
     "ListWorkstationsResponse": {
       "id": "ListWorkstationsResponse",
       "description": "Response message for ListWorkstations.",
+      "type": "object",
+      "properties": {
+        "workstations": {
+          "description": "The requested workstations.",
+          "type": "array",
+          "items": {
+            "$ref": "Workstation"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results, or empty if there are no more results in the list.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Unreachable resources.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ListUsableWorkstationsResponse": {
+      "id": "ListUsableWorkstationsResponse",
+      "description": "Response message for ListUsableWorkstations.",
       "type": "object",
       "properties": {
         "workstations": {
@@ -1655,6 +1709,42 @@
                       ],
                       "description": "Returns all WorkstationConfigs in the specified cluster."
                     },
+                    "listUsable": {
+                      "id": "workstations.projects.locations.workstationClusters.workstationConfigs.listUsable",
+                      "path": "v1alpha1/{+parent}/workstationConfigs:listUsable",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/workstationClusters/{workstationClustersId}/workstationConfigs:listUsable",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. Parent resource name.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workstationClusters\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "Maximum number of items to return.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "next_page_token value returned from a previous List request, if any.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListUsableWorkstationConfigsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Returns all WorkstationConfigs in the specified cluster on which the caller has the \"workstations.workstationConfigs.useReadOnly\" permission."
+                    },
                     "create": {
                       "id": "workstations.projects.locations.workstationClusters.workstationConfigs.create",
                       "path": "v1alpha1/{+parent}/workstationConfigs",
@@ -1923,6 +2013,42 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Returns all Workstations in the specified cluster."
+                    },
+                    "listUsable": {
+                      "id": "workstations.projects.locations.workstationClusters.workstations.listUsable",
+                      "path": "v1alpha1/{+parent}/workstations:listUsable",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/workstationClusters/{workstationClustersId}/workstations:listUsable",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. Parent resource name.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workstationClusters\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "Maximum number of items to return.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "next_page_token value returned from a previous List request, if any.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListUsableWorkstationsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Returns all Workstations in the specified cluster on which the caller has the \"workstations.workstations.use\" permission."
                     },
                     "create": {
                       "id": "workstations.projects.locations.workstationClusters.workstations.create",

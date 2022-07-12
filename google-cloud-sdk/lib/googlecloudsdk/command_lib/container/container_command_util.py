@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.container import api_adapter
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
+from googlecloudsdk.command_lib.container import flags
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
@@ -295,6 +296,7 @@ def ParseUpdateOptionsBase(args, locations):
       max_nodes=args.max_nodes,
       total_min_nodes=args.total_min_nodes,
       total_max_nodes=args.total_max_nodes,
+      location_policy=args.location_policy,
       node_pool=args.node_pool,
       locations=locations,
       enable_master_authorized_networks=args.enable_master_authorized_networks,
@@ -360,5 +362,7 @@ def ParseUpdateOptionsBase(args, locations):
           'will fail to terminate. Any new pods that try to use those '
           'PersistentVolumes will also fail to start.',
           cancel_on_no=True)
+
+  flags.WarnForLocationPolicyDefault(args)
 
   return opts

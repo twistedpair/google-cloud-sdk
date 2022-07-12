@@ -22,6 +22,8 @@ from apitools.base.py import encoding
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import base
+from googlecloudsdk.command_lib.transcoder import util
+from googlecloudsdk.command_lib.util.args import labels_util
 
 VERSION_MAP = {
     base.ReleaseTrack.ALPHA: 'v1beta1',
@@ -44,19 +46,23 @@ class TemplatesClient(object):
     self._service = self.client.projects_locations_jobTemplates
     self._template_class = self.client.MESSAGES_MODULE.JobTemplate
 
-  def Create(self, parent_ref, template_id, template_json):
+  def Create(self, parent_ref, template_id, args):
     """Create a job template.
 
     Args:
       parent_ref: a Resource reference to a transcoder.projects.locations
         resource for the parent of this template.
       template_id: the ID of the resource to create.
-      template_json: job template in json format.
+      args: arguments to create a job template.
 
     Returns:
       JobTemplate: Template created
     """
+    template_json = util.GetContent(args.file, args.json)
+    labels = labels_util.ParseCreateArgs(args,
+                                         self.message.JobTemplate.LabelsValue)
     job_template = encoding.JsonToMessage(self._template_class, template_json)
+    job_template.labels = labels or job_template.labels
 
     req = self.message.TranscoderProjectsLocationsJobTemplatesCreateRequest(
         parent=parent_ref.RelativeName(),

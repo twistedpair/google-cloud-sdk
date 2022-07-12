@@ -1040,6 +1040,239 @@ class GetPolicyOptions(_messages.Message):
   requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
+class Header(_messages.Message):
+  r"""Defines a header message. A header can have a key and a value.
+
+  Fields:
+    key: A byte attribute.
+    value: A byte attribute.
+  """
+
+  key = _messages.BytesField(1)
+  value = _messages.BytesField(2)
+
+
+class HeaderOverride(_messages.Message):
+  r"""Wraps the Header object.
+
+  Fields:
+    header: header embodying a key and a value.
+  """
+
+  header = _messages.MessageField('Header', 1)
+
+
+class HttpRequest(_messages.Message):
+  r"""HTTP request. The task will be pushed to the worker as an HTTP request.
+  An HTTP request embodies a url, an http method, headers, body and
+  authorization for the http task.
+
+  Enums:
+    HttpMethodValueValuesEnum: The HTTP method to use for the request. The
+      default is POST.
+
+  Messages:
+    HeadersValue: HTTP request headers. This map contains the header field
+      names and values. Headers can be set when running the task is created or
+      task is created. These headers represent a subset of the headers that
+      will accompany the task's HTTP request. Some HTTP request headers will
+      be ignored or replaced. A partial list of headers that will be ignored
+      or replaced is: * Any header that is prefixed with "X-Google-Cloud-
+      Tasks-" will be treated as service header. Service headers define
+      properties of the task and are predefined in CloudTask. * Host: This
+      will be computed by Cloud Tasks and derived from HttpRequest.url. *
+      Content-Length: This will be computed by Cloud Tasks. * User-Agent: This
+      will be set to `"Google-Cloud-Tasks"`. * `X-Google-*`: Google use only.
+      * `X-AppEngine-*`: Google use only. `Content-Type` won't be set by Cloud
+      Tasks. You can explicitly set `Content-Type` to a media type when the
+      task is created. For example, `Content-Type` can be set to
+      `"application/octet-stream"` or `"application/json"`. Headers which can
+      have multiple values (according to RFC2616) can be specified using
+      comma-separated values. The size of the headers must be less than 80KB.
+
+  Fields:
+    body: HTTP request body. A request body is allowed only if the HTTP method
+      is POST, PUT, or PATCH. It is an error to set body on a task with an
+      incompatible HttpMethod.
+    headers: HTTP request headers. This map contains the header field names
+      and values. Headers can be set when running the task is created or task
+      is created. These headers represent a subset of the headers that will
+      accompany the task's HTTP request. Some HTTP request headers will be
+      ignored or replaced. A partial list of headers that will be ignored or
+      replaced is: * Any header that is prefixed with "X-Google-Cloud-Tasks-"
+      will be treated as service header. Service headers define properties of
+      the task and are predefined in CloudTask. * Host: This will be computed
+      by Cloud Tasks and derived from HttpRequest.url. * Content-Length: This
+      will be computed by Cloud Tasks. * User-Agent: This will be set to
+      `"Google-Cloud-Tasks"`. * `X-Google-*`: Google use only. *
+      `X-AppEngine-*`: Google use only. `Content-Type` won't be set by Cloud
+      Tasks. You can explicitly set `Content-Type` to a media type when the
+      task is created. For example, `Content-Type` can be set to
+      `"application/octet-stream"` or `"application/json"`. Headers which can
+      have multiple values (according to RFC2616) can be specified using
+      comma-separated values. The size of the headers must be less than 80KB.
+    httpMethod: The HTTP method to use for the request. The default is POST.
+    oauthToken: If specified, an [OAuth
+      token](https://developers.google.com/identity/protocols/OAuth2) will be
+      generated and attached as an `Authorization` header in the HTTP request.
+      This type of authorization should generally only be used when calling
+      Google APIs hosted on *.googleapis.com.
+    oidcToken: If specified, an
+      [OIDC](https://developers.google.com/identity/protocols/OpenIDConnect)
+      token will be generated and attached as an `Authorization` header in the
+      HTTP request. This type of authorization can be used for many scenarios,
+      including calling Cloud Run, or endpoints where you intend to validate
+      the token yourself.
+    url: Required. The full url path that the request will be sent to. This
+      string must begin with either "http://" or "https://". Some examples
+      are: `http://acme.com` and `https://acme.com/sales:8080`. Cloud Tasks
+      will encode some characters for safety and compatibility. The maximum
+      allowed URL length is 2083 characters after encoding. The `Location`
+      header response from a redirect response [`300` - `399`] may be
+      followed. The redirect is not counted as a separate attempt.
+  """
+
+  class HttpMethodValueValuesEnum(_messages.Enum):
+    r"""The HTTP method to use for the request. The default is POST.
+
+    Values:
+      HTTP_METHOD_UNSPECIFIED: HTTP method unspecified
+      POST: HTTP POST
+      GET: HTTP GET
+      HEAD: HTTP HEAD
+      PUT: HTTP PUT
+      DELETE: HTTP DELETE
+    """
+    HTTP_METHOD_UNSPECIFIED = 0
+    POST = 1
+    GET = 2
+    HEAD = 3
+    PUT = 4
+    DELETE = 5
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class HeadersValue(_messages.Message):
+    r"""HTTP request headers. This map contains the header field names and
+    values. Headers can be set when running the task is created or task is
+    created. These headers represent a subset of the headers that will
+    accompany the task's HTTP request. Some HTTP request headers will be
+    ignored or replaced. A partial list of headers that will be ignored or
+    replaced is: * Any header that is prefixed with "X-Google-Cloud-Tasks-"
+    will be treated as service header. Service headers define properties of
+    the task and are predefined in CloudTask. * Host: This will be computed by
+    Cloud Tasks and derived from HttpRequest.url. * Content-Length: This will
+    be computed by Cloud Tasks. * User-Agent: This will be set to `"Google-
+    Cloud-Tasks"`. * `X-Google-*`: Google use only. * `X-AppEngine-*`: Google
+    use only. `Content-Type` won't be set by Cloud Tasks. You can explicitly
+    set `Content-Type` to a media type when the task is created. For example,
+    `Content-Type` can be set to `"application/octet-stream"` or
+    `"application/json"`. Headers which can have multiple values (according to
+    RFC2616) can be specified using comma-separated values. The size of the
+    headers must be less than 80KB.
+
+    Messages:
+      AdditionalProperty: An additional property for a HeadersValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type HeadersValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a HeadersValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  body = _messages.BytesField(1)
+  headers = _messages.MessageField('HeadersValue', 2)
+  httpMethod = _messages.EnumField('HttpMethodValueValuesEnum', 3)
+  oauthToken = _messages.MessageField('OAuthToken', 4)
+  oidcToken = _messages.MessageField('OidcToken', 5)
+  url = _messages.StringField(6)
+
+
+class HttpTarget(_messages.Message):
+  r"""HTTP target. When specified as a Queue, all the tasks with [HttpRequest]
+  will be overridden according to the target.
+
+  Enums:
+    HttpMethodValueValuesEnum: The HTTP method to use for the request. When
+      specified, it will override HttpRequest for the task. Note that if the
+      value is set to HttpMethod the HttpRequest of the task will be ignored
+      at execution time.
+
+  Fields:
+    headerOverrides: HTTP target headers. This map contains the header field
+      names and values. Headers will be set when running the task is created
+      and/or task is created. These headers represent a subset of the headers
+      that will accompany the task's HTTP request. Some HTTP request headers
+      will be ignored or replaced. A partial list of headers that will be
+      ignored or replaced is: * Any header that is prefixed with "X-Google-
+      Cloud-Tasks-" will be treated as service header. Service headers define
+      properties of the task and are predefined in CloudTask. * Host: This
+      will be computed by Cloud Tasks and derived from HttpRequest.url. *
+      Content-Length: This will be computed by Cloud Tasks. * User-Agent: This
+      will be set to `"Google-Cloud-Tasks"`. * `X-Google-*`: Google use only.
+      * `X-AppEngine-*`: Google use only. `Content-Type` won't be set by Cloud
+      Tasks. You can explicitly set `Content-Type` to a media type when the
+      task is created. For example, `Content-Type` can be set to
+      `"application/octet-stream"` or `"application/json"`. Headers which can
+      have multiple values (according to RFC2616) can be specified using
+      comma-separated values. The size of the headers must be less than 80KB.
+      Queue-level headers to override headers of all the tasks in the queue.
+    httpMethod: The HTTP method to use for the request. When specified, it
+      will override HttpRequest for the task. Note that if the value is set to
+      HttpMethod the HttpRequest of the task will be ignored at execution
+      time.
+    oauthToken: If specified, an [OAuth
+      token](https://developers.google.com/identity/protocols/OAuth2) will be
+      generated and attached as an `Authorization` header in the HTTP request.
+      This type of authorization should generally only be used when calling
+      Google APIs hosted on *.googleapis.com.
+    oidcToken: If specified, an
+      [OIDC](https://developers.google.com/identity/protocols/OpenIDConnect)
+      token will be generated and attached as an `Authorization` header in the
+      HTTP request. This type of authorization can be used for many scenarios,
+      including calling Cloud Run, or endpoints where you intend to validate
+      the token yourself.
+    uriOverride: Uri override. When specified modifies the execution Uri for
+      all the tasks in the queue.
+  """
+
+  class HttpMethodValueValuesEnum(_messages.Enum):
+    r"""The HTTP method to use for the request. When specified, it will
+    override HttpRequest for the task. Note that if the value is set to
+    HttpMethod the HttpRequest of the task will be ignored at execution time.
+
+    Values:
+      HTTP_METHOD_UNSPECIFIED: HTTP method unspecified
+      POST: HTTP POST
+      GET: HTTP GET
+      HEAD: HTTP HEAD
+      PUT: HTTP PUT
+      DELETE: HTTP DELETE
+    """
+    HTTP_METHOD_UNSPECIFIED = 0
+    POST = 1
+    GET = 2
+    HEAD = 3
+    PUT = 4
+    DELETE = 5
+
+  headerOverrides = _messages.MessageField('HeaderOverride', 1, repeated=True)
+  httpMethod = _messages.EnumField('HttpMethodValueValuesEnum', 2)
+  oauthToken = _messages.MessageField('OAuthToken', 3)
+  oidcToken = _messages.MessageField('OidcToken', 4)
+  uriOverride = _messages.MessageField('UriOverride', 5)
+
+
 class LeaseTasksRequest(_messages.Message):
   r"""Request message for leasing tasks using LeaseTasks.
 
@@ -1253,6 +1486,47 @@ class Location(_messages.Message):
   name = _messages.StringField(5)
 
 
+class OAuthToken(_messages.Message):
+  r"""Contains information needed for generating an [OAuth
+  token](https://developers.google.com/identity/protocols/OAuth2). This type
+  of authorization should generally only be used when calling Google APIs
+  hosted on *.googleapis.com.
+
+  Fields:
+    scope: OAuth scope to be used for generating OAuth access token. If not
+      specified, "https://www.googleapis.com/auth/cloud-platform" will be
+      used.
+    serviceAccountEmail: [Service account
+      email](https://cloud.google.com/iam/docs/service-accounts) to be used
+      for generating OAuth token. The service account must be within the same
+      project as the queue. The caller must have iam.serviceAccounts.actAs
+      permission for the service account.
+  """
+
+  scope = _messages.StringField(1)
+  serviceAccountEmail = _messages.StringField(2)
+
+
+class OidcToken(_messages.Message):
+  r"""Contains information needed for generating an [OpenID Connect
+  token](https://developers.google.com/identity/protocols/OpenIDConnect). This
+  type of authorization can be used for many scenarios, including calling
+  Cloud Run, or endpoints where you intend to validate the token yourself.
+
+  Fields:
+    audience: Audience to be used when generating OIDC token. If not
+      specified, the URI specified in target will be used.
+    serviceAccountEmail: [Service account
+      email](https://cloud.google.com/iam/docs/service-accounts) to be used
+      for generating OIDC token. The service account must be within the same
+      project as the queue. The caller must have iam.serviceAccounts.actAs
+      permission for the service account.
+  """
+
+  audience = _messages.StringField(1)
+  serviceAccountEmail = _messages.StringField(2)
+
+
 class PauseQueueRequest(_messages.Message):
   r"""Request message for PauseQueue."""
 
@@ -1379,6 +1653,8 @@ class Queue(_messages.Message):
   Fields:
     appEngineHttpTarget: App Engine HTTP target. An App Engine queue is a
       queue that has an AppEngineHttpTarget.
+    httpTarget: An http_target is used to override the target values for HTTP
+      tasks.
     name: Caller-specified and required in CreateQueue, after which it becomes
       output only. The queue name. The queue name must have the following
       format: `projects/PROJECT_ID/locations/LOCATION_ID/queues/QUEUE_ID` *
@@ -1474,15 +1750,16 @@ class Queue(_messages.Message):
     DISABLED = 3
 
   appEngineHttpTarget = _messages.MessageField('AppEngineHttpTarget', 1)
-  name = _messages.StringField(2)
-  pullTarget = _messages.MessageField('PullTarget', 3)
-  purgeTime = _messages.StringField(4)
-  rateLimits = _messages.MessageField('RateLimits', 5)
-  retryConfig = _messages.MessageField('RetryConfig', 6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
-  stats = _messages.MessageField('QueueStats', 8)
-  taskTtl = _messages.StringField(9)
-  tombstoneTtl = _messages.StringField(10)
+  httpTarget = _messages.MessageField('HttpTarget', 2)
+  name = _messages.StringField(3)
+  pullTarget = _messages.MessageField('PullTarget', 4)
+  purgeTime = _messages.StringField(5)
+  rateLimits = _messages.MessageField('RateLimits', 6)
+  retryConfig = _messages.MessageField('RetryConfig', 7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  stats = _messages.MessageField('QueueStats', 9)
+  taskTtl = _messages.StringField(10)
+  tombstoneTtl = _messages.StringField(11)
 
 
 class QueueStats(_messages.Message):
@@ -1876,6 +2153,8 @@ class Task(_messages.Message):
       An App Engine task is a task that has AppEngineHttpRequest set.
     createTime: Output only. The time that the task was created. `create_time`
       will be truncated to the nearest second.
+    httpRequest: HTTP request that is sent to the task's target. An HTTP task
+      is a task that has HttpRequest set.
     name: Optionally caller-specified in CreateTask. The task name. The task
       name must have the following format: `projects/PROJECT_ID/locations/LOCA
       TION_ID/queues/QUEUE_ID/tasks/TASK_ID` * `PROJECT_ID` can contain
@@ -1926,11 +2205,12 @@ class Task(_messages.Message):
 
   appEngineHttpRequest = _messages.MessageField('AppEngineHttpRequest', 1)
   createTime = _messages.StringField(2)
-  name = _messages.StringField(3)
-  pullMessage = _messages.MessageField('PullMessage', 4)
-  scheduleTime = _messages.StringField(5)
-  status = _messages.MessageField('TaskStatus', 6)
-  view = _messages.EnumField('ViewValueValuesEnum', 7)
+  httpRequest = _messages.MessageField('HttpRequest', 3)
+  name = _messages.StringField(4)
+  pullMessage = _messages.MessageField('PullMessage', 5)
+  scheduleTime = _messages.StringField(6)
+  status = _messages.MessageField('TaskStatus', 7)
+  view = _messages.EnumField('ViewValueValuesEnum', 8)
 
 
 class TaskStatus(_messages.Message):
@@ -1978,6 +2258,51 @@ class TestIamPermissionsResponse(_messages.Message):
   """
 
   permissions = _messages.StringField(1, repeated=True)
+
+
+class UriOverride(_messages.Message):
+  r"""Uri Override. When specified, all the HTTP tasks inside the queue will
+  be partially or fully overridden depending on the configured values.
+
+  Enums:
+    SchemeValueValuesEnum: Scheme override. When specified, the Uri scheme is
+      replaced by the provided value.
+
+  Fields:
+    host: Host override. When specified, the host part of url will be
+      overridden. For example, if the original Uri is
+      "https://www.google.com", and host is set to "example.net", the
+      overridden Uri will be "https://example.net".
+    path: Uri path. Will be used as the path for the current Uri (replaces any
+      existing path of the task url).
+    port: Port override. When specified, the port part of Uri will be replaced
+      by the provided value. For instance, for a Uri http://www.google.com/foo
+      and port=123 the overridden Uri becomes http://www.google.com:123/foo.
+    query: Uri Query. Will replace the query part of the task uri.
+    scheme: Scheme override. When specified, the Uri scheme is replaced by the
+      provided value.
+  """
+
+  class SchemeValueValuesEnum(_messages.Enum):
+    r"""Scheme override. When specified, the Uri scheme is replaced by the
+    provided value.
+
+    Values:
+      SCHEME_UNSPECIFIED: Scheme unspecified. Defaults to HTTPS.
+      HTTP: Convert the scheme to HTTP, e.g., https://www.google.ca will
+        change to http://www.google.ca.
+      HTTPS: Convert the scheme to HTTPS, e.g., http://www.google.ca will
+        change to https://www.google.ca.
+    """
+    SCHEME_UNSPECIFIED = 0
+    HTTP = 1
+    HTTPS = 2
+
+  host = _messages.StringField(1)
+  path = _messages.StringField(2)
+  port = _messages.IntegerField(3)
+  query = _messages.StringField(4)
+  scheme = _messages.EnumField('SchemeValueValuesEnum', 5)
 
 
 encoding.AddCustomJsonFieldMapping(

@@ -199,7 +199,7 @@ def _GetToolArgs(interpreter, interpreter_args, executable_path, *args):
   return tool_args
 
 
-def _GetToolEnv(env=None):
+def GetToolEnv(env=None):
   """Generate the environment that should be used for the subprocess.
 
   Args:
@@ -328,7 +328,7 @@ class _ProcessHolder(object):
 
 
 @contextlib.contextmanager
-def _ReplaceEnv(**env_vars):
+def ReplaceEnv(**env_vars):
   """Temporarily set process environment variables."""
   old_environ = dict(os.environ)
   os.environ.update(env_vars)
@@ -369,7 +369,7 @@ def _Exec(args,
       # that happens.
       # https://bugs.python.org/issue19264
       args = [encoding.Encode(a) for a in args]
-    p = subprocess.Popen(args, env=_GetToolEnv(env=env), **extra_popen_kwargs)
+    p = subprocess.Popen(args, env=GetToolEnv(env=env), **extra_popen_kwargs)
   except OSError as err:
     if err.errno == errno.EACCES:
       raise PermissionError(err.strerror)
@@ -484,7 +484,7 @@ def Subprocess(args, env=None, **extra_popen_kwargs):
   try:
     if args and isinstance(args, list):
       args = [encoding.Encode(a) for a in args]
-    p = subprocess.Popen(args, env=_GetToolEnv(env=env), **extra_popen_kwargs)
+    p = subprocess.Popen(args, env=GetToolEnv(env=env), **extra_popen_kwargs)
   except OSError as err:
     if err.errno == errno.EACCES:
       raise PermissionError(err.strerror)
@@ -530,7 +530,7 @@ def _StreamSubprocessOutput(proc,
   """Log stdout and stderr output from running sub-process."""
   stdout = []
   stderr = []
-  with _ReplaceEnv(PYTHONUNBUFFERED='1'):
+  with ReplaceEnv(PYTHONUNBUFFERED='1'):
     while True:
       out_line = proc.stdout.readline() or b''
       err_line = proc.stderr.readline() or b''
@@ -616,7 +616,7 @@ def ExecWithStreamingOutput(args,
   # started and the original is killed.  When running in a shell, the prompt
   # returns as soon as the parent is killed even though the child is still
   # running.  subprocess waits for the new process to finish before returning.
-  env = _GetToolEnv(env=env)
+  env = GetToolEnv(env=env)
   process_holder = _ProcessHolder()
   with _ReplaceSignal(signal.SIGTERM, process_holder.Handler):
     with _ReplaceSignal(signal.SIGINT, process_holder.Handler):
@@ -726,7 +726,7 @@ def ExecWithStreamingOutputNonThreaded(args,
   # started and the original is killed.  When running in a shell, the prompt
   # returns as soon as the parent is killed even though the child is still
   # running.  subprocess waits for the new process to finish before returning.
-  env = _GetToolEnv(env=env)
+  env = GetToolEnv(env=env)
   process_holder = _ProcessHolder()
   with _ReplaceSignal(signal.SIGTERM, process_holder.Handler):
     with _ReplaceSignal(signal.SIGINT, process_holder.Handler):

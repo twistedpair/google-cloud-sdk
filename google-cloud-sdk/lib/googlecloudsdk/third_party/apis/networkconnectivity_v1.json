@@ -1870,7 +1870,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Deactivates a Network Connectivity Center spoke. A deactivated spoke can't be used to connect to the Google Cloud network. When you deactivate a spoke, Network Connectivity Center retains details about the spoke so that you can reactivate it later."
+                  "description": "Deactivates a Network Connectivity Center spoke. When you deactivate a spoke, it can't connect to other spokes that are attached to the same hub."
                 },
                 "activate": {
                   "id": "networkconnectivity.projects.locations.spokes.activate",
@@ -1898,7 +1898,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Activates a Network Connectivity Center spoke. By activating a spoke, you permit connectivity through the spoke's linked resources to the Google Cloud network."
+                  "description": "Activates a Network Connectivity Center spoke. By activating a spoke, you permit connectivity between it and other spokes that are attached to the same hub."
                 },
                 "delete": {
                   "id": "networkconnectivity.projects.locations.spokes.delete",

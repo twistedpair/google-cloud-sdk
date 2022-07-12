@@ -18,7 +18,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 
 
@@ -72,12 +71,11 @@ def ValidateSetPasswordRequest(args):
         'while discarding the old password.')
 
 
-def CreatePasswordPolicyFromArgs(sql_messages, release_track, args):
+def CreatePasswordPolicyFromArgs(sql_messages, args):
   """Generates password policy for the user.
 
   Args:
     sql_messages: module, The messages module that should be used.
-    release_track: base.ReleaseTrack, the release track that this was run under.
     args: argparse.Namespace, The arguments that this command was invoked with.
 
   Returns:
@@ -91,15 +89,10 @@ def CreatePasswordPolicyFromArgs(sql_messages, release_track, args):
   if hasattr(args, 'clear_password_policy'):
     clear_password_policy = args.clear_password_policy
 
-  # enable_password_verification is only supported in the ALPHA track at this
-  # time, but will be expanded to BETA and GA closer to release.
-  enable_password_verification = None
-  if release_track == base.ReleaseTrack.ALPHA:
-    enable_password_verification = args.password_policy_enable_password_verification
-
   allowed_failed_attempts = args.password_policy_allowed_failed_attempts
   password_expiration_duration = args.password_policy_password_expiration_duration
   enable_failed_attempts_check = args.password_policy_enable_failed_attempts_check
+  enable_password_verification = args.password_policy_enable_password_verification
 
   should_generate_policy = any([
       allowed_failed_attempts is not None,

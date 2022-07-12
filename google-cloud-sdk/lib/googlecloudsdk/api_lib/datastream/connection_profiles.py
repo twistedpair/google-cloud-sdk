@@ -158,6 +158,8 @@ class ConnectionProfilesClient:
     elif cp_type == 'GOOGLE-CLOUD-STORAGE':
       connection_profile_obj.gcsProfile = self._GetGCSProfile(
           args, release_track)
+    elif cp_type == 'BIGQUERY':
+      connection_profile_obj.bigqueryProfile = self._messages.BigQueryProfile()
     else:
       raise exceptions.InvalidArgumentException(
           cp_type,
@@ -348,6 +350,9 @@ class ConnectionProfilesClient:
     elif cp_type == 'GOOGLE-CLOUD-STORAGE':
       self._UpdateGCSProfile(connection_profile, release_track, args,
                              update_fields)
+    elif cp_type == 'BIGQUERY':
+      # There are currently no parameters that can be updated in a bigquery CP.
+      pass
     else:
       raise exceptions.InvalidArgumentException(
           cp_type,

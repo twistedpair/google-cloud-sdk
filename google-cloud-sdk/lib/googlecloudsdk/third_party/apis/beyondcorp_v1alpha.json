@@ -2071,11 +2071,44 @@
         }
       }
     },
+    "GoogleCloudBeyondcorpAppconnectorsV1alphaRemoteAgentDetails": {
+      "id": "GoogleCloudBeyondcorpAppconnectorsV1alphaRemoteAgentDetails",
+      "description": "RemoteAgentDetails reflects the details of a remote agent.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "RemoteAgentDetails": {
       "id": "RemoteAgentDetails",
       "description": "RemoteAgentDetails reflects the details of a remote agent.",
       "type": "object",
       "properties": {
+      }
+    },
+    "GoogleCloudBeyondcorpAppconnectorsV1alphaContainerHealthDetails": {
+      "id": "GoogleCloudBeyondcorpAppconnectorsV1alphaContainerHealthDetails",
+      "description": "ContainerHealthDetails reflects the health details of a container.",
+      "type": "object",
+      "properties": {
+        "expectedConfigVersion": {
+          "description": "The version of the expected config.",
+          "type": "string"
+        },
+        "currentConfigVersion": {
+          "description": "The version of the current config.",
+          "type": "string"
+        },
+        "extendedStatus": {
+          "description": "The extended status. Such as ExitCode, StartedAt, FinishedAt, etc.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "errorMsg": {
+          "description": "The latest error message.",
+          "type": "string"
+        }
       }
     },
     "ContainerHealthDetails": {

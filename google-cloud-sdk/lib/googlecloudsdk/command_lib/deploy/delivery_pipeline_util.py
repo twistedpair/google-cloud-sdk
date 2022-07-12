@@ -62,11 +62,33 @@ def PipelineToPipelineRef(pipeline):
   return pipeline_ref
 
 
-def ThrowIfPipelineSuspended(pipeline_ref, suspended_pipeline_msg):
+def GetPipeline(pipeline_name):
+  """Gets the delivery pipeline and returns the value of its suspended field.
+
+  Args:
+    pipeline_name: str, the canonical resource name of the delivery pipeline
+
+  Returns:
+    The pipeline object
+  Raises:
+    apitools.base.py.HttpError
+  """
+  try:
+    pipeline_obj = delivery_pipeline.DeliveryPipelinesClient().Get(
+        pipeline_name)
+    return pipeline_obj
+  except apitools_exceptions.HttpError as error:
+    log.debug('Failed to get pipeline {}: {}'.format(pipeline_name,
+                                                     error.content))
+    log.status.Print('Unable to get delivery pipeline {}'.format(pipeline_name))
+    raise error
+
+
+def ThrowIfPipelineSuspended(pipeline_obj, suspended_pipeline_msg):
   """Checks if the delivery pipeline associated with the release is suspended.
 
   Args:
-    pipeline_ref: protorpc.messages.Message, delivery pipeline object.
+    pipeline_obj: protorpc.messages.Message, delivery pipeline object.
     suspended_pipeline_msg: str, error msg to show the user if the pipeline is
       suspended.
 
@@ -74,29 +96,7 @@ def ThrowIfPipelineSuspended(pipeline_ref, suspended_pipeline_msg):
     googlecloudsdk.command_lib.deploy.PipelineSuspendedError if the pipeline is
     suspended
   """
-  if _PipelineSuspended(pipeline_ref.RelativeName()):
+  if pipeline_obj.suspended:
     raise cd_exceptions.PipelineSuspendedError(
-        pipeline_name=pipeline_ref.RelativeName(),
+        pipeline_name=pipeline_obj.name,
         failed_activity_msg=suspended_pipeline_msg)
-
-
-def _PipelineSuspended(pipeline_name):
-  """Gets the delivery pipeline and returns the value of its suspended field.
-
-  Args:
-    pipeline_name: str, the canonical resource name of the delivery pipeline
-
-  Returns:
-    True is the pipeline is suspended, false otherwise.
-  Raises:
-    apitools.base.py.HttpError
-  """
-  try:
-    pipeline_obj = delivery_pipeline.DeliveryPipelinesClient().Get(
-        pipeline_name)
-    return pipeline_obj.suspended
-  except apitools_exceptions.HttpError as error:
-    log.debug('Failed to get pipeline {}: {}'.format(pipeline_name,
-                                                     error.content))
-    log.status.Print('Unable to get delivery pipeline {}'.format(pipeline_name))
-    raise error

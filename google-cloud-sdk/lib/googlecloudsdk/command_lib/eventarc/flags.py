@@ -662,7 +662,7 @@ def AddCryptoKeyArg(parser, required=False, hidden=False, with_clear=True):
       '--crypto-key',
       required=required,
       hidden=hidden,
-      help='The fully qualified name of the crypto key to use for '
+      help='Fully qualified name of the crypto key to use for '
       'customer-managed encryption. If this is unspecified, Google-managed '
       'keys will be used for encryption.')
 

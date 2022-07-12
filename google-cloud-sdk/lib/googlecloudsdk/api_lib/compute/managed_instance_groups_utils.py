@@ -1545,7 +1545,7 @@ def ApplyInstanceRedistributionTypeToUpdatePolicy(
     update_policy.instanceRedistributionType = (
         client.messages.InstanceGroupManagerUpdatePolicy.
         InstanceRedistributionTypeValueValuesEnum)(
-            instance_redistribution_type)
+            instance_redistribution_type.upper())
   return update_policy
 
 

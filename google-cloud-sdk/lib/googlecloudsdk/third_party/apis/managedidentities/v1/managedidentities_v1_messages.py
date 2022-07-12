@@ -492,11 +492,11 @@ class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message)
     LabelsValue: Optional. Resource labels to represent user provided
       metadata. Each label is a key-value pair, where both the key and the
       value are arbitrary strings provided by the user.
-    MaintenancePolicyNamesValue: Deprecated. The MaintenancePolicies that have
-      been attached to the instance. The key must be of the type name of the
-      oneof policy name defined in MaintenancePolicy, and the referenced
-      policy must define the same policy type. For complete details of
-      MaintenancePolicy, please refer to go/cloud-saas-mw-ug.
+    MaintenancePolicyNamesValue: Optional. Deprecated. The MaintenancePolicies
+      that have been attached to the instance. The key must be of the type
+      name of the oneof policy name defined in MaintenancePolicy, and the
+      referenced policy must define the same policy type. For complete details
+      of MaintenancePolicy, please refer to go/cloud-saas-mw-ug.
     MaintenanceSchedulesValue: The MaintenanceSchedule contains the scheduling
       information of published maintenance schedule with same key as
       software_versions.
@@ -526,11 +526,11 @@ class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message)
     labels: Optional. Resource labels to represent user provided metadata.
       Each label is a key-value pair, where both the key and the value are
       arbitrary strings provided by the user.
-    maintenancePolicyNames: Deprecated. The MaintenancePolicies that have been
-      attached to the instance. The key must be of the type name of the oneof
-      policy name defined in MaintenancePolicy, and the referenced policy must
-      define the same policy type. For complete details of MaintenancePolicy,
-      please refer to go/cloud-saas-mw-ug.
+    maintenancePolicyNames: Optional. Deprecated. The MaintenancePolicies that
+      have been attached to the instance. The key must be of the type name of
+      the oneof policy name defined in MaintenancePolicy, and the referenced
+      policy must define the same policy type. For complete details of
+      MaintenancePolicy, please refer to go/cloud-saas-mw-ug.
     maintenanceSchedules: The MaintenanceSchedule contains the scheduling
       information of published maintenance schedule with same key as
       software_versions.
@@ -617,8 +617,8 @@ class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MaintenancePolicyNamesValue(_messages.Message):
-    r"""Deprecated. The MaintenancePolicies that have been attached to the
-    instance. The key must be of the type name of the oneof policy name
+    r"""Optional. Deprecated. The MaintenancePolicies that have been attached
+    to the instance. The key must be of the type name of the oneof policy name
     defined in MaintenancePolicy, and the referenced policy must define the
     same policy type. For complete details of MaintenancePolicy, please refer
     to go/cloud-saas-mw-ug.
@@ -815,9 +815,8 @@ class GoogleCloudSaasacceleratorManagementProvidersV1MaintenanceSettings(_messag
       attached to the instance. The key must be of the type name of the oneof
       policy name defined in MaintenancePolicy, and the embedded policy must
       define the same policy type. For complete details of MaintenancePolicy,
-      please refer to go/cloud-saas-mw-ug. If only the name is needed (like in
-      the deprecated Instance.maintenance_policy_names field) then only
-      populate MaintenancePolicy.name.
+      please refer to go/cloud-saas-mw-ug. If only the name is needed, then
+      only populate MaintenancePolicy.name.
 
   Fields:
     exclude: Optional. Exclude instance from maintenance. When true, rollout
@@ -829,9 +828,8 @@ class GoogleCloudSaasacceleratorManagementProvidersV1MaintenanceSettings(_messag
       attached to the instance. The key must be of the type name of the oneof
       policy name defined in MaintenancePolicy, and the embedded policy must
       define the same policy type. For complete details of MaintenancePolicy,
-      please refer to go/cloud-saas-mw-ug. If only the name is needed (like in
-      the deprecated Instance.maintenance_policy_names field) then only
-      populate MaintenancePolicy.name.
+      please refer to go/cloud-saas-mw-ug. If only the name is needed, then
+      only populate MaintenancePolicy.name.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -840,8 +838,7 @@ class GoogleCloudSaasacceleratorManagementProvidersV1MaintenanceSettings(_messag
     instance. The key must be of the type name of the oneof policy name
     defined in MaintenancePolicy, and the embedded policy must define the same
     policy type. For complete details of MaintenancePolicy, please refer to
-    go/cloud-saas-mw-ug. If only the name is needed (like in the deprecated
-    Instance.maintenance_policy_names field) then only populate
+    go/cloud-saas-mw-ug. If only the name is needed, then only populate
     MaintenancePolicy.name.
 
     Messages:

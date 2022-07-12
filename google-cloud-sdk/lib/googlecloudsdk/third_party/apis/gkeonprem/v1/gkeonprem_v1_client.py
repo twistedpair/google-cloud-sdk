@@ -1311,7 +1311,7 @@ class GkeonpremV1(base_api.BaseApiClient):
         method_id='gkeonprem.projects.locations.vmwareClusters.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['pageSize', 'pageToken', 'showDeleted'],
+        query_params=['filter', 'pageSize', 'pageToken', 'showDeleted'],
         relative_path='v1/{+parent}/vmwareClusters',
         request_field='',
         request_type_name='GkeonpremProjectsLocationsVmwareClustersListRequest',

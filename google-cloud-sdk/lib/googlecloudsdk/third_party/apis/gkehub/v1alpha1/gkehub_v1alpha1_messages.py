@@ -2993,6 +2993,8 @@ class ServiceMeshFeatureSpec(_messages.Message):
       its individual config.
 
   Fields:
+    fleetDefaultMemberConfig: Optional. The default fleet configuration to be
+      applied to all memberships.
     membershipSpecs: Optional. Map from full path to the membership, to its
       individual config.
   """
@@ -3023,7 +3025,8 @@ class ServiceMeshFeatureSpec(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  membershipSpecs = _messages.MessageField('MembershipSpecsValue', 1)
+  fleetDefaultMemberConfig = _messages.MessageField('ServiceMeshMembershipSpec', 1)
+  membershipSpecs = _messages.MessageField('MembershipSpecsValue', 2)
 
 
 class ServiceMeshFeatureState(_messages.Message):

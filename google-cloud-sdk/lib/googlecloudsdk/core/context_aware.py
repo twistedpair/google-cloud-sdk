@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import atexit
+import enum
 import os
 
 from google.auth import exceptions as google_auth_exceptions
@@ -143,6 +144,11 @@ def EncryptedSSLCredentials(config_path):
   raise ConfigException()
 
 
+class ConfigType(enum.Enum):
+  ENTERPRISE_CERTIFICATE = 1
+  ON_DISK_CERTIFICATE = 2
+
+
 class _ConfigImpl(object):
   """Represents the configurations associated with context aware access.
 
@@ -158,18 +164,49 @@ class _ConfigImpl(object):
     if not properties.VALUES.context_aware.use_client_certificate.GetBool():
       return None
 
+    enterprise_certificate_config_file_path = properties.VALUES.context_aware.enterprise_certificate_config_file_path.Get(
+    )
+    if enterprise_certificate_config_file_path is None:
+      enterprise_certificate_config_file_path = config.EnterpriseCertConfigDefaultFilePath(
+      )
+    if enterprise_certificate_config_file_path is not None:
+      # The enterprise cert config file path will be used.
+      return _EnterpriseCertConfigImpl(enterprise_certificate_config_file_path)
+
     config_path = _AutoDiscoveryFilePath()
     # Raw cert and key
     cert_bytes, key_bytes = SSLCredentials(config_path)
 
     # Encrypted cert stored in a file
     encrypted_cert_path, password = EncryptedSSLCredentials(config_path)
-    return _ConfigImpl(config_path,
-                       cert_bytes, key_bytes,
-                       encrypted_cert_path, password)
+    return _OnDiskCertConfigImpl(config_path, cert_bytes, key_bytes,
+                                 encrypted_cert_path, password)
+
+  def __init__(self, config_type):
+    self.config_type = config_type
+
+
+class _EnterpriseCertConfigImpl(_ConfigImpl):
+  """Represents the configurations associated with context aware access through a enterprise certificate on TPM or OS key store."""
+
+  def __init__(self, enterprise_certificate_config_file_path):
+    super(_EnterpriseCertConfigImpl,
+          self).__init__(ConfigType.ENTERPRISE_CERTIFICATE)
+    self.enterprise_certificate_config_file_path = enterprise_certificate_config_file_path
+
+
+class _OnDiskCertConfigImpl(_ConfigImpl):
+  """Represents the configurations associated with context aware access through a certificate on disk.
+
+  Both the encrypted and unencrypted certs need to be generated to support HTTP
+  API clients and gRPC API clients, respectively.
+
+  Only one instance of Config can be created for the program.
+  """
 
   def __init__(self, config_path, client_cert_bytes, client_key_bytes,
                encrypted_client_cert_path, encrypted_client_cert_password):
+    super(_OnDiskCertConfigImpl, self).__init__(ConfigType.ON_DISK_CERTIFICATE)
     self.config_path = config_path
     self.client_cert_bytes = client_cert_bytes
     self.client_key_bytes = client_key_bytes

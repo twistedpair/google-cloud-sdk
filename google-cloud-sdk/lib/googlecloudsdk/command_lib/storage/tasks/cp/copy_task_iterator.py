@@ -141,10 +141,10 @@ def _destination_is_container(destination):
            destination_url.is_bucket()))
 
 
-def _destination_is_pipe(destination):
-  """Checks if destination points to local pipe-type."""
-  return (isinstance(destination.storage_url, storage_url.FileUrl) and
-          destination.storage_url.is_pipe)
+def _resource_is_pipe(resource):
+  """Checks if a resource points to local pipe-type."""
+  return (isinstance(resource.storage_url, storage_url.FileUrl) and
+          resource.storage_url.is_pipe)
 
 
 def _is_expanded_url_valid_parent_dir(expanded_url):
@@ -287,7 +287,8 @@ class CopyTaskIterator:
       else:
         raise errors.ValueCannotBeDeterminedError
     except (OSError, errors.ValueCannotBeDeterminedError):
-      log.error('Could not get size of resource {}.'.format(resource))
+      if not _resource_is_pipe(resource):
+        log.error('Could not get size of resource {}.'.format(resource))
       self._total_file_count = -1
       self._total_size = -1
     else:
@@ -378,7 +379,7 @@ class CopyTaskIterator:
     """Returns the final destination StorageUrl instance."""
     completion_is_necessary = (
         _destination_is_container(raw_destination) or
-        (self._multiple_sources and not _destination_is_pipe(raw_destination))
+        (self._multiple_sources and not _resource_is_pipe(raw_destination))
         or source.resource.storage_url.versionless_url_string !=
         source.expanded_url.versionless_url_string  # Recursion case.
     )

@@ -978,6 +978,9 @@ class MembershipEndpoint(_messages.Message):
   r"""MembershipEndpoint contains information needed to contact a Kubernetes
   API, endpoint and any additional Kubernetes metadata.
 
+  Enums:
+    ModeValueValuesEnum: Output only. The management mode of this membership.
+
   Fields:
     applianceCluster: Optional. Specific information for a GDC Edge Appliance
       cluster.
@@ -992,6 +995,7 @@ class MembershipEndpoint(_messages.Message):
       registered to one and only one Hub Membership. * Propagate Workload Pool
       Information available in the Membership Authority field. * Ensure proper
       initial configuration of default Hub Features.
+    mode: Output only. The management mode of this membership.
     multiCloudCluster: Optional. Specific information for a GKE Multi-Cloud
       cluster.
     onPremCluster: Optional. Specific information for a GKE On-Prem cluster.
@@ -999,14 +1003,25 @@ class MembershipEndpoint(_messages.Message):
       this field, it should have a nil "type" instead.
   """
 
+  class ModeValueValuesEnum(_messages.Enum):
+    r"""Output only. The management mode of this membership.
+
+    Values:
+      MODE_UNSPECIFIED: The mode is not set.
+      AUTOFLEET: Membership is being managed in autofleet mode.
+    """
+    MODE_UNSPECIFIED = 0
+    AUTOFLEET = 1
+
   applianceCluster = _messages.MessageField('ApplianceCluster', 1)
   edgeCluster = _messages.MessageField('EdgeCluster', 2)
   gkeCluster = _messages.MessageField('GkeCluster', 3)
   googleManaged = _messages.BooleanField(4)
   kubernetesMetadata = _messages.MessageField('KubernetesMetadata', 5)
   kubernetesResource = _messages.MessageField('KubernetesResource', 6)
-  multiCloudCluster = _messages.MessageField('MultiCloudCluster', 7)
-  onPremCluster = _messages.MessageField('OnPremCluster', 8)
+  mode = _messages.EnumField('ModeValueValuesEnum', 7)
+  multiCloudCluster = _messages.MessageField('MultiCloudCluster', 8)
+  onPremCluster = _messages.MessageField('OnPremCluster', 9)
 
 
 class MembershipState(_messages.Message):

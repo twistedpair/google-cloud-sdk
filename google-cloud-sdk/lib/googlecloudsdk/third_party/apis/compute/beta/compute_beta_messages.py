@@ -1562,6 +1562,8 @@ class AttachedDisk(_messages.Message):
   r"""An instance-attached disk resource.
 
   Enums:
+    ArchitectureValueValuesEnum: [Output Only] The architecture of the
+      attached disk. Valid values are ARM64 or X86_64.
     InterfaceValueValuesEnum: Specifies the disk interface to use for
       attaching this disk, which is either SCSI or NVME. The default is SCSI.
       Persistent disks must always use SCSI and the request will fail if you
@@ -1575,6 +1577,8 @@ class AttachedDisk(_messages.Message):
       PERSISTENT. If not specified, the default is PERSISTENT.
 
   Fields:
+    architecture: [Output Only] The architecture of the attached disk. Valid
+      values are ARM64 or X86_64.
     autoDelete: Specifies whether the disk will be auto-deleted when the
       instance is deleted (but not when the disk is detached from the
       instance).
@@ -1651,6 +1655,20 @@ class AttachedDisk(_messages.Message):
       created.
   """
 
+  class ArchitectureValueValuesEnum(_messages.Enum):
+    r"""[Output Only] The architecture of the attached disk. Valid values are
+    ARM64 or X86_64.
+
+    Values:
+      ARCHITECTURE_UNSPECIFIED: Default value indicating Architecture is not
+        set.
+      ARM64: Machines with architecture ARM64
+      X86_64: Machines with architecture X86_64
+    """
+    ARCHITECTURE_UNSPECIFIED = 0
+    ARM64 = 1
+    X86_64 = 2
+
   class InterfaceValueValuesEnum(_messages.Enum):
     r"""Specifies the disk interface to use for attaching this disk, which is
     either SCSI or NVME. The default is SCSI. Persistent disks must always use
@@ -1690,23 +1708,24 @@ class AttachedDisk(_messages.Message):
     PERSISTENT = 0
     SCRATCH = 1
 
-  autoDelete = _messages.BooleanField(1)
-  boot = _messages.BooleanField(2)
-  deviceName = _messages.StringField(3)
-  diskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 4)
-  diskSizeGb = _messages.IntegerField(5)
-  guestOsFeatures = _messages.MessageField('GuestOsFeature', 6, repeated=True)
-  index = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  initializeParams = _messages.MessageField('AttachedDiskInitializeParams', 8)
-  interface = _messages.EnumField('InterfaceValueValuesEnum', 9)
-  kind = _messages.StringField(10, default='compute#attachedDisk')
-  licenses = _messages.StringField(11, repeated=True)
-  locked = _messages.BooleanField(12)
-  mode = _messages.EnumField('ModeValueValuesEnum', 13)
-  shieldedInstanceInitialState = _messages.MessageField('InitialStateConfig', 14)
-  source = _messages.StringField(15)
-  type = _messages.EnumField('TypeValueValuesEnum', 16)
-  userLicenses = _messages.StringField(17, repeated=True)
+  architecture = _messages.EnumField('ArchitectureValueValuesEnum', 1)
+  autoDelete = _messages.BooleanField(2)
+  boot = _messages.BooleanField(3)
+  deviceName = _messages.StringField(4)
+  diskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 5)
+  diskSizeGb = _messages.IntegerField(6)
+  guestOsFeatures = _messages.MessageField('GuestOsFeature', 7, repeated=True)
+  index = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  initializeParams = _messages.MessageField('AttachedDiskInitializeParams', 9)
+  interface = _messages.EnumField('InterfaceValueValuesEnum', 10)
+  kind = _messages.StringField(11, default='compute#attachedDisk')
+  licenses = _messages.StringField(12, repeated=True)
+  locked = _messages.BooleanField(13)
+  mode = _messages.EnumField('ModeValueValuesEnum', 14)
+  shieldedInstanceInitialState = _messages.MessageField('InitialStateConfig', 15)
+  source = _messages.StringField(16)
+  type = _messages.EnumField('TypeValueValuesEnum', 17)
+  userLicenses = _messages.StringField(18, repeated=True)
 
 
 class AttachedDiskInitializeParams(_messages.Message):
@@ -1718,6 +1737,8 @@ class AttachedDiskInitializeParams(_messages.Message):
   you can only define one or the other, but not both.
 
   Enums:
+    ArchitectureValueValuesEnum: The architecture of the attached disk. Valid
+      values are arm64 or x86_64.
     OnUpdateActionValueValuesEnum: Specifies which action to take on instance
       update with this disk. Default is to use the existing disk.
 
@@ -1727,6 +1748,8 @@ class AttachedDiskInitializeParams(_messages.Message):
       disks.
 
   Fields:
+    architecture: The architecture of the attached disk. Valid values are
+      arm64 or x86_64.
     description: An optional description. Provide this property when creating
       the disk.
     diskName: Specifies the disk name. If not specified, the default is to use
@@ -1799,6 +1822,20 @@ class AttachedDiskInitializeParams(_messages.Message):
       source snapshot.
   """
 
+  class ArchitectureValueValuesEnum(_messages.Enum):
+    r"""The architecture of the attached disk. Valid values are arm64 or
+    x86_64.
+
+    Values:
+      ARCHITECTURE_UNSPECIFIED: Default value indicating Architecture is not
+        set.
+      ARM64: Machines with architecture ARM64
+      X86_64: Machines with architecture X86_64
+    """
+    ARCHITECTURE_UNSPECIFIED = 0
+    ARM64 = 1
+    X86_64 = 2
+
   class OnUpdateActionValueValuesEnum(_messages.Enum):
     r"""Specifies which action to take on instance update with this disk.
     Default is to use the existing disk.
@@ -1839,21 +1876,22 @@ class AttachedDiskInitializeParams(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  description = _messages.StringField(1)
-  diskName = _messages.StringField(2)
-  diskSizeGb = _messages.IntegerField(3)
-  diskType = _messages.StringField(4)
-  guestOsFeatures = _messages.MessageField('GuestOsFeature', 5, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 6)
-  licenses = _messages.StringField(7, repeated=True)
-  multiWriter = _messages.BooleanField(8)
-  onUpdateAction = _messages.EnumField('OnUpdateActionValueValuesEnum', 9)
-  provisionedIops = _messages.IntegerField(10)
-  resourcePolicies = _messages.StringField(11, repeated=True)
-  sourceImage = _messages.StringField(12)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 13)
-  sourceSnapshot = _messages.StringField(14)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 15)
+  architecture = _messages.EnumField('ArchitectureValueValuesEnum', 1)
+  description = _messages.StringField(2)
+  diskName = _messages.StringField(3)
+  diskSizeGb = _messages.IntegerField(4)
+  diskType = _messages.StringField(5)
+  guestOsFeatures = _messages.MessageField('GuestOsFeature', 6, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 7)
+  licenses = _messages.StringField(8, repeated=True)
+  multiWriter = _messages.BooleanField(9)
+  onUpdateAction = _messages.EnumField('OnUpdateActionValueValuesEnum', 10)
+  provisionedIops = _messages.IntegerField(11)
+  resourcePolicies = _messages.StringField(12, repeated=True)
+  sourceImage = _messages.StringField(13)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 14)
+  sourceSnapshot = _messages.StringField(15)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 16)
 
 
 class AuditConfig(_messages.Message):
@@ -3160,7 +3198,7 @@ class Backend(_messages.Message):
       balancing mode. Not available if the backend's balancingMode is
       CONNECTION.
     maxUtilization: Optional parameter to define a target capacity for the
-      UTILIZATIONbalancing mode. The valid range is [0.0, 1.0]. For usage
+      UTILIZATION balancing mode. The valid range is [0.0, 1.0]. For usage
       guidelines, see Utilization balancing mode.
   """
 
@@ -5450,7 +5488,8 @@ class BulkInsertInstanceResource(_messages.Message):
     count: The maximum number of instances to create.
     instanceProperties: The instance properties defining the VM instances to
       be created. Required if sourceInstanceTemplate is not provided.
-    locationPolicy: Policy for chosing target zone.
+    locationPolicy: Policy for chosing target zone. For more information, see
+      Create VMs in bulk .
     minCount: The minimum number of instances to create. If no min_count is
       specified then count is used as the default value. If min_count
       instances cannot be created, then no instances will be created and
@@ -29910,6 +29949,8 @@ class Disk(_messages.Message):
   information, read Regional resources.
 
   Enums:
+    ArchitectureValueValuesEnum: The architecture of the disk. Valid values
+      are ARM64 or X86_64.
     InterfaceValueValuesEnum: [Deprecated] Specifies the disk interface to use
       for attaching this disk, which is either SCSI or NVME. The default is
       SCSI.
@@ -29925,6 +29966,8 @@ class Disk(_messages.Message):
       the setLabels method.
 
   Fields:
+    architecture: The architecture of the disk. Valid values are ARM64 or
+      X86_64.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
@@ -30102,6 +30145,19 @@ class Disk(_messages.Message):
       as a field in the request body.
   """
 
+  class ArchitectureValueValuesEnum(_messages.Enum):
+    r"""The architecture of the disk. Valid values are ARM64 or X86_64.
+
+    Values:
+      ARCHITECTURE_UNSPECIFIED: Default value indicating Architecture is not
+        set.
+      ARM64: Machines with architecture ARM64
+      X86_64: Machines with architecture X86_64
+    """
+    ARCHITECTURE_UNSPECIFIED = 0
+    ARM64 = 1
+    X86_64 = 2
+
   class InterfaceValueValuesEnum(_messages.Enum):
     r"""[Deprecated] Specifies the disk interface to use for attaching this
     disk, which is either SCSI or NVME. The default is SCSI.
@@ -30169,48 +30225,49 @@ class Disk(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  creationTimestamp = _messages.StringField(1)
-  description = _messages.StringField(2)
-  diskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 3)
-  eraseWindowsVssSignature = _messages.BooleanField(4)
-  guestOsFeatures = _messages.MessageField('GuestOsFeature', 5, repeated=True)
-  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
-  interface = _messages.EnumField('InterfaceValueValuesEnum', 7)
-  kind = _messages.StringField(8, default='compute#disk')
-  labelFingerprint = _messages.BytesField(9)
-  labels = _messages.MessageField('LabelsValue', 10)
-  lastAttachTimestamp = _messages.StringField(11)
-  lastDetachTimestamp = _messages.StringField(12)
-  licenseCodes = _messages.IntegerField(13, repeated=True)
-  licenses = _messages.StringField(14, repeated=True)
-  locationHint = _messages.StringField(15)
-  locked = _messages.BooleanField(16)
-  multiWriter = _messages.BooleanField(17)
-  name = _messages.StringField(18)
-  options = _messages.StringField(19)
-  physicalBlockSizeBytes = _messages.IntegerField(20)
-  provisionedIops = _messages.IntegerField(21)
-  region = _messages.StringField(22)
-  replicaZones = _messages.StringField(23, repeated=True)
-  resourcePolicies = _messages.StringField(24, repeated=True)
-  satisfiesPzs = _messages.BooleanField(25)
-  selfLink = _messages.StringField(26)
-  sizeGb = _messages.IntegerField(27)
-  sourceDisk = _messages.StringField(28)
-  sourceDiskId = _messages.StringField(29)
-  sourceImage = _messages.StringField(30)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 31)
-  sourceImageId = _messages.StringField(32)
-  sourceSnapshot = _messages.StringField(33)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 34)
-  sourceSnapshotId = _messages.StringField(35)
-  sourceStorageObject = _messages.StringField(36)
-  status = _messages.EnumField('StatusValueValuesEnum', 37)
-  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 38)
-  type = _messages.StringField(39)
-  userLicenses = _messages.StringField(40, repeated=True)
-  users = _messages.StringField(41, repeated=True)
-  zone = _messages.StringField(42)
+  architecture = _messages.EnumField('ArchitectureValueValuesEnum', 1)
+  creationTimestamp = _messages.StringField(2)
+  description = _messages.StringField(3)
+  diskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 4)
+  eraseWindowsVssSignature = _messages.BooleanField(5)
+  guestOsFeatures = _messages.MessageField('GuestOsFeature', 6, repeated=True)
+  id = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
+  interface = _messages.EnumField('InterfaceValueValuesEnum', 8)
+  kind = _messages.StringField(9, default='compute#disk')
+  labelFingerprint = _messages.BytesField(10)
+  labels = _messages.MessageField('LabelsValue', 11)
+  lastAttachTimestamp = _messages.StringField(12)
+  lastDetachTimestamp = _messages.StringField(13)
+  licenseCodes = _messages.IntegerField(14, repeated=True)
+  licenses = _messages.StringField(15, repeated=True)
+  locationHint = _messages.StringField(16)
+  locked = _messages.BooleanField(17)
+  multiWriter = _messages.BooleanField(18)
+  name = _messages.StringField(19)
+  options = _messages.StringField(20)
+  physicalBlockSizeBytes = _messages.IntegerField(21)
+  provisionedIops = _messages.IntegerField(22)
+  region = _messages.StringField(23)
+  replicaZones = _messages.StringField(24, repeated=True)
+  resourcePolicies = _messages.StringField(25, repeated=True)
+  satisfiesPzs = _messages.BooleanField(26)
+  selfLink = _messages.StringField(27)
+  sizeGb = _messages.IntegerField(28)
+  sourceDisk = _messages.StringField(29)
+  sourceDiskId = _messages.StringField(30)
+  sourceImage = _messages.StringField(31)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 32)
+  sourceImageId = _messages.StringField(33)
+  sourceSnapshot = _messages.StringField(34)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 35)
+  sourceSnapshotId = _messages.StringField(36)
+  sourceStorageObject = _messages.StringField(37)
+  status = _messages.EnumField('StatusValueValuesEnum', 38)
+  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 39)
+  type = _messages.StringField(40)
+  userLicenses = _messages.StringField(41, repeated=True)
+  users = _messages.StringField(42, repeated=True)
+  zone = _messages.StringField(43)
 
 
 class DiskAggregatedList(_messages.Message):
@@ -31448,6 +31505,81 @@ class Duration(_messages.Message):
 
   nanos = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   seconds = _messages.IntegerField(2)
+
+
+class ErrorInfo(_messages.Message):
+  r"""Describes the cause of the error with structured details. Example of an
+  error when contacting the "pubsub.googleapis.com" API when it is not
+  enabled: { "reason": "API_DISABLED" "domain": "googleapis.com" "metadata": {
+  "resource": "projects/123", "service": "pubsub.googleapis.com" } } This
+  response indicates that the pubsub.googleapis.com API is not enabled.
+  Example of an error that is returned when attempting to create a Spanner
+  instance in a region that is out of stock: { "reason": "STOCKOUT" "domain":
+  "spanner.googleapis.com", "metadata": { "availableRegions": "us-central1,us-
+  east2" } }
+
+  Messages:
+    MetadatasValue: Additional structured details about this error. Keys
+      should match /[a-zA-Z0-9-_]/ and be limited to 64 characters in length.
+      When identifying the current value of an exceeded limit, the units
+      should be contained in the key, not the value. For example, rather than
+      {"instanceLimit": "100/request"}, should be returned as,
+      {"instanceLimitPerRequest": "100"}, if the client exceeds the number of
+      instances that can be created in a single (batch) request.
+
+  Fields:
+    domain: The logical grouping to which the "reason" belongs. The error
+      domain is typically the registered service name of the tool or product
+      that generates the error. Example: "pubsub.googleapis.com". If the error
+      is generated by some common infrastructure, the error domain must be a
+      globally unique value that identifies the infrastructure. For Google API
+      infrastructure, the error domain is "googleapis.com".
+    metadatas: Additional structured details about this error. Keys should
+      match /[a-zA-Z0-9-_]/ and be limited to 64 characters in length. When
+      identifying the current value of an exceeded limit, the units should be
+      contained in the key, not the value. For example, rather than
+      {"instanceLimit": "100/request"}, should be returned as,
+      {"instanceLimitPerRequest": "100"}, if the client exceeds the number of
+      instances that can be created in a single (batch) request.
+    reason: The reason of the error. This is a constant value that identifies
+      the proximate cause of the error. Error reasons are unique within a
+      particular domain of errors. This should be at most 63 characters and
+      match /[A-Z0-9_]+/.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetadatasValue(_messages.Message):
+    r"""Additional structured details about this error. Keys should match
+    /[a-zA-Z0-9-_]/ and be limited to 64 characters in length. When
+    identifying the current value of an exceeded limit, the units should be
+    contained in the key, not the value. For example, rather than
+    {"instanceLimit": "100/request"}, should be returned as,
+    {"instanceLimitPerRequest": "100"}, if the client exceeds the number of
+    instances that can be created in a single (batch) request.
+
+    Messages:
+      AdditionalProperty: An additional property for a MetadatasValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type MetadatasValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MetadatasValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  domain = _messages.StringField(1)
+  metadatas = _messages.MessageField('MetadatasValue', 2)
+  reason = _messages.StringField(3)
 
 
 class ExchangedPeeringRoute(_messages.Message):
@@ -35302,6 +35434,32 @@ class HealthStatusForNetworkEndpoint(_messages.Message):
   healthState = _messages.EnumField('HealthStateValueValuesEnum', 5)
 
 
+class Help(_messages.Message):
+  r"""Provides links to documentation or for performing an out of band action.
+  For example, if a quota check failed with an error indicating the calling
+  project hasn't enabled the accessed service, this can contain a URL pointing
+  directly to the right place in the developer console to flip the bit.
+
+  Fields:
+    links: URL(s) pointing to additional information on handling the current
+      error.
+  """
+
+  links = _messages.MessageField('HelpLink', 1, repeated=True)
+
+
+class HelpLink(_messages.Message):
+  r"""Describes a URL link.
+
+  Fields:
+    description: Describes what the link offers.
+    url: The URL of the link.
+  """
+
+  description = _messages.StringField(1)
+  url = _messages.StringField(2)
+
+
 class HostRule(_messages.Message):
   r"""UrlMaps A host-matching rule for a URL. If matched, will use the named
   PathMatcher to select the BackendService.
@@ -36283,6 +36441,8 @@ class Image(_messages.Message):
   for your VM instances. For more information, read Images.
 
   Enums:
+    ArchitectureValueValuesEnum: The architecture of the image. Valid values
+      are ARM64 or X86_64.
     SourceTypeValueValuesEnum: The type of the image used to create this disk.
       The default and only valid value is RAW.
     StatusValueValuesEnum: [Output Only] The status of the image. An image can
@@ -36296,6 +36456,8 @@ class Image(_messages.Message):
     RawDiskValue: The parameters of the raw disk image.
 
   Fields:
+    architecture: The architecture of the image. Valid values are ARM64 or
+      X86_64.
     archiveSizeBytes: Size of the image tar.gz archive stored in Google Cloud
       Storage (in bytes).
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
@@ -36428,6 +36590,19 @@ class Image(_messages.Message):
       cloud/global/licenses/debian-9-stretch
   """
 
+  class ArchitectureValueValuesEnum(_messages.Enum):
+    r"""The architecture of the image. Valid values are ARM64 or X86_64.
+
+    Values:
+      ARCHITECTURE_UNSPECIFIED: Default value indicating Architecture is not
+        set.
+      ARM64: Machines with architecture ARM64
+      X86_64: Machines with architecture X86_64
+    """
+    ARCHITECTURE_UNSPECIFIED = 0
+    ARM64 = 1
+    X86_64 = 2
+
   class SourceTypeValueValuesEnum(_messages.Enum):
     r"""The type of the image used to create this disk. The default and only
     valid value is RAW.
@@ -36519,40 +36694,41 @@ class Image(_messages.Message):
     sha1Checksum = _messages.StringField(2)
     source = _messages.StringField(3)
 
-  archiveSizeBytes = _messages.IntegerField(1)
-  creationTimestamp = _messages.StringField(2)
-  deprecated = _messages.MessageField('DeprecationStatus', 3)
-  description = _messages.StringField(4)
-  diskSizeGb = _messages.IntegerField(5)
-  family = _messages.StringField(6)
-  guestOsFeatures = _messages.MessageField('GuestOsFeature', 7, repeated=True)
-  id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
-  imageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 9)
-  kind = _messages.StringField(10, default='compute#image')
-  labelFingerprint = _messages.BytesField(11)
-  labels = _messages.MessageField('LabelsValue', 12)
-  licenseCodes = _messages.IntegerField(13, repeated=True)
-  licenses = _messages.StringField(14, repeated=True)
-  locked = _messages.BooleanField(15)
-  name = _messages.StringField(16)
-  rawDisk = _messages.MessageField('RawDiskValue', 17)
-  rolloutOverride = _messages.MessageField('RolloutPolicy', 18)
-  satisfiesPzs = _messages.BooleanField(19)
-  selfLink = _messages.StringField(20)
-  shieldedInstanceInitialState = _messages.MessageField('InitialStateConfig', 21)
-  sourceDisk = _messages.StringField(22)
-  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 23)
-  sourceDiskId = _messages.StringField(24)
-  sourceImage = _messages.StringField(25)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 26)
-  sourceImageId = _messages.StringField(27)
-  sourceSnapshot = _messages.StringField(28)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 29)
-  sourceSnapshotId = _messages.StringField(30)
-  sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 31, default='RAW')
-  status = _messages.EnumField('StatusValueValuesEnum', 32)
-  storageLocations = _messages.StringField(33, repeated=True)
-  userLicenses = _messages.StringField(34, repeated=True)
+  architecture = _messages.EnumField('ArchitectureValueValuesEnum', 1)
+  archiveSizeBytes = _messages.IntegerField(2)
+  creationTimestamp = _messages.StringField(3)
+  deprecated = _messages.MessageField('DeprecationStatus', 4)
+  description = _messages.StringField(5)
+  diskSizeGb = _messages.IntegerField(6)
+  family = _messages.StringField(7)
+  guestOsFeatures = _messages.MessageField('GuestOsFeature', 8, repeated=True)
+  id = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
+  imageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 10)
+  kind = _messages.StringField(11, default='compute#image')
+  labelFingerprint = _messages.BytesField(12)
+  labels = _messages.MessageField('LabelsValue', 13)
+  licenseCodes = _messages.IntegerField(14, repeated=True)
+  licenses = _messages.StringField(15, repeated=True)
+  locked = _messages.BooleanField(16)
+  name = _messages.StringField(17)
+  rawDisk = _messages.MessageField('RawDiskValue', 18)
+  rolloutOverride = _messages.MessageField('RolloutPolicy', 19)
+  satisfiesPzs = _messages.BooleanField(20)
+  selfLink = _messages.StringField(21)
+  shieldedInstanceInitialState = _messages.MessageField('InitialStateConfig', 22)
+  sourceDisk = _messages.StringField(23)
+  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 24)
+  sourceDiskId = _messages.StringField(25)
+  sourceImage = _messages.StringField(26)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 27)
+  sourceImageId = _messages.StringField(28)
+  sourceSnapshot = _messages.StringField(29)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 30)
+  sourceSnapshotId = _messages.StringField(31)
+  sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 32, default='RAW')
+  status = _messages.EnumField('StatusValueValuesEnum', 33)
+  storageLocations = _messages.StringField(34, repeated=True)
+  userLicenses = _messages.StringField(35, repeated=True)
 
 
 class ImageFamilyView(_messages.Message):
@@ -43239,6 +43415,21 @@ class LocalDisk(_messages.Message):
   diskType = _messages.StringField(3)
 
 
+class LocalizedMessage(_messages.Message):
+  r"""Provides a localized error message that is safe to return to the user
+  which can be attached to an RPC error.
+
+  Fields:
+    locale: The locale used following the specification defined at
+      http://www.rfc-editor.org/rfc/bcp/bcp47.txt. Examples are: "en-US", "fr-
+      CH", "es-MX"
+    message: The localized error message in the above locale.
+  """
+
+  locale = _messages.StringField(1)
+  message = _messages.StringField(2)
+
+
 class LocationPolicy(_messages.Message):
   r"""Configuration for location policy among multiple possible locations
   (e.g. preferences for zone selection among zones in a single region).
@@ -43315,16 +43506,17 @@ class LocationPolicyLocation(_messages.Message):
   r"""A LocationPolicyLocation object.
 
   Enums:
-    PreferenceValueValuesEnum: Preference for a given location.
+    PreferenceValueValuesEnum: Preference for a given location. Set to either
+      ALLOW or DENY.
 
   Fields:
     constraints: Constraints that the caller requires on the result
       distribution in this zone.
-    preference: Preference for a given location.
+    preference: Preference for a given location. Set to either ALLOW or DENY.
   """
 
   class PreferenceValueValuesEnum(_messages.Enum):
-    r"""Preference for a given location.
+    r"""Preference for a given location. Set to either ALLOW or DENY.
 
     Values:
       ALLOW: Location is allowed for use.
@@ -44500,16 +44692,38 @@ class ManagedInstanceLastAttempt(_messages.Message):
     class ErrorsValueListEntry(_messages.Message):
       r"""A ErrorsValueListEntry object.
 
+      Messages:
+        ErrorDetailsValueListEntry: A ErrorDetailsValueListEntry object.
+
       Fields:
         code: [Output Only] The error type identifier for this error.
+        errorDetails: [Output Only] An optional list of messages that contain
+          the error details. There is a set of defined message types to use
+          for providing details.The syntax depends on the error code. For
+          example, QuotaExceededInfo will have details when the error code is
+          QUOTA_EXCEEDED.
         location: [Output Only] Indicates the field in the request that caused
           the error. This property is optional.
         message: [Output Only] An optional, human-readable error message.
       """
 
+      class ErrorDetailsValueListEntry(_messages.Message):
+        r"""A ErrorDetailsValueListEntry object.
+
+        Fields:
+          errorInfo: A ErrorInfo attribute.
+          help: A Help attribute.
+          localizedMessage: A LocalizedMessage attribute.
+        """
+
+        errorInfo = _messages.MessageField('ErrorInfo', 1)
+        help = _messages.MessageField('Help', 2)
+        localizedMessage = _messages.MessageField('LocalizedMessage', 3)
+
       code = _messages.StringField(1)
-      location = _messages.StringField(2)
-      message = _messages.StringField(3)
+      errorDetails = _messages.MessageField('ErrorDetailsValueListEntry', 2, repeated=True)
+      location = _messages.StringField(3)
+      message = _messages.StringField(4)
 
     errors = _messages.MessageField('ErrorsValueListEntry', 1, repeated=True)
 
@@ -44690,6 +44904,8 @@ class Network(_messages.Message):
     enableUlaInternalIpv6: Enable ULA internal ipv6 on this network. Enabling
       this feature will assign a /48 from google defined ULA prefix fd20::/20.
       .
+    firewallPolicy: [Output Only] URL of the firewall policy the network is
+      associated with.
     gatewayIPv4: [Output Only] The gateway address for default routing out of
       the network, selected by GCP.
     id: [Output Only] The unique identifier for the resource. This identifier
@@ -44745,18 +44961,19 @@ class Network(_messages.Message):
   creationTimestamp = _messages.StringField(3)
   description = _messages.StringField(4)
   enableUlaInternalIpv6 = _messages.BooleanField(5)
-  gatewayIPv4 = _messages.StringField(6)
-  id = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
-  internalIpv6Range = _messages.StringField(8)
-  kind = _messages.StringField(9, default='compute#network')
-  mtu = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  name = _messages.StringField(11)
-  networkFirewallPolicyEnforcementOrder = _messages.EnumField('NetworkFirewallPolicyEnforcementOrderValueValuesEnum', 12)
-  peerings = _messages.MessageField('NetworkPeering', 13, repeated=True)
-  routingConfig = _messages.MessageField('NetworkRoutingConfig', 14)
-  selfLink = _messages.StringField(15)
-  selfLinkWithId = _messages.StringField(16)
-  subnetworks = _messages.StringField(17, repeated=True)
+  firewallPolicy = _messages.StringField(6)
+  gatewayIPv4 = _messages.StringField(7)
+  id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
+  internalIpv6Range = _messages.StringField(9)
+  kind = _messages.StringField(10, default='compute#network')
+  mtu = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  name = _messages.StringField(12)
+  networkFirewallPolicyEnforcementOrder = _messages.EnumField('NetworkFirewallPolicyEnforcementOrderValueValuesEnum', 13)
+  peerings = _messages.MessageField('NetworkPeering', 14, repeated=True)
+  routingConfig = _messages.MessageField('NetworkRoutingConfig', 15)
+  selfLink = _messages.StringField(16)
+  selfLinkWithId = _messages.StringField(17)
+  subnetworks = _messages.StringField(18, repeated=True)
 
 
 class NetworkEdgeSecurityService(_messages.Message):
@@ -49121,16 +49338,38 @@ class Operation(_messages.Message):
     class ErrorsValueListEntry(_messages.Message):
       r"""A ErrorsValueListEntry object.
 
+      Messages:
+        ErrorDetailsValueListEntry: A ErrorDetailsValueListEntry object.
+
       Fields:
         code: [Output Only] The error type identifier for this error.
+        errorDetails: [Output Only] An optional list of messages that contain
+          the error details. There is a set of defined message types to use
+          for providing details.The syntax depends on the error code. For
+          example, QuotaExceededInfo will have details when the error code is
+          QUOTA_EXCEEDED.
         location: [Output Only] Indicates the field in the request that caused
           the error. This property is optional.
         message: [Output Only] An optional, human-readable error message.
       """
 
+      class ErrorDetailsValueListEntry(_messages.Message):
+        r"""A ErrorDetailsValueListEntry object.
+
+        Fields:
+          errorInfo: A ErrorInfo attribute.
+          help: A Help attribute.
+          localizedMessage: A LocalizedMessage attribute.
+        """
+
+        errorInfo = _messages.MessageField('ErrorInfo', 1)
+        help = _messages.MessageField('Help', 2)
+        localizedMessage = _messages.MessageField('LocalizedMessage', 3)
+
       code = _messages.StringField(1)
-      location = _messages.StringField(2)
-      message = _messages.StringField(3)
+      errorDetails = _messages.MessageField('ErrorDetailsValueListEntry', 2, repeated=True)
+      location = _messages.StringField(3)
+      message = _messages.StringField(4)
 
     errors = _messages.MessageField('ErrorsValueListEntry', 1, repeated=True)
 
@@ -57755,6 +57994,8 @@ class SavedDisk(_messages.Message):
   r"""An instance-attached disk resource.
 
   Enums:
+    ArchitectureValueValuesEnum: [Output Only] The architecture of the
+      attached disk.
     StorageBytesStatusValueValuesEnum: [Output Only] An indicator whether
       storageBytes is in a stable state or it is being adjusted as a result of
       shared storage reallocation. This status can either be UPDATING, meaning
@@ -57762,6 +58003,7 @@ class SavedDisk(_messages.Message):
       size of the snapshot is up-to-date.
 
   Fields:
+    architecture: [Output Only] The architecture of the attached disk.
     kind: [Output Only] Type of the resource. Always compute#savedDisk for
       attached disks.
     sourceDisk: Specifies a URL of the disk attached to the source instance.
@@ -57773,6 +58015,19 @@ class SavedDisk(_messages.Message):
       the snapshot is being updated, or UP_TO_DATE, meaning the size of the
       snapshot is up-to-date.
   """
+
+  class ArchitectureValueValuesEnum(_messages.Enum):
+    r"""[Output Only] The architecture of the attached disk.
+
+    Values:
+      ARCHITECTURE_UNSPECIFIED: Default value indicating Architecture is not
+        set.
+      ARM64: Machines with architecture ARM64
+      X86_64: Machines with architecture X86_64
+    """
+    ARCHITECTURE_UNSPECIFIED = 0
+    ARM64 = 1
+    X86_64 = 2
 
   class StorageBytesStatusValueValuesEnum(_messages.Enum):
     r"""[Output Only] An indicator whether storageBytes is in a stable state
@@ -57787,10 +58042,11 @@ class SavedDisk(_messages.Message):
     UPDATING = 0
     UP_TO_DATE = 1
 
-  kind = _messages.StringField(1, default='compute#savedDisk')
-  sourceDisk = _messages.StringField(2)
-  storageBytes = _messages.IntegerField(3)
-  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 4)
+  architecture = _messages.EnumField('ArchitectureValueValuesEnum', 1)
+  kind = _messages.StringField(2, default='compute#savedDisk')
+  sourceDisk = _messages.StringField(3)
+  storageBytes = _messages.IntegerField(4)
+  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 5)
 
 
 class ScalingScheduleStatus(_messages.Message):
@@ -60112,6 +60368,8 @@ class Snapshot(_messages.Message):
   persistent disk snapshots.
 
   Enums:
+    ArchitectureValueValuesEnum: [Output Only] The architecture of the
+      snapshot. Valid values are ARM64 or X86_64.
     StatusValueValuesEnum: [Output Only] The status of the snapshot. This can
       be CREATING, DELETING, FAILED, READY, or UPLOADING.
     StorageBytesStatusValueValuesEnum: [Output Only] An indicator whether
@@ -60125,6 +60383,8 @@ class Snapshot(_messages.Message):
       by the setLabels method. Label values may be empty.
 
   Fields:
+    architecture: [Output Only] The architecture of the snapshot. Valid values
+      are ARM64 or X86_64.
     autoCreated: [Output Only] Set to true if snapshots are automatically
       created by applying resource policy on the target disk.
     chainName: Creates the new snapshot in the snapshot chain labeled with the
@@ -60209,6 +60469,20 @@ class Snapshot(_messages.Message):
       by a list of URLs to the license resource.
   """
 
+  class ArchitectureValueValuesEnum(_messages.Enum):
+    r"""[Output Only] The architecture of the snapshot. Valid values are ARM64
+    or X86_64.
+
+    Values:
+      ARCHITECTURE_UNSPECIFIED: Default value indicating Architecture is not
+        set.
+      ARM64: Machines with architecture ARM64
+      X86_64: Machines with architecture X86_64
+    """
+    ARCHITECTURE_UNSPECIFIED = 0
+    ARM64 = 1
+    X86_64 = 2
+
   class StatusValueValuesEnum(_messages.Enum):
     r"""[Output Only] The status of the snapshot. This can be CREATING,
     DELETING, FAILED, READY, or UPLOADING.
@@ -60264,34 +60538,35 @@ class Snapshot(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  autoCreated = _messages.BooleanField(1)
-  chainName = _messages.StringField(2)
-  creationTimestamp = _messages.StringField(3)
-  description = _messages.StringField(4)
-  diskSizeGb = _messages.IntegerField(5)
-  downloadBytes = _messages.IntegerField(6)
-  guestFlush = _messages.BooleanField(7)
-  id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(9, default='compute#snapshot')
-  labelFingerprint = _messages.BytesField(10)
-  labels = _messages.MessageField('LabelsValue', 11)
-  licenseCodes = _messages.IntegerField(12, repeated=True)
-  licenses = _messages.StringField(13, repeated=True)
-  locationHint = _messages.StringField(14)
-  name = _messages.StringField(15)
-  satisfiesPzs = _messages.BooleanField(16)
-  selfLink = _messages.StringField(17)
-  snapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 18)
-  sourceDisk = _messages.StringField(19)
-  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 20)
-  sourceDiskId = _messages.StringField(21)
-  sourceSnapshotSchedulePolicy = _messages.StringField(22)
-  sourceSnapshotSchedulePolicyId = _messages.StringField(23)
-  status = _messages.EnumField('StatusValueValuesEnum', 24)
-  storageBytes = _messages.IntegerField(25)
-  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 26)
-  storageLocations = _messages.StringField(27, repeated=True)
-  userLicenses = _messages.StringField(28, repeated=True)
+  architecture = _messages.EnumField('ArchitectureValueValuesEnum', 1)
+  autoCreated = _messages.BooleanField(2)
+  chainName = _messages.StringField(3)
+  creationTimestamp = _messages.StringField(4)
+  description = _messages.StringField(5)
+  diskSizeGb = _messages.IntegerField(6)
+  downloadBytes = _messages.IntegerField(7)
+  guestFlush = _messages.BooleanField(8)
+  id = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(10, default='compute#snapshot')
+  labelFingerprint = _messages.BytesField(11)
+  labels = _messages.MessageField('LabelsValue', 12)
+  licenseCodes = _messages.IntegerField(13, repeated=True)
+  licenses = _messages.StringField(14, repeated=True)
+  locationHint = _messages.StringField(15)
+  name = _messages.StringField(16)
+  satisfiesPzs = _messages.BooleanField(17)
+  selfLink = _messages.StringField(18)
+  snapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 19)
+  sourceDisk = _messages.StringField(20)
+  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 21)
+  sourceDiskId = _messages.StringField(22)
+  sourceSnapshotSchedulePolicy = _messages.StringField(23)
+  sourceSnapshotSchedulePolicyId = _messages.StringField(24)
+  status = _messages.EnumField('StatusValueValuesEnum', 25)
+  storageBytes = _messages.IntegerField(26)
+  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 27)
+  storageLocations = _messages.StringField(28, repeated=True)
+  userLicenses = _messages.StringField(29, repeated=True)
 
 
 class SnapshotList(_messages.Message):

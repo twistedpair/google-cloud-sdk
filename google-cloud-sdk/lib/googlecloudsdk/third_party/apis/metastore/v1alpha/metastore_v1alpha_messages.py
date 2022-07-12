@@ -495,19 +495,19 @@ class Federation(_messages.Message):
   Messages:
     BackendMetastoresValue: A map from BackendMetastore rank to
       BackendMetastores from which the federation service serves metadata at
-      query time. The map key is an integer that represents the order in which
-      BackendMetastores should be evaluated to resolve database names at query
-      time. A BackendMetastore with a lower number will be evaluated before a
-      BackendMetastore with a higher number.
+      query time. The map key represents the order in which BackendMetastores
+      should be evaluated to resolve database names at query time and should
+      be greater than or equal to zero. A BackendMetastore with a lower number
+      will be evaluated before a BackendMetastore with a higher number.
     LabelsValue: User-defined labels for the metastore federation.
 
   Fields:
     backendMetastores: A map from BackendMetastore rank to BackendMetastores
       from which the federation service serves metadata at query time. The map
-      key is an integer that represents the order in which BackendMetastores
-      should be evaluated to resolve database names at query time. A
-      BackendMetastore with a lower number will be evaluated before a
-      BackendMetastore with a higher number.
+      key represents the order in which BackendMetastores should be evaluated
+      to resolve database names at query time and should be greater than or
+      equal to zero. A BackendMetastore with a lower number will be evaluated
+      before a BackendMetastore with a higher number.
     createTime: Output only. The time when the metastore federation was
       created.
     endpointUri: Output only. The federation endpoint.
@@ -552,11 +552,11 @@ class Federation(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class BackendMetastoresValue(_messages.Message):
     r"""A map from BackendMetastore rank to BackendMetastores from which the
-    federation service serves metadata at query time. The map key is an
-    integer that represents the order in which BackendMetastores should be
-    evaluated to resolve database names at query time. A BackendMetastore with
-    a lower number will be evaluated before a BackendMetastore with a higher
-    number.
+    federation service serves metadata at query time. The map key represents
+    the order in which BackendMetastores should be evaluated to resolve
+    database names at query time and should be greater than or equal to zero.
+    A BackendMetastore with a lower number will be evaluated before a
+    BackendMetastore with a higher number.
 
     Messages:
       AdditionalProperty: An additional property for a BackendMetastoresValue

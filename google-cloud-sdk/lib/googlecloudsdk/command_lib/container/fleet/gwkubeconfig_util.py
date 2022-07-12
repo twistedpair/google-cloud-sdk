@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 
 import os
 
+from googlecloudsdk.api_lib.container import kubeconfig as container_kubeconfig
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
@@ -186,23 +187,18 @@ def User(name, auth_provider=None):
 
   Args:
     name: str, nickname for this user entry.
-    auth_provider: str, authentication provider.
+    auth_provider: str, authentication provider if not using `exec`. `exec` may
+      still be used regardless of this parameter's value.
   Returns:
     dict, valid kubeconfig user entry.
 
   Raises:
-    Error: if no auth info is provided (auth_provider or cert AND key)
+    Error: if no auth_provider is not provided when `exec` is not used.
   """
-  if not auth_provider:
-    raise Error('auth_provider must be provided')
-  user = {}
-  if auth_provider:
-    user['auth-provider'] = _AuthProvider(name=auth_provider)
-
-  return {
-      'name': name,
-      'user': user
-  }
+  return container_kubeconfig.User(
+      name=name,
+      auth_provider=auth_provider,
+  )
 
 
 SDK_BIN_PATH_NOT_FOUND = '''\

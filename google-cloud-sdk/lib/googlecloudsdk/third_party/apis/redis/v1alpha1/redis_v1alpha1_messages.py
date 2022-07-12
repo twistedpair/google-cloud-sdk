@@ -63,8 +63,6 @@ class Cluster(_messages.Message):
       maxmemory-policy
 
   Fields:
-    clusterUid: Output only. UID of the cluster for use by Pantheon for
-      analytics.
     createTime: Output only. The timestamp associated with the cluster
       creation request.
     customerManagedKey: Input only. The KMS key reference that the customer
@@ -90,6 +88,7 @@ class Cluster(_messages.Message):
       READY, UPDATING, DELETING and SUSPENDED
     totalMemorySizeGb: Optional. Redis memory size in GiB for the entire
       cluster. Defaults to 48 for Dense tier and 12 for Performance tier.
+    uid: Output only.
   """
 
   class RedisVersionValueValuesEnum(_messages.Enum):
@@ -151,18 +150,18 @@ class Cluster(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  clusterUid = _messages.StringField(1)
-  createTime = _messages.StringField(2)
-  customerManagedKey = _messages.StringField(3)
-  defaultReplicaCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  displayName = _messages.StringField(5)
-  endpoints = _messages.MessageField('Endpoint', 6, repeated=True)
-  name = _messages.StringField(7)
-  redisConfigs = _messages.MessageField('RedisConfigsValue', 8)
-  redisVersion = _messages.EnumField('RedisVersionValueValuesEnum', 9)
-  slots = _messages.MessageField('ClusterSlots', 10, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  totalMemorySizeGb = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  createTime = _messages.StringField(1)
+  customerManagedKey = _messages.StringField(2)
+  defaultReplicaCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  displayName = _messages.StringField(4)
+  endpoints = _messages.MessageField('Endpoint', 5, repeated=True)
+  name = _messages.StringField(6)
+  redisConfigs = _messages.MessageField('RedisConfigsValue', 7)
+  redisVersion = _messages.EnumField('RedisVersionValueValuesEnum', 8)
+  slots = _messages.MessageField('ClusterSlots', 9, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  totalMemorySizeGb = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  uid = _messages.StringField(12)
 
 
 class ClusterSlots(_messages.Message):

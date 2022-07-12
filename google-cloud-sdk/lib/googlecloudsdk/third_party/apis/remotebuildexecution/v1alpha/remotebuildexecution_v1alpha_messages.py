@@ -1079,6 +1079,8 @@ class GoogleDevtoolsRemotebuildbotCommandStatus(_messages.Message):
         runtime because input root cannot be proc.
       DOCKER_START_RUNTIME_FILE_NOT_FOUND: Docker failed to start OCI runtime
         because of file not found.
+      DOCKER_CREATE_INVALID_LAYERCHAIN_JSON: Docker failed to run because the
+        layerchain json was invalid (see b/234782336).
     """
     OK = 0
     INVALID_ARGUMENT = 1
@@ -1127,6 +1129,7 @@ class GoogleDevtoolsRemotebuildbotCommandStatus(_messages.Message):
     DOCKER_INVALID_VOLUME = 44
     DOCKER_CREATE_RUNTIME_CANNOT_MOUNT_TO_PROC = 45
     DOCKER_START_RUNTIME_FILE_NOT_FOUND = 46
+    DOCKER_CREATE_INVALID_LAYERCHAIN_JSON = 47
 
   code = _messages.EnumField('CodeValueValuesEnum', 1)
   message = _messages.StringField(2)

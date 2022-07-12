@@ -22,11 +22,11 @@ import re
 
 from apitools.base.py import encoding
 from googlecloudsdk.api_lib.compute import utils
+from googlecloudsdk.api_lib.functions import api_enablement
 from googlecloudsdk.api_lib.functions import secrets as secrets_util
 from googlecloudsdk.api_lib.functions.v1 import env_vars as env_vars_api_util
 from googlecloudsdk.api_lib.functions.v1 import exceptions as function_exceptions
 from googlecloudsdk.api_lib.functions.v1 import util as api_util
-from googlecloudsdk.calliope import base as calliope_base
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.calliope.arg_parsers import ArgumentTypeError
 from googlecloudsdk.command_lib.functions import flags
@@ -226,13 +226,12 @@ def _ApplyCMEKArgsToFunction(function_ref, function, args):
   return updated_fields
 
 
-def _ApplyDockerRegistryArgsToFunction(function, args, release_track):
+def _ApplyDockerRegistryArgsToFunction(function, args):
   """Populates the docker_registry field of a Cloud Function message.
 
   Args:
     function: Cloud function message to be checked and populated.
     args: All CLI arguments.
-    release_track: gcloud release track.
 
   Returns:
     updated_fields: update mask containing the list of fields to be updated.
@@ -242,9 +241,6 @@ def _ApplyDockerRegistryArgsToFunction(function, args, release_track):
     deployment (CMEK is only supported by Artifact Registry).
   """
   updated_fields = []
-  if (release_track != calliope_base.ReleaseTrack.ALPHA and
-      release_track != calliope_base.ReleaseTrack.BETA):
-    return updated_fields
   if args.IsSpecified('docker_registry'):
     kms_key = function.kmsKeyName
     if args.IsSpecified('kms_key') or args.IsSpecified('clear_kms_key'):
@@ -258,6 +254,10 @@ def _ApplyDockerRegistryArgsToFunction(function, args, release_track):
     function.dockerRegistry = enum_util.ParseDockerRegistry(
         args.docker_registry)
     updated_fields.append('docker_registry')
+
+    if args.docker_registry == 'artifact-registry':
+      api_enablement.PromptToEnableApiIfDisabled(
+          'artifactregistry.googleapis.com')
   return updated_fields
 
 
@@ -496,8 +496,9 @@ def Run(args, track=None, enable_runtime=True):
   # Applies remaining Artifact Registry args to the function. Note that one of
   # them, docker_repository, was already added as part of CMEK
   updated_fields.extend(
-      _ApplyDockerRegistryArgsToFunction(function, args, track))
+      _ApplyDockerRegistryArgsToFunction(function, args))
 
+  api_enablement.PromptToEnableApiIfDisabled('cloudbuild.googleapis.com')
   if is_new_function:
     if (function.httpsTrigger and not ensure_all_users_invoke and
         not deny_all_users_invoke and

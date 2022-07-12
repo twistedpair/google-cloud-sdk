@@ -746,14 +746,11 @@ class FirestoreProjectsDatabasesCreateRequest(_messages.Message):
     googleFirestoreAdminV1Database: A GoogleFirestoreAdminV1Database resource
       to be passed as the request body.
     parent: Required. A parent name of the form `projects/{project_id}`
-    validateOnly: If set, validate the request and preview the response, but
-      do not actually create the database.
   """
 
   databaseId = _messages.StringField(1)
   googleFirestoreAdminV1Database = _messages.MessageField('GoogleFirestoreAdminV1Database', 2)
   parent = _messages.StringField(3, required=True)
-  validateOnly = _messages.BooleanField(4)
 
 
 class FirestoreProjectsDatabasesDocumentsBatchGetRequest(_messages.Message):

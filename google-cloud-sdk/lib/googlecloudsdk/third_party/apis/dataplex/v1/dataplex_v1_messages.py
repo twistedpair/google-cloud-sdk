@@ -3651,6 +3651,9 @@ class GoogleCloudDataplexV1TaskExecutionSpec(_messages.Message):
       https://cloud.google.com/sdk/gcloud/reference/topic/escaping. In case of
       other keys being present in the args, then TASK_ARGS will be passed as
       the last argument.
+    kmsKey: Optional. The Cloud KMS key to use for encryption, of the form:
+      projects/{project_number}/locations/{location_id}/keyRings/{key-ring-
+      name}/cryptoKeys/{key-name}
     maxJobExecutionLifetime: Optional. The maximum duration after which the
       job execution is expired.
     project: Optional. The project in which jobs are run. By default, the
@@ -3694,9 +3697,10 @@ class GoogleCloudDataplexV1TaskExecutionSpec(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   args = _messages.MessageField('ArgsValue', 1)
-  maxJobExecutionLifetime = _messages.StringField(2)
-  project = _messages.StringField(3)
-  serviceAccount = _messages.StringField(4)
+  kmsKey = _messages.StringField(2)
+  maxJobExecutionLifetime = _messages.StringField(3)
+  project = _messages.StringField(4)
+  serviceAccount = _messages.StringField(5)
 
 
 class GoogleCloudDataplexV1TaskExecutionStatus(_messages.Message):
@@ -3752,6 +3756,7 @@ class GoogleCloudDataplexV1TaskInfrastructureSpecContainerImageRuntime(_messages
       (https://cloud.google.com/dataproc/docs/concepts/cluster-properties).
 
   Fields:
+    image: Optional. Container image to use.
     javaJars: Optional. A list of Java JARS to add to the classpath. Valid
       input includes Cloud Storage URIs to Jar binaries. For example,
       gs://bucket-name/my/path/to/file.jar
@@ -3794,9 +3799,10 @@ class GoogleCloudDataplexV1TaskInfrastructureSpecContainerImageRuntime(_messages
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  javaJars = _messages.StringField(1, repeated=True)
-  properties = _messages.MessageField('PropertiesValue', 2)
-  pythonPackages = _messages.StringField(3, repeated=True)
+  image = _messages.StringField(1)
+  javaJars = _messages.StringField(2, repeated=True)
+  properties = _messages.MessageField('PropertiesValue', 3)
+  pythonPackages = _messages.StringField(4, repeated=True)
 
 
 class GoogleCloudDataplexV1TaskInfrastructureSpecVpcNetwork(_messages.Message):

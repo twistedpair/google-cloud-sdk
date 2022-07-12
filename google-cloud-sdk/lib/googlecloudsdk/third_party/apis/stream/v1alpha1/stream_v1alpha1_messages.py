@@ -14,7 +14,7 @@ package = 'stream'
 
 
 class BuildStreamContentRequest(_messages.Message):
-  r"""A BuildStreamContentRequest object.
+  r"""Message for building a StreamContent
 
   Fields:
     contentVersionTag: Required. The user-specified version tag of the build

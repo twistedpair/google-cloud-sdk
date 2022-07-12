@@ -41,12 +41,14 @@ class SecuritycenterV1beta2(base_api.BaseApiClient):
         response_encoding=response_encoding)
     self.folders_containerThreatDetectionSettings = self.FoldersContainerThreatDetectionSettingsService(self)
     self.folders_eventThreatDetectionSettings = self.FoldersEventThreatDetectionSettingsService(self)
+    self.folders_rapidVulnerabilityDetectionSettings = self.FoldersRapidVulnerabilityDetectionSettingsService(self)
     self.folders_securityHealthAnalyticsSettings = self.FoldersSecurityHealthAnalyticsSettingsService(self)
     self.folders_virtualMachineThreatDetectionSettings = self.FoldersVirtualMachineThreatDetectionSettingsService(self)
     self.folders_webSecurityScannerSettings = self.FoldersWebSecurityScannerSettingsService(self)
     self.folders = self.FoldersService(self)
     self.organizations_containerThreatDetectionSettings = self.OrganizationsContainerThreatDetectionSettingsService(self)
     self.organizations_eventThreatDetectionSettings = self.OrganizationsEventThreatDetectionSettingsService(self)
+    self.organizations_rapidVulnerabilityDetectionSettings = self.OrganizationsRapidVulnerabilityDetectionSettingsService(self)
     self.organizations_securityHealthAnalyticsSettings = self.OrganizationsSecurityHealthAnalyticsSettingsService(self)
     self.organizations_virtualMachineThreatDetectionSettings = self.OrganizationsVirtualMachineThreatDetectionSettingsService(self)
     self.organizations_webSecurityScannerSettings = self.OrganizationsWebSecurityScannerSettingsService(self)
@@ -56,6 +58,7 @@ class SecuritycenterV1beta2(base_api.BaseApiClient):
     self.projects_locations_clusters_containerThreatDetectionSettings = self.ProjectsLocationsClustersContainerThreatDetectionSettingsService(self)
     self.projects_locations_clusters = self.ProjectsLocationsClustersService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
+    self.projects_rapidVulnerabilityDetectionSettings = self.ProjectsRapidVulnerabilityDetectionSettingsService(self)
     self.projects_securityHealthAnalyticsSettings = self.ProjectsSecurityHealthAnalyticsSettingsService(self)
     self.projects_virtualMachineThreatDetectionSettings = self.ProjectsVirtualMachineThreatDetectionSettingsService(self)
     self.projects_webSecurityScannerSettings = self.ProjectsWebSecurityScannerSettingsService(self)
@@ -132,6 +135,43 @@ class SecuritycenterV1beta2(base_api.BaseApiClient):
         request_field='',
         request_type_name='SecuritycenterFoldersEventThreatDetectionSettingsCalculateRequest',
         response_type_name='EventThreatDetectionSettings',
+        supports_download=False,
+    )
+
+  class FoldersRapidVulnerabilityDetectionSettingsService(base_api.BaseApiService):
+    """Service class for the folders_rapidVulnerabilityDetectionSettings resource."""
+
+    _NAME = 'folders_rapidVulnerabilityDetectionSettings'
+
+    def __init__(self, client):
+      super(SecuritycenterV1beta2.FoldersRapidVulnerabilityDetectionSettingsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Calculate(self, request, global_params=None):
+      r"""Calculates the effective RapidVulnerabilityDetectionSettings based on its level in the resource hierarchy and its settings.
+
+      Args:
+        request: (SecuritycenterFoldersRapidVulnerabilityDetectionSettingsCalculateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RapidVulnerabilityDetectionSettings) The response message.
+      """
+      config = self.GetMethodConfig('Calculate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Calculate.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta2/folders/{foldersId}/rapidVulnerabilityDetectionSettings:calculate',
+        http_method='GET',
+        method_id='securitycenter.folders.rapidVulnerabilityDetectionSettings.calculate',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta2/{+name}:calculate',
+        request_field='',
+        request_type_name='SecuritycenterFoldersRapidVulnerabilityDetectionSettingsCalculateRequest',
+        response_type_name='RapidVulnerabilityDetectionSettings',
         supports_download=False,
     )
 
@@ -337,6 +377,33 @@ class SecuritycenterV1beta2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetRapidVulnerabilityDetectionSettings(self, request, global_params=None):
+      r"""Get the RapidVulnerabilityDetectionSettings resource.
+
+      Args:
+        request: (SecuritycenterFoldersGetRapidVulnerabilityDetectionSettingsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RapidVulnerabilityDetectionSettings) The response message.
+      """
+      config = self.GetMethodConfig('GetRapidVulnerabilityDetectionSettings')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetRapidVulnerabilityDetectionSettings.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta2/folders/{foldersId}/rapidVulnerabilityDetectionSettings',
+        http_method='GET',
+        method_id='securitycenter.folders.getRapidVulnerabilityDetectionSettings',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta2/{+name}',
+        request_field='',
+        request_type_name='SecuritycenterFoldersGetRapidVulnerabilityDetectionSettingsRequest',
+        response_type_name='RapidVulnerabilityDetectionSettings',
+        supports_download=False,
+    )
+
     def GetSecurityCenterSettings(self, request, global_params=None):
       r"""Get the SecurityCenterSettings resource.
 
@@ -499,6 +566,33 @@ class SecuritycenterV1beta2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def UpdateRapidVulnerabilityDetectionSettings(self, request, global_params=None):
+      r"""Update the RapidVulnerabilityDetectionSettings resource.
+
+      Args:
+        request: (SecuritycenterFoldersUpdateRapidVulnerabilityDetectionSettingsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RapidVulnerabilityDetectionSettings) The response message.
+      """
+      config = self.GetMethodConfig('UpdateRapidVulnerabilityDetectionSettings')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateRapidVulnerabilityDetectionSettings.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta2/folders/{foldersId}/rapidVulnerabilityDetectionSettings',
+        http_method='PATCH',
+        method_id='securitycenter.folders.updateRapidVulnerabilityDetectionSettings',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1beta2/{+name}',
+        request_field='rapidVulnerabilityDetectionSettings',
+        request_type_name='SecuritycenterFoldersUpdateRapidVulnerabilityDetectionSettingsRequest',
+        response_type_name='RapidVulnerabilityDetectionSettings',
+        supports_download=False,
+    )
+
     def UpdateSecurityHealthAnalyticsSettings(self, request, global_params=None):
       r"""Update the SecurityHealthAnalyticsSettings resource.
 
@@ -651,6 +745,43 @@ class SecuritycenterV1beta2(base_api.BaseApiClient):
         request_field='',
         request_type_name='SecuritycenterOrganizationsEventThreatDetectionSettingsCalculateRequest',
         response_type_name='EventThreatDetectionSettings',
+        supports_download=False,
+    )
+
+  class OrganizationsRapidVulnerabilityDetectionSettingsService(base_api.BaseApiService):
+    """Service class for the organizations_rapidVulnerabilityDetectionSettings resource."""
+
+    _NAME = 'organizations_rapidVulnerabilityDetectionSettings'
+
+    def __init__(self, client):
+      super(SecuritycenterV1beta2.OrganizationsRapidVulnerabilityDetectionSettingsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Calculate(self, request, global_params=None):
+      r"""Calculates the effective RapidVulnerabilityDetectionSettings based on its level in the resource hierarchy and its settings.
+
+      Args:
+        request: (SecuritycenterOrganizationsRapidVulnerabilityDetectionSettingsCalculateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RapidVulnerabilityDetectionSettings) The response message.
+      """
+      config = self.GetMethodConfig('Calculate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Calculate.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta2/organizations/{organizationsId}/rapidVulnerabilityDetectionSettings:calculate',
+        http_method='GET',
+        method_id='securitycenter.organizations.rapidVulnerabilityDetectionSettings.calculate',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta2/{+name}:calculate',
+        request_field='',
+        request_type_name='SecuritycenterOrganizationsRapidVulnerabilityDetectionSettingsCalculateRequest',
+        response_type_name='RapidVulnerabilityDetectionSettings',
         supports_download=False,
     )
 
@@ -856,6 +987,33 @@ class SecuritycenterV1beta2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetRapidVulnerabilityDetectionSettings(self, request, global_params=None):
+      r"""Get the RapidVulnerabilityDetectionSettings resource.
+
+      Args:
+        request: (SecuritycenterOrganizationsGetRapidVulnerabilityDetectionSettingsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RapidVulnerabilityDetectionSettings) The response message.
+      """
+      config = self.GetMethodConfig('GetRapidVulnerabilityDetectionSettings')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetRapidVulnerabilityDetectionSettings.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta2/organizations/{organizationsId}/rapidVulnerabilityDetectionSettings',
+        http_method='GET',
+        method_id='securitycenter.organizations.getRapidVulnerabilityDetectionSettings',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta2/{+name}',
+        request_field='',
+        request_type_name='SecuritycenterOrganizationsGetRapidVulnerabilityDetectionSettingsRequest',
+        response_type_name='RapidVulnerabilityDetectionSettings',
+        supports_download=False,
+    )
+
     def GetSecurityCenterSettings(self, request, global_params=None):
       r"""Get the SecurityCenterSettings resource.
 
@@ -1042,6 +1200,33 @@ class SecuritycenterV1beta2(base_api.BaseApiClient):
         request_field='eventThreatDetectionSettings',
         request_type_name='SecuritycenterOrganizationsUpdateEventThreatDetectionSettingsRequest',
         response_type_name='EventThreatDetectionSettings',
+        supports_download=False,
+    )
+
+    def UpdateRapidVulnerabilityDetectionSettings(self, request, global_params=None):
+      r"""Update the RapidVulnerabilityDetectionSettings resource.
+
+      Args:
+        request: (SecuritycenterOrganizationsUpdateRapidVulnerabilityDetectionSettingsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RapidVulnerabilityDetectionSettings) The response message.
+      """
+      config = self.GetMethodConfig('UpdateRapidVulnerabilityDetectionSettings')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateRapidVulnerabilityDetectionSettings.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta2/organizations/{organizationsId}/rapidVulnerabilityDetectionSettings',
+        http_method='PATCH',
+        method_id='securitycenter.organizations.updateRapidVulnerabilityDetectionSettings',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1beta2/{+name}',
+        request_field='rapidVulnerabilityDetectionSettings',
+        request_type_name='SecuritycenterOrganizationsUpdateRapidVulnerabilityDetectionSettingsRequest',
+        response_type_name='RapidVulnerabilityDetectionSettings',
         supports_download=False,
     )
 
@@ -1311,6 +1496,43 @@ class SecuritycenterV1beta2(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+  class ProjectsRapidVulnerabilityDetectionSettingsService(base_api.BaseApiService):
+    """Service class for the projects_rapidVulnerabilityDetectionSettings resource."""
+
+    _NAME = 'projects_rapidVulnerabilityDetectionSettings'
+
+    def __init__(self, client):
+      super(SecuritycenterV1beta2.ProjectsRapidVulnerabilityDetectionSettingsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Calculate(self, request, global_params=None):
+      r"""Calculates the effective RapidVulnerabilityDetectionSettings based on its level in the resource hierarchy and its settings.
+
+      Args:
+        request: (SecuritycenterProjectsRapidVulnerabilityDetectionSettingsCalculateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RapidVulnerabilityDetectionSettings) The response message.
+      """
+      config = self.GetMethodConfig('Calculate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Calculate.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta2/projects/{projectsId}/rapidVulnerabilityDetectionSettings:calculate',
+        http_method='GET',
+        method_id='securitycenter.projects.rapidVulnerabilityDetectionSettings.calculate',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta2/{+name}:calculate',
+        request_field='',
+        request_type_name='SecuritycenterProjectsRapidVulnerabilityDetectionSettingsCalculateRequest',
+        response_type_name='RapidVulnerabilityDetectionSettings',
+        supports_download=False,
+    )
+
   class ProjectsSecurityHealthAnalyticsSettingsService(base_api.BaseApiService):
     """Service class for the projects_securityHealthAnalyticsSettings resource."""
 
@@ -1513,6 +1735,33 @@ class SecuritycenterV1beta2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetRapidVulnerabilityDetectionSettings(self, request, global_params=None):
+      r"""Get the RapidVulnerabilityDetectionSettings resource.
+
+      Args:
+        request: (SecuritycenterProjectsGetRapidVulnerabilityDetectionSettingsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RapidVulnerabilityDetectionSettings) The response message.
+      """
+      config = self.GetMethodConfig('GetRapidVulnerabilityDetectionSettings')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetRapidVulnerabilityDetectionSettings.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta2/projects/{projectsId}/rapidVulnerabilityDetectionSettings',
+        http_method='GET',
+        method_id='securitycenter.projects.getRapidVulnerabilityDetectionSettings',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta2/{+name}',
+        request_field='',
+        request_type_name='SecuritycenterProjectsGetRapidVulnerabilityDetectionSettingsRequest',
+        response_type_name='RapidVulnerabilityDetectionSettings',
+        supports_download=False,
+    )
+
     def GetSecurityCenterSettings(self, request, global_params=None):
       r"""Get the SecurityCenterSettings resource.
 
@@ -1672,6 +1921,33 @@ class SecuritycenterV1beta2(base_api.BaseApiClient):
         request_field='eventThreatDetectionSettings',
         request_type_name='SecuritycenterProjectsUpdateEventThreatDetectionSettingsRequest',
         response_type_name='EventThreatDetectionSettings',
+        supports_download=False,
+    )
+
+    def UpdateRapidVulnerabilityDetectionSettings(self, request, global_params=None):
+      r"""Update the RapidVulnerabilityDetectionSettings resource.
+
+      Args:
+        request: (SecuritycenterProjectsUpdateRapidVulnerabilityDetectionSettingsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RapidVulnerabilityDetectionSettings) The response message.
+      """
+      config = self.GetMethodConfig('UpdateRapidVulnerabilityDetectionSettings')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateRapidVulnerabilityDetectionSettings.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta2/projects/{projectsId}/rapidVulnerabilityDetectionSettings',
+        http_method='PATCH',
+        method_id='securitycenter.projects.updateRapidVulnerabilityDetectionSettings',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1beta2/{+name}',
+        request_field='rapidVulnerabilityDetectionSettings',
+        request_type_name='SecuritycenterProjectsUpdateRapidVulnerabilityDetectionSettingsRequest',
+        response_type_name='RapidVulnerabilityDetectionSettings',
         supports_download=False,
     )
 

@@ -37,7 +37,7 @@ _ETC_RELPATH = 'etc'
 SAMPLES_ETC_PATH = os.path.join(SAMPLES_DIR_PATH, _ETC_RELPATH)
 
 # TODO(b/228633873): Replace with prod bucket
-GCS_BUCKET = 'todo://cloud-spanner-samples'
+GCS_BUCKET = 'gs://cloud-spanner-samples'
 
 FINANCE_APP_NAME = 'finance'
 

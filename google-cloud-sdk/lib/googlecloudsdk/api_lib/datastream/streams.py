@@ -142,6 +142,51 @@ class StreamsClient:
           'Cannot parse YAML: missing file format.')
     return gcs_dest_config_msg
 
+  def _ParseBigqueryDestinationConfig(self, config_file):
+    """Parses a bigquery_destination_config into the BigQueryDestinationConfig message."""
+    data = console_io.ReadFromFileOrStdin(config_file, binary=False)
+    try:
+      head_config_data = yaml.load(data)
+    except Exception as e:
+      raise ds_exceptions.ParseError('Cannot parse YAML:[{0}]'.format(e))
+
+    config_data_object = head_config_data.get('bigquery_destination_config')
+    config_data = config_data_object if config_data_object else head_config_data
+
+    config_msg = self._messages.BigQueryDestinationConfig()
+
+    if 'data_freshness' not in config_data:
+      raise ds_exceptions.ParseError(
+          'Cannot parse YAML: missing data_freshness.')
+    config_msg.dataFreshness = config_data.get('data_freshness')
+
+    if 'single_target_dataset' in config_data:
+      single_target_data = config_data.get('single_target_dataset')
+      config_msg.singleTargetDataset = self._messages.SingleTargetDataset(
+          datasetId=single_target_data.get('dataset_id'))
+    elif 'source_hierarchy_datasets' in config_data:
+      source_hierarchy_data = config_data.get('source_hierarchy_datasets')
+      if 'dataset_template' in source_hierarchy_data:
+        dataset_template_data = source_hierarchy_data.get('dataset_template')
+        if 'location' not in dataset_template_data:
+          raise ds_exceptions.ParseError(
+              'Cannot parse YAML: missing source_hierarchy_datasets.' +
+              'dataset_template.location')
+        location = dataset_template_data.get('location')
+        template = self._messages.DatasetTemplate(location=location)
+        if 'dataset_id_prefix' in dataset_template_data:
+          template.datasetIdPrefix = dataset_template_data.get(
+              'dataset_id_prefix')
+        if 'kms_key_name' in dataset_template_data:
+          template.kmsKeyName = dataset_template_data.get('kms_key_name')
+        config_msg.sourceHierarchyDatasets = self._messages.SourceHierarchyDatasets(
+            datasetTemplate=template)
+    else:
+      raise ds_exceptions.ParseError(
+          'Cannot parse YAML: must specific either source_hierarchy_datasets' +
+          ' or single_target_dataset.')
+    return config_msg
+
   def _GetStream(self, stream_id, release_track, args):
     """Returns a stream object."""
     labels = labels_util.ParseCreateArgs(
@@ -179,6 +224,10 @@ class StreamsClient:
     if args.gcs_destination_config:
       stream_destination_config.gcsDestinationConfig = (
           self._ParseGcsDestinationConfig(args.gcs_destination_config))
+    elif args.bigquery_destination_config:
+      stream_destination_config.bigqueryDestinationConfig = (
+          self._ParseBigqueryDestinationConfig(
+              args.bigquery_destination_config))
     stream_obj.destinationConfig = stream_destination_config
 
     if args.backfill_none:
@@ -286,6 +335,12 @@ class StreamsClient:
           self._ParseGcsDestinationConfig(args.gcs_destination_config))
       update_fields = self._UpdateListWithFieldNamePrefixes(
           update_fields, 'gcs_destination_config', 'destination_config.')
+    elif args.IsSpecified('bigquery_destination_config'):
+      stream.destinationConfig.bigqueryDestinationConfig = (
+          self._ParseBigqueryDestinationConfig(
+              args.bigquery_destination_config))
+      update_fields = self._UpdateListWithFieldNamePrefixes(
+          update_fields, 'bigquery_destination_config', 'destination_config.')
 
     if args.IsSpecified('backfill_none'):
       stream.backfillNone = self._messages.BackfillNoneStrategy()

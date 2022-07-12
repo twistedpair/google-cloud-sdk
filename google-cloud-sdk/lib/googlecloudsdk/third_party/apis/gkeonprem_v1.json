@@ -1798,6 +1798,11 @@
                       "description": "If true, shows deleted VMware Clusters.",
                       "location": "query",
                       "type": "boolean"
+                    },
+                    "filter": {
+                      "description": "A resource filtering expression following https:\/\/google.aip.dev\/160. When non-empty, only resource's whose attributes field matches the filter are returned.",
+                      "location": "query",
+                      "type": "string"
                     }
                   },
                   "parameterOrder": [

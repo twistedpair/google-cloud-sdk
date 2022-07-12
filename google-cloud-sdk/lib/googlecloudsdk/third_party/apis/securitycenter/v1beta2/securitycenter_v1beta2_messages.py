@@ -1963,6 +1963,83 @@ class ProcessSignature(_messages.Message):
   yaraRuleSignature = _messages.MessageField('YaraRuleSignature', 2)
 
 
+class RapidVulnerabilityDetectionSettings(_messages.Message):
+  r"""Resource capturing the settings for the Rapid Vulnerability Detection
+  service.
+
+  Enums:
+    ServiceEnablementStateValueValuesEnum: The state of enablement for the
+      service at its level of the resource hierarchy. A DISABLED state will
+      override all module enablement_states to DISABLED.
+
+  Messages:
+    ModulesValue: The configurations including the state of enablement for the
+      service's different modules. The absence of a module in the map implies
+      its configuration is inherited from its parent's.
+
+  Fields:
+    modules: The configurations including the state of enablement for the
+      service's different modules. The absence of a module in the map implies
+      its configuration is inherited from its parent's.
+    name: The resource name of the RapidVulnerabilityDetectionSettings.
+      Formats: *
+      organizations/{organization}/rapidVulnerabilityDetectionSettings *
+      folders/{folder}/rapidVulnerabilityDetectionSettings *
+      projects/{project}/rapidVulnerabilityDetectionSettings
+    serviceEnablementState: The state of enablement for the service at its
+      level of the resource hierarchy. A DISABLED state will override all
+      module enablement_states to DISABLED.
+    updateTime: Output only. The time the settings were last updated.
+  """
+
+  class ServiceEnablementStateValueValuesEnum(_messages.Enum):
+    r"""The state of enablement for the service at its level of the resource
+    hierarchy. A DISABLED state will override all module enablement_states to
+    DISABLED.
+
+    Values:
+      ENABLEMENT_STATE_UNSPECIFIED: Default value. This value is unused.
+      INHERITED: State is inherited from the parent resource.
+      ENABLED: State is enabled.
+      DISABLED: State is disabled.
+    """
+    ENABLEMENT_STATE_UNSPECIFIED = 0
+    INHERITED = 1
+    ENABLED = 2
+    DISABLED = 3
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ModulesValue(_messages.Message):
+    r"""The configurations including the state of enablement for the service's
+    different modules. The absence of a module in the map implies its
+    configuration is inherited from its parent's.
+
+    Messages:
+      AdditionalProperty: An additional property for a ModulesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ModulesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ModulesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A Config attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('Config', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  modules = _messages.MessageField('ModulesValue', 1)
+  name = _messages.StringField(2)
+  serviceEnablementState = _messages.EnumField('ServiceEnablementStateValueValuesEnum', 3)
+  updateTime = _messages.StringField(4)
+
+
 class Reference(_messages.Message):
   r"""Additional Links
 
@@ -2224,6 +2301,21 @@ class SecuritycenterFoldersGetOnboardingStateRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class SecuritycenterFoldersGetRapidVulnerabilityDetectionSettingsRequest(_messages.Message):
+  r"""A SecuritycenterFoldersGetRapidVulnerabilityDetectionSettingsRequest
+  object.
+
+  Fields:
+    name: Required. The name of the RapidVulnerabilityDetectionSettings to
+      retrieve. Formats: *
+      organizations/{organization}/rapidVulnerabilityDetectionSettings *
+      folders/{folder}/rapidVulnerabilityDetectionSettings *
+      projects/{project}/rapidVulnerabilityDetectionSettings
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class SecuritycenterFoldersGetSecurityCenterSettingsRequest(_messages.Message):
   r"""A SecuritycenterFoldersGetSecurityCenterSettingsRequest object.
 
@@ -2274,6 +2366,22 @@ class SecuritycenterFoldersGetWebSecurityScannerSettingsRequest(_messages.Messag
       Formats: * organizations/{organization}/webSecurityScannerSettings *
       folders/{folder}/webSecurityScannerSettings *
       projects/{project}/webSecurityScannerSettings
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SecuritycenterFoldersRapidVulnerabilityDetectionSettingsCalculateRequest(_messages.Message):
+  r"""A
+  SecuritycenterFoldersRapidVulnerabilityDetectionSettingsCalculateRequest
+  object.
+
+  Fields:
+    name: Required. The name of the RapidVulnerabilityDetectionSettings to
+      calculate. Formats: *
+      organizations/{organization}/rapidVulnerabilityDetectionSettings *
+      folders/{folder}/rapidVulnerabilityDetectionSettings *
+      projects/{project}/rapidVulnerabilityDetectionSettings
   """
 
   name = _messages.StringField(1, required=True)
@@ -2330,6 +2438,26 @@ class SecuritycenterFoldersUpdateEventThreatDetectionSettingsRequest(_messages.M
 
   eventThreatDetectionSettings = _messages.MessageField('EventThreatDetectionSettings', 1)
   name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class SecuritycenterFoldersUpdateRapidVulnerabilityDetectionSettingsRequest(_messages.Message):
+  r"""A SecuritycenterFoldersUpdateRapidVulnerabilityDetectionSettingsRequest
+  object.
+
+  Fields:
+    name: The resource name of the RapidVulnerabilityDetectionSettings.
+      Formats: *
+      organizations/{organization}/rapidVulnerabilityDetectionSettings *
+      folders/{folder}/rapidVulnerabilityDetectionSettings *
+      projects/{project}/rapidVulnerabilityDetectionSettings
+    rapidVulnerabilityDetectionSettings: A RapidVulnerabilityDetectionSettings
+      resource to be passed as the request body.
+    updateMask: The list of fields to be updated.
+  """
+
+  name = _messages.StringField(1, required=True)
+  rapidVulnerabilityDetectionSettings = _messages.MessageField('RapidVulnerabilityDetectionSettings', 2)
   updateMask = _messages.StringField(3)
 
 
@@ -2498,6 +2626,22 @@ class SecuritycenterOrganizationsGetOnboardingStateRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class SecuritycenterOrganizationsGetRapidVulnerabilityDetectionSettingsRequest(_messages.Message):
+  r"""A
+  SecuritycenterOrganizationsGetRapidVulnerabilityDetectionSettingsRequest
+  object.
+
+  Fields:
+    name: Required. The name of the RapidVulnerabilityDetectionSettings to
+      retrieve. Formats: *
+      organizations/{organization}/rapidVulnerabilityDetectionSettings *
+      folders/{folder}/rapidVulnerabilityDetectionSettings *
+      projects/{project}/rapidVulnerabilityDetectionSettings
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class SecuritycenterOrganizationsGetSecurityCenterSettingsRequest(_messages.Message):
   r"""A SecuritycenterOrganizationsGetSecurityCenterSettingsRequest object.
 
@@ -2567,6 +2711,21 @@ class SecuritycenterOrganizationsGetWebSecurityScannerSettingsRequest(_messages.
   name = _messages.StringField(1, required=True)
 
 
+class SecuritycenterOrganizationsRapidVulnerabilityDetectionSettingsCalculateRequest(_messages.Message):
+  r"""A SecuritycenterOrganizationsRapidVulnerabilityDetectionSettingsCalculat
+  eRequest object.
+
+  Fields:
+    name: Required. The name of the RapidVulnerabilityDetectionSettings to
+      calculate. Formats: *
+      organizations/{organization}/rapidVulnerabilityDetectionSettings *
+      folders/{folder}/rapidVulnerabilityDetectionSettings *
+      projects/{project}/rapidVulnerabilityDetectionSettings
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class SecuritycenterOrganizationsSecurityHealthAnalyticsSettingsCalculateRequest(_messages.Message):
   r"""A
   SecuritycenterOrganizationsSecurityHealthAnalyticsSettingsCalculateRequest
@@ -2621,6 +2780,27 @@ class SecuritycenterOrganizationsUpdateEventThreatDetectionSettingsRequest(_mess
 
   eventThreatDetectionSettings = _messages.MessageField('EventThreatDetectionSettings', 1)
   name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class SecuritycenterOrganizationsUpdateRapidVulnerabilityDetectionSettingsRequest(_messages.Message):
+  r"""A
+  SecuritycenterOrganizationsUpdateRapidVulnerabilityDetectionSettingsRequest
+  object.
+
+  Fields:
+    name: The resource name of the RapidVulnerabilityDetectionSettings.
+      Formats: *
+      organizations/{organization}/rapidVulnerabilityDetectionSettings *
+      folders/{folder}/rapidVulnerabilityDetectionSettings *
+      projects/{project}/rapidVulnerabilityDetectionSettings
+    rapidVulnerabilityDetectionSettings: A RapidVulnerabilityDetectionSettings
+      resource to be passed as the request body.
+    updateMask: The list of fields to be updated.
+  """
+
+  name = _messages.StringField(1, required=True)
+  rapidVulnerabilityDetectionSettings = _messages.MessageField('RapidVulnerabilityDetectionSettings', 2)
   updateMask = _messages.StringField(3)
 
 
@@ -2786,6 +2966,21 @@ class SecuritycenterProjectsGetOnboardingStateRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class SecuritycenterProjectsGetRapidVulnerabilityDetectionSettingsRequest(_messages.Message):
+  r"""A SecuritycenterProjectsGetRapidVulnerabilityDetectionSettingsRequest
+  object.
+
+  Fields:
+    name: Required. The name of the RapidVulnerabilityDetectionSettings to
+      retrieve. Formats: *
+      organizations/{organization}/rapidVulnerabilityDetectionSettings *
+      folders/{folder}/rapidVulnerabilityDetectionSettings *
+      projects/{project}/rapidVulnerabilityDetectionSettings
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class SecuritycenterProjectsGetSecurityCenterSettingsRequest(_messages.Message):
   r"""A SecuritycenterProjectsGetSecurityCenterSettingsRequest object.
 
@@ -2897,6 +3092,22 @@ class SecuritycenterProjectsLocationsClustersUpdateContainerThreatDetectionSetti
   updateMask = _messages.StringField(3)
 
 
+class SecuritycenterProjectsRapidVulnerabilityDetectionSettingsCalculateRequest(_messages.Message):
+  r"""A
+  SecuritycenterProjectsRapidVulnerabilityDetectionSettingsCalculateRequest
+  object.
+
+  Fields:
+    name: Required. The name of the RapidVulnerabilityDetectionSettings to
+      calculate. Formats: *
+      organizations/{organization}/rapidVulnerabilityDetectionSettings *
+      folders/{folder}/rapidVulnerabilityDetectionSettings *
+      projects/{project}/rapidVulnerabilityDetectionSettings
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class SecuritycenterProjectsSecurityHealthAnalyticsSettingsCalculateRequest(_messages.Message):
   r"""A SecuritycenterProjectsSecurityHealthAnalyticsSettingsCalculateRequest
   object.
@@ -2949,6 +3160,26 @@ class SecuritycenterProjectsUpdateEventThreatDetectionSettingsRequest(_messages.
 
   eventThreatDetectionSettings = _messages.MessageField('EventThreatDetectionSettings', 1)
   name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class SecuritycenterProjectsUpdateRapidVulnerabilityDetectionSettingsRequest(_messages.Message):
+  r"""A SecuritycenterProjectsUpdateRapidVulnerabilityDetectionSettingsRequest
+  object.
+
+  Fields:
+    name: The resource name of the RapidVulnerabilityDetectionSettings.
+      Formats: *
+      organizations/{organization}/rapidVulnerabilityDetectionSettings *
+      folders/{folder}/rapidVulnerabilityDetectionSettings *
+      projects/{project}/rapidVulnerabilityDetectionSettings
+    rapidVulnerabilityDetectionSettings: A RapidVulnerabilityDetectionSettings
+      resource to be passed as the request body.
+    updateMask: The list of fields to be updated.
+  """
+
+  name = _messages.StringField(1, required=True)
+  rapidVulnerabilityDetectionSettings = _messages.MessageField('RapidVulnerabilityDetectionSettings', 2)
   updateMask = _messages.StringField(3)
 
 

@@ -118,13 +118,13 @@ class Product(enum.Enum):
   RUN_APPS = 'Runapps'
 
 
-def AddImageArg(parser, required=True):
+def AddImageArg(parser, required=True, image='gcr.io/cloudrun/hello:latest'):
   """Add an image resource arg."""
   parser.add_argument(
       '--image',
       required=required,
-      help='Name of the container image to deploy (e.g. '
-      '`gcr.io/cloudrun/hello:latest`).')
+      help='Name of the container image to deploy (e.g. `{image}`).'.format(
+          image=image))
 
 
 _ARG_GROUP_HELP_TEXT = ('Only applicable if connecting to {platform_desc}. '

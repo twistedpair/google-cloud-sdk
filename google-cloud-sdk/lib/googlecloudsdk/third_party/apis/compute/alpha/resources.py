@@ -245,6 +245,14 @@ class Collections(enum.Enum):
       ['project', 'interconnectLocation'],
       True
   )
+  INTERCONNECTREMOTELOCATIONS = (
+      'interconnectRemoteLocations',
+      'projects/{project}/global/interconnectRemoteLocations/'
+      '{interconnectRemoteLocation}',
+      {},
+      ['project', 'interconnectRemoteLocation'],
+      True
+  )
   INTERCONNECTS = (
       'interconnects',
       'projects/{project}/global/interconnects/{interconnect}',
@@ -726,6 +734,13 @@ class Collections(enum.Enum):
       'projects/{project}/zones/{zone}/operations/{operation}',
       {},
       ['project', 'zone', 'operation'],
+      True
+  )
+  ZONEQUEUEDRESOURCES = (
+      'zoneQueuedResources',
+      'projects/{project}/zones/{zone}/queuedResources/{queuedResource}',
+      {},
+      ['project', 'zone', 'queuedResource'],
       True
   )
   ZONES = (

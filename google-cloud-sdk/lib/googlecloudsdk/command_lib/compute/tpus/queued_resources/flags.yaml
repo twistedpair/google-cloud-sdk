@@ -72,24 +72,45 @@ reserved:
 
 valid_after_duration:
   arg_name: valid-after-duration
+  type: googlecloudsdk.core.util.times:ParseDuration
+  processor: googlecloudsdk.core.util.times:FormatDurationForJson
   api_field: queuedResource.queueingPolicy.validAfterDuration
   help_text: |
     A duration before which the TPU must not be provisioned, relative to the current time.
+    See $ gcloud topic datetimes for information on duration formats.
 
 valid_after_time:
   arg_name: valid-after-time
+  type: googlecloudsdk.core.util.times:ParseDateTime
+  processor: googlecloudsdk.core.util.times:FormatDateTime
   api_field: queuedResource.queueingPolicy.validAfterTime
   help_text: |
     An absolute time before which the TPU must not be provisioned.
+    See $ gcloud topic datetimes for information on duration formats.
 
 valid_until_duration:
   arg_name: valid-until-duration
+  type: googlecloudsdk.core.util.times:ParseDuration
+  processor: googlecloudsdk.core.util.times:FormatDurationForJson
   api_field: queuedResource.queueingPolicy.validUntilDuration
   help_text: |
     A duration after which the TPU must not be provisioned, relative to the current time.
+    See $ gcloud topic datetimes for information on duration formats.
 
 valid_until_time:
   arg_name: valid-until-time
+  type: googlecloudsdk.core.util.times:ParseDateTime
+  processor: googlecloudsdk.core.util.times:FormatDateTime
   api_field: queuedResource.queueingPolicy.validUntilTime
   help_text: |
     An absolute time after which resources must not be created.
+    See $ gcloud topic datetimes for information on duration formats.
+
+internal_ips:
+  arg_name: internal-ips
+  type: bool
+  action: store_true
+  default: false  # note that user-facing flag is inverse of API enable_external_ips flag
+  help_text: |
+    Indicates that the IP addresses for the node should be internal. The default is that external IP
+    addresses will be associated with the TPU workers.

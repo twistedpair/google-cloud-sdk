@@ -131,6 +131,16 @@ node_template:
     attribute_name: node_template
     help: The name of the Google Compute Engine node template.
 
+queued_resource:
+  name: queued_resource
+  collection: compute.zoneQueuedResources
+  attributes:
+  - *project
+  - *zone
+  - parameter_name: queuedResource
+    attribute_name: queued_resource
+    help: The name of the Google Compute Engine queued resource.
+
 reservation:
   name: reservation
   collection: compute.reservations

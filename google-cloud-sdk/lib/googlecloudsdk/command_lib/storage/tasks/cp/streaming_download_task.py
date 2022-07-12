@@ -23,6 +23,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import os
+import sys
 import threading
 
 from googlecloudsdk.api_lib.storage import api_factory
@@ -41,7 +42,8 @@ class StreamingDownloadTask(task.Task):
                source_resource,
                download_stream,
                print_created_message=False,
-               user_request_args=None):
+               user_request_args=None,
+               show_url=False):
     """Initializes task.
 
     Args:
@@ -52,25 +54,30 @@ class StreamingDownloadTask(task.Task):
       print_created_message (bool): Print a message containing the versioned
         URL of the copy result.
       user_request_args (UserRequestArgs|None): Values for RequestConfig.
+      show_url (bool): Says whether or not to print the header before each
+        object's content
     """
     super(StreamingDownloadTask, self).__init__()
     self._source_resource = source_resource
     self._download_stream = download_stream
     self._print_created_message = print_created_message
     self._user_request_args = user_request_args
+    self._show_url = show_url
 
   def execute(self, task_status_queue=None):
-    """Runs download to stream."""
-    progress_callback = progress_callbacks.FilesAndBytesProgressCallback(
-        status_queue=task_status_queue,
-        offset=0,
-        length=self._source_resource.size,
-        source_url=self._source_resource.storage_url,
-        destination_url=self._download_stream.name,
-        operation_name=task_status.OperationName.DOWNLOADING,
-        process_id=os.getpid(),
-        thread_id=threading.get_ident(),
-    )
+    if task_status_queue:
+      progress_callback = progress_callbacks.FilesAndBytesProgressCallback(
+          status_queue=task_status_queue,
+          offset=0,
+          length=self._source_resource.size,
+          source_url=self._source_resource.storage_url,
+          destination_url=self._download_stream.name,
+          operation_name=task_status.OperationName.DOWNLOADING,
+          process_id=os.getpid(),
+          thread_id=threading.get_ident(),
+      )
+    else:
+      progress_callback = None
 
     request_config = request_config_factory.get_request_config(
         self._source_resource.storage_url,
@@ -79,12 +86,22 @@ class StreamingDownloadTask(task.Task):
     )
 
     provider = self._source_resource.storage_url.scheme
+    if self._show_url:
+      sys.stderr.write('==> {} <==\n'.format(self._source_resource))
     api_factory.get_api(provider).download_object(
         self._source_resource,
         self._download_stream,
         request_config,
         download_strategy=cloud_api.DownloadStrategy.ONE_SHOT,
         progress_callback=progress_callback)
-
+    self._download_stream.flush()
     if self._print_created_message:
       log.status.Print('Created: {}'.format(self._download_stream.name))
+
+  def __eq__(self, other):
+    if not isinstance(other, self.__class__):
+      return NotImplemented
+    return (self._source_resource == other._source_resource and
+            self._download_stream == other._download_stream and
+            self._print_created_message == other._print_created_message and
+            self._user_request_args == other._user_request_args)

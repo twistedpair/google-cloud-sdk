@@ -1223,32 +1223,6 @@ class ProvisioningIssue(_messages.Message):
   reason = _messages.EnumField('ReasonValueValuesEnum', 2)
 
 
-class ResourcesCount(_messages.Message):
-  r"""ResourcesCount represents the resource that stores aggregated project's
-  info in the given location, e.g.: total number of certificates assigned to
-  the project.
-
-  Fields:
-    certificates: The count of certificates.
-    computeTime: Required. Input only. The time of the computation. The field
-      is input only, used in Create and Update calls. For Update call, new
-      values of selected resources are set if their compute_time is younger
-      than the persisted ones, e.g.: If you support 3 types of resources: A, B
-      and C, and you have: 'A' resource count computed at timestamp = 3 'B'
-      resource count computed at timestamp = 10 'C' resource count computed at
-      timestamp = 5 And you're going to update all of them with compute_time =
-      8, only 'A' and 'C' will be updated, as 'B' already has fresher data.
-      For Get call a ResourcesCount instance contains the freshest values for
-      every type.
-    name: The singleton resource of the resources count. Must be in the format
-      `projects/*/locations/*/resourcesCounts/single`.
-  """
-
-  certificates = _messages.IntegerField(1, variant=_messages.Variant.UINT64)
-  computeTime = _messages.StringField(2)
-  name = _messages.StringField(3)
-
-
 class SelfManagedCertificate(_messages.Message):
   r"""Certificate data for a SelfManaged Certificate. SelfManaged Certificates
   are uploaded by the user. Updating such certificates before they expire

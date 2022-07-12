@@ -98,6 +98,28 @@ class BackfillNoneStrategy(_messages.Message):
 
 
 
+class BigQueryDestinationConfig(_messages.Message):
+  r"""A BigQueryDestinationConfig object.
+
+  Fields:
+    dataFreshness: The guaranteed data freshness (in seconds) when querying
+      tables created by the stream. Editing this field will only affect new
+      tables created in the future, but existing tables will not be impacted.
+      Lower values mean that queries will return fresher data, but may result
+      in higher cost.
+    singleTargetDataset: Single destination dataset.
+    sourceHierarchyDatasets: Source hierarchy datasets.
+  """
+
+  dataFreshness = _messages.StringField(1)
+  singleTargetDataset = _messages.MessageField('SingleTargetDataset', 2)
+  sourceHierarchyDatasets = _messages.MessageField('SourceHierarchyDatasets', 3)
+
+
+class BigQueryProfile(_messages.Message):
+  r"""A BigQueryProfile object."""
+
+
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
@@ -110,6 +132,7 @@ class ConnectionProfile(_messages.Message):
     LabelsValue: Labels.
 
   Fields:
+    bigqueryProfile: BigQuery Connection Profile configuration.
     createTime: Output only. The create time of the resource.
     displayName: Required. Display name.
     forwardSshConnectivity: Forward SSH tunnel connectivity.
@@ -147,17 +170,41 @@ class ConnectionProfile(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  displayName = _messages.StringField(2)
-  forwardSshConnectivity = _messages.MessageField('ForwardSshTunnelConnectivity', 3)
-  gcsProfile = _messages.MessageField('GcsProfile', 4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  mysqlProfile = _messages.MessageField('MysqlProfile', 6)
-  name = _messages.StringField(7)
-  oracleProfile = _messages.MessageField('OracleProfile', 8)
-  privateConnectivity = _messages.MessageField('PrivateConnectivity', 9)
-  staticServiceIpConnectivity = _messages.MessageField('StaticServiceIpConnectivity', 10)
-  updateTime = _messages.StringField(11)
+  bigqueryProfile = _messages.MessageField('BigQueryProfile', 1)
+  createTime = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  forwardSshConnectivity = _messages.MessageField('ForwardSshTunnelConnectivity', 4)
+  gcsProfile = _messages.MessageField('GcsProfile', 5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  mysqlProfile = _messages.MessageField('MysqlProfile', 7)
+  name = _messages.StringField(8)
+  oracleProfile = _messages.MessageField('OracleProfile', 9)
+  privateConnectivity = _messages.MessageField('PrivateConnectivity', 10)
+  staticServiceIpConnectivity = _messages.MessageField('StaticServiceIpConnectivity', 11)
+  updateTime = _messages.StringField(12)
+
+
+class DatasetTemplate(_messages.Message):
+  r"""Dataset template used for dynamic dataset creation.
+
+  Fields:
+    datasetIdPrefix: If supplied, every created dataset will have its name
+      prefixed by the provided value. The prefix and name will be separated by
+      an underscore. i.e. _.
+    kmsKeyName: Describes the Cloud KMS encryption key that will be used to
+      protect destination BigQuery table. The BigQuery Service Account
+      associated with your project requires access to this encryption key.
+      i.e. projects/{project}/locations/{location}/keyRings/{key_ring}/cryptoK
+      eys/{cryptoKey}. See https://cloud.google.com/bigquery/docs/customer-
+      managed-encryption for more information.
+    location: Required. The geographic location where the dataset should
+      reside. See https://cloud.google.com/bigquery/docs/locations for
+      supported locations.
+  """
+
+  datasetIdPrefix = _messages.StringField(1)
+  kmsKeyName = _messages.StringField(2)
+  location = _messages.StringField(3)
 
 
 class DatastreamProjectsLocationsConnectionProfilesCreateRequest(_messages.Message):
@@ -762,6 +809,7 @@ class DestinationConfig(_messages.Message):
   r"""The configuration of the stream destination.
 
   Fields:
+    bigqueryDestinationConfig: BigQuery destination configuration.
     destinationConnectionProfile: Required. Destination connection profile
       resource. Format:
       `projects/{project}/locations/{location}/connectionProfiles/{name}`
@@ -769,8 +817,9 @@ class DestinationConfig(_messages.Message):
       Cloud Storage.
   """
 
-  destinationConnectionProfile = _messages.StringField(1)
-  gcsDestinationConfig = _messages.MessageField('GcsDestinationConfig', 2)
+  bigqueryDestinationConfig = _messages.MessageField('BigQueryDestinationConfig', 1)
+  destinationConnectionProfile = _messages.StringField(2)
+  gcsDestinationConfig = _messages.MessageField('GcsDestinationConfig', 3)
 
 
 class DiscoverConnectionProfileRequest(_messages.Message):
@@ -1702,6 +1751,16 @@ class Route(_messages.Message):
   updateTime = _messages.StringField(7)
 
 
+class SingleTargetDataset(_messages.Message):
+  r"""A single target dataset to which all data will be streamed.
+
+  Fields:
+    datasetId: A string attribute.
+  """
+
+  datasetId = _messages.StringField(1)
+
+
 class SourceConfig(_messages.Message):
   r"""The configuration of the stream source.
 
@@ -1716,6 +1775,17 @@ class SourceConfig(_messages.Message):
   mysqlSourceConfig = _messages.MessageField('MysqlSourceConfig', 1)
   oracleSourceConfig = _messages.MessageField('OracleSourceConfig', 2)
   sourceConnectionProfile = _messages.StringField(3)
+
+
+class SourceHierarchyDatasets(_messages.Message):
+  r"""Destination datasets are created so that hierarchy of the destination
+  data objects matches the source hierarchy.
+
+  Fields:
+    datasetTemplate: A DatasetTemplate attribute.
+  """
+
+  datasetTemplate = _messages.MessageField('DatasetTemplate', 1)
 
 
 class SourceObjectIdentifier(_messages.Message):
@@ -2108,7 +2178,6 @@ class VpcPeeringConfig(_messages.Message):
 
   Fields:
     subnet: Required. A free subnet for peering. (CIDR of /29)
-      TODO(b/172995841) add validators.
     vpc: Required. Fully qualified name of the VPC that Datastream will peer
       to. Format: `projects/{project}/global/{networks}/{name}`
   """

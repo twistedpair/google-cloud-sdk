@@ -54,3 +54,12 @@ class IapTunnelingUnavailable(exceptions.Error):
   def __init__(self):
     super(IapTunnelingUnavailable, self).__init__(
         'Currently unable to connect to this TPU using IAP tunneling.')
+
+
+class TPUInMaintenanceEvent(exceptions.Error):
+  """Error when TPU has unhealthy maintenance for health."""
+
+  def __init__(self):
+    super(TPUInMaintenanceEvent, self).__init__(
+        'This TPU is going through a maintenance event, and is currently unavailable. Please try again later.'
+    )

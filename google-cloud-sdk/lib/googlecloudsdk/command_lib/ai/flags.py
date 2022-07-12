@@ -80,9 +80,7 @@ ENABLE_WEB_ACCESS = base.Argument(
     required=False,
     default=False,
     help=textwrap.dedent("""\
-      Whether you want Vertex AI to enable [interactive shell
-      access]
-      (https://cloud.google.com/vertex-ai/docs/training/monitor-debug-interactive-shell)
+      Whether you want Vertex AI to enable [interactive shell access](https://cloud.google.com/vertex-ai/docs/training/monitor-debug-interactive-shell)
       to training containers. If set to ``true'', you can access
       interactive shells at the URIs given by CustomJob.web_access_uris or
       Trial.web_access_uris (within HyperparameterTuningJob.trials).
@@ -487,6 +485,29 @@ def AddModelResourceArg(parser, verb, prompt_func=region_util.PromptForRegion):
       required=True).AddToParser(parser)
 
 
+def AddModelVersionResourceArg(parser,
+                               verb,
+                               prompt_func=region_util.PromptForRegion):
+  """Add a resource argument for a Vertex AI model version.
+
+  NOTE: Must be used only if it's the only resource arg in the command.
+
+  Args:
+    parser: the parser for the command.
+    verb: str, the verb to describe the resource, such as 'to update'.
+    prompt_func: function, the function to prompt for region from list of
+      available regions which returns a string for the region selected. Default
+      is region_util.PromptForRegion which contains three regions,
+      'us-central1', 'europe-west4', and 'asia-east1'.
+  """
+  name = 'model_version'
+  concept_parsers.ConceptParser.ForResource(
+      name,
+      GetModelResourceSpec(prompt_func=prompt_func),
+      'Model version {}.'.format(verb),
+      required=True).AddToParser(parser)
+
+
 def AddUploadModelFlags(parser, prompt_func=region_util.PromptForRegion):
   """Adds flags for UploadModel.
 
@@ -593,6 +614,16 @@ inclusive.
       action=arg_parsers.UpdateAction,
       help='Noise sigma by features for explanation. Noise sigma represents the standard deviation of the gaussian kernel that will be used to add noise to interpolated inputs prior to computing gradients. Only applicable to explanation method `integrated-gradients` or `xrai`.'
   )
+  parser.add_argument(
+      '--parent-model',
+      type=str,
+      help='Resource name of the model into which to upload the version. Only specify this field when uploading a new version.'
+  )
+  parser.add_argument(
+      '--model-id',
+      type=str,
+      help='ID to use for the uploaded Model, which will become the final component of the model resource name.'
+  )
 
 
 def GetMetadataFilePathArg(noun, required=False):
@@ -632,6 +663,32 @@ def GetIndexResourceSpec(resource_name='index'):
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       locationsId=RegionAttributeConfig(),
       disable_auto_completers=False)
+
+
+def AddDatapointSourceGroupForStreamUpdate(noun, parser, required=False):
+  """Add datapoint source group to the parser for StreamUpdate API."""
+  datapoint_source_group = parser.add_mutually_exclusive_group(
+      required=required)
+  GetDatapointsFilePathArg(noun).AddToParser(datapoint_source_group)
+  GetIndexDatapointIdsArg(noun).AddToParser(datapoint_source_group)
+
+
+def GetDatapointsFilePathArg(noun, required=False):
+  return base.Argument(
+      '--datapoints-from-file',
+      required=required,
+      help='Path to a local JSON file that contains the data points that need to be added to the {noun}.'
+      .format(noun=noun))
+
+
+def GetIndexDatapointIdsArg(noun, required=False):
+  return base.Argument(
+      '--datapoint-ids',
+      required=required,
+      metavar='DATAPOINT_IDS',
+      type=arg_parsers.ArgList(),
+      help='List of index datapoint ids to be removed from the {noun}.'.format(
+          noun=noun))
 
 
 def GetEndpointId():

@@ -716,6 +716,9 @@ class GkeonpremProjectsLocationsVmwareClustersListRequest(_messages.Message):
   r"""A GkeonpremProjectsLocationsVmwareClustersListRequest object.
 
   Fields:
+    filter: A resource filtering expression following
+      https://google.aip.dev/160. When non-empty, only resource's whose
+      attributes field matches the filter are returned.
     pageSize: Requested page size. Server may return fewer items than
       requested. If unspecified, at most 50 clusters will be returned. The
       maximum value is 1000; values above 1000 will be coerced to 1000.
@@ -726,10 +729,11 @@ class GkeonpremProjectsLocationsVmwareClustersListRequest(_messages.Message):
     showDeleted: If true, shows deleted VMware Clusters.
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-  showDeleted = _messages.BooleanField(4)
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+  showDeleted = _messages.BooleanField(5)
 
 
 class GkeonpremProjectsLocationsVmwareClustersOperationsGetRequest(_messages.Message):

@@ -2112,7 +2112,7 @@ class CloudbuildV1(base_api.BaseApiClient):
     )
 
     def Run(self, request, global_params=None):
-      r"""Runs a `BuildTrigger` at a particular source revision.
+      r"""Runs a `BuildTrigger` at a particular source revision. To run a regional or global trigger, use the POST request that includes the location endpoint in the path. The POST request that does not include the location endpoint in the path can only be used when running global triggers.
 
       Args:
         request: (CloudbuildProjectsLocationsTriggersRunRequest) input message
@@ -2461,7 +2461,7 @@ class CloudbuildV1(base_api.BaseApiClient):
     )
 
     def Run(self, request, global_params=None):
-      r"""Runs a `BuildTrigger` at a particular source revision.
+      r"""Runs a `BuildTrigger` at a particular source revision. To run a regional or global trigger, use the POST request that includes the location endpoint in the path. The POST request that does not include the location endpoint in the path can only be used when running global triggers.
 
       Args:
         request: (CloudbuildProjectsTriggersRunRequest) input message

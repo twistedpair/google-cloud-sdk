@@ -148,29 +148,6 @@ def GetSchemaPath():
 def PreprocessUpdateRestorePlan(ref, args, request):
   """Preprocess request for updating restore plan."""
   del ref
-  messages = api_util.GetMessagesModule()
-
-  # Guarded by argparse
-  if args.IsSpecified('cluster_resource_conflict_policy'):
-    if args.cluster_resource_conflict_policy == 'USE_EXISTING_VERSION':
-      request.restorePlan.restoreConfig.clusterResourceConflictPolicy = messages.RestoreConfig.ClusterResourceConflictPolicyValueValuesEnum.USE_EXISTING_VERSION
-    elif args.cluster_resource_conflict_policy == 'USE_BACKUP_VERSION':
-      request.restorePlan.restoreConfig.clusterResourceConflictPolicy = messages.RestoreConfig.ClusterResourceConflictPolicyValueValuesEnum.USE_BACKUP_VERSION
-
-  # Guarded by argparse
-  if args.IsSpecified('namespaced_resource_restore_mode'):
-    if args.namespaced_resource_restore_mode == 'DELETE_AND_RESTORE':
-      request.restorePlan.restoreConfig.namespacedResourceRestoreMode = messages.RestoreConfig.NamespacedResourceRestoreModeValueValuesEnum.DELETE_AND_RESTORE
-    elif args.namespaced_resource_restore_mode == 'FAIL_ON_CONFLICT':
-      request.restorePlan.restoreConfig.namespacedResourceRestoreMode = messages.RestoreConfig.NamespacedResourceRestoreModeValueValuesEnum.FAIL_ON_CONFLICT
-
-  if args.IsSpecified('volume_data_restore_policy'):
-    if args.volume_data_restore_policy == 'RESTORE_VOLUME_DATA_FROM_BACKUP':
-      request.restorePlan.restoreConfig.volumeDataRestorePolicy = messages.RestoreConfig.VolumeDataRestorePolicyValueValuesEnum.RESTORE_VOLUME_DATA_FROM_BACKUP
-    elif args.volume_data_restore_policy == 'REUSE_VOLUME_HANDLE_FROM_BACKUP':
-      request.restorePlan.restoreConfig.volumeDataRestorePolicy = messages.RestoreConfig.VolumeDataRestorePolicyValueValuesEnum.REUSE_VOLUME_HANDLE_FROM_BACKUP
-    else:
-      request.restorePlan.restoreConfig.volumeDataRestorePolicy = messages.RestoreConfig.VolumeDataRestorePolicyValueValuesEnum.NO_VOLUME_DATA_RESTORATION
 
   if args.IsSpecified('cluster_resource_restore_scope'):
     request.restorePlan.restoreConfig.clusterResourceRestoreScope = ParseClusterResourceRestoreScope(

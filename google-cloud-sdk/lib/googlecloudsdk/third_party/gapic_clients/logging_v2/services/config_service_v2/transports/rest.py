@@ -3077,22 +3077,12 @@ class ConfigServiceV2RestTransport(ConfigServiceV2Transport):
             },
 {
                 'method': 'patch',
-                'uri': '/v2/{name=projects/*}/settings',
-                'body': 'settings',
-            },
-{
-                'method': 'patch',
                 'uri': '/v2/{name=organizations/*}/settings',
                 'body': 'settings',
             },
 {
                 'method': 'patch',
                 'uri': '/v2/{name=folders/*}/settings',
-                'body': 'settings',
-            },
-{
-                'method': 'patch',
-                'uri': '/v2/{name=billingAccounts/*}/settings',
                 'body': 'settings',
             },
             ]

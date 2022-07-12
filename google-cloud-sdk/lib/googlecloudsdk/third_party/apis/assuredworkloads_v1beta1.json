@@ -520,20 +520,6 @@
       "properties": {
       }
     },
-    "GoogleCloudAssuredworkloadsV1beta1AnalyzeWorkloadMoveResponse": {
-      "id": "GoogleCloudAssuredworkloadsV1beta1AnalyzeWorkloadMoveResponse",
-      "description": "Response with the analysis if the source workload can be moved to the target workload",
-      "type": "object",
-      "properties": {
-        "blockers": {
-          "description": "List of blockers that prevent moving the source workload to the target workload",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
     "GoogleCloudAssuredworkloadsVersioningV1beta1Workload": {
       "id": "GoogleCloudAssuredworkloadsVersioningV1beta1Workload",
       "description": "An Workload object for managing highly regulated workloads of cloud customers.",
@@ -2126,7 +2112,7 @@
                         "target"
                       ],
                       "response": {
-                        "$ref": "GoogleCloudAssuredworkloadsV1beta1AnalyzeWorkloadMoveResponse"
+                        "$ref": "GoogleCloudAssuredworkloadsVersioningV1beta1AnalyzeWorkloadMoveResponse"
                       },
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"

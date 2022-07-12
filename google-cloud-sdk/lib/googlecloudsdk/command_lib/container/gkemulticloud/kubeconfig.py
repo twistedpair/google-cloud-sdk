@@ -26,11 +26,9 @@ from googlecloudsdk.api_lib.container import util
 from googlecloudsdk.command_lib.container.fleet import connect_gateway_util
 from googlecloudsdk.command_lib.container.fleet import gwkubeconfig_util
 from googlecloudsdk.command_lib.container.gkemulticloud import errors
-from googlecloudsdk.command_lib.projects import util as project_util
 from googlecloudsdk.core import config
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
-from googlecloudsdk.core import resources
 from googlecloudsdk.core.util import platforms
 from googlecloudsdk.core.util import semver
 
@@ -167,15 +165,8 @@ def _ConnectGatewayKubeconfig(kubeconfig, cluster, context, cmd_path):
     raise errors.MissingClusterField('fleet')
   if cluster.fleet.membership is None:
     raise errors.MissingClusterField('fleet.membership')
-  membership_resource = resources.REGISTRY.ParseRelativeName(
-      cluster.fleet.membership,
-      collection='gkehub.projects.locations.memberships')
-  # Connect Gateway only supports project number.
-  # TODO(b/198380839): Use the url with locations once rolled out.
-  server = 'https://{}/v1/projects/{}/memberships/{}'.format(
-      _GetConnectGatewayEndpoint(),
-      project_util.GetProjectNumber(membership_resource.projectsId),
-      membership_resource.membershipsId)
+  server = 'https://{}/v1/{}'.format(_GetConnectGatewayEndpoint(),
+                                     cluster.fleet.membership)
   user_kwargs = {'auth_provider': 'gcp', 'auth_provider_cmd_path': cmd_path}
   kubeconfig.users[context] = kubeconfig_util.User(context, **user_kwargs)
   kubeconfig.clusters[context] = gwkubeconfig_util.Cluster(context, server)
@@ -250,6 +241,8 @@ def _GetConnectGatewayEndpoint():
   Raises:
     Error: Unknown API override.
   """
+  # TODO(b/196964566): Use per-region URL for Connect Gatway once GA e.g.
+  # us-west1-connectgateway.googleapis.com.
   endpoint = properties.VALUES.api_endpoint_overrides.gkemulticloud.Get()
   # Multicloud overrides prod endpoint at run time with the regionalized version
   # so we can't simply check that endpoint is not overridden.

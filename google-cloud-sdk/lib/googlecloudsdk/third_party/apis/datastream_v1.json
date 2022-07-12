@@ -274,6 +274,10 @@
           "description": "MySQL ConnectionProfile configuration.",
           "$ref": "MysqlProfile"
         },
+        "bigqueryProfile": {
+          "description": "BigQuery Connection Profile configuration.",
+          "$ref": "BigQueryProfile"
+        },
         "staticServiceIpConnectivity": {
           "description": "Static Service IP connectivity.",
           "$ref": "StaticServiceIpConnectivity"
@@ -398,6 +402,12 @@
           "readOnly": true,
           "type": "boolean"
         }
+      }
+    },
+    "BigQueryProfile": {
+      "id": "BigQueryProfile",
+      "type": "object",
+      "properties": {
       }
     },
     "StaticServiceIpConnectivity": {
@@ -863,6 +873,10 @@
         "gcsDestinationConfig": {
           "description": "A configuration for how data should be loaded to Cloud Storage.",
           "$ref": "GcsDestinationConfig"
+        },
+        "bigqueryDestinationConfig": {
+          "description": "BigQuery destination configuration.",
+          "$ref": "BigQueryDestinationConfig"
         }
       }
     },
@@ -934,6 +948,64 @@
             "NO_COMPRESSION",
             "GZIP"
           ]
+        }
+      }
+    },
+    "BigQueryDestinationConfig": {
+      "id": "BigQueryDestinationConfig",
+      "type": "object",
+      "properties": {
+        "singleTargetDataset": {
+          "description": "Single destination dataset.",
+          "$ref": "SingleTargetDataset"
+        },
+        "sourceHierarchyDatasets": {
+          "description": "Source hierarchy datasets.",
+          "$ref": "SourceHierarchyDatasets"
+        },
+        "dataFreshness": {
+          "description": "The guaranteed data freshness (in seconds) when querying tables created by the stream. Editing this field will only affect new tables created in the future, but existing tables will not be impacted. Lower values mean that queries will return fresher data, but may result in higher cost.",
+          "type": "string",
+          "format": "google-duration"
+        }
+      }
+    },
+    "SingleTargetDataset": {
+      "id": "SingleTargetDataset",
+      "description": "A single target dataset to which all data will be streamed.",
+      "type": "object",
+      "properties": {
+        "datasetId": {
+          "type": "string"
+        }
+      }
+    },
+    "SourceHierarchyDatasets": {
+      "id": "SourceHierarchyDatasets",
+      "description": "Destination datasets are created so that hierarchy of the destination data objects matches the source hierarchy.",
+      "type": "object",
+      "properties": {
+        "datasetTemplate": {
+          "$ref": "DatasetTemplate"
+        }
+      }
+    },
+    "DatasetTemplate": {
+      "id": "DatasetTemplate",
+      "description": "Dataset template used for dynamic dataset creation.",
+      "type": "object",
+      "properties": {
+        "location": {
+          "description": "Required. The geographic location where the dataset should reside. See https:\/\/cloud.google.com\/bigquery\/docs\/locations for supported locations.",
+          "type": "string"
+        },
+        "datasetIdPrefix": {
+          "description": "If supplied, every created dataset will have its name prefixed by the provided value. The prefix and name will be separated by an underscore. i.e. _.",
+          "type": "string"
+        },
+        "kmsKeyName": {
+          "description": "Describes the Cloud KMS encryption key that will be used to protect destination BigQuery table. The BigQuery Service Account associated with your project requires access to this encryption key. i.e. projects\/{project}\/locations\/{location}\/keyRings\/{key_ring}\/cryptoKeys\/{cryptoKey}. See https:\/\/cloud.google.com\/bigquery\/docs\/customer-managed-encryption for more information.",
+          "type": "string"
         }
       }
     },
@@ -1302,7 +1374,7 @@
           "type": "string"
         },
         "subnet": {
-          "description": "Required. A free subnet for peering. (CIDR of \/29) TODO(b\/172995841) add validators.",
+          "description": "Required. A free subnet for peering. (CIDR of \/29)",
           "type": "string"
         }
       }

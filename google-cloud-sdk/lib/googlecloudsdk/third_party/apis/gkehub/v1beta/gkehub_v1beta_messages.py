@@ -846,6 +846,9 @@ class ConfigManagementPolicyController(_messages.Message):
       cluster.
     logDeniesEnabled: Logs all denies and dry run failures.
     monitoring: Monitoring specifies the configuration of monitoring.
+    mutationEnabled: Enable or disable mutation in policy controller. If true,
+      mutation CRDs, webhook and controller deployment will be deployed to the
+      cluster.
     referentialRulesEnabled: Enables the ability to use Constraint Templates
       that reference to objects other than the object currently being
       evaluated.
@@ -858,8 +861,9 @@ class ConfigManagementPolicyController(_messages.Message):
   exemptableNamespaces = _messages.StringField(3, repeated=True)
   logDeniesEnabled = _messages.BooleanField(4)
   monitoring = _messages.MessageField('ConfigManagementPolicyControllerMonitoring', 5)
-  referentialRulesEnabled = _messages.BooleanField(6)
-  templateLibraryInstalled = _messages.BooleanField(7)
+  mutationEnabled = _messages.BooleanField(6)
+  referentialRulesEnabled = _messages.BooleanField(7)
+  templateLibraryInstalled = _messages.BooleanField(8)
 
 
 class ConfigManagementPolicyControllerMonitoring(_messages.Message):
@@ -1915,7 +1919,7 @@ class MembershipFeatureState(_messages.Message):
     appdevexperience: Appdevexperience specific state.
     configmanagement: Config Management-specific state.
     identityservice: Identity Service-specific state.
-    metering: Metering-specific spec.
+    metering: Metering-specific state.
     policycontroller: Policycontroller-specific state.
     servicemesh: Service Mesh-specific state.
     state: The high-level state of this Feature for a single membership.
@@ -2250,6 +2254,8 @@ class PolicyControllerHubConfig(_messages.Message):
       controller that is reported in the feature state.
     logDeniesEnabled: Logs all denies and dry run failures.
     monitoring: Monitoring specifies the configuration of monitoring.
+    mutationEnabled: Enables the ability to mutate resources using Policy
+      Controller.
     referentialRulesEnabled: Enables the ability to use Constraint Templates
       that reference to objects other than the object currently being
       evaluated.
@@ -2280,8 +2286,9 @@ class PolicyControllerHubConfig(_messages.Message):
   installSpec = _messages.EnumField('InstallSpecValueValuesEnum', 3)
   logDeniesEnabled = _messages.BooleanField(4)
   monitoring = _messages.MessageField('PolicyControllerMonitoringConfig', 5)
-  referentialRulesEnabled = _messages.BooleanField(6)
-  templateLibraryConfig = _messages.MessageField('PolicyControllerTemplateLibraryConfig', 7)
+  mutationEnabled = _messages.BooleanField(6)
+  referentialRulesEnabled = _messages.BooleanField(7)
+  templateLibraryConfig = _messages.MessageField('PolicyControllerTemplateLibraryConfig', 8)
 
 
 class PolicyControllerHubState(_messages.Message):

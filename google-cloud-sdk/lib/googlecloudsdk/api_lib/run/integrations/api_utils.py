@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+from apitools.base.py import encoding as apitools_encoding
 from apitools.base.py import exceptions as api_exceptions
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import waiter
@@ -165,28 +166,37 @@ def WaitForApplicationOperation(client, operation):
                            client.projects_locations_applications)
 
 
-def WaitForDeploymentOperation(client, operation):
+def WaitForDeploymentOperation(client, operation, tracker, tracker_update_func):
   """Waits for an operation to complete.
 
   Args:
     client:  GAPIC API client, client used to make requests.
     operation: run_apps.v1alpha1.operation, object to wait for.
+    tracker: The ProgressTracker that tracks the operation progress.
+    tracker_update_func: function to update the tracker on polling.
 
   Returns:
     run_apps.v1alpha1.Deployment, from operation.
   """
 
   return _WaitForOperation(client, operation,
-                           client.projects_locations_applications_deployments)
+                           client.projects_locations_applications_deployments,
+                           tracker, tracker_update_func)
 
 
-def _WaitForOperation(client, operation, resource_type):
+def _WaitForOperation(client,
+                      operation,
+                      resource_type,
+                      tracker=None,
+                      tracker_update_func=None):
   """Waits for an operation to complete.
 
   Args:
     client:  GAPIC API client, client used to make requests.
     operation: run_apps.v1alpha1.operation, object to wait for.
     resource_type: type, the expected type of resource response
+    tracker: The ProgressTracker that tracks the operation progress.
+    tracker_update_func: function to update the tracker on polling.
 
   Returns:
     The resulting resource of input paramater resource_type.
@@ -196,12 +206,23 @@ def _WaitForOperation(client, operation, resource_type):
   operation_ref = resources.REGISTRY.ParseRelativeName(
       operation.name,
       collection='{}.projects.locations.operations'.format(API_NAME))
+
+  def _StatusUpdate(result, status):
+    if tracker is None:
+      return
+    if tracker_update_func:
+      tracker_update_func(tracker, result, status)
+    else:
+      tracker.Tick()
+
   try:
-    return poller.GetResult(waiter.PollUntilDone(
-        poller,
-        operation_ref,
-        max_wait_ms=_POLLING_TIMEOUT_MS,
-        wait_ceiling_ms=_RETRY_TIMEOUT_MS))
+    return poller.GetResult(
+        waiter.PollUntilDone(
+            poller,
+            operation_ref,
+            max_wait_ms=_POLLING_TIMEOUT_MS,
+            wait_ceiling_ms=_RETRY_TIMEOUT_MS,
+            status_update=_StatusUpdate))
   except waiter.OperationError:
     operation = poller.Poll(operation_ref)
     raise exceptions.IntegrationsOperationError(
@@ -213,3 +234,20 @@ def _WaitForOperation(client, operation, resource_type):
         'Operation timed out after {0} seconds. The operations may still '
         'be underway remotely and may still succeed.'
         .format(_POLLING_TIMEOUT_MS / 1000))
+
+
+def GetDeploymentOperationMetadata(messages, operation):
+  """Get the metadata message for the deployment operation.
+
+  Args:
+    messages: Module containing the definitions of messages for the Runapps
+      API.
+    operation: runapps.v1alpha1.operation.
+
+  Returns:
+    The DeploymentOperationMetadata object.
+  """
+
+  return apitools_encoding.PyValueToMessage(
+      messages.DeploymentOperationMetadata,
+      apitools_encoding.MessageToPyValue(operation.metadata))

@@ -1077,8 +1077,8 @@
             "type": "string"
           }
         },
-        "clusterUid": {
-          "description": "Output only. UID of the cluster for use by Pantheon for analytics.",
+        "uid": {
+          "description": "Output only.",
           "readOnly": true,
           "type": "string"
         },

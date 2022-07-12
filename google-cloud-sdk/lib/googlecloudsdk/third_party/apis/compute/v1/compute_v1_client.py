@@ -5380,7 +5380,7 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def BulkInsert(self, request, global_params=None):
-      r"""Creates multiple instances. Count specifies the number of instances to create.
+      r"""Creates multiple instances. Count specifies the number of instances to create. For more information, see About bulk creation of VMs.
 
       Args:
         request: (ComputeInstancesBulkInsertRequest) input message

@@ -172,7 +172,7 @@ class Validator:
            'integration of type [{}]')
           .format(
               self._RemoveEncoding(missing_required_params),
-              self.integration['name'])
+              self.integration['integration_type'])
       )
 
   def _RemoveEncoding(self, elements):

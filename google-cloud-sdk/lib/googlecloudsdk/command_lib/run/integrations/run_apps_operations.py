@@ -38,6 +38,7 @@ from googlecloudsdk.command_lib.run.integrations import messages_util
 from googlecloudsdk.command_lib.run.integrations import stages
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
+from googlecloudsdk.core.console import progress_tracker
 
 # Max wait time before timing out
 _POLLING_TIMEOUT_MS = 180000
@@ -120,7 +121,8 @@ class RunAppsOperations(object):
                      deploy_message=None,
                      match_type_names=None,
                      intermediate_step=False,
-                     etag=None):
+                     etag=None,
+                     tracker_update_func=None):
     """Applies the application config.
 
     Args:
@@ -132,6 +134,7 @@ class RunAppsOperations(object):
       match_type_names: array of type/name pairs used for create selector.
       intermediate_step: bool of whether this is an intermediate step.
       etag: the etag of the application if it's an incremental patch.
+      tracker_update_func: optional custom fn to update the tracker.
     """
     tracker.StartStage(stages.UPDATE_APPLICATION)
     if integration_name:
@@ -161,7 +164,11 @@ class RunAppsOperations(object):
     if deploy_message:
       tracker.UpdateStage(stages.CREATE_DEPLOYMENT, deploy_message)
     try:
-      self._CreateDeployment(appname, create_selector=create_selector)
+      self._CreateDeployment(
+          appname,
+          tracker,
+          tracker_update_func=tracker_update_func,
+          create_selector=create_selector)
     except api_exceptions.HttpConflictError as err:
       _HandleQueueingException(err)
     except exceptions.IntegrationsOperationError as err:
@@ -193,12 +200,16 @@ class RunAppsOperations(object):
 
   def _CreateDeployment(self,
                         appname,
+                        tracker,
+                        tracker_update_func=None,
                         create_selector=None,
                         delete_selector=None):
     """Create a deployment, waits for operation to finish.
 
     Args:
       appname:  name of the application.
+      tracker: The ProgressTracker to track the deployment operation.
+      tracker_update_func: optional custom fn to update the tracker.
       create_selector: create selector for the deployment.
       delete_selector: delete selector for the deployment.
     """
@@ -216,13 +227,49 @@ class RunAppsOperations(object):
                                                 deployment)
 
     dep_response = api_utils.WaitForDeploymentOperation(
-        self._client, deployment_ops)
+        self._client,
+        deployment_ops,
+        tracker,
+        tracker_update_func=tracker_update_func)
     self.CheckDeploymentState(dep_response)
 
   def _GetDeploymentName(self, appname):
-    return '{}-{}'.format(
-        appname,
-        datetime.datetime.now().strftime('%Y%m%d%H%M%S'))
+    return '{}-{}'.format(appname,
+                          datetime.datetime.now().strftime('%Y%m%d%H%M%S'))
+
+  @staticmethod
+  def _UpdateDeploymentTracker(tracker, operation, tracker_stages):
+    """Updates deployment tracker with the current status of operation.
+
+    Args:
+      tracker: The ProgressTracker to track the deployment operation.
+      operation: run_apps.v1alpha1.operation object for the deployment.
+      tracker_stages: map of stages with key as stage key (string) and value is
+        the progress_tracker.Stage.
+    """
+
+    messages = api_utils.GetMessages()
+    metadata = api_utils.GetDeploymentOperationMetadata(messages, operation)
+    resources_in_progress = []
+    resources_completed = []
+    resource_state = messages.ResourceDeploymentStatus.StateValueValuesEnum
+
+    if metadata.resourceStatus is not None:
+      for resource in metadata.resourceStatus:
+        stage_name = stages.StageKeyForResourceDeployment(resource.name.type)
+        if resource.state == resource_state.RUNNING:
+          resources_in_progress.append(stage_name)
+        if resource.state == resource_state.FINISHED:
+          resources_completed.append(stage_name)
+
+    for resource in resources_in_progress:
+      if resource in tracker_stages and tracker.IsWaiting(resource):
+        tracker.StartStage(resource)
+
+    for resource in resources_completed:
+      if resource in tracker_stages and tracker.IsRunning(resource):
+        tracker.CompleteStage(resource)
+    tracker.Tick()
 
   def GetResourceTypeFromConfig(self, resource_config):
     """Gets the resource type.
@@ -236,11 +283,7 @@ class RunAppsOperations(object):
     Returns:
       str, the integration type.
     """
-    keys = list(resource_config.keys())
-    if len(keys) != 1:
-      raise exceptions.ConfigurationError(
-          'resource config is invalid: {}.'.format(resource_config))
-    return keys[0]
+    return types_utils.GetResourceTypeFromConfig(resource_config)
 
   def GetIntegration(self, name):
     """Get an integration.
@@ -282,16 +325,10 @@ class RunAppsOperations(object):
     except api_exceptions.HttpError:
       return None
 
-  def CreateIntegration(self,
-                        tracker,
-                        integration_type,
-                        parameters,
-                        service,
-                        name=None):
+  def CreateIntegration(self, integration_type, parameters, service, name=None):
     """Create an integration.
 
     Args:
-      tracker: StagedProgressTracker, to report on the progress of releasing.
       integration_type:  type of the integration.
       parameters: parameter dictionary from args.
       service: the service to attach to the new integration.
@@ -325,25 +362,36 @@ class RunAppsOperations(object):
 
     deploy_message = messages_util.GetDeployMessage(resource_type, create=True)
     application = encoding.DictToMessage(app_dict, self.messages.Application)
-    try:
-      self.ApplyAppConfig(
-          tracker=tracker,
-          appname=_DEFAULT_APP_NAME,
-          appconfig=application.config,
-          integration_name=name,
-          deploy_message=deploy_message,
-          match_type_names=match_type_names,
-          etag=application.etag)
-    except exceptions.IntegrationsOperationError as err:
-      tracker.AddWarning('To retry the deployment, use update command ' +
-                         '`gcloud alpha run integrations update {}`'
-                         .format(name))
-      raise err
+    stages_map = stages.IntegrationStages(
+        create=True, match_type_names=match_type_names)
+
+    def StatusUpdate(tracker, operation, unused_status):
+      self._UpdateDeploymentTracker(tracker, operation, stages_map)
+      return
+
+    with progress_tracker.StagedProgressTracker(
+        'Creating new Integration...',
+        stages_map.values(),
+        failure_message='Failed to create new integration.') as tracker:
+      try:
+        self.ApplyAppConfig(
+            tracker=tracker,
+            tracker_update_func=StatusUpdate,
+            appname=_DEFAULT_APP_NAME,
+            appconfig=application.config,
+            integration_name=name,
+            deploy_message=deploy_message,
+            match_type_names=match_type_names,
+            etag=application.etag)
+      except exceptions.IntegrationsOperationError as err:
+        tracker.AddWarning(
+            'To retry the deployment, use update command ' +
+            'gcloud alpha run integrations update {}'.format(name))
+        raise err
 
     return name
 
   def UpdateIntegration(self,
-                        tracker,
                         name,
                         parameters,
                         add_service=None,
@@ -351,7 +399,6 @@ class RunAppsOperations(object):
     """Update an integration.
 
     Args:
-      tracker: StagedProgressTracker, to report on the progress of releasing.
       name:  str, the name of the resource to update.
       parameters: dict, the parameters from args.
       add_service: the service to attach to the integration.
@@ -371,7 +418,8 @@ class RunAppsOperations(object):
           'Integration [{}] cannot be found'.format(name))
 
     resource_type = self.GetResourceTypeFromConfig(existing_resource)
-    integration_type = types_utils.GetIntegrationType(resource_type)
+    type_def = types_utils.GetIntegrationFromResource(existing_resource)
+    integration_type = type_def[types_utils.INTEGRATION_TYPE]
     flags.ValidateUpdateParameters(integration_type, parameters)
     resource_config = self._GetResourceConfig(resource_type, parameters,
                                               add_service, remove_service,
@@ -411,21 +459,32 @@ class RunAppsOperations(object):
 
     deploy_message = messages_util.GetDeployMessage(resource_type)
     application = encoding.DictToMessage(app_dict, self.messages.Application)
-    return self.ApplyAppConfig(
-        tracker=tracker,
-        appname=_DEFAULT_APP_NAME,
-        appconfig=application.config,
-        integration_name=name,
-        deploy_message=deploy_message,
-        match_type_names=match_type_names,
-        etag=application.etag)
+    stages_map = stages.IntegrationStages(
+        create=False, match_type_names=match_type_names)
 
-  def DeleteIntegration(self, name, tracker):
+    def StatusUpdate(tracker, operation, unused_status):
+      self._UpdateDeploymentTracker(tracker, operation, stages_map)
+      return
+
+    with progress_tracker.StagedProgressTracker(
+        'Updating Integration...',
+        stages_map.values(),
+        failure_message='Failed to update integration.') as tracker:
+      return self.ApplyAppConfig(
+          tracker=tracker,
+          tracker_update_func=StatusUpdate,
+          appname=_DEFAULT_APP_NAME,
+          appconfig=application.config,
+          integration_name=name,
+          deploy_message=deploy_message,
+          match_type_names=match_type_names,
+          etag=application.etag)
+
+  def DeleteIntegration(self, name):
     """Delete an integration.
 
     Args:
       name:  str, the name of the resource to update.
-      tracker: StagedProgressTracker, to report on the progress.
 
     Raises:
       IntegrationNotFoundError: If the integration is not found.
@@ -447,47 +506,63 @@ class RunAppsOperations(object):
       # Unbind services
       services = self._GetRefServices(name, resource_type, resource,
                                       resources_map)
+    service_match_type_names = []
     if services:
-      match_type_names = []
       for service in services:
-        self._RemoveServiceToIntegrationRef(name, resource_type,
-                                            resources_map[service])
-        match_type_names.append({'type': 'service', 'name': service})
-      application = encoding.DictToMessage(app_dict,
-                                           self.messages.Application)
-      # TODO(b/222748706): refine message on failure.
-      self.ApplyAppConfig(
-          tracker=tracker,
-          appname=_DEFAULT_APP_NAME,
-          appconfig=application.config,
-          match_type_names=match_type_names,
-          intermediate_step=True,
-          etag=application.etag)
-    else:
-      tracker.CompleteStage(stages.UPDATE_APPLICATION)
-      tracker.CompleteStage(stages.CREATE_DEPLOYMENT)
+        service_match_type_names.append({'type': 'service', 'name': service})
+    delete_match_type_names = self._GetDeleteSelectors(name, resource_type)
+    stages_map = stages.IntegrationDeleteStages(service_match_type_names,
+                                                delete_match_type_names)
+    def StatusUpdate(tracker, operation, unused_status):
+      self._UpdateDeploymentTracker(tracker, operation, stages_map)
+      return
+    with progress_tracker.StagedProgressTracker(
+        'Deleting Integration...',
+        stages_map.values(),
+        failure_message='Failed to delete integration.') as tracker:
+      if services:
+        for service in services:
+          self._RemoveServiceToIntegrationRef(name, resource_type,
+                                              resources_map[service])
+        application = encoding.DictToMessage(app_dict,
+                                             self.messages.Application)
+        # TODO(b/222748706): refine message on failure.
+        self.ApplyAppConfig(
+            tracker=tracker,
+            tracker_update_func=StatusUpdate,
+            appname=_DEFAULT_APP_NAME,
+            appconfig=application.config,
+            match_type_names=service_match_type_names,
+            intermediate_step=True,
+            etag=application.etag)
+      # Undeploy integration resource
+      delete_selector = {'matchTypeNames': delete_match_type_names}
+      self._UndeployResource(name, delete_selector, tracker, StatusUpdate)
 
-    # TODO(b/222748706): refine message on failure.
-    # Undeploy integration resource
-    self._UndeployResource(resource_type, name, tracker)
-
-    integration_type = types_utils.GetIntegrationType(resource_type)
+    type_def = types_utils.GetIntegrationFromResource(resource)
+    integration_type = type_def[types_utils.INTEGRATION_TYPE]
     return integration_type
 
-  def _UndeployResource(self, resource_type, name, tracker):
+  def _UndeployResource(self,
+                        name,
+                        delete_selector,
+                        tracker,
+                        tracker_update_func=None):
     """Undeploy a resource.
 
     Args:
-      resource_type: type of the resource
       name: name of the resource
+      delete_selector: The selector for the undeploy operation.
       tracker: StagedProgressTracker, to report on the progress.
+      tracker_update_func: optional custom fn to update the tracker.
     """
-    delete_selector = self._GetDeleteSelectors(name, resource_type)
-
     tracker.StartStage(stages.UNDEPLOY_RESOURCE)
     self._CreateDeployment(
         appname=_DEFAULT_APP_NAME,
-        delete_selector=delete_selector,)
+        tracker=tracker,
+        tracker_update_func=tracker_update_func,
+        delete_selector=delete_selector,
+    )
     tracker.CompleteStage(stages.UNDEPLOY_RESOURCE)
 
     # Get application again to refresh etag before update
@@ -524,11 +599,7 @@ class RunAppsOperations(object):
     Returns:
       An integration type definition. None if no matching type.
     """
-    int_types = types_utils.IntegrationTypes(self._client)
-    for t in int_types:
-      if t['name'] == type_name:
-        return t
-    return None
+    return types_utils.GetIntegration(type_name)
 
   def ListIntegrations(self, integration_type_filter, service_name_filter):
     """Returns the list of integrations.
@@ -554,16 +625,12 @@ class RunAppsOperations(object):
     # Filter by type and/or service.
     output = []
     for name, resource in app_resources.items():
-      resource_type = self.GetResourceTypeFromConfig(resource)
-      integration_type = types_utils.GetIntegrationType(resource_type)
-
-      # Remove invalid integrations.
-      if integration_type is None:
+      type_def = types_utils.GetIntegrationFromResource(resource)
+      if type_def is None:
         continue
 
-      # Always remove services.
-      if integration_type == 'service':
-        continue
+      resource_type = type_def[types_utils.RESOURCE_TYPE]
+      integration_type = type_def[types_utils.INTEGRATION_TYPE]
 
       # TODO(b/217744072): Support Cloud SDK topic filtering.
       # Optionally filter by type.
@@ -629,7 +696,7 @@ class RunAppsOperations(object):
       resource_type: str, type of resource.
 
     Returns:
-      the selector object
+      a list of dict of typed names.
     """
     selectors = [{'type': resource_type, 'name': name}]
 
@@ -637,7 +704,7 @@ class RunAppsOperations(object):
       # TODO(b/222753640): remove this all destroying vpc selector
       selectors.append({'type': 'vpc', 'name': '*'})
 
-    return {'matchTypeNames': selectors}
+    return selectors
 
   def _AddServiceToIntegrationRef(self, name, resource_type, service):
     """Add service to integration ref.
@@ -792,7 +859,7 @@ class RunAppsOperations(object):
   def _GetResourceType(self, integration_type):
     type_def = self.GetIntegrationTypeDefinition(integration_type)
     if type_def is not None:
-      res_name = type_def.get('resource_name', None)
+      res_name = type_def.get(types_utils.RESOURCE_TYPE, None)
       if res_name is not None:
         return res_name
     return integration_type

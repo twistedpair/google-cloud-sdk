@@ -20,13 +20,10 @@ from __future__ import unicode_literals
 
 
 DEFAULT_TEMPLATE = """\
-# To configure your package manager with this repository:
+# To configure your package manager with this repository, do the following:
 
-# Update Apt:
-sudo apt update
-
-# Install the Apt credential helper:
-sudo apt install apt-transport-artifact-registry
+# Prepare your VM to access the repository using the following instructions:
+# https://cloud.google.com/artifact-registry/docs/os-packages/debian/configure#prepare-apt
 
 # Configure your VM to access Artifact Registry packages using the following
 # command:
@@ -35,6 +32,9 @@ echo "deb ar+https://{location}-apt.pkg.dev/projects/{project} {repo} main" | su
 
 # Update Apt:
 sudo apt update
+
+# For complete setup information, see
+# https://cloud.google.com/artifact-registry/docs/os-packages/debian/configure
 """
 
 
@@ -48,4 +48,7 @@ echo "deb https://{location}-apt.pkg.dev/projects/{project} {repo} main" | sudo 
 
 # Update Apt:
 sudo apt update
+
+# For complete setup information, see
+# https://cloud.google.com/artifact-registry/docs/os-packages/debian/configure
 """

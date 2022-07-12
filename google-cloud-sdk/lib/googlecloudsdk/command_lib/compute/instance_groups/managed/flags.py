@@ -220,61 +220,62 @@ INSTANCE_REDISTRIBUTION_TYPES = ['NONE', 'PROACTIVE']
 
 def AddMigInstanceRedistributionTypeFlag(parser):
   """Add --instance-redistribution-type flag to the parser."""
-  parser.add_argument(
-      '--instance-redistribution-type',
-      metavar='TYPE',
-      type=lambda x: x.upper(),
-      choices=INSTANCE_REDISTRIBUTION_TYPES,
-      help="""\
+  help_text = """\
       Specifies the type of the instance redistribution policy. An instance
       redistribution type lets you enable or disable automatic instance
       redistribution across zones to meet the group's target distribution shape.
 
       An instance redistribution type can be specified only for a non-autoscaled
-      regional managed instance group. By default it is set to PROACTIVE.
+      regional managed instance group. By default it is set to ``proactive''.
+      """
+  choices = {
+      'none':
+          'The managed instance group does not redistribute instances across '
+          'zones.',
+      'proactive':
+          'The managed instance group proactively redistributes instances to '
+          'meet its target distribution.'
+  }
 
-      The following types are available:
-
-       * NONE - The managed instance group does not redistribute instances
-         across zones.
-
-       * PROACTIVE - The managed instance group proactively redistributes
-         instances to meet its target distribution.
-      """)
-
-
-DISTRIBUTION_POLICY_TARGET_SHAPE_CHOICES = {
-    'EVEN':
-        'The group schedules VM instance creation and deletion to achieve and '
-        'maintain an even number of managed instances across the selected '
-        'zones. The distribution is even when the number of managed instances '
-        'does not differ by more than 1 between any two zones. Recommended for'
-        ' highly available serving workloads.',
-    'BALANCED':
-        'The group prioritizes acquisition of resources, scheduling VMs in '
-        'zones where resources are available while distributing VMs as evenly '
-        'as possible across selected zones to minimize the impact of zonal '
-        'failure. Recommended for highly available serving or batch workloads '
-        'that do not require autoscaling.',
-    'ANY': 'The group picks zones for creating VM instances to fulfill the '
-           'requested number of VMs within present resource constraints and to '
-           'maximize utilization of unused zonal reservations. Recommended for '
-           'batch workloads that do not require high availability.'
-}
+  parser.add_argument(
+      '--instance-redistribution-type',
+      metavar='TYPE',
+      type=lambda x: x.lower(),
+      choices=choices,
+      help=help_text)
 
 
 def AddMigDistributionPolicyTargetShapeFlag(parser):
   """Add --target-distribution-shape flag to the parser."""
   help_text = """\
       Specifies how a regional managed instance group distributes its instances
-      across zones within the region. The default shape is ``EVEN''.
+      across zones within the region. The default shape is ``even''.
     """
+  choices = {
+      'even':
+          'The group schedules VM instance creation and deletion to achieve '
+          'and maintain an even number of managed instances across the '
+          'selected zones. The distribution is even when the number of managed'
+          ' instances does not differ by more than 1 between any two zones. '
+          'Recommended for highly available serving workloads.',
+      'balanced':
+          'The group prioritizes acquisition of resources, scheduling VMs in '
+          'zones where resources are available while distributing VMs as '
+          'evenly as possible across selected zones to minimize the impact of '
+          'zonal failure. Recommended for highly available serving or batch '
+          'workloads that do not require autoscaling.',
+      'any':
+          'The group picks zones for creating VM instances to fulfill the '
+          'requested number of VMs within present resource constraints and to '
+          'maximize utilization of unused zonal reservations. Recommended for '
+          'batch workloads that do not require high availability.'
+  }
 
   parser.add_argument(
       '--target-distribution-shape',
       metavar='SHAPE',
-      type=lambda x: x.upper(),
-      choices=DISTRIBUTION_POLICY_TARGET_SHAPE_CHOICES,
+      type=lambda x: x.lower(),
+      choices=choices,
       help=help_text)
 
 
@@ -344,28 +345,26 @@ def ValidateRegionalMigFlagsUsage(args, regional_flags_dests, igm_ref):
           parameter_name=flag_name, message=error_message)
 
 
-LIST_MANAGED_INSTANCES_RESULTS_CHOICES = {
-    'PAGELESS':
-        'Pagination is disabled for the group\'s listManagedInstances API '
-        'method. maxResults and pageToken query parameters are ignored and all '
-        'instances are returned in a single response.',
-    'PAGINATED':
-        'Pagination is enabled for the group\'s listManagedInstances API '
-        'method. maxResults and pageToken query parameters are respected.',
-}
-
-
 def AddMigListManagedInstancesResultsFlag(parser):
   """Add --list-managed-instances-results flag to the parser."""
   help_text = """\
       Pagination behavior for the group's listManagedInstances API method.
       This flag does not affect the group's gcloud or console list-instances
-      behavior. By default it is set to PAGELESS.
+      behavior. By default it is set to ``pageless''.
     """
+  choices = {
+      'pageless':
+          'Pagination is disabled for the group\'s listManagedInstances API '
+          'method. maxResults and pageToken query parameters are ignored and '
+          'all instances are returned in a single response.',
+      'paginated':
+          'Pagination is enabled for the group\'s listManagedInstances API '
+          'method. maxResults and pageToken query parameters are respected.',
+  }
 
   parser.add_argument(
       '--list-managed-instances-results',
       metavar='MODE',
-      type=lambda x: x.upper(),
-      choices=LIST_MANAGED_INSTANCES_RESULTS_CHOICES,
+      type=lambda x: x.lower(),
+      choices=choices,
       help=help_text)

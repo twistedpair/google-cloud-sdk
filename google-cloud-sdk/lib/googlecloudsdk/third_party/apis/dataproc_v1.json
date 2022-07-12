@@ -1992,11 +1992,17 @@
             "type": "string",
             "enumDescriptions": [
               "Required unspecified role.",
-              "Job drivers will run on the node pool."
+              "Job drivers will run on the node pool.",
+              "Master nodes",
+              "Primary workers",
+              "Secondary workers"
             ],
             "enum": [
               "ROLE_UNSPECIFIED",
-              "DRIVER"
+              "DRIVER",
+              "MASTER",
+              "PRIMARY_WORKER",
+              "SECONDARY_WORKER"
             ]
           }
         },

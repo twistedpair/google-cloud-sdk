@@ -75,11 +75,14 @@ class AiplatformProjectsLocationsBatchPredictionJobsListRequest(_messages.Messag
 
   Fields:
     filter: The standard list filter. Supported fields: * `display_name`
-      supports = and !=. * `state` supports = and !=. * `model_display_name`
-      supports = and != Some examples of using the filter are: *
-      `state="JOB_STATE_SUCCEEDED" AND display_name="my_job"` *
-      `state="JOB_STATE_RUNNING" OR display_name="my_job"` * `NOT
-      display_name="my_job"` * `state="JOB_STATE_FAILED"`
+      supports `=`, `!=` comparisons, and `:` wildcard. * `model_display_name`
+      supports `=`, `!=` comparisons. * `state` supports `=`, `!=`
+      comparisons. * `create_time` supports `=`, `!=`,`<`, `<=`,`>`, `>=`
+      comparisons. `create_time` must be in RFC 3339 format. Some examples of
+      using the filter are: * `state="JOB_STATE_SUCCEEDED" AND
+      display_name:"my_job_*"` * `state!="JOB_STATE_FAILED" OR
+      display_name="my_job"` * `NOT display_name="my_job"` *
+      `create_time>"2021-05-18T00:00:00Z"`
     pageSize: The standard list page size.
     pageToken: The standard list page token. Typically obtained via
       ListBatchPredictionJobsResponse.next_page_token of the previous
@@ -154,11 +157,13 @@ class AiplatformProjectsLocationsCustomJobsListRequest(_messages.Message):
 
   Fields:
     filter: The standard list filter. Supported fields: * `display_name`
-      supports = and !=. * `state` supports = and !=. Some examples of using
-      the filter are: * `state="JOB_STATE_SUCCEEDED" AND
-      display_name="my_job"` * `state="JOB_STATE_RUNNING" OR
+      supports `=`, `!=` comparisons, and `:` wildcard. * `state` supports
+      `=`, `!=` comparisons. * `create_time` supports `=`, `!=`,`<`, `<=`,`>`,
+      `>=` comparisons. `create_time` must be in RFC 3339 format. Some
+      examples of using the filter are: * `state="JOB_STATE_SUCCEEDED" AND
+      display_name:"my_job_*"` * `state!="JOB_STATE_FAILED" OR
       display_name="my_job"` * `NOT display_name="my_job"` *
-      `state="JOB_STATE_FAILED"`
+      `create_time>"2021-05-18T00:00:00Z"`
     pageSize: The standard list page size.
     pageToken: The standard list page token. Typically obtained via
       ListCustomJobsResponse.next_page_token of the previous
@@ -294,11 +299,13 @@ class AiplatformProjectsLocationsDataLabelingJobsListRequest(_messages.Message):
 
   Fields:
     filter: The standard list filter. Supported fields: * `display_name`
-      supports = and !=. * `state` supports = and !=. Some examples of using
-      the filter are: * `state="JOB_STATE_SUCCEEDED" AND
-      display_name="my_job"` * `state="JOB_STATE_RUNNING" OR
+      supports `=`, `!=` comparisons, and `:` wildcard. * `state` supports
+      `=`, `!=` comparisons. * `create_time` supports `=`, `!=`,`<`, `<=`,`>`,
+      `>=` comparisons. `create_time` must be in RFC 3339 format. Some
+      examples of using the filter are: * `state="JOB_STATE_SUCCEEDED" AND
+      display_name:"my_job_*"` * `state!="JOB_STATE_FAILED" OR
       display_name="my_job"` * `NOT display_name="my_job"` *
-      `state="JOB_STATE_FAILED"`
+      `create_time>"2021-05-18T00:00:00Z"`
     pageSize: The standard list page size.
     pageToken: The standard list page token.
     parent: Required. The parent of the DataLabelingJob. Format:
@@ -1416,11 +1423,13 @@ class AiplatformProjectsLocationsHyperparameterTuningJobsListRequest(_messages.M
 
   Fields:
     filter: The standard list filter. Supported fields: * `display_name`
-      supports = and !=. * `state` supports = and !=. Some examples of using
-      the filter are: * `state="JOB_STATE_SUCCEEDED" AND
-      display_name="my_job"` * `state="JOB_STATE_RUNNING" OR
+      supports `=`, `!=` comparisons, and `:` wildcard. * `state` supports
+      `=`, `!=` comparisons. * `create_time` supports `=`, `!=`,`<`, `<=`,`>`,
+      `>=` comparisons. `create_time` must be in RFC 3339 format. Some
+      examples of using the filter are: * `state="JOB_STATE_SUCCEEDED" AND
+      display_name:"my_job_*"` * `state!="JOB_STATE_FAILED" OR
       display_name="my_job"` * `NOT display_name="my_job"` *
-      `state="JOB_STATE_FAILED"`
+      `create_time>"2021-05-18T00:00:00Z"`
     pageSize: The standard list page size.
     pageToken: The standard list page token. Typically obtained via
       ListHyperparameterTuningJobsResponse.next_page_token of the previous
@@ -2486,7 +2495,14 @@ class AiplatformProjectsLocationsModelDeploymentMonitoringJobsListRequest(_messa
   object.
 
   Fields:
-    filter: The standard list filter.
+    filter: The standard list filter. Supported fields: * `display_name`
+      supports `=`, `!=` comparisons, and `:` wildcard. * `state` supports
+      `=`, `!=` comparisons. * `create_time` supports `=`, `!=`,`<`, `<=`,`>`,
+      `>=` comparisons. `create_time` must be in RFC 3339 format. Some
+      examples of using the filter are: * `state="JOB_STATE_SUCCEEDED" AND
+      display_name:"my_job_*"` * `state!="JOB_STATE_FAILED" OR
+      display_name="my_job"` * `NOT display_name="my_job"` *
+      `create_time>"2021-05-18T00:00:00Z"`
     pageSize: The standard list page size.
     pageToken: The standard list page token.
     parent: Required. The parent of the ModelDeploymentMonitoringJob. Format:
@@ -4513,11 +4529,15 @@ class AiplatformProjectsLocationsTrainingPipelinesListRequest(_messages.Message)
 
   Fields:
     filter: The standard list filter. Supported fields: * `display_name`
-      supports = and !=. * `state` supports = and !=. Some examples of using
-      the filter are: * `state="PIPELINE_STATE_SUCCEEDED" AND
-      display_name="my_pipeline"` * `state="PIPELINE_STATE_RUNNING" OR
-      display_name="my_pipeline"` * `NOT display_name="my_pipeline"` *
-      `state="PIPELINE_STATE_FAILED"`
+      supports `=`, `!=` comparisons, and `:` wildcard. * `state` supports
+      `=`, `!=` comparisons. * `training_task_definition` `=`, `!=`
+      comparisons, and `:` wildcard. * `create_time` supports `=`, `!=`,`<`,
+      `<=`,`>`, `>=` comparisons. `create_time` must be in RFC 3339 format.
+      Some examples of using the filter are: *
+      `state="PIPELINE_STATE_SUCCEEDED" AND display_name:"my_pipeline_*"` *
+      `state!="PIPELINE_STATE_FAILED" OR display_name="my_pipeline"` * `NOT
+      display_name="my_pipeline"` * `create_time>"2021-05-18T00:00:00Z"` *
+      `training_task_definition:"*automl_text_classification*"`
     pageSize: The standard list page size.
     pageToken: The standard list page token. Typically obtained via
       ListTrainingPipelinesResponse.next_page_token of the previous
@@ -6341,7 +6361,7 @@ class GoogleCloudAiplatformInternalGenericOperationMetadata(_messages.Message):
 class GoogleCloudAiplatformInternalHumanInTheLoop(_messages.Message):
   r"""A human in the loop configuration describing how to trigger a human
   labeling job in a prediction process and properties of the human labeling
-  job. Next id: 28
+  job. Next id: 29
 
   Enums:
     GoogleSpecialistRegionValueValuesEnum: Residency of Google in-house
@@ -6420,6 +6440,7 @@ class GoogleCloudAiplatformInternalHumanInTheLoop(_messages.Message):
       feature is enabled, one document may be labeled by multiple human
       labelers sequentially. It also supports the expert audit or QA labeling
       in the last stage of the pipelining labeling process.
+    questionTypes: The question types in the HITL.
     replicaCount: Required. Number of labelers to work on each DataItem.
     runningDataItemsCount: Output only. Number of data items that belongs to
       the current running data labeling jobs from this human in the loop
@@ -6515,12 +6536,13 @@ class GoogleCloudAiplatformInternalHumanInTheLoop(_messages.Message):
   name = _messages.StringField(17)
   outputPath = _messages.StringField(18)
   pipeliningConfig = _messages.MessageField('GoogleCloudAiplatformInternalPipeliningAndAuditConfig', 19)
-  replicaCount = _messages.IntegerField(20, variant=_messages.Variant.INT32)
-  runningDataItemsCount = _messages.IntegerField(21, variant=_messages.Variant.INT32)
-  runningDataLabelingJobsCount = _messages.IntegerField(22, variant=_messages.Variant.INT32)
-  specialistPool = _messages.StringField(23, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 24)
-  updateTime = _messages.StringField(25)
+  questionTypes = _messages.StringField(20, repeated=True)
+  replicaCount = _messages.IntegerField(21, variant=_messages.Variant.INT32)
+  runningDataItemsCount = _messages.IntegerField(22, variant=_messages.Variant.INT32)
+  runningDataLabelingJobsCount = _messages.IntegerField(23, variant=_messages.Variant.INT32)
+  specialistPool = _messages.StringField(24, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 25)
+  updateTime = _messages.StringField(26)
 
 
 class GoogleCloudAiplatformInternalHumanInTheLoopEntitlement(_messages.Message):
@@ -11797,7 +11819,7 @@ class GoogleCloudAiplatformV1CreateTensorboardOperationMetadata(_messages.Messag
 
 
 class GoogleCloudAiplatformV1CustomJobSpec(_messages.Message):
-  r"""Represents the spec of a CustomJob. Next Id: 14
+  r"""Represents the spec of a CustomJob. Next Id: 15
 
   Fields:
     baseOutputDirectory: The Cloud Storage location to store the output of
@@ -11817,7 +11839,7 @@ class GoogleCloudAiplatformV1CustomJobSpec(_messages.Message):
       containers. If set to `true`, you can access interactive shells at the
       URIs given by CustomJob.web_access_uris or Trial.web_access_uris (within
       HyperparameterTuningJob.trials).
-    network: The full name of the Compute Engine
+    network: Optional. The full name of the Compute Engine
       [network](/compute/docs/networks-and-firewalls#networks) to which the
       Job should be peered. For example,
       `projects/12345/global/networks/myVPC`.
@@ -12118,6 +12140,7 @@ class GoogleCloudAiplatformV1DeployedModel(_messages.Message):
       the DeployedModel's Endpoint. The resource name may contain version id
       or version alias to specify the version, if no version is specified, the
       default version will be deployed.
+    modelVersionId: Output only. The version ID of the model that is deployed.
     privateEndpoints: Output only. Provide paths for users to send
       predict/explain/health requests directly to the deployed model services
       running on Cloud via private services access. This field is populated if
@@ -12139,8 +12162,9 @@ class GoogleCloudAiplatformV1DeployedModel(_messages.Message):
   explanationSpec = _messages.MessageField('GoogleCloudAiplatformV1ExplanationSpec', 7)
   id = _messages.StringField(8)
   model = _messages.StringField(9)
-  privateEndpoints = _messages.MessageField('GoogleCloudAiplatformV1PrivateEndpoints', 10)
-  serviceAccount = _messages.StringField(11)
+  modelVersionId = _messages.StringField(10)
+  privateEndpoints = _messages.MessageField('GoogleCloudAiplatformV1PrivateEndpoints', 11)
+  serviceAccount = _messages.StringField(12)
 
 
 class GoogleCloudAiplatformV1DiskSpec(_messages.Message):
@@ -17124,9 +17148,11 @@ class GoogleCloudAiplatformV1UploadModelResponse(_messages.Message):
   Fields:
     model: The name of the uploaded Model resource. Format:
       `projects/{project}/locations/{location}/models/{model}`
+    modelVersionId: Output only. The version ID of the model that is uploaded.
   """
 
   model = _messages.StringField(1)
+  modelVersionId = _messages.StringField(2)
 
 
 class GoogleCloudAiplatformV1WorkerPoolSpec(_messages.Message):
@@ -17866,6 +17892,9 @@ class GoogleCloudAiplatformV1alpha1BatchPredictionJob(_messages.Message):
       model resource name may contain version id or version alias to specify
       the version, if no version is specified, the default version will be
       used.
+    modelMonitoringConfig: Model monitoring config will be used for analysis
+      model behaviors, based on the input and output to the batch prediction
+      job, as well as the provided training dataset.
     modelParameters: The parameters that govern the predictions. The schema of
       the parameters may be specified via the Model's PredictSchemata's
       parameters_schema_uri.
@@ -17970,16 +17999,17 @@ class GoogleCloudAiplatformV1alpha1BatchPredictionJob(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 11)
   manualBatchTuningParameters = _messages.MessageField('GoogleCloudAiplatformV1alpha1ManualBatchTuningParameters', 12)
   model = _messages.StringField(13)
-  modelParameters = _messages.MessageField('extra_types.JsonValue', 14)
-  name = _messages.StringField(15)
-  outputConfig = _messages.MessageField('GoogleCloudAiplatformV1alpha1BatchPredictionJobOutputConfig', 16)
-  outputInfo = _messages.MessageField('GoogleCloudAiplatformV1alpha1BatchPredictionJobOutputInfo', 17)
-  partialFailures = _messages.MessageField('GoogleRpcStatus', 18, repeated=True)
-  resourcesConsumed = _messages.MessageField('GoogleCloudAiplatformV1alpha1ResourcesConsumed', 19)
-  startTime = _messages.StringField(20)
-  state = _messages.EnumField('StateValueValuesEnum', 21)
-  unmanagedContainerModel = _messages.MessageField('GoogleCloudAiplatformV1alpha1UnmanagedContainerModel', 22)
-  updateTime = _messages.StringField(23)
+  modelMonitoringConfig = _messages.MessageField('GoogleCloudAiplatformV1alpha1ModelMonitoringConfig', 14)
+  modelParameters = _messages.MessageField('extra_types.JsonValue', 15)
+  name = _messages.StringField(16)
+  outputConfig = _messages.MessageField('GoogleCloudAiplatformV1alpha1BatchPredictionJobOutputConfig', 17)
+  outputInfo = _messages.MessageField('GoogleCloudAiplatformV1alpha1BatchPredictionJobOutputInfo', 18)
+  partialFailures = _messages.MessageField('GoogleRpcStatus', 19, repeated=True)
+  resourcesConsumed = _messages.MessageField('GoogleCloudAiplatformV1alpha1ResourcesConsumed', 20)
+  startTime = _messages.StringField(21)
+  state = _messages.EnumField('StateValueValuesEnum', 22)
+  unmanagedContainerModel = _messages.MessageField('GoogleCloudAiplatformV1alpha1UnmanagedContainerModel', 23)
+  updateTime = _messages.StringField(24)
 
 
 class GoogleCloudAiplatformV1alpha1BatchPredictionJobInputConfig(_messages.Message):
@@ -18687,7 +18717,7 @@ class GoogleCloudAiplatformV1alpha1CustomJob(_messages.Message):
 
 
 class GoogleCloudAiplatformV1alpha1CustomJobSpec(_messages.Message):
-  r"""Represents the spec of a CustomJob. Next Id: 14
+  r"""Represents the spec of a CustomJob. Next Id: 15
 
   Fields:
     enableWebAccess: Optional. Whether you want Vertex AI to enable
@@ -22617,6 +22647,25 @@ class GoogleCloudAiplatformV1alpha1ModelMonitoringAlertConfigEmailAlertConfig(_m
   """
 
   userEmails = _messages.StringField(1, repeated=True)
+
+
+class GoogleCloudAiplatformV1alpha1ModelMonitoringConfig(_messages.Message):
+  r"""Next ID: 5
+
+  Fields:
+    alertConfig: Model monitoring alert config.
+    analysisInstanceSchemaUri: YAML schema file uri in Cloud Storage
+      describing the format of a single instance that you want Tensorflow Data
+      Validation (TFDV) to analyze. If there are any data type differences
+      between predict instance and TFDV instance, this field can be used to
+      override the schema. For models trained with Vertex AI, this field must
+      be set as all the fields in predict instance formatted as string.
+    objectiveConfigs: Model monitoring objective config.
+  """
+
+  alertConfig = _messages.MessageField('GoogleCloudAiplatformV1alpha1ModelMonitoringAlertConfig', 1)
+  analysisInstanceSchemaUri = _messages.StringField(2)
+  objectiveConfigs = _messages.MessageField('GoogleCloudAiplatformV1alpha1ModelMonitoringObjectiveConfig', 3, repeated=True)
 
 
 class GoogleCloudAiplatformV1alpha1ModelMonitoringObjectiveConfig(_messages.Message):
@@ -26570,7 +26619,7 @@ class GoogleCloudAiplatformV1beta1CreateTensorboardOperationMetadata(_messages.M
 
 
 class GoogleCloudAiplatformV1beta1CustomJobSpec(_messages.Message):
-  r"""Represents the spec of a CustomJob. Next Id: 14
+  r"""Represents the spec of a CustomJob. Next Id: 15
 
   Fields:
     baseOutputDirectory: The Cloud Storage location to store the output of
@@ -26590,7 +26639,7 @@ class GoogleCloudAiplatformV1beta1CustomJobSpec(_messages.Message):
       containers. If set to `true`, you can access interactive shells at the
       URIs given by CustomJob.web_access_uris or Trial.web_access_uris (within
       HyperparameterTuningJob.trials).
-    network: The full name of the Compute Engine
+    network: Optional. The full name of the Compute Engine
       [network](/compute/docs/networks-and-firewalls#networks) to which the
       Job should be peered. For example,
       `projects/12345/global/networks/myVPC`.

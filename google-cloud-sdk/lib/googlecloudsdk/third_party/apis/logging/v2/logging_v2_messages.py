@@ -2435,28 +2435,6 @@ class LoggingBillingAccountsSinksUpdateRequest(_messages.Message):
   updateMask = _messages.StringField(4)
 
 
-class LoggingBillingAccountsUpdateSettingsRequest(_messages.Message):
-  r"""A LoggingBillingAccountsUpdateSettingsRequest object.
-
-  Fields:
-    name: Required. The resource name for the settings to update.
-      "organizations/[ORGANIZATION_ID]/settings" For
-      example:"organizations/12345/settings"Note: Settings for the Log Router
-      can currently only be configured for Google Cloud organizations. Once
-      configured, it applies to all projects and folders in the Google Cloud
-      organization.
-    settings: A Settings resource to be passed as the request body.
-    updateMask: Optional. Field mask identifying which fields from settings
-      should be updated. A field will be overwritten if and only if it is in
-      the update mask. Output only fields cannot be updated.See FieldMask for
-      more information.For example: "updateMask=kmsKeyName"
-  """
-
-  name = _messages.StringField(1, required=True)
-  settings = _messages.MessageField('Settings', 2)
-  updateMask = _messages.StringField(3)
-
-
 class LoggingExclusionsCreateRequest(_messages.Message):
   r"""A LoggingExclusionsCreateRequest object.
 
@@ -5258,28 +5236,6 @@ class LoggingProjectsSinksUpdateRequest(_messages.Message):
   sinkName = _messages.StringField(2, required=True)
   uniqueWriterIdentity = _messages.BooleanField(3)
   updateMask = _messages.StringField(4)
-
-
-class LoggingProjectsUpdateSettingsRequest(_messages.Message):
-  r"""A LoggingProjectsUpdateSettingsRequest object.
-
-  Fields:
-    name: Required. The resource name for the settings to update.
-      "organizations/[ORGANIZATION_ID]/settings" For
-      example:"organizations/12345/settings"Note: Settings for the Log Router
-      can currently only be configured for Google Cloud organizations. Once
-      configured, it applies to all projects and folders in the Google Cloud
-      organization.
-    settings: A Settings resource to be passed as the request body.
-    updateMask: Optional. Field mask identifying which fields from settings
-      should be updated. A field will be overwritten if and only if it is in
-      the update mask. Output only fields cannot be updated.See FieldMask for
-      more information.For example: "updateMask=kmsKeyName"
-  """
-
-  name = _messages.StringField(1, required=True)
-  settings = _messages.MessageField('Settings', 2)
-  updateMask = _messages.StringField(3)
 
 
 class LoggingSinksCreateRequest(_messages.Message):

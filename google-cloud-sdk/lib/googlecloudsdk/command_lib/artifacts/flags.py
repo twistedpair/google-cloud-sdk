@@ -25,7 +25,9 @@ from googlecloudsdk.api_lib.artifacts import exceptions as ar_exceptions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope.concepts import concepts
+from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
+from googlecloudsdk.core import properties
 
 _PACKAGE_TYPE_CHOICES = {
     'MAVEN': 'Maven package.',
@@ -38,13 +40,19 @@ _EXPERIMENTAL_PACKAGE_TYPE_CHOICES = {
 
 
 def RepoAttributeConfig():
+  fts = [deps.PropertyFallthrough(properties.VALUES.artifacts.repository)]
   return concepts.ResourceParameterAttributeConfig(
-      name='repository', help_text='Repository of the {resource}.')
+      name='repository',
+      help_text='Repository of the {resource}.',
+      fallthroughs=fts)
 
 
 def LocationAttributeConfig():
+  fts = [deps.PropertyFallthrough(properties.VALUES.artifacts.location)]
   return concepts.ResourceParameterAttributeConfig(
-      name='location', help_text='Location of the {resource}.')
+      name='location',
+      help_text='Location of the {resource}.',
+      fallthroughs=fts)
 
 
 def GetRepoResourceSpec():
@@ -157,6 +165,15 @@ def GetLocationFlag():
       GetLocationResourceSpec(),
       ('The Artifact Registry repository location. If not specified, '
        'the current artifacts/location is used.'),
+      required=True)
+
+
+def GetRepoArg():
+  return concept_parsers.ConceptParser.ForResource(
+      'repository',
+      GetRepoResourceSpec(),
+      ('The Artifact Registry repository. If not specified, '
+       'the current artifacts/repository is used.'),
       required=True)
 
 

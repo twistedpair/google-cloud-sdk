@@ -302,8 +302,8 @@ class Destination(_messages.Message):
     hosts: Required. List of host names to match. Matched against the
       ":authority" header in http requests. At least one host should match.
       Each host can be an exact match, or a prefix match (example
-      "mydomain.*") or a suffix match (example // *.myorg.com") or a
-      presence(any) match "*".
+      "mydomain.*") or a suffix match (example "*.myorg.com") or a presence
+      (any) match "*".
     httpHeaderMatch: Optional. Match against key:value pair in http header.
       Provides a flexible match based on HTTP headers, for potentially
       advanced use cases. At least one header should match. Avoid using header
@@ -631,7 +631,7 @@ class GoogleIamV1TestIamPermissionsResponse(_messages.Message):
 
 
 class HttpHeaderMatch(_messages.Message):
-  r"""Specification of HTTP header match atrributes.
+  r"""Specification of HTTP header match attributes.
 
   Fields:
     headerName: Required. The name of the HTTP header to match. For matching
@@ -1706,6 +1706,70 @@ class NetworksecurityProjectsLocationsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class NetworksecurityProjectsLocationsSecurityProfileGroupsGetIamPolicyRequest(_messages.Message):
+  r"""A
+  NetworksecurityProjectsLocationsSecurityProfileGroupsGetIamPolicyRequest
+  object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class NetworksecurityProjectsLocationsSecurityProfileGroupsSetIamPolicyRequest(_messages.Message):
+  r"""A
+  NetworksecurityProjectsLocationsSecurityProfileGroupsSetIamPolicyRequest
+  object.
+
+  Fields:
+    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
+      to be passed as the request body.
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class NetworksecurityProjectsLocationsSecurityProfileGroupsTestIamPermissionsRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsSecurityProfileGroupsTestIamPermission
+  sRequest object.
+
+  Fields:
+    googleIamV1TestIamPermissionsRequest: A
+      GoogleIamV1TestIamPermissionsRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
 class NetworksecurityProjectsLocationsServerTlsPoliciesCreateRequest(_messages.Message):
   r"""A NetworksecurityProjectsLocationsServerTlsPoliciesCreateRequest object.
 
@@ -2105,8 +2169,8 @@ class Source(_messages.Message):
       balancers or proxies should be considered untrusted.
     principals: Optional. List of peer identities to match for authorization.
       At least one principal should match. Each peer can be an exact match, or
-      a prefix match (example, "namespace/*") or a suffix match (example, //
-      */service-account") or a presence match "*". Authorization based on the
+      a prefix match (example, "namespace/*") or a suffix match (example,
+      "*/service-account") or a presence match "*". Authorization based on the
       principal name without certificate validation (configured by
       ServerTlsPolicy resource) is considered insecure.
   """

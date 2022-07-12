@@ -45,6 +45,7 @@ class AiplatformV1(base_api.BaseApiClient):
     self.projects_locations_datasets_annotationSpecs = self.ProjectsLocationsDatasetsAnnotationSpecsService(self)
     self.projects_locations_datasets_dataItems_annotations = self.ProjectsLocationsDatasetsDataItemsAnnotationsService(self)
     self.projects_locations_datasets_dataItems = self.ProjectsLocationsDatasetsDataItemsService(self)
+    self.projects_locations_datasets_savedQueries = self.ProjectsLocationsDatasetsSavedQueriesService(self)
     self.projects_locations_datasets = self.ProjectsLocationsDatasetsService(self)
     self.projects_locations_endpoints = self.ProjectsLocationsEndpointsService(self)
     self.projects_locations_featurestores_entityTypes_features = self.ProjectsLocationsFeaturestoresEntityTypesFeaturesService(self)
@@ -75,6 +76,11 @@ class AiplatformV1(base_api.BaseApiClient):
     self.projects_locations_trainingPipelines = self.ProjectsLocationsTrainingPipelinesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+    self.ui_projects_locations_featurestores_entityTypes = self.UiProjectsLocationsFeaturestoresEntityTypesService(self)
+    self.ui_projects_locations_featurestores = self.UiProjectsLocationsFeaturestoresService(self)
+    self.ui_projects_locations = self.UiProjectsLocationsService(self)
+    self.ui_projects = self.UiProjectsService(self)
+    self.ui = self.UiService(self)
 
   class ProjectsLocationsBatchPredictionJobsService(base_api.BaseApiService):
     """Service class for the projects_locations_batchPredictionJobs resource."""
@@ -619,6 +625,43 @@ class AiplatformV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='AiplatformProjectsLocationsDatasetsDataItemsListRequest',
         response_type_name='GoogleCloudAiplatformV1ListDataItemsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsDatasetsSavedQueriesService(base_api.BaseApiService):
+    """Service class for the projects_locations_datasets_savedQueries resource."""
+
+    _NAME = 'projects_locations_datasets_savedQueries'
+
+    def __init__(self, client):
+      super(AiplatformV1.ProjectsLocationsDatasetsSavedQueriesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists SavedQueries in a Dataset.
+
+      Args:
+        request: (AiplatformProjectsLocationsDatasetsSavedQueriesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1ListSavedQueriesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/savedQueries',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.datasets.savedQueries.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken', 'readMask'],
+        relative_path='v1/{+parent}/savedQueries',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsDatasetsSavedQueriesListRequest',
+        response_type_name='GoogleCloudAiplatformV1ListSavedQueriesResponse',
         supports_download=False,
     )
 
@@ -3428,6 +3471,33 @@ class AiplatformV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def BatchImport(self, request, global_params=None):
+      r"""Imports a list of externally generated ModelEvaluationSlice.
+
+      Args:
+        request: (AiplatformProjectsLocationsModelsEvaluationsSlicesBatchImportRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1BatchImportModelEvaluationSlicesResponse) The response message.
+      """
+      config = self.GetMethodConfig('BatchImport')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    BatchImport.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/models/{modelsId}/evaluations/{evaluationsId}/slices:batchImport',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.models.evaluations.slices.batchImport',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/slices:batchImport',
+        request_field='googleCloudAiplatformV1BatchImportModelEvaluationSlicesRequest',
+        request_type_name='AiplatformProjectsLocationsModelsEvaluationsSlicesBatchImportRequest',
+        response_type_name='GoogleCloudAiplatformV1BatchImportModelEvaluationSlicesResponse',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets a ModelEvaluationSlice.
 
@@ -3610,6 +3680,33 @@ class AiplatformV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def DeleteVersion(self, request, global_params=None):
+      r"""Deletes a Model version. Model version can only be deleted if there are no DeployedModels created from it. Deleting the only version in the Model is not allowed. Use DeleteModel for deleting the Model instead.
+
+      Args:
+        request: (AiplatformProjectsLocationsModelsDeleteVersionRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('DeleteVersion')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DeleteVersion.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/models/{modelsId}:deleteVersion',
+        http_method='DELETE',
+        method_id='aiplatform.projects.locations.models.deleteVersion',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:deleteVersion',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsModelsDeleteVersionRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
     def Export(self, request, global_params=None):
       r"""Exports a trained, exportable Model to a location specified by the user. A Model is considered to be exportable if it has at least one supported export format.
 
@@ -3688,6 +3785,60 @@ class AiplatformV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='AiplatformProjectsLocationsModelsListRequest',
         response_type_name='GoogleCloudAiplatformV1ListModelsResponse',
+        supports_download=False,
+    )
+
+    def ListVersions(self, request, global_params=None):
+      r"""Lists versions of the specified model.
+
+      Args:
+        request: (AiplatformProjectsLocationsModelsListVersionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1ListModelVersionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListVersions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListVersions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/models/{modelsId}:listVersions',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.models.listVersions',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken', 'readMask'],
+        relative_path='v1/{+name}:listVersions',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsModelsListVersionsRequest',
+        response_type_name='GoogleCloudAiplatformV1ListModelVersionsResponse',
+        supports_download=False,
+    )
+
+    def MergeVersionAliases(self, request, global_params=None):
+      r"""Merges a set of aliases for a Model version.
+
+      Args:
+        request: (AiplatformProjectsLocationsModelsMergeVersionAliasesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1Model) The response message.
+      """
+      config = self.GetMethodConfig('MergeVersionAliases')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    MergeVersionAliases.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/models/{modelsId}:mergeVersionAliases',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.models.mergeVersionAliases',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:mergeVersionAliases',
+        request_field='googleCloudAiplatformV1MergeVersionAliasesRequest',
+        request_type_name='AiplatformProjectsLocationsModelsMergeVersionAliasesRequest',
+        response_type_name='GoogleCloudAiplatformV1Model',
         supports_download=False,
     )
 
@@ -5563,5 +5714,217 @@ class AiplatformV1(base_api.BaseApiClient):
 
     def __init__(self, client):
       super(AiplatformV1.ProjectsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class UiProjectsLocationsFeaturestoresEntityTypesService(base_api.BaseApiService):
+    """Service class for the ui_projects_locations_featurestores_entityTypes resource."""
+
+    _NAME = 'ui_projects_locations_featurestores_entityTypes'
+
+    def __init__(self, client):
+      super(AiplatformV1.UiProjectsLocationsFeaturestoresEntityTypesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
+
+      Args:
+        request: (AiplatformUiProjectsLocationsFeaturestoresEntityTypesGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='ui/projects/{projectsId}/locations/{locationsId}/featurestores/{featurestoresId}/entityTypes/{entityTypesId}:getIamPolicy',
+        http_method='POST',
+        method_id='aiplatform.ui.projects.locations.featurestores.entityTypes.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='ui/{+resource}:getIamPolicy',
+        request_field='',
+        request_type_name='AiplatformUiProjectsLocationsFeaturestoresEntityTypesGetIamPolicyRequest',
+        response_type_name='GoogleIamV1Policy',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
+
+      Args:
+        request: (AiplatformUiProjectsLocationsFeaturestoresEntityTypesSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='ui/projects/{projectsId}/locations/{locationsId}/featurestores/{featurestoresId}/entityTypes/{entityTypesId}:setIamPolicy',
+        http_method='POST',
+        method_id='aiplatform.ui.projects.locations.featurestores.entityTypes.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='ui/{+resource}:setIamPolicy',
+        request_field='googleIamV1SetIamPolicyRequest',
+        request_type_name='AiplatformUiProjectsLocationsFeaturestoresEntityTypesSetIamPolicyRequest',
+        response_type_name='GoogleIamV1Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
+
+      Args:
+        request: (AiplatformUiProjectsLocationsFeaturestoresEntityTypesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='ui/projects/{projectsId}/locations/{locationsId}/featurestores/{featurestoresId}/entityTypes/{entityTypesId}:testIamPermissions',
+        http_method='POST',
+        method_id='aiplatform.ui.projects.locations.featurestores.entityTypes.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['permissions'],
+        relative_path='ui/{+resource}:testIamPermissions',
+        request_field='',
+        request_type_name='AiplatformUiProjectsLocationsFeaturestoresEntityTypesTestIamPermissionsRequest',
+        response_type_name='GoogleIamV1TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
+  class UiProjectsLocationsFeaturestoresService(base_api.BaseApiService):
+    """Service class for the ui_projects_locations_featurestores resource."""
+
+    _NAME = 'ui_projects_locations_featurestores'
+
+    def __init__(self, client):
+      super(AiplatformV1.UiProjectsLocationsFeaturestoresService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
+
+      Args:
+        request: (AiplatformUiProjectsLocationsFeaturestoresGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='ui/projects/{projectsId}/locations/{locationsId}/featurestores/{featurestoresId}:getIamPolicy',
+        http_method='POST',
+        method_id='aiplatform.ui.projects.locations.featurestores.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='ui/{+resource}:getIamPolicy',
+        request_field='',
+        request_type_name='AiplatformUiProjectsLocationsFeaturestoresGetIamPolicyRequest',
+        response_type_name='GoogleIamV1Policy',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
+
+      Args:
+        request: (AiplatformUiProjectsLocationsFeaturestoresSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='ui/projects/{projectsId}/locations/{locationsId}/featurestores/{featurestoresId}:setIamPolicy',
+        http_method='POST',
+        method_id='aiplatform.ui.projects.locations.featurestores.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='ui/{+resource}:setIamPolicy',
+        request_field='googleIamV1SetIamPolicyRequest',
+        request_type_name='AiplatformUiProjectsLocationsFeaturestoresSetIamPolicyRequest',
+        response_type_name='GoogleIamV1Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
+
+      Args:
+        request: (AiplatformUiProjectsLocationsFeaturestoresTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='ui/projects/{projectsId}/locations/{locationsId}/featurestores/{featurestoresId}:testIamPermissions',
+        http_method='POST',
+        method_id='aiplatform.ui.projects.locations.featurestores.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['permissions'],
+        relative_path='ui/{+resource}:testIamPermissions',
+        request_field='',
+        request_type_name='AiplatformUiProjectsLocationsFeaturestoresTestIamPermissionsRequest',
+        response_type_name='GoogleIamV1TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
+  class UiProjectsLocationsService(base_api.BaseApiService):
+    """Service class for the ui_projects_locations resource."""
+
+    _NAME = 'ui_projects_locations'
+
+    def __init__(self, client):
+      super(AiplatformV1.UiProjectsLocationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class UiProjectsService(base_api.BaseApiService):
+    """Service class for the ui_projects resource."""
+
+    _NAME = 'ui_projects'
+
+    def __init__(self, client):
+      super(AiplatformV1.UiProjectsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class UiService(base_api.BaseApiService):
+    """Service class for the ui resource."""
+
+    _NAME = 'ui'
+
+    def __init__(self, client):
+      super(AiplatformV1.UiService, self).__init__(client)
       self._upload_configs = {
           }

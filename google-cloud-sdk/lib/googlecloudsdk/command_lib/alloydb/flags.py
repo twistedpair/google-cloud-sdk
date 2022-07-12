@@ -223,7 +223,7 @@ def AddZone(parser):
       required=False,
       type=str,
       help=('Primary Compute Engine zone '
-            '(e.g. us-central1, us-central1, etc.'))
+            '(e.g. us-central1-a, us-central1-b, etc.'))
 
 
 def AddForce(parser):
@@ -254,7 +254,7 @@ def AddCPUCount(parser, required=True):
       '--cpu-count',
       required=required,
       type=int,
-      choices=[4, 8, 16, 32, 64],
+      choices=[2, 4, 8, 16, 32, 64],
       help=(
           'Whole number value indicating how many vCPUs the machine should '
           'contain. Each vCPU count corresponds to a N2 high-mem machine: '

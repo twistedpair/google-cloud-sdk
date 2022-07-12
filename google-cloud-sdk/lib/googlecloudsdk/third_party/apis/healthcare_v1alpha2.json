@@ -1760,35 +1760,6 @@
         "timeZone": {
           "description": "The default timezone used by this dataset. Must be a either a valid IANA time zone name such as \"America\/New_York\" or empty, which defaults to UTC. This is used for parsing times in resources, such as HL7v2 messages, where no explicit timezone is specified.",
           "type": "string"
-        },
-        "storageOptions": {
-          "description": "StorageOptions defines the options for storing datasets.",
-          "$ref": "StorageOptions"
-        }
-      }
-    },
-    "StorageOptions": {
-      "id": "StorageOptions",
-      "description": "StorageOptions defines the options for storing datasets.",
-      "type": "object",
-      "properties": {
-        "defaultBlobStorageClass": {
-          "description": "The default storage class for Blobs stored in this dataset. Applies to DICOM objects only.",
-          "type": "string",
-          "enumDescriptions": [
-            "If unspecified in CreateDataset, the StorageClass defaults to STANDARD. If unspecified in UpdateDataset and the StorageClass is set in the field mask, an InvalidRequest error is thrown.",
-            "Stores the Object in Blob Standard Storage: https:\/\/cloud.google.com\/storage\/docs\/storage-classes#standard",
-            "Stores the Object in Blob Nearline Storage: https:\/\/cloud.google.com\/storage\/docs\/storage-classes#nearline",
-            "Stores the Object in Blob Coldline Storage: https:\/\/cloud.google.com\/storage\/docs\/storage-classes#coldline",
-            "Stores the Object in Blob Archive Storage: https:\/\/cloud.google.com\/storage\/docs\/storage-classes#archive"
-          ],
-          "enum": [
-            "BLOB_STORAGE_CLASS_UNSPECIFIED",
-            "STANDARD",
-            "NEARLINE",
-            "COLDLINE",
-            "ARCHIVE"
-          ]
         }
       }
     },
@@ -2332,65 +2303,6 @@
           "description": "Size in bytes of data stored in Blob Storage.",
           "type": "string",
           "format": "int64"
-        },
-        "storageClass": {
-          "description": "The Storage class in which the Blob data is stored.",
-          "type": "string",
-          "enumDescriptions": [
-            "If unspecified in CreateDataset, the StorageClass defaults to STANDARD. If unspecified in UpdateDataset and the StorageClass is set in the field mask, an InvalidRequest error is thrown.",
-            "Stores the Object in Blob Standard Storage: https:\/\/cloud.google.com\/storage\/docs\/storage-classes#standard",
-            "Stores the Object in Blob Nearline Storage: https:\/\/cloud.google.com\/storage\/docs\/storage-classes#nearline",
-            "Stores the Object in Blob Coldline Storage: https:\/\/cloud.google.com\/storage\/docs\/storage-classes#coldline",
-            "Stores the Object in Blob Archive Storage: https:\/\/cloud.google.com\/storage\/docs\/storage-classes#archive"
-          ],
-          "enum": [
-            "BLOB_STORAGE_CLASS_UNSPECIFIED",
-            "STANDARD",
-            "NEARLINE",
-            "COLDLINE",
-            "ARCHIVE"
-          ]
-        },
-        "storageClassUpdateTime": {
-          "description": "The time at which the storage class was updated. This is used to compute early deletion fees of the resource.",
-          "type": "string",
-          "format": "google-datetime"
-        }
-      }
-    },
-    "SetBlobStorageSettingsRequest": {
-      "id": "SetBlobStorageSettingsRequest",
-      "description": "Request message for `SetBlobStorageSettings` method.",
-      "type": "object",
-      "properties": {
-        "blobStorageSettings": {
-          "description": "The blob storage settings to update for the specified resources. Only fields listed in `update_mask` are applied.",
-          "$ref": "BlobStorageSettings"
-        }
-      }
-    },
-    "BlobStorageSettings": {
-      "id": "BlobStorageSettings",
-      "description": "Settings for data stored in Blob storage.",
-      "type": "object",
-      "properties": {
-        "blobStorageClass": {
-          "description": "The Storage class in which the Blob data is stored.",
-          "type": "string",
-          "enumDescriptions": [
-            "If unspecified in CreateDataset, the StorageClass defaults to STANDARD. If unspecified in UpdateDataset and the StorageClass is set in the field mask, an InvalidRequest error is thrown.",
-            "Stores the Object in Blob Standard Storage: https:\/\/cloud.google.com\/storage\/docs\/storage-classes#standard",
-            "Stores the Object in Blob Nearline Storage: https:\/\/cloud.google.com\/storage\/docs\/storage-classes#nearline",
-            "Stores the Object in Blob Coldline Storage: https:\/\/cloud.google.com\/storage\/docs\/storage-classes#coldline",
-            "Stores the Object in Blob Archive Storage: https:\/\/cloud.google.com\/storage\/docs\/storage-classes#archive"
-          ],
-          "enum": [
-            "BLOB_STORAGE_CLASS_UNSPECIFIED",
-            "STANDARD",
-            "NEARLINE",
-            "COLDLINE",
-            "ARCHIVE"
-          ]
         }
       }
     },
@@ -2571,13 +2483,6 @@
           "type": "string",
           "format": "int64"
         }
-      }
-    },
-    "SetBlobStorageSettingsResponse": {
-      "id": "SetBlobStorageSettingsResponse",
-      "description": "Returns additional info in regards to a completed set blob storage settings API.",
-      "type": "object",
-      "properties": {
       }
     }
   },
@@ -3385,34 +3290,6 @@
                                         "https://www.googleapis.com/auth/cloud-platform"
                                       ],
                                       "description": "GetStorageInfo returns the storage info of the specified resource."
-                                    },
-                                    "setBlobStorageSettings": {
-                                      "id": "healthcare.projects.locations.datasets.dicomStores.dicomWeb.studies.series.instances.setBlobStorageSettings",
-                                      "path": "v1alpha2/{+resource}:setBlobStorageSettings",
-                                      "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/dicomStores/{dicomStoresId}/dicomWeb/studies/{studiesId}/series/{seriesId}/instances/{instancesId}:setBlobStorageSettings",
-                                      "httpMethod": "POST",
-                                      "parameters": {
-                                        "resource": {
-                                          "description": "Required. REQUIRED: The path of the resource to update the blob storage settings e.g. in the format of `projects\/{projectid}\/datasets\/{datasetid}\/dicomStores\/{dicomStoreID}\/dicomWeb\/studies\/{studyUID}\/series\/-\/instances\/-`",
-                                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/dicomStores\/[^\/]+\/dicomWeb\/studies\/[^\/]+\/series\/[^\/]+\/instances\/[^\/]+$",
-                                          "location": "path",
-                                          "required": true,
-                                          "type": "string"
-                                        }
-                                      },
-                                      "parameterOrder": [
-                                        "resource"
-                                      ],
-                                      "request": {
-                                        "$ref": "SetBlobStorageSettingsRequest"
-                                      },
-                                      "response": {
-                                        "$ref": "Operation"
-                                      },
-                                      "scopes": [
-                                        "https://www.googleapis.com/auth/cloud-platform"
-                                      ],
-                                      "description": "SetBlobStorageSettings sets the blob storage settings of the specified resources."
                                     }
                                   }
                                 }

@@ -491,6 +491,8 @@ class GceInstanceConfig(_messages.Message):
 
   Fields:
     disablePublicIpAddresses: Whether instances have no public IP address.
+    enableNestedVirtualization: Whether to enable nested virtualization on
+      instances.
     machineType: The name of a Google Compute Engine machine type.
     poolSize: Number of instances to pool for faster Workstation starup.
     serviceAccount: Email address of the service account that will be used on
@@ -505,11 +507,12 @@ class GceInstanceConfig(_messages.Message):
   """
 
   disablePublicIpAddresses = _messages.BooleanField(1)
-  machineType = _messages.StringField(2)
-  poolSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  serviceAccount = _messages.StringField(4)
-  serviceAccountScopes = _messages.StringField(5, repeated=True)
-  tags = _messages.StringField(6, repeated=True)
+  enableNestedVirtualization = _messages.BooleanField(2)
+  machineType = _messages.StringField(3)
+  poolSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  serviceAccount = _messages.StringField(5)
+  serviceAccountScopes = _messages.StringField(6, repeated=True)
+  tags = _messages.StringField(7, repeated=True)
 
 
 class GceRegionalPersistentDisk(_messages.Message):
@@ -601,6 +604,36 @@ class ListOperationsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+
+
+class ListUsableWorkstationConfigsResponse(_messages.Message):
+  r"""Response message for ListUsableWorkstationConfigs.
+
+  Fields:
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+    unreachable: Unreachable resources.
+    workstationConfigs: The requested configs.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  unreachable = _messages.StringField(2, repeated=True)
+  workstationConfigs = _messages.MessageField('WorkstationConfig', 3, repeated=True)
+
+
+class ListUsableWorkstationsResponse(_messages.Message):
+  r"""Response message for ListUsableWorkstations.
+
+  Fields:
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+    unreachable: Unreachable resources.
+    workstations: The requested workstations.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  unreachable = _messages.StringField(2, repeated=True)
+  workstations = _messages.MessageField('Workstation', 3, repeated=True)
 
 
 class ListWorkstationClustersResponse(_messages.Message):
@@ -1643,6 +1676,22 @@ class WorkstationsProjectsLocationsWorkstationClustersWorkstationConfigsListRequ
   parent = _messages.StringField(3, required=True)
 
 
+class WorkstationsProjectsLocationsWorkstationClustersWorkstationConfigsListUsableRequest(_messages.Message):
+  r"""A WorkstationsProjectsLocationsWorkstationClustersWorkstationConfigsList
+  UsableRequest object.
+
+  Fields:
+    pageSize: Maximum number of items to return.
+    pageToken: next_page_token value returned from a previous List request, if
+      any.
+    parent: Required. Parent resource name.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class WorkstationsProjectsLocationsWorkstationClustersWorkstationConfigsPatchRequest(_messages.Message):
   r"""A WorkstationsProjectsLocationsWorkstationClustersWorkstationConfigsPatc
   hRequest object.
@@ -1794,6 +1843,22 @@ class WorkstationsProjectsLocationsWorkstationClustersWorkstationsListRequest(_m
   r"""A
   WorkstationsProjectsLocationsWorkstationClustersWorkstationsListRequest
   object.
+
+  Fields:
+    pageSize: Maximum number of items to return.
+    pageToken: next_page_token value returned from a previous List request, if
+      any.
+    parent: Required. Parent resource name.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class WorkstationsProjectsLocationsWorkstationClustersWorkstationsListUsableRequest(_messages.Message):
+  r"""A WorkstationsProjectsLocationsWorkstationClustersWorkstationsListUsable
+  Request object.
 
   Fields:
     pageSize: Maximum number of items to return.

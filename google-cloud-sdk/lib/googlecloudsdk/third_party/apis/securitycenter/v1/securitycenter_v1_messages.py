@@ -614,6 +614,54 @@ class Detection(_messages.Message):
   percentPagesMatched = _messages.FloatField(2)
 
 
+class EffectiveSecurityHealthAnalyticsCustomModule(_messages.Message):
+  r"""An EffectiveSecurityHealthAnalyticsCustomModule is the representation of
+  SecurityHealthAnalyticsCustomModule at a given level taking hierarchy into
+  account and resolving various fields accordingly. e.g. if the module is
+  enabled at the ancestor level, effective modules at all descendant levels
+  will have enablement_state set to enabled. Similarly, if module.inherited is
+  set, then effective module's config will contain the ancestor's config
+  details. EffectiveSecurityHealthAnalyticsCustomModule is read-only.
+
+  Enums:
+    EnablementStateValueValuesEnum: Output only. The effective state of
+      enablement for the module at the given level of the hierarchy.
+
+  Fields:
+    customConfig: Output only. Config for the effective module. The user
+      specified custom configuration for the module.
+    description: Output only. The description for the module.
+    displayName: Output only. The human readable name to be displayed for the
+      module.
+    enablementState: Output only. The effective state of enablement for the
+      module at the given level of the hierarchy.
+    name: Output only. The resource name of the custom module. Its format is "
+      organizations/{organization}/securityHealthAnalyticsSettings/effectiveCu
+      stomModules/{customModule}", or "folders/{folder}/securityHealthAnalytic
+      sSettings/effectiveCustomModules/{customModule}", or "projects/{project}
+      /securityHealthAnalyticsSettings/effectiveCustomModules/{customModule}"
+  """
+
+  class EnablementStateValueValuesEnum(_messages.Enum):
+    r"""Output only. The effective state of enablement for the module at the
+    given level of the hierarchy.
+
+    Values:
+      ENABLEMENT_STATE_UNSPECIFIED: Unspecified enablement state.
+      ENABLED: The module is enabled at the given level.
+      DISABLED: The module is disabled at the given level.
+    """
+    ENABLEMENT_STATE_UNSPECIFIED = 0
+    ENABLED = 1
+    DISABLED = 2
+
+  customConfig = _messages.MessageField('GoogleCloudSecuritycenterV1CustomConfig', 1)
+  description = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  enablementState = _messages.EnumField('EnablementStateValueValuesEnum', 4)
+  name = _messages.StringField(5)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -1180,6 +1228,56 @@ class GoogleCloudSecuritycenterV1BulkMuteFindingsResponse(_messages.Message):
   r"""The response to a BulkMute request. Contains the LRO information."""
 
 
+class GoogleCloudSecuritycenterV1CustomConfig(_messages.Message):
+  r""" Resource capturing CEL config for the custom module.
+
+  Enums:
+    SeverityValueValuesEnum: The severity of the generated finding.
+
+  Fields:
+    customOutput: Custom output properties.
+    description: The description providing context for the generated finding.
+    predicate: Evaluation expression for the resource which will produce a
+      finding.
+    recommendation: The recommendation steps to fix the generated finding.
+    resourceSelector: Selection criteria for the resource type.
+    severity: The severity of the generated finding.
+  """
+
+  class SeverityValueValuesEnum(_messages.Enum):
+    r"""The severity of the generated finding.
+
+    Values:
+      SEVERITY_UNSPECIFIED: Unspecified severity.
+      CRITICAL: Critical severity.
+      HIGH: High severity.
+      MEDIUM: Medium severity.
+      LOW: Low severity.
+    """
+    SEVERITY_UNSPECIFIED = 0
+    CRITICAL = 1
+    HIGH = 2
+    MEDIUM = 3
+    LOW = 4
+
+  customOutput = _messages.MessageField('GoogleCloudSecuritycenterV1CustomOutputSpec', 1)
+  description = _messages.StringField(2)
+  predicate = _messages.MessageField('Expr', 3)
+  recommendation = _messages.StringField(4)
+  resourceSelector = _messages.MessageField('GoogleCloudSecuritycenterV1ResourceSelector', 5)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 6)
+
+
+class GoogleCloudSecuritycenterV1CustomOutputSpec(_messages.Message):
+  r"""Resource capturing custom output property.
+
+  Fields:
+    properties: List of custom output properties with name, CEL expression.
+  """
+
+  properties = _messages.MessageField('GoogleCloudSecuritycenterV1Property', 1, repeated=True)
+
+
 class GoogleCloudSecuritycenterV1ExternalSystem(_messages.Message):
   r"""Representation of third party SIEM/SOAR fields within SCC.
 
@@ -1264,6 +1362,19 @@ class GoogleCloudSecuritycenterV1NotificationMessage(_messages.Message):
   resource = _messages.MessageField('GoogleCloudSecuritycenterV1Resource', 3)
 
 
+class GoogleCloudSecuritycenterV1Property(_messages.Message):
+  r"""Resource for an individual output property.
+
+  Fields:
+    name: Name of the property for the custom output.
+    valueExpression: CEL Expression for the custom output. The expression can
+      output any standard CEL value types.
+  """
+
+  name = _messages.StringField(1)
+  valueExpression = _messages.MessageField('Expr', 2)
+
+
 class GoogleCloudSecuritycenterV1Resource(_messages.Message):
   r"""Information related to the Google Cloud resource.
 
@@ -1289,6 +1400,16 @@ class GoogleCloudSecuritycenterV1Resource(_messages.Message):
   project = _messages.StringField(6)
   projectDisplayName = _messages.StringField(7)
   type = _messages.StringField(8)
+
+
+class GoogleCloudSecuritycenterV1ResourceSelector(_messages.Message):
+  r"""Resource for selecting resource type.
+
+  Fields:
+    resourceTypes: Resource type for detector to operate on.
+  """
+
+  resourceTypes = _messages.StringField(1, repeated=True)
 
 
 class GoogleCloudSecuritycenterV1RunAssetDiscoveryResponse(_messages.Message):
@@ -1320,6 +1441,67 @@ class GoogleCloudSecuritycenterV1RunAssetDiscoveryResponse(_messages.Message):
 
   duration = _messages.StringField(1)
   state = _messages.EnumField('StateValueValuesEnum', 2)
+
+
+class GoogleCloudSecuritycenterV1SecurityHealthAnalyticsCustomModule(_messages.Message):
+  r""" A custom module is a user authored module that is run by SHA on behalf
+  of the user to produce findings. Custom modules can be created anywhere in
+  the CRM hierarchy, and are inherited by all descendants. A resident custom
+  module is a custom module that was created at the CRM scope it is viewed in.
+  An inherited custom module is a custom module that has inherited its
+  configuration and enablement state from an ancestor resident module
+  somewhere up the CRM hierarchy.
+
+  Enums:
+    EnablementStateValueValuesEnum: The enablement state of the custom module.
+
+  Fields:
+    ancestorModule: Output only. If empty, indicates that the current module
+      is a resident module of the current CRM scope. Otherwise, it will
+      contain the name of the CRM ancestor module that this module inherited
+      its enablement state from.
+    customConfig: The user specified custom configuration for the module.
+    description:  The description of the custom module. Must be less than 1024
+      characters.
+    displayName: The human readable display name of the custom module. Must be
+      less than 64 characters.
+    enablementState: The enablement state of the custom module.
+    lastEditor: Output only. The editor that last updated the custom module.
+    name: Immutable. The resource name of the custom module. Its format is "or
+      ganizations/{organization}/securityHealthAnalyticsSettings/customModules
+      /{customModule}", or "folders/{folder}/securityHealthAnalyticsSettings/c
+      ustomModules/{customModule}", or "projects/{project}/securityHealthAnaly
+      ticsSettings/customModules/{customModule}" The id {customModule} is
+      server-generated and is not user settable. It will be a numeric id
+      containing 1-20 digits.
+    updateTime: Output only. The time at which the custom module was last
+      updated.
+  """
+
+  class EnablementStateValueValuesEnum(_messages.Enum):
+    r"""The enablement state of the custom module.
+
+    Values:
+      ENABLEMENT_STATE_UNSPECIFIED: Unspecified enablement state.
+      ENABLED: The module is enabled at the given CRM resource.
+      DISABLED: The module is disabled at the given CRM resource.
+      INHERITED: State is inherited from an ancestor module. The module will
+        either be effectively ENABLED or DISABLED based on its closest non-
+        inherited ancestor module in the CRM hierarchy.
+    """
+    ENABLEMENT_STATE_UNSPECIFIED = 0
+    ENABLED = 1
+    DISABLED = 2
+    INHERITED = 3
+
+  ancestorModule = _messages.StringField(1)
+  customConfig = _messages.MessageField('GoogleCloudSecuritycenterV1CustomConfig', 2)
+  description = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  enablementState = _messages.EnumField('EnablementStateValueValuesEnum', 5)
+  lastEditor = _messages.StringField(6)
+  name = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
 
 
 class GoogleCloudSecuritycenterV1beta1RunAssetDiscoveryResponse(_messages.Message):
@@ -2019,6 +2201,36 @@ class ListBigQueryExportsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class ListDescendantSecurityHealthAnalyticsCustomModulesResponse(_messages.Message):
+  r"""Response message for listing descendant security health analytics custom
+  modules.
+
+  Fields:
+    nextPageToken: If not empty, indicates that there may be more custom
+      modules to be returned.
+    securityHealthAnalyticsCustomModules: Custom modules belonging to the
+      requested parent and its descendants.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  securityHealthAnalyticsCustomModules = _messages.MessageField('GoogleCloudSecuritycenterV1SecurityHealthAnalyticsCustomModule', 2, repeated=True)
+
+
+class ListEffectiveSecurityHealthAnalyticsCustomModulesResponse(_messages.Message):
+  r"""Response message for listing effective security health analytics custom
+  modules.
+
+  Fields:
+    effectiveSecurityHealthAnalyticsCustomModules: Effective custom modules
+      belonging to the requested parent.
+    nextPageToken: If not empty, indicates that there may be more effective
+      custom modules to be returned.
+  """
+
+  effectiveSecurityHealthAnalyticsCustomModules = _messages.MessageField('EffectiveSecurityHealthAnalyticsCustomModule', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class ListFindingsResponse(_messages.Message):
   r"""Response message for listing findings.
 
@@ -2112,6 +2324,20 @@ class ListOperationsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+
+
+class ListSecurityHealthAnalyticsCustomModulesResponse(_messages.Message):
+  r"""Response message for listing security health analytics custom modules.
+
+  Fields:
+    nextPageToken: If not empty, indicates that there may be more custom
+      modules to be returned.
+    securityHealthAnalyticsCustomModules: Custom modules belonging to the
+      requested parent.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  securityHealthAnalyticsCustomModules = _messages.MessageField('GoogleCloudSecuritycenterV1SecurityHealthAnalyticsCustomModule', 2, repeated=True)
 
 
 class ListSourcesResponse(_messages.Message):
@@ -3157,6 +3383,174 @@ class SecuritycenterFoldersMuteConfigsPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class SecuritycenterFoldersSecurityHealthAnalyticsSettingsCustomModulesCreateRequest(_messages.Message):
+  r"""A SecuritycenterFoldersSecurityHealthAnalyticsSettingsCustomModulesCreat
+  eRequest object.
+
+  Fields:
+    googleCloudSecuritycenterV1SecurityHealthAnalyticsCustomModule: A
+      GoogleCloudSecuritycenterV1SecurityHealthAnalyticsCustomModule resource
+      to be passed as the request body.
+    parent: Required. Resource name of the new custom module's parent. Its
+      format is
+      "organizations/{organization}/securityHealthAnalyticsSettings",
+      "folders/{folder}/securityHealthAnalyticsSettings", or
+      "projects/{project}/securityHealthAnalyticsSettings"
+  """
+
+  googleCloudSecuritycenterV1SecurityHealthAnalyticsCustomModule = _messages.MessageField('GoogleCloudSecuritycenterV1SecurityHealthAnalyticsCustomModule', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class SecuritycenterFoldersSecurityHealthAnalyticsSettingsCustomModulesDeleteRequest(_messages.Message):
+  r"""A SecuritycenterFoldersSecurityHealthAnalyticsSettingsCustomModulesDelet
+  eRequest object.
+
+  Fields:
+    name: Required. Name of the custom module to delete. Its format is "organi
+      zations/{organization}/securityHealthAnalyticsSettings/customModules/{cu
+      stomModule}", "folders/{folder}/securityHealthAnalyticsSettings/customMo
+      dules/{customModule}", or "projects/{project}/securityHealthAnalyticsSet
+      tings/customModules/{customModule}"
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SecuritycenterFoldersSecurityHealthAnalyticsSettingsCustomModulesGetRequest(_messages.Message):
+  r"""A
+  SecuritycenterFoldersSecurityHealthAnalyticsSettingsCustomModulesGetRequest
+  object.
+
+  Fields:
+    name: Required. Name of the custom module to get. Its format is "organizat
+      ions/{organization}/securityHealthAnalyticsSettings/customModules/{custo
+      mModule}", "folders/{folder}/securityHealthAnalyticsSettings/customModul
+      es/{customModule}", or "projects/{project}/securityHealthAnalyticsSettin
+      gs/customModules/{customModule}"
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SecuritycenterFoldersSecurityHealthAnalyticsSettingsCustomModulesListDescendantRequest(_messages.Message):
+  r"""A SecuritycenterFoldersSecurityHealthAnalyticsSettingsCustomModulesListD
+  escendantRequest object.
+
+  Fields:
+    pageSize: The maximum number of results to return in a single response.
+      Default is 10, minimum is 1, maximum is 1000.
+    pageToken: The value returned by the last call indicating a continuation
+    parent: Required. Name of parent to list descendant custom modules. Its
+      format is
+      "organizations/{organization}/securityHealthAnalyticsSettings",
+      "folders/{folder}/securityHealthAnalyticsSettings", or
+      "projects/{project}/securityHealthAnalyticsSettings"
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class SecuritycenterFoldersSecurityHealthAnalyticsSettingsCustomModulesListRequest(_messages.Message):
+  r"""A
+  SecuritycenterFoldersSecurityHealthAnalyticsSettingsCustomModulesListRequest
+  object.
+
+  Fields:
+    pageSize: The maximum number of results to return in a single response.
+      Default is 10, minimum is 1, maximum is 1000.
+    pageToken: The value returned by the last call indicating a continuation
+    parent: Required. Name of parent to list custom modules. Its format is
+      "organizations/{organization}/securityHealthAnalyticsSettings",
+      "folders/{folder}/securityHealthAnalyticsSettings", or
+      "projects/{project}/securityHealthAnalyticsSettings"
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class SecuritycenterFoldersSecurityHealthAnalyticsSettingsCustomModulesPatchRequest(_messages.Message):
+  r"""A SecuritycenterFoldersSecurityHealthAnalyticsSettingsCustomModulesPatch
+  Request object.
+
+  Fields:
+    googleCloudSecuritycenterV1SecurityHealthAnalyticsCustomModule: A
+      GoogleCloudSecuritycenterV1SecurityHealthAnalyticsCustomModule resource
+      to be passed as the request body.
+    name: Immutable. The resource name of the custom module. Its format is "or
+      ganizations/{organization}/securityHealthAnalyticsSettings/customModules
+      /{customModule}", or "folders/{folder}/securityHealthAnalyticsSettings/c
+      ustomModules/{customModule}", or "projects/{project}/securityHealthAnaly
+      ticsSettings/customModules/{customModule}" The id {customModule} is
+      server-generated and is not user settable. It will be a numeric id
+      containing 1-20 digits.
+    updateMask: The list of fields to update.
+  """
+
+  googleCloudSecuritycenterV1SecurityHealthAnalyticsCustomModule = _messages.MessageField('GoogleCloudSecuritycenterV1SecurityHealthAnalyticsCustomModule', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class SecuritycenterFoldersSecurityHealthAnalyticsSettingsCustomModulesTestRequest(_messages.Message):
+  r"""A
+  SecuritycenterFoldersSecurityHealthAnalyticsSettingsCustomModulesTestRequest
+  object.
+
+  Fields:
+    name: Required. Name of the custom module to test. Its format is "organiza
+      tions/[organization_id]/securityHealthAnalyticsSettings/customModules/[m
+      odule_id]". If the custom_module field is empty, it is assumed that the
+      custom module already exists; otherwise the specified custom_module will
+      be used.
+    testSecurityHealthAnalyticsCustomModuleRequest: A
+      TestSecurityHealthAnalyticsCustomModuleRequest resource to be passed as
+      the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  testSecurityHealthAnalyticsCustomModuleRequest = _messages.MessageField('TestSecurityHealthAnalyticsCustomModuleRequest', 2)
+
+
+class SecuritycenterFoldersSecurityHealthAnalyticsSettingsEffectiveCustomModulesGetRequest(_messages.Message):
+  r"""A SecuritycenterFoldersSecurityHealthAnalyticsSettingsEffectiveCustomMod
+  ulesGetRequest object.
+
+  Fields:
+    name: Required. Name of the effective custom module to get. Its format is
+      "organizations/{organization}/securityHealthAnalyticsSettings/effectiveC
+      ustomModules/{customModule}", "folders/{folder}/securityHealthAnalyticsS
+      ettings/effectiveCustomModules/{customModule}", or "projects/{project}/s
+      ecurityHealthAnalyticsSettings/effectiveCustomModules/{customModule}"
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SecuritycenterFoldersSecurityHealthAnalyticsSettingsEffectiveCustomModulesListRequest(_messages.Message):
+  r"""A SecuritycenterFoldersSecurityHealthAnalyticsSettingsEffectiveCustomMod
+  ulesListRequest object.
+
+  Fields:
+    pageSize: The maximum number of results to return in a single response.
+      Default is 10, minimum is 1, maximum is 1000.
+    pageToken: The value returned by the last call indicating a continuation
+    parent: Required. Name of parent to list effective custom modules. Its
+      format is
+      "organizations/{organization}/securityHealthAnalyticsSettings",
+      "folders/{folder}/securityHealthAnalyticsSettings", or
+      "projects/{project}/securityHealthAnalyticsSettings"
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class SecuritycenterFoldersSourcesFindingsExternalSystemsPatchRequest(_messages.Message):
   r"""A SecuritycenterFoldersSourcesFindingsExternalSystemsPatchRequest
   object.
@@ -3877,6 +4271,171 @@ class SecuritycenterOrganizationsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class SecuritycenterOrganizationsSecurityHealthAnalyticsSettingsCustomModulesCreateRequest(_messages.Message):
+  r"""A SecuritycenterOrganizationsSecurityHealthAnalyticsSettingsCustomModule
+  sCreateRequest object.
+
+  Fields:
+    googleCloudSecuritycenterV1SecurityHealthAnalyticsCustomModule: A
+      GoogleCloudSecuritycenterV1SecurityHealthAnalyticsCustomModule resource
+      to be passed as the request body.
+    parent: Required. Resource name of the new custom module's parent. Its
+      format is
+      "organizations/{organization}/securityHealthAnalyticsSettings",
+      "folders/{folder}/securityHealthAnalyticsSettings", or
+      "projects/{project}/securityHealthAnalyticsSettings"
+  """
+
+  googleCloudSecuritycenterV1SecurityHealthAnalyticsCustomModule = _messages.MessageField('GoogleCloudSecuritycenterV1SecurityHealthAnalyticsCustomModule', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class SecuritycenterOrganizationsSecurityHealthAnalyticsSettingsCustomModulesDeleteRequest(_messages.Message):
+  r"""A SecuritycenterOrganizationsSecurityHealthAnalyticsSettingsCustomModule
+  sDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the custom module to delete. Its format is "organi
+      zations/{organization}/securityHealthAnalyticsSettings/customModules/{cu
+      stomModule}", "folders/{folder}/securityHealthAnalyticsSettings/customMo
+      dules/{customModule}", or "projects/{project}/securityHealthAnalyticsSet
+      tings/customModules/{customModule}"
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SecuritycenterOrganizationsSecurityHealthAnalyticsSettingsCustomModulesGetRequest(_messages.Message):
+  r"""A SecuritycenterOrganizationsSecurityHealthAnalyticsSettingsCustomModule
+  sGetRequest object.
+
+  Fields:
+    name: Required. Name of the custom module to get. Its format is "organizat
+      ions/{organization}/securityHealthAnalyticsSettings/customModules/{custo
+      mModule}", "folders/{folder}/securityHealthAnalyticsSettings/customModul
+      es/{customModule}", or "projects/{project}/securityHealthAnalyticsSettin
+      gs/customModules/{customModule}"
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SecuritycenterOrganizationsSecurityHealthAnalyticsSettingsCustomModulesListDescendantRequest(_messages.Message):
+  r"""A SecuritycenterOrganizationsSecurityHealthAnalyticsSettingsCustomModule
+  sListDescendantRequest object.
+
+  Fields:
+    pageSize: The maximum number of results to return in a single response.
+      Default is 10, minimum is 1, maximum is 1000.
+    pageToken: The value returned by the last call indicating a continuation
+    parent: Required. Name of parent to list descendant custom modules. Its
+      format is
+      "organizations/{organization}/securityHealthAnalyticsSettings",
+      "folders/{folder}/securityHealthAnalyticsSettings", or
+      "projects/{project}/securityHealthAnalyticsSettings"
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class SecuritycenterOrganizationsSecurityHealthAnalyticsSettingsCustomModulesListRequest(_messages.Message):
+  r"""A SecuritycenterOrganizationsSecurityHealthAnalyticsSettingsCustomModule
+  sListRequest object.
+
+  Fields:
+    pageSize: The maximum number of results to return in a single response.
+      Default is 10, minimum is 1, maximum is 1000.
+    pageToken: The value returned by the last call indicating a continuation
+    parent: Required. Name of parent to list custom modules. Its format is
+      "organizations/{organization}/securityHealthAnalyticsSettings",
+      "folders/{folder}/securityHealthAnalyticsSettings", or
+      "projects/{project}/securityHealthAnalyticsSettings"
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class SecuritycenterOrganizationsSecurityHealthAnalyticsSettingsCustomModulesPatchRequest(_messages.Message):
+  r"""A SecuritycenterOrganizationsSecurityHealthAnalyticsSettingsCustomModule
+  sPatchRequest object.
+
+  Fields:
+    googleCloudSecuritycenterV1SecurityHealthAnalyticsCustomModule: A
+      GoogleCloudSecuritycenterV1SecurityHealthAnalyticsCustomModule resource
+      to be passed as the request body.
+    name: Immutable. The resource name of the custom module. Its format is "or
+      ganizations/{organization}/securityHealthAnalyticsSettings/customModules
+      /{customModule}", or "folders/{folder}/securityHealthAnalyticsSettings/c
+      ustomModules/{customModule}", or "projects/{project}/securityHealthAnaly
+      ticsSettings/customModules/{customModule}" The id {customModule} is
+      server-generated and is not user settable. It will be a numeric id
+      containing 1-20 digits.
+    updateMask: The list of fields to update.
+  """
+
+  googleCloudSecuritycenterV1SecurityHealthAnalyticsCustomModule = _messages.MessageField('GoogleCloudSecuritycenterV1SecurityHealthAnalyticsCustomModule', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class SecuritycenterOrganizationsSecurityHealthAnalyticsSettingsCustomModulesTestRequest(_messages.Message):
+  r"""A SecuritycenterOrganizationsSecurityHealthAnalyticsSettingsCustomModule
+  sTestRequest object.
+
+  Fields:
+    name: Required. Name of the custom module to test. Its format is "organiza
+      tions/[organization_id]/securityHealthAnalyticsSettings/customModules/[m
+      odule_id]". If the custom_module field is empty, it is assumed that the
+      custom module already exists; otherwise the specified custom_module will
+      be used.
+    testSecurityHealthAnalyticsCustomModuleRequest: A
+      TestSecurityHealthAnalyticsCustomModuleRequest resource to be passed as
+      the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  testSecurityHealthAnalyticsCustomModuleRequest = _messages.MessageField('TestSecurityHealthAnalyticsCustomModuleRequest', 2)
+
+
+class SecuritycenterOrganizationsSecurityHealthAnalyticsSettingsEffectiveCustomModulesGetRequest(_messages.Message):
+  r"""A SecuritycenterOrganizationsSecurityHealthAnalyticsSettingsEffectiveCus
+  tomModulesGetRequest object.
+
+  Fields:
+    name: Required. Name of the effective custom module to get. Its format is
+      "organizations/{organization}/securityHealthAnalyticsSettings/effectiveC
+      ustomModules/{customModule}", "folders/{folder}/securityHealthAnalyticsS
+      ettings/effectiveCustomModules/{customModule}", or "projects/{project}/s
+      ecurityHealthAnalyticsSettings/effectiveCustomModules/{customModule}"
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SecuritycenterOrganizationsSecurityHealthAnalyticsSettingsEffectiveCustomModulesListRequest(_messages.Message):
+  r"""A SecuritycenterOrganizationsSecurityHealthAnalyticsSettingsEffectiveCus
+  tomModulesListRequest object.
+
+  Fields:
+    pageSize: The maximum number of results to return in a single response.
+      Default is 10, minimum is 1, maximum is 1000.
+    pageToken: The value returned by the last call indicating a continuation
+    parent: Required. Name of parent to list effective custom modules. Its
+      format is
+      "organizations/{organization}/securityHealthAnalyticsSettings",
+      "folders/{folder}/securityHealthAnalyticsSettings", or
+      "projects/{project}/securityHealthAnalyticsSettings"
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class SecuritycenterOrganizationsSourcesCreateRequest(_messages.Message):
   r"""A SecuritycenterOrganizationsSourcesCreateRequest object.
 
@@ -4571,6 +5130,172 @@ class SecuritycenterProjectsMuteConfigsPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class SecuritycenterProjectsSecurityHealthAnalyticsSettingsCustomModulesCreateRequest(_messages.Message):
+  r"""A SecuritycenterProjectsSecurityHealthAnalyticsSettingsCustomModulesCrea
+  teRequest object.
+
+  Fields:
+    googleCloudSecuritycenterV1SecurityHealthAnalyticsCustomModule: A
+      GoogleCloudSecuritycenterV1SecurityHealthAnalyticsCustomModule resource
+      to be passed as the request body.
+    parent: Required. Resource name of the new custom module's parent. Its
+      format is
+      "organizations/{organization}/securityHealthAnalyticsSettings",
+      "folders/{folder}/securityHealthAnalyticsSettings", or
+      "projects/{project}/securityHealthAnalyticsSettings"
+  """
+
+  googleCloudSecuritycenterV1SecurityHealthAnalyticsCustomModule = _messages.MessageField('GoogleCloudSecuritycenterV1SecurityHealthAnalyticsCustomModule', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class SecuritycenterProjectsSecurityHealthAnalyticsSettingsCustomModulesDeleteRequest(_messages.Message):
+  r"""A SecuritycenterProjectsSecurityHealthAnalyticsSettingsCustomModulesDele
+  teRequest object.
+
+  Fields:
+    name: Required. Name of the custom module to delete. Its format is "organi
+      zations/{organization}/securityHealthAnalyticsSettings/customModules/{cu
+      stomModule}", "folders/{folder}/securityHealthAnalyticsSettings/customMo
+      dules/{customModule}", or "projects/{project}/securityHealthAnalyticsSet
+      tings/customModules/{customModule}"
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SecuritycenterProjectsSecurityHealthAnalyticsSettingsCustomModulesGetRequest(_messages.Message):
+  r"""A
+  SecuritycenterProjectsSecurityHealthAnalyticsSettingsCustomModulesGetRequest
+  object.
+
+  Fields:
+    name: Required. Name of the custom module to get. Its format is "organizat
+      ions/{organization}/securityHealthAnalyticsSettings/customModules/{custo
+      mModule}", "folders/{folder}/securityHealthAnalyticsSettings/customModul
+      es/{customModule}", or "projects/{project}/securityHealthAnalyticsSettin
+      gs/customModules/{customModule}"
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SecuritycenterProjectsSecurityHealthAnalyticsSettingsCustomModulesListDescendantRequest(_messages.Message):
+  r"""A SecuritycenterProjectsSecurityHealthAnalyticsSettingsCustomModulesList
+  DescendantRequest object.
+
+  Fields:
+    pageSize: The maximum number of results to return in a single response.
+      Default is 10, minimum is 1, maximum is 1000.
+    pageToken: The value returned by the last call indicating a continuation
+    parent: Required. Name of parent to list descendant custom modules. Its
+      format is
+      "organizations/{organization}/securityHealthAnalyticsSettings",
+      "folders/{folder}/securityHealthAnalyticsSettings", or
+      "projects/{project}/securityHealthAnalyticsSettings"
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class SecuritycenterProjectsSecurityHealthAnalyticsSettingsCustomModulesListRequest(_messages.Message):
+  r"""A SecuritycenterProjectsSecurityHealthAnalyticsSettingsCustomModulesList
+  Request object.
+
+  Fields:
+    pageSize: The maximum number of results to return in a single response.
+      Default is 10, minimum is 1, maximum is 1000.
+    pageToken: The value returned by the last call indicating a continuation
+    parent: Required. Name of parent to list custom modules. Its format is
+      "organizations/{organization}/securityHealthAnalyticsSettings",
+      "folders/{folder}/securityHealthAnalyticsSettings", or
+      "projects/{project}/securityHealthAnalyticsSettings"
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class SecuritycenterProjectsSecurityHealthAnalyticsSettingsCustomModulesPatchRequest(_messages.Message):
+  r"""A SecuritycenterProjectsSecurityHealthAnalyticsSettingsCustomModulesPatc
+  hRequest object.
+
+  Fields:
+    googleCloudSecuritycenterV1SecurityHealthAnalyticsCustomModule: A
+      GoogleCloudSecuritycenterV1SecurityHealthAnalyticsCustomModule resource
+      to be passed as the request body.
+    name: Immutable. The resource name of the custom module. Its format is "or
+      ganizations/{organization}/securityHealthAnalyticsSettings/customModules
+      /{customModule}", or "folders/{folder}/securityHealthAnalyticsSettings/c
+      ustomModules/{customModule}", or "projects/{project}/securityHealthAnaly
+      ticsSettings/customModules/{customModule}" The id {customModule} is
+      server-generated and is not user settable. It will be a numeric id
+      containing 1-20 digits.
+    updateMask: The list of fields to update.
+  """
+
+  googleCloudSecuritycenterV1SecurityHealthAnalyticsCustomModule = _messages.MessageField('GoogleCloudSecuritycenterV1SecurityHealthAnalyticsCustomModule', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class SecuritycenterProjectsSecurityHealthAnalyticsSettingsCustomModulesTestRequest(_messages.Message):
+  r"""A SecuritycenterProjectsSecurityHealthAnalyticsSettingsCustomModulesTest
+  Request object.
+
+  Fields:
+    name: Required. Name of the custom module to test. Its format is "organiza
+      tions/[organization_id]/securityHealthAnalyticsSettings/customModules/[m
+      odule_id]". If the custom_module field is empty, it is assumed that the
+      custom module already exists; otherwise the specified custom_module will
+      be used.
+    testSecurityHealthAnalyticsCustomModuleRequest: A
+      TestSecurityHealthAnalyticsCustomModuleRequest resource to be passed as
+      the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  testSecurityHealthAnalyticsCustomModuleRequest = _messages.MessageField('TestSecurityHealthAnalyticsCustomModuleRequest', 2)
+
+
+class SecuritycenterProjectsSecurityHealthAnalyticsSettingsEffectiveCustomModulesGetRequest(_messages.Message):
+  r"""A SecuritycenterProjectsSecurityHealthAnalyticsSettingsEffectiveCustomMo
+  dulesGetRequest object.
+
+  Fields:
+    name: Required. Name of the effective custom module to get. Its format is
+      "organizations/{organization}/securityHealthAnalyticsSettings/effectiveC
+      ustomModules/{customModule}", "folders/{folder}/securityHealthAnalyticsS
+      ettings/effectiveCustomModules/{customModule}", or "projects/{project}/s
+      ecurityHealthAnalyticsSettings/effectiveCustomModules/{customModule}"
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SecuritycenterProjectsSecurityHealthAnalyticsSettingsEffectiveCustomModulesListRequest(_messages.Message):
+  r"""A SecuritycenterProjectsSecurityHealthAnalyticsSettingsEffectiveCustomMo
+  dulesListRequest object.
+
+  Fields:
+    pageSize: The maximum number of results to return in a single response.
+      Default is 10, minimum is 1, maximum is 1000.
+    pageToken: The value returned by the last call indicating a continuation
+    parent: Required. Name of parent to list effective custom modules. Its
+      format is
+      "organizations/{organization}/securityHealthAnalyticsSettings",
+      "folders/{folder}/securityHealthAnalyticsSettings", or
+      "projects/{project}/securityHealthAnalyticsSettings"
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class SecuritycenterProjectsSourcesFindingsExternalSystemsPatchRequest(_messages.Message):
   r"""A SecuritycenterProjectsSourcesFindingsExternalSystemsPatchRequest
   object.
@@ -5045,6 +5770,68 @@ class StreamingConfig(_messages.Message):
   filter = _messages.StringField(1)
 
 
+class TestAsset(_messages.Message):
+  r"""Manually constructed resource. If the custom module only evaluates
+  against the resource data, the iam_policy_data field can be omitted, and
+  vice versa.
+
+  Messages:
+    ResourceDataValue: A representation of the resource.
+
+  Fields:
+    assetType: The type of the asset, e.g. `compute.googleapis.com/Disk`.
+    iamPolicyData: A representation of the IAM policy.
+    resource: Pseudo name identifying the resource, must be within 128
+      characters.
+    resourceData: A representation of the resource.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ResourceDataValue(_messages.Message):
+    r"""A representation of the resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a ResourceDataValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ResourceDataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  assetType = _messages.StringField(1)
+  iamPolicyData = _messages.MessageField('Policy', 2)
+  resource = _messages.StringField(3)
+  resourceData = _messages.MessageField('ResourceDataValue', 4)
+
+
+class TestData(_messages.Message):
+  r"""Test data used for testing.
+
+  Fields:
+    asset: Manually constructed asset data.
+    resource: The full name of the resource within the organization to test
+      against. Example: "//cloudresourcemanager.googleapis.com/projects/123".
+      Both resource data and IAM policy will be available if a valid resource
+      name is provided.
+  """
+
+  asset = _messages.MessageField('TestAsset', 1)
+  resource = _messages.StringField(2)
+
+
 class TestIamPermissionsRequest(_messages.Message):
   r"""Request message for `TestIamPermissions` method.
 
@@ -5067,6 +5854,46 @@ class TestIamPermissionsResponse(_messages.Message):
   """
 
   permissions = _messages.StringField(1, repeated=True)
+
+
+class TestResult(_messages.Message):
+  r"""Possible test result.
+
+  Fields:
+    error: Error encountered during the test.
+    finding: Finding that would be published for the test case, if a violation
+      is detected.
+    noViolation: Indicates that the test case does not trigger any violation.
+  """
+
+  error = _messages.MessageField('Status', 1)
+  finding = _messages.MessageField('Finding', 2)
+  noViolation = _messages.MessageField('Empty', 3)
+
+
+class TestSecurityHealthAnalyticsCustomModuleRequest(_messages.Message):
+  r"""Request message to test a SecurityHealthAnalyticsCustomModule.
+
+  Fields:
+    securityHealthAnalyticsCustomModule: Custom module to test if provided.
+      The name will be ignored in favor of the explicitly specified name
+      field.
+    testData: Resource data to test against.
+  """
+
+  securityHealthAnalyticsCustomModule = _messages.MessageField('GoogleCloudSecuritycenterV1SecurityHealthAnalyticsCustomModule', 1)
+  testData = _messages.MessageField('TestData', 2, repeated=True)
+
+
+class TestSecurityHealthAnalyticsCustomModuleResponse(_messages.Message):
+  r"""Response message for testing a SecurityHealthAnalyticsCustomModule.
+
+  Fields:
+    results: Test results for each of the test cases in the corresponding
+      request, in the same order.
+  """
+
+  results = _messages.MessageField('TestResult', 1, repeated=True)
 
 
 class Vulnerability(_messages.Message):

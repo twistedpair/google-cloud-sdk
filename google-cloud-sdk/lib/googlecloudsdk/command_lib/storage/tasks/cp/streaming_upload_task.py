@@ -21,6 +21,8 @@ from __future__ import unicode_literals
 from googlecloudsdk.api_lib.storage import api_factory
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.api_lib.storage import request_config_factory
+from googlecloudsdk.command_lib.storage import errors
+from googlecloudsdk.command_lib.storage import user_request_args_factory
 from googlecloudsdk.command_lib.storage.tasks import task
 from googlecloudsdk.command_lib.storage.tasks.cp import upload_util
 from googlecloudsdk.core import log
@@ -53,6 +55,21 @@ class StreamingUploadTask(task.Task):
 
   def execute(self, task_status_queue=None):
     """Runs upload from stream."""
+    request_config = request_config_factory.get_request_config(
+        self._destination_resource.storage_url,
+        content_type=upload_util.get_content_type(
+            self._source_resource.storage_url.object_name, is_pipe=True),
+        md5_hash=self._source_resource.md5_hash,
+        user_request_args=self._user_request_args)
+
+    gzip_type = getattr(request_config.gzip_settings, 'type', None)
+    if gzip_type is user_request_args_factory.GzipType.LOCAL:
+      # TODO(b/202729249): Supporting this is possible after dropping Python 2.
+      raise errors.Error(
+          'Gzip content encoding is not currently supported for streaming'
+          ' uploads. Remove the compression flag or save the streamed output'
+          ' to a file before uploading.')
+
     digesters = upload_util.get_digesters(
         self._source_resource,
         self._destination_resource)
@@ -61,13 +78,6 @@ class StreamingUploadTask(task.Task):
         digesters=digesters,
         task_status_queue=task_status_queue,
         destination_resource=self._destination_resource)
-
-    request_config = request_config_factory.get_request_config(
-        self._destination_resource.storage_url,
-        content_type=upload_util.get_content_type(
-            self._source_resource.storage_url.object_name, is_pipe=True),
-        md5_hash=self._source_resource.md5_hash,
-        user_request_args=self._user_request_args)
 
     with stream:
       provider = self._destination_resource.storage_url.scheme

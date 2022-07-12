@@ -182,33 +182,6 @@ class VmwareengineV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
-
-      Args:
-        request: (VmwareengineProjectsLocationsGlobalNetworkPeeringsGetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('GetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/global/networkPeerings/{networkPeeringsId}:getIamPolicy',
-        http_method='GET',
-        method_id='vmwareengine.projects.locations.global.networkPeerings.getIamPolicy',
-        ordered_params=['resource'],
-        path_params=['resource'],
-        query_params=['options_requestedPolicyVersion'],
-        relative_path='v1/{+resource}:getIamPolicy',
-        request_field='',
-        request_type_name='VmwareengineProjectsLocationsGlobalNetworkPeeringsGetIamPolicyRequest',
-        response_type_name='Policy',
-        supports_download=False,
-    )
-
     def List(self, request, global_params=None):
       r"""Lists `NetworkPeering` resources in a given project.
 
@@ -260,60 +233,6 @@ class VmwareengineV1(base_api.BaseApiClient):
         request_field='networkPeering',
         request_type_name='VmwareengineProjectsLocationsGlobalNetworkPeeringsPatchRequest',
         response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
-
-      Args:
-        request: (VmwareengineProjectsLocationsGlobalNetworkPeeringsSetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('SetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/global/networkPeerings/{networkPeeringsId}:setIamPolicy',
-        http_method='POST',
-        method_id='vmwareengine.projects.locations.global.networkPeerings.setIamPolicy',
-        ordered_params=['resource'],
-        path_params=['resource'],
-        query_params=[],
-        relative_path='v1/{+resource}:setIamPolicy',
-        request_field='setIamPolicyRequest',
-        request_type_name='VmwareengineProjectsLocationsGlobalNetworkPeeringsSetIamPolicyRequest',
-        response_type_name='Policy',
-        supports_download=False,
-    )
-
-    def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
-
-      Args:
-        request: (VmwareengineProjectsLocationsGlobalNetworkPeeringsTestIamPermissionsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (TestIamPermissionsResponse) The response message.
-      """
-      config = self.GetMethodConfig('TestIamPermissions')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/global/networkPeerings/{networkPeeringsId}:testIamPermissions',
-        http_method='POST',
-        method_id='vmwareengine.projects.locations.global.networkPeerings.testIamPermissions',
-        ordered_params=['resource'],
-        path_params=['resource'],
-        query_params=[],
-        relative_path='v1/{+resource}:testIamPermissions',
-        request_field='testIamPermissionsRequest',
-        request_type_name='VmwareengineProjectsLocationsGlobalNetworkPeeringsTestIamPermissionsRequest',
-        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
@@ -418,33 +337,6 @@ class VmwareengineV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
-
-      Args:
-        request: (VmwareengineProjectsLocationsNetworkPoliciesExternalAccessRulesGetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('GetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/networkPolicies/{networkPoliciesId}/externalAccessRules/{externalAccessRulesId}:getIamPolicy',
-        http_method='GET',
-        method_id='vmwareengine.projects.locations.networkPolicies.externalAccessRules.getIamPolicy',
-        ordered_params=['resource'],
-        path_params=['resource'],
-        query_params=['options_requestedPolicyVersion'],
-        relative_path='v1/{+resource}:getIamPolicy',
-        request_field='',
-        request_type_name='VmwareengineProjectsLocationsNetworkPoliciesExternalAccessRulesGetIamPolicyRequest',
-        response_type_name='Policy',
-        supports_download=False,
-    )
-
     def List(self, request, global_params=None):
       r"""Lists `ExternalAccessRule` resources in the specified network policy.
 
@@ -496,60 +388,6 @@ class VmwareengineV1(base_api.BaseApiClient):
         request_field='externalAccessRule',
         request_type_name='VmwareengineProjectsLocationsNetworkPoliciesExternalAccessRulesPatchRequest',
         response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
-
-      Args:
-        request: (VmwareengineProjectsLocationsNetworkPoliciesExternalAccessRulesSetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('SetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/networkPolicies/{networkPoliciesId}/externalAccessRules/{externalAccessRulesId}:setIamPolicy',
-        http_method='POST',
-        method_id='vmwareengine.projects.locations.networkPolicies.externalAccessRules.setIamPolicy',
-        ordered_params=['resource'],
-        path_params=['resource'],
-        query_params=[],
-        relative_path='v1/{+resource}:setIamPolicy',
-        request_field='setIamPolicyRequest',
-        request_type_name='VmwareengineProjectsLocationsNetworkPoliciesExternalAccessRulesSetIamPolicyRequest',
-        response_type_name='Policy',
-        supports_download=False,
-    )
-
-    def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
-
-      Args:
-        request: (VmwareengineProjectsLocationsNetworkPoliciesExternalAccessRulesTestIamPermissionsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (TestIamPermissionsResponse) The response message.
-      """
-      config = self.GetMethodConfig('TestIamPermissions')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/networkPolicies/{networkPoliciesId}/externalAccessRules/{externalAccessRulesId}:testIamPermissions',
-        http_method='POST',
-        method_id='vmwareengine.projects.locations.networkPolicies.externalAccessRules.testIamPermissions',
-        ordered_params=['resource'],
-        path_params=['resource'],
-        query_params=[],
-        relative_path='v1/{+resource}:testIamPermissions',
-        request_field='testIamPermissionsRequest',
-        request_type_name='VmwareengineProjectsLocationsNetworkPoliciesExternalAccessRulesTestIamPermissionsRequest',
-        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
@@ -671,33 +509,6 @@ class VmwareengineV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
-
-      Args:
-        request: (VmwareengineProjectsLocationsNetworkPoliciesGetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('GetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/networkPolicies/{networkPoliciesId}:getIamPolicy',
-        http_method='GET',
-        method_id='vmwareengine.projects.locations.networkPolicies.getIamPolicy',
-        ordered_params=['resource'],
-        path_params=['resource'],
-        query_params=['options_requestedPolicyVersion'],
-        relative_path='v1/{+resource}:getIamPolicy',
-        request_field='',
-        request_type_name='VmwareengineProjectsLocationsNetworkPoliciesGetIamPolicyRequest',
-        response_type_name='Policy',
-        supports_download=False,
-    )
-
     def List(self, request, global_params=None):
       r"""Lists `NetworkPolicy` resources in a specified project and location.
 
@@ -749,60 +560,6 @@ class VmwareengineV1(base_api.BaseApiClient):
         request_field='networkPolicy',
         request_type_name='VmwareengineProjectsLocationsNetworkPoliciesPatchRequest',
         response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
-
-      Args:
-        request: (VmwareengineProjectsLocationsNetworkPoliciesSetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('SetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/networkPolicies/{networkPoliciesId}:setIamPolicy',
-        http_method='POST',
-        method_id='vmwareengine.projects.locations.networkPolicies.setIamPolicy',
-        ordered_params=['resource'],
-        path_params=['resource'],
-        query_params=[],
-        relative_path='v1/{+resource}:setIamPolicy',
-        request_field='setIamPolicyRequest',
-        request_type_name='VmwareengineProjectsLocationsNetworkPoliciesSetIamPolicyRequest',
-        response_type_name='Policy',
-        supports_download=False,
-    )
-
-    def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
-
-      Args:
-        request: (VmwareengineProjectsLocationsNetworkPoliciesTestIamPermissionsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (TestIamPermissionsResponse) The response message.
-      """
-      config = self.GetMethodConfig('TestIamPermissions')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/networkPolicies/{networkPoliciesId}:testIamPermissions',
-        http_method='POST',
-        method_id='vmwareengine.projects.locations.networkPolicies.testIamPermissions',
-        ordered_params=['resource'],
-        path_params=['resource'],
-        query_params=[],
-        relative_path='v1/{+resource}:testIamPermissions',
-        request_field='testIamPermissionsRequest',
-        request_type_name='VmwareengineProjectsLocationsNetworkPoliciesTestIamPermissionsRequest',
-        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
@@ -2037,33 +1794,6 @@ class VmwareengineV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
-
-      Args:
-        request: (VmwareengineProjectsLocationsVmwareEngineNetworksGetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('GetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/vmwareEngineNetworks/{vmwareEngineNetworksId}:getIamPolicy',
-        http_method='GET',
-        method_id='vmwareengine.projects.locations.vmwareEngineNetworks.getIamPolicy',
-        ordered_params=['resource'],
-        path_params=['resource'],
-        query_params=['options_requestedPolicyVersion'],
-        relative_path='v1/{+resource}:getIamPolicy',
-        request_field='',
-        request_type_name='VmwareengineProjectsLocationsVmwareEngineNetworksGetIamPolicyRequest',
-        response_type_name='Policy',
-        supports_download=False,
-    )
-
     def List(self, request, global_params=None):
       r"""Lists `VmwareEngineNetwork` resources in a given project and location.
 
@@ -2115,60 +1845,6 @@ class VmwareengineV1(base_api.BaseApiClient):
         request_field='vmwareEngineNetwork',
         request_type_name='VmwareengineProjectsLocationsVmwareEngineNetworksPatchRequest',
         response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
-
-      Args:
-        request: (VmwareengineProjectsLocationsVmwareEngineNetworksSetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('SetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/vmwareEngineNetworks/{vmwareEngineNetworksId}:setIamPolicy',
-        http_method='POST',
-        method_id='vmwareengine.projects.locations.vmwareEngineNetworks.setIamPolicy',
-        ordered_params=['resource'],
-        path_params=['resource'],
-        query_params=[],
-        relative_path='v1/{+resource}:setIamPolicy',
-        request_field='setIamPolicyRequest',
-        request_type_name='VmwareengineProjectsLocationsVmwareEngineNetworksSetIamPolicyRequest',
-        response_type_name='Policy',
-        supports_download=False,
-    )
-
-    def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
-
-      Args:
-        request: (VmwareengineProjectsLocationsVmwareEngineNetworksTestIamPermissionsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (TestIamPermissionsResponse) The response message.
-      """
-      config = self.GetMethodConfig('TestIamPermissions')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/vmwareEngineNetworks/{vmwareEngineNetworksId}:testIamPermissions',
-        http_method='POST',
-        method_id='vmwareengine.projects.locations.vmwareEngineNetworks.testIamPermissions',
-        ordered_params=['resource'],
-        path_params=['resource'],
-        query_params=[],
-        relative_path='v1/{+resource}:testIamPermissions',
-        request_field='testIamPermissionsRequest',
-        request_type_name='VmwareengineProjectsLocationsVmwareEngineNetworksTestIamPermissionsRequest',
-        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 

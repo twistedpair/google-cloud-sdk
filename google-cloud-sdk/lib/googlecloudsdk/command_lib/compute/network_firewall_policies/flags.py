@@ -159,11 +159,12 @@ def NetworkSrcFirewallPolicyRuleArgument(required=False,
       regional_collection='compute.regionNetworkFirewallPolicies')
 
 
-def AddAction(parser, required=True):
+def AddAction(parser, required=True, support_ips=False):
   """Adds the action argument to the argparse."""
   parser.add_argument(
       '--action',
-      choices=['allow', 'deny', 'goto_next'],
+      choices=['allow', 'deny', 'goto_next'] +
+      (['apply_profile_group'] if support_ips else []),
       type=lambda x: x.lower(),
       required=required,
       help='Action to take if the request matches the match condition.')
@@ -425,4 +426,16 @@ def AddDestThreatIntelligence(parser):
       help=(
           'Destination Threat Intelligence lists to match for this rule. '
           'Can only be specified if DIRECTION is `egress`.'
+      ))
+
+
+def AddSecurityProfileGroup(parser):
+  """Adds security profile group to this rule."""
+  parser.add_argument(
+      '--security-profile-group',
+      metavar='SECURITY_PROFILE_GROUP',
+      required=False,
+      hidden=True,
+      help=(
+          'A security profile group to be used with apply_profile_group action.'
       ))

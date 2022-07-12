@@ -169,3 +169,43 @@ class IndexesClient(object):
     request = self.messages.AiplatformProjectsLocationsIndexesDeleteRequest(
         name=index_ref.RelativeName())
     return self._service.Delete(request)
+
+  def RemoveDatapointsBeta(self, index_ref, args):
+    """Remove data points from an v1beta1 index."""
+    if args.datapoint_ids and args.datapoints_from_file:
+      raise errors.ArgumentError(
+          'datapoint_ids and datapoints_from_file can not be set at the same time.'
+      )
+
+    if args.datapoint_ids:
+      req = self.messages.AiplatformProjectsLocationsIndexesRemoveDatapointsRequest(
+          index=index_ref.RelativeName(),
+          googleCloudAiplatformV1beta1RemoveDatapointsRequest=self.messages
+          .GoogleCloudAiplatformV1beta1RemoveDatapointsRequest(
+              datapointIds=args.datapoint_ids))
+    if args.datapoints_from_file:
+      data = yaml.load_path(args.datapoints_from_file)
+      req = self.messages.AiplatformProjectsLocationsIndexesRemoveDatapointsRequest(
+          index=index_ref.RelativeName(),
+          googleCloudAiplatformV1beta1RemoveDatapointsRequest=self.messages
+          .GoogleCloudAiplatformV1beta1RemoveDatapointsRequest(
+              datapointIds=data))
+    return self._service.RemoveDatapoints(req)
+
+  def UpsertDatapointsBeta(self, index_ref, args):
+    """Upsert data points from an v1beta1 index."""
+    datapoints = []
+    if args.datapoints_from_file:
+      data = yaml.load_path(args.datapoints_from_file)
+      for datapoint_json in data:
+        datapoint = messages_util.DictToMessageWithErrorCheck(
+            datapoint_json,
+            self.messages.GoogleCloudAiplatformV1beta1IndexDatapoint)
+        datapoints.append(datapoint)
+
+    req = self.messages.AiplatformProjectsLocationsIndexesUpsertDatapointsRequest(
+        index=index_ref.RelativeName(),
+        googleCloudAiplatformV1beta1UpsertDatapointsRequest=self.messages
+        .GoogleCloudAiplatformV1beta1UpsertDatapointsRequest(
+            datapoints=datapoints))
+    return self._service.UpsertDatapoints(req)

@@ -112,6 +112,10 @@ class OrgPolicyApi(object):
     pass
 
   @abc.abstractmethod
+  def DeleteCustomConstraint(self, name):
+    pass
+
+  @abc.abstractmethod
   def CreateEmptyPolicySpec(self):
     pass
 
@@ -254,6 +258,11 @@ class OrgPolicyApiGA(OrgPolicyApi):
     request = self.messages.OrgpolicyOrganizationsCustomConstraintsGetRequest(
         name=name)
     return self.client.organizations_customConstraints.Get(request)
+
+  def DeleteCustomConstraint(self, name):
+    request = self.messages.OrgpolicyOrganizationsCustomConstraintsDeleteRequest(
+        name=name)
+    return self.client.organizations_customConstraints.Delete(request)
 
   def CreateEmptyPolicySpec(self):
     return self.messages.GoogleCloudOrgpolicyV2PolicySpec()

@@ -87,7 +87,7 @@ def RaiseProxyError(source_exc):
 
 def PromptForAuthCode(message, authorize_url):
   log.err.Print(message.format(url=authorize_url))
-  return input('Enter verification code: ').strip()
+  return input('Enter authorization code: ').strip()
 
 
 @contextlib.contextmanager
@@ -324,7 +324,7 @@ class FullWebFlow(InstalledAppFlow):
     # OAuth 2.0 should only occur over https.
     authorization_response = self.app.last_request_uri.replace(
         'http:', 'https:')
-    # TODO (b/204953716): Remove verify=None
+    # TODO(b/204953716): Remove verify=None
     self.fetch_token(
         authorization_response=authorization_response, include_client_id=True,
         verify=None)
@@ -378,7 +378,7 @@ class OobFlow(InstalledAppFlow):
     authorization_prompt_message = (
         'Go to the following link in your browser:\n\n    {url}\n')
     code = PromptForAuthCode(authorization_prompt_message, auth_url)
-    # TODO (b/204953716): Remove verify=None
+    # TODO(b/204953716): Remove verify=None
     self.fetch_token(code=code, include_client_id=True, verify=None)
 
     return self.credentials
@@ -549,7 +549,7 @@ class NoBrowserFlow(InstalledAppFlow):
     # using "localhost" as the redirect_uri in token exchange because it is
     # what was used during authorization.
     self.redirect_uri = 'http://{}:{}/'.format(_LOCALHOST, redirect_port)
-    # TODO (b/204953716): Remove verify=None
+    # TODO(b/204953716): Remove verify=None
     self.fetch_token(
         authorization_response=auth_response,
         include_client_id=True,
