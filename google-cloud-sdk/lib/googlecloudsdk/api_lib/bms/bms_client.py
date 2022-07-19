@@ -82,7 +82,7 @@ class BmsClient(object):
     self.luns_service = self._client.projects_locations_volumes_luns
     self.nfs_shares_service = self._client.projects_locations_nfsShares
     self.ssh_keys_service = self._client.projects_locations_sshKeys
-    self.operation_service = self._v1_client.operations
+    self.operation_service = self._client.projects_locations_operations
 
   @property
   def client(self):

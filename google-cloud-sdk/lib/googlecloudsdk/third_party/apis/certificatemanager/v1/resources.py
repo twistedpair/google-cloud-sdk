@@ -41,6 +41,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_CERTIFICATEISSUANCECONFIGS = (
+      'projects.locations.certificateIssuanceConfigs',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'certificateIssuanceConfigs/{certificateIssuanceConfigsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_CERTIFICATEMAPS = (
       'projects.locations.certificateMaps',
       '{+name}',
@@ -93,6 +104,17 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/operations/'
               '{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_TRUSTCONFIGS = (
+      'projects.locations.trustConfigs',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/trustConfigs/'
+              '{trustConfigsId}',
       },
       ['name'],
       True

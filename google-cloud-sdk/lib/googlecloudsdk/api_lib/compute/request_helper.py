@@ -236,6 +236,7 @@ def MakeRequests(requests,
                  http,
                  batch_url,
                  errors,
+                 project_override=None,
                  progress_tracker=None,
                  no_followup=False,
                  always_return_operation=False,
@@ -269,6 +270,8 @@ def MakeRequests(requests,
     batch_url: The handler for making batch requests.
     errors: A list for capturing errors. If any response contains an error, it
       is added to this list.
+    project_override: The override project for the returned operation to poll
+      from.
     progress_tracker: progress tracker to be ticked while waiting for operations
       to finish.
     no_followup: If True, do not followup operation with a GET request.
@@ -321,7 +324,11 @@ def MakeRequests(requests,
       resource_service = service
       project = None
       if hasattr(request_body, 'project'):
-        project = request_body.project
+        if project_override:
+          project = project_override
+        else:
+          project = request_body.project
+
         if response.zone:
           operation_service = service.client.zoneOperations
         elif response.region:

@@ -37,7 +37,7 @@ def AddGcsSourceStagingDirFlag(parser, hidden=False):
       help='A directory in Google Cloud Storage to copy the source used for '
       'staging the build. If the specified bucket does not exist, Cloud '
       'Deploy will create one. If you don\'t set this field, '
-      '```gs://[PROJECT_ID]_clouddeploy/source``` is used.')
+      '```gs://[DELIVERY_PIPELINE_ID]_clouddeploy/source``` is used.')
 
 
 def AddIgnoreFileFlag(parser, hidden=False):
@@ -210,9 +210,15 @@ def AddSkaffoldFileFlag(parser):
 
 """)
 
+  parser.add_argument('--skaffold-file', help=help_text)
+
+
+def AddKubernetesFileFlag(parser):
   parser.add_argument(
-      '--skaffold-file',
-      help=help_text)
+      '--from-k8s-manifest',
+      help='Path to kubernetes file. This will result in a Skaffold file being '
+      'generated',
+      hidden=True)
 
 
 def AddDescriptionFlag(parser):
@@ -256,3 +262,22 @@ def AddSkipPipelineLookup(parser):
       action='store_true',
       default=False,
       help=help_text)
+
+
+def AddInitialRolloutGroup(parser, hidden=False):
+  """Adds initial-rollout flag group."""
+  group = parser.add_mutually_exclusive_group()
+  group.add_argument(
+      '--enable-initial-rollout',
+      action='store_const',
+      const=True,
+      hidden=hidden,
+      help='Creates a rollout in the first target defined in the delivery pipeline. This is the default behavior.'
+  )
+  group.add_argument(
+      '--disable-initial-rollout',
+      hidden=hidden,
+      action='store_const',
+      const=True,
+      help='Skips creating a rollout in the first target defined in the delivery pipeline.'
+  )

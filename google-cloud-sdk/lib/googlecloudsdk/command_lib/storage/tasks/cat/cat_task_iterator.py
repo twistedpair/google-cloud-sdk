@@ -23,7 +23,27 @@ import os
 from googlecloudsdk.command_lib.storage.tasks.cp import streaming_download_task
 
 
-def get_cat_task_iterator(source_iterator, show_url):
+def _get_start_byte(start_byte, source_resource_size):
+  """Returns the byte index to start streaming from.
+
+  Gets an absolute start byte for object download API calls.
+
+  Args:
+    start_byte (int): The start index entered by the user. Negative values are
+      interpreted as offsets from the end of the object.
+    source_resource_size (int|None): The size of the source resource.
+
+  Returns:
+    int: The byte index to start the object download from.
+  """
+  if start_byte < 0:
+    if abs(start_byte) >= source_resource_size:
+      return 0
+    return source_resource_size - abs(start_byte)
+  return start_byte
+
+
+def get_cat_task_iterator(source_iterator, show_url, start_byte, end_byte):
   """An iterator that yields StreamingDownloadTasks for cat sources.
 
   Given a list of strings that are object URLs ("gs://foo/object1"), yield a
@@ -33,13 +53,20 @@ def get_cat_task_iterator(source_iterator, show_url):
     source_iterator (NameExpansionIterator): Yields sources resources that
       should be packaged in StreamingDownloadTasks.
     show_url (bool): Says whether or not to print the header before each
-      object's content
+      object's content.
+    start_byte (int): The byte index to start streaming from.
+    end_byte (int|None): The byte index to stop streaming from.
 
   Yields:
     StreamingDownloadTask
 
   """
+
   stdout = os.fdopen(1, 'wb')
   for item in source_iterator:
     yield streaming_download_task.StreamingDownloadTask(
-        item.resource, stdout, show_url=show_url)
+        item.resource,
+        stdout,
+        show_url=show_url,
+        start_byte=_get_start_byte(start_byte, item.resource.size),
+        end_byte=end_byte)

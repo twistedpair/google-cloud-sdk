@@ -87,50 +87,40 @@ _INTEGRATION_TYPES = frozenset([
         REQUIRED_FIELD:
             'domains',
         'description':
-            'Configure a custom domain for Cloud Run services with Google Cloud '
+            'Configure custom domains for Cloud Run services with Google Cloud '
             'Load Balancer.',
         'example_command':  # TODO(b/237330249): revisit this message.
             '$ gcloud run integrations update domain-routing '
-            '--add-service=[SERVICE] --parameters=add-domain=example.com',
+            '--parameters=set-mapping=example.com/*:[SERVICE]',
         'parameters':
             frozendict({
-                'domain':
+                'set-mapping':
                     frozendict({
                         'description':
-                            'The domain to target add or update services of.',
+                            'Set a route mapping from a path to a service. ' +
+                            'Format: set-mapping=[DOMAIN]/[PATH]:[SERVICE]',
                         'type':
-                            'domain',
+                            'domain-path-service',
                     }),
-                'add-domain':
+                'remove-mapping':
                     frozendict({
-                        'description': 'The domain to be created.',
-                        'type': 'domain',
+                        'description':
+                            'Remove a route mapping. ' +
+                            'Format: remove-mapping=[DOMAIN]/[PATH]',
+                        'type':
+                            'domain-path',
+                        'create_allowed': False,
                     }),
                 'remove-domain':
                     frozendict({
-                        'description': 'The domain to be removed.',
-                        'type': 'domain',
-                    }),
-                'paths':
-                    frozendict({
                         'description':
-                            'The paths at the domain for your Cloud Run service. '
-                            'Defaults to "/" if not specified. (e.g. "/foo/*" for '
-                            '"example.com/foo/*")',
-                        'type': 'path_matcher',
+                            'To remove a domain an all of its route mappings.',
+                        'type': 'domain',
+                        'create_allowed': False,
                     }),
             }),
         'required_apis':
             frozenset({'compute.googleapis.com'}),
-        'update_exclusive_groups':
-            frozenset({
-                frozendict({
-                    'params':
-                        frozenset({'domain', 'add-domain', 'remove-domain'}),
-                    'required':
-                        True
-                })
-            })
     }),
     frozendict({
         INTEGRATION_TYPE:

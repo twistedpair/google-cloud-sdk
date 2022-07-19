@@ -18,17 +18,11 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-# Binary exponentiation strings for gsutil formatting.
-_EXP_STRINGS = [
-    (0, 'B', 'bit'),
-    (10, 'KiB', 'Kibit', 'K'),
-    (20, 'MiB', 'Mibit', 'M'),
-    (30, 'GiB', 'Gibit', 'G'),
-    (40, 'TiB', 'Tibit', 'T'),
-    (50, 'PiB', 'Pibit', 'P'),
-    (60, 'EiB', 'Eibit', 'E'),
-]
+from googlecloudsdk.core.util import scaled_integer
 
+_BUCKET_FIELDS_WITH_PRESENT_VALUE = ('cors_config', 'lifecycle_config',
+                                     'logging_config', 'retention_policy',
+                                     'website_config')
 _BYTE_EXPONENTS_AND_UNIT_STRINGS = [
     (0, 'B'),
     (10, 'KiB'),
@@ -38,17 +32,15 @@ _BYTE_EXPONENTS_AND_UNIT_STRINGS = [
     (50, 'PiB'),
     (60, 'EiB'),
 ]
+# Using literal strings as default so that they get displayed
+# if the value is missing.
+NONE_STRING = 'None'
+EMPTY_LIST_STRING = '[]'
+PRESENT_STRING = 'Present'
 
 
-def gsutil_format_byte_values(byte_count):
-  """Generates a gsutil-style human-readable string for a number of bytes.
-
-  Args:
-    byte_count (int): A number of bytes to format.
-
-  Returns:
-    A string form of the number using size abbreviations (KiB, MiB, etc).
-  """
+def _gsutil_format_byte_values(byte_count):
+  """Generates a gsutil-style human-readable string for a number of bytes."""
   final_exponent, final_unit_string = _BYTE_EXPONENTS_AND_UNIT_STRINGS[0]
   for exponent, unit_string in _BYTE_EXPONENTS_AND_UNIT_STRINGS:
     if byte_count < 2**exponent:
@@ -58,3 +50,42 @@ def gsutil_format_byte_values(byte_count):
 
   rounded_number = round(byte_count / 2**final_exponent, 2)
   return '{:g} {}'.format(rounded_number, final_unit_string)
+
+
+def get_human_readable_byte_value(byte_count, use_gsutil_style=False):
+  """Generates a string for bytes with human-readable units.
+
+  Args:
+    byte_count (int): A number of bytes to format.
+    use_gsutil_style (bool): Outputs units in the style of the gsutil CLI (e.g.
+      gcloud -> "1.00kiB", gsutil -> "1 KiB").
+
+  Returns:
+    A string form of the number using size abbreviations (KiB, MiB, etc).
+  """
+  if use_gsutil_style:
+    return _gsutil_format_byte_values(byte_count)
+  return scaled_integer.FormatBinaryNumber(byte_count, decimal_places=2)
+
+
+def replace_bucket_values_with_present_string(displayable_bucket_data):
+  """Updates fields with complex data to a simple 'Present' string."""
+  for field in _BUCKET_FIELDS_WITH_PRESENT_VALUE:
+    value = getattr(displayable_bucket_data, field)
+    # Checking for string because these fields might have error strings.
+    if value and not isinstance(value, str):
+      setattr(displayable_bucket_data, field, PRESENT_STRING)
+
+
+def replace_object_values_with_encryption_string(displayable_object_data,
+                                                 encrypted_marker_string):
+  """Updates fields to reflect that they are encrypted."""
+  if displayable_object_data.encryption_algorithm is None:
+    return
+  # Handle special case of missing hash for encrypted objects.
+  # We check for _crc32c_hash value instead of crc32c_hash because we
+  # want to be able to avoid displaying the field if it is explicitly set
+  # to DO_NOT_DISPLAY.
+  for key in ('md5_hash', '_crc32c_hash'):
+    if getattr(displayable_object_data, key) is None:
+      setattr(displayable_object_data, key, encrypted_marker_string)

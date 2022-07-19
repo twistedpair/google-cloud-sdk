@@ -19,7 +19,6 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.command_lib.util.anthos import binary_operations
-from googlecloudsdk.core import log
 
 
 class PackOperation(binary_operations.BinaryBackedOperation):
@@ -36,5 +35,4 @@ class PackOperation(binary_operations.BinaryBackedOperation):
         '--source=' + source,
         '--output=' + output,
     ]
-    log.status.Print(args)
     return args

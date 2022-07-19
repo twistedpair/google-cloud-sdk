@@ -92,6 +92,7 @@ class Certificate(_messages.Message):
     createTime: Output only. The creation timestamp of a Certificate.
     description: One or more paragraphs of text description of a certificate.
     expireTime: Output only. The expiry timestamp of a Certificate.
+    fingerprint: Output only. The hash of the x.509 certificate.
     labels: Set of labels associated with a Certificate.
     managed: If set, contains configuration and state of a managed
       certificate.
@@ -147,14 +148,127 @@ class Certificate(_messages.Message):
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
   expireTime = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  managed = _messages.MessageField('ManagedCertificate', 5)
-  name = _messages.StringField(6)
-  pemCertificate = _messages.StringField(7)
-  sanDnsnames = _messages.StringField(8, repeated=True)
-  scope = _messages.EnumField('ScopeValueValuesEnum', 9)
-  selfManaged = _messages.MessageField('SelfManagedCertificate', 10)
-  updateTime = _messages.StringField(11)
+  fingerprint = _messages.MessageField('Fingerprint', 4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  managed = _messages.MessageField('ManagedCertificate', 6)
+  name = _messages.StringField(7)
+  pemCertificate = _messages.StringField(8)
+  sanDnsnames = _messages.StringField(9, repeated=True)
+  scope = _messages.EnumField('ScopeValueValuesEnum', 10)
+  selfManaged = _messages.MessageField('SelfManagedCertificate', 11)
+  updateTime = _messages.StringField(12)
+
+
+class CertificateAuthorityConfig(_messages.Message):
+  r"""The CA that issues the workload certificate. It includes CA address,
+  type, authentication to CA service, etc.
+
+  Fields:
+    certificateAuthorityServiceConfig: Defines a
+      CertificateAuthorityServiceConfig.
+    meshCaConfig: Defines a MeshCAConfig.
+  """
+
+  certificateAuthorityServiceConfig = _messages.MessageField('CertificateAuthorityServiceConfig', 1)
+  meshCaConfig = _messages.MessageField('MeshCAConfig', 2)
+
+
+class CertificateAuthorityServiceConfig(_messages.Message):
+  r"""Contains information required to contact CA service.
+
+  Fields:
+    caPool: Required. A CA pool resource used to issue a certificate. The CA
+      pool string has a relative resource path following the form
+      "projects/{project}/locations/{location}/caPools/{ca_pool}".
+  """
+
+  caPool = _messages.StringField(1)
+
+
+class CertificateIssuanceConfig(_messages.Message):
+  r"""CertificateIssuanceConfig specifies how to issue and manage a
+  certificate.
+
+  Enums:
+    KeyAlgorithmValueValuesEnum: Required. The key algorithm to use when
+      generating the private key.
+
+  Messages:
+    LabelsValue: Set of labels associated with a CertificateIssuanceConfig.
+
+  Fields:
+    certificateAuthorityConfig: Required. The CA that issues the workload
+      certificate. It includes the CA address, type, authentication to CA
+      service, etc.
+    createTime: Output only. The creation timestamp of a
+      CertificateIssuanceConfig.
+    description: One or more paragraphs of text description of a
+      CertificateIssuanceConfig.
+    keyAlgorithm: Required. The key algorithm to use when generating the
+      private key.
+    labels: Set of labels associated with a CertificateIssuanceConfig.
+    lifetime: Required. Workload certificate lifetime requested.
+    name: A user-defined name of the certificate issuance config.
+      CertificateIssuanceConfig names must be unique globally and match
+      pattern `projects/*/locations/*/certificateIssuanceConfigs/*`.
+    rotationWindowPercentage: Required. Specifies the percentage of elapsed
+      time of the certificate lifetime to wait before renewing the
+      certificate. Must be a number between 1-99, inclusive.
+    updateTime: Output only. The last update timestamp of a
+      CertificateIssuanceConfig.
+  """
+
+  class KeyAlgorithmValueValuesEnum(_messages.Enum):
+    r"""Required. The key algorithm to use when generating the private key.
+
+    Values:
+      KEY_ALGORITHM_UNSPECIFIED: Unspecified key algorithm.
+      RSA_2048: Specifies RSA with a 2048-bit modulus.
+      RSA_3072: Specifies RSA with a 3072-bit modulus.
+      RSA_4096: Specifies RSA with a 4096-bit modulus.
+      ECDSA_P256: Specifies ECDSA with curve P256.
+      ECDSA_P384: Specifies ECDSA with curve P384.
+    """
+    KEY_ALGORITHM_UNSPECIFIED = 0
+    RSA_2048 = 1
+    RSA_3072 = 2
+    RSA_4096 = 3
+    ECDSA_P256 = 4
+    ECDSA_P384 = 5
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Set of labels associated with a CertificateIssuanceConfig.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  certificateAuthorityConfig = _messages.MessageField('CertificateAuthorityConfig', 1)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  keyAlgorithm = _messages.EnumField('KeyAlgorithmValueValuesEnum', 4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  lifetime = _messages.StringField(6)
+  name = _messages.StringField(7)
+  rotationWindowPercentage = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  updateTime = _messages.StringField(9)
 
 
 class CertificateMap(_messages.Message):
@@ -299,6 +413,99 @@ class CertificateMapEntry(_messages.Message):
   name = _messages.StringField(7)
   state = _messages.EnumField('StateValueValuesEnum', 8)
   updateTime = _messages.StringField(9)
+
+
+class CertificatemanagerProjectsLocationsCertificateIssuanceConfigsCreateRequest(_messages.Message):
+  r"""A
+  CertificatemanagerProjectsLocationsCertificateIssuanceConfigsCreateRequest
+  object.
+
+  Fields:
+    certificateIssuanceConfig: A CertificateIssuanceConfig resource to be
+      passed as the request body.
+    certificateIssuanceConfigId: Required. A user-provided name of the
+      certificate config.
+    parent: Required. The parent resource of the certificate issuance config.
+      Must be in the format `projects/*/locations/*`.
+  """
+
+  certificateIssuanceConfig = _messages.MessageField('CertificateIssuanceConfig', 1)
+  certificateIssuanceConfigId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class CertificatemanagerProjectsLocationsCertificateIssuanceConfigsDeleteRequest(_messages.Message):
+  r"""A
+  CertificatemanagerProjectsLocationsCertificateIssuanceConfigsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. A name of the certificate issuance config to delete. Must
+      be in the format `projects/*/locations/*/certificateIssuanceConfigs/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class CertificatemanagerProjectsLocationsCertificateIssuanceConfigsGetRequest(_messages.Message):
+  r"""A
+  CertificatemanagerProjectsLocationsCertificateIssuanceConfigsGetRequest
+  object.
+
+  Fields:
+    name: Required. A name of the certificate issuance config to describe.
+      Must be in the format
+      `projects/*/locations/*/certificateIssuanceConfigs/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class CertificatemanagerProjectsLocationsCertificateIssuanceConfigsListRequest(_messages.Message):
+  r"""A
+  CertificatemanagerProjectsLocationsCertificateIssuanceConfigsListRequest
+  object.
+
+  Fields:
+    filter: Filter expression to restrict the Certificates Configs returned.
+    orderBy: A list of Certificate Config field names used to specify the
+      order of the returned results. The default sorting order is ascending.
+      To specify descending order for a field, add a suffix " desc".
+    pageSize: Maximum number of certificate configs to return per call.
+    pageToken: The value returned by the last
+      `ListCertificateIssuanceConfigsResponse`. Indicates that this is a
+      continuation of a prior `ListCertificateIssuanceConfigs` call, and that
+      the system should return the next page of data.
+    parent: Required. The project and location from which the certificate
+      should be listed, specified in the format `projects/*/locations/*`.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class CertificatemanagerProjectsLocationsCertificateIssuanceConfigsPatchRequest(_messages.Message):
+  r"""A
+  CertificatemanagerProjectsLocationsCertificateIssuanceConfigsPatchRequest
+  object.
+
+  Fields:
+    certificateIssuanceConfig: A CertificateIssuanceConfig resource to be
+      passed as the request body.
+    name: A user-defined name of the certificate issuance config.
+      CertificateIssuanceConfig names must be unique globally and match
+      pattern `projects/*/locations/*/certificateIssuanceConfigs/*`.
+    updateMask: Required. The update mask applies to the resource. For the
+      `FieldMask` definition, see https://developers.google.com/protocol-
+      buffers/docs/reference/google.protobuf#fieldmask.
+  """
+
+  certificateIssuanceConfig = _messages.MessageField('CertificateIssuanceConfig', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class CertificatemanagerProjectsLocationsCertificateMapsCertificateMapEntriesCreateRequest(_messages.Message):
@@ -720,6 +927,88 @@ class CertificatemanagerProjectsLocationsOperationsListRequest(_messages.Message
   pageToken = _messages.StringField(4)
 
 
+class CertificatemanagerProjectsLocationsTrustConfigsCreateRequest(_messages.Message):
+  r"""A CertificatemanagerProjectsLocationsTrustConfigsCreateRequest object.
+
+  Fields:
+    parent: Required. The parent resource of the TrustConfig. Must be in the
+      format `projects/*/locations/*`.
+    trustConfig: A TrustConfig resource to be passed as the request body.
+    trustConfigId: Required. A user-provided name of the TrustConfig.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  trustConfig = _messages.MessageField('TrustConfig', 2)
+  trustConfigId = _messages.StringField(3)
+
+
+class CertificatemanagerProjectsLocationsTrustConfigsDeleteRequest(_messages.Message):
+  r"""A CertificatemanagerProjectsLocationsTrustConfigsDeleteRequest object.
+
+  Fields:
+    etag: The current etag of the TrustConfig. If an etag is provided and does
+      not match the current etag of the resource, deletion will be blocked and
+      an ABORTED error will be returned.
+    name: Required. A name of the TrustConfig to delete. Must be in the format
+      `projects/*/locations/*/trustConfigs/*`.
+  """
+
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+
+
+class CertificatemanagerProjectsLocationsTrustConfigsGetRequest(_messages.Message):
+  r"""A CertificatemanagerProjectsLocationsTrustConfigsGetRequest object.
+
+  Fields:
+    name: Required. A name of the TrustConfig to describe. Must be in the
+      format `projects/*/locations/*/trustConfigs/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class CertificatemanagerProjectsLocationsTrustConfigsListRequest(_messages.Message):
+  r"""A CertificatemanagerProjectsLocationsTrustConfigsListRequest object.
+
+  Fields:
+    filter: Filter expression to restrict the TrustConfigs returned.
+    orderBy: A list of TrustConfig field names used to specify the order of
+      the returned results. The default sorting order is ascending. To specify
+      descending order for a field, add a suffix " desc".
+    pageSize: Maximum number of TrustConfigs to return per call.
+    pageToken: The value returned by the last `ListTrustConfigsResponse`.
+      Indicates that this is a continuation of a prior `ListTrustConfigs`
+      call, and that the system should return the next page of data.
+    parent: Required. The project and location from which the TrustConfigs
+      should be listed, specified in the format `projects/*/locations/*`.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class CertificatemanagerProjectsLocationsTrustConfigsPatchRequest(_messages.Message):
+  r"""A CertificatemanagerProjectsLocationsTrustConfigsPatchRequest object.
+
+  Fields:
+    name: A user-defined name of the trust config. TrustConfig names must be
+      unique globally and match pattern
+      `projects/*/locations/*/trustConfigs/*`.
+    trustConfig: A TrustConfig resource to be passed as the request body.
+    updateMask: Required. The update mask applies to the resource. For the
+      `FieldMask` definition, see https://developers.google.com/protocol-
+      buffers/docs/reference/google.protobuf#fieldmask.
+  """
+
+  name = _messages.StringField(1, required=True)
+  trustConfig = _messages.MessageField('TrustConfig', 2)
+  updateMask = _messages.StringField(3)
+
+
 class DnsAuthorization(_messages.Message):
   r"""A DnsAuthorization resource describes a way to perform domain
   authorization for certificate issuance.
@@ -803,6 +1092,20 @@ class Empty(_messages.Message):
 
 
 
+class Fingerprint(_messages.Message):
+  r"""A group of fingerprints for the x509 certificate. These values can be
+  used, where supported to search for certificate across Google Cloud APIs.
+  For example, see the Fingerprint field.
+
+  Fields:
+    sha256Hash: The SHA 256 hash, encoded as a hexadecimal string, with no
+      separators, of the DER x509 certificate. For example,
+      `f6c245267d2302a426156a5c692d23a854327c758d867ad6e5f62d7f2017b6a8`.
+  """
+
+  sha256Hash = _messages.StringField(1)
+
+
 class GclbTarget(_messages.Message):
   r"""Describes a Target Proxy which uses this Certificate Map.
 
@@ -821,6 +1124,18 @@ class GclbTarget(_messages.Message):
   targetSslProxy = _messages.StringField(3)
 
 
+class IntermediateCA(_messages.Message):
+  r"""Defines an intermediate CA.
+
+  Fields:
+    pemCertificate: PEM intermediate certificate used for building up paths
+      for validation. Each certificate provided in PEM format may occupy up to
+      5kB.
+  """
+
+  pemCertificate = _messages.StringField(1)
+
+
 class IpConfig(_messages.Message):
   r"""Defines IP configuration where this Certificate Map is serving.
 
@@ -831,6 +1146,24 @@ class IpConfig(_messages.Message):
 
   ipAddress = _messages.StringField(1)
   ports = _messages.IntegerField(2, repeated=True, variant=_messages.Variant.UINT32)
+
+
+class ListCertificateIssuanceConfigsResponse(_messages.Message):
+  r"""Response for the `ListCertificateIssuanceConfigs` method.
+
+  Fields:
+    certificateIssuanceConfigs: A list of certificate configs for the parent
+      resource.
+    nextPageToken: If there might be more results than those appearing in this
+      response, then `next_page_token` is included. To get the next set of
+      results, call this method again using the value of `next_page_token` as
+      `page_token`.
+    unreachable: Locations that could not be reached.
+  """
+
+  certificateIssuanceConfigs = _messages.MessageField('CertificateIssuanceConfig', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListCertificateMapEntriesResponse(_messages.Message):
@@ -926,6 +1259,23 @@ class ListOperationsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+
+
+class ListTrustConfigsResponse(_messages.Message):
+  r"""Response for the `ListTrustConfigs` method.
+
+  Fields:
+    nextPageToken: If there might be more results than those appearing in this
+      response, then `next_page_token` is included. To get the next set of
+      results, call this method again using the value of `next_page_token` as
+      `page_token`.
+    trustConfigs: A list of TrustConfigs for the parent resource.
+    unreachable: Locations that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  trustConfigs = _messages.MessageField('TrustConfig', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class Location(_messages.Message):
@@ -1026,6 +1376,12 @@ class ManagedCertificate(_messages.Message):
     domains: Immutable. The domains for which a managed SSL certificate will
       be generated. Wildcard domains are only supported with DNS challenge
       resolution.
+    issuanceConfig: The resource name for a CertificateIssuanceConfig used to
+      configure private PKI certificates in the format
+      `projects/*/locations/*/certificateIssuanceConfigs/*`. If this field is
+      not set, the certificates will instead be publicly signed as documented
+      at https://cloud.google.com/load-balancing/docs/ssl-certificates/google-
+      managed-certs#caa.
     provisioningIssue: Information about issues with provisioning a Managed
       Certificate.
     state: Output only. State of the managed certificate resource.
@@ -1054,8 +1410,13 @@ class ManagedCertificate(_messages.Message):
   authorizationAttemptInfo = _messages.MessageField('AuthorizationAttemptInfo', 1, repeated=True)
   dnsAuthorizations = _messages.StringField(2, repeated=True)
   domains = _messages.StringField(3, repeated=True)
-  provisioningIssue = _messages.MessageField('ProvisioningIssue', 4)
-  state = _messages.EnumField('StateValueValuesEnum', 5)
+  issuanceConfig = _messages.StringField(4)
+  provisioningIssue = _messages.MessageField('ProvisioningIssue', 5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+
+
+class MeshCAConfig(_messages.Message):
+  r"""Config for use of the default CA endpoint."""
 
 
 class Operation(_messages.Message):
@@ -1351,6 +1712,88 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class TrustAnchor(_messages.Message):
+  r"""Defines a trust anchor.
+
+  Fields:
+    pemCertificate: PEM root certificate of the PKI used for validation. Each
+      certificate provided in PEM format may occupy up to 5kB.
+  """
+
+  pemCertificate = _messages.StringField(1)
+
+
+class TrustConfig(_messages.Message):
+  r"""Defines a trust config.
+
+  Messages:
+    LabelsValue: Set of labels associated with a TrustConfig.
+
+  Fields:
+    createTime: Output only. The creation timestamp of a TrustConfig.
+    description: One or more paragraphs of text description of a TrustConfig.
+    etag: This checksum is computed by the server based on the value of other
+      fields, and may be sent on update and delete requests to ensure the
+      client has an up-to-date value before proceeding.
+    labels: Set of labels associated with a TrustConfig.
+    name: A user-defined name of the trust config. TrustConfig names must be
+      unique globally and match pattern
+      `projects/*/locations/*/trustConfigs/*`.
+    trustStores: Set of trust stores to perform validation against. This field
+      is supported when TrustConfig is configured with Load Balancers,
+      currently not supported for SPIFFE certificate validation. Only one
+      TrustStore specified is currently allowed.
+    updateTime: Output only. The last update timestamp of a TrustConfig.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Set of labels associated with a TrustConfig.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  etag = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  trustStores = _messages.MessageField('TrustStore', 6, repeated=True)
+  updateTime = _messages.StringField(7)
+
+
+class TrustStore(_messages.Message):
+  r"""Defines a trust store.
+
+  Fields:
+    intermediateCas: Set of intermediate CA certificates used for the path
+      building phase of chain validation. The field is currently not supported
+      if TrustConfig is used for the workload certificate feature.
+    trustAnchors: List of Trust Anchors to be used while performing validation
+      against a given TrustStore.
+  """
+
+  intermediateCas = _messages.MessageField('IntermediateCA', 1, repeated=True)
+  trustAnchors = _messages.MessageField('TrustAnchor', 2, repeated=True)
 
 
 encoding.AddCustomJsonFieldMapping(

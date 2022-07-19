@@ -1493,20 +1493,11 @@ class Fleet(_messages.Message):
       present, it must be between 4 to 30 characters. Allowed characters are:
       lowercase and uppercase letters, numbers, hyphen, single-quote, double-
       quote, space, and exclamation point. Example: `Production Fleet`
-    fleetName: The name for the fleet. The name must meet the following
-      constraints: + The name of a fleet should be unique within the
-      organization; + It must consist of lower case alphanumeric characters or
-      `-`; + The length of the name must be less than or equal to 63; +
-      Unicode names must be expressed in Punycode format (rfc3492). Examples:
-      + prod-fleet + xn--wlq33vhyw9jb \uff08Punycode form for
-      "\u751f\u4ea7\u73af\u5883")
-    managedNamespaces: Optional. If true, namespaces must be explicitly
-      declared in a `Namespace` object in order to use Fleet Features.
-      Deprecated, not included in final fleet namespaces design
     name: Output only. The full, unique resource name of this fleet in the
       format of `projects/{project}/locations/{location}/fleets/{fleet}`. Each
       GCP project can have at most one fleet resource, named "default".
     samenessMode: Optional. The sameness mode this fleet is using.
+    state: Output only. State of the namespace resource.
     uid: Output only. Google-generated UUID for this resource. This is unique
       across all Fleet resources. If a Fleet resource is deleted and another
       resource with the same name is created, it gets a different uid.
@@ -1530,12 +1521,40 @@ class Fleet(_messages.Message):
   createTime = _messages.StringField(1)
   deleteTime = _messages.StringField(2)
   displayName = _messages.StringField(3)
-  fleetName = _messages.StringField(4)
-  managedNamespaces = _messages.BooleanField(5)
-  name = _messages.StringField(6)
-  samenessMode = _messages.EnumField('SamenessModeValueValuesEnum', 7)
-  uid = _messages.StringField(8)
-  updateTime = _messages.StringField(9)
+  name = _messages.StringField(4)
+  samenessMode = _messages.EnumField('SamenessModeValueValuesEnum', 5)
+  state = _messages.MessageField('FleetLifecycleState', 6)
+  uid = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
+
+
+class FleetLifecycleState(_messages.Message):
+  r"""FleetLifecycleState describes the state of a Fleet resource.
+
+  Enums:
+    CodeValueValuesEnum: Output only. The current state of the Fleet resource.
+
+  Fields:
+    code: Output only. The current state of the Fleet resource.
+  """
+
+  class CodeValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of the Fleet resource.
+
+    Values:
+      CODE_UNSPECIFIED: The code is not set.
+      CREATING: The fleet is being created.
+      READY: The fleet active.
+      DELETING: The fleet is being deleted.
+      UPDATING: The fleet is being updated.
+    """
+    CODE_UNSPECIFIED = 0
+    CREATING = 1
+    READY = 2
+    DELETING = 3
+    UPDATING = 4
+
+  code = _messages.EnumField('CodeValueValuesEnum', 1)
 
 
 class GenerateConnectManifestResponse(_messages.Message):
@@ -2694,14 +2713,36 @@ class IdentityServiceAuthMethod(_messages.Message):
   authentication method (e.g., OIDC and LDAP) can be set per AuthMethod.
 
   Fields:
+    azureadConfig: AzureAD specific Configuration.
     name: Identifier for auth config.
     oidcConfig: OIDC specific configuration.
     proxy: Proxy server address to use for auth method.
   """
 
-  name = _messages.StringField(1)
-  oidcConfig = _messages.MessageField('IdentityServiceOidcConfig', 2)
-  proxy = _messages.StringField(3)
+  azureadConfig = _messages.MessageField('IdentityServiceAzureADConfig', 1)
+  name = _messages.StringField(2)
+  oidcConfig = _messages.MessageField('IdentityServiceOidcConfig', 3)
+  proxy = _messages.StringField(4)
+
+
+class IdentityServiceAzureADConfig(_messages.Message):
+  r"""Configuration for the AzureAD Auth flow.
+
+  Fields:
+    clientId: ID for the registered client application that makes
+      authentication requests to the Azure AD identity provider.
+    clientSecret: Raw client secret will be passed to the GKE Hub CLH.
+    encryptedClientSecret: Encrypted AzureAD client secrets
+    kubectlRedirectUri: The redirect URL that kubectl uses for authorization.
+    tenant: Kind of Azure AD account to be authenticated. Supported values are
+      or for accounts belonging to a specific tenant.
+  """
+
+  clientId = _messages.StringField(1)
+  clientSecret = _messages.StringField(2)
+  encryptedClientSecret = _messages.BytesField(3)
+  kubectlRedirectUri = _messages.StringField(4)
+  tenant = _messages.StringField(5)
 
 
 class IdentityServiceMembershipSpec(_messages.Message):

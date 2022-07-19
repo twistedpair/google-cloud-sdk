@@ -33,8 +33,10 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import re
-
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.calliope.concepts import concepts
+from googlecloudsdk.command_lib.util.concepts import concept_parsers
 
 
 def AddAvailabilityType(parser):
@@ -379,3 +381,64 @@ def AddAutomatedBackupFlags(parser, alloydb_messages, update=False):
       '--disable-automated-backup',
       action='store_true',
       help='Disables automated backups on the cluster.')
+
+
+def AddEncryptionConfigFlags(parser, verb):
+  """Add a resource argument for a KMS Key used to create a CMEK encrypted resource.
+
+  Args:
+    parser: argparser, the parser for the command.
+    verb: str, the verb used to describe the resource, such as 'to create'.
+  """
+  concept_parsers.ConceptParser.ForResource(
+      '--kms-key',
+      GetKmsKeyResourceSpec(),
+      'Cloud KMS key to be used {}.'.format(verb),
+      required=False).AddToParser(parser)
+
+
+def KmsKeyAttributeConfig():
+  # For anchor attribute, help text is generated automatically.
+  return concepts.ResourceParameterAttributeConfig(name='kms-key')
+
+
+def KmsKeyringAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='kms-keyring', help_text='KMS keyring id of the {resource}.')
+
+
+def KmsLocationAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='kms-location', help_text='Cloud location for the {resource}.')
+
+
+def KmsProjectAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='kms-project', help_text='Cloud project id for the {resource}.')
+
+
+def GetKmsKeyResourceSpec():
+  return concepts.ResourceSpec(
+      'cloudkms.projects.locations.keyRings.cryptoKeys',
+      resource_name='key',
+      cryptoKeysId=KmsKeyAttributeConfig(),
+      keyRingsId=KmsKeyringAttributeConfig(),
+      locationsId=KmsLocationAttributeConfig(),
+      projectsId=KmsProjectAttributeConfig())
+
+
+def GetAndValidateKmsKeyName(args):
+  """Parse the KMS key resource arg, make sure the key format is correct."""
+  kms_ref = args.CONCEPTS.kms_key.Parse()
+  if kms_ref:
+    return kms_ref.RelativeName()
+  else:
+    # If parsing failed but args were specified, raise error
+    for keyword in ['kms-key', 'kms-keyring', 'kms-location', 'kms-project']:
+      if getattr(args, keyword.replace('-', '_'), None):
+        raise exceptions.InvalidArgumentException(
+            '--kms-project --kms-location --kms-keyring --kms-key',
+            'Specify fully qualified KMS key ID with --kms-key, or use ' +
+            'combination of --kms-project, --kms-location, --kms-keyring and ' +
+            '--kms-key to specify the key ID in pieces.')
+    return None  # User didn't specify KMS key

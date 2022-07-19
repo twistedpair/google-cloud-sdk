@@ -32,3 +32,16 @@ network_policy:
     attribute_name: network-policy
     help: VMware Engine network policy
   disable_auto_completers: false
+
+external_access_rule:
+  name: VMware Engine External Access Rule
+  collection: vmwareengine.projects.locations.networkPolicies.externalAccessRules
+  attributes:
+  - *project
+  - *location
+  - *network_policy
+  - &external_access_rule
+    parameter_name: externalAccessRulesId
+    attribute_name: external-access-rule
+    help: VMware Engine external access rule
+  disable_auto_completers: false

@@ -1107,7 +1107,8 @@ class CreateNodePoolOptions(object):
                maintenance_interval=None,
                network_performance_config=None,
                enable_confidential_nodes=None,
-               disable_pod_cidr_overprovision=None):
+               disable_pod_cidr_overprovision=None,
+               enable_fast_socket=None):
     self.machine_type = machine_type
     self.disk_size_gb = disk_size_gb
     self.scopes = scopes
@@ -1170,6 +1171,7 @@ class CreateNodePoolOptions(object):
     self.network_performance_config = network_performance_config
     self.enable_confidential_nodes = enable_confidential_nodes
     self.disable_pod_cidr_overprovision = disable_pod_cidr_overprovision
+    self.enable_fast_socket = enable_fast_socket
 
 
 class UpdateNodePoolOptions(object):
@@ -1203,7 +1205,8 @@ class UpdateNodePoolOptions(object):
                node_pool_soak_duration=None,
                standard_rollout_policy=None,
                network_performance_config=None,
-               enable_confidential_nodes=None):
+               enable_confidential_nodes=None,
+               enable_fast_socket=None):
     self.enable_autorepair = enable_autorepair
     self.enable_autoupgrade = enable_autoupgrade
     self.enable_autoscaling = enable_autoscaling
@@ -1232,6 +1235,7 @@ class UpdateNodePoolOptions(object):
     self.standard_rollout_policy = standard_rollout_policy
     self.network_performance_config = network_performance_config
     self.enable_confidential_nodes = enable_confidential_nodes
+    self.enable_fast_socket = enable_fast_socket
 
   def IsAutoscalingUpdate(self):
     return (self.enable_autoscaling is not None or self.max_nodes is not None or
@@ -1260,7 +1264,8 @@ class UpdateNodePoolOptions(object):
             self.node_pool_soak_duration is not None or
             self.standard_rollout_policy is not None or
             self.network_performance_config is not None or
-            self.enable_confidential_nodes is not None)
+            self.enable_confidential_nodes is not None or
+            self.enable_fast_socket is not None)
 
 
 class APIAdapter(object):
@@ -3278,6 +3283,10 @@ class APIAdapter(object):
           enabled=options.enable_confidential_nodes)
       node_config.confidentialNodes = confidential_nodes
 
+    if options.enable_fast_socket is not None:
+      fast_socket = self.messages.FastSocket(enabled=options.enable_fast_socket)
+      node_config.fastSocket = fast_socket
+
     if options.maintenance_interval:
       node_config.stableFleetConfig = _GetStableFleetConfig(
           options, self.messages)
@@ -3588,6 +3597,9 @@ class APIAdapter(object):
       confidential_nodes = self.messages.ConfidentialNodes(
           enabled=options.enable_confidential_nodes)
       update_request.confidentialNodes = confidential_nodes
+    elif options.enable_fast_socket is not None:
+      fast_socket = self.messages.FastSocket(enabled=options.enable_fast_socket)
+      update_request.fastSocket = fast_socket
     return update_request
 
   def UpdateNodePool(self, node_pool_ref, options):

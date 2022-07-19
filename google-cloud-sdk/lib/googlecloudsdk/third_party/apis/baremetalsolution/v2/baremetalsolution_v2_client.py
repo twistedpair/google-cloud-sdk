@@ -43,6 +43,7 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
     self.projects_locations_instances = self.ProjectsLocationsInstancesService(self)
     self.projects_locations_networks = self.ProjectsLocationsNetworksService(self)
     self.projects_locations_nfsShares = self.ProjectsLocationsNfsSharesService(self)
+    self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_provisioningConfigs = self.ProjectsLocationsProvisioningConfigsService(self)
     self.projects_locations_provisioningQuotas = self.ProjectsLocationsProvisioningQuotasService(self)
     self.projects_locations_snapshotSchedulePolicies = self.ProjectsLocationsSnapshotSchedulePoliciesService(self)
@@ -602,6 +603,43 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
         relative_path='v2/{+name}',
         request_field='nfsShare',
         request_type_name='BaremetalsolutionProjectsLocationsNfsSharesPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsOperationsService(base_api.BaseApiService):
+    """Service class for the projects_locations_operations resource."""
+
+    _NAME = 'projects_locations_operations'
+
+    def __init__(self, client):
+      super(BaremetalsolutionV2.ProjectsLocationsOperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Get details about an operation. This method used only to work around CCFE lack of passthrough LRO support (b/221498758).
+
+      Args:
+        request: (BaremetalsolutionProjectsLocationsOperationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='baremetalsolution.projects.locations.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='BaremetalsolutionProjectsLocationsOperationsGetRequest',
         response_type_name='Operation',
         supports_download=False,
     )

@@ -67,7 +67,30 @@ def SecurityPolicyFromFile(input_file, messages, file_format):
             layer7DdosDefenseConfig=messages
             .SecurityPolicyAdaptiveProtectionConfigLayer7DdosDefenseConfig(
                 enable=parsed_security_policy['adaptiveProtectionConfig']
-                ['layer7DdosDefenseConfig']['enable'])))
+                ['layer7DdosDefenseConfig']['enable']),))
+    if 'autoDeployConfig' in parsed_security_policy['adaptiveProtectionConfig']:
+      security_policy.adaptiveProtectionConfig.autoDeployConfig = (
+          messages.SecurityPolicyAdaptiveProtectionConfigAutoDeployConfig())
+      if 'loadThreshold' in parsed_security_policy['adaptiveProtectionConfig'][
+          'autoDeployConfig']:
+        security_policy.adaptiveProtectionConfig.autoDeployConfig.loadThreshold = (
+            parsed_security_policy['adaptiveProtectionConfig']
+            ['autoDeployConfig']['loadThreshold'])
+      if 'confidenceThreshold' in parsed_security_policy[
+          'adaptiveProtectionConfig']['autoDeployConfig']:
+        security_policy.adaptiveProtectionConfig.autoDeployConfig.confidenceThreshold = (
+            parsed_security_policy['adaptiveProtectionConfig']
+            ['autoDeployConfig']['confidenceThreshold'])
+      if 'impactedBaselineThreshold' in parsed_security_policy[
+          'adaptiveProtectionConfig']['autoDeployConfig']:
+        security_policy.adaptiveProtectionConfig.autoDeployConfig.impactedBaselineThreshold = (
+            parsed_security_policy['adaptiveProtectionConfig']
+            ['autoDeployConfig']['impactedBaselineThreshold'])
+      if 'expirationSec' in parsed_security_policy['adaptiveProtectionConfig'][
+          'autoDeployConfig']:
+        security_policy.adaptiveProtectionConfig.autoDeployConfig.expirationSec = (
+            parsed_security_policy['adaptiveProtectionConfig']
+            ['autoDeployConfig']['expirationSec'])
     if 'ruleVisibility' in parsed_security_policy['adaptiveProtectionConfig'][
         'layer7DdosDefenseConfig']:
       security_policy.adaptiveProtectionConfig.layer7DdosDefenseConfig.ruleVisibility = (
@@ -254,6 +277,43 @@ def CreateAdaptiveProtectionConfig(client, args,
               args.layer7_ddos_defense_rule_visibility))
     adaptive_protection_config.layer7DdosDefenseConfig = (
         layer7_ddos_defense_config)
+
+  return adaptive_protection_config
+
+
+def CreateAdaptiveProtectionConfigWithAutoDeployConfig(
+    client, args, existing_adaptive_protection_config):
+  """Returns a SecurityPolicyAdaptiveProtectionConfig message with AutoDeployConfig."""
+
+  messages = client.messages
+  adaptive_protection_config = CreateAdaptiveProtectionConfig(
+      client, args, existing_adaptive_protection_config)
+
+  if args.IsSpecified(
+      'layer7_ddos_defense_auto_deploy_load_threshold') or args.IsSpecified(
+          'layer7_ddos_defense_auto_deploy_confidence_threshold'
+      ) or args.IsSpecified(
+          'layer7_ddos_defense_auto_deploy_impacted_baseline_threshold'
+      ) or args.IsSpecified('layer7_ddos_defense_auto_deploy_expiration_sec'):
+    auto_deploy_config = (
+        adaptive_protection_config.autoDeployConfig
+        if adaptive_protection_config.autoDeployConfig is not None else
+        messages.SecurityPolicyAdaptiveProtectionConfigAutoDeployConfig())
+    if args.IsSpecified('layer7_ddos_defense_auto_deploy_load_threshold'):
+      auto_deploy_config.loadThreshold = (
+          args.layer7_ddos_defense_auto_deploy_load_threshold)
+    if args.IsSpecified('layer7_ddos_defense_auto_deploy_confidence_threshold'):
+      auto_deploy_config.confidenceThreshold = (
+          args.layer7_ddos_defense_auto_deploy_confidence_threshold)
+    if args.IsSpecified(
+        'layer7_ddos_defense_auto_deploy_impacted_baseline_threshold'):
+      auto_deploy_config.impactedBaselineThreshold = (
+          args.layer7_ddos_defense_auto_deploy_impacted_baseline_threshold)
+    if args.IsSpecified('layer7_ddos_defense_auto_deploy_expiration_sec'):
+      auto_deploy_config.expirationSec = (
+          args.layer7_ddos_defense_auto_deploy_expiration_sec)
+
+    adaptive_protection_config.autoDeployConfig = auto_deploy_config
 
   return adaptive_protection_config
 

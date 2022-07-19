@@ -585,7 +585,7 @@ def Build(messages,
     log.CreatedResource(build_ref)
     if build.logUrl:
       log.status.Print(
-          'Logs are available at [{log_url}].'.format(log_url=build.logUrl))
+          'Logs are available at [ {log_url} ].'.format(log_url=build.logUrl))
     else:
       log.status.Print('Logs are available in the Cloud Console.')
 

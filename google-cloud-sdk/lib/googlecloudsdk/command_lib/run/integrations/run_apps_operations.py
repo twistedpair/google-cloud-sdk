@@ -22,7 +22,6 @@ from __future__ import unicode_literals
 import contextlib
 import datetime
 import json
-import re
 
 from apitools.base.py import encoding
 from apitools.base.py import exceptions as api_exceptions
@@ -36,6 +35,7 @@ from googlecloudsdk.command_lib.run import serverless_operations
 from googlecloudsdk.command_lib.run.integrations import flags
 from googlecloudsdk.command_lib.run.integrations import messages_util
 from googlecloudsdk.command_lib.run.integrations import stages
+from googlecloudsdk.command_lib.run.integrations import typekits_util
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import progress_tracker
@@ -47,6 +47,7 @@ _RETRY_TIMEOUT_MS = 1000
 
 _CONFIG_KEY = 'config'
 _RESOURCES_KEY = 'resources'
+_SERVICE_TYPE = 'service'
 
 _DEFAULT_APP_NAME = 'default'
 
@@ -271,20 +272,6 @@ class RunAppsOperations(object):
         tracker.CompleteStage(resource)
     tracker.Tick()
 
-  def GetResourceTypeFromConfig(self, resource_config):
-    """Gets the resource type.
-
-    The input is converted from proto with "oneof" property. Thus the dictionary
-    is expected to have only one key, matching the type of the matching oneof.
-
-    Args:
-      resource_config: dict, the resource configuration.
-
-    Returns:
-      str, the integration type.
-    """
-    return types_utils.GetResourceTypeFromConfig(resource_config)
-
   def GetIntegration(self, name):
     """Get an integration.
 
@@ -339,24 +326,27 @@ class RunAppsOperations(object):
     """
     app_dict = self._GetDefaultAppDict()
     resources_map = app_dict[_CONFIG_KEY][_RESOURCES_KEY]
+    typekit = typekits_util.GetTypeKit(integration_type)
     if not name:
-      name = self._NewIntegrationName(integration_type, service, parameters,
-                                      app_dict)
+      name = typekit.NewIntegrationName(service, parameters, resources_map)
 
-    resource_type = self._GetResourceType(integration_type)
+    resource_type = typekit.resource_type
 
     if name in resources_map:
       raise exceptions.ArgumentError(
           'Integration with name [{}] already exists.'.format(name))
 
-    resource_config = self._GetResourceConfig(resource_type, parameters,
-                                              service, None, {})
-    resources_map[name] = resource_config
-    match_type_names = self._GetCreateSelectors(name, resource_type, service)
+    resource_config = {}
+    typekit.UpdateResourceConfig(parameters, resource_config)
+
+    resources_map[name] = {resource_type: resource_config}
+
+    match_type_names = typekit.GetCreateSelectors(name, service)
     if service:
-      self._EnsureServiceConfig(resources_map, service)
-      self._AddServiceToIntegrationRef(name, resource_type,
-                                       resources_map[service])
+      typekit.BindServiceToIntegration(
+          name, resource_config, service,
+          resources_map.setdefault(service, {}).setdefault(_SERVICE_TYPE, {}),
+          parameters)
 
     self.CheckCloudRunServices([service])
 
@@ -417,42 +407,48 @@ class RunAppsOperations(object):
       raise exceptions.IntegrationNotFoundError(
           'Integration [{}] cannot be found'.format(name))
 
-    resource_type = self.GetResourceTypeFromConfig(existing_resource)
-    type_def = types_utils.GetIntegrationFromResource(existing_resource)
-    integration_type = type_def[types_utils.INTEGRATION_TYPE]
+    typekit = typekits_util.GetTypeKitByResource(existing_resource)
+    resource_type = typekit.resource_type
+    integration_type = typekit.integration_type
+
     flags.ValidateUpdateParameters(integration_type, parameters)
-    resource_config = self._GetResourceConfig(resource_type, parameters,
-                                              add_service, remove_service,
-                                              existing_resource)
-    resources_map[name] = resource_config
-    match_type_names = self._GetCreateSelectors(name, resource_type,
-                                                add_service, remove_service)
+
+    resource_config = existing_resource[typekit.resource_type]
+    typekit.UpdateResourceConfig(parameters, resource_config)
+
+    match_type_names = typekit.GetCreateSelectors(name, add_service,
+                                                  remove_service)
 
     if add_service:
-      self._EnsureServiceConfig(resources_map, add_service)
-      self._AddServiceToIntegrationRef(name, resource_type,
-                                       resources_map[add_service])
+      typekit.BindServiceToIntegration(
+          name, resource_config, add_service,
+          resources_map.setdefault(add_service,
+                                   {}).setdefault(_SERVICE_TYPE, {}),
+          parameters)
+
     if remove_service and remove_service in resources_map:
-      self._RemoveServiceToIntegrationRef(name, resource_type,
-                                          resources_map[remove_service])
+      typekit.UnbindServiceFromIntegration(
+          name, resource_config, remove_service,
+          resources_map[remove_service].setdefault(_SERVICE_TYPE,
+                                                   {}), parameters)
 
     services = []
     if self._IsIngressResource(resource_type):
       # For ingress resource, expand the check list and selector to include all
       # binded services.
-      services = self._GetRefServices(name, resource_type, resource_config,
+      services = self._GetRefServices(name, resource_type, existing_resource,
                                       resources_map)
       for service in services:
         if service != add_service:
-          match_type_names.append({'type': 'service', 'name': service})
+          match_type_names.append({'type': _SERVICE_TYPE, 'name': service})
     elif add_service:
       services.append(add_service)
     elif self._IsBackingResource(resource_type) and remove_service is None:
       services.extend(
-          self._GetRefServices(name, resource_type, resource_config,
+          self._GetRefServices(name, resource_type, existing_resource,
                                resources_map))
       for service in services:
-        match_type_names.append({'type': 'service', 'name': service})
+        match_type_names.append({'type': _SERVICE_TYPE, 'name': service})
 
     if services:
       self.CheckCloudRunServices(services)
@@ -498,7 +494,8 @@ class RunAppsOperations(object):
     if resource is None:
       raise exceptions.IntegrationNotFoundError(
           'Integration [{}] cannot be found'.format(name))
-    resource_type = self.GetResourceTypeFromConfig(resource)
+    typekit = typekits_util.GetTypeKitByResource(resource)
+    resource_type = typekit.resource_type
 
     # TODO(b/222748706): revisit whether this apply to future ingress services.
     services = []
@@ -509,8 +506,11 @@ class RunAppsOperations(object):
     service_match_type_names = []
     if services:
       for service in services:
-        service_match_type_names.append({'type': 'service', 'name': service})
-    delete_match_type_names = self._GetDeleteSelectors(name, resource_type)
+        service_match_type_names.append({
+            'type': _SERVICE_TYPE,
+            'name': service
+        })
+    delete_match_type_names = typekit.GetDeleteSelectors(name)
     stages_map = stages.IntegrationDeleteStages(service_match_type_names,
                                                 delete_match_type_names)
     def StatusUpdate(tracker, operation, unused_status):
@@ -522,8 +522,9 @@ class RunAppsOperations(object):
         failure_message='Failed to delete integration.') as tracker:
       if services:
         for service in services:
-          self._RemoveServiceToIntegrationRef(name, resource_type,
-                                              resources_map[service])
+          typekit.UnbindServiceFromIntegration(
+              name, resource[resource_type], service,
+              resources_map[service][_SERVICE_TYPE], {})
         application = encoding.DictToMessage(app_dict,
                                              self.messages.Application)
         # TODO(b/222748706): refine message on failure.
@@ -654,90 +655,6 @@ class RunAppsOperations(object):
 
     return output
 
-  def _GetCreateSelectors(self,
-                          integration_name,
-                          resource_type,
-                          add_service_name,
-                          remove_service_name=None):
-    """Returns create selectors for given integration and service.
-
-    Args:
-      integration_name: str, name of integration.
-      resource_type: str, type of integration.
-      add_service_name: str, name of the service being added.
-      remove_service_name: str, name of the service being removed.
-
-    Returns:
-      list of dict typed names.
-    """
-    service_name = add_service_name if add_service_name else remove_service_name
-    selectors = [{'type': resource_type, 'name': integration_name}]
-
-    # Handle router edgecase. Selector should not be added for remove service.
-    if resource_type == 'router' and add_service_name:
-      selectors.append({'type': 'service', 'name': add_service_name})
-    elif resource_type != 'router' and service_name:
-      selectors.append({'type': 'service', 'name': service_name})
-
-    # TODO(b/222753640): Remove redis specific logic after default VPC logic
-    # is handled in CP.
-    if resource_type == 'redis':
-      # For now redis integration has a shadow VPC resource. This will hopefully
-      # change in the near future, but for now it needs to be actuated
-      selectors.append({'type': 'vpc', 'name': '*'})
-
-    return selectors
-
-  def _GetDeleteSelectors(self, name, resource_type):
-    """Returns delete selectors for undeploying an integration.
-
-    Args:
-      name: str, name of integration.
-      resource_type: str, type of resource.
-
-    Returns:
-      a list of dict of typed names.
-    """
-    selectors = [{'type': resource_type, 'name': name}]
-
-    if resource_type == 'redis':
-      # TODO(b/222753640): remove this all destroying vpc selector
-      selectors.append({'type': 'vpc', 'name': '*'})
-
-    return selectors
-
-  def _AddServiceToIntegrationRef(self, name, resource_type, service):
-    """Add service to integration ref.
-
-    Args:
-      name: str, name of integration.
-      resource_type: str, type of integration.
-      service: dict of proto, service to add ref too.
-    """
-    if resource_type == 'router':
-      return
-
-    # Check if ref already exists
-    refs = [ref['ref'] for ref in service['service'].get('resources', [])]
-    if '{}/{}'.format(resource_type, name) not in refs:
-      service['service'].setdefault('resources', []).append(
-          {'ref': '{}/{}'.format(resource_type, name)})
-
-  def _RemoveServiceToIntegrationRef(self, name, resource_type, service):
-    """Remove service to integration ref.
-
-    Args:
-      name: str, name of integration.
-      resource_type: str, type of integration.
-      service: dict of proto, service from which to remove ref.
-    """
-    if resource_type == 'router':
-      return
-
-    for ref in service.get('service', {}).get('resources', []):
-      if ref['ref'] == '{}/{}'.format(resource_type, name):
-        service['service']['resources'].remove(ref)
-
   def _GetRefServices(self, name, resource_type, resource, all_resources):
     """Returns list of services referenced by integration.
 
@@ -759,9 +676,10 @@ class RunAppsOperations(object):
     if resource_type == 'redis':
       for resource_name, resource in all_resources.items():
         ref_name = '{}/{}'.format(resource_type, name)
-        if resource.get('service', {}).get('resources'):
+        if resource.get(_SERVICE_TYPE, {}).get('resources'):
           if any([
-              ref['ref'] == ref_name for ref in resource['service']['resources']
+              ref['ref'] == ref_name
+              for ref in resource[_SERVICE_TYPE]['resources']
           ]):
             output.append(resource_name)
 
@@ -793,109 +711,6 @@ class RunAppsOperations(object):
     app_dict.setdefault(_CONFIG_KEY, {})
     app_dict[_CONFIG_KEY].setdefault(_RESOURCES_KEY, {})
     return app_dict
-
-  def _GetResourceConfig(self, res_type, parameters, add_service,
-                         remove_service, res_config):
-    """Returns a new resource config according to the parameters.
-
-    Args:
-      res_type: type of the resource.
-      parameters: parameter dictionary from args.
-      add_service: the service to attach to the integration.
-      remove_service: the service to remove from the integration.
-      res_config: previous resource config. If given, changes will be made based
-        on it.
-
-    Returns:
-      A new resource config
-    """
-    if res_config is not None and res_type in res_config:
-      config = dict(res_config[res_type])
-    else:
-      config = {}
-
-    if res_type == 'router':
-      if 'dns-zone' in parameters:
-        config['dns-zone'] = parameters['dns-zone']
-      if 'domain' in parameters:
-        config['domain'] = parameters['domain']
-      if remove_service:
-        ref = 'service/{}'.format(remove_service)
-        if 'default-route' in config and ref in config['default-route']['ref']:
-          raise exceptions.ArgumentError(
-              'Cannot remove service associated with the default path (/*)')
-
-        config['routes'] = [
-            x for x in config.get('routes', []) if x['ref'] != ref
-        ]
-      if add_service:
-        route = {'ref': 'service/{}'.format(add_service)}
-        if 'paths' in parameters:
-          route['paths'] = parameters['paths']
-          if 'routes' not in config:
-            config['routes'] = []
-          config['routes'].append(route)
-        else:
-          config['default-route'] = route
-    elif res_type == 'redis':
-      instance = config.setdefault('instance', {})
-      if 'memory-size-gb' in parameters:
-        instance['memory-size-gb'] = parameters['memory-size-gb']
-      if 'tier' in parameters:
-        instance['tier'] = parameters['tier']
-      if 'version' in parameters:
-        instance['version'] = parameters['version']
-
-    else:
-      raise exceptions.ArgumentError(
-          'Unsupported integration type [{}]'.format(res_type))
-
-    return {res_type: config}
-
-  def _EnsureServiceConfig(self, resources_map, service_name):
-    if service_name not in resources_map:
-      resources_map[service_name] = {'service': {}}
-
-  def _GetResourceType(self, integration_type):
-    type_def = self.GetIntegrationTypeDefinition(integration_type)
-    if type_def is not None:
-      res_name = type_def.get(types_utils.RESOURCE_TYPE, None)
-      if res_name is not None:
-        return res_name
-    return integration_type
-
-  def _NewIntegrationName(self, integration_type, service, parameters,
-                          app_dict):
-    """Returns a new name for an integration.
-
-    It makes sure the new name does not exist in the given app_dict.
-
-    Args:
-      integration_type:  str, name of the integration type.
-      service: str, name of the service.
-      parameters: parameter dictionary from args.
-      app_dict: dict, the dictionary that represents the application.
-
-    Returns:
-      str, the new name.
-
-    """
-    if integration_type == 'custom-domain':
-      domain = parameters['domain']
-      if not domain:
-        raise exceptions.ArgumentError('domain is required in "PARAMETERS" '
-                                       'for integration type "custom-domain"')
-      return 'domain-{}'.format(domain.replace('.', '-'))
-
-    name = '{}-{}'.format(integration_type, service)
-    while name in app_dict[_CONFIG_KEY][_RESOURCES_KEY]:
-      count = 1
-      match = re.search(r'(.+)-(\d+)$', name)
-      if match:
-        name = match.group(1)
-        count = int(match.group(2)) + 1
-      name = '{}-{}'.format(name, count)
-    return name
 
   def GetAppRef(self, name):
     """Returns the application resource object.

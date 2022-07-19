@@ -25,10 +25,6 @@ from googlecloudsdk.command_lib.storage.resources import resource_reference
 from googlecloudsdk.command_lib.storage.resources import resource_util
 
 
-INCOMPLETE_OBJECT_METADATA_WARNING = (
-    'Use "-j", the JSON flag, to view additional S3 metadata.')
-
-
 def _json_dump_recursion_helper(metadata):
   """See _get_json_dump docstring."""
   if isinstance(metadata, list):
@@ -122,8 +118,6 @@ class S3BucketResource(resource_reference.BucketResource):
         url_string=self.storage_url.url_string,
         acl=_get_error_string_or_value(self.metadata.get('ACL')),
         cors_config=_get_error_string_or_value(self.metadata.get('CORSRules')),
-        encryption_config=_get_error_string_or_value(
-            self.metadata.get('ServerSideEncryptionConfiguration')),
         location=_get_error_string_or_value(
             self.metadata.get('LocationConstraint')),
         logging_config=_get_error_string_or_value(
@@ -188,8 +182,7 @@ class S3ObjectResource(resource_reference.ObjectResource):
         generation=self.generation,
         md5_hash=self.md5_hash,
         storage_class=self.metadata.get('StorageClass'),
-        update_time=self.metadata.get('LastModified'),
-        incomplete_warning=INCOMPLETE_OBJECT_METADATA_WARNING)
+        update_time=self.metadata.get('LastModified'))
 
   def get_json_dump(self):
     return _get_json_dump(self)

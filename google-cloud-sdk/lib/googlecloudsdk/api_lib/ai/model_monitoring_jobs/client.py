@@ -30,6 +30,7 @@ from googlecloudsdk.command_lib.ai import constants
 from googlecloudsdk.command_lib.ai import errors
 from googlecloudsdk.command_lib.ai import model_monitoring_jobs_util
 from googlecloudsdk.command_lib.ai import validation as common_validation
+from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core import yaml
@@ -289,6 +290,23 @@ class ModelMonitoringJobsClient(object):
       objective_configs.append(objective_config)
     return objective_configs
 
+  def _ParseCreateLabels(self, args):
+    """Parses create labels."""
+    return labels_util.ParseCreateArgs(
+        args,
+        api_util.GetMessage('ModelDeploymentMonitoringJob',
+                            self._version)().LabelsValue)
+
+  def _ParseUpdateLabels(self, model_monitoring_job_ref, args):
+    """Parses update labels."""
+    def GetLabels():
+      return self.Get(model_monitoring_job_ref).labels
+
+    return labels_util.ProcessUpdateArgsLazy(
+        args,
+        api_util.GetMessage('ModelDeploymentMonitoringJob',
+                            self._version)().LabelsValue, GetLabels)
+
   def Create(self, location_ref, args):
     """Creates a model deployment monitoring job."""
     endpoint_ref = _ParseEndpoint(args.endpoint, location_ref)
@@ -314,6 +332,7 @@ class ModelMonitoringJobsClient(object):
           args.training_sampling_rate)
     job_spec.endpoint = endpoint_ref.RelativeName()
     job_spec.displayName = args.display_name
+    job_spec.labels = self._ParseCreateLabels(args)
 
     enable_anomaly_cloud_logging = False if args.anomaly_cloud_logging is None else args.anomaly_cloud_logging
     job_spec.modelMonitoringAlertConfig = api_util.GetMessage(
@@ -439,6 +458,11 @@ class ModelMonitoringJobsClient(object):
       model_monitoring_job_to_update.logTtl = '{}s'.format(
           six.text_type(86400 * int(args.log_ttl)))
       update_mask.append('log_ttl')
+
+    labels_update = self._ParseUpdateLabels(model_monitoring_job_ref, args)
+    if labels_update.needs_update:
+      model_monitoring_job_to_update.labels = labels_update.labels
+      update_mask.append('labels')
 
     if not update_mask:
       raise errors.NoFieldsSpecifiedError('No updates requested.')

@@ -214,6 +214,16 @@ def AddCaPoolIssuancePolicyFlag(parser):
             'policy.')).AddToParser(parser)
 
 
+def AddEncodingFormatFlag(parser):
+  _ENCODING_FORMAT_MAPPER.choice_arg.AddToParser(parser)
+
+
+def AddPublishingOptionsFlags(parser, use_update_help_text=False):
+  AddPublishCaCertFlag(parser, use_update_help_text)
+  AddPublishCrlFlag(parser, use_update_help_text)
+  AddEncodingFormatFlag(parser)
+
+
 def AddBucketFlag(parser):
   base.Argument(
       '--bucket',
@@ -707,14 +717,22 @@ def ParseIssuancePolicy(args):
         '--issuance-policy', 'Unrecognized field in the Issuance Policy.')
 
 
+def ParseEncodingFormatFlag(args):
+  return _ENCODING_FORMAT_MAPPER.GetEnumForChoice(
+      args.publishing_encoding_format)
+
+
 def ParsePublishingOptions(args):
   """Parses the PublshingOptions proto message from the args."""
   messages = privateca_base.GetMessagesModule('v1')
   publish_ca_cert = args.publish_ca_cert
   publish_crl = args.publish_crl
+  encoding_format = ParseEncodingFormatFlag(args)
 
-  tier = ParseTierFlag(args)
-  if tier == messages.CaPool.TierValueValuesEnum.DEVOPS:
+  is_devops_tier = (args.IsKnownAndSpecified('tier') and
+                    (ParseTierFlag(args)
+                     == messages.CaPool.TierValueValuesEnum.DEVOPS))
+  if is_devops_tier:
     if args.IsSpecified('publish_crl') and publish_crl:
       raise exceptions.InvalidArgumentException(
           '--publish-crl',
@@ -723,7 +741,9 @@ def ParsePublishingOptions(args):
     publish_crl = False
 
   return messages.PublishingOptions(
-      publishCaCert=publish_ca_cert, publishCrl=publish_crl)
+      publishCaCert=publish_ca_cert,
+      publishCrl=publish_crl,
+      encodingFormat=encoding_format)
 
 
 # Flag validation helpers
@@ -771,6 +791,20 @@ _REVOCATION_REASON_MAPPER = arg_utils.ChoiceEnumMapper(
     message_enum=privateca_base.GetMessagesModule(
         'v1').RevokeCertificateRequest.ReasonValueValuesEnum,
     custom_mappings=_REVOCATION_MAPPING)
+
+_ENCODING_FORMAT_MAPPING = {
+    'PEM': 'pem',
+    'DER': 'der',
+}
+
+_ENCODING_FORMAT_MAPPER = arg_utils.ChoiceEnumMapper(
+    arg_name='--publishing-encoding-format',
+    default='pem',
+    help_str='The encoding format of the content published to storage buckets.',
+    message_enum=privateca_base.GetMessagesModule(
+        'v1').PublishingOptions.EncodingFormatValueValuesEnum,
+    hidden=True,
+    custom_mappings=_ENCODING_FORMAT_MAPPING)
 
 _TIER_MAPPING = {
     'ENTERPRISE': 'enterprise',

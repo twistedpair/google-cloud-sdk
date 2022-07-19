@@ -43,12 +43,12 @@ def GetPolicyIDFlag():
       'attached.')
 
 
+# etag is only used in DeletePolicy
 def GetEtagFlag():
   return base.Argument(
       '--etag',
-      help='Etag that identifies the version of the existing policy. If '
-      'omitted, the command gets the `etag` for the current version of the '
-      'policy.')
+      help='Etag that identifies the version of the existing policy. If omitted'
+      ', the policy is deleted regardless of its current etag.')
 
 
 def GetPolicyFileFlag():

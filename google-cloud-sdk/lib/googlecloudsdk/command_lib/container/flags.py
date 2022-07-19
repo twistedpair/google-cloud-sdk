@@ -4633,3 +4633,16 @@ def AddEnableGoogleCloudAccess(parser, hidden=True):
       default=None,
       action='store_true',
       help=help_text)
+
+
+def AddEnableFastSocketFlag(parser):
+  help_text = """
+Enable the use of fast socket for this node pool. Requires re-creation of nodes using
+either a node-pool upgrade or node-pool creation.
+"""
+  parser.add_argument(
+      '--enable-fast-socket',
+      help=help_text,
+      default=None,
+      hidden=True,
+      action='store_true')

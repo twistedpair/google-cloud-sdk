@@ -85,6 +85,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_EXTENSIONCHAINS = (
+      'projects.locations.extensionChains',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/extensionChains/'
+              '{extensionChainsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_GATEWAYS = (
       'projects.locations.gateways',
       '{+name}',
@@ -202,6 +213,28 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/tlsRoutes/'
               '{tlsRoutesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_WASMPLUGINS = (
+      'projects.locations.wasmPlugins',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/wasmPlugins/'
+              '{wasmPluginsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_WASMPLUGINS_VERSIONS = (
+      'projects.locations.wasmPlugins.versions',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/wasmPlugins/'
+              '{wasmPluginsId}/versions/{versionsId}',
       },
       ['name'],
       True

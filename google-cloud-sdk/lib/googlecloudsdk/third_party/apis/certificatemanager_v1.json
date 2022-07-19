@@ -282,6 +282,11 @@
           "readOnly": true,
           "type": "string"
         },
+        "fingerprint": {
+          "description": "Output only. The hash of the x.509 certificate.",
+          "readOnly": true,
+          "$ref": "Fingerprint"
+        },
         "expireTime": {
           "description": "Output only. The expiry timestamp of a Certificate.",
           "readOnly": true,
@@ -335,6 +340,10 @@
           "items": {
             "type": "string"
           }
+        },
+        "issuanceConfig": {
+          "description": "The resource name for a CertificateIssuanceConfig used to configure private PKI certificates in the format `projects\/*\/locations\/*\/certificateIssuanceConfigs\/*`. If this field is not set, the certificates will instead be publicly signed as documented at https:\/\/cloud.google.com\/load-balancing\/docs\/ssl-certificates\/google-managed-certs#caa.",
+          "type": "string"
         },
         "state": {
           "description": "Output only. State of the managed certificate resource.",
@@ -436,6 +445,17 @@
         },
         "details": {
           "description": "Human readable explanation for reaching the state. Provided to help address the configuration issues. Not guaranteed to be stable. For programmatic access use Reason enum.",
+          "type": "string"
+        }
+      }
+    },
+    "Fingerprint": {
+      "id": "Fingerprint",
+      "description": "A group of fingerprints for the x509 certificate. These values can be used, where supported to search for certificate across Google Cloud APIs. For example, see the Fingerprint field.",
+      "type": "object",
+      "properties": {
+        "sha256Hash": {
+          "description": "The SHA 256 hash, encoded as a hexadecimal string, with no separators, of the DER x509 certificate. For example, `f6c245267d2302a426156a5c692d23a854327c758d867ad6e5f62d7f2017b6a8`.",
           "type": "string"
         }
       }
@@ -731,6 +751,245 @@
         "data": {
           "description": "Output only. Data of the DNS Resource Record.",
           "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "ListCertificateIssuanceConfigsResponse": {
+      "id": "ListCertificateIssuanceConfigsResponse",
+      "description": "Response for the `ListCertificateIssuanceConfigs` method.",
+      "type": "object",
+      "properties": {
+        "certificateIssuanceConfigs": {
+          "description": "A list of certificate configs for the parent resource.",
+          "type": "array",
+          "items": {
+            "$ref": "CertificateIssuanceConfig"
+          }
+        },
+        "nextPageToken": {
+          "description": "If there might be more results than those appearing in this response, then `next_page_token` is included. To get the next set of results, call this method again using the value of `next_page_token` as `page_token`.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "CertificateIssuanceConfig": {
+      "id": "CertificateIssuanceConfig",
+      "description": "CertificateIssuanceConfig specifies how to issue and manage a certificate.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "A user-defined name of the certificate issuance config. CertificateIssuanceConfig names must be unique globally and match pattern `projects\/*\/locations\/*\/certificateIssuanceConfigs\/*`.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. The creation timestamp of a CertificateIssuanceConfig.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The last update timestamp of a CertificateIssuanceConfig.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "labels": {
+          "description": "Set of labels associated with a CertificateIssuanceConfig.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "description": {
+          "description": "One or more paragraphs of text description of a CertificateIssuanceConfig.",
+          "type": "string"
+        },
+        "certificateAuthorityConfig": {
+          "description": "Required. The CA that issues the workload certificate. It includes the CA address, type, authentication to CA service, etc.",
+          "$ref": "CertificateAuthorityConfig"
+        },
+        "lifetime": {
+          "description": "Required. Workload certificate lifetime requested.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "rotationWindowPercentage": {
+          "description": "Required. Specifies the percentage of elapsed time of the certificate lifetime to wait before renewing the certificate. Must be a number between 1-99, inclusive.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "keyAlgorithm": {
+          "description": "Required. The key algorithm to use when generating the private key.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified key algorithm.",
+            "Specifies RSA with a 2048-bit modulus.",
+            "Specifies RSA with a 3072-bit modulus.",
+            "Specifies RSA with a 4096-bit modulus.",
+            "Specifies ECDSA with curve P256.",
+            "Specifies ECDSA with curve P384."
+          ],
+          "enum": [
+            "KEY_ALGORITHM_UNSPECIFIED",
+            "RSA_2048",
+            "RSA_3072",
+            "RSA_4096",
+            "ECDSA_P256",
+            "ECDSA_P384"
+          ]
+        }
+      }
+    },
+    "CertificateAuthorityConfig": {
+      "id": "CertificateAuthorityConfig",
+      "description": "The CA that issues the workload certificate. It includes CA address, type, authentication to CA service, etc.",
+      "type": "object",
+      "properties": {
+        "certificateAuthorityServiceConfig": {
+          "description": "Defines a CertificateAuthorityServiceConfig.",
+          "$ref": "CertificateAuthorityServiceConfig"
+        },
+        "meshCaConfig": {
+          "description": "Defines a MeshCAConfig.",
+          "$ref": "MeshCAConfig"
+        }
+      }
+    },
+    "CertificateAuthorityServiceConfig": {
+      "id": "CertificateAuthorityServiceConfig",
+      "description": "Contains information required to contact CA service.",
+      "type": "object",
+      "properties": {
+        "caPool": {
+          "description": "Required. A CA pool resource used to issue a certificate. The CA pool string has a relative resource path following the form \"projects\/{project}\/locations\/{location}\/caPools\/{ca_pool}\".",
+          "type": "string"
+        }
+      }
+    },
+    "MeshCAConfig": {
+      "id": "MeshCAConfig",
+      "description": "Config for use of the default CA endpoint.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "ListTrustConfigsResponse": {
+      "id": "ListTrustConfigsResponse",
+      "description": "Response for the `ListTrustConfigs` method.",
+      "type": "object",
+      "properties": {
+        "trustConfigs": {
+          "description": "A list of TrustConfigs for the parent resource.",
+          "type": "array",
+          "items": {
+            "$ref": "TrustConfig"
+          }
+        },
+        "nextPageToken": {
+          "description": "If there might be more results than those appearing in this response, then `next_page_token` is included. To get the next set of results, call this method again using the value of `next_page_token` as `page_token`.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "TrustConfig": {
+      "id": "TrustConfig",
+      "description": "Defines a trust config.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "A user-defined name of the trust config. TrustConfig names must be unique globally and match pattern `projects\/*\/locations\/*\/trustConfigs\/*`.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. The creation timestamp of a TrustConfig.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The last update timestamp of a TrustConfig.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "labels": {
+          "description": "Set of labels associated with a TrustConfig.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "description": {
+          "description": "One or more paragraphs of text description of a TrustConfig.",
+          "type": "string"
+        },
+        "etag": {
+          "description": "This checksum is computed by the server based on the value of other fields, and may be sent on update and delete requests to ensure the client has an up-to-date value before proceeding.",
+          "type": "string"
+        },
+        "trustStores": {
+          "description": "Set of trust stores to perform validation against. This field is supported when TrustConfig is configured with Load Balancers, currently not supported for SPIFFE certificate validation. Only one TrustStore specified is currently allowed.",
+          "type": "array",
+          "items": {
+            "$ref": "TrustStore"
+          }
+        }
+      }
+    },
+    "TrustStore": {
+      "id": "TrustStore",
+      "description": "Defines a trust store.",
+      "type": "object",
+      "properties": {
+        "trustAnchors": {
+          "description": "List of Trust Anchors to be used while performing validation against a given TrustStore.",
+          "type": "array",
+          "items": {
+            "$ref": "TrustAnchor"
+          }
+        },
+        "intermediateCas": {
+          "description": "Set of intermediate CA certificates used for the path building phase of chain validation. The field is currently not supported if TrustConfig is used for the workload certificate feature.",
+          "type": "array",
+          "items": {
+            "$ref": "IntermediateCA"
+          }
+        }
+      }
+    },
+    "TrustAnchor": {
+      "id": "TrustAnchor",
+      "description": "Defines a trust anchor.",
+      "type": "object",
+      "properties": {
+        "pemCertificate": {
+          "description": "PEM root certificate of the PKI used for validation. Each certificate provided in PEM format may occupy up to 5kB.",
+          "type": "string"
+        }
+      }
+    },
+    "IntermediateCA": {
+      "id": "IntermediateCA",
+      "description": "Defines an intermediate CA.",
+      "type": "object",
+      "properties": {
+        "pemCertificate": {
+          "description": "PEM intermediate certificate used for building up paths for validation. Each certificate provided in PEM format may occupy up to 5kB.",
           "type": "string"
         }
       }
@@ -1690,6 +1949,345 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Deletes a single DnsAuthorization."
+                }
+              }
+            },
+            "certificateIssuanceConfigs": {
+              "methods": {
+                "list": {
+                  "id": "certificatemanager.projects.locations.certificateIssuanceConfigs.list",
+                  "path": "v1/{+parent}/certificateIssuanceConfigs",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/certificateIssuanceConfigs",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The project and location from which the certificate should be listed, specified in the format `projects\/*\/locations\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Maximum number of certificate configs to return per call.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "The value returned by the last `ListCertificateIssuanceConfigsResponse`. Indicates that this is a continuation of a prior `ListCertificateIssuanceConfigs` call, and that the system should return the next page of data.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "Filter expression to restrict the Certificates Configs returned.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "orderBy": {
+                      "description": "A list of Certificate Config field names used to specify the order of the returned results. The default sorting order is ascending. To specify descending order for a field, add a suffix \" desc\".",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListCertificateIssuanceConfigsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists CertificateIssuanceConfigs in a given project and location."
+                },
+                "get": {
+                  "id": "certificatemanager.projects.locations.certificateIssuanceConfigs.get",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/certificateIssuanceConfigs/{certificateIssuanceConfigsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. A name of the certificate issuance config to describe. Must be in the format `projects\/*\/locations\/*\/certificateIssuanceConfigs\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateIssuanceConfigs\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "CertificateIssuanceConfig"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets details of a single CertificateIssuanceConfig."
+                },
+                "create": {
+                  "id": "certificatemanager.projects.locations.certificateIssuanceConfigs.create",
+                  "path": "v1/{+parent}/certificateIssuanceConfigs",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/certificateIssuanceConfigs",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent resource of the certificate issuance config. Must be in the format `projects\/*\/locations\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "certificateIssuanceConfigId": {
+                      "description": "Required. A user-provided name of the certificate config.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "CertificateIssuanceConfig"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a new CertificateIssuanceConfig in a given project and location."
+                },
+                "patch": {
+                  "id": "certificatemanager.projects.locations.certificateIssuanceConfigs.patch",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/certificateIssuanceConfigs/{certificateIssuanceConfigsId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "A user-defined name of the certificate issuance config. CertificateIssuanceConfig names must be unique globally and match pattern `projects\/*\/locations\/*\/certificateIssuanceConfigs\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateIssuanceConfigs\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Required. The update mask applies to the resource. For the `FieldMask` definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmask.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "CertificateIssuanceConfig"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Updates a CertificateIssuanceConfig."
+                },
+                "delete": {
+                  "id": "certificatemanager.projects.locations.certificateIssuanceConfigs.delete",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/certificateIssuanceConfigs/{certificateIssuanceConfigsId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. A name of the certificate issuance config to delete. Must be in the format `projects\/*\/locations\/*\/certificateIssuanceConfigs\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateIssuanceConfigs\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a single CertificateIssuanceConfig."
+                }
+              }
+            },
+            "trustConfigs": {
+              "methods": {
+                "list": {
+                  "id": "certificatemanager.projects.locations.trustConfigs.list",
+                  "path": "v1/{+parent}/trustConfigs",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/trustConfigs",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The project and location from which the TrustConfigs should be listed, specified in the format `projects\/*\/locations\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Maximum number of TrustConfigs to return per call.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "The value returned by the last `ListTrustConfigsResponse`. Indicates that this is a continuation of a prior `ListTrustConfigs` call, and that the system should return the next page of data.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "Filter expression to restrict the TrustConfigs returned.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "orderBy": {
+                      "description": "A list of TrustConfig field names used to specify the order of the returned results. The default sorting order is ascending. To specify descending order for a field, add a suffix \" desc\".",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListTrustConfigsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists TrustConfigs in a given project and location."
+                },
+                "get": {
+                  "id": "certificatemanager.projects.locations.trustConfigs.get",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/trustConfigs/{trustConfigsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. A name of the TrustConfig to describe. Must be in the format `projects\/*\/locations\/*\/trustConfigs\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/trustConfigs\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "TrustConfig"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets details of a single TrustConfig."
+                },
+                "create": {
+                  "id": "certificatemanager.projects.locations.trustConfigs.create",
+                  "path": "v1/{+parent}/trustConfigs",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/trustConfigs",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent resource of the TrustConfig. Must be in the format `projects\/*\/locations\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "trustConfigId": {
+                      "description": "Required. A user-provided name of the TrustConfig.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "TrustConfig"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a new TrustConfig in a given project and location."
+                },
+                "patch": {
+                  "id": "certificatemanager.projects.locations.trustConfigs.patch",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/trustConfigs/{trustConfigsId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "A user-defined name of the trust config. TrustConfig names must be unique globally and match pattern `projects\/*\/locations\/*\/trustConfigs\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/trustConfigs\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Required. The update mask applies to the resource. For the `FieldMask` definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmask.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "TrustConfig"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Updates a TrustConfig."
+                },
+                "delete": {
+                  "id": "certificatemanager.projects.locations.trustConfigs.delete",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/trustConfigs/{trustConfigsId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. A name of the TrustConfig to delete. Must be in the format `projects\/*\/locations\/*\/trustConfigs\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/trustConfigs\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "etag": {
+                      "description": "The current etag of the TrustConfig. If an etag is provided and does not match the current etag of the resource, deletion will be blocked and an ABORTED error will be returned.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a single TrustConfig."
                 }
               }
             }

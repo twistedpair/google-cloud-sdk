@@ -100,7 +100,8 @@ def UpdateCaPoolFromArgs(args, current_labels):
   pool_to_update = messages.CaPool()
   update_mask = []
 
-  if args.IsSpecified('publish_crl') or args.IsSpecified('publish_ca_cert'):
+  if args.IsSpecified('publish_crl') or args.IsSpecified(
+      'publish_ca_cert') or args.IsSpecified('publishing_encoding_format'):
     pool_to_update.publishingOptions = messages.PublishingOptions()
     if args.IsSpecified('publish_crl'):
       pool_to_update.publishingOptions.publishCrl = args.publish_crl
@@ -108,6 +109,10 @@ def UpdateCaPoolFromArgs(args, current_labels):
     if args.IsSpecified('publish_ca_cert'):
       pool_to_update.publishingOptions.publishCaCert = args.publish_ca_cert
       update_mask.append('publishing_options.publish_ca_cert')
+    if args.IsSpecified('publishing_encoding_format'):
+      pool_to_update.publishingOptions.encodingFormat = flags_v1.ParseEncodingFormatFlag(
+          args)
+      update_mask.append('publishing_options.encoding_format')
 
   labels_diff = labels_util.Diff.FromUpdateArgs(args)
   labels_update = labels_diff.Apply(messages.CaPool.LabelsValue,

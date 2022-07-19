@@ -33,10 +33,11 @@ from googlecloudsdk.command_lib.storage import plurality_checkable_iterator
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage import wildcard_iterator
 from googlecloudsdk.command_lib.storage.resources import gcloud_full_resource_formatter
+from googlecloudsdk.command_lib.storage.resources import gsutil_full_resource_formatter
+from googlecloudsdk.command_lib.storage.resources import resource_formatter_util
 from googlecloudsdk.command_lib.storage.resources import resource_reference
 from googlecloudsdk.command_lib.storage.resources import resource_util
 from googlecloudsdk.command_lib.storage.tasks import task
-from googlecloudsdk.core.util import scaled_integer
 
 import six
 
@@ -84,21 +85,31 @@ class _BaseFormatWrapper(six.with_metaclass(abc.ABCMeta)):
     resource (resource_reference.Resource): Item to be formatted for printing.
   """
 
-  def __init__(self, resource, display_detail=DisplayDetail.SHORT,):
+  def __init__(self,
+               resource,
+               display_detail=DisplayDetail.SHORT,
+               use_gsutil_style=False):
     """Initializes wrapper instance.
 
     Args:
       resource (resource_reference.Resource): Item to be formatted for printing.
       display_detail (DisplayDetail): Level of metadata detail for printing.
+      use_gsutil_style (bool): Outputs closer to the style of the gsutil CLI.
     """
     self.resource = resource
     self._display_detail = display_detail
+    self._use_gsutil_style = use_gsutil_style
 
 
 class _HeaderFormatWrapper(_BaseFormatWrapper):
   """For formatting how containers are printed as headers when listed."""
 
   def __str__(self):
+    if self._use_gsutil_style and isinstance(self.resource,
+                                             resource_reference.BucketResource):
+      # Gsutil does not show header lines for buckets.
+      return ''
+
     url = self.resource.storage_url.versionless_url_string
     if self._display_detail == DisplayDetail.JSON:
       return self.resource.get_json_dump()
@@ -115,7 +126,8 @@ class _ResourceFormatWrapper(_BaseFormatWrapper):
                display_detail=DisplayDetail.SHORT,
                include_etag=False,
                readable_sizes=False,
-               full_formatter=None):
+               full_formatter=None,
+               use_gsutil_style=False):
     """Initializes wrapper instance.
 
     Args:
@@ -127,12 +139,14 @@ class _ResourceFormatWrapper(_BaseFormatWrapper):
         long lising. For example, print 1024B as 1KiB.
       full_formatter (FullResourceFormatter): A formatter to format the resource
         if display_detail == DisplayDetail.FULL
+      use_gsutil_style (bool): Outputs closer to the style of the gsutil CLI.
     """
     self._all_versions = all_versions
     self._include_etag = include_etag
     self._readable_sizes = readable_sizes
     self._full_formatter = full_formatter
-    super(_ResourceFormatWrapper, self).__init__(resource, display_detail)
+    super(_ResourceFormatWrapper, self).__init__(resource, display_detail,
+                                                 use_gsutil_style)
 
   def _format_for_list_long(self):
     """Returns string of select properties from resource."""
@@ -160,8 +174,8 @@ class _ResourceFormatWrapper(_BaseFormatWrapper):
       etag_string = ''
 
     if self._readable_sizes and self.resource.size is not None:
-      size = scaled_integer.FormatBinaryNumber(
-          self.resource.size, decimal_places=2)
+      size = resource_formatter_util.get_human_readable_byte_value(
+          self.resource.size, use_gsutil_style=self._use_gsutil_style)
     else:
       # Also handles None values.
       size = str(self.resource.size)
@@ -183,7 +197,8 @@ class _ResourceFormatWrapper(_BaseFormatWrapper):
     if self._display_detail == DisplayDetail.FULL and (
         isinstance(self.resource, resource_reference.BucketResource) or
         isinstance(self.resource, resource_reference.ObjectResource)):
-      return self.resource.get_full_metadata_string(self._full_formatter)
+      return self.resource.get_full_metadata_string(
+          self._full_formatter, show_version_in_url=self._all_versions)
     if self._display_detail == DisplayDetail.JSON:
       return self.resource.get_json_dump()
     if self._all_versions:
@@ -202,7 +217,8 @@ class CloudListTask(task.Task):
                display_detail=DisplayDetail.SHORT,
                include_etag=False,
                readable_sizes=False,
-               recursion_flag=False):
+               recursion_flag=False,
+               use_gsutil_style=False):
     """Initializes task.
 
     Args:
@@ -218,6 +234,7 @@ class CloudListTask(task.Task):
         long lising. For example, print 1024B as 1KiB.
       recursion_flag (bool): Recurse through all containers and format all
         container headers.
+      use_gsutil_style (bool): Outputs closer to the style of the gsutil CLI.
     """
     super(CloudListTask, self).__init__()
 
@@ -228,11 +245,17 @@ class CloudListTask(task.Task):
     self._include_etag = include_etag
     self._readable_sizes = readable_sizes
     self._recursion_flag = recursion_flag
+    self._use_gsutil_style = use_gsutil_style
+
+    if use_gsutil_style:
+      self._full_formatter = (
+          gsutil_full_resource_formatter.GsutilFullResourceFormatter())
+    else:
+      self._full_formatter = (
+          gcloud_full_resource_formatter.GcloudFullResourceFormatter())
 
     self._only_display_buckets = self._cloud_url.is_provider() or (
         self._buckets_flag and self._cloud_url.is_bucket())
-    self._full_formatter = (
-        gcloud_full_resource_formatter.GcloudFullResourceFormatter())
 
   def _get_container_iterator(
       self, cloud_url, recursion_level):
@@ -277,7 +300,9 @@ class CloudListTask(task.Task):
       # Check if we need to display contents of a container.
       if resource.is_container() and recursion_level > 0:
         yield _HeaderFormatWrapper(
-            resource, display_detail=self._display_detail)
+            resource,
+            display_detail=self._display_detail,
+            use_gsutil_style=self._use_gsutil_style)
 
         # Get container contents by adding wildcard to URL.
         nested_iterator = self._get_container_iterator(
@@ -321,6 +346,8 @@ class CloudListTask(task.Task):
     object_count = total_bytes = 0
     for i, resource_wrapper in enumerate(resource_wrappers):
       resource_wrapper_string = str(resource_wrapper)
+      if not resource_wrapper_string:
+        continue
       if i == 0 and resource_wrapper and resource_wrapper_string[0] == '\n':
         # First print should not begin with a line break, which can happen
         # for headers.
@@ -339,7 +366,8 @@ class CloudListTask(task.Task):
       # Long listing needs summary line.
       print('TOTAL: {} objects, {} bytes ({})'.format(
           object_count, int(total_bytes),
-          scaled_integer.FormatBinaryNumber(total_bytes, decimal_places=2)))
+          resource_formatter_util.get_human_readable_byte_value(
+              total_bytes, self._use_gsutil_style)))
 
   def execute(self, task_status_queue=None):
     """Recursively create wildcard iterators to print all relevant items."""

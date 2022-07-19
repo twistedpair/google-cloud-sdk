@@ -280,7 +280,7 @@ def DoInstalledAppBrowserFlowGoogleAuth(scopes,
                                         no_launch_browser=False,
                                         no_browser=False,
                                         remote_bootstrap=None,
-                                        redirect_uri=None):
+                                        auth_proxy_redirect_uri=None):
   """Launches a 3LO oauth2 flow to get google-auth credentials.
 
   Args:
@@ -289,14 +289,15 @@ def DoInstalledAppBrowserFlowGoogleAuth(scopes,
       to use for the flow.  If None, the default client id for the Cloud SDK is
       used.
     no_launch_browser: bool, True if users specify --no-launch-browser flag to
-      use the oob auth flow.
+      use the remote login with auth proxy flow.
     no_browser: bool, True if users specify --no-browser flag to ask another
       gcloud instance to help with authorization.
     remote_bootstrap: str, The auth parameters specified by --remote-bootstrap
       flag. Once used, it means the command is to help authorize another
       gcloud (i.e. gcloud without access to browser).
-    redirect_uri: str, The uri where OAuth service will redirect the user to
-      once the authentication is complete.
+    auth_proxy_redirect_uri: str, The uri where OAuth service will redirect the
+      user to once the authentication is complete for a remote login with auth
+      proxy flow.
   Returns:
     core.credentials.google_auth_credentials.Credentials, The credentials
       obtained from the flow.
@@ -315,11 +316,9 @@ def DoInstalledAppBrowserFlowGoogleAuth(scopes,
           'where gcloud can launch a web browser.')
     user_creds = NoBrowserHelperRunner(
         scopes, client_config).Run(partial_auth_url=remote_bootstrap)
-  elif no_launch_browser:
-    user_creds = RemoteLoginWithAuthProxyFlowRunner(scopes, client_config,
-                                                    redirect_uri).Run()
-  elif not can_launch_browser:
-    user_creds = NoBrowserFlowRunner(scopes, client_config).Run()
+  elif no_launch_browser or not can_launch_browser:
+    user_creds = RemoteLoginWithAuthProxyFlowRunner(
+        scopes, client_config, auth_proxy_redirect_uri).Run()
   else:
     user_creds = BrowserFlowWithNoBrowserFallbackRunner(
         scopes, client_config).Run()

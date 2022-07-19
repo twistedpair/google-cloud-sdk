@@ -307,6 +307,33 @@ class CloudtasksV2beta2(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Buffer(self, request, global_params=None):
+      r"""Creates and buffers a new task without the need to explicitly define a Task message. The queue must be an http queue (i.e., must have HTTP target). This method is used for a simplified application of Cloud Tasks queues in buffer and rate limitting HTTP requests.
+
+      Args:
+        request: (CloudtasksProjectsLocationsQueuesBufferRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BufferQueueResponse) The response message.
+      """
+      config = self.GetMethodConfig('Buffer')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Buffer.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2beta2/projects/{projectsId}/locations/{locationsId}/queues/{queuesId}:buffer',
+        http_method='POST',
+        method_id='cloudtasks.projects.locations.queues.buffer',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2beta2/{+name}:buffer',
+        request_field='bufferQueueRequest',
+        request_type_name='CloudtasksProjectsLocationsQueuesBufferRequest',
+        response_type_name='BufferQueueResponse',
+        supports_download=False,
+    )
+
     def Create(self, request, global_params=None):
       r"""Creates a queue. Queues created with this method allow tasks to live for a maximum of 31 days. After a task is 31 days old, the task will be deleted regardless of whether it was dispatched or not. WARNING: Using this method may have unintended side effects if you are using an App Engine `queue.yaml` or `queue.xml` file to manage your queues. Read [Overview of Queue Management and queue.yaml](https://cloud.google.com/tasks/docs/queue-yaml) before using this method.
 

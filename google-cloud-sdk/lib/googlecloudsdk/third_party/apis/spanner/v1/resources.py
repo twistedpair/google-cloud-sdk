@@ -106,6 +106,14 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_INSTANCES_DATABASES_ROLES = (
+      'projects.instances.databases.roles',
+      'projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/'
+      'databaseRoles/{rolesName}',
+      {},
+      ['projectsId', 'instancesId', 'databasesId', 'rolesName'],
+      True
+  )
   PROJECTS_INSTANCES_DATABASES_SESSIONS = (
       'projects.instances.databases.sessions',
       '{+name}',

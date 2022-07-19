@@ -37,7 +37,6 @@ import six
 API_NAME = 'cloudasset'
 DEFAULT_API_VERSION = 'v1'
 V1P1BETA1_API_VERSION = 'v1p1beta1'
-V1P4BETA1_API_VERSION = 'v1p4beta1'
 V1P5BETA1_API_VERSION = 'v1p5beta1'
 V1P7BETA1_API_VERSION = 'v1p7beta1'
 _HEADERS = {
@@ -48,12 +47,6 @@ _HTTP_ERROR_FORMAT = ('HTTP request failed with status code {}. '
                       'Response content: {}')
 # A dictionary that captures version differences for IAM Policy Analyzer.
 _IAM_POLICY_ANALYZER_VERSION_DICT_JSON = {
-    V1P4BETA1_API_VERSION: {
-        'resource_selector': 'analysisQuery_resourceSelector',
-        'identity_selector': 'analysisQuery_identitySelector',
-        'access_selector': 'analysisQuery_accessSelector',
-        'options': 'options',
-    },
     DEFAULT_API_VERSION: {
         'resource_selector': 'analysisQuery_resourceSelector',
         'identity_selector': 'analysisQuery_identitySelector',
@@ -276,43 +269,26 @@ def MakeAnalyzeIamPolicyHttpRequests(args,
   if args.IsSpecified('execution_timeout'):
     execution_timeout = str(args.execution_timeout) + 's'
 
-  if api_version == V1P4BETA1_API_VERSION:
-    response = service.AnalyzeIamPolicy(
-        messages.CloudassetAnalyzeIamPolicyRequest(
-            analysisQuery_accessSelector_permissions=permissions,
-            analysisQuery_accessSelector_roles=roles,
-            analysisQuery_identitySelector_identity=identity,
-            analysisQuery_resourceSelector_fullResourceName=full_resource_name,
-            options_analyzeServiceAccountImpersonation=analyze_service_account_impersonation,
-            options_executionTimeout=execution_timeout,
-            options_expandGroups=expand_groups,
-            options_expandResources=expand_resources,
-            options_expandRoles=expand_roles,
-            options_outputGroupEdges=output_group_edges,
-            options_outputResourceEdges=output_resource_edges,
-            parent=parent,
-        ))
-  else:
-    access_time = None
-    if args.IsSpecified('access_time'):
-      access_time = times.FormatDateTime(args.access_time)
+  access_time = None
+  if args.IsSpecified('access_time'):
+    access_time = times.FormatDateTime(args.access_time)
 
-    response = service.AnalyzeIamPolicy(
-        messages.CloudassetAnalyzeIamPolicyRequest(
-            analysisQuery_accessSelector_permissions=permissions,
-            analysisQuery_accessSelector_roles=roles,
-            analysisQuery_identitySelector_identity=identity,
-            analysisQuery_options_analyzeServiceAccountImpersonation=analyze_service_account_impersonation,
-            analysisQuery_options_expandGroups=expand_groups,
-            analysisQuery_options_expandResources=expand_resources,
-            analysisQuery_options_expandRoles=expand_roles,
-            analysisQuery_options_outputGroupEdges=output_group_edges,
-            analysisQuery_options_outputResourceEdges=output_resource_edges,
-            analysisQuery_resourceSelector_fullResourceName=full_resource_name,
-            analysisQuery_conditionContext_accessTime=access_time,
-            executionTimeout=execution_timeout,
-            scope=parent,
-        ))
+  response = service.AnalyzeIamPolicy(
+      messages.CloudassetAnalyzeIamPolicyRequest(
+          analysisQuery_accessSelector_permissions=permissions,
+          analysisQuery_accessSelector_roles=roles,
+          analysisQuery_identitySelector_identity=identity,
+          analysisQuery_options_analyzeServiceAccountImpersonation=analyze_service_account_impersonation,
+          analysisQuery_options_expandGroups=expand_groups,
+          analysisQuery_options_expandResources=expand_resources,
+          analysisQuery_options_expandRoles=expand_roles,
+          analysisQuery_options_outputGroupEdges=output_group_edges,
+          analysisQuery_options_outputResourceEdges=output_resource_edges,
+          analysisQuery_resourceSelector_fullResourceName=full_resource_name,
+          analysisQuery_conditionContext_accessTime=access_time,
+          executionTimeout=execution_timeout,
+          scope=parent,
+      ))
   if not args.show_response:
     return _RenderResponseforAnalyzeIamPolicy(
         response, analyze_service_account_impersonation, api_version)
@@ -326,10 +302,7 @@ class AnalyzeIamPolicyClient(object):
     self.api_version = api_version
     self.client = GetClient(api_version)
 
-    if api_version == V1P4BETA1_API_VERSION:
-      self.service = self.client.v1p4beta1
-    else:
-      self.service = self.client.v1
+    self.service = self.client.v1
 
   def Analyze(self, args):
     """Calls MakeAnalyzeIamPolicy method."""
@@ -360,10 +333,6 @@ class AnalyzeIamPolicyClient(object):
     AddCustomJsonFieldMapping('options', '_outputResourceEdges')
     AddCustomJsonFieldMapping('options', '_outputGroupEdges')
     AddCustomJsonFieldMapping('options', '_analyzeServiceAccountImpersonation')
-
-    if self.api_version == V1P4BETA1_API_VERSION and args.IsSpecified(
-        'execution_timeout'):
-      AddCustomJsonFieldMapping('options', '_executionTimeout')
 
     if self.api_version == DEFAULT_API_VERSION and args.IsSpecified(
         'access_time'):
@@ -675,18 +644,12 @@ class IamPolicyAnalysisLongrunningClient(object):
 
   def __init__(self, api_version=DEFAULT_API_VERSION):
     self.message_module = GetMessages(api_version)
-    if api_version == V1P4BETA1_API_VERSION:
-      self.service = GetClient(api_version).v1p4beta1
-    else:
-      self.service = GetClient(api_version).v1
+    self.service = GetClient(api_version).v1
 
-  def Analyze(self, scope, args, api_version=DEFAULT_API_VERSION):
+  def Analyze(self, scope, args):
     """Analyze IAM Policy asynchronously."""
     analysis_query = self.message_module.IamPolicyAnalysisQuery()
-    if api_version == V1P4BETA1_API_VERSION:
-      analysis_query.parent = scope
-    else:
-      analysis_query.scope = scope
+    analysis_query.scope = scope
     if args.IsSpecified('full_resource_name'):
       analysis_query.resourceSelector = self.message_module.ResourceSelector(
           fullResourceName=args.full_resource_name)
@@ -701,27 +664,22 @@ class IamPolicyAnalysisLongrunningClient(object):
         analysis_query.accessSelector.permissions.extend(args.permissions)
 
     output_config = None
-    if api_version == V1P4BETA1_API_VERSION:
+    if args.gcs_output_path:
       output_config = self.message_module.IamPolicyAnalysisOutputConfig(
-          gcsDestination=self.message_module.GcsDestination(
-              uri=args.output_path))
+          gcsDestination=self.message_module.GoogleCloudAssetV1GcsDestination(
+              uri=args.gcs_output_path))
     else:
-      if args.gcs_output_path:
-        output_config = self.message_module.IamPolicyAnalysisOutputConfig(
-            gcsDestination=self.message_module.GoogleCloudAssetV1GcsDestination(
-                uri=args.gcs_output_path))
-      else:
-        output_config = self.message_module.IamPolicyAnalysisOutputConfig(
-            bigqueryDestination=self.message_module
-            .GoogleCloudAssetV1BigQueryDestination(
-                dataset=args.bigquery_dataset,
-                tablePrefix=args.bigquery_table_prefix))
-        if args.IsSpecified('bigquery_partition_key'):
-          output_config.bigqueryDestination.partitionKey = getattr(
-              self.message_module.GoogleCloudAssetV1BigQueryDestination
-              .PartitionKeyValueValuesEnum, args.bigquery_partition_key)
-        if args.IsSpecified('bigquery_write_disposition'):
-          output_config.bigqueryDestination.writeDisposition = args.bigquery_write_disposition
+      output_config = self.message_module.IamPolicyAnalysisOutputConfig(
+          bigqueryDestination=self.message_module
+          .GoogleCloudAssetV1BigQueryDestination(
+              dataset=args.bigquery_dataset,
+              tablePrefix=args.bigquery_table_prefix))
+      if args.IsSpecified('bigquery_partition_key'):
+        output_config.bigqueryDestination.partitionKey = getattr(
+            self.message_module.GoogleCloudAssetV1BigQueryDestination
+            .PartitionKeyValueValuesEnum, args.bigquery_partition_key)
+      if args.IsSpecified('bigquery_write_disposition'):
+        output_config.bigqueryDestination.writeDisposition = args.bigquery_write_disposition
 
     options = self.message_module.Options()
     if args.expand_groups:
@@ -738,24 +696,15 @@ class IamPolicyAnalysisLongrunningClient(object):
       options.analyzeServiceAccountImpersonation = args.analyze_service_account_impersonation
 
     operation = None
-    if api_version == V1P4BETA1_API_VERSION:
-      request = self.message_module.ExportIamPolicyAnalysisRequest(
-          analysisQuery=analysis_query,
-          options=options,
-          outputConfig=output_config)
-      request_message = self.message_module.CloudassetExportIamPolicyAnalysisRequest(
-          parent=scope, exportIamPolicyAnalysisRequest=request)
-      operation = self.service.ExportIamPolicyAnalysis(request_message)
-    else:
-      analysis_query.options = options
-      if args.IsSpecified('access_time'):
-        analysis_query.conditionContext = self.message_module.ConditionContext(
-            accessTime=times.FormatDateTime(args.access_time))
-      request = self.message_module.AnalyzeIamPolicyLongrunningRequest(
-          analysisQuery=analysis_query, outputConfig=output_config)
-      request_message = self.message_module.CloudassetAnalyzeIamPolicyLongrunningRequest(
-          scope=scope, analyzeIamPolicyLongrunningRequest=request)
-      operation = self.service.AnalyzeIamPolicyLongrunning(request_message)
+    analysis_query.options = options
+    if args.IsSpecified('access_time'):
+      analysis_query.conditionContext = self.message_module.ConditionContext(
+          accessTime=times.FormatDateTime(args.access_time))
+    request = self.message_module.AnalyzeIamPolicyLongrunningRequest(
+        analysisQuery=analysis_query, outputConfig=output_config)
+    request_message = self.message_module.CloudassetAnalyzeIamPolicyLongrunningRequest(
+        scope=scope, analyzeIamPolicyLongrunningRequest=request)
+    operation = self.service.AnalyzeIamPolicyLongrunning(request_message)
 
     return operation
 

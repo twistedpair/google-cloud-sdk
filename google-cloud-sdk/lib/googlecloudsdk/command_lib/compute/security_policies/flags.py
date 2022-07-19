@@ -145,6 +145,34 @@ def AddCloudArmorAdaptiveProtection(parser, required=False):
             'transparent.'))
 
 
+def AddCloudArmorAdaptiveProtectionAutoDeploy(parser):
+  """Adds the cloud armor adaptive protection's auto-deploy arguments to the argparse."""
+  parser.add_argument(
+      '--layer7-ddos-defense-auto-deploy-load-threshold',
+      type=float,
+      help=(
+          "Load threshold above which Adaptive Protection's auto-deploy takes actions"
+      ))
+  parser.add_argument(
+      '--layer7-ddos-defense-auto-deploy-confidence-threshold',
+      type=float,
+      help=(
+          "Confidence threshold above which Adaptive Protection's auto-deploy takes actions"
+      ))
+  parser.add_argument(
+      '--layer7-ddos-defense-auto-deploy-impacted-baseline-threshold',
+      type=float,
+      help=(
+          "Impacted baseline threshold below which Adaptive Protection's auto-deploy takes actions"
+      ))
+  parser.add_argument(
+      '--layer7-ddos-defense-auto-deploy-expiration-sec',
+      type=int,
+      help=(
+          "Duration over which Adaptive Protection's auto-deployed actions last"
+      ))
+
+
 def AddAdvancedOptions(parser, required=False):
   """Adds the cloud armor advanced options arguments to the argparse."""
   parser.add_argument(

@@ -57,7 +57,6 @@ BucketDisplayTitlesAndDefaults = collections.namedtuple(
         'logging_config',
         'website_config',
         'cors_config',
-        'encryption_config',
         'lifecycle_config',
         'requester_pays',
         'retention_policy',
@@ -123,17 +122,20 @@ def _get_formatted_line(display_name, value, default_value=None):
   return None
 
 
-def get_formatted_string(url_string, displayable_resource_data,
-                         display_titles_and_defaults):
+def get_formatted_string(url,
+                         displayable_resource_data,
+                         display_titles_and_defaults,
+                         show_version_in_url=False):
   """Returns the formatted string representing the resource.
 
   Args:
-    url_string (str): URL string representing the resource.
+    url (StorageUrl): URL representing the resource.
     displayable_resource_data (resource_reference.DisplayableResourceData):
       Object holding resource metadata that needs to be displayed.
     display_titles_and_defaults (ObjectDisplayTitlesAndDefaults): Holds the
       display titles and default values for each field present in
       DisplayableResourceData.
+    show_version_in_url (bool): Display extended URL with versioning info.
 
   Returns:
     A string representing the Resource for ls -L command.
@@ -143,7 +145,6 @@ def get_formatted_string(url_string, displayable_resource_data,
   # the method and attribute names start with an underscore.
   for key in display_titles_and_defaults._fields:
     field_display_title_and_default = getattr(display_titles_and_defaults, key)
-
     # The field_name present in field_display_title_and_default takes
     # precedence over the key in display_titles_and_defaults.
     if field_display_title_and_default.field_name is not None:
@@ -159,12 +160,10 @@ def get_formatted_string(url_string, displayable_resource_data,
     if line:
       lines.append(line)
 
-  # The data to be displayed might be incomplete.
-  # TODO(b/228209680) Log a single warning in the end.
-  incomplete_warning = displayable_resource_data.get_incomplete_warning()
-  if incomplete_warning is not None:
-    lines.append(resource_util.METADATA_LINE_INDENT_STRING + incomplete_warning)
-
+  if show_version_in_url:
+    url_string = url.url_string
+  else:
+    url_string = url.versionless_url_string
   return ('{url_string}:\n'
           '{fields}').format(
               url_string=url_string,
@@ -177,11 +176,11 @@ class FullResourceFormatter(six.with_metaclass(abc.ABCMeta, object)):
   This FullResourceFormatter is specifically used for ls -L output formatting.
   """
 
-  def format_bucket(self, url_string, displayable_bucket_data):
+  def format_bucket(self, url, displayable_bucket_data):
     """Returns a formatted string representing the BucketResource.
 
     Args:
-      url_string (str): String representing the object.
+      url (StorageUrl): URL representing the object.
       displayable_bucket_data (resource_reference.DisplayableBucketData): A
         DisplayableBucketData instance.
 
@@ -190,13 +189,17 @@ class FullResourceFormatter(six.with_metaclass(abc.ABCMeta, object)):
     """
     raise NotImplementedError('format_bucket must be overridden.')
 
-  def format_object(self, url_string, displayable_object_data):
+  def format_object(self,
+                    url,
+                    displayable_object_data,
+                    show_version_in_url=False):
     """Returns a formatted string representing the ObjectResource.
 
     Args:
-      url_string (str): String representing the object.
+      url (StorageUrl): URL representing the object.
       displayable_object_data (resource_reference.DisplayableResourceData): A
         DisplayableObjectData instance.
+      show_version_in_url (bool): Display extended URL with versioning info.
 
     Returns:
       Formatted multi-line string represnting the ObjectResource.

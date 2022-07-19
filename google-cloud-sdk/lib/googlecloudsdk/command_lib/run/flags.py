@@ -1443,6 +1443,9 @@ def _GetConfigurationChanges(args):
     changes.append(
         config_changes.SetTemplateAnnotationChange(
             container_resource.EGRESS_SETTINGS_ANNOTATION, args.vpc_egress))
+  if 'clear_vpc_connector' in args and args.clear_vpc_connector:
+    # MUST be after 'vpc_egress' change.
+    changes.append(config_changes.ClearVpcConnectorChange())
   if 'command' in args and args.command is not None:
     # Allow passing an empty string here to reset the field
     changes.append(config_changes.ContainerCommandChange(args.command))
@@ -1540,9 +1543,6 @@ def GetServiceConfigurationChanges(args):
       changes.append(config_changes.SetAnnotationChange(key, value))
   if 'revision_suffix' in args and args.revision_suffix:
     changes.append(config_changes.RevisionNameChanges(args.revision_suffix))
-  if 'clear_vpc_connector' in args and args.clear_vpc_connector:
-    # MUST be after 'vpc_egress' change.
-    changes.append(config_changes.ClearVpcConnectorChange())
   if 'connectivity' in args and args.connectivity:
     if args.connectivity == 'internal':
       changes.append(config_changes.EndpointVisibilityChange(True))

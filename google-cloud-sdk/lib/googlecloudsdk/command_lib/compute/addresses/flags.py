@@ -214,3 +214,18 @@ def AddPurpose(parser, support_psc_google_apis):
       The purpose of the address resource. This field is not applicable to
       external addresses.
       """)
+
+
+def AddMoveArguments(parser):
+  """Add flags for move."""
+  parser.add_argument(
+      '--target-project',
+      required=True,
+      help='The target project to move address in. It can be either project '
+      'name or project numerical ID. It must not be the same as the current '
+      'project.')
+  parser.add_argument(
+      '--new-name',
+      help='Name of moved new address. If not specified, current '
+      'address\'s name is used.')
+  parser.add_argument('--description', help='Description of moved new address.')

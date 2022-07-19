@@ -57,6 +57,19 @@ class AbandonedReleaseError(exceptions.Error):
     super(AbandonedReleaseError, self).__init__(error_template)
 
 
+class MultipleSkaffoldSourcesError(exceptions.Error):
+  """Error when multiple sources are given for the Skaffold file."""
+
+  def __init__(self, from_k8s_manifest, skaffold_sources):
+    sources = (', '.join(skaffold_sources))
+    error_msg = (
+        'The --from-k8s-manifest={} flag and Skaffold file flag(s): {} were '
+        'given. This is invalid. When using the --from-k8s-manifest flag the '
+        'Skaffold file is generated for you. You do not need to provide '
+        'Skaffold file sources.').format(from_k8s_manifest, sources)
+    super(MultipleSkaffoldSourcesError, self).__init__(error_msg)
+
+
 class NoSnappedTargetsError(exceptions.Error):
   """Error when a release doesn't contain any snapped target resource."""
 

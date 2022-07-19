@@ -55,6 +55,7 @@ def AddServiceArgument(parser):
       choices=[
           'container-threat-detection',
           'event-threat-detection',
+          'rapid-vulnerability-detection',
           'security-health-analytics',
           'virtual-machine-threat-detection',
           'web-security-scanner',

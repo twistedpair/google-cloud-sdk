@@ -24,6 +24,22 @@ from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
 
 
+def AddExternalAccessRuleToParser(parser, positional=False):
+  """Sets up an argument for the VMware Engine external access rule resource."""
+  name = '--external-access-rule'
+  if positional:
+    name = 'external_access_rule'
+  peering_data = yaml_data.ResourceYAMLData.FromPath(
+      'vmware.network_policies.external_access_rule')
+  resource_spec = concepts.ResourceSpec.FromYaml(peering_data.GetData())
+  presentation_spec = presentation_specs.ResourcePresentationSpec(
+      name=name,
+      concept_spec=resource_spec,
+      required=True,
+      group_help='external_access_rule.')
+  return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
+
+
 def AddNetworkPolicyToParser(parser, positional=False):
   """Sets up an argument for the VMware Engine network policy resource."""
   name = '--network-policy'
@@ -32,19 +48,11 @@ def AddNetworkPolicyToParser(parser, positional=False):
   network_policy_data = yaml_data.ResourceYAMLData.FromPath(
       'vmware.network_policies.network_policy')
   resource_spec = concepts.ResourceSpec.FromYaml(network_policy_data.GetData())
-  if positional:
-    presentation_spec = presentation_specs.ResourcePresentationSpec(
-        name=name,
-        concept_spec=resource_spec,
-        required=True,
-        group_help='network_policy.')
-  else:
-    presentation_spec = presentation_specs.ResourcePresentationSpec(
-        name=name,
-        concept_spec=resource_spec,
-        required=True,
-        group_help='network_policy.',
-        flag_name_overrides={'location': '--network-policy-location'})
+  presentation_spec = presentation_specs.ResourcePresentationSpec(
+      name=name,
+      concept_spec=resource_spec,
+      required=True,
+      group_help='network_policy.')
   return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
 
 

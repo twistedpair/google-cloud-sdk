@@ -692,18 +692,18 @@ def AddReplication(parser):
       'synchronous.').AddToParser(parser)
 
 
-def AddStorageAutoIncrease(parser):
+def AddStorageAutoIncrease(parser, show_negated_in_help=True):
+  kwargs = _GetKwargsForBoolFlag(show_negated_in_help)
   parser.add_argument(
       '--storage-auto-increase',
-      action='store_true',
-      default=None,
       help=('Storage size can be increased, but it cannot be decreased; '
             'storage increases are permanent for the life of the instance. '
             'With this setting enabled, a spike in storage requirements '
             'can result in permanently increased storage costs for your '
             'instance. However, if an instance runs out of available space, '
             'it can result in the instance going offline, dropping existing '
-            'connections. This setting is enabled by default.'))
+            'connections. This setting is enabled by default.'),
+      **kwargs)
 
 
 def AddStorageSize(parser):

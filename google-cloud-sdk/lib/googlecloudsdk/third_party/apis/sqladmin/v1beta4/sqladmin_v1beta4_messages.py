@@ -585,7 +585,8 @@ class DatabaseInstance(_messages.Message):
     replicaConfiguration: Configuration specific to failover replicas and read
       replicas.
     replicaNames: The replicas of the instance.
-    rootPassword: Initial root password. Use only on creation.
+    rootPassword: Initial root password. Use only on creation. You must set
+      root passwords before you can connect to PostgreSQL instances.
     satisfiesPzs: The status indicating if instance satisfiesPzs. Reserved for
       future use.
     scheduledMaintenance: The start time of any upcoming scheduled maintenance
@@ -1578,6 +1579,8 @@ class IpConfiguration(_messages.Message):
     authorizedNetworks: The list of external networks that are allowed to
       connect to the instance using the IP. In 'CIDR' notation, also known as
       'slash' notation (for example: `157.197.200.0/24`).
+    enablePrivatePathForGoogleCloudServices: Controls connectivity to private
+      IP instances from Google services, such as BigQuery.
     ipv4Enabled: Whether the instance is assigned a public IP address or not.
     privateNetwork: The resource link for the VPC network from which the Cloud
       SQL instance is accessible for private IP. For example,
@@ -1590,10 +1593,11 @@ class IpConfiguration(_messages.Message):
 
   allocatedIpRange = _messages.StringField(1)
   authorizedNetworks = _messages.MessageField('AclEntry', 2, repeated=True)
-  ipv4Enabled = _messages.BooleanField(3)
-  privateNetwork = _messages.StringField(4)
-  requireSsl = _messages.BooleanField(5)
-  reservedIpRange = _messages.StringField(6)
+  enablePrivatePathForGoogleCloudServices = _messages.BooleanField(3)
+  ipv4Enabled = _messages.BooleanField(4)
+  privateNetwork = _messages.StringField(5)
+  requireSsl = _messages.BooleanField(6)
+  reservedIpRange = _messages.StringField(7)
 
 
 class IpMapping(_messages.Message):

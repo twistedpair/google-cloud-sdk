@@ -55,3 +55,15 @@ certificate:
     parameter_name: certificatesId
     attribute_name: certificate
     help: Certificate Manager Certificate
+
+trustConfig:
+  name: trustConfig
+  collection: certificatemanager.projects.locations.trustConfigs
+  request_id_field: trustConfigId
+  attributes:
+  - *project
+  - *location
+  - &trustConfig
+    parameter_name: trustConfigsId
+    attribute_name: trust_config
+    help: Certificate Manager Trust Config

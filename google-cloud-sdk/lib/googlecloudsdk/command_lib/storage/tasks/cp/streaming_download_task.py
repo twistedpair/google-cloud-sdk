@@ -43,7 +43,9 @@ class StreamingDownloadTask(task.Task):
                download_stream,
                print_created_message=False,
                user_request_args=None,
-               show_url=False):
+               show_url=False,
+               start_byte=0,
+               end_byte=None):
     """Initializes task.
 
     Args:
@@ -56,6 +58,8 @@ class StreamingDownloadTask(task.Task):
       user_request_args (UserRequestArgs|None): Values for RequestConfig.
       show_url (bool): Says whether or not to print the header before each
         object's content
+      start_byte (int): The byte index to start streaming from.
+      end_byte (int|None): The byte index to stop streaming from.
     """
     super(StreamingDownloadTask, self).__init__()
     self._source_resource = source_resource
@@ -63,8 +67,12 @@ class StreamingDownloadTask(task.Task):
     self._print_created_message = print_created_message
     self._user_request_args = user_request_args
     self._show_url = show_url
+    self._start_byte = start_byte
+    self._end_byte = end_byte
 
   def execute(self, task_status_queue=None):
+    if self._show_url:
+      sys.stderr.write('==> {} <==\n'.format(self._source_resource))
     if task_status_queue:
       progress_callback = progress_callbacks.FilesAndBytesProgressCallback(
           status_queue=task_status_queue,
@@ -79,6 +87,12 @@ class StreamingDownloadTask(task.Task):
     else:
       progress_callback = None
 
+    if (self._source_resource.size and
+        self._start_byte >= self._source_resource.size):
+      if progress_callback:
+        progress_callback(self._source_resource.size)
+      return
+
     request_config = request_config_factory.get_request_config(
         self._source_resource.storage_url,
         decryption_key_hash=self._source_resource.decryption_key_hash,
@@ -86,14 +100,14 @@ class StreamingDownloadTask(task.Task):
     )
 
     provider = self._source_resource.storage_url.scheme
-    if self._show_url:
-      sys.stderr.write('==> {} <==\n'.format(self._source_resource))
     api_factory.get_api(provider).download_object(
         self._source_resource,
         self._download_stream,
         request_config,
         download_strategy=cloud_api.DownloadStrategy.ONE_SHOT,
-        progress_callback=progress_callback)
+        progress_callback=progress_callback,
+        start_byte=self._start_byte,
+        end_byte=self._end_byte)
     self._download_stream.flush()
     if self._print_created_message:
       log.status.Print('Created: {}'.format(self._download_stream.name))
@@ -104,4 +118,7 @@ class StreamingDownloadTask(task.Task):
     return (self._source_resource == other._source_resource and
             self._download_stream == other._download_stream and
             self._print_created_message == other._print_created_message and
-            self._user_request_args == other._user_request_args)
+            self._user_request_args == other._user_request_args and
+            self._show_url == other._show_url and
+            self._start_byte == other._start_byte and
+            self._end_byte == other._end_byte)

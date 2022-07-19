@@ -932,6 +932,10 @@
         "oidcConfig": {
           "description": "OIDC specific configuration.",
           "$ref": "OidcConfig"
+        },
+        "azureadConfig": {
+          "description": "AzureAD specific configuration.",
+          "$ref": "AzureADConfig"
         }
       }
     },
@@ -997,6 +1001,34 @@
         "enableAccessToken": {
           "description": "Enable access token.",
           "type": "boolean"
+        }
+      }
+    },
+    "AzureADConfig": {
+      "id": "AzureADConfig",
+      "description": "Configuration for the AzureAD Auth flow.",
+      "type": "object",
+      "properties": {
+        "clientId": {
+          "description": "ID for the registered client application that makes authentication requests to the Azure AD identity provider.",
+          "type": "string"
+        },
+        "tenant": {
+          "description": "Kind of Azure AD account to be authenticated. Supported values are or for accounts belonging to a specific tenant.",
+          "type": "string"
+        },
+        "kubectlRedirectUri": {
+          "description": "The redirect URL that kubectl uses for authorization.",
+          "type": "string"
+        },
+        "clientSecret": {
+          "description": "Raw client secret will be passed to the GKE Hub CLH.",
+          "type": "string"
+        },
+        "encryptedClientSecret": {
+          "description": "Encrypted AzureAD client secrets.",
+          "type": "string",
+          "format": "byte"
         }
       }
     },

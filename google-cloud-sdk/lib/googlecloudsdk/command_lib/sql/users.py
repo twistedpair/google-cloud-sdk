@@ -71,11 +71,15 @@ def ValidateSetPasswordRequest(args):
         'while discarding the old password.')
 
 
-def CreatePasswordPolicyFromArgs(sql_messages, args):
+def CreatePasswordPolicyFromArgs(sql_messages,
+                                 password_policy,
+                                 args):
   """Generates password policy for the user.
 
   Args:
     sql_messages: module, The messages module that should be used.
+    password_policy: sql_messages.UserPasswordValidationPolicy,
+    The policy to build the new policy off.
     args: argparse.Namespace, The arguments that this command was invoked with.
 
   Returns:
@@ -106,12 +110,9 @@ def CreatePasswordPolicyFromArgs(sql_messages, args):
   if not should_generate_policy:
     return None
 
-  # Config exists, generate password policy.
-  password_policy = sql_messages.UserPasswordValidationPolicy()
-
   # Directly return empty policy to clear the existing password policy.
   if clear_password_policy:
-    return password_policy
+    return sql_messages.UserPasswordValidationPolicy()
 
   if allowed_failed_attempts is not None:
     password_policy.allowedFailedAttempts = allowed_failed_attempts

@@ -91,6 +91,7 @@ AZURE_NODEPOOL_ARGS_TO_UPDATE_MASKS = {
     'min_nodes': 'autoscaling.minNodeCount',
     'max_nodes': 'autoscaling.maxNodeCount',
     'node_version': 'version',
+    'ssh_public_key': 'config.ssh_config.authorized_key',
 }
 
 

@@ -23,6 +23,7 @@ import collections
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.command_lib.util.apis import arg_utils
 
 DEFAULT_CREATE_OR_LIST_FORMAT = """\
     table(
@@ -245,7 +246,7 @@ def AddMigInstanceRedistributionTypeFlag(parser):
       help=help_text)
 
 
-def AddMigDistributionPolicyTargetShapeFlag(parser):
+def AddMigDistributionPolicyTargetShapeFlag(parser, support_any_single_zone):
   """Add --target-distribution-shape flag to the parser."""
   help_text = """\
       Specifies how a regional managed instance group distributes its instances
@@ -270,11 +271,21 @@ def AddMigDistributionPolicyTargetShapeFlag(parser):
           'maximize utilization of unused zonal reservations. Recommended for '
           'batch workloads that do not require high availability.'
   }
+  if support_any_single_zone:
+    choices.update({
+        'any-single-zone':
+            'The group schedules all instances within a single zone. The zone '
+            'is chosen based on hardware support, current resources '
+            'availability, and matching reservations. The group might not be '
+            'able to create the requested number of VMs in case of zonal '
+            'resource availability constraints. Recommended for workloads '
+            'requiring extensive communication between VMs.'
+    })
 
   parser.add_argument(
       '--target-distribution-shape',
       metavar='SHAPE',
-      type=lambda x: x.lower(),
+      type=arg_utils.EnumNameToChoice,
       choices=choices,
       help=help_text)
 

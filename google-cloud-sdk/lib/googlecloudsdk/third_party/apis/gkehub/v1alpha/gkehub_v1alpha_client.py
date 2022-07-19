@@ -352,7 +352,7 @@ class GkehubV1alpha(base_api.BaseApiClient):
         request: (GkehubProjectsLocationsFleetsCreateRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Fleet) The response message.
+        (Operation) The response message.
       """
       config = self.GetMethodConfig('Create')
       return self._RunMethod(
@@ -368,7 +368,7 @@ class GkehubV1alpha(base_api.BaseApiClient):
         relative_path='v1alpha/{+parent}/fleets',
         request_field='fleet',
         request_type_name='GkehubProjectsLocationsFleetsCreateRequest',
-        response_type_name='Fleet',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -379,7 +379,7 @@ class GkehubV1alpha(base_api.BaseApiClient):
         request: (GkehubProjectsLocationsFleetsDeleteRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Empty) The response message.
+        (Operation) The response message.
       """
       config = self.GetMethodConfig('Delete')
       return self._RunMethod(
@@ -395,7 +395,7 @@ class GkehubV1alpha(base_api.BaseApiClient):
         relative_path='v1alpha/{+name}',
         request_field='',
         request_type_name='GkehubProjectsLocationsFleetsDeleteRequest',
-        response_type_name='Empty',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -460,7 +460,7 @@ class GkehubV1alpha(base_api.BaseApiClient):
         request: (GkehubProjectsLocationsFleetsPatchRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Fleet) The response message.
+        (Operation) The response message.
       """
       config = self.GetMethodConfig('Patch')
       return self._RunMethod(
@@ -476,7 +476,7 @@ class GkehubV1alpha(base_api.BaseApiClient):
         relative_path='v1alpha/{+name}',
         request_field='fleet',
         request_type_name='GkehubProjectsLocationsFleetsPatchRequest',
-        response_type_name='Fleet',
+        response_type_name='Operation',
         supports_download=False,
     )
 

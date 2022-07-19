@@ -307,9 +307,6 @@ def AddConnectionTrackingPolicy(parser):
       service-based network load balancers and internal TCP/UDP load balancers
       as part of a connection tracking policy.
       """)
-
-
-def AddStrongSessionAffinity(parser):
   parser.add_argument(
       '--enable-strong-affinity',
       action=arg_parsers.StoreTrueFalseAction,

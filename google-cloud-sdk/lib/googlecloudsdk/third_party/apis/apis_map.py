@@ -469,6 +469,15 @@ MAP = {
                 mtls_endpoint_override=''),
     },
     'beyondcorp': {
+        'v1':
+            APIDef(
+                ApitoolsClientDef(
+                    class_path='googlecloudsdk.third_party.apis.beyondcorp.v1',
+                    client_classpath='beyondcorp_v1_client.BeyondcorpV1',
+                    messages_modulepath='beyondcorp_v1_messages'),
+                default_version=False,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
         'v1alpha':
             APIDef(
                 ApitoolsClientDef(
@@ -627,15 +636,6 @@ MAP = {
                 default_version=False,
                 enable_mtls=True,
                 mtls_endpoint_override='https://cloudasset.mtls.googleapis.com/'),
-        'v1p4beta1':
-            APIDef(
-                ApitoolsClientDef(
-                    class_path='googlecloudsdk.third_party.apis.cloudasset.v1p4beta1',
-                    client_classpath='cloudasset_v1p4beta1_client.CloudassetV1p4beta1',
-                    messages_modulepath='cloudasset_v1p4beta1_messages'),
-                default_version=False,
-                enable_mtls=True,
-                mtls_endpoint_override=''),
         'v1p5beta1':
             APIDef(
                 ApitoolsClientDef(

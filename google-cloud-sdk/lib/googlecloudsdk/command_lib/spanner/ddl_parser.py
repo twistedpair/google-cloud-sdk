@@ -155,7 +155,11 @@ class DDLParser:
     else:
       self.EmitBuffer()
     self.logger_.debug('ddls: %s', self.statements_)
-    return [''.join(frags) for frags in self.statements_ if frags]
+    res = [''.join(frags) for frags in self.statements_ if frags]
+    # See https://stackoverflow.com/q/67857941
+    if res and res[-1].isspace():
+      return res[:-1]
+    return res
 
 
 class DDLParserMode:

@@ -57,6 +57,7 @@ def contains_wildcard(url_string):
 
 def get_wildcard_iterator(url_str,
                           all_versions=False,
+                          error_on_missing_key=True,
                           fields_scope=cloud_api.FieldsScope.NO_ACL,
                           get_bucket_metadata=False,
                           ignore_symlinks=False):
@@ -66,6 +67,9 @@ def get_wildcard_iterator(url_str,
     url_str (str): URL string which may contain wildcard characters.
     all_versions (bool): If true, the iterator yields all versions of objects
         matching the wildcard.  If false, yields just the live object version.
+    error_on_missing_key (bool): If true, and the encryption key needed to
+        decrypt an object is missing, the iterator raises an error for that
+        object.
     fields_scope (cloud_api.FieldsScope): Determines amount of metadata
         returned by API.
     get_bucket_metadata (bool): If true, perform a bucket GET request when
@@ -80,6 +84,7 @@ def get_wildcard_iterator(url_str,
     return CloudWildcardIterator(
         url,
         all_versions=all_versions,
+        error_on_missing_key=error_on_missing_key,
         fields_scope=fields_scope,
         get_bucket_metadata=get_bucket_metadata)
   elif isinstance(url, storage_url.FileUrl):

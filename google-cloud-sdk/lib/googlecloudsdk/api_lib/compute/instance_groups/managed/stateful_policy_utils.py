@@ -54,9 +54,13 @@ def MakeStatefulPolicyPreservedStateDiskEntry(messages, stateful_disk_dict):
         stateful_disk_dict.get('auto-delete').GetAutoDeleteEnumValue(
             messages.StatefulPolicyPreservedStateDiskDevice
             .AutoDeleteValueValuesEnum))
-  # Add all disk_devices to map
-  return messages.StatefulPolicyPreservedState.DisksValue.AdditionalProperty(
-      key=stateful_disk_dict.get('device-name'), value=disk_device)
+  return (messages.StatefulPolicyPreservedState.DisksValue.AdditionalProperty(
+      key=stateful_disk_dict.get('device-name'), value=disk_device))
+
+
+def MakeDiskDeviceNullEntryForDisablingInPatch(client, device_name):
+  return (client.messages.StatefulPolicyPreservedState.DisksValue
+          .AdditionalProperty(key=device_name, value=None))
 
 
 def MakeInternalIPEntry(messages, stateful_ip_dict):

@@ -848,12 +848,53 @@ class Location(_messages.Message):
 class MTLSPolicy(_messages.Message):
   r"""Specification of the MTLSPolicy.
 
+  Enums:
+    ClientValidationModeValueValuesEnum: Specifies whether client connections
+      proceed when a client presents an invalid certificate or no certificate.
+      Required if the policy is to be used with the External HTTPS LB. For
+      Traffic Director it must be empty.
+
   Fields:
     clientValidationCa:  Defines the mechanism to obtain the Certificate
       Authority certificate to validate the client certificate.
+    clientValidationMode: Specifies whether client connections proceed when a
+      client presents an invalid certificate or no certificate. Required if
+      the policy is to be used with the External HTTPS LB. For Traffic
+      Director it must be empty.
+    clientValidationTrustConfig: Reference to the TrustConfig from
+      certificatemanager.googleapis.com namespace. If specified, the chain
+      validation will be performed against certificates configured in the
+      given TrustConfig. Allowed only if the policy is to be used with
+      External HTTPS LB.
   """
 
+  class ClientValidationModeValueValuesEnum(_messages.Enum):
+    r"""Specifies whether client connections proceed when a client presents an
+    invalid certificate or no certificate. Required if the policy is to be
+    used with the External HTTPS LB. For Traffic Director it must be empty.
+
+    Values:
+      CLIENT_VALIDATION_MODE_UNSPECIFIED: Not allowed.
+      ALLOW_UNVERIFIED_OR_MISSING_CLIENT_CERT: Allow connection to the backend
+        even if certificate chain verification of the client certificate
+        failed or no client certificate was presented. The proof of possession
+        of the private key is always checked if client certificate was
+        presented. This mode requires the backend to implement processing of
+        data extracted from a client certificate to authenticate the peer, or
+        to reject connections if the client certificate fingerprint is
+        missing.
+      REJECT_INVALID: Require a client certificate and allow connection to the
+        backend only if verification of the client certificate passed. If no
+        trust stores are specified it will require any client certificate and
+        force the backend to perform authentication of the peer.
+    """
+    CLIENT_VALIDATION_MODE_UNSPECIFIED = 0
+    ALLOW_UNVERIFIED_OR_MISSING_CLIENT_CERT = 1
+    REJECT_INVALID = 2
+
   clientValidationCa = _messages.MessageField('ValidationCA', 1, repeated=True)
+  clientValidationMode = _messages.EnumField('ClientValidationModeValueValuesEnum', 2)
+  clientValidationTrustConfig = _messages.StringField(3)
 
 
 class NetworksecurityOrganizationsLocationsAddressGroupsAddItemsRequest(_messages.Message):

@@ -550,6 +550,9 @@ def SaveSnapshot(environment_ref,
 
 def LoadSnapshot(environment_ref,
                  skip_pypi_packages_installation,
+                 skip_environment_variables_setting,
+                 skip_airflow_overrides_setting,
+                 skip_gcs_data_copying,
                  snapshot_path,
                  release_track=base.ReleaseTrack.ALPHA):
   """Calls the Composer Environments.LoadSnapshot method.
@@ -559,6 +562,11 @@ def LoadSnapshot(environment_ref,
       snapshot for.
     skip_pypi_packages_installation: skip installing the pypi packages during
       the operation.
+    skip_environment_variables_setting: skip setting environment variables
+      during the operation.
+    skip_airflow_overrides_setting: skip setting Airflow overrides during
+      the operation.
+    skip_gcs_data_copying: skip copying GCS data during the operation.
     snapshot_path: path of the specific snapshot to load the snapshot.
     release_track: base.ReleaseTrack, the release track of command. Will dictate
       which Composer client library will be used.
@@ -571,6 +579,9 @@ def LoadSnapshot(environment_ref,
       environment=environment_ref.RelativeName(),
       loadSnapshotRequest=message_module.LoadSnapshotRequest(
           skipPypiPackagesInstallation=skip_pypi_packages_installation,
+          skipEnvironmentVariablesSetting=skip_environment_variables_setting,
+          skipAirflowOverridesSetting=skip_airflow_overrides_setting,
+          skipGcsDataCopying=skip_gcs_data_copying,
           snapshotPath=snapshot_path))
   return GetService(release_track=release_track).LoadSnapshot(request_message)
 

@@ -51,6 +51,16 @@ def AddFieldToUpdateMask(field, patch_request):
   return patch_request
 
 
+def ClearEndpointValue(endpoint, endpoint_name):
+  proto_endpoint_fields = {"cloudFunction"}
+  if endpoint_name in proto_endpoint_fields:
+    # Endpoint is a proto message: Set to None.
+    setattr(endpoint, endpoint_name, None)
+  else:
+    # Endpoint is a string (only a URI): Set to "".
+    setattr(endpoint, endpoint_name, "")
+
+
 def ClearSingleEndpointAttr(patch_request, endpoint_type, endpoint_name):
   """Checks if given endpoint can be removed from Connectivity Test and removes it."""
   test = patch_request.connectivityTest
@@ -64,7 +74,7 @@ def ClearSingleEndpointAttr(patch_request, endpoint_type, endpoint_name):
       non_empty_endpoint_fields += 1
   if (non_empty_endpoint_fields > 1 or
       not getattr(endpoint, endpoint_name, None)):
-    setattr(endpoint, endpoint_name, "")
+    ClearEndpointValue(endpoint, endpoint_name)
     setattr(test, endpoint_type, endpoint)
     patch_request.connectivityTest = test
     return AddFieldToUpdateMask(endpoint_type + "." + endpoint_name,
@@ -106,7 +116,8 @@ def ClearSingleEndpointAttrBeta(patch_request, endpoint_type, endpoint_name):
   test = patch_request.connectivityTest
   endpoint = getattr(test, endpoint_type)
   endpoint_fields = {
-      "instance", "ipAddress", "gkeMasterCluster", "cloudSqlInstance"
+      "instance", "ipAddress", "gkeMasterCluster", "cloudSqlInstance",
+      "cloudFunction"
   }
   non_empty_endpoint_fields = 0
   for field in endpoint_fields:
@@ -114,7 +125,7 @@ def ClearSingleEndpointAttrBeta(patch_request, endpoint_type, endpoint_name):
       non_empty_endpoint_fields += 1
   if (non_empty_endpoint_fields > 1 or
       not getattr(endpoint, endpoint_name, None)):
-    setattr(endpoint, endpoint_name, "")
+    ClearEndpointValue(endpoint, endpoint_name)
     setattr(test, endpoint_type, endpoint)
     patch_request.connectivityTest = test
     return AddFieldToUpdateMask(endpoint_type + "." + endpoint_name,
@@ -132,6 +143,7 @@ def ClearEndpointAttrsBeta(unused_ref, args, patch_request):
       ("clear_source_ip_address", "source", "ipAddress"),
       ("clear_source_gke_master_cluster", "source", "gkeMasterCluster"),
       ("clear_source_cloud_sql_instance", "source", "cloudSqlInstance"),
+      ("clear_source_cloud_function", "source", "cloudFunction"),
       ("clear_destination_instance", "destination", "instance"),
       ("clear_destination_ip_address", "destination", "ipAddress"),
       ("clear_destination_gke_master_cluster", "destination",
@@ -233,4 +245,26 @@ def ValidateCloudSQLInstancesURIs(unused_ref, args, request):
             "Expected Cloud SQL instance in the following format:\n"
             "  projects/my-project/instances/my-instance".format(
                 flag, instance))
+  return request
+
+
+def ValidateCloudFunctionsURIs(unused_ref, args, request):
+  """Checks if all provided Cloud Functions URIs are in correct format."""
+  flags = [
+      "source_cloud_function",
+  ]
+  function_pattern = re.compile(
+      r"projects/(?:[a-z][a-z0-9-\.:]*[a-z0-9])/locations/[-\w]+/functions/[-\w]+"
+  )
+  for flag in flags:
+    if not args.IsSpecified(flag):
+      continue
+
+    function = getattr(args, flag)
+    if not function_pattern.match(function):
+      raise InvalidInputError(
+          "Invalid value for flag {}: {}\n"
+          "Expected Cloud Function in the following format:\n"
+          "  projects/my-project/locations/location/functions/my-function"
+          .format(flag, function))
   return request

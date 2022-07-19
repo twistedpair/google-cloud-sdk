@@ -205,8 +205,8 @@ class CDNPolicy(_messages.Message):
       apply the following default TTLs to these status codes: - HTTP 300
       (Multiple Choice), 301, 308 (Permanent Redirects): 10m - HTTP 404 (Not
       Found), 410 (Gone), 451 (Unavailable For Legal Reasons): 120s - HTTP 405
-      (Method Not Found), 414 (URI Too Long), 501 (Not Implemented): 60s These
-      defaults can be overridden in negativeCachingPolicy
+      (Method Not Found), 501 (Not Implemented): 60s These defaults can be
+      overridden in negativeCachingPolicy
     negativeCachingPolicy: Optional. Sets a cache TTL for the specified HTTP
       status code. negativeCaching must be enabled to configure
       negativeCachingPolicy. - Omitting the policy and leaving negativeCaching
@@ -944,6 +944,103 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
+class ExtensionChain(_messages.Message):
+  r"""ExtensionChain is a resource representing a chain of programmable
+  extensions, to be injected in the request processing path.
+
+  Messages:
+    AnnotationsValue: Optional. Unstructured key-value map holding arbitrary
+      metadata. Introduced to satisfy https://google.aip.dev/128.
+    LabelsValue: Optional. Set of label tags associated with the
+      ExtensionChain resource.
+
+  Fields:
+    annotations: Optional. Unstructured key-value map holding arbitrary
+      metadata. Introduced to satisfy https://google.aip.dev/128.
+    createTime: Output only. The timestamp when the resource was created.
+    description: Optional. A human-readable description of the resource.
+    httpExtensions: List of Extension resources that can process http
+      requests.
+    labels: Optional. Set of label tags associated with the ExtensionChain
+      resource.
+    name: Required. Name of the ExtensionChain resource. It matches pattern `p
+      rojects/{project}/locations/{location}/extensionChains/{extension_chain}
+      `.
+    updateTime: Output only. The timestamp when the resource was updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""Optional. Unstructured key-value map holding arbitrary metadata.
+    Introduced to satisfy https://google.aip.dev/128.
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Set of label tags associated with the ExtensionChain
+    resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  httpExtensions = _messages.MessageField('ExtensionChainExtension', 4, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
+
+
+class ExtensionChainExtension(_messages.Message):
+  r"""A single Extension in a chain.
+
+  Fields:
+    wasmPlugin: Required. The relative resource name of the WasmPlugin
+      resource to execute in format:
+      projects/{project}/locations/{location}/wasmPlugins/{wasm_plugin}.
+  """
+
+  wasmPlugin = _messages.StringField(1)
+
+
 class Gateway(_messages.Message):
   r"""Gateway represents the configuration for a proxy, typically a load
   balancer. It captures the ip:port over which the services are exposed by the
@@ -952,6 +1049,7 @@ class Gateway(_messages.Message):
 
   Enums:
     TypeValueValuesEnum: Immutable. The type of the customer managed gateway.
+      This field is required. If unspecified, an error is returned.
 
   Messages:
     LabelsValue: Optional. Set of label tags associated with the Gateway
@@ -967,9 +1065,10 @@ class Gateway(_messages.Message):
     labels: Optional. Set of label tags associated with the Gateway resource.
     name: Required. Name of the Gateway resource. It matches pattern
       `projects/*/locations/*/gateways/`.
-    ports: Required. One or more ports that the Gateway must receive traffic
-      on. The proxy binds to the ports specified. Gateway listen on 0.0.0.0 on
-      the ports specified below.
+    ports: Required. One or more port numbers (1-65535), on which the Gateway
+      will receive traffic. The proxy binds to the specified ports. Gateways
+      of type 'SECURE_WEB_GATEWAY' are limited to 1 port. Gateways of type
+      'OPEN_MESH' listen on 0.0.0.0 and support multiple ports.
     scope: Required. Immutable. Scope determines how configuration across
       multiple Gateway instances are merged. The configuration for multiple
       Gateway instances with the same scope will be merged as presented as a
@@ -980,12 +1079,14 @@ class Gateway(_messages.Message):
     serverTlsPolicy: Optional. A fully-qualified ServerTLSPolicy URL
       reference. Specifies how TLS traffic is terminated. If empty, TLS
       termination is disabled.
-    type: Immutable. The type of the customer managed gateway.
+    type: Immutable. The type of the customer managed gateway. This field is
+      required. If unspecified, an error is returned.
     updateTime: Output only. The timestamp when the resource was updated.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
-    r"""Immutable. The type of the customer managed gateway.
+    r"""Immutable. The type of the customer managed gateway. This field is
+    required. If unspecified, an error is returned.
 
     Values:
       TYPE_UNSPECIFIED: The type of the customer managed gateway is
@@ -1271,7 +1372,7 @@ class GrpcRouteRetryPolicy(_messages.Message):
 
   Fields:
     numRetries: Specifies the allowed number of retries. This number must be >
-      0. If not specpfied, default to 1.
+      0. If not specified, default to 1.
     retryConditions: - connect-failure: Router will retry on failures
       connecting to Backend Services, for example due to connection timeouts.
       - refused-stream: Router will retry if the backend service resets the
@@ -2182,6 +2283,21 @@ class ListEndpointPoliciesResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class ListExtensionChainsResponse(_messages.Message):
+  r"""Response returned by the ListExtensionChains method.
+
+  Fields:
+    extensionChains: List of ExtensionChain resources.
+    nextPageToken: If there might be more results than those appearing in this
+      response, then `next_page_token` is included. To get the next set of
+      results, call this method again using the value of `next_page_token` as
+      `page_token`.
+  """
+
+  extensionChains = _messages.MessageField('ExtensionChain', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class ListGatewaysResponse(_messages.Message):
   r"""Response returned by the ListGateways method.
 
@@ -2356,6 +2472,36 @@ class ListTlsRoutesResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   tlsRoutes = _messages.MessageField('TlsRoute', 2, repeated=True)
+
+
+class ListWasmPluginVersionsResponse(_messages.Message):
+  r"""Response returned by the ListWasmPluginVersions method.
+
+  Fields:
+    nextPageToken: If there might be more results than those appearing in this
+      response, then `next_page_token` is included. To get the next set of
+      results, call this method again using the value of `next_page_token` as
+      `page_token`.
+    wasmPluginVersions: List of WasmPluginVersion resources.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  wasmPluginVersions = _messages.MessageField('WasmPluginVersion', 2, repeated=True)
+
+
+class ListWasmPluginsResponse(_messages.Message):
+  r"""Response returned by the ListWasmPlugins method.
+
+  Fields:
+    nextPageToken: If there might be more results than those appearing in this
+      response, then `next_page_token` is included. To get the next set of
+      results, call this method again using the value of `next_page_token` as
+      `page_token`.
+    wasmPlugins: List of WasmPlugin resources.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  wasmPlugins = _messages.MessageField('WasmPlugin', 2, repeated=True)
 
 
 class Location(_messages.Message):
@@ -3281,6 +3427,85 @@ class NetworkservicesProjectsLocationsEndpointPoliciesTestIamPermissionsRequest(
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
+class NetworkservicesProjectsLocationsExtensionChainsCreateRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsExtensionChainsCreateRequest object.
+
+  Fields:
+    extensionChain: A ExtensionChain resource to be passed as the request
+      body.
+    extensionChainId: Required. User-provided ID of the ExtensionChain
+      resource to be created.
+    parent: Required. The parent resource of the ExtensionChain. Must be in
+      the format `projects/*/locations/global`.
+  """
+
+  extensionChain = _messages.MessageField('ExtensionChain', 1)
+  extensionChainId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NetworkservicesProjectsLocationsExtensionChainsDeleteRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsExtensionChainsDeleteRequest object.
+
+  Fields:
+    name: Required. A name of the ExtensionChain to delete. Must be in the
+      format `projects/*/locations/global/extensionChains/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsExtensionChainsGetRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsExtensionChainsGetRequest object.
+
+  Fields:
+    name: Required. A name of the ExtensionChain to get. Must be in the format
+      `projects/*/locations/global/extensionChains/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsExtensionChainsListRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsExtensionChainsListRequest object.
+
+  Fields:
+    pageSize: Maximum number of ExtensionChain to return per call. If
+      unspecified, at most 50 ExtensionChains will be returned. The maximum
+      value is 1000; values above 1000 will be coerced to 1000.
+    pageToken: The value returned by the last `ListExtensionChainsResponse`
+      Indicates that this is a continuation of a prior `ListExtensionChains`
+      call, and that the system should return the next page of data.
+    parent: Required. The project and location from which the ExtensionChains
+      should be listed, specified in the format `projects/*/locations/global`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NetworkservicesProjectsLocationsExtensionChainsPatchRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsExtensionChainsPatchRequest object.
+
+  Fields:
+    extensionChain: A ExtensionChain resource to be passed as the request
+      body.
+    name: Required. Name of the ExtensionChain resource. It matches pattern `p
+      rojects/{project}/locations/{location}/extensionChains/{extension_chain}
+      `.
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the ExtensionChain resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then all fields will be overwritten.
+  """
+
+  extensionChain = _messages.MessageField('ExtensionChain', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
 class NetworkservicesProjectsLocationsGatewaysCreateRequest(_messages.Message):
   r"""A NetworkservicesProjectsLocationsGatewaysCreateRequest object.
 
@@ -3757,8 +3982,8 @@ class NetworkservicesProjectsLocationsHttpRoutesListRequest(_messages.Message):
   Fields:
     pageSize: Maximum number of HttpRoutes to return per call.
     pageToken: The value returned by the last `ListHttpRoutesResponse`
-      Indicates that this is a continuation of a prior `ListRouters` call, and
-      that the system should return the next page of data.
+      Indicates that this is a continuation of a prior `ListHttpRoutes` call,
+      and that the system should return the next page of data.
     parent: Required. The project and location from which the HttpRoutes
       should be listed, specified in the format `projects/*/locations/global`.
   """
@@ -4497,8 +4722,8 @@ class NetworkservicesProjectsLocationsTcpRoutesListRequest(_messages.Message):
   Fields:
     pageSize: Maximum number of TcpRoutes to return per call.
     pageToken: The value returned by the last `ListTcpRoutesResponse`
-      Indicates that this is a continuation of a prior `ListRouters` call, and
-      that the system should return the next page of data.
+      Indicates that this is a continuation of a prior `ListTcpRoutes` call,
+      and that the system should return the next page of data.
     parent: Required. The project and location from which the TcpRoutes should
       be listed, specified in the format `projects/*/locations/global`.
   """
@@ -4604,8 +4829,8 @@ class NetworkservicesProjectsLocationsTlsRoutesListRequest(_messages.Message):
   Fields:
     pageSize: Maximum number of TlsRoutes to return per call.
     pageToken: The value returned by the last `ListTlsRoutesResponse`
-      Indicates that this is a continuation of a prior `ListRouters` call, and
-      that the system should return the next page of data.
+      Indicates that this is a continuation of a prior `ListTlsRoutes` call,
+      and that the system should return the next page of data.
     parent: Required. The project and location from which the TlsRoutes should
       be listed, specified in the format `projects/*/locations/global`.
   """
@@ -4649,6 +4874,148 @@ class NetworkservicesProjectsLocationsTlsRoutesTestIamPermissionsRequest(_messag
 
   resource = _messages.StringField(1, required=True)
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class NetworkservicesProjectsLocationsWasmPluginsCreateRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsWasmPluginsCreateRequest object.
+
+  Fields:
+    parent: Required. The parent resource of the WasmPlugin. Must be in the
+      format `projects/*/locations/global`.
+    wasmPlugin: A WasmPlugin resource to be passed as the request body.
+    wasmPluginId: Required. User-provided ID of the WasmPlugin resource to be
+      created.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  wasmPlugin = _messages.MessageField('WasmPlugin', 2)
+  wasmPluginId = _messages.StringField(3)
+
+
+class NetworkservicesProjectsLocationsWasmPluginsDeleteRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsWasmPluginsDeleteRequest object.
+
+  Fields:
+    force: If set to true, any WasmPluginVersions of this WasmPlugin will also
+      be deleted. (Otherwise, the request will only work if the plugin has no
+      versions.) https://google.aip.dev/135#cascading-delete
+    name: Required. A name of the WasmPlugin to delete. Must be in the format
+      `projects/*/locations/global/wasmPlugins/*`.
+  """
+
+  force = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
+
+
+class NetworkservicesProjectsLocationsWasmPluginsGetRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsWasmPluginsGetRequest object.
+
+  Fields:
+    name: Required. A name of the WasmPlugin to get. Must be in the format
+      `projects/*/locations/global/wasmPlugins/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsWasmPluginsListRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsWasmPluginsListRequest object.
+
+  Fields:
+    pageSize: Maximum number of WasmPlugins to return per call. If
+      unspecified, at most 50 WasmPlugins will be returned. The maximum value
+      is 1000; values above 1000 will be coerced to 1000.
+    pageToken: The value returned by the last `ListWasmPluginsResponse`
+      Indicates that this is a continuation of a prior `ListWasmPlugins` call,
+      and that the system should return the next page of data.
+    parent: Required. The project and location from which the WasmPlugins
+      should be listed, specified in the format `projects/*/locations/global`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NetworkservicesProjectsLocationsWasmPluginsPatchRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsWasmPluginsPatchRequest object.
+
+  Fields:
+    name: Required. Name of the WasmPlugins resource. It matches pattern
+      `projects/{project}/locations/{location}/wasmPlugins/{wasm_plugin}`.
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the WasmPlugin resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then all fields will be overwritten.
+    wasmPlugin: A WasmPlugin resource to be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  updateMask = _messages.StringField(2)
+  wasmPlugin = _messages.MessageField('WasmPlugin', 3)
+
+
+class NetworkservicesProjectsLocationsWasmPluginsVersionsCreateRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsWasmPluginsVersionsCreateRequest
+  object.
+
+  Fields:
+    parent: Required. The parent resource of the WasmPluginVersion. Must be in
+      the format `projects/*/locations/global/wasmPlugins/*`.
+    wasmPluginVersion: A WasmPluginVersion resource to be passed as the
+      request body.
+    wasmPluginVersionId: Optional. User-provided ID of the WasmPluginVersion
+      resource to be created. If empty, the system will generate one.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  wasmPluginVersion = _messages.MessageField('WasmPluginVersion', 2)
+  wasmPluginVersionId = _messages.StringField(3)
+
+
+class NetworkservicesProjectsLocationsWasmPluginsVersionsDeleteRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsWasmPluginsVersionsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. A name of the WasmPluginVersion to delete. Must be in the
+      format `projects/*/locations/global/wasmPlugins/*/versions/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsWasmPluginsVersionsGetRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsWasmPluginsVersionsGetRequest object.
+
+  Fields:
+    name: Required. A name of the WasmPluginVersion to get. Must be in the
+      format `projects/*/locations/global/wasmPlugins/*/versions/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsWasmPluginsVersionsListRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsWasmPluginsVersionsListRequest object.
+
+  Fields:
+    pageSize: Maximum number of WasmPluginVersions to return per call. If
+      unspecified, at most 50 WasmPluginVersions will be returned. The maximum
+      value is 1000; values above 1000 will be coerced to 1000.
+    pageToken: The value returned by the last `ListWasmPluginVersionsResponse`
+      Indicates that this is a continuation of a prior
+      `ListWasmPluginVersions` call, and that the system should return the
+      next page of data.
+    parent: Required. The WasmPlugin whose WasmPluginVersions should be
+      listed, specified in the format
+      `projects/*/locations/global/wasmPlugins/*`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class ObservabilityPolicy(_messages.Message):
@@ -5806,6 +6173,307 @@ class UrlRewrite(_messages.Message):
   hostRewrite = _messages.StringField(1)
   pathPrefixRewrite = _messages.StringField(2)
   pathTemplateRewrite = _messages.StringField(3)
+
+
+class WasmPlugin(_messages.Message):
+  r"""WasmPlugin is a resource representing a service executing a customer-
+  provided Wasm module.
+
+  Messages:
+    AnnotationsValue: Optional. Unstructured key-value map holding arbitrary
+      metadata. Introduced to satisfy https://google.aip.dev/128.
+    LabelsValue: Optional. Set of label tags associated with the WasmPlugin
+      resource.
+
+  Fields:
+    annotations: Optional. Unstructured key-value map holding arbitrary
+      metadata. Introduced to satisfy https://google.aip.dev/128.
+    createTime: Output only. The timestamp when the resource was created.
+    description: Optional. A human-readable description of the resource.
+    labels: Optional. Set of label tags associated with the WasmPlugin
+      resource.
+    logConfig: Optional. Specifies the logging options for the activity
+      performed by this WasmPlugin. If logging is enabled, logs will be
+      exported to Cloud Logging. Note that this setting relates to the logs
+      generated by using logging statements in your Wasm code. The http
+      request logs are separately configured in the Media CDN service that
+      uses this WasmPlugin on the request path.
+    mainVersionDetails: Output only. Inlined details of the current main
+      version. Equal to the contents of the WasmPluginVersion pointed to by
+      the "main_version_id" field.
+    mainVersionId: Optional. The ID of the WasmPluginVersion that is the
+      currently serving one. The version referred to must be a child of this
+      WasmPlugin.
+    name: Required. Name of the WasmPlugins resource. It matches pattern
+      `projects/{project}/locations/{location}/wasmPlugins/{wasm_plugin}`.
+    updateTime: Output only. The timestamp when the resource was updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""Optional. Unstructured key-value map holding arbitrary metadata.
+    Introduced to satisfy https://google.aip.dev/128.
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Set of label tags associated with the WasmPlugin resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  logConfig = _messages.MessageField('WasmPluginLogConfig', 5)
+  mainVersionDetails = _messages.MessageField('WasmPluginVersionDetails', 6)
+  mainVersionId = _messages.StringField(7)
+  name = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
+
+
+class WasmPluginLogConfig(_messages.Message):
+  r"""Specifies the logging options for the activity performed by this
+  WasmPlugin. If logging is enabled, logs will be exported to Cloud Logging.
+
+  Fields:
+    enable: Optional. Specifies whether to enable logging for activity by this
+      WasmPlugin. Defaults to false.
+    sampleRate: Optional. Configures the sampling rate of activity logs, where
+      1.0 means all logged activity is reported and 0.0 means no activity is
+      reported. The default value is 1.0, and the value of the field must be
+      in [0, 1]. This field can only be specified if logging is enabled for
+      this WasmPlugin.
+  """
+
+  enable = _messages.BooleanField(1)
+  sampleRate = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+
+
+class WasmPluginRuntimeConfig(_messages.Message):
+  r"""Configuration of the runtime environment in which a WasmPlugin is
+  executed.
+
+  Fields:
+    env: Optional. A list of environment variables to configure on the process
+      running the Wasm module.
+  """
+
+  env = _messages.MessageField('WasmPluginRuntimeConfigEnvVar', 1, repeated=True)
+
+
+class WasmPluginRuntimeConfigEnvVar(_messages.Message):
+  r"""Unix environment variable (key, value).
+
+  Fields:
+    key: Required. Key of the environment variable.
+    value: Optional. Value of the environment variable.
+  """
+
+  key = _messages.StringField(1)
+  value = _messages.StringField(2)
+
+
+class WasmPluginVersion(_messages.Message):
+  r"""A single immutable version of a WasmPlugin (code + runtime config).
+
+  Messages:
+    AnnotationsValue: Optional. Unstructured key-value map holding arbitrary
+      metadata. Introduced to satisfy https://google.aip.dev/128.
+    LabelsValue: Optional. Set of label tags associated with the
+      WasmPluginVersion resource.
+
+  Fields:
+    annotations: Optional. Unstructured key-value map holding arbitrary
+      metadata. Introduced to satisfy https://google.aip.dev/128.
+    createTime: Output only. The timestamp when the resource was created.
+    description: Optional. A human-readable description of the resource.
+    imageDigest: Output only. The resolved digest for the image specified in
+      "image". The digest is resolved during the creation of
+      WasmPluginVersion. This field holds the digest value regardless of
+      whether a tag or digest was originally specified in the "image" field.
+    imageUri: Optional. URI of the container image containing the Wasm plugin,
+      stored in the Artifact Registry. When a new WasmPluginVersion is
+      created, the URI gets resolved to an image digest and saved in the
+      `image_digest` field, and the user-provided tag or digest is removed
+      from the "image" field.
+    labels: Optional. Set of label tags associated with the WasmPluginVersion
+      resource.
+    name: Optional. Name of the WasmPluginVersion resource. System-generated
+      if unspecified by the user. It matches pattern
+      `projects/{project}/locations/{location}/wasmPlugins/{wasm_plugin}/
+      versions/{wasm_plugin_version}'.
+    proxyWasmPluginConfig: Optional. Configuration for the Wasm plugin. The
+      configuration is provided to the Proxy-Wasm plugin at runtime via the
+      proxy_on_configure Proxy-Wasm ABI.
+    runtimeEnvironmentConfig: Optional. Configuration of the runtime
+      environment of this WasmPluginVersion.
+    updateTime: Output only. The timestamp when the resource was updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""Optional. Unstructured key-value map holding arbitrary metadata.
+    Introduced to satisfy https://google.aip.dev/128.
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Set of label tags associated with the WasmPluginVersion
+    resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  imageDigest = _messages.StringField(4)
+  imageUri = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  proxyWasmPluginConfig = _messages.BytesField(8)
+  runtimeEnvironmentConfig = _messages.MessageField('WasmPluginRuntimeConfig', 9)
+  updateTime = _messages.StringField(10)
+
+
+class WasmPluginVersionDetails(_messages.Message):
+  r"""Details of a WasmPluginVersion to be inlined in the WasmPlugin resource.
+
+  Messages:
+    LabelsValue: Optional. Set of label tags associated with the
+      WasmPluginVersion resource.
+
+  Fields:
+    createTime: Output only. The timestamp when the resource was created.
+    description: Optional. A human-readable description of the resource.
+    imageDigest: Output only. The resolved digest for the image specified in
+      "image". The digest is resolved during the creation of
+      WasmPluginVersion. This field holds the digest value regardless of
+      whether a tag or digest was originally specified in the "image" field.
+    imageUri: Required. URI of the container image containing the Wasm plugin,
+      stored in the Artifact Registry. When a new WasmPluginVersion is
+      created, the URI gets resolved to an image digest and saved in the
+      `image_digest` field, and the user-provided tag or digest is removed
+      from the "image" field.
+    labels: Optional. Set of label tags associated with the WasmPluginVersion
+      resource.
+    pluginConfig: Optional. Configuration for the Wasm plugin. The
+      configuration is provided to the Proxy-Wasm plugin at runtime via the
+      proxy_on_configure Proxy-Wasm ABI.
+    runtimeEnvironmentConfig: Optional. Configuration of the runtime
+      environment of this WasmPluginVersion.
+    updateTime: Output only. The timestamp when the resource was updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Set of label tags associated with the WasmPluginVersion
+    resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  imageDigest = _messages.StringField(3)
+  imageUri = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  pluginConfig = _messages.BytesField(6)
+  runtimeEnvironmentConfig = _messages.MessageField('WasmPluginRuntimeConfig', 7)
+  updateTime = _messages.StringField(8)
 
 
 encoding.AddCustomJsonFieldMapping(

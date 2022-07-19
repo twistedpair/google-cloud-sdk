@@ -79,7 +79,11 @@ def validate_args(args):
   """
   if args.monitoring is not None and args.no_monitoring:
     raise exceptions.Error(
-        'Both monitoring and no-monitoring cant be used in the same command')
+        'Both monitoring and no-monitoring cannot be used in the same command')
+  if args.exemptable_namespaces is not None and args.no_exemptable_namespaces:
+    raise exceptions.Error(
+        'Both exemptable-namespaces and no-exemptable-namespaces ' +
+        'cannot be used in the same command')
 
 
 def merge_args_with_poco_hub_config(args, poco_hub_config, messages):
@@ -97,6 +101,8 @@ def merge_args_with_poco_hub_config(args, poco_hub_config, messages):
   if args.exemptable_namespaces:
     exemptable_namespaces = args.exemptable_namespaces.split(',')
     poco_hub_config.exemptableNamespaces = exemptable_namespaces
+  elif args.no_exemptable_namespaces:
+    poco_hub_config.exemptableNamespaces = []
   if args.log_denies_enabled is not None:
     poco_hub_config.logDeniesEnabled = args.log_denies_enabled
   if hasattr(args, 'mutation_enabled') and args.mutation_enabled is not None:

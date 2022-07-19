@@ -2926,6 +2926,19 @@ class GkeClusterConfig(_messages.Message):
   nodePoolTarget = _messages.MessageField('GkeNodePoolTarget', 3, repeated=True)
 
 
+class GkeEphemeralStorageConfig(_messages.Message):
+  r"""GkeEphemeralStorageConfig contains configuration for the ephemeral
+  storage filesystem.
+
+  Fields:
+    localSsdCount: Number of local SSDs to use to back ephemeral storage. Uses
+      NVMe interfaces. Each local SSD is 375 GB in size. If zero, it means to
+      disable using local SSDs as ephemeral storage.
+  """
+
+  localSsdCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
 class GkeNodeConfig(_messages.Message):
   r"""Parameters that describe cluster nodes.
 
@@ -2938,6 +2951,9 @@ class GkeNodeConfig(_messages.Message):
       the key using the following format:
       projects/KEY_PROJECT_ID/locations/LOCATION
       /keyRings/RING_NAME/cryptoKeys/KEY_NAME.
+    ephemeralStorageConfig: Optional. Parameters for the ephemeral storage
+      filesystem. If unspecified, ephemeral storage is backed by the boot
+      disk.
     localSsdCount: Optional. The number of local SSD disks to attach to the
       node, which is limited by the maximum number of disks allowable per zone
       (see Adding Local SSDs
@@ -2960,11 +2976,12 @@ class GkeNodeConfig(_messages.Message):
 
   accelerators = _messages.MessageField('GkeNodePoolAcceleratorConfig', 1, repeated=True)
   bootDiskKmsKey = _messages.StringField(2)
-  localSsdCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  machineType = _messages.StringField(4)
-  minCpuPlatform = _messages.StringField(5)
-  preemptible = _messages.BooleanField(6)
-  spot = _messages.BooleanField(7)
+  ephemeralStorageConfig = _messages.MessageField('GkeEphemeralStorageConfig', 3)
+  localSsdCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  machineType = _messages.StringField(5)
+  minCpuPlatform = _messages.StringField(6)
+  preemptible = _messages.BooleanField(7)
+  spot = _messages.BooleanField(8)
 
 
 class GkeNodePoolAcceleratorConfig(_messages.Message):
@@ -3059,12 +3076,17 @@ class GkeNodePoolTarget(_messages.Message):
         example, controllers and webhooks). Very low resource requirements.
       SPARK_DRIVER: Run work associated with a Spark driver of a job.
       SPARK_EXECUTOR: Run work associated with a Spark executor of a job.
+      SHUFFLE_SERVICE: Run work associated with a shuffle service of a job.
+        During private preview only, this role must be set explicitly, it does
+        not default to DEFAULT. Once the feature reaches public preview, then
+        it will default to DEFAULT as the other roles do.
     """
     ROLE_UNSPECIFIED = 0
     DEFAULT = 1
     CONTROLLER = 2
     SPARK_DRIVER = 3
     SPARK_EXECUTOR = 4
+    SHUFFLE_SERVICE = 5
 
   nodePool = _messages.StringField(1)
   nodePoolConfig = _messages.MessageField('GkeNodePoolConfig', 2)
@@ -3862,6 +3884,33 @@ class KerberosConfig(_messages.Message):
   tgtLifetimeHours = _messages.IntegerField(13, variant=_messages.Variant.INT32)
   truststorePasswordUri = _messages.StringField(14)
   truststoreUri = _messages.StringField(15)
+
+
+class Key(_messages.Message):
+  r"""The key that can be used to share data with the workload.
+
+  Enums:
+    TypeValueValuesEnum: Output only. The type of the key.
+
+  Fields:
+    content: Output only. The content of the key.
+    type: Output only. The type of the key.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Output only. The type of the key.
+
+    Values:
+      KEY_TYPE_UNSPECIFIED: Unspecified
+      RSA: RSA public-key type
+      ECIES: ECIES public-key type
+    """
+    KEY_TYPE_UNSPECIFIED = 0
+    RSA = 1
+    ECIES = 2
+
+  content = _messages.StringField(1)
+  type = _messages.EnumField('TypeValueValuesEnum', 2)
 
 
 class KubernetesClusterConfig(_messages.Message):
@@ -4889,6 +4938,16 @@ class PrestoJob(_messages.Message):
   queryList = _messages.MessageField('QueryList', 7)
 
 
+class PublicKeys(_messages.Message):
+  r"""The public keys informations from the workload.
+
+  Fields:
+    keys: Output only. The list of keys.
+  """
+
+  keys = _messages.MessageField('Key', 1, repeated=True)
+
+
 class PySparkBatch(_messages.Message):
   r"""A configuration for running an Apache PySpark (https://spark.apache.org/
   docs/latest/api/python/getting_started/quickstart.html) batch workload.
@@ -5022,9 +5081,20 @@ class RepairClusterRequest(_messages.Message):
     clusterUuid: Optional. Specifying the cluster_uuid means the RPC will fail
       (with error NOT_FOUND) if a cluster with the specified UUID does not
       exist.
+    gracefulDecommissionTimeout: Optional. Timeout for graceful YARN
+      decomissioning. Graceful decommissioning facilitates the removal of
+      cluster nodes without interrupting jobs in progress. The timeout
+      specifies the amount of time to wait for jobs finish before forcefully
+      removing nodes. The default timeout is 0 for forceful decommissioning,
+      and the maximum timeout period is 1 day. (see JSON Mapping-Duration
+      (https://developers.google.com/protocol-
+      buffers/docs/proto3#json)).graceful_decommission_timeout is supported in
+      Dataproc image versions 1.2+.
     nodePools: Optional. Node pools and corresponding repair action to be
       taken. All node pools should be unique in this request. i.e. Multiple
       entries for the same node pool id are not allowed.
+    parentOperationId: Optional. operation id of the parent operation sending
+      the repair request
     requestId: Optional. A unique ID used to identify the request. If the
       server receives two RepairClusterRequests with the same ID, the second
       request is ignored, and the first google.longrunning.Operation created
@@ -5035,8 +5105,10 @@ class RepairClusterRequest(_messages.Message):
   """
 
   clusterUuid = _messages.StringField(1)
-  nodePools = _messages.MessageField('NodePool', 2, repeated=True)
-  requestId = _messages.StringField(3)
+  gracefulDecommissionTimeout = _messages.StringField(2)
+  nodePools = _messages.MessageField('NodePool', 3, repeated=True)
+  parentOperationId = _messages.StringField(4)
+  requestId = _messages.StringField(5)
 
 
 class ReservationAffinity(_messages.Message):
@@ -5135,6 +5207,8 @@ class RuntimeInfo(_messages.Message):
       interfaces and APIs) to their URIs.
     outputUri: Output only. A URI pointing to the location of the stdout and
       stderr of the workload.
+    publicKeys: Output only. The public keys used for sharing data with this
+      workload.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -5165,6 +5239,7 @@ class RuntimeInfo(_messages.Message):
   diagnosticOutputUri = _messages.StringField(1)
   endpoints = _messages.MessageField('EndpointsValue', 2)
   outputUri = _messages.StringField(3)
+  publicKeys = _messages.MessageField('PublicKeys', 4)
 
 
 class SecurityConfig(_messages.Message):
@@ -5212,6 +5287,7 @@ class Session(_messages.Message):
     runtimeInfo: Output only. Runtime information about session execution.
     spark: Optional. Spark engine config.
     state: Output only. A state of the session.
+    stateHistory: Output only. Historical state information for the session.
     stateMessage: Output only. Session state details, such as a failure
       description if the state is FAILED.
     stateTime: Output only. The time when the session entered a current state.
@@ -5228,14 +5304,14 @@ class Session(_messages.Message):
       CREATING: The session is created before running.
       ACTIVE: The session is running.
       TERMINATING: The session is terminating.
-      SUCCEEDED: The session completed successfully.
+      TERMINATED: The session is terminated successfully.
       FAILED: The session is no longer running due to an error.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
     ACTIVE = 2
     TERMINATING = 3
-    SUCCEEDED = 4
+    TERMINATED = 4
     FAILED = 5
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -5277,10 +5353,11 @@ class Session(_messages.Message):
   runtimeInfo = _messages.MessageField('RuntimeInfo', 8)
   spark = _messages.MessageField('SparkConfig', 9)
   state = _messages.EnumField('StateValueValuesEnum', 10)
-  stateMessage = _messages.StringField(11)
-  stateTime = _messages.StringField(12)
-  user = _messages.StringField(13)
-  uuid = _messages.StringField(14)
+  stateHistory = _messages.MessageField('SessionStateHistory', 11, repeated=True)
+  stateMessage = _messages.StringField(12)
+  stateTime = _messages.StringField(13)
+  user = _messages.StringField(14)
+  uuid = _messages.StringField(15)
 
 
 class SessionOperationMetadata(_messages.Message):
@@ -5349,6 +5426,44 @@ class SessionOperationMetadata(_messages.Message):
   session = _messages.StringField(6)
   sessionUuid = _messages.StringField(7)
   warnings = _messages.StringField(8, repeated=True)
+
+
+class SessionStateHistory(_messages.Message):
+  r"""Historical state information.
+
+  Enums:
+    StateValueValuesEnum: Output only. The state of the session at this point
+      in history.
+
+  Fields:
+    state: Output only. The state of the session at this point in history.
+    stateMessage: Output only. Details about the state at this point in
+      history.
+    stateStartTime: Output only. The time when the session entered the
+      historical state.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the session at this point in history.
+
+    Values:
+      STATE_UNSPECIFIED: The session state is unknown.
+      CREATING: The session is created before running.
+      ACTIVE: The session is running.
+      TERMINATING: The session is terminating.
+      TERMINATED: The session is terminated successfully.
+      FAILED: The session is no longer running due to an error.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    ACTIVE = 2
+    TERMINATING = 3
+    TERMINATED = 4
+    FAILED = 5
+
+  state = _messages.EnumField('StateValueValuesEnum', 1)
+  stateMessage = _messages.StringField(2)
+  stateStartTime = _messages.StringField(3)
 
 
 class SetIamPolicyRequest(_messages.Message):

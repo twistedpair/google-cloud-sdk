@@ -345,14 +345,16 @@ class AuthMethod(_messages.Message):
   authentication method (e.g., OIDC and LDAP) can be set per AuthMethod.
 
   Fields:
+    azureadConfig: AzureAD specific configuration.
     name: Identifier for auth config.
     oidcConfig: OIDC specific configuration.
     proxy: Proxy server address to use for auth method.
   """
 
-  name = _messages.StringField(1)
-  oidcConfig = _messages.MessageField('OidcConfig', 2)
-  proxy = _messages.StringField(3)
+  azureadConfig = _messages.MessageField('AzureADConfig', 1)
+  name = _messages.StringField(2)
+  oidcConfig = _messages.MessageField('OidcConfig', 3)
+  proxy = _messages.StringField(4)
 
 
 class AuthorizerFeatureSpec(_messages.Message):
@@ -367,6 +369,26 @@ class AuthorizerFeatureState(_messages.Message):
   Authorizer Feature.
   """
 
+
+
+class AzureADConfig(_messages.Message):
+  r"""Configuration for the AzureAD Auth flow.
+
+  Fields:
+    clientId: ID for the registered client application that makes
+      authentication requests to the Azure AD identity provider.
+    clientSecret: Raw client secret will be passed to the GKE Hub CLH.
+    encryptedClientSecret: Encrypted AzureAD client secrets.
+    kubectlRedirectUri: The redirect URL that kubectl uses for authorization.
+    tenant: Kind of Azure AD account to be authenticated. Supported values are
+      or for accounts belonging to a specific tenant.
+  """
+
+  clientId = _messages.StringField(1)
+  clientSecret = _messages.StringField(2)
+  encryptedClientSecret = _messages.BytesField(3)
+  kubectlRedirectUri = _messages.StringField(4)
+  tenant = _messages.StringField(5)
 
 
 class BinauthzConfig(_messages.Message):

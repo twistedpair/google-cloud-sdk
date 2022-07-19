@@ -1174,7 +1174,7 @@
           "$ref": "CDNPolicyCacheKeyPolicy"
         },
         "negativeCaching": {
-          "description": "Optional. Negative caching allows per-status code TTLs to be set, in order to apply fine-grained caching for common errors or redirects. This can reduce the load on your origin and improve end-user experience by reducing response latency. By default, the CDNPolicy will apply the following default TTLs to these status codes: - HTTP 300 (Multiple Choice), 301, 308 (Permanent Redirects): 10m - HTTP 404 (Not Found), 410 (Gone), 451 (Unavailable For Legal Reasons): 120s - HTTP 405 (Method Not Found), 414 (URI Too Long), 501 (Not Implemented): 60s These defaults can be overridden in negativeCachingPolicy",
+          "description": "Optional. Negative caching allows per-status code TTLs to be set, in order to apply fine-grained caching for common errors or redirects. This can reduce the load on your origin and improve end-user experience by reducing response latency. By default, the CDNPolicy will apply the following default TTLs to these status codes: - HTTP 300 (Multiple Choice), 301, 308 (Permanent Redirects): 10m - HTTP 404 (Not Found), 410 (Gone), 451 (Unavailable For Legal Reasons): 120s - HTTP 405 (Method Not Found), 501 (Not Implemented): 60s These defaults can be overridden in negativeCachingPolicy",
           "type": "boolean"
         },
         "negativeCachingPolicy": {
@@ -1368,6 +1368,325 @@
       "properties": {
       }
     },
+    "ListExtensionChainsResponse": {
+      "id": "ListExtensionChainsResponse",
+      "description": "Response returned by the ListExtensionChains method.",
+      "type": "object",
+      "properties": {
+        "extensionChains": {
+          "description": "List of ExtensionChain resources.",
+          "type": "array",
+          "items": {
+            "$ref": "ExtensionChain"
+          }
+        },
+        "nextPageToken": {
+          "description": "If there might be more results than those appearing in this response, then `next_page_token` is included. To get the next set of results, call this method again using the value of `next_page_token` as `page_token`.",
+          "type": "string"
+        }
+      }
+    },
+    "ExtensionChain": {
+      "id": "ExtensionChain",
+      "description": "ExtensionChain is a resource representing a chain of programmable extensions, to be injected in the request processing path.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. Name of the ExtensionChain resource. It matches pattern `projects\/{project}\/locations\/{location}\/extensionChains\/{extension_chain}`.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. The timestamp when the resource was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The timestamp when the resource was updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "description": {
+          "description": "Optional. A human-readable description of the resource.",
+          "type": "string"
+        },
+        "labels": {
+          "description": "Optional. Set of label tags associated with the ExtensionChain resource.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "annotations": {
+          "description": "Optional. Unstructured key-value map holding arbitrary metadata. Introduced to satisfy https:\/\/google.aip.dev\/128.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "httpExtensions": {
+          "description": "List of Extension resources that can process http requests.",
+          "type": "array",
+          "items": {
+            "$ref": "ExtensionChainExtension"
+          }
+        }
+      }
+    },
+    "ExtensionChainExtension": {
+      "id": "ExtensionChainExtension",
+      "description": "A single Extension in a chain.",
+      "type": "object",
+      "properties": {
+        "wasmPlugin": {
+          "description": "Required. The relative resource name of the WasmPlugin resource to execute in format: projects\/{project}\/locations\/{location}\/wasmPlugins\/{wasm_plugin}.",
+          "type": "string"
+        }
+      }
+    },
+    "ListWasmPluginVersionsResponse": {
+      "id": "ListWasmPluginVersionsResponse",
+      "description": "Response returned by the ListWasmPluginVersions method.",
+      "type": "object",
+      "properties": {
+        "wasmPluginVersions": {
+          "description": "List of WasmPluginVersion resources.",
+          "type": "array",
+          "items": {
+            "$ref": "WasmPluginVersion"
+          }
+        },
+        "nextPageToken": {
+          "description": "If there might be more results than those appearing in this response, then `next_page_token` is included. To get the next set of results, call this method again using the value of `next_page_token` as `page_token`.",
+          "type": "string"
+        }
+      }
+    },
+    "WasmPluginVersion": {
+      "id": "WasmPluginVersion",
+      "description": "A single immutable version of a WasmPlugin (code + runtime config).",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Optional. Name of the WasmPluginVersion resource. System-generated if unspecified by the user. It matches pattern `projects\/{project}\/locations\/{location}\/wasmPlugins\/{wasm_plugin}\/ versions\/{wasm_plugin_version}'.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. The timestamp when the resource was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The timestamp when the resource was updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "description": {
+          "description": "Optional. A human-readable description of the resource.",
+          "type": "string"
+        },
+        "labels": {
+          "description": "Optional. Set of label tags associated with the WasmPluginVersion resource.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "annotations": {
+          "description": "Optional. Unstructured key-value map holding arbitrary metadata. Introduced to satisfy https:\/\/google.aip.dev\/128.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "imageUri": {
+          "description": "Optional. URI of the container image containing the Wasm plugin, stored in the Artifact Registry. When a new WasmPluginVersion is created, the URI gets resolved to an image digest and saved in the `image_digest` field, and the user-provided tag or digest is removed from the \"image\" field.",
+          "type": "string"
+        },
+        "imageDigest": {
+          "description": "Output only. The resolved digest for the image specified in \"image\". The digest is resolved during the creation of WasmPluginVersion. This field holds the digest value regardless of whether a tag or digest was originally specified in the \"image\" field.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "proxyWasmPluginConfig": {
+          "description": "Optional. Configuration for the Wasm plugin. The configuration is provided to the Proxy-Wasm plugin at runtime via the proxy_on_configure Proxy-Wasm ABI.",
+          "type": "string",
+          "format": "byte"
+        },
+        "runtimeEnvironmentConfig": {
+          "description": "Optional. Configuration of the runtime environment of this WasmPluginVersion.",
+          "$ref": "WasmPluginRuntimeConfig"
+        }
+      }
+    },
+    "WasmPluginRuntimeConfig": {
+      "id": "WasmPluginRuntimeConfig",
+      "description": "Configuration of the runtime environment in which a WasmPlugin is executed.",
+      "type": "object",
+      "properties": {
+        "env": {
+          "description": "Optional. A list of environment variables to configure on the process running the Wasm module.",
+          "type": "array",
+          "items": {
+            "$ref": "WasmPluginRuntimeConfigEnvVar"
+          }
+        }
+      }
+    },
+    "WasmPluginRuntimeConfigEnvVar": {
+      "id": "WasmPluginRuntimeConfigEnvVar",
+      "description": "Unix environment variable (key, value).",
+      "type": "object",
+      "properties": {
+        "key": {
+          "description": "Required. Key of the environment variable.",
+          "type": "string"
+        },
+        "value": {
+          "description": "Optional. Value of the environment variable.",
+          "type": "string"
+        }
+      }
+    },
+    "ListWasmPluginsResponse": {
+      "id": "ListWasmPluginsResponse",
+      "description": "Response returned by the ListWasmPlugins method.",
+      "type": "object",
+      "properties": {
+        "wasmPlugins": {
+          "description": "List of WasmPlugin resources.",
+          "type": "array",
+          "items": {
+            "$ref": "WasmPlugin"
+          }
+        },
+        "nextPageToken": {
+          "description": "If there might be more results than those appearing in this response, then `next_page_token` is included. To get the next set of results, call this method again using the value of `next_page_token` as `page_token`.",
+          "type": "string"
+        }
+      }
+    },
+    "WasmPlugin": {
+      "id": "WasmPlugin",
+      "description": "WasmPlugin is a resource representing a service executing a customer-provided Wasm module.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. Name of the WasmPlugins resource. It matches pattern `projects\/{project}\/locations\/{location}\/wasmPlugins\/{wasm_plugin}`.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. The timestamp when the resource was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The timestamp when the resource was updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "description": {
+          "description": "Optional. A human-readable description of the resource.",
+          "type": "string"
+        },
+        "labels": {
+          "description": "Optional. Set of label tags associated with the WasmPlugin resource.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "annotations": {
+          "description": "Optional. Unstructured key-value map holding arbitrary metadata. Introduced to satisfy https:\/\/google.aip.dev\/128.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "mainVersionId": {
+          "description": "Optional. The ID of the WasmPluginVersion that is the currently serving one. The version referred to must be a child of this WasmPlugin.",
+          "type": "string"
+        },
+        "mainVersionDetails": {
+          "description": "Output only. Inlined details of the current main version. Equal to the contents of the WasmPluginVersion pointed to by the \"main_version_id\" field.",
+          "readOnly": true,
+          "$ref": "WasmPluginVersionDetails"
+        },
+        "logConfig": {
+          "description": "Optional. Specifies the logging options for the activity performed by this WasmPlugin. If logging is enabled, logs will be exported to Cloud Logging. Note that this setting relates to the logs generated by using logging statements in your Wasm code. The http request logs are separately configured in the Media CDN service that uses this WasmPlugin on the request path.",
+          "$ref": "WasmPluginLogConfig"
+        }
+      }
+    },
+    "WasmPluginVersionDetails": {
+      "id": "WasmPluginVersionDetails",
+      "description": "Details of a WasmPluginVersion to be inlined in the WasmPlugin resource.",
+      "type": "object",
+      "properties": {
+        "createTime": {
+          "description": "Output only. The timestamp when the resource was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The timestamp when the resource was updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "description": {
+          "description": "Optional. A human-readable description of the resource.",
+          "type": "string"
+        },
+        "labels": {
+          "description": "Optional. Set of label tags associated with the WasmPluginVersion resource.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "imageUri": {
+          "description": "Required. URI of the container image containing the Wasm plugin, stored in the Artifact Registry. When a new WasmPluginVersion is created, the URI gets resolved to an image digest and saved in the `image_digest` field, and the user-provided tag or digest is removed from the \"image\" field.",
+          "type": "string"
+        },
+        "imageDigest": {
+          "description": "Output only. The resolved digest for the image specified in \"image\". The digest is resolved during the creation of WasmPluginVersion. This field holds the digest value regardless of whether a tag or digest was originally specified in the \"image\" field.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "pluginConfig": {
+          "description": "Optional. Configuration for the Wasm plugin. The configuration is provided to the Proxy-Wasm plugin at runtime via the proxy_on_configure Proxy-Wasm ABI.",
+          "type": "string",
+          "format": "byte"
+        },
+        "runtimeEnvironmentConfig": {
+          "description": "Optional. Configuration of the runtime environment of this WasmPluginVersion.",
+          "$ref": "WasmPluginRuntimeConfig"
+        }
+      }
+    },
+    "WasmPluginLogConfig": {
+      "id": "WasmPluginLogConfig",
+      "description": "Specifies the logging options for the activity performed by this WasmPlugin. If logging is enabled, logs will be exported to Cloud Logging.",
+      "type": "object",
+      "properties": {
+        "enable": {
+          "description": "Optional. Specifies whether to enable logging for activity by this WasmPlugin. Defaults to false.",
+          "type": "boolean"
+        },
+        "sampleRate": {
+          "description": "Optional. Configures the sampling rate of activity logs, where 1.0 means all logged activity is reported and 0.0 means no activity is reported. The default value is 1.0, and the value of the field must be in [0, 1]. This field can only be specified if logging is enabled for this WasmPlugin.",
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
     "ListGatewaysResponse": {
       "id": "ListGatewaysResponse",
       "description": "Response returned by the ListGateways method.",
@@ -1424,7 +1743,7 @@
           "type": "string"
         },
         "type": {
-          "description": "Immutable. The type of the customer managed gateway.",
+          "description": "Immutable. The type of the customer managed gateway. This field is required. If unspecified, an error is returned.",
           "type": "string",
           "enumDescriptions": [
             "The type of the customer managed gateway is unspecified.",
@@ -1438,7 +1757,7 @@
           ]
         },
         "ports": {
-          "description": "Required. One or more ports that the Gateway must receive traffic on. The proxy binds to the ports specified. Gateway listen on 0.0.0.0 on the ports specified below.",
+          "description": "Required. One or more port numbers (1-65535), on which the Gateway will receive traffic. The proxy binds to the specified ports. Gateways of type 'SECURE_WEB_GATEWAY' are limited to 1 port. Gateways of type 'OPEN_MESH' listen on 0.0.0.0 and support multiple ports.",
           "type": "array",
           "items": {
             "type": "integer",
@@ -1747,7 +2066,7 @@
           }
         },
         "numRetries": {
-          "description": "Specifies the allowed number of retries. This number must be > 0. If not specpfied, default to 1.",
+          "description": "Specifies the allowed number of retries. This number must be > 0. If not specified, default to 1.",
           "type": "integer",
           "format": "uint32"
         }
@@ -4504,6 +4823,451 @@
                 }
               }
             },
+            "extensionChains": {
+              "methods": {
+                "list": {
+                  "id": "networkservices.projects.locations.extensionChains.list",
+                  "path": "v1alpha1/{+parent}/extensionChains",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/extensionChains",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The project and location from which the ExtensionChains should be listed, specified in the format `projects\/*\/locations\/global`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Maximum number of ExtensionChain to return per call. If unspecified, at most 50 ExtensionChains will be returned. The maximum value is 1000; values above 1000 will be coerced to 1000.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "The value returned by the last `ListExtensionChainsResponse` Indicates that this is a continuation of a prior `ListExtensionChains` call, and that the system should return the next page of data.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListExtensionChainsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists ExtensionChains in a given project and location."
+                },
+                "get": {
+                  "id": "networkservices.projects.locations.extensionChains.get",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/extensionChains/{extensionChainsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. A name of the ExtensionChain to get. Must be in the format `projects\/*\/locations\/global\/extensionChains\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/extensionChains\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "ExtensionChain"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets details of a single ExtensionChain."
+                },
+                "create": {
+                  "id": "networkservices.projects.locations.extensionChains.create",
+                  "path": "v1alpha1/{+parent}/extensionChains",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/extensionChains",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent resource of the ExtensionChain. Must be in the format `projects\/*\/locations\/global`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "extensionChainId": {
+                      "description": "Required. User-provided ID of the ExtensionChain resource to be created.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "ExtensionChain"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a new ExtensionChain in a given project and location."
+                },
+                "patch": {
+                  "id": "networkservices.projects.locations.extensionChains.patch",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/extensionChains/{extensionChainsId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Name of the ExtensionChain resource. It matches pattern `projects\/{project}\/locations\/{location}\/extensionChains\/{extension_chain}`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/extensionChains\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Optional. Field mask is used to specify the fields to be overwritten in the ExtensionChain resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "ExtensionChain"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Updates the parameters of a single ExtensionChain."
+                },
+                "delete": {
+                  "id": "networkservices.projects.locations.extensionChains.delete",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/extensionChains/{extensionChainsId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. A name of the ExtensionChain to delete. Must be in the format `projects\/*\/locations\/global\/extensionChains\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/extensionChains\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a single ExtensionChain."
+                }
+              }
+            },
+            "wasmPlugins": {
+              "methods": {
+                "list": {
+                  "id": "networkservices.projects.locations.wasmPlugins.list",
+                  "path": "v1alpha1/{+parent}/wasmPlugins",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/wasmPlugins",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The project and location from which the WasmPlugins should be listed, specified in the format `projects\/*\/locations\/global`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Maximum number of WasmPlugins to return per call. If unspecified, at most 50 WasmPlugins will be returned. The maximum value is 1000; values above 1000 will be coerced to 1000.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "The value returned by the last `ListWasmPluginsResponse` Indicates that this is a continuation of a prior `ListWasmPlugins` call, and that the system should return the next page of data.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListWasmPluginsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists WasmPlugins in a given project and location."
+                },
+                "get": {
+                  "id": "networkservices.projects.locations.wasmPlugins.get",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/wasmPlugins/{wasmPluginsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. A name of the WasmPlugin to get. Must be in the format `projects\/*\/locations\/global\/wasmPlugins\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/wasmPlugins\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "WasmPlugin"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets details of a single WasmPlugin."
+                },
+                "create": {
+                  "id": "networkservices.projects.locations.wasmPlugins.create",
+                  "path": "v1alpha1/{+parent}/wasmPlugins",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/wasmPlugins",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent resource of the WasmPlugin. Must be in the format `projects\/*\/locations\/global`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "wasmPluginId": {
+                      "description": "Required. User-provided ID of the WasmPlugin resource to be created.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "WasmPlugin"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a new WasmPlugin in a given project and location."
+                },
+                "patch": {
+                  "id": "networkservices.projects.locations.wasmPlugins.patch",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/wasmPlugins/{wasmPluginsId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Name of the WasmPlugins resource. It matches pattern `projects\/{project}\/locations\/{location}\/wasmPlugins\/{wasm_plugin}`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/wasmPlugins\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Optional. Field mask is used to specify the fields to be overwritten in the WasmPlugin resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "WasmPlugin"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Updates the parameters of a single WasmPlugin."
+                },
+                "delete": {
+                  "id": "networkservices.projects.locations.wasmPlugins.delete",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/wasmPlugins/{wasmPluginsId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. A name of the WasmPlugin to delete. Must be in the format `projects\/*\/locations\/global\/wasmPlugins\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/wasmPlugins\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "force": {
+                      "description": "If set to true, any WasmPluginVersions of this WasmPlugin will also be deleted. (Otherwise, the request will only work if the plugin has no versions.) https:\/\/google.aip.dev\/135#cascading-delete",
+                      "location": "query",
+                      "type": "boolean"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a single WasmPlugin."
+                }
+              }
+              ,
+              "resources": {
+                "versions": {
+                  "methods": {
+                    "list": {
+                      "id": "networkservices.projects.locations.wasmPlugins.versions.list",
+                      "path": "v1alpha1/{+parent}/versions",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/wasmPlugins/{wasmPluginsId}/versions",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The WasmPlugin whose WasmPluginVersions should be listed, specified in the format `projects\/*\/locations\/global\/wasmPlugins\/*`.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/wasmPlugins\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "Maximum number of WasmPluginVersions to return per call. If unspecified, at most 50 WasmPluginVersions will be returned. The maximum value is 1000; values above 1000 will be coerced to 1000.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "The value returned by the last `ListWasmPluginVersionsResponse` Indicates that this is a continuation of a prior `ListWasmPluginVersions` call, and that the system should return the next page of data.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListWasmPluginVersionsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Lists WasmPluginVersions in a given project and location."
+                    },
+                    "get": {
+                      "id": "networkservices.projects.locations.wasmPlugins.versions.get",
+                      "path": "v1alpha1/{+name}",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/wasmPlugins/{wasmPluginsId}/versions/{versionsId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. A name of the WasmPluginVersion to get. Must be in the format `projects\/*\/locations\/global\/wasmPlugins\/*\/versions\/*`.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/wasmPlugins\/[^\/]+\/versions\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "WasmPluginVersion"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets details of a single WasmPluginVersion."
+                    },
+                    "create": {
+                      "id": "networkservices.projects.locations.wasmPlugins.versions.create",
+                      "path": "v1alpha1/{+parent}/versions",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/wasmPlugins/{wasmPluginsId}/versions",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The parent resource of the WasmPluginVersion. Must be in the format `projects\/*\/locations\/global\/wasmPlugins\/*`.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/wasmPlugins\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "wasmPluginVersionId": {
+                          "description": "Optional. User-provided ID of the WasmPluginVersion resource to be created. If empty, the system will generate one.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "WasmPluginVersion"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Creates a new WasmPluginVersion in a given project and location."
+                    },
+                    "delete": {
+                      "id": "networkservices.projects.locations.wasmPlugins.versions.delete",
+                      "path": "v1alpha1/{+name}",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/wasmPlugins/{wasmPluginsId}/versions/{versionsId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. A name of the WasmPluginVersion to delete. Must be in the format `projects\/*\/locations\/global\/wasmPlugins\/*\/versions\/*`.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/wasmPlugins\/[^\/]+\/versions\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Deletes a single WasmPluginVersion."
+                    }
+                  }
+                }
+              }
+            },
             "gateways": {
               "methods": {
                 "list": {
@@ -5258,7 +6022,7 @@
                       "format": "int32"
                     },
                     "pageToken": {
-                      "description": "The value returned by the last `ListHttpRoutesResponse` Indicates that this is a continuation of a prior `ListRouters` call, and that the system should return the next page of data.",
+                      "description": "The value returned by the last `ListHttpRoutesResponse` Indicates that this is a continuation of a prior `ListHttpRoutes` call, and that the system should return the next page of data.",
                       "location": "query",
                       "type": "string"
                     }
@@ -5502,7 +6266,7 @@
                       "format": "int32"
                     },
                     "pageToken": {
-                      "description": "The value returned by the last `ListTcpRoutesResponse` Indicates that this is a continuation of a prior `ListRouters` call, and that the system should return the next page of data.",
+                      "description": "The value returned by the last `ListTcpRoutesResponse` Indicates that this is a continuation of a prior `ListTcpRoutes` call, and that the system should return the next page of data.",
                       "location": "query",
                       "type": "string"
                     }
@@ -5746,7 +6510,7 @@
                       "format": "int32"
                     },
                     "pageToken": {
-                      "description": "The value returned by the last `ListTlsRoutesResponse` Indicates that this is a continuation of a prior `ListRouters` call, and that the system should return the next page of data.",
+                      "description": "The value returned by the last `ListTlsRoutesResponse` Indicates that this is a continuation of a prior `ListTlsRoutes` call, and that the system should return the next page of data.",
                       "location": "query",
                       "type": "string"
                     }

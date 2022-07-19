@@ -3948,6 +3948,23 @@ class SpannerProjectsInstancesDatabasesDatabaseRolesListRequest(_messages.Messag
   parent = _messages.StringField(3, required=True)
 
 
+class SpannerProjectsInstancesDatabasesDatabaseRolesTestIamPermissionsRequest(_messages.Message):
+  r"""A
+  SpannerProjectsInstancesDatabasesDatabaseRolesTestIamPermissionsRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The Cloud Spanner resource for which permissions are
+      being tested. The format is `projects//instances/` for instance
+      resources and `projects//instances//databases/` for database resources.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
 class SpannerProjectsInstancesDatabasesDropDatabaseRequest(_messages.Message):
   r"""A SpannerProjectsInstancesDatabasesDropDatabaseRequest object.
 

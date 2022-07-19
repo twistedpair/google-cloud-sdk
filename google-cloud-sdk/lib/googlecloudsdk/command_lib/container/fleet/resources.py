@@ -96,42 +96,51 @@ def _LocationAttributeConfig(help_text=''):
       fallthroughs=fallthroughs)
 
 
-def _MembershipAttributeConfig(help_text=''):
+def _MembershipAttributeConfig(attr_name, help_text=''):
   """Create membership attributes in resource argument.
 
   Args:
+    attr_name: Name of the resource
     help_text: If set, overrides default help text for `--membership`
 
   Returns:
     Membership resource argument parameter config
   """
-  fallthroughs = [deps.ArgFallthrough('--membership')]
   return concepts.ResourceParameterAttributeConfig(
-      name='membership',
-      help_text=help_text if help_text else ('Name of the {resource}.'),
-      fallthroughs=fallthroughs)
+      name=attr_name,
+      help_text=help_text if help_text else ('Name of the {resource}.'))
 
 
 def AddMembershipResourceArg(parser,
                              api_version='v1',
                              positional=False,
+                             plural=False,
                              membership_required=False,
+                             membership_arg='',
                              membership_help='',
                              location_help=''):
   """Add resource arg for projects/{}/locations/{}/memberships/{}."""
-
+  flag_name = '--membership'
+  if membership_arg:
+    flag_name = membership_arg
+  elif positional:
+    # Flags without '--' prefix are automatically positional
+    flag_name = 'MEMBERSHIP_NAME'
+  elif plural:
+    flag_name = '--memberships'
   spec = concepts.ResourceSpec(
       'gkehub.projects.locations.memberships',
       api_version=api_version,
       resource_name='membership',
+      plural_name='memberships',
       disable_auto_completers=True,
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       locationsId=_LocationAttributeConfig(location_help),
-      membershipsId=_MembershipAttributeConfig(membership_help))
-
-  # `--` prefix automatically makes flag non-positional
+      membershipsId=_MembershipAttributeConfig(
+          'memberships' if plural else 'membership', membership_help))
   concept_parsers.ConceptParser.ForResource(
-      'MEMBERSHIP_NAME' if positional else '--membership',
+      flag_name,
       spec,
-      'Membership resource name.',
+      'The group of arguments defining a membership resource.',
+      plural=plural,
       required=membership_required).AddToParser(parser)

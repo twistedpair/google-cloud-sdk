@@ -35,6 +35,9 @@ root_dir: googlecloudsdk/third_party/apis
 
 apis:
   beyondcorp:
+    v1:
+      discovery_doc: beyondcorp_v1.json
+      default: false
     v1alpha:
       discovery_doc: beyondcorp_v1alpha.json
       default: true
@@ -231,8 +234,6 @@ apis:
     v1p4alpha1:
       discovery_doc: cloudasset_v1p4alpha1.json
       mtls_endpoint_override: https://cloudasset.mtls.googleapis.com/
-    v1p4beta1:
-      discovery_doc: cloudasset_v1p4beta1.json
     v1p5beta1:
       discovery_doc: cloudasset_v1p5beta1.json
     v1p7beta1:
@@ -1143,6 +1144,9 @@ apis:
   spanner:
     v1:
       discovery_doc: spanner_v1.json
+      resources:
+        projects.instances.databases.roles:
+          path: projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/databaseRoles/{rolesName}
       default: true
   speech:
     v1:

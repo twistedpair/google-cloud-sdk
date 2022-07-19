@@ -18,18 +18,19 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from googlecloudsdk.core import properties
+import six
 
 
-def GetSafeProject():
-  """Returns the encoded project id that can be used as part of the GCS bucket name."""
-  return (properties.VALUES.core.project.Get(required=True).replace(
-      ':', '_').replace('.', '_')
-          # The string 'google' is not allowed in bucket names.
-          .replace('google', 'elgoog'))
-
-
-def GetDefaultStagingBucket(project_id, location):
+def GetDefaultStagingBucket(pipeline_uuid):
   """Returns the default source staging bucket."""
-
-  return project_id + '_clouddeploy_' + location
+  if not pipeline_uuid:
+    raise ValueError(
+        'Expected a value for pipeline uid but the string is either empty or "None"'
+    )
+  uid_str = six.text_type(pipeline_uuid)
+  bucket_name = uid_str + '_clouddeploy'
+  if len(bucket_name) > 63:
+    raise ValueError(
+        'The length of the bucket id: {} must not exceed 63 characters'.format(
+            bucket_name))
+  return bucket_name

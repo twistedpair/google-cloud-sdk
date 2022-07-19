@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 # TODO(b/142489773) Required because of thread-safety issue with loading python
 # modules in the presence of threads.
 import encodings.idna  # pylint: disable=unused-import
+import json
 import os
 import re
 
@@ -100,7 +101,6 @@ Format of the repository. REPOSITORY_FORMAT must be one of:\n
     YUM package format.
 """
 
-
 _REPO_CREATION_HELP_TEXT_BETA = """\
 Format of the repository. REPOSITORY_FORMAT must be one of:\n
  apt
@@ -120,6 +120,26 @@ Format of the repository. REPOSITORY_FORMAT must be one of:\n
  yum
     YUM package format.
 """
+
+_REPO_CREATION_HELP_UPSTREAM_POLICIES = """\
+(Virtual Repositories only) is the upstreams for the Virtual Repository.
+Example of the file contents:
+[
+  {
+    "id": "test1",
+    "repository": "projects/p1/locations/us-central1/repository/repo1",
+    "priority": 1
+  },
+  {
+    "id": "test2",
+    "repository": "projects/p2/locations/us-west2/repository/repo2",
+    "priority": 2
+  }
+]
+"""
+
+_INVALID_UPSTREAM_POLICY = ("Upstream Policies should contain id, repository "
+                            "and priority.")
 
 
 def _GetMessagesForResource(resource_ref):
@@ -180,18 +200,59 @@ def AppendRepoDataToRequest(repo_ref, repo_args, request):
   request.repository.name = repo_ref.RelativeName()
   request.repositoryId = repo_ref.repositoriesId
   request.repository.format = repo_format
+
   return request
 
 
-def AddRepositoryFormatArg():
+def AppendUpstreamPoliciesToRequest(repo_ref, repo_args, request):
+  """Adds upstream policies to CreateRepositoryRequest."""
+  messages = _GetMessagesForResource(repo_ref)
+  if repo_args.upstream_policy_file:
+    content = console_io.ReadFromFileOrStdin(
+        repo_args.upstream_policy_file, binary=False)
+    policies = json.loads(content)
+    request.repository.virtualRepositoryConfig = messages.VirtualRepositoryConfig(
+    )
+    request.repository.virtualRepositoryConfig.upstreamPolicies = []
+    for policy in policies:
+      if all(key in policy for key in ("id", "priority", "repository")):
+        p = messages.UpstreamPolicy(
+            id=policy["id"],
+            priority=policy["priority"],
+            repository=policy["repository"])
+        request.repository.virtualRepositoryConfig.upstreamPolicies.append(p)
+      else:
+        raise ar_exceptions.InvalidInputValueError(_INVALID_UPSTREAM_POLICY)
+
+  return request
+
+
+def AddAdditionalArgs():
+  """Adds the repository-format and upstream-policy-file flags."""
+  return UpstreamsArgs() + RepoFormatArgs()
+
+
+def UpstreamsArgs():
+  """Adds the upstream-policy-file flag."""
+  # Is required because the upload operation requires the type conversion that
+  # should be done by a function. The "File" metavar is also usually handled by
+  # custom functions.
+  return [
+      base.Argument(
+          "--upstream-policy-file",
+          hidden=True,
+          metavar="FILE",
+          help=_REPO_CREATION_HELP_UPSTREAM_POLICIES)
+  ]
+
+
+def RepoFormatArgs():
   """Adds the repository-format flag."""
   # We need to do this because the declarative framework doesn't support
   # hiding an enum from the help text.
   return [
       base.Argument(
-          "--repository-format",
-          required=True,
-          help=_REPO_CREATION_HELP_TEXT)
+          "--repository-format", required=True, help=_REPO_CREATION_HELP_TEXT)
   ]
 
 
@@ -314,10 +375,11 @@ def SetTagUpdateMask(tag_ref, tag_args, request):
   return request
 
 
-def SlashEscapePackageName(pkg_ref, unused_args, request):
-  """Escapes slashes in package name for ListVersionsRequest."""
+def EscapePackageName(pkg_ref, unused_args, request):
+  """Escapes slashes and pluses in package name for ListVersionsRequest."""
   request.parent = "{}/packages/{}".format(
-      pkg_ref.Parent().RelativeName(), pkg_ref.packagesId.replace("/", "%2F"))
+      pkg_ref.Parent().RelativeName(),
+      pkg_ref.packagesId.replace("/", "%2F").replace("+", "%2B"))
   return request
 
 
@@ -341,12 +403,12 @@ def AppendSortingToRequest(unused_ref, ver_args, request):
   return request
 
 
-def SlashUnescapePackageName(response, unused_args):
-  """Unescapes slashes in package name from ListPackagesResponse."""
+def UnescapePackageName(response, unused_args):
+  """Unescapes slashes and pluses in package name from ListPackagesResponse."""
   ret = []
   for ver in response:
     ver.name = os.path.basename(ver.name)
-    ver.name = ver.name.replace("%2F", "/")
+    ver.name = ver.name.replace("%2F", "/").replace("%2B", "+")
     ret.append(ver)
   return ret
 
@@ -488,9 +550,9 @@ def ListFiles(args):
                                                     1).split(" ")
       project, location, repo, package = [params[i] for i in range(len(params))]
 
-  # Escape slashes in package name
+  # Escape slashes and pluses in package name
   if package:
-    package = package.replace("/", "%2F")
+    package = package.replace("/", "%2F").replace("+", "%2B")
 
   # Retrieve version from tag name
   if version and tag:
@@ -543,7 +605,7 @@ def ListFiles(args):
     file.name = resources.REGISTRY.ParseRelativeName(
         file.name,
         collection="artifactregistry.projects.locations.repositories.files"
-    ).filesId.replace("%2F", "/")
+    ).filesId.replace("%2F", "/").replace("%2B", "+")
 
   return files
 
@@ -567,43 +629,40 @@ def ConvertBytesToMB(response, unused_args):
   return response
 
 
-def SlashUnescapePackageNameHook(ref, unused_args, req):
-  """Unescapes slashes from request names."""
+def UnescapePackageNameHook(ref, unused_args, req):
+  """Unescapes slashes and pluses from request names."""
   package = resources.REGISTRY.Create(
       "artifactregistry.projects.locations.repositories.packages",
       projectsId=ref.projectsId,
       locationsId=ref.locationsId,
       repositoriesId=ref.repositoriesId,
-      packagesId=ref.packagesId.replace("/", "%2F")
-  )
+      packagesId=ref.packagesId.replace("/", "%2F").replace("+", "%2B"))
   req.name = package.RelativeName()
   return req
 
 
-def SlashUnescapeTagNameHook(ref, unused_args, req):
-  """Unescapes slashes from request names."""
+def UnescapeTagNameHook(ref, unused_args, req):
+  """Unescapes slashes and pluses from request names."""
   tag = resources.REGISTRY.Create(
       "artifactregistry.projects.locations.repositories.packages.tags",
       projectsId=ref.projectsId,
       locationsId=ref.locationsId,
       repositoriesId=ref.repositoriesId,
-      packagesId=ref.packagesId.replace("/", "%2F"),
-      tagsId=ref.tagsId.replace("/", "%2F")
-  )
+      packagesId=ref.packagesId.replace("/", "%2F").replace("+", "%2B"),
+      tagsId=ref.tagsId.replace("/", "%2F").replace("+", "%2B"))
   req.name = tag.RelativeName()
   return req
 
 
-def SlashUnescapeVersionNameHook(ref, unused_args, req):
-  """Unescapes slashes from request names."""
+def UnescapeVersionNameHook(ref, unused_args, req):
+  """Unescapes slashes and pluses from request names."""
   tag = resources.REGISTRY.Create(
       "artifactregistry.projects.locations.repositories.packages.versions",
       projectsId=ref.projectsId,
       locationsId=ref.locationsId,
       repositoriesId=ref.repositoriesId,
-      packagesId=ref.packagesId.replace("/", "%2F"),
-      versionsId=ref.versionsId.replace("/", "%2F")
-  )
+      packagesId=ref.packagesId.replace("/", "%2F").replace("+", "%2B"),
+      versionsId=ref.versionsId.replace("/", "%2F").replace("+", "%2B"))
   req.name = tag.RelativeName()
   return req
 

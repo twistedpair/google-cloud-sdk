@@ -837,6 +837,33 @@ class SpannerV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that the caller has on the specified database or backup resource. Attempting this RPC on a non-existent Cloud Spanner database will result in a NOT_FOUND error if the user has `spanner.databases.list` permission on the containing Cloud Spanner instance. Otherwise returns an empty set of permissions. Calling this method on a backup that does not exist will result in a NOT_FOUND error if the user has `spanner.backups.list` permission on the containing instance.
+
+      Args:
+        request: (SpannerProjectsInstancesDatabasesDatabaseRolesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/databaseRoles/{databaseRolesId}:testIamPermissions',
+        http_method='POST',
+        method_id='spanner.projects.instances.databases.databaseRoles.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='SpannerProjectsInstancesDatabasesDatabaseRolesTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
   class ProjectsInstancesDatabasesOperationsService(base_api.BaseApiService):
     """Service class for the projects_instances_databases_operations resource."""
 

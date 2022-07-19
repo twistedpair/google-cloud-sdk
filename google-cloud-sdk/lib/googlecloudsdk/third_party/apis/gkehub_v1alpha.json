@@ -1392,6 +1392,10 @@
           "description": "OIDC specific configuration.",
           "$ref": "IdentityServiceOidcConfig"
         },
+        "azureadConfig": {
+          "description": "AzureAD specific Configuration.",
+          "$ref": "IdentityServiceAzureADConfig"
+        },
         "name": {
           "description": "Identifier for auth config.",
           "type": "string"
@@ -1464,6 +1468,34 @@
         "enableAccessToken": {
           "description": "Enable access token.",
           "type": "boolean"
+        }
+      }
+    },
+    "IdentityServiceAzureADConfig": {
+      "id": "IdentityServiceAzureADConfig",
+      "description": "Configuration for the AzureAD Auth flow.",
+      "type": "object",
+      "properties": {
+        "clientId": {
+          "description": "ID for the registered client application that makes authentication requests to the Azure AD identity provider.",
+          "type": "string"
+        },
+        "tenant": {
+          "description": "Kind of Azure AD account to be authenticated. Supported values are or for accounts belonging to a specific tenant.",
+          "type": "string"
+        },
+        "kubectlRedirectUri": {
+          "description": "The redirect URL that kubectl uses for authorization.",
+          "type": "string"
+        },
+        "clientSecret": {
+          "description": "Raw client secret will be passed to the GKE Hub CLH.",
+          "type": "string"
+        },
+        "encryptedClientSecret": {
+          "description": "Encrypted AzureAD client secrets",
+          "type": "string",
+          "format": "byte"
         }
       }
     },
@@ -3084,10 +3116,6 @@
           "readOnly": true,
           "type": "string"
         },
-        "managedNamespaces": {
-          "description": "Optional. If true, namespaces must be explicitly declared in a `Namespace` object in order to use Fleet Features. Deprecated, not included in final fleet namespaces design",
-          "type": "boolean"
-        },
         "samenessMode": {
           "description": "Optional. The sameness mode this fleet is using.",
           "type": "string",
@@ -3102,9 +3130,36 @@
             "MAPPED_FLEET_NAMESPACES"
           ]
         },
-        "fleetName": {
-          "description": "The name for the fleet. The name must meet the following constraints: + The name of a fleet should be unique within the organization; + It must consist of lower case alphanumeric characters or `-`; + The length of the name must be less than or equal to 63; + Unicode names must be expressed in Punycode format (rfc3492). Examples: + prod-fleet + xn--wlq33vhyw9jb \uFF08Punycode form for \"\u751F\u4EA7\u73AF\u5883\")",
-          "type": "string"
+        "state": {
+          "description": "Output only. State of the namespace resource.",
+          "readOnly": true,
+          "$ref": "FleetLifecycleState"
+        }
+      }
+    },
+    "FleetLifecycleState": {
+      "id": "FleetLifecycleState",
+      "description": "FleetLifecycleState describes the state of a Fleet resource.",
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "Output only. The current state of the Fleet resource.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "The code is not set.",
+            "The fleet is being created.",
+            "The fleet active.",
+            "The fleet is being deleted.",
+            "The fleet is being updated."
+          ],
+          "enum": [
+            "CODE_UNSPECIFIED",
+            "CREATING",
+            "READY",
+            "DELETING",
+            "UPDATING"
+          ]
         }
       }
     },
@@ -5093,7 +5148,7 @@
                     "$ref": "Fleet"
                   },
                   "response": {
-                    "$ref": "Fleet"
+                    "$ref": "Operation"
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
@@ -5152,7 +5207,7 @@
                     "$ref": "Fleet"
                   },
                   "response": {
-                    "$ref": "Fleet"
+                    "$ref": "Operation"
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
@@ -5177,7 +5232,7 @@
                     "name"
                   ],
                   "response": {
-                    "$ref": "Empty"
+                    "$ref": "Operation"
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"

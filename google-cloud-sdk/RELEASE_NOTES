@@ -5,6 +5,93 @@ Copyright 2014-2022 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 394.0.0 (2022-07-19)
+
+### AI
+
+* Modified `gcloud ai models describe` to support model versioning.
+* Added europe-west9 option to `--region` flag of `gcloud ai custom-jobs` and `gcloud ai hp-tuning-jobs`.
+  * Provide the model version ID or version alias to retrieve a specific version of the model.
+  * If no model version ID or alias is specified, the "default" model version will be used. The "default" version alias is created for the first version of the model, and can be moved to other versions later on. There will be exactly one default version.
+* Added `gcloud ai models delete-version` which deletes an existing Vertex AI model version.
+
+### Anthos Multi-Cloud
+
+*   Added `--ssh-public-key` flag to `gcloud container azure node-pools update`
+    to update the SSH public key for the Azure node pool nodes.
+
+### Artifact Registry
+
+* Fixed a bug where the plus sign ("+") was not escaped properly, making it
+  impossible to delete artifacts with a plus sign in their name.
+
+### Bare Metal Solution
+
+* Started using v2.projects.locations.operations instead of v1.operations for
+the following commands:
+  * `gcloud bms instances start`
+  * `gcloud bms instances reset`
+  * `gcloud bms instances disable-serial-console`
+  * `gcloud bms instances enable-serial-console`
+  * `gcloud bms instances update`
+  * `gcloud bms networks update`
+  * `gcloud bms nfs-shares update`
+  * `gcloud bms volumes update`
+  * `gcloud bms volumes restore`
+  * `gcloud bms operations describe`
+  * `gcloud bms operations wait`
+* Promoted `--os-image` flag of `gcloud bms instances update` to GA.
+* Promoted `--[no-]enable-hyperthreading` flag of `gcloud bms instances update`
+to GA.
+* Promoted `--add-ip-range-reservation` flag of `gcloud bms networks update`
+to GA.
+* Promoted `--clear-ip-range-reservations` flag of `gcloud bms networks update`
+to GA.
+* Promoted `--remove-ip-range-reservation` flag of `gcloud bms networks update`
+to GA.
+* Promoted `gcloud bms networks list-ip-reservations` to GA.
+
+### Batch
+
+* Promoted `gcloud batch` to alpha and beta which enables the CLI to use Batch APIs.
+
+### CLOUD SDK
+
+*   Replaced the default login flow when a browser is not detected from
+    `--no-browser` to `--no-launch-browser`.
+
+### Cloud Deploy
+
+* Changed the default bucket name upload path on release create to use the pipeline UUID.
+* Added mutex flags `--enable-initial-rollout` and `--disable-initial-rollout`.
+
+### Cloud Key Management Service
+
+*   Modified `gcloud kms import-jobs create` to accept new SHA-2 import methods
+    `rsa-oaep-3072-sha256`, `rsa-oaep-3072-sha256-aes-256`,
+    `rsa-oaep-4096-sha256`, and `rsa-oaep-4096-sha256-aes-256` in beta.
+
+### Cloud SQL
+
+* Added support for incremental addition of user password policies.
+
+### Cloud Storage
+
+* Updated gsutil component to 5.11.
+
+### Compute Engine
+
+* Added `--layer7-ddos-defense-auto-deploy-load-threshold`, `--layer7-ddos-defense-auto-deploy-confidence-threshold`, `--layer7-ddos-defense-auto-deploy-impacted-baseline-threshold`, and `--layer7-ddos-defense-auto-deploy-expiration-sec` to `gcloud compute security-policies update` to `gcloud beta compute security-policies update`.
+* Promoted flags `--enable-strong-affinity` of `gcloud compute backend-services create` and `gcloud compute backend-services update` to GA.
+
+### Identity and Access Management
+
+* Removed `etag` flag from `gcloud beta iam policies update` command. The command will always use the `etag` in the policy file.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 393.0.0 (2022-07-12)
 
 ### Breaking Changes
