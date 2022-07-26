@@ -1827,7 +1827,7 @@
       "type": "object",
       "properties": {
         "enabled": {
-          "description": "Enable Binary Authorization for this cluster. If enabled, all container images will be validated by Binary Authorization.",
+          "description": "This field is deprecated. Leave this unset and instead configure BinaryAuthorization using evaluation_mode. If evaluation_mode is set to anything other than EVALUATION_MODE_UNSPECIFIED, this field is ignored.",
           "type": "boolean"
         },
         "evaluationMode": {
@@ -1939,7 +1939,7 @@
           "$ref": "NodeManagement"
         },
         "minCpuPlatform": {
-          "description": "Deprecated. Minimum CPU platform to be used for NAP created node pools. The instance may be scheduled on the specified or newer CPU platform. Applicable values are the friendly names of CPU platforms, such as minCpuPlatform: Intel Haswell or minCpuPlatform: Intel Sandy Bridge. For more information, read [how to specify min CPU platform](https:\/\/cloud.google.com\/compute\/docs\/instances\/specify-min-cpu-platform) This field is deprecated, min_cpu_platform should be specified using cloud.google.com\/requested-min-cpu-platform label selector on the pod. To unset the min cpu platform field pass \"automatic\" as field value.",
+          "description": "Deprecated. Minimum CPU platform to be used for NAP created node pools. The instance may be scheduled on the specified or newer CPU platform. Applicable values are the friendly names of CPU platforms, such as minCpuPlatform: Intel Haswell or minCpuPlatform: Intel Sandy Bridge. For more information, read [how to specify min CPU platform](https:\/\/cloud.google.com\/compute\/docs\/instances\/specify-min-cpu-platform) This field is deprecated, min_cpu_platform should be specified using https:\/\/cloud.google.com\/requested-min-cpu-platform label selector on the pod. To unset the min cpu platform field pass \"automatic\" as field value.",
           "type": "string"
         },
         "diskSizeGb": {
@@ -2400,7 +2400,7 @@
       "type": "object",
       "properties": {
         "gcfsConfig": {
-          "description": "GCFS (Google Container File System, a.k.a. Riptide) options.",
+          "description": "GCFS (Google Container File System, also known as Riptide) options.",
           "$ref": "GcfsConfig"
         },
         "loggingConfig": {
@@ -3019,6 +3019,10 @@
         "desiredNodePoolLoggingConfig": {
           "description": "The desired node pool logging configuration defaults for the cluster.",
           "$ref": "NodePoolLoggingConfig"
+        },
+        "desiredManagedConfig": {
+          "description": "The desired managed config for the cluster.",
+          "$ref": "ManagedConfig"
         }
       }
     },
@@ -3147,6 +3151,13 @@
         "loggingConfig": {
           "description": "Logging configuration.",
           "$ref": "NodePoolLoggingConfig"
+        },
+        "resourceLabels": {
+          "description": "The resource labels for the node pool to use to annotate any related Google Compute Engine resources.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },
@@ -5057,7 +5068,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "name": {
-                          "description": "The name (project, location, cluster, node pool id) of the node pool to complete upgrade. Specified in the format 'projects\/*\/locations\/*\/clusters\/*\/nodePools\/*'.",
+                          "description": "The name (project, location, cluster, node pool id) of the node pool to complete upgrade. Specified in the format `projects\/*\/locations\/*\/clusters\/*\/nodePools\/*`.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+\/nodePools\/[^\/]+$",
                           "location": "path",
                           "required": true,

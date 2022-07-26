@@ -210,7 +210,10 @@ class _ObjectConfig(object):
     content_language (str|None): Content's language (e.g. "en" = "English).
     content_type (str|None): Type of data contained in content (e.g.
       "text/html").
-    custom_metadata (dict|None): Custom metadata fields set by user.
+    custom_metadata_to_set (dict|None): Custom metadata fields set by user.
+    custom_metadata_to_remove (dict|None): Custom metadata fields to be removed.
+    custom_metadata_to_update (dict|None): Custom metadata fields to be added or
+      changed.
     decryption_key (encryption_util.EncryptionKey): The key that should be used
       to decrypt information in GCS.
     encryption_key (encryption_util.EncryptionKey|None|str): The key that should
@@ -230,7 +233,9 @@ class _ObjectConfig(object):
                content_encoding=None,
                content_language=None,
                content_type=None,
-               custom_metadata=None,
+               custom_metadata_to_set=None,
+               custom_metadata_to_remove=None,
+               custom_metadata_to_update=None,
                decryption_key=None,
                encryption_key=None,
                md5_hash=None,
@@ -242,7 +247,9 @@ class _ObjectConfig(object):
     self.content_encoding = content_encoding
     self.content_language = content_language
     self.content_type = content_type
-    self.custom_metadata = custom_metadata
+    self.custom_metadata_to_set = custom_metadata_to_set
+    self.custom_metadata_to_remove = custom_metadata_to_remove
+    self.custom_metadata_to_update = custom_metadata_to_update
     self.decryption_key = decryption_key
     self.encryption_key = encryption_key
     self.md5_hash = md5_hash
@@ -253,17 +260,20 @@ class _ObjectConfig(object):
   def __eq__(self, other):
     if not isinstance(other, type(self)):
       return NotImplemented
-    return (self.cache_control == other.cache_control and
-            self.content_disposition == other.content_disposition and
-            self.content_encoding == other.content_encoding and
-            self.content_language == other.content_language and
-            self.content_type == other.content_type and
-            self.custom_metadata == other.custom_metadata and
-            self.decryption_key == other.decryption_key and
-            self.encryption_key == other.encryption_key and
-            self.md5_hash == other.md5_hash and self.size == other.size and
-            self.preserve_acl == other.preserve_acl and
-            self.storage_class == other.storage_class)
+    return (
+        self.cache_control == other.cache_control and
+        self.content_disposition == other.content_disposition and
+        self.content_encoding == other.content_encoding and
+        self.content_language == other.content_language and
+        self.content_type == other.content_type and
+        self.custom_metadata_to_set == other.custom_metadata_to_set and
+        self.custom_metadata_to_remove == other.custom_metadata_to_remove and
+        self.custom_metadata_to_update == other.custom_metadata_to_update and
+        self.decryption_key == other.decryption_key and
+        self.encryption_key == other.encryption_key and
+        self.md5_hash == other.md5_hash and self.size == other.size and
+        self.preserve_acl == other.preserve_acl and
+        self.storage_class == other.storage_class)
 
   def __repr__(self):
     return debug_output.generic_repr(self)
@@ -288,7 +298,9 @@ class _GcsObjectConfig(_ObjectConfig):
                content_encoding=None,
                content_language=None,
                content_type=None,
-               custom_metadata=None,
+               custom_metadata_to_set=None,
+               custom_metadata_to_remove=None,
+               custom_metadata_to_update=None,
                custom_time=None,
                decryption_key=None,
                encryption_key=None,
@@ -302,7 +314,9 @@ class _GcsObjectConfig(_ObjectConfig):
         content_encoding=content_encoding,
         content_language=content_language,
         content_type=content_type,
-        custom_metadata=custom_metadata,
+        custom_metadata_to_set=custom_metadata_to_set,
+        custom_metadata_to_remove=custom_metadata_to_remove,
+        custom_metadata_to_update=custom_metadata_to_update,
         decryption_key=decryption_key,
         encryption_key=encryption_key,
         md5_hash=md5_hash,
@@ -545,7 +559,12 @@ def _get_request_config_resource_args(url,
       new_resource_args.content_disposition = user_resource_args.content_disposition
       new_resource_args.content_encoding = user_resource_args.content_encoding
       new_resource_args.content_language = user_resource_args.content_language
-      new_resource_args.custom_metadata = user_resource_args.custom_metadata
+      new_resource_args.custom_metadata_to_set = (
+          user_resource_args.custom_metadata_to_set)
+      new_resource_args.custom_metadata_to_remove = (
+          user_resource_args.custom_metadata_to_remove)
+      new_resource_args.custom_metadata_to_update = (
+          user_resource_args.custom_metadata_to_update)
       new_resource_args.preserve_acl = user_resource_args.preserve_acl
 
       if user_resource_args.storage_class:

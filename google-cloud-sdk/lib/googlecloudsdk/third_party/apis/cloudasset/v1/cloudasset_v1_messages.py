@@ -704,11 +704,8 @@ class CloudassetAnalyzeOrgPoliciesRequest(_messages.Message):
       AnalyzeOrgPoliciesResponse.org_policy_results will contain 20 items with
       a maximum of 200.
     pageToken: The pagination token to retrieve the next page.
-    scope: Required. The project/folder/organization to scope the request.
-      Only organization policies within the scope will be analyzed. *
-      projects/{PROJECT_NUMBER} (e.g., "projects/12345678") *
-      projects/{PROJECT_ID} (e.g., "projects/test-project") *
-      folders/{FOLDER_NUMBER} (e.g., "folders/1234567") *
+    scope: Required. The organization to scope the request. Only organization
+      policies within the scope will be analyzed. *
       organizations/{ORGANIZATION_NUMBER} (e.g., "organizations/123456")
   """
 
@@ -734,13 +731,11 @@ class CloudassetAnalyzeOrgPolicyGovernedContainersRequest(_messages.Message):
       AnalyzeOrgPolicyGovernedContainersResponse.governed_containers will
       contain 100 items with a maximum of 200.
     pageToken: The pagination token to retrieve the next page.
-    scope: Required. The project/folder/organization to scope the request.
-      Only organization policies within the scope will be analyzed. The output
-      containers will also be limited to the ones governed by those in-scope
-      organization policies. * projects/{PROJECT_NUMBER} (e.g.,
-      "projects/12345678") * projects/{PROJECT_ID} (e.g., "projects/test-
-      project") * folders/{FOLDER_NUMBER} (e.g., "folders/1234567") *
-      organizations/{ORGANIZATION_NUMBER} (e.g., "organizations/123456")
+    scope: Required. The organization to scope the request. Only organization
+      policies within the scope will be analyzed. The output containers will
+      also be limited to the ones governed by those in-scope organization
+      policies. * organizations/{ORGANIZATION_NUMBER} (e.g.,
+      "organizations/123456")
   """
 
   constraint = _messages.StringField(1)
@@ -766,13 +761,11 @@ class CloudassetAnalyzeOrgPolicyGovernedResourcesRequest(_messages.Message):
       AnalyzeOrgPolicyGovernedResourcesResponse.governed_resources will
       contain 100 items with a maximum of 200.
     pageToken: The pagination token to retrieve the next page.
-    scope: Required. The project/folder/organization to scope the request.
-      Only organization policies within the scope will be analyzed. The output
-      resources will also be limited to the ones governed by those in-scope
-      organization policies. * projects/{PROJECT_NUMBER} (e.g.,
-      "projects/12345678") * projects/{PROJECT_ID} (e.g., "projects/test-
-      project") * folders/{FOLDER_NUMBER} (e.g., "folders/1234567") *
-      organizations/{ORGANIZATION_NUMBER} (e.g., "organizations/123456")
+    scope: Required. The organization to scope the request. Only organization
+      policies within the scope will be analyzed. The output resources will
+      also be limited to the ones governed by those in-scope organization
+      policies. * organizations/{ORGANIZATION_NUMBER} (e.g.,
+      "organizations/123456")
   """
 
   constraint = _messages.StringField(1)

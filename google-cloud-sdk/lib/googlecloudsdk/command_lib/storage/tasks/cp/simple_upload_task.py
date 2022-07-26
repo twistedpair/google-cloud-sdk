@@ -39,7 +39,7 @@ class SimpleUploadTask(upload_task.UploadTask):
         self._destination_resource.storage_url,
         content_type=upload_util.get_content_type(
             self._source_resource.storage_url.object_name,
-            self._source_resource.storage_url.is_pipe),
+            self._source_resource.storage_url.is_stream),
         md5_hash=self._source_resource.md5_hash,
         size=self._length)
 

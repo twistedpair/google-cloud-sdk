@@ -856,10 +856,6 @@
         "certificateAuthorityServiceConfig": {
           "description": "Defines a CertificateAuthorityServiceConfig.",
           "$ref": "CertificateAuthorityServiceConfig"
-        },
-        "meshCaConfig": {
-          "description": "Defines a MeshCAConfig.",
-          "$ref": "MeshCAConfig"
         }
       }
     },
@@ -872,13 +868,6 @@
           "description": "Required. A CA pool resource used to issue a certificate. The CA pool string has a relative resource path following the form \"projects\/{project}\/locations\/{location}\/caPools\/{ca_pool}\".",
           "type": "string"
         }
-      }
-    },
-    "MeshCAConfig": {
-      "id": "MeshCAConfig",
-      "description": "Config for use of the default CA endpoint.",
-      "type": "object",
-      "properties": {
       }
     },
     "ListTrustConfigsResponse": {

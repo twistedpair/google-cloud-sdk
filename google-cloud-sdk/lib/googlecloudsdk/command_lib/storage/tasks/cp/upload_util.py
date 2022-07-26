@@ -67,7 +67,7 @@ def get_upload_strategy(api, object_length):
     return cloud_api.UploadStrategy.SIMPLE
 
 
-def get_content_type(source_path, is_pipe):
+def get_content_type(source_path, is_stream):
   """Gets a file's MIME type.
 
   Favors returning the result of `file -b --mime ...` if the command is
@@ -77,14 +77,14 @@ def get_content_type(source_path, is_pipe):
   Args:
     source_path (str): Path to file. May differ from file_resource.storage_url
       if using a temporary file (e.g. for gzipping).
-    is_pipe (bool): If the source file is a pipe (typically FIFO or stdin).
+    is_stream (bool): If the source file is a pipe (typically FIFO or stdin).
 
   Returns:
     A MIME type (str).
     If a type cannot be guessed, request_config_factory.DEFAULT_CONTENT_TYPE is
     returned.
   """
-  if is_pipe:
+  if is_stream:
     return request_config_factory.DEFAULT_CONTENT_TYPE
 
   # Some common extensions are not recognized by the mimetypes library and
@@ -176,13 +176,13 @@ def get_stream(source_resource,
   else:
     progress_callback = None
 
-  if source_resource.storage_url.is_stream:
+  if source_resource.storage_url.is_stdio:
     source_stream = os.fdopen(0, 'rb')
   else:
     source_stream = files.BinaryFileReader(
         source_resource.storage_url.object_name)
 
-  if source_resource.storage_url.is_pipe:
+  if source_resource.storage_url.is_stream:
     max_buffer_size = scaled_integer.ParseBinaryInteger(
         properties.VALUES.storage.upload_chunk_size.Get())
     return buffered_upload_stream.BufferedUploadStream(

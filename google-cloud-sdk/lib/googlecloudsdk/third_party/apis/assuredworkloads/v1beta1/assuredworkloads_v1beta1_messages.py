@@ -272,6 +272,8 @@ class GoogleCloudAssuredworkloadsV1CreateWorkloadOperationMetadata(_messages.Mes
       CA_REGIONS_AND_SUPPORT: Assured Workloads For Canada Regions and Support
         controls
       ITAR: International Traffic in Arms Regulations
+      AU_REGIONS_AND_US_SUPPORT: Assured Workloads for Australia Regions and
+        Support controls
     """
     COMPLIANCE_REGIME_UNSPECIFIED = 0
     IL4 = 1
@@ -284,6 +286,7 @@ class GoogleCloudAssuredworkloadsV1CreateWorkloadOperationMetadata(_messages.Mes
     EU_REGIONS_AND_SUPPORT = 8
     CA_REGIONS_AND_SUPPORT = 9
     ITAR = 10
+    AU_REGIONS_AND_US_SUPPORT = 11
 
   complianceRegime = _messages.EnumField('ComplianceRegimeValueValuesEnum', 1)
   createTime = _messages.StringField(2)
@@ -371,6 +374,8 @@ class GoogleCloudAssuredworkloadsV1Workload(_messages.Message):
       CA_REGIONS_AND_SUPPORT: Assured Workloads For Canada Regions and Support
         controls
       ITAR: International Traffic in Arms Regulations
+      AU_REGIONS_AND_US_SUPPORT: Assured Workloads for Australia Regions and
+        Support controls
     """
     COMPLIANCE_REGIME_UNSPECIFIED = 0
     IL4 = 1
@@ -383,6 +388,7 @@ class GoogleCloudAssuredworkloadsV1Workload(_messages.Message):
     EU_REGIONS_AND_SUPPORT = 8
     CA_REGIONS_AND_SUPPORT = 9
     ITAR = 10
+    AU_REGIONS_AND_US_SUPPORT = 11
 
   class KajEnrollmentStateValueValuesEnum(_messages.Enum):
     r"""Output only. Represents the KAJ enrollment state of the given
@@ -620,6 +626,8 @@ class GoogleCloudAssuredworkloadsV1beta1CreateWorkloadOperationMetadata(_message
       CA_REGIONS_AND_SUPPORT: Assured Workloads For Canada Regions and Support
         controls
       ITAR: International Traffic in Arms Regulations
+      AU_REGIONS_AND_US_SUPPORT: Assured Workloads for Australia Regions and
+        Support controls
     """
     COMPLIANCE_REGIME_UNSPECIFIED = 0
     IL4 = 1
@@ -632,6 +640,7 @@ class GoogleCloudAssuredworkloadsV1beta1CreateWorkloadOperationMetadata(_message
     EU_REGIONS_AND_SUPPORT = 8
     CA_REGIONS_AND_SUPPORT = 9
     ITAR = 10
+    AU_REGIONS_AND_US_SUPPORT = 11
 
   complianceRegime = _messages.EnumField('ComplianceRegimeValueValuesEnum', 1)
   createTime = _messages.StringField(2)
@@ -765,6 +774,8 @@ class GoogleCloudAssuredworkloadsV1beta1Workload(_messages.Message):
       CA_REGIONS_AND_SUPPORT: Assured Workloads For Canada Regions and Support
         controls
       ITAR: International Traffic in Arms Regulations
+      AU_REGIONS_AND_US_SUPPORT: Assured Workloads for Australia Regions and
+        Support controls
     """
     COMPLIANCE_REGIME_UNSPECIFIED = 0
     IL4 = 1
@@ -777,6 +788,7 @@ class GoogleCloudAssuredworkloadsV1beta1Workload(_messages.Message):
     EU_REGIONS_AND_SUPPORT = 8
     CA_REGIONS_AND_SUPPORT = 9
     ITAR = 10
+    AU_REGIONS_AND_US_SUPPORT = 11
 
   class KajEnrollmentStateValueValuesEnum(_messages.Enum):
     r"""Output only. Represents the KAJ enrollment state of the given
@@ -1206,6 +1218,8 @@ class GoogleCloudAssuredworkloadsVersioningV1beta1Workload(_messages.Message):
       CA_REGIONS_AND_SUPPORT: Assured Workloads For Canada Regions and Support
         controls
       ITAR: International Traffic in Arms Regulations
+      AU_REGIONS_AND_US_SUPPORT: Assured Workloads for Australia Regions and
+        Support controls
     """
     COMPLIANCE_REGIME_UNSPECIFIED = 0
     IL4 = 1
@@ -1218,6 +1232,7 @@ class GoogleCloudAssuredworkloadsVersioningV1beta1Workload(_messages.Message):
     EU_REGIONS_AND_SUPPORT = 8
     CA_REGIONS_AND_SUPPORT = 9
     ITAR = 10
+    AU_REGIONS_AND_US_SUPPORT = 11
 
   class KajEnrollmentStateValueValuesEnum(_messages.Enum):
     r"""Output only. Represents the KAJ enrollment state of the given
@@ -1292,11 +1307,13 @@ class GoogleCloudAssuredworkloadsVersioningV1beta1WorkloadComplianceStatus(_mess
   r"""Represents the Compliance Status of this workload
 
   Fields:
-    activeViolationCount: Optional. Count of active Violations in the
+    acknowledgedViolationCount: Count of acknowledged violations in the
       Workload.
+    activeViolationCount: Count of active Violations in the Workload.
   """
 
-  activeViolationCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  acknowledgedViolationCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  activeViolationCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudAssuredworkloadsVersioningV1beta1WorkloadFedrampHighSettings(_messages.Message):
@@ -1513,6 +1530,8 @@ class GoogleCloudAssuredworkloadsVersioningV1mainCreateWorkloadOperationMetadata
       CA_REGIONS_AND_SUPPORT: Assured Workloads For Canada Regions and Support
         controls
       ITAR: International Traffic in Arms Regulations
+      AU_REGIONS_AND_US_SUPPORT: Assured Workloads for Australia Regions and
+        Support controls
     """
     COMPLIANCE_REGIME_UNSPECIFIED = 0
     IL4 = 1
@@ -1525,6 +1544,7 @@ class GoogleCloudAssuredworkloadsVersioningV1mainCreateWorkloadOperationMetadata
     EU_REGIONS_AND_SUPPORT = 8
     CA_REGIONS_AND_SUPPORT = 9
     ITAR = 10
+    AU_REGIONS_AND_US_SUPPORT = 11
 
   complianceRegime = _messages.EnumField('ComplianceRegimeValueValuesEnum', 1)
   createTime = _messages.StringField(2)
@@ -1622,6 +1642,8 @@ class GoogleCloudAssuredworkloadsVersioningV1mainWorkload(_messages.Message):
       CA_REGIONS_AND_SUPPORT: Assured Workloads For Canada Regions and Support
         controls
       ITAR: International Traffic in Arms Regulations
+      AU_REGIONS_AND_US_SUPPORT: Assured Workloads for Australia Regions and
+        Support controls
     """
     COMPLIANCE_REGIME_UNSPECIFIED = 0
     IL4 = 1
@@ -1634,6 +1656,7 @@ class GoogleCloudAssuredworkloadsVersioningV1mainWorkload(_messages.Message):
     EU_REGIONS_AND_SUPPORT = 8
     CA_REGIONS_AND_SUPPORT = 9
     ITAR = 10
+    AU_REGIONS_AND_US_SUPPORT = 11
 
   class KajEnrollmentStateValueValuesEnum(_messages.Enum):
     r"""Output only. Represents the KAJ enrollment state of the given
@@ -1708,11 +1731,13 @@ class GoogleCloudAssuredworkloadsVersioningV1mainWorkloadComplianceStatus(_messa
   r"""Represents the Compliance Status of this workload
 
   Fields:
-    activeViolationCount: Optional. Count of active Violations in the
+    acknowledgedViolationCount: Count of acknowledged violations in the
       Workload.
+    activeViolationCount: Count of active Violations in the Workload.
   """
 
-  activeViolationCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  acknowledgedViolationCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  activeViolationCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudAssuredworkloadsVersioningV1mainWorkloadFedrampHighSettings(_messages.Message):

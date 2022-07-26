@@ -1619,17 +1619,29 @@
             "Resource is known but no action has been taken yet.",
             "Resource is being analyzed.",
             "Analysis has finished successfully.",
+            "Analysis has completed",
             "Analysis has finished unsuccessfully, the analysis itself is in a bad state.",
-            "The resource is known not to be supported"
+            "The resource is known not to be supported."
           ],
           "enum": [
             "ANALYSIS_STATUS_UNSPECIFIED",
             "PENDING",
             "SCANNING",
             "FINISHED_SUCCESS",
+            "COMPLETE",
             "FINISHED_FAILED",
             "FINISHED_UNSUPPORTED"
           ]
+        },
+        "analysisCompleted": {
+          "$ref": "AnalysisCompleted"
+        },
+        "analysisError": {
+          "description": "Indicates any errors encountered during analysis of a resource. There could be 0 or more of these errors.",
+          "type": "array",
+          "items": {
+            "$ref": "Status"
+          }
         },
         "analysisStatusError": {
           "description": "When an error is encountered this will contain a LocalizedMessage under details to show to the user. The LocalizedMessage is output only and populated by the API.",
@@ -1649,6 +1661,19 @@
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
+        }
+      }
+    },
+    "AnalysisCompleted": {
+      "id": "AnalysisCompleted",
+      "description": "Indicates which analysis completed successfully. Multiple types of analysis can be performed on a single resource.",
+      "type": "object",
+      "properties": {
+        "analysisType": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },

@@ -164,7 +164,7 @@ def AddAction(parser, required=True, support_ips=False):
   parser.add_argument(
       '--action',
       choices=['allow', 'deny', 'goto_next'] +
-      (['apply_profile_group'] if support_ips else []),
+      (['apply_security_profile_group'] if support_ips else []),
       type=lambda x: x.lower(),
       required=required,
       help='Action to take if the request matches the match condition.')
@@ -437,5 +437,5 @@ def AddSecurityProfileGroup(parser):
       required=False,
       hidden=True,
       help=(
-          'A security profile group to be used with apply_profile_group action.'
+          'A security profile group to be used with apply_security_profile_group action.'
       ))

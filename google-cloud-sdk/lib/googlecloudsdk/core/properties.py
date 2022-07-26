@@ -1844,9 +1844,9 @@ class _SectionCore(_Section):
     self.disable_usage_reporting = self._AddBool(
         'disable_usage_reporting',
         help_text='If True, anonymous statistics on SDK usage will not be '
-        'collected. This value is set by default based on your choices during '
-        'installation, but can be changed at any time.  For more information, '
-        'see: https://cloud.google.com/sdk/usage-statistics')
+        'collected. This value is set by your choices during installation, but '
+        'can be changed at any time.  For more information, see '
+        '[Usage statistics](/sdk/docs/usage-statistics).')
     self.enable_gri = self._AddBool(
         'enable_gri',
         default=False,

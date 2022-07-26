@@ -22,16 +22,32 @@ from googlecloudsdk.api_lib import network_security
 from googlecloudsdk.api_lib import network_services
 
 
-def BuildFullResourceUrl(base_uri, project_name, location, collection_name,
-                         resource_name):
+def BuildFullResourceUrl(base_uri, container_type, container_name, location,
+                         collection_name, resource_name):
   """Creates a reference to a non-compute resource in the full URL format."""
-  return '{}projects/{}/locations/{}/{}/{}'.format(base_uri, project_name,
-                                                   location, collection_name,
-                                                   resource_name)
+  # base_uri ends with slash.
+  return '{}{}/{}/locations/{}/{}/{}'.format(base_uri, container_type,
+                                             container_name, location,
+                                             collection_name, resource_name)
+
+
+def BuildFullResourceUrlForProjectBasedResource(base_uri, project_name,
+                                                location, collection_name,
+                                                resource_name):
+  """Note: base_uri ends with slash."""
+  return BuildFullResourceUrl(base_uri, 'projects', project_name, location,
+                              collection_name, resource_name)
+
+
+def BuildFullResourceUrlForOrgBasedResource(base_uri, org_id, collection_name,
+                                            resource_name):
+  """Note: base_uri ends with slash."""
+  return BuildFullResourceUrl(base_uri, 'organizations', org_id, 'global',
+                              collection_name, resource_name)
 
 
 def BuildServerTlsPolicyUrl(project_name, location, policy_name):
-  return BuildFullResourceUrl(
+  return BuildFullResourceUrlForProjectBasedResource(
       base_uri=network_security.GetApiBaseUrl(),
       project_name=project_name,
       location=location,
@@ -40,7 +56,7 @@ def BuildServerTlsPolicyUrl(project_name, location, policy_name):
 
 
 def BuildServiceLbPolicyUrl(project_name, location, policy_name):
-  return BuildFullResourceUrl(
+  return BuildFullResourceUrlForProjectBasedResource(
       base_uri=network_services.GetApiBaseUrl(),
       project_name=project_name,
       location=location,
@@ -49,7 +65,7 @@ def BuildServiceLbPolicyUrl(project_name, location, policy_name):
 
 
 def BuildServiceBindingUrl(project_name, location, binding_name):
-  return BuildFullResourceUrl(
+  return BuildFullResourceUrlForProjectBasedResource(
       base_uri=network_services.GetApiBaseUrl(
           network_services.base.ReleaseTrack.GA),
       project_name=project_name,

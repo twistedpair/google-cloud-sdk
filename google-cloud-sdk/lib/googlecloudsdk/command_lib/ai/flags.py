@@ -624,6 +624,13 @@ inclusive.
       type=str,
       help='ID to use for the uploaded Model, which will become the final component of the model resource name.'
   )
+  parser.add_argument(
+      '--version-aliases',
+      metavar='VERSION_ALIASES',
+      type=arg_parsers.ArgList(),
+      action=arg_parsers.UpdateAction,
+      help='Aliases used to reference a model version instead of auto-generated version ID. The aliases mentioned in the flag will replace the aliases set in the model.'
+  )
 
 
 def GetMetadataFilePathArg(noun, required=False):

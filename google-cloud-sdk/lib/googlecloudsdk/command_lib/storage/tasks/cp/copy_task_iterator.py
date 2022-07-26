@@ -141,10 +141,10 @@ def _destination_is_container(destination):
            destination_url.is_bucket()))
 
 
-def _resource_is_pipe(resource):
+def _resource_is_stream(resource):
   """Checks if a resource points to local pipe-type."""
   return (isinstance(resource.storage_url, storage_url.FileUrl) and
-          resource.storage_url.is_pipe)
+          resource.storage_url.is_stream)
 
 
 def _is_expanded_url_valid_parent_dir(expanded_url):
@@ -260,7 +260,7 @@ class CopyTaskIterator:
   def _raise_if_destination_is_file_url_and_not_a_directory_or_pipe(self):
     if (isinstance(self._raw_destination.storage_url, storage_url.FileUrl) and
         not (_destination_is_container(self._raw_destination) or
-             self._raw_destination.storage_url.is_pipe)):
+             self._raw_destination.storage_url.is_stream)):
       raise errors.InvalidUrlError(
           'Destination URL must name an existing directory.'
           ' Provided: {}.'.format(
@@ -287,7 +287,7 @@ class CopyTaskIterator:
       else:
         raise errors.ValueCannotBeDeterminedError
     except (OSError, errors.ValueCannotBeDeterminedError):
-      if not _resource_is_pipe(resource):
+      if not _resource_is_stream(resource):
         log.error('Could not get size of resource {}.'.format(resource))
       self._total_file_count = -1
       self._total_size = -1
@@ -379,16 +379,16 @@ class CopyTaskIterator:
     """Returns the final destination StorageUrl instance."""
     completion_is_necessary = (
         _destination_is_container(raw_destination) or
-        (self._multiple_sources and not _resource_is_pipe(raw_destination))
+        (self._multiple_sources and not _resource_is_stream(raw_destination))
         or source.resource.storage_url.versionless_url_string !=
         source.expanded_url.versionless_url_string  # Recursion case.
     )
 
     if completion_is_necessary:
       if (isinstance(source.expanded_url, storage_url.FileUrl) and
-          source.expanded_url.is_stream):
+          source.expanded_url.is_stdio):
         raise errors.Error(
-            'Destination object name needed when source is a stream.')
+            'Destination object name needed when source is stdin.')
       return self._complete_destination(raw_destination, source)
     else:
       return raw_destination

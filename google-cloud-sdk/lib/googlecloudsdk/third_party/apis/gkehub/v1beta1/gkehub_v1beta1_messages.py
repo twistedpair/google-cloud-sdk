@@ -1073,6 +1073,8 @@ class MultiCloudCluster(_messages.Message):
       project/locations/us-west1-a/awsClusters/my-cluster
       //gkemulticloud.googleapis.com/projects/my-project/locations/us-
       west1-a/azureClusters/my-cluster
+      //gkemulticloud.googleapis.com/projects/my-project/locations/us-
+      west1-a/attachedClusters/my-cluster
   """
 
   clusterMissing = _messages.BooleanField(1)

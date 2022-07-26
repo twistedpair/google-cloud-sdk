@@ -25,6 +25,32 @@ from googlecloudsdk.command_lib.scc.hooks import InvalidSCCInputError
 _PARENT_SUFFIX = "/securityHealthAnalyticsSettings"
 
 
+def GetSecurityHealthAnalyticsCustomModuleReqHook(ref, args, req):
+  """Gets a Security Health Analytics custom module."""
+  del ref
+  parent = _ValidateAndGetParent(args)
+  if parent is not None:
+    custom_module_id = _ValidateAndGetCustomModuleId(args)
+    req.name = parent + "/customModules/" + custom_module_id
+  else:
+    custom_module = _ValidateAndGetCustomModuleFullResourceName(args)
+    req.name = custom_module
+  return req
+
+
+def GetEffectiveSecurityHealthAnalyticsCustomModuleReqHook(ref, args, req):
+  """Gets an effective Security Health Analytics custom module."""
+  del ref
+  parent = _ValidateAndGetParent(args)
+  if parent is not None:
+    custom_module_id = _ValidateAndGetCustomModuleId(args)
+    req.name = parent + "/effectiveCustomModules/" + custom_module_id
+  else:
+    custom_module = _ValidateAndGetEffectiveCustomModuleFullResourceName(args)
+    req.name = custom_module
+  return req
+
+
 def ListSecurityHealthAnalyticsCustomModulesReqHook(ref, args, req):
   """Lists Security Health Analytics custom modules."""
   del ref
@@ -44,6 +70,47 @@ def ListEffectiveSecurityHealthAnalyticsCustomModulesReqHook(ref, args, req):
   del ref
   req.parent = _ValidateAndGetParent(args)
   return req
+
+
+def _ValidateAndGetCustomModuleId(args):
+  """Validate customModuleId."""
+  custom_module_id = args.custom_module
+  pattern = re.compile("^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$")
+  if not pattern.match(custom_module_id):
+    raise InvalidSCCInputError(
+        "Custom module id does not match the pattern "
+        "'^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$'."
+    )
+  else:
+    return custom_module_id
+
+
+def _ValidateAndGetCustomModuleFullResourceName(args):
+  """Validates custom module full resource name."""
+  custom_module = args.custom_module
+  resource_pattern = re.compile(
+      "(organizations|projects|folders)/.*/securityHealthAnalyticsSettings/"
+      "customModules/[a-z]([a-z0-9-]{0,61}[a-z0-9])?$"
+  )
+  if not resource_pattern.match(custom_module):
+    raise InvalidSCCInputError(
+        "Custom module must match the full resource name, or `--organization=`,"
+        " `--folder=` or `--project=` must be provided."
+    )
+  return custom_module
+
+
+def _ValidateAndGetEffectiveCustomModuleFullResourceName(args):
+  """Validates effective custom module full resource name."""
+  custom_module = args.custom_module
+  resource_pattern = re.compile(
+      "(organizations|projects|folders)/.*/securityHealthAnalyticsSettings/effectiveCustomModules/[a-z]([a-z0-9-]{0,61}[a-z0-9])?$"
+  )
+  if not resource_pattern.match(custom_module):
+    raise InvalidSCCInputError(
+        "Custom module must match the full resource name, or `--organization=`, `--folder=` or `--project=` must be provided."
+    )
+  return custom_module
 
 
 def _ValidateAndGetParent(args):

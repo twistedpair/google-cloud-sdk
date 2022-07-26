@@ -39,6 +39,7 @@ LOCATIONS_COLLECTION = 'domains.projects.locations'
 OPERATIONS_COLLECTION = 'domains.projects.locations.operations'
 REGISTRATIONS_COLLECTION = 'domains.projects.locations.registrations'
 _PROJECT = lambda: properties.VALUES.core.project.Get(required=True)
+_MAX_LIST_BATCH_SIZE = 200
 
 
 def RegistrationsUriFunc(api_version):
@@ -387,3 +388,13 @@ def ReadFileContents(path):
   if not path:
     return None
   return files.ReadFileContents(path)
+
+
+def GetListBatchSize(args):
+  """Returns the batch size for listing resources."""
+  if args.page_size:
+    return args.page_size
+  elif args.limit:
+    return min(args.limit, _MAX_LIST_BATCH_SIZE)
+  else:
+    return None

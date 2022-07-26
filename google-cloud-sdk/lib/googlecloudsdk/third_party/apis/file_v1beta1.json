@@ -231,7 +231,7 @@
     },
     "Instance": {
       "id": "Instance",
-      "description": "A Cloud Filestore instance.",
+      "description": "A Filestore instance.",
       "type": "object",
       "properties": {
         "name": {
@@ -392,7 +392,7 @@
           "type": "string"
         },
         "capacityGb": {
-          "description": "File share capacity in gigabytes (GB). Cloud Filestore defines 1 GB as 1024^3 bytes.",
+          "description": "File share capacity in gigabytes (GB). Filestore defines 1 GB as 1024^3 bytes.",
           "type": "string",
           "format": "int64"
         },
@@ -486,7 +486,7 @@
           }
         },
         "reservedIpRange": {
-          "description": "Optional, reserved_ip_range can have one of the following two types of values. * CIDR range value when using DIRECT_PEERING connect mode. * [Allocated IP address range](https:\/\/cloud.google.com\/compute\/docs\/ip-addresses\/reserve-static-internal-ip-address) when using PRIVATE_SERVICE_ACCESS connect mode. When the name of an allocated IP address range is specified, it must be one of the ranges associated with the private service access connection. When specified as a direct CIDR value, it must be a \/29 CIDR block for Basic tier, a \/24 CIDR block for High Scale tier, or a \/26 CIDR block for Enterprise tier in one of the [internal IP address ranges](https:\/\/www.arin.net\/reference\/research\/statistics\/address_filters\/) that identifies the range of IP addresses reserved for this instance. For example, 10.0.0.0\/29, 192.168.0.0\/24, or 192.168.0.0\/26, respectively. The range you specify can't overlap with either existing subnets or assigned IP address ranges for other Cloud Filestore instances in the selected VPC network.",
+          "description": "Optional, reserved_ip_range can have one of the following two types of values. * CIDR range value when using DIRECT_PEERING connect mode. * [Allocated IP address range](https:\/\/cloud.google.com\/compute\/docs\/ip-addresses\/reserve-static-internal-ip-address) when using PRIVATE_SERVICE_ACCESS connect mode. When the name of an allocated IP address range is specified, it must be one of the ranges associated with the private service access connection. When specified as a direct CIDR value, it must be a \/29 CIDR block for Basic tier, a \/24 CIDR block for High Scale tier, or a \/26 CIDR block for Enterprise tier in one of the [internal IP address ranges](https:\/\/www.arin.net\/reference\/research\/statistics\/address_filters\/) that identifies the range of IP addresses reserved for this instance. For example, 10.0.0.0\/29, 192.168.0.0\/24, or 192.168.0.0\/26, respectively. The range you specify can't overlap with either existing subnets or assigned IP address ranges for other Filestore instances in the selected VPC network.",
           "type": "string"
         },
         "ipAddresses": {
@@ -519,7 +519,7 @@
       "type": "object",
       "properties": {
         "fileShare": {
-          "description": "Required. Name of the file share in the Cloud Filestore instance that the snapshot is being restored to.",
+          "description": "Required. Name of the file share in the Filestore instance that the snapshot is being restored to.",
           "type": "string"
         },
         "sourceSnapshot": {
@@ -563,7 +563,7 @@
     },
     "Snapshot": {
       "id": "Snapshot",
-      "description": "A Cloud Filestore snapshot.",
+      "description": "A Filestore snapshot.",
       "type": "object",
       "properties": {
         "name": {
@@ -640,7 +640,7 @@
     },
     "Backup": {
       "id": "Backup",
-      "description": "A Cloud Filestore backup.",
+      "description": "A Filestore backup.",
       "type": "object",
       "properties": {
         "name": {
@@ -697,15 +697,15 @@
           "format": "int64"
         },
         "sourceInstance": {
-          "description": "The resource name of the source Cloud Filestore instance, in the format `projects\/{project_id}\/locations\/{location_id}\/instances\/{instance_id}`, used to create this backup.",
+          "description": "The resource name of the source Filestore instance, in the format `projects\/{project_id}\/locations\/{location_id}\/instances\/{instance_id}`, used to create this backup.",
           "type": "string"
         },
         "sourceFileShare": {
-          "description": "Name of the file share in the source Cloud Filestore instance that the backup is created from.",
+          "description": "Name of the file share in the source Filestore instance that the backup is created from.",
           "type": "string"
         },
         "sourceInstanceTier": {
-          "description": "Output only. The service tier of the source Cloud Filestore instance that this backup is created from.",
+          "description": "Output only. The service tier of the source Filestore instance that this backup is created from.",
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -771,7 +771,7 @@
     },
     "Share": {
       "id": "Share",
-      "description": "A Cloud Filestore share.",
+      "description": "A Filestore share.",
       "type": "object",
       "properties": {
         "name": {
@@ -788,7 +788,7 @@
           "type": "string"
         },
         "capacityGb": {
-          "description": "File share capacity in gigabytes (GB). Cloud Filestore defines 1 GB as 1024^3 bytes. Must be greater than 0.",
+          "description": "File share capacity in gigabytes (GB). Filestore defines 1 GB as 1024^3 bytes. Must be greater than 0.",
           "type": "string",
           "format": "int64"
         },
@@ -1718,7 +1718,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The instance's project and location, in the format `projects\/{project_id}\/locations\/{location}`. In Cloud Filestore, locations map to GCP zones, for example **us-west1-b**.",
+                      "description": "Required. The instance's project and location, in the format `projects\/{project_id}\/locations\/{location}`. In Filestore, locations map to GCP zones, for example **us-west1-b**.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -2212,7 +2212,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The project and location for which to retrieve backup information, in the format `projects\/{project_id}\/locations\/{location}`. In Cloud Filestore, backup locations map to GCP regions, for example **us-west1**. To retrieve backup information for all locations, use \"-\" for the `{location}` value.",
+                      "description": "Required. The project and location for which to retrieve backup information, in the format `projects\/{project_id}\/locations\/{location}`. In Filestore, backup locations map to GCP regions, for example **us-west1**. To retrieve backup information for all locations, use \"-\" for the `{location}` value.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -2283,7 +2283,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The backup's project and location, in the format `projects\/{project_id}\/locations\/{location}`. In Cloud Filestore, backup locations map to GCP regions, for example **us-west1**.",
+                      "description": "Required. The backup's project and location, in the format `projects\/{project_id}\/locations\/{location}`. In Filestore, backup locations map to GCP regions, for example **us-west1**.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,

@@ -225,7 +225,8 @@
             "Health Information Trust Alliance controls",
             "Assured Workloads For EU Regions and Support controls",
             "Assured Workloads For Canada Regions and Support controls",
-            "International Traffic in Arms Regulations"
+            "International Traffic in Arms Regulations",
+            "Assured Workloads for Australia Regions and Support controls"
           ],
           "enum": [
             "COMPLIANCE_REGIME_UNSPECIFIED",
@@ -238,7 +239,8 @@
             "HITRUST",
             "EU_REGIONS_AND_SUPPORT",
             "CA_REGIONS_AND_SUPPORT",
-            "ITAR"
+            "ITAR",
+            "AU_REGIONS_AND_US_SUPPORT"
           ]
         },
         "createTime": {
@@ -571,7 +573,8 @@
             "Health Information Trust Alliance controls",
             "Assured Workloads For EU Regions and Support controls",
             "Assured Workloads For Canada Regions and Support controls",
-            "International Traffic in Arms Regulations"
+            "International Traffic in Arms Regulations",
+            "Assured Workloads for Australia Regions and Support controls"
           ],
           "enum": [
             "COMPLIANCE_REGIME_UNSPECIFIED",
@@ -584,7 +587,8 @@
             "HITRUST",
             "EU_REGIONS_AND_SUPPORT",
             "CA_REGIONS_AND_SUPPORT",
-            "ITAR"
+            "ITAR",
+            "AU_REGIONS_AND_US_SUPPORT"
           ]
         },
         "createTime": {
@@ -826,7 +830,12 @@
       "type": "object",
       "properties": {
         "activeViolationCount": {
-          "description": "Optional. Count of active Violations in the Workload.",
+          "description": "Count of active Violations in the Workload.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "acknowledgedViolationCount": {
+          "description": "Count of acknowledged violations in the Workload.",
           "type": "integer",
           "format": "int32"
         }
@@ -984,7 +993,8 @@
             "Health Information Trust Alliance controls",
             "Assured Workloads For EU Regions and Support controls",
             "Assured Workloads For Canada Regions and Support controls",
-            "International Traffic in Arms Regulations"
+            "International Traffic in Arms Regulations",
+            "Assured Workloads for Australia Regions and Support controls"
           ],
           "enum": [
             "COMPLIANCE_REGIME_UNSPECIFIED",
@@ -997,7 +1007,8 @@
             "HITRUST",
             "EU_REGIONS_AND_SUPPORT",
             "CA_REGIONS_AND_SUPPORT",
-            "ITAR"
+            "ITAR",
+            "AU_REGIONS_AND_US_SUPPORT"
           ]
         }
       }
@@ -1037,7 +1048,8 @@
             "Health Information Trust Alliance controls",
             "Assured Workloads For EU Regions and Support controls",
             "Assured Workloads For Canada Regions and Support controls",
-            "International Traffic in Arms Regulations"
+            "International Traffic in Arms Regulations",
+            "Assured Workloads for Australia Regions and Support controls"
           ],
           "enum": [
             "COMPLIANCE_REGIME_UNSPECIFIED",
@@ -1050,7 +1062,8 @@
             "HITRUST",
             "EU_REGIONS_AND_SUPPORT",
             "CA_REGIONS_AND_SUPPORT",
-            "ITAR"
+            "ITAR",
+            "AU_REGIONS_AND_US_SUPPORT"
           ]
         },
         "createTime": {
@@ -1269,7 +1282,8 @@
             "Health Information Trust Alliance controls",
             "Assured Workloads For EU Regions and Support controls",
             "Assured Workloads For Canada Regions and Support controls",
-            "International Traffic in Arms Regulations"
+            "International Traffic in Arms Regulations",
+            "Assured Workloads for Australia Regions and Support controls"
           ],
           "enum": [
             "COMPLIANCE_REGIME_UNSPECIFIED",
@@ -1282,7 +1296,8 @@
             "HITRUST",
             "EU_REGIONS_AND_SUPPORT",
             "CA_REGIONS_AND_SUPPORT",
-            "ITAR"
+            "ITAR",
+            "AU_REGIONS_AND_US_SUPPORT"
           ]
         },
         "resourceSettings": {
@@ -1326,7 +1341,8 @@
             "Health Information Trust Alliance controls",
             "Assured Workloads For EU Regions and Support controls",
             "Assured Workloads For Canada Regions and Support controls",
-            "International Traffic in Arms Regulations"
+            "International Traffic in Arms Regulations",
+            "Assured Workloads for Australia Regions and Support controls"
           ],
           "enum": [
             "COMPLIANCE_REGIME_UNSPECIFIED",
@@ -1339,7 +1355,8 @@
             "HITRUST",
             "EU_REGIONS_AND_SUPPORT",
             "CA_REGIONS_AND_SUPPORT",
-            "ITAR"
+            "ITAR",
+            "AU_REGIONS_AND_US_SUPPORT"
           ]
         },
         "resourceSettings": {
@@ -1419,7 +1436,8 @@
             "Health Information Trust Alliance controls",
             "Assured Workloads For EU Regions and Support controls",
             "Assured Workloads For Canada Regions and Support controls",
-            "International Traffic in Arms Regulations"
+            "International Traffic in Arms Regulations",
+            "Assured Workloads for Australia Regions and Support controls"
           ],
           "enum": [
             "COMPLIANCE_REGIME_UNSPECIFIED",
@@ -1432,7 +1450,8 @@
             "HITRUST",
             "EU_REGIONS_AND_SUPPORT",
             "CA_REGIONS_AND_SUPPORT",
-            "ITAR"
+            "ITAR",
+            "AU_REGIONS_AND_US_SUPPORT"
           ]
         },
         "createTime": {
@@ -1657,7 +1676,12 @@
       "type": "object",
       "properties": {
         "activeViolationCount": {
-          "description": "Optional. Count of active Violations in the Workload.",
+          "description": "Count of active Violations in the Workload.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "acknowledgedViolationCount": {
+          "description": "Count of acknowledged violations in the Workload.",
           "type": "integer",
           "format": "int32"
         }

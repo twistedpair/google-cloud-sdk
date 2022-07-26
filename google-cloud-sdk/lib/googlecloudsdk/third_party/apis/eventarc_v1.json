@@ -460,7 +460,7 @@
           }
         },
         "nextPageToken": {
-          "description": "A page token that can be sent to ListTriggers to request the next page. If this is empty, then there are no more pages.",
+          "description": "A page token that can be sent to `ListTriggers` to request the next page. If this is empty, then there are no more pages.",
           "type": "string"
         },
         "unreachable": {
@@ -515,7 +515,7 @@
             "Default value. This value is unused.",
             "The PENDING state indicates that a Channel has been created successfully and there is a new activation token available for the subscriber to use to convey the Channel to the provider in order to create a Connection.",
             "The ACTIVE state indicates that a Channel has been successfully connected with the event provider. An ACTIVE Channel is ready to receive and route events from the event provider.",
-            "The INACTIVE state means that the Channel cannot receive events permanently. There are two possible cases this state can happen: 1. The SaaS provider disconnected from this Channel. 2. The Channel activation token has expired but the SaaS provider wasn't connected. To re-establish a Connection with a provider, the subscriber should create a new Channel and give it to the provider."
+            "The INACTIVE state indicates that the Channel cannot receive events permanently. There are two possible cases this state can happen: 1. The SaaS provider disconnected from this Channel. 2. The Channel activation token has expired but the SaaS provider wasn't connected. To re-establish a Connection with a provider, the subscriber should create a new Channel and give it to the provider."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
@@ -548,7 +548,7 @@
           }
         },
         "nextPageToken": {
-          "description": "A page token that can be sent to ListChannels to request the next page. If this is empty, then there are no more pages.",
+          "description": "A page token that can be sent to `ListChannels` to request the next page. If this is empty, then there are no more pages.",
           "type": "string"
         },
         "unreachable": {
@@ -655,7 +655,7 @@
           }
         },
         "nextPageToken": {
-          "description": "A page token that can be sent to ListProviders to request the next page. If this is empty, then there are no more pages.",
+          "description": "A page token that can be sent to `ListProviders` to request the next page. If this is empty, then there are no more pages.",
           "type": "string"
         },
         "unreachable": {
@@ -677,7 +677,7 @@
           "type": "string"
         },
         "uid": {
-          "description": "Output only. \/ Output only. Server assigned ID of the resource. The server guarantees uniqueness and immutability until deleted.",
+          "description": "Output only. Server assigned ID of the resource. The server guarantees uniqueness and immutability until deleted.",
           "readOnly": true,
           "type": "string"
         },
@@ -716,7 +716,7 @@
           }
         },
         "nextPageToken": {
-          "description": "A page token that can be sent to ListChannelConnections to request the next page. If this is empty, then there are no more pages.",
+          "description": "A page token that can be sent to `ListChannelConnections` to request the next page. If this is empty, then there are no more pages.",
           "type": "string"
         },
         "unreachable": {

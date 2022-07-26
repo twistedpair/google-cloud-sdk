@@ -3886,7 +3886,7 @@
           "httpMethod": "GET",
           "parameters": {
             "scope": {
-              "description": "Required. The project\/folder\/organization to scope the request. Only organization policies within the scope will be analyzed. * projects\/{PROJECT_NUMBER} (e.g., \"projects\/12345678\") * projects\/{PROJECT_ID} (e.g., \"projects\/test-project\") * folders\/{FOLDER_NUMBER} (e.g., \"folders\/1234567\") * organizations\/{ORGANIZATION_NUMBER} (e.g., \"organizations\/123456\")",
+              "description": "Required. The organization to scope the request. Only organization policies within the scope will be analyzed. * organizations\/{ORGANIZATION_NUMBER} (e.g., \"organizations\/123456\")",
               "pattern": "^[^\/]+\/[^\/]+$",
               "location": "path",
               "required": true,
@@ -3932,7 +3932,7 @@
           "httpMethod": "GET",
           "parameters": {
             "scope": {
-              "description": "Required. The project\/folder\/organization to scope the request. Only organization policies within the scope will be analyzed. The output containers will also be limited to the ones governed by those in-scope organization policies. * projects\/{PROJECT_NUMBER} (e.g., \"projects\/12345678\") * projects\/{PROJECT_ID} (e.g., \"projects\/test-project\") * folders\/{FOLDER_NUMBER} (e.g., \"folders\/1234567\") * organizations\/{ORGANIZATION_NUMBER} (e.g., \"organizations\/123456\")",
+              "description": "Required. The organization to scope the request. Only organization policies within the scope will be analyzed. The output containers will also be limited to the ones governed by those in-scope organization policies. * organizations\/{ORGANIZATION_NUMBER} (e.g., \"organizations\/123456\")",
               "pattern": "^[^\/]+\/[^\/]+$",
               "location": "path",
               "required": true,
@@ -3978,7 +3978,7 @@
           "httpMethod": "GET",
           "parameters": {
             "scope": {
-              "description": "Required. The project\/folder\/organization to scope the request. Only organization policies within the scope will be analyzed. The output resources will also be limited to the ones governed by those in-scope organization policies. * projects\/{PROJECT_NUMBER} (e.g., \"projects\/12345678\") * projects\/{PROJECT_ID} (e.g., \"projects\/test-project\") * folders\/{FOLDER_NUMBER} (e.g., \"folders\/1234567\") * organizations\/{ORGANIZATION_NUMBER} (e.g., \"organizations\/123456\")",
+              "description": "Required. The organization to scope the request. Only organization policies within the scope will be analyzed. The output resources will also be limited to the ones governed by those in-scope organization policies. * organizations\/{ORGANIZATION_NUMBER} (e.g., \"organizations\/123456\")",
               "pattern": "^[^\/]+\/[^\/]+$",
               "location": "path",
               "required": true,

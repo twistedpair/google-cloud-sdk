@@ -200,8 +200,8 @@ class AutoprovisioningNodePoolDefaults(_messages.Message):
       Intel Sandy Bridge. For more information, read [how to specify min CPU
       platform](https://cloud.google.com/compute/docs/instances/specify-min-
       cpu-platform) This field is deprecated, min_cpu_platform should be
-      specified using cloud.google.com/requested-min-cpu-platform label
-      selector on the pod. To unset the min cpu platform field pass
+      specified using https://cloud.google.com/requested-min-cpu-platform
+      label selector on the pod. To unset the min cpu platform field pass
       "automatic" as field value.
     oauthScopes: Scopes that are used by NAP when creating node pools.
     serviceAccount: The Google Cloud Platform Service Account to be used by
@@ -242,8 +242,9 @@ class BinaryAuthorization(_messages.Message):
       If unspecified, defaults to DISABLED.
 
   Fields:
-    enabled: Enable Binary Authorization for this cluster. If enabled, all
-      container images will be validated by Binary Authorization.
+    enabled: This field is deprecated. Leave this unset and instead configure
+      BinaryAuthorization using evaluation_mode. If evaluation_mode is set to
+      anything other than EVALUATION_MODE_UNSPECIFIED, this field is ignored.
     evaluationMode: Mode of operation for binauthz policy evaluation.
       Currently the only options are equivalent to enable/disable. If
       unspecified, defaults to DISABLED.
@@ -834,6 +835,7 @@ class ClusterUpdate(_messages.Message):
       cluster. If left as an empty string,`logging.googleapis.com/kubernetes`
       will be used for GKE 1.14+ or `logging.googleapis.com` for earlier
       versions.
+    desiredManagedConfig: The desired managed config for the cluster.
     desiredMasterAuthorizedNetworksConfig: The desired configuration options
       for master authorized networks feature.
     desiredMasterVersion: The Kubernetes version to change the master to.
@@ -951,26 +953,27 @@ class ClusterUpdate(_messages.Message):
   desiredLocations = _messages.StringField(18, repeated=True)
   desiredLoggingConfig = _messages.MessageField('LoggingConfig', 19)
   desiredLoggingService = _messages.StringField(20)
-  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 21)
-  desiredMasterVersion = _messages.StringField(22)
-  desiredMeshCertificates = _messages.MessageField('MeshCertificates', 23)
-  desiredMonitoringConfig = _messages.MessageField('MonitoringConfig', 24)
-  desiredMonitoringService = _messages.StringField(25)
-  desiredNodePoolAutoConfigNetworkTags = _messages.MessageField('NetworkTags', 26)
-  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 27)
-  desiredNodePoolId = _messages.StringField(28)
-  desiredNodePoolLoggingConfig = _messages.MessageField('NodePoolLoggingConfig', 29)
-  desiredNodeVersion = _messages.StringField(30)
-  desiredNotificationConfig = _messages.MessageField('NotificationConfig', 31)
-  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 32)
-  desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 33)
-  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 34)
-  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 35)
-  desiredServiceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 36)
-  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 37)
-  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 38)
-  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 39)
-  etag = _messages.StringField(40)
+  desiredManagedConfig = _messages.MessageField('ManagedConfig', 21)
+  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 22)
+  desiredMasterVersion = _messages.StringField(23)
+  desiredMeshCertificates = _messages.MessageField('MeshCertificates', 24)
+  desiredMonitoringConfig = _messages.MessageField('MonitoringConfig', 25)
+  desiredMonitoringService = _messages.StringField(26)
+  desiredNodePoolAutoConfigNetworkTags = _messages.MessageField('NetworkTags', 27)
+  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 28)
+  desiredNodePoolId = _messages.StringField(29)
+  desiredNodePoolLoggingConfig = _messages.MessageField('NodePoolLoggingConfig', 30)
+  desiredNodeVersion = _messages.StringField(31)
+  desiredNotificationConfig = _messages.MessageField('NotificationConfig', 32)
+  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 33)
+  desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 34)
+  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 35)
+  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 36)
+  desiredServiceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 37)
+  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 38)
+  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 39)
+  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 40)
+  etag = _messages.StringField(41)
 
 
 class CompleteIPRotationRequest(_messages.Message):
@@ -1166,7 +1169,7 @@ class ContainerProjectsLocationsClustersNodePoolsCompleteUpgradeRequest(_message
       to be passed as the request body.
     name: The name (project, location, cluster, node pool id) of the node pool
       to complete upgrade. Specified in the format
-      'projects/*/locations/*/clusters/*/nodePools/*'.
+      `projects/*/locations/*/clusters/*/nodePools/*`.
   """
 
   completeNodePoolUpgradeRequest = _messages.MessageField('CompleteNodePoolUpgradeRequest', 1)
@@ -2998,7 +3001,8 @@ class NodeConfigDefaults(_messages.Message):
   r"""Subset of NodeConfig message that has defaults.
 
   Fields:
-    gcfsConfig: GCFS (Google Container File System, a.k.a. Riptide) options.
+    gcfsConfig: GCFS (Google Container File System, also known as Riptide)
+      options.
     loggingConfig: Logging configuration for node pools.
   """
 
@@ -4761,6 +4765,10 @@ class UpdateMasterRequest(_messages.Message):
 class UpdateNodePoolRequest(_messages.Message):
   r"""UpdateNodePoolRequests update a node pool's image and/or version.
 
+  Messages:
+    ResourceLabelsValue: The resource labels for the node pool to use to
+      annotate any related Google Compute Engine resources.
+
   Fields:
     clusterId: Deprecated. The name of the cluster to upgrade. This field has
       been deprecated and replaced by the name field.
@@ -4807,6 +4815,8 @@ class UpdateNodePoolRequest(_messages.Message):
       project number](https://cloud.google.com/resource-manager/docs/creating-
       managing-projects). This field has been deprecated and replaced by the
       name field.
+    resourceLabels: The resource labels for the node pool to use to annotate
+      any related Google Compute Engine resources.
     tags: The desired network tags to be applied to all nodes in the node
       pool. If this field is not present, the tags will not be changed.
       Otherwise, the existing network tags will be *replaced* with the
@@ -4824,6 +4834,32 @@ class UpdateNodePoolRequest(_messages.Message):
       the cluster resides. This field has been deprecated and replaced by the
       name field.
   """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ResourceLabelsValue(_messages.Message):
+    r"""The resource labels for the node pool to use to annotate any related
+    Google Compute Engine resources.
+
+    Messages:
+      AdditionalProperty: An additional property for a ResourceLabelsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type ResourceLabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ResourceLabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   clusterId = _messages.StringField(1)
   confidentialNodes = _messages.MessageField('ConfidentialNodes', 2)
@@ -4844,11 +4880,12 @@ class UpdateNodePoolRequest(_messages.Message):
   nodePoolId = _messages.StringField(17)
   nodeVersion = _messages.StringField(18)
   projectId = _messages.StringField(19)
-  tags = _messages.MessageField('NetworkTags', 20)
-  taints = _messages.MessageField('NodeTaints', 21)
-  upgradeSettings = _messages.MessageField('UpgradeSettings', 22)
-  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 23)
-  zone = _messages.StringField(24)
+  resourceLabels = _messages.MessageField('ResourceLabelsValue', 20)
+  tags = _messages.MessageField('NetworkTags', 21)
+  taints = _messages.MessageField('NodeTaints', 22)
+  upgradeSettings = _messages.MessageField('UpgradeSettings', 23)
+  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 24)
+  zone = _messages.StringField(25)
 
 
 class UpgradeAvailableEvent(_messages.Message):

@@ -1814,7 +1814,7 @@
           "$ref": "GoogleCloudDialogflowV2InputAudioConfig"
         },
         "text": {
-          "description": "The natural language text to be processed.",
+          "description": "The natural language text to be processed. Text length must not exceed 256 character for virtual agent interactions.",
           "$ref": "GoogleCloudDialogflowV2TextInput"
         },
         "event": {
@@ -1934,7 +1934,7 @@
       "type": "object",
       "properties": {
         "text": {
-          "description": "Required. The UTF-8 encoded natural language text to be processed. Text length must not exceed 256 characters.",
+          "description": "Required. The UTF-8 encoded natural language text to be processed. Text length must not exceed 256 characters for virtual agent interactions.",
           "type": "string"
         },
         "languageCode": {

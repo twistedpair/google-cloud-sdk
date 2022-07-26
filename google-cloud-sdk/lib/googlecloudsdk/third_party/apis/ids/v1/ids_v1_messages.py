@@ -445,6 +445,8 @@ class Endpoint(_messages.Message):
     severity: Required. Lowest threat severity that this endpoint will alert
       on.
     state: Output only. Current state of the endpoint.
+    threatExceptions: List of threat IDs to be excepted from generating
+      alerts.
     trafficLogs: Whether the endpoint should report traffic logs in addition
       to threat logs.
     updateTime: Output only. The update time timestamp.
@@ -515,8 +517,9 @@ class Endpoint(_messages.Message):
   network = _messages.StringField(7)
   severity = _messages.EnumField('SeverityValueValuesEnum', 8)
   state = _messages.EnumField('StateValueValuesEnum', 9)
-  trafficLogs = _messages.BooleanField(10)
-  updateTime = _messages.StringField(11)
+  threatExceptions = _messages.StringField(10, repeated=True)
+  trafficLogs = _messages.BooleanField(11)
+  updateTime = _messages.StringField(12)
 
 
 class Exemplar(_messages.Message):

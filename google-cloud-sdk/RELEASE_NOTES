@@ -5,6 +5,116 @@ Copyright 2014-2022 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 395.0.0 (2022-07-26)
+
+### AI
+
+* Modified `gcloud ai models upload` to support model version aliases. Use `--version-aliases` flag to set version aliases so that a model version can be referenced via alias (i.e. projects/{project}/locations/{location}/models/{model_id}@{version_alias} instead of auto-generated version id (i.e. projects/{project}/locations/{location}/models/{model_id}@{version_id}). The format is [a-z][a-zA-Z0-9-]{0,126}[a-z0-9] to distinguish from version_id. The aliases set in the flag will replace the aliases set in the model.
+
+### App Engine
+
+* Updated the Java SDK to version 1.9.98.
+  Please visit the following release notes for details:
+  <https://cloud.google.com/appengine/docs/java/release-notes>.
+
+### Artifact Registry
+
+*   Added `gcloud artifacts packages describe` command.
+
+### Cloud Deploy
+
+*   Added new `--from-k8s-manifest` to `releases create` command.
+    When used, a Skaffold file will be generated.
+
+### Cloud Domains
+
+* Implemented the following commands for `gcloud domains registrations` in alpha and beta.
+  * `import`
+  * `list-importable-domains`
+
+### Cloud Functions
+
+*   Updated `gcloud functions list` to return 2nd gen functions in addition to
+    1st gen functions.
+*   Fixed crash in `gcloud beta functions deploy --gen2` failures causing the
+    error message "This stage does not belong to this progress tracker".
+*   Promoted `--gen2` flag of `gcloud functions add-iam-policy-binding` to GA.
+*   Promoted `--gen2` flag of `gcloud functions call` to GA.
+*   Promoted `--gen2` flag of `gcloud functions delete` to GA.
+*   Promoted `--gen2` flag of `gcloud functions deploy` to GA.
+*   Promoted `--gen2` flag of `gcloud functions describe` to GA.
+*   Promoted `--gen2` flag of `gcloud functions get-iam-policy` to GA.
+*   Promoted `--gen2` flag of `gcloud functions remove-iam-policy-binding` to
+    GA.
+*   Promoted `--gen2` flag of `gcloud functions set-iam-policy` to GA.
+*   Promoted `--gen2` flag of `gcloud functions event-types list` to GA.
+*   Promoted `--gen2` flag of `gcloud functions logs read` to GA.
+*   Promoted `--gen2` flag of `gcloud functions regions list` to GA.
+*   Promoted `gcloud functions add-invoker-policy-binding` to GA.
+*   Promoted `gcloud functions remove-invoker-policy-binding` to GA.
+
+### Cloud Healthcare
+
+* Added `--schema-type` value `analytics_v2` to `gcloud healthcare fhir-stores export bq`.
+
+### Cloud Identity-Aware Proxy
+
+*  Renamed flag `--group-name` to `--dest-group` for`gcloud iap tcp dest-groups` IAM commands.
+
+### Cloud Pub/Sub
+
+*   Fixed issue where `gcloud pubsub subscriptions create` and
+    `gcloud pubsub subscriptions update` will crash when specifying
+    `--min-retry-delay=0` and/or `--max-retry-delay=0`.
+*   Fixed issue where `gcloud pubsub subscriptions create` will crash when
+    specifying `--retention_duration=0`.
+
+### Cloud Run
+
+* Added `--description` flag in `gcloud run deploy`, and description field in `gcloud run services describe [SERVICE]`.
+  * Description is an optional, human-readable string of up to 512 characters.
+  * Using the flag is functionally equivalent to adding service annotation "run.googleapis.com/description".
+
+### Compute Engine
+
+* Added `--update-user-licenses` and `--clear-user-licenses` flags of `gcloud compute images update` to alpha and beta.
+* Made global scope the default for `gcloud compute security-policies`.
+
+### Config Controller
+
+* Added `--man-blocks` flag to `gcloud anthos config controller create` to allow
+    specifying multiple master authorized network CIDR blocks for a CC instance.
+* Deprecated `--man-block` flag of `gcloud anthos config controller create`.
+    Use `--man-blocks` to set master authorized network CIDR block.
+* Modified `gcloud anthos config controller list` to print out only the
+    instance name instead of the fully specified name.
+* Added `--full-name` flag to `gcloud anthos config controller list` to allow
+    users printing out the fully specified name in the NAME column when needed.
+
+### GKE Hub
+
+* Promote `gcloud container hub memberships generate-gateway-rbac` to GA.
+
+### Kubernetes Engine
+
+* Add `cgroupMode` node system config option to allow switching nodes to cgroupv1 or cgroupv2.
+* Updates default kubectl from 1.22.9 to 1.22.12
+* Additional kubectl versions:
+  * kubectl.1.19 (1.19.16)
+  * kubectl.1.20 (1.20.15)
+  * kubectl.1.21 (1.21.14)
+  * kubectl.1.22 (1.22.12)
+  * kubectl.1.23 (1.23.9)
+  * kubectl.1.24 (1.24.3)
+
+### Pubsub Emulator
+
+*   Added support for creating BigQuery subscriptions.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 394.0.0 (2022-07-19)
 
 ### AI

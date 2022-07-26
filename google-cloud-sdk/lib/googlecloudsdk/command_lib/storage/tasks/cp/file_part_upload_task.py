@@ -144,7 +144,7 @@ class FilePartUploadTask(file_part_task.FilePartTask):
     request_config = request_config_factory.get_request_config(
         destination_url,
         content_type=upload_util.get_content_type(
-            self._source_path, self._source_resource.storage_url.is_pipe),
+            self._source_path, self._source_resource.storage_url.is_stream),
         md5_hash=self._source_resource.md5_hash,
         size=self._length,
         user_request_args=self._user_request_args)

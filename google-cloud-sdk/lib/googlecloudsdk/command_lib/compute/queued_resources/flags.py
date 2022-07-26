@@ -19,6 +19,8 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.command_lib.compute import flags as compute_flags
+from googlecloudsdk.core.util.iso_duration import Duration
+from googlecloudsdk.core.util.times import FormatDuration
 
 
 def MakeQueuedResourcesArg(plural=False):
@@ -27,3 +29,38 @@ def MakeQueuedResourcesArg(plural=False):
       zonal_collection='compute.zoneQueuedResources',
       plural=plural,
       zone_explanation=compute_flags.ZONE_PROPERTY_EXPLANATION)
+
+
+DEFAULT_LIST_FORMAT = """
+        table(
+          name,
+          location(),
+          bulkInsertInstanceResource.count,
+          bulkInsertInstanceResource.instanceProperties.machineType,
+          bulkInsertInstanceResource.instanceProperties.guest_accelerators[0].accelerator_type,
+          state,
+          maxRunDuration(),
+          status.queuingPolicy.validUntilTime
+        )"""
+
+
+def _TransformMaxRunDuration(resource):
+  """Properly format max_run_duration field."""
+  # This will always be present in the resource.
+  bulk_resource = resource.get('bulkInsertInstanceResource')
+
+  # Use get with dictionary optional return value to skip existence checking
+  max_run_duration = bulk_resource.get('instanceProperties',
+                                       {}).get('scheduling',
+                                               {}).get('maxRunDuration')
+  if not max_run_duration:
+    return ''
+  duration = Duration(seconds=int(max_run_duration.get('seconds')))
+  return FormatDuration(duration, parts=4)
+
+
+def AddOutputFormat(parser):
+  parser.display_info.AddFormat(DEFAULT_LIST_FORMAT)
+  parser.display_info.AddTransforms({
+      'maxRunDuration': _TransformMaxRunDuration,
+  })

@@ -4172,7 +4172,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Required. The name of the WorkforcePoolSubject to delete. Format: `locations\/{location}\/workforcePools\/{workforce_pool_id}\/subjects\/{subject_id}`",
+                      "description": "Required. The resource name of the WorkforcePoolSubject. Special characters, like '\/' and ':', must be escaped, because all URLs need to conform to the \"When to Escape and Unescape\" section of [RFC3986](https:\/\/www.ietf.org\/rfc\/rfc2396.txt). Format: `locations\/{location}\/workforcePools\/{workforce_pool_id}\/subjects\/{subject_id}`",
                       "pattern": "^locations\/[^\/]+\/workforcePools\/[^\/]+\/subjects\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -4197,7 +4197,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
-                      "description": "Required. The name of the WorkforcePoolSubject to undelete. Format: `locations\/{location}\/workforcePools\/{workforce_pool_id}\/subjects\/{subject_id}`",
+                      "description": "Required. The resource name of the WorkforcePoolSubject. Special characters, like '\/' and ':', must be escaped, because all URLs need to conform to the \"When to Escape and Unescape\" section of [RFC3986](https:\/\/www.ietf.org\/rfc\/rfc2396.txt). Format: `locations\/{location}\/workforcePools\/{workforce_pool_id}\/subjects\/{subject_id}`",
                       "pattern": "^locations\/[^\/]+\/workforcePools\/[^\/]+\/subjects\/[^\/]+$",
                       "location": "path",
                       "required": true,

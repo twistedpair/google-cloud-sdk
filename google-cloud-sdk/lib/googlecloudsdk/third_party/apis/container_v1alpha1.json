@@ -2253,7 +2253,7 @@
       "type": "object",
       "properties": {
         "enabled": {
-          "description": "Enable Binary Authorization for this cluster. If enabled, all container images will be validated by Binary Authorization.",
+          "description": "This field is deprecated. Leave this unset and instead configure BinaryAuthorization using evaluation_mode. If evaluation_mode is set to anything other than EVALUATION_MODE_UNSPECIFIED, this field is ignored.",
           "type": "boolean"
         },
         "evaluationMode": {
@@ -2376,7 +2376,7 @@
           "$ref": "NodeManagement"
         },
         "minCpuPlatform": {
-          "description": "Deprecated. Minimum CPU platform to be used for NAP created node pools. The instance may be scheduled on the specified or newer CPU platform. Applicable values are the friendly names of CPU platforms, such as minCpuPlatform: Intel Haswell or minCpuPlatform: Intel Sandy Bridge. For more information, read [how to specify min CPU platform](https:\/\/cloud.google.com\/compute\/docs\/instances\/specify-min-cpu-platform) This field is deprecated, min_cpu_platform should be specified using cloud.google.com\/requested-min-cpu-platform label selector on the pod. To unset the min cpu platform field pass \"automatic\" as field value.",
+          "description": "Deprecated. Minimum CPU platform to be used for NAP created node pools. The instance may be scheduled on the specified or newer CPU platform. Applicable values are the friendly names of CPU platforms, such as minCpuPlatform: Intel Haswell or minCpuPlatform: Intel Sandy Bridge. For more information, read [how to specify min CPU platform](https:\/\/cloud.google.com\/compute\/docs\/instances\/specify-min-cpu-platform) This field is deprecated, min_cpu_platform should be specified using https:\/\/cloud.google.com\/requested-min-cpu-platform label selector on the pod. To unset the min cpu platform field pass \"automatic\" as field value.",
           "type": "string"
         },
         "diskSizeGb": {
@@ -3134,7 +3134,7 @@
       "type": "object",
       "properties": {
         "gcfsConfig": {
-          "description": "GCFS (Google Container File System, a.k.a. Riptide) options.",
+          "description": "GCFS (Google Container File System, also known as Riptide) options.",
           "$ref": "GcfsConfig"
         },
         "stableFleetConfig": {
@@ -3391,7 +3391,7 @@
           "$ref": "Cluster"
         },
         "parent": {
-          "description": "The parent (project and location) where the cluster will be created. Specified in the format 'projects\/*\/locations\/*'.",
+          "description": "The parent (project and location) where the cluster will be created. Specified in the format `projects\/*\/locations\/*`.",
           "type": "string"
         }
       }
@@ -3646,7 +3646,7 @@
           "$ref": "Cluster"
         },
         "name": {
-          "description": "The name (project, location, cluster) of the cluster to update. Specified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
+          "description": "The name (project, location, cluster) of the cluster to update. Specified in the format `projects\/*\/locations\/*\/clusters\/*`.",
           "type": "string"
         }
       }
@@ -3937,6 +3937,24 @@
         "desiredNodePoolLoggingConfig": {
           "description": "The desired node pool logging configuration defaults for the cluster.",
           "$ref": "NodePoolLoggingConfig"
+        },
+        "desiredManagedConfig": {
+          "description": "The desired managed config for the cluster.",
+          "$ref": "ManagedConfig"
+        },
+        "desiredStackType": {
+          "description": "The desired stack type of the cluster. If a stack type is provided and does not match the current stack type of the cluster, update will attempt to change the stack type to the new type.",
+          "type": "string",
+          "enumDescriptions": [
+            "By default, the clusters will be IPV4 only",
+            "The value used if the cluster is a IPV4 only",
+            "The value used if the cluster is a dual stack cluster"
+          ],
+          "enum": [
+            "STACK_TYPE_UNSPECIFIED",
+            "IPV4",
+            "IPV4_IPV6"
+          ]
         }
       }
     },
@@ -4044,7 +4062,7 @@
           }
         },
         "name": {
-          "description": "The name (project, location, cluster, node pool) of the node pool to update. Specified in the format 'projects\/*\/locations\/*\/clusters\/*\/nodePools\/*'.",
+          "description": "The name (project, location, cluster, node pool) of the node pool to update. Specified in the format `projects\/*\/locations\/*\/clusters\/*\/nodePools\/*`.",
           "type": "string"
         },
         "workloadMetadataConfig": {
@@ -4102,6 +4120,13 @@
         "loggingConfig": {
           "description": "Logging configuration.",
           "$ref": "NodePoolLoggingConfig"
+        },
+        "resourceLabels": {
+          "description": "The resource labels for the node pool to use to annotate any related Google Compute Engine resources.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },
@@ -4159,7 +4184,7 @@
           "$ref": "NodePoolAutoscaling"
         },
         "name": {
-          "description": "The name (project, location, cluster, node pool) of the node pool to set autoscaler settings. Specified in the format 'projects\/*\/locations\/*\/clusters\/*\/nodePools\/*'.",
+          "description": "The name (project, location, cluster, node pool) of the node pool to set autoscaler settings. Specified in the format `projects\/*\/locations\/*\/clusters\/*\/nodePools\/*`.",
           "type": "string"
         }
       }
@@ -4186,7 +4211,7 @@
           "type": "string"
         },
         "name": {
-          "description": "The name (project, location, cluster) of the cluster to set logging. Specified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
+          "description": "The name (project, location, cluster) of the cluster to set logging. Specified in the format `projects\/*\/locations\/*\/clusters\/*`.",
           "type": "string"
         }
       }
@@ -4213,7 +4238,7 @@
           "type": "string"
         },
         "name": {
-          "description": "The name (project, location, cluster) of the cluster to set monitoring. Specified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
+          "description": "The name (project, location, cluster) of the cluster to set monitoring. Specified in the format `projects\/*\/locations\/*\/clusters\/*`.",
           "type": "string"
         }
       }
@@ -4240,7 +4265,7 @@
           "$ref": "AddonsConfig"
         },
         "name": {
-          "description": "The name (project, location, cluster) of the cluster to set addons. Specified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
+          "description": "The name (project, location, cluster) of the cluster to set addons. Specified in the format `projects\/*\/locations\/*\/clusters\/*`.",
           "type": "string"
         }
       }
@@ -4270,7 +4295,7 @@
           }
         },
         "name": {
-          "description": "The name (project, location, cluster) of the cluster to set locations. Specified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
+          "description": "The name (project, location, cluster) of the cluster to set locations. Specified in the format `projects\/*\/locations\/*\/clusters\/*`.",
           "type": "string"
         }
       }
@@ -4297,7 +4322,7 @@
           "type": "string"
         },
         "name": {
-          "description": "The name (project, location, cluster) of the cluster to update. Specified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
+          "description": "The name (project, location, cluster) of the cluster to update. Specified in the format `projects\/*\/locations\/*\/clusters\/*`.",
           "type": "string"
         }
       }
@@ -4340,7 +4365,7 @@
           "$ref": "MasterAuth"
         },
         "name": {
-          "description": "The name (project, location, cluster) of the cluster to set auth. Specified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
+          "description": "The name (project, location, cluster) of the cluster to set auth. Specified in the format `projects\/*\/locations\/*\/clusters\/*`.",
           "type": "string"
         }
       }
@@ -4384,7 +4409,7 @@
           "type": "string"
         },
         "name": {
-          "description": "The name (project, location, operation id) of the operation to cancel. Specified in the format 'projects\/*\/locations\/*\/operations\/*'.",
+          "description": "The name (project, location, operation id) of the operation to cancel. Specified in the format `projects\/*\/locations\/*\/operations\/*`.",
           "type": "string"
         }
       }
@@ -4728,7 +4753,7 @@
           "$ref": "NodePool"
         },
         "parent": {
-          "description": "The parent (project, location, cluster name) where the node pool will be created. Specified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
+          "description": "The parent (project, location, cluster name) where the node pool will be created. Specified in the format `projects\/*\/locations\/*\/clusters\/*`.",
           "type": "string"
         }
       }
@@ -4762,7 +4787,7 @@
           "type": "string"
         },
         "name": {
-          "description": "The name (project, location, cluster, node pool id) of the node poll to rollback upgrade. Specified in the format 'projects\/*\/locations\/*\/clusters\/*\/nodePools\/*'.",
+          "description": "The name (project, location, cluster, node pool id) of the node poll to rollback upgrade. Specified in the format `projects\/*\/locations\/*\/clusters\/*\/nodePools\/*`.",
           "type": "string"
         },
         "respectPdb": {
@@ -4797,7 +4822,7 @@
           "$ref": "NodeManagement"
         },
         "name": {
-          "description": "The name (project, location, cluster, node pool id) of the node pool to set management properties. Specified in the format 'projects\/*\/locations\/*\/clusters\/*\/nodePools\/*'.",
+          "description": "The name (project, location, cluster, node pool id) of the node pool to set management properties. Specified in the format `projects\/*\/locations\/*\/clusters\/*\/nodePools\/*`.",
           "type": "string"
         }
       }
@@ -4831,7 +4856,7 @@
           "type": "string"
         },
         "name": {
-          "description": "The name (project, location, cluster name) of the cluster to set labels. Specified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
+          "description": "The name (project, location, cluster name) of the cluster to set labels. Specified in the format `projects\/*\/locations\/*\/clusters\/*`.",
           "type": "string"
         }
       }
@@ -4858,7 +4883,7 @@
           "type": "boolean"
         },
         "name": {
-          "description": "The name (project, location, cluster name) of the cluster to set legacy abac. Specified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
+          "description": "The name (project, location, cluster name) of the cluster to set legacy abac. Specified in the format `projects\/*\/locations\/*\/clusters\/*`.",
           "type": "string"
         }
       }
@@ -4881,7 +4906,7 @@
           "type": "string"
         },
         "name": {
-          "description": "The name (project, location, cluster name) of the cluster to start IP rotation. Specified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
+          "description": "The name (project, location, cluster name) of the cluster to start IP rotation. Specified in the format `projects\/*\/locations\/*\/clusters\/*`.",
           "type": "string"
         },
         "rotateCredentials": {
@@ -4908,7 +4933,7 @@
           "type": "string"
         },
         "name": {
-          "description": "The name (project, location, cluster name) of the cluster to complete IP rotation. Specified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
+          "description": "The name (project, location, cluster name) of the cluster to complete IP rotation. Specified in the format `projects\/*\/locations\/*\/clusters\/*`.",
           "type": "string"
         }
       }
@@ -4940,7 +4965,7 @@
           "format": "int32"
         },
         "name": {
-          "description": "The name (project, location, cluster, node pool id) of the node pool to set size. Specified in the format 'projects\/*\/locations\/*\/clusters\/*\/nodePools\/*'.",
+          "description": "The name (project, location, cluster, node pool id) of the node pool to set size. Specified in the format `projects\/*\/locations\/*\/clusters\/*\/nodePools\/*`.",
           "type": "string"
         }
       }
@@ -4967,7 +4992,7 @@
           "$ref": "NetworkPolicy"
         },
         "name": {
-          "description": "The name (project, location, cluster name) of the cluster to set networking policy. Specified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
+          "description": "The name (project, location, cluster name) of the cluster to set networking policy. Specified in the format `projects\/*\/locations\/*\/clusters\/*`.",
           "type": "string"
         }
       }
@@ -4994,7 +5019,7 @@
           "$ref": "MaintenancePolicy"
         },
         "name": {
-          "description": "The name (project, location, cluster name) of the cluster to set maintenance policy. Specified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
+          "description": "The name (project, location, cluster name) of the cluster to set maintenance policy. Specified in the format `projects\/*\/locations\/*\/clusters\/*`.",
           "type": "string"
         }
       }
@@ -5037,7 +5062,7 @@
           ]
         },
         "name": {
-          "description": "Contains the name of the resource requested. Specified in the format 'projects\/*\/locations\/*'.",
+          "description": "Contains the name of the resource requested. Specified in the format `projects\/*\/locations\/*`.",
           "type": "string"
         },
         "recommended": {
@@ -5199,7 +5224,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "name": {
-                  "description": "The name (project and location) of the server config to get, specified in the format 'projects\/*\/locations\/*'.",
+                  "description": "The name (project and location) of the server config to get, specified in the format `projects\/*\/locations\/*`.",
                   "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -5264,7 +5289,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "The parent (project and location) where the clusters will be listed. Specified in the format 'projects\/*\/locations\/*'. Location \"-\" matches all zones and all regions.",
+                      "description": "The parent (project and location) where the clusters will be listed. Specified in the format `projects\/*\/locations\/*`. Location \"-\" matches all zones and all regions.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -5299,7 +5324,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "The name (project, location, cluster) of the cluster to retrieve. Specified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
+                      "description": "The name (project, location, cluster) of the cluster to retrieve. Specified in the format `projects\/*\/locations\/*\/clusters\/*`.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -5339,7 +5364,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "The parent (project and location) where the cluster will be created. Specified in the format 'projects\/*\/locations\/*'.",
+                      "description": "The parent (project and location) where the cluster will be created. Specified in the format `projects\/*\/locations\/*`.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -5367,7 +5392,7 @@
                   "httpMethod": "PUT",
                   "parameters": {
                     "name": {
-                      "description": "The name (project, location, cluster) of the cluster to update. Specified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
+                      "description": "The name (project, location, cluster) of the cluster to update. Specified in the format `projects\/*\/locations\/*\/clusters\/*`.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -5395,7 +5420,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
-                      "description": "The name (project, location, cluster) of the cluster to set logging. Specified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
+                      "description": "The name (project, location, cluster) of the cluster to set logging. Specified in the format `projects\/*\/locations\/*\/clusters\/*`.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -5423,7 +5448,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
-                      "description": "The name (project, location, cluster) of the cluster to set monitoring. Specified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
+                      "description": "The name (project, location, cluster) of the cluster to set monitoring. Specified in the format `projects\/*\/locations\/*\/clusters\/*`.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -5451,7 +5476,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
-                      "description": "The name (project, location, cluster) of the cluster to set addons. Specified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
+                      "description": "The name (project, location, cluster) of the cluster to set addons. Specified in the format `projects\/*\/locations\/*\/clusters\/*`.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -5479,7 +5504,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
-                      "description": "The name (project, location, cluster) of the cluster to set locations. Specified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
+                      "description": "The name (project, location, cluster) of the cluster to set locations. Specified in the format `projects\/*\/locations\/*\/clusters\/*`.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -5507,7 +5532,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
-                      "description": "The name (project, location, cluster) of the cluster to update. Specified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
+                      "description": "The name (project, location, cluster) of the cluster to update. Specified in the format `projects\/*\/locations\/*\/clusters\/*`.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -5535,7 +5560,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
-                      "description": "The name (project, location, cluster) of the cluster to set auth. Specified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
+                      "description": "The name (project, location, cluster) of the cluster to set auth. Specified in the format `projects\/*\/locations\/*\/clusters\/*`.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -5563,7 +5588,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "The name (project, location, cluster) of the cluster to delete. Specified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
+                      "description": "The name (project, location, cluster) of the cluster to delete. Specified in the format `projects\/*\/locations\/*\/clusters\/*`.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -5603,7 +5628,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "The cluster (project, location, cluster name) to get keys for. Specified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
+                      "description": "The cluster (project, location, cluster name) to get keys for. Specified in the format `projects\/*\/locations\/*\/clusters\/*`.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -5625,7 +5650,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
-                      "description": "The name (project, location, cluster name) of the cluster to set labels. Specified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
+                      "description": "The name (project, location, cluster name) of the cluster to set labels. Specified in the format `projects\/*\/locations\/*\/clusters\/*`.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -5653,7 +5678,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
-                      "description": "The name (project, location, cluster name) of the cluster to set legacy abac. Specified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
+                      "description": "The name (project, location, cluster name) of the cluster to set legacy abac. Specified in the format `projects\/*\/locations\/*\/clusters\/*`.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -5681,7 +5706,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
-                      "description": "The name (project, location, cluster name) of the cluster to start IP rotation. Specified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
+                      "description": "The name (project, location, cluster name) of the cluster to start IP rotation. Specified in the format `projects\/*\/locations\/*\/clusters\/*`.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -5709,7 +5734,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
-                      "description": "The name (project, location, cluster name) of the cluster to complete IP rotation. Specified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
+                      "description": "The name (project, location, cluster name) of the cluster to complete IP rotation. Specified in the format `projects\/*\/locations\/*\/clusters\/*`.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -5737,7 +5762,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
-                      "description": "The name (project, location, cluster name) of the cluster to set networking policy. Specified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
+                      "description": "The name (project, location, cluster name) of the cluster to set networking policy. Specified in the format `projects\/*\/locations\/*\/clusters\/*`.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -5765,7 +5790,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
-                      "description": "The name (project, location, cluster name) of the cluster to set maintenance policy. Specified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
+                      "description": "The name (project, location, cluster name) of the cluster to set maintenance policy. Specified in the format `projects\/*\/locations\/*\/clusters\/*`.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -5823,7 +5848,7 @@
                       "httpMethod": "PUT",
                       "parameters": {
                         "name": {
-                          "description": "The name (project, location, cluster, node pool) of the node pool to update. Specified in the format 'projects\/*\/locations\/*\/clusters\/*\/nodePools\/*'.",
+                          "description": "The name (project, location, cluster, node pool) of the node pool to update. Specified in the format `projects\/*\/locations\/*\/clusters\/*\/nodePools\/*`.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+\/nodePools\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -5851,7 +5876,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "name": {
-                          "description": "The name (project, location, cluster, node pool) of the node pool to set autoscaler settings. Specified in the format 'projects\/*\/locations\/*\/clusters\/*\/nodePools\/*'.",
+                          "description": "The name (project, location, cluster, node pool) of the node pool to set autoscaler settings. Specified in the format `projects\/*\/locations\/*\/clusters\/*\/nodePools\/*`.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+\/nodePools\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -5879,7 +5904,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "The parent (project, location, cluster name) where the node pools will be listed. Specified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
+                          "description": "The parent (project, location, cluster name) where the node pools will be listed. Specified in the format `projects\/*\/locations\/*\/clusters\/*`.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -5919,7 +5944,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "name": {
-                          "description": "The name (project, location, cluster, node pool id) of the node pool to get. Specified in the format 'projects\/*\/locations\/*\/clusters\/*\/nodePools\/*'.",
+                          "description": "The name (project, location, cluster, node pool id) of the node pool to get. Specified in the format `projects\/*\/locations\/*\/clusters\/*\/nodePools\/*`.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+\/nodePools\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -5964,7 +5989,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "parent": {
-                          "description": "The parent (project, location, cluster name) where the node pool will be created. Specified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
+                          "description": "The parent (project, location, cluster name) where the node pool will be created. Specified in the format `projects\/*\/locations\/*\/clusters\/*`.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -5992,7 +6017,7 @@
                       "httpMethod": "DELETE",
                       "parameters": {
                         "name": {
-                          "description": "The name (project, location, cluster, node pool id) of the node pool to delete. Specified in the format 'projects\/*\/locations\/*\/clusters\/*\/nodePools\/*'.",
+                          "description": "The name (project, location, cluster, node pool id) of the node pool to delete. Specified in the format `projects\/*\/locations\/*\/clusters\/*\/nodePools\/*`.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+\/nodePools\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -6037,7 +6062,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "name": {
-                          "description": "The name (project, location, cluster, node pool id) of the node pool to complete upgrade. Specified in the format 'projects\/*\/locations\/*\/clusters\/*\/nodePools\/*'.",
+                          "description": "The name (project, location, cluster, node pool id) of the node pool to complete upgrade. Specified in the format `projects\/*\/locations\/*\/clusters\/*\/nodePools\/*`.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+\/nodePools\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -6065,7 +6090,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "name": {
-                          "description": "The name (project, location, cluster, node pool id) of the node poll to rollback upgrade. Specified in the format 'projects\/*\/locations\/*\/clusters\/*\/nodePools\/*'.",
+                          "description": "The name (project, location, cluster, node pool id) of the node poll to rollback upgrade. Specified in the format `projects\/*\/locations\/*\/clusters\/*\/nodePools\/*`.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+\/nodePools\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -6093,7 +6118,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "name": {
-                          "description": "The name (project, location, cluster, node pool id) of the node pool to set management properties. Specified in the format 'projects\/*\/locations\/*\/clusters\/*\/nodePools\/*'.",
+                          "description": "The name (project, location, cluster, node pool id) of the node pool to set management properties. Specified in the format `projects\/*\/locations\/*\/clusters\/*\/nodePools\/*`.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+\/nodePools\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -6121,7 +6146,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "name": {
-                          "description": "The name (project, location, cluster, node pool id) of the node pool to set size. Specified in the format 'projects\/*\/locations\/*\/clusters\/*\/nodePools\/*'.",
+                          "description": "The name (project, location, cluster, node pool id) of the node pool to set size. Specified in the format `projects\/*\/locations\/*\/clusters\/*\/nodePools\/*`.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+\/nodePools\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -6153,7 +6178,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "The cluster (project, location, cluster name) to get the discovery document for. Specified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
+                          "description": "The cluster (project, location, cluster name) to get the discovery document for. Specified in the format `projects\/*\/locations\/*\/clusters\/*`.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -6181,7 +6206,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "The parent (project and location) where the operations will be listed. Specified in the format 'projects\/*\/locations\/*'. Location \"-\" matches all zones and all regions.",
+                      "description": "The parent (project and location) where the operations will be listed. Specified in the format `projects\/*\/locations\/*`. Location \"-\" matches all zones and all regions.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -6216,7 +6241,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "The name (project, location, operation id) of the operation to get. Specified in the format 'projects\/*\/locations\/*\/operations\/*'.",
+                      "description": "The name (project, location, operation id) of the operation to get. Specified in the format `projects\/*\/locations\/*\/operations\/*`.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -6256,7 +6281,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
-                      "description": "The name (project, location, operation id) of the operation to cancel. Specified in the format 'projects\/*\/locations\/*\/operations\/*'.",
+                      "description": "The name (project, location, operation id) of the operation to cancel. Specified in the format `projects\/*\/locations\/*\/operations\/*`.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -6302,7 +6327,7 @@
                   "type": "string"
                 },
                 "name": {
-                  "description": "The name (project and location) of the server config to get, specified in the format 'projects\/*\/locations\/*'.",
+                  "description": "The name (project and location) of the server config to get, specified in the format `projects\/*\/locations\/*`.",
                   "location": "query",
                   "type": "string"
                 }
@@ -6343,7 +6368,7 @@
                       "type": "string"
                     },
                     "parent": {
-                      "description": "The parent (project and location) where the clusters will be listed. Specified in the format 'projects\/*\/locations\/*'. Location \"-\" matches all zones and all regions.",
+                      "description": "The parent (project and location) where the clusters will be listed. Specified in the format `projects\/*\/locations\/*`. Location \"-\" matches all zones and all regions.",
                       "location": "query",
                       "type": "string"
                     }
@@ -6385,7 +6410,7 @@
                       "type": "string"
                     },
                     "name": {
-                      "description": "The name (project, location, cluster) of the cluster to retrieve. Specified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
+                      "description": "The name (project, location, cluster) of the cluster to retrieve. Specified in the format `projects\/*\/locations\/*\/clusters\/*`.",
                       "location": "query",
                       "type": "string"
                     }
@@ -6749,7 +6774,7 @@
                       "type": "string"
                     },
                     "name": {
-                      "description": "The name (project, location, cluster) of the cluster to delete. Specified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
+                      "description": "The name (project, location, cluster) of the cluster to delete. Specified in the format `projects\/*\/locations\/*\/clusters\/*`.",
                       "location": "query",
                       "type": "string"
                     }
@@ -7139,7 +7164,7 @@
                           "type": "string"
                         },
                         "parent": {
-                          "description": "The parent (project, location, cluster name) where the node pools will be listed. Specified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
+                          "description": "The parent (project, location, cluster name) where the node pools will be listed. Specified in the format `projects\/*\/locations\/*\/clusters\/*`.",
                           "location": "query",
                           "type": "string"
                         }
@@ -7188,7 +7213,7 @@
                           "type": "string"
                         },
                         "name": {
-                          "description": "The name (project, location, cluster, node pool id) of the node pool to get. Specified in the format 'projects\/*\/locations\/*\/clusters\/*\/nodePools\/*'.",
+                          "description": "The name (project, location, cluster, node pool id) of the node pool to get. Specified in the format `projects\/*\/locations\/*\/clusters\/*\/nodePools\/*`.",
                           "location": "query",
                           "type": "string"
                         }
@@ -7279,7 +7304,7 @@
                           "type": "string"
                         },
                         "name": {
-                          "description": "The name (project, location, cluster, node pool id) of the node pool to delete. Specified in the format 'projects\/*\/locations\/*\/clusters\/*\/nodePools\/*'.",
+                          "description": "The name (project, location, cluster, node pool id) of the node pool to delete. Specified in the format `projects\/*\/locations\/*\/clusters\/*\/nodePools\/*`.",
                           "location": "query",
                           "type": "string"
                         }
@@ -7467,7 +7492,7 @@
                       "type": "string"
                     },
                     "parent": {
-                      "description": "The parent (project and location) where the operations will be listed. Specified in the format 'projects\/*\/locations\/*'. Location \"-\" matches all zones and all regions.",
+                      "description": "The parent (project and location) where the operations will be listed. Specified in the format `projects\/*\/locations\/*`. Location \"-\" matches all zones and all regions.",
                       "location": "query",
                       "type": "string"
                     }
@@ -7509,7 +7534,7 @@
                       "type": "string"
                     },
                     "name": {
-                      "description": "The name (project, location, operation id) of the operation to get. Specified in the format 'projects\/*\/locations\/*\/operations\/*'.",
+                      "description": "The name (project, location, operation id) of the operation to get. Specified in the format `projects\/*\/locations\/*\/operations\/*`.",
                       "location": "query",
                       "type": "string"
                     }

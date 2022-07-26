@@ -27,7 +27,7 @@ legacy_display_name:
   help_text: |-
     An arbitrary user-provided name for the connector. Cannot exceed 64 characters.
 
-service_account:
+service_account_v1alpha:
   api_field: googleCloudBeyondcorpAppconnectorsV1alphaAppConnector.principalInfo.serviceAccount.email
   arg_name: member
   required: true
@@ -35,8 +35,23 @@ service_account:
   help_text: |-
     Connector service account email in form of 'serviceAccount:email'.
 
-display_name:
+service_account_v1:
+  api_field: googleCloudBeyondcorpAppconnectorsV1AppConnector.principalInfo.serviceAccount.email
+  arg_name: member
+  required: true
+  processor: googlecloudsdk.command_lib.beyondcorp.app.util:MemberProcessor
+  help_text: |-
+    Connector service account email in form of 'serviceAccount:email'.
+
+display_name_v1alpha:
   api_field: googleCloudBeyondcorpAppconnectorsV1alphaAppConnector.displayName
+  arg_name: display-name
+  required: false
+  help_text: |-
+    An arbitrary user-provided name for the connector. Cannot exceed 64 characters.
+
+display_name_v1:
+  api_field: googleCloudBeyondcorpAppconnectorsV1AppConnector.displayName
   arg_name: display-name
   required: false
   help_text: |-

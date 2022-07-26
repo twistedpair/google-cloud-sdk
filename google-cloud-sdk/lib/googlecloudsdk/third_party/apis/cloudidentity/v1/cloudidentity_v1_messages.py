@@ -14,6 +14,10 @@ from apitools.base.py import extra_types
 package = 'cloudidentity'
 
 
+class CancelUserInvitationRequest(_messages.Message):
+  r"""Request to cancel sent invitation for target email in UserInvitation."""
+
+
 class CheckTransitiveMembershipResponse(_messages.Message):
   r"""The response message for MembershipsService.CheckTransitiveMembership.
 
@@ -25,6 +29,86 @@ class CheckTransitiveMembershipResponse(_messages.Message):
   """
 
   hasMembership = _messages.BooleanField(1)
+
+
+class CloudidentityCustomersUserinvitationsCancelRequest(_messages.Message):
+  r"""A CloudidentityCustomersUserinvitationsCancelRequest object.
+
+  Fields:
+    cancelUserInvitationRequest: A CancelUserInvitationRequest resource to be
+      passed as the request body.
+    name: Required. `UserInvitation` name in the format
+      `customers/{customer}/userinvitations/{user_email_address}`
+  """
+
+  cancelUserInvitationRequest = _messages.MessageField('CancelUserInvitationRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class CloudidentityCustomersUserinvitationsGetRequest(_messages.Message):
+  r"""A CloudidentityCustomersUserinvitationsGetRequest object.
+
+  Fields:
+    name: Required. `UserInvitation` name in the format
+      `customers/{customer}/userinvitations/{user_email_address}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class CloudidentityCustomersUserinvitationsIsInvitableUserRequest(_messages.Message):
+  r"""A CloudidentityCustomersUserinvitationsIsInvitableUserRequest object.
+
+  Fields:
+    name: Required. `UserInvitation` name in the format
+      `customers/{customer}/userinvitations/{user_email_address}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class CloudidentityCustomersUserinvitationsListRequest(_messages.Message):
+  r"""A CloudidentityCustomersUserinvitationsListRequest object.
+
+  Fields:
+    filter: Optional. A query string for filtering `UserInvitation` results by
+      their current state, in the format: `"state=='invited'"`.
+    orderBy: Optional. The sort order of the list results. You can sort the
+      results in descending order based on either email or last update
+      timestamp but not both, using `order_by="email desc"`. Currently,
+      sorting is supported for `update_time asc`, `update_time desc`, `email
+      asc`, and `email desc`. If not specified, results will be returned based
+      on `email asc` order.
+    pageSize: Optional. The maximum number of UserInvitation resources to
+      return. If unspecified, at most 100 resources will be returned. The
+      maximum value is 200; values above 200 will be set to 200.
+    pageToken: Optional. A page token, received from a previous
+      `ListUserInvitations` call. Provide this to retrieve the subsequent
+      page. When paginating, all other parameters provided to `ListBooks` must
+      match the call that provided the page token.
+    parent: Required. The customer ID of the Google Workspace or Cloud
+      Identity account the UserInvitation resources are associated with.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class CloudidentityCustomersUserinvitationsSendRequest(_messages.Message):
+  r"""A CloudidentityCustomersUserinvitationsSendRequest object.
+
+  Fields:
+    name: Required. `UserInvitation` name in the format
+      `customers/{customer}/userinvitations/{user_email_address}`
+    sendUserInvitationRequest: A SendUserInvitationRequest resource to be
+      passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  sendUserInvitationRequest = _messages.MessageField('SendUserInvitationRequest', 2)
 
 
 class CloudidentityDevicesCancelWipeRequest(_messages.Message):
@@ -1959,6 +2043,16 @@ class GroupRelation(_messages.Message):
   roles = _messages.MessageField('TransitiveMembershipRole', 6, repeated=True)
 
 
+class IsInvitableUserResponse(_messages.Message):
+  r"""Response for IsInvitableUser RPC.
+
+  Fields:
+    isInvitableUser: Returns true if the email address is invitable.
+  """
+
+  isInvitableUser = _messages.BooleanField(1)
+
+
 class ListGroupsResponse(_messages.Message):
   r"""Response message for ListGroups operation.
 
@@ -1984,6 +2078,22 @@ class ListMembershipsResponse(_messages.Message):
 
   memberships = _messages.MessageField('Membership', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+
+
+class ListUserInvitationsResponse(_messages.Message):
+  r"""Response message for UserInvitation listing request.
+
+  Fields:
+    nextPageToken: The token for the next page. If not empty, indicates that
+      there may be more `UserInvitation` resources that match the listing
+      request; this value can be used in a subsequent
+      ListUserInvitationsRequest to get continued results with the current
+      list call.
+    userInvitations: The list of UserInvitation resources.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  userInvitations = _messages.MessageField('UserInvitation', 2, repeated=True)
 
 
 class LookupGroupNameResponse(_messages.Message):
@@ -2423,6 +2533,13 @@ class SecuritySettings(_messages.Message):
   name = _messages.StringField(2)
 
 
+class SendUserInvitationRequest(_messages.Message):
+  r"""A request to send email for inviting target user corresponding to the
+  UserInvitation.
+  """
+
+
+
 class StandardQueryParameters(_messages.Message):
   r"""Query parameters accepted by all methods.
 
@@ -2568,6 +2685,50 @@ class UpdateMembershipRolesParams(_messages.Message):
 
   fieldMask = _messages.StringField(1)
   membershipRole = _messages.MessageField('MembershipRole', 2)
+
+
+class UserInvitation(_messages.Message):
+  r"""The `UserInvitation` resource represents an email that can be sent to an
+  unmanaged user account inviting them to join the customer's Google Workspace
+  or Cloud Identity account. An unmanaged account shares an email address
+  domain with the Google Workspace or Cloud Identity account but is not
+  managed by it yet. If the user accepts the `UserInvitation`, the user
+  account will become managed.
+
+  Enums:
+    StateValueValuesEnum: State of the `UserInvitation`.
+
+  Fields:
+    mailsSentCount: Number of invitation emails sent to the user.
+    name: Shall be of the form
+      `customers/{customer}/userinvitations/{user_email_address}`.
+    state: State of the `UserInvitation`.
+    updateTime: Time when the `UserInvitation` was last updated.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""State of the `UserInvitation`.
+
+    Values:
+      STATE_UNSPECIFIED: The default value. This value is used if the state is
+        omitted.
+      NOT_YET_SENT: The `UserInvitation` has been created and is ready for
+        sending as an email.
+      INVITED: The user has been invited by email.
+      ACCEPTED: The user has accepted the invitation and is part of the
+        organization.
+      DECLINED: The user declined the invitation.
+    """
+    STATE_UNSPECIFIED = 0
+    NOT_YET_SENT = 1
+    INVITED = 2
+    ACCEPTED = 3
+    DECLINED = 4
+
+  mailsSentCount = _messages.IntegerField(1)
+  name = _messages.StringField(2)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
+  updateTime = _messages.StringField(4)
 
 
 encoding.AddCustomJsonFieldMapping(

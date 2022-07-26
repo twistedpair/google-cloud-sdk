@@ -5567,9 +5567,13 @@ class SchemaConfig(_messages.Message):
         type `Resource`, which can hold any resource type. The affected fields
         are `Parameters.parameter.resource`, `Bundle.entry.resource`, and
         `Bundle.entry.response.outcome`.
+      ANALYTICS_V2: Analytics V2, similar to schema defined by the FHIR
+        community, with added support for extensions with one or more
+        occurrences and contained resources in stringified JSON.
     """
     SCHEMA_TYPE_UNSPECIFIED = 0
     ANALYTICS = 1
+    ANALYTICS_V2 = 2
 
   recursiveStructureDepth = _messages.IntegerField(1)
   schemaType = _messages.EnumField('SchemaTypeValueValuesEnum', 2)

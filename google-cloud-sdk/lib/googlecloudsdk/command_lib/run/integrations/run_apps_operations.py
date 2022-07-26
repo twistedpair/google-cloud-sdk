@@ -327,6 +327,10 @@ class RunAppsOperations(object):
     app_dict = self._GetDefaultAppDict()
     resources_map = app_dict[_CONFIG_KEY][_RESOURCES_KEY]
     typekit = typekits_util.GetTypeKit(integration_type)
+    if name and typekit.is_singleton:
+      raise exceptions.ArgumentError(
+          '--name is not allowed for integration type [{}].'.format(
+              integration_type))
     if not name:
       name = typekit.NewIntegrationName(service, parameters, resources_map)
 
@@ -347,8 +351,11 @@ class RunAppsOperations(object):
           name, resource_config, service,
           resources_map.setdefault(service, {}).setdefault(_SERVICE_TYPE, {}),
           parameters)
-
-    self.CheckCloudRunServices([service])
+      services = [service]
+    else:
+      services = self._GetRefServices(name, resource_type, resource_config,
+                                      resources_map)
+    self.CheckCloudRunServices(services)
 
     deploy_message = messages_util.GetDeployMessage(resource_type, create=True)
     application = encoding.DictToMessage(app_dict, self.messages.Application)
@@ -409,9 +416,8 @@ class RunAppsOperations(object):
 
     typekit = typekits_util.GetTypeKitByResource(existing_resource)
     resource_type = typekit.resource_type
-    integration_type = typekit.integration_type
 
-    flags.ValidateUpdateParameters(integration_type, parameters)
+    flags.ValidateUpdateParameters(typekit.integration_type, parameters)
 
     resource_config = existing_resource[typekit.resource_type]
     typekit.UpdateResourceConfig(parameters, resource_config)

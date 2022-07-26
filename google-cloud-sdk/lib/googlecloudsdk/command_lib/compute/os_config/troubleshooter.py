@@ -21,24 +21,26 @@ from __future__ import unicode_literals
 from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.command_lib.compute.os_config.troubleshoot import agent_freshness
 from googlecloudsdk.command_lib.compute.os_config.troubleshoot import metadata_setup
+from googlecloudsdk.command_lib.compute.os_config.troubleshoot import network_config
 from googlecloudsdk.command_lib.compute.os_config.troubleshoot import service_account
 from googlecloudsdk.command_lib.compute.os_config.troubleshoot import service_enablement
 from googlecloudsdk.command_lib.compute.os_config.troubleshoot import utils
+from googlecloudsdk.core import log
 
 
 def Troubleshoot(client, instance_ref, release_track):
   """Main troubleshoot function for testing prerequisites."""
-  response_message = (
+  log.Print((
       'OS Config troubleshooter tool is checking if there are '
-      'issues with the VM Manager setup for this VM instance.\n\n')
+      'issues with the VM Manager setup for this VM instance.\n'))
 
   # Service enablement check.
   service_enablement_response = service_enablement.Check(
       instance_ref, release_track)
-  response_message += service_enablement_response.response_message
+  log.Print(service_enablement_response.response_message)
 
   if not service_enablement_response.continue_flag:
-    return response_message
+    return
 
   exception = None
   project = None
@@ -52,32 +54,34 @@ def Troubleshoot(client, instance_ref, release_track):
   # Metadata setup check.
   metadata_setup_response = metadata_setup.Check(project, instance,
                                                  release_track, exception)
-  response_message += metadata_setup_response.response_message
+  log.Print(metadata_setup_response.response_message)
 
   if not metadata_setup_response.continue_flag:
-    return response_message
+    return
 
   # Agent freshness check.
   agent_freshness_response = agent_freshness.Check(project, instance,
                                                    instance_ref.zone,
                                                    release_track)
-  response_message += agent_freshness_response.response_message
+  log.Print(agent_freshness_response.response_message)
 
   if not agent_freshness_response.continue_flag:
-    return response_message
+    return
 
   # Service account existence check.
   service_account_existence_response = service_account.CheckExistence(instance)
-  response_message += service_account_existence_response.response_message
+  log.Print(service_account_existence_response.response_message)
 
   if not service_account_existence_response.continue_flag:
-    return response_message
+    return
 
   # Service account enablement check.
   service_account_enablement_response = service_account.CheckEnablement(project)
-  response_message += service_account_enablement_response.response_message
+  log.Print(service_account_enablement_response.response_message)
 
   if not service_account_enablement_response.continue_flag:
-    return response_message
+    return
 
-  return response_message
+  # Network configuration check.
+  network_config_response = network_config.Check(client, instance)
+  log.Print(network_config_response.response_message)

@@ -95,6 +95,7 @@ NC_CPU_CFS_QUOTA_PERIOD = 'cpuCFSQuotaPeriod'
 NC_POD_PIDS_LIMIT = 'podPidsLimit'
 NC_LINUX_CONFIG = 'linuxConfig'
 NC_SYSCTL = 'sysctl'
+NC_CGROUP_MODE = 'cgroupMode'
 
 
 class Error(core_exceptions.Error):
@@ -569,6 +570,7 @@ def LoadSystemConfigFromYAML(node_config, content, messages):
   if linux_config_opts:
     _CheckNodeConfigFields(NC_LINUX_CONFIG, linux_config_opts, {
         NC_SYSCTL: dict,
+        NC_CGROUP_MODE: str,
     })
     node_config.linuxNodeConfig = messages.LinuxNodeConfig()
     sysctl_opts = linux_config_opts.get(NC_SYSCTL)
@@ -580,6 +582,27 @@ def LoadSystemConfigFromYAML(node_config, content, messages):
         node_config.linuxNodeConfig.sysctls.additionalProperties.append(
             node_config.linuxNodeConfig.sysctls.AdditionalProperty(
                 key=key, value=value))
+    cgroup_mode_opts = linux_config_opts.get(NC_CGROUP_MODE)
+    if cgroup_mode_opts:
+      if not hasattr(messages.LinuxNodeConfig, 'cgroupMode'):
+        raise NodeConfigError(
+            'setting cgroupMode as {0} is not supported'.format(
+                cgroup_mode_opts))
+      cgroup_mode_mapping = {
+          'CGROUP_MODE_UNSPECIFIED':
+              messages.LinuxNodeConfig.CgroupModeValueValuesEnum
+              .CGROUP_MODE_UNSPECIFIED,
+          'CGROUP_MODE_V1':
+              messages.LinuxNodeConfig.CgroupModeValueValuesEnum.CGROUP_MODE_V1,
+          'CGROUP_MODE_V2':
+              messages.LinuxNodeConfig.CgroupModeValueValuesEnum.CGROUP_MODE_V2,
+      }
+      if cgroup_mode_opts not in cgroup_mode_mapping:
+        raise NodeConfigError(
+            'cgroup mode "{0}" is not supported, the supported options are CGROUP_MODE_UNSPECIFIED, CGROUP_MODE_V1, CGROUP_MODE_V2'
+            .format(cgroup_mode_opts))
+      node_config.linuxNodeConfig.cgroupMode = cgroup_mode_mapping[
+          cgroup_mode_opts]
 
 
 def _CheckNodeConfigFields(parent_name, parent, spec):

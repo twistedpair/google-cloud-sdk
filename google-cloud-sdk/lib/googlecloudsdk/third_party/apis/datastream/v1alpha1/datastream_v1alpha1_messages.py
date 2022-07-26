@@ -2101,7 +2101,6 @@ class VpcPeeringConfig(_messages.Message):
 
   Fields:
     subnet: Required. A free subnet for peering. (CIDR of /29)
-      TODO(b/172995841) add validators.
     vpcName: Required. fully qualified name of the VPC Datastream will peer
       to.
   """

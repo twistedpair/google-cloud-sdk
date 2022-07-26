@@ -39,6 +39,9 @@ class BeyondcorpV1alpha(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.organizations_locations_insights = self.OrganizationsLocationsInsightsService(self)
+    self.organizations_locations = self.OrganizationsLocationsService(self)
+    self.organizations = self.OrganizationsService(self)
     self.projects_locations_appConnections = self.ProjectsLocationsAppConnectionsService(self)
     self.projects_locations_appConnectors = self.ProjectsLocationsAppConnectorsService(self)
     self.projects_locations_appGateways = self.ProjectsLocationsAppGatewaysService(self)
@@ -47,9 +50,121 @@ class BeyondcorpV1alpha(base_api.BaseApiClient):
     self.projects_locations_clientGateways = self.ProjectsLocationsClientGatewaysService(self)
     self.projects_locations_connections = self.ProjectsLocationsConnectionsService(self)
     self.projects_locations_connectors = self.ProjectsLocationsConnectorsService(self)
+    self.projects_locations_insights = self.ProjectsLocationsInsightsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class OrganizationsLocationsInsightsService(base_api.BaseApiService):
+    """Service class for the organizations_locations_insights resource."""
+
+    _NAME = 'organizations_locations_insights'
+
+    def __init__(self, client):
+      super(BeyondcorpV1alpha.OrganizationsLocationsInsightsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def ConfiguredInsight(self, request, global_params=None):
+      r"""Gets the value for a selected particular insight based on the provided filters. Use the organization level path for fetching at org level and project level path for fetching the insight value specific to a particular project.
+
+      Args:
+        request: (BeyondcorpOrganizationsLocationsInsightsConfiguredInsightRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudBeyondcorpSaasplatformInsightsV1alphaConfiguredInsightResponse) The response message.
+      """
+      config = self.GetMethodConfig('ConfiguredInsight')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ConfiguredInsight.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/organizations/{organizationsId}/locations/{locationsId}/insights/{insightsId}:configuredInsight',
+        http_method='GET',
+        method_id='beyondcorp.organizations.locations.insights.configuredInsight',
+        ordered_params=['insight'],
+        path_params=['insight'],
+        query_params=['aggregation', 'endTime', 'fieldFilter', 'group', 'pageSize', 'pageToken', 'startTime'],
+        relative_path='v1alpha/{+insight}:configuredInsight',
+        request_field='',
+        request_type_name='BeyondcorpOrganizationsLocationsInsightsConfiguredInsightRequest',
+        response_type_name='GoogleCloudBeyondcorpSaasplatformInsightsV1alphaConfiguredInsightResponse',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the value for a selected particular insight with default configuration. The default aggregation level is 'DAILY' and no grouping will be applied or default grouping if applicable. The data will be returned for recent 7 days. Use the organization level path for fetching at org level and project level path for fetching the insight value specific to a particular project. Setting the `view` to `BASIC` will only return the metadata for the insight.
+
+      Args:
+        request: (BeyondcorpOrganizationsLocationsInsightsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudBeyondcorpSaasplatformInsightsV1alphaInsight) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/organizations/{organizationsId}/locations/{locationsId}/insights/{insightsId}',
+        http_method='GET',
+        method_id='beyondcorp.organizations.locations.insights.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['view'],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='BeyondcorpOrganizationsLocationsInsightsGetRequest',
+        response_type_name='GoogleCloudBeyondcorpSaasplatformInsightsV1alphaInsight',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists for all the available insights that could be fetched from the system. Allows to filter using category. Setting the `view` to `BASIC` will let you iterate over the list of insight metadatas.
+
+      Args:
+        request: (BeyondcorpOrganizationsLocationsInsightsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudBeyondcorpSaasplatformInsightsV1alphaListInsightsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/organizations/{organizationsId}/locations/{locationsId}/insights',
+        http_method='GET',
+        method_id='beyondcorp.organizations.locations.insights.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken', 'view'],
+        relative_path='v1alpha/{+parent}/insights',
+        request_field='',
+        request_type_name='BeyondcorpOrganizationsLocationsInsightsListRequest',
+        response_type_name='GoogleCloudBeyondcorpSaasplatformInsightsV1alphaListInsightsResponse',
+        supports_download=False,
+    )
+
+  class OrganizationsLocationsService(base_api.BaseApiService):
+    """Service class for the organizations_locations resource."""
+
+    _NAME = 'organizations_locations'
+
+    def __init__(self, client):
+      super(BeyondcorpV1alpha.OrganizationsLocationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class OrganizationsService(base_api.BaseApiService):
+    """Service class for the organizations resource."""
+
+    _NAME = 'organizations'
+
+    def __init__(self, client):
+      super(BeyondcorpV1alpha.OrganizationsService, self).__init__(client)
+      self._upload_configs = {
+          }
 
   class ProjectsLocationsAppConnectionsService(base_api.BaseApiService):
     """Service class for the projects_locations_appConnections resource."""
@@ -504,7 +619,7 @@ class BeyondcorpV1alpha(base_api.BaseApiClient):
     )
 
     def ResolveInstanceConfig(self, request, global_params=None):
-      r"""Get instance config for a given AppConnector. An internal method called by a AppConnector to get its container config.
+      r"""Gets instance configuration for a given AppConnector. An internal method called by a AppConnector to get its container config.
 
       Args:
         request: (BeyondcorpProjectsLocationsAppConnectorsResolveInstanceConfigRequest) input message
@@ -1752,7 +1867,7 @@ class BeyondcorpV1alpha(base_api.BaseApiClient):
     )
 
     def ResolveInstanceConfig(self, request, global_params=None):
-      r"""Get instance config for a given connector. An internal method called by a connector to get its container config.
+      r"""Gets instance configuration for a given connector. An internal method called by a connector to get its container config.
 
       Args:
         request: (BeyondcorpProjectsLocationsConnectorsResolveInstanceConfigRequest) input message
@@ -1829,6 +1944,97 @@ class BeyondcorpV1alpha(base_api.BaseApiClient):
         request_field='googleIamV1TestIamPermissionsRequest',
         request_type_name='BeyondcorpProjectsLocationsConnectorsTestIamPermissionsRequest',
         response_type_name='GoogleIamV1TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsInsightsService(base_api.BaseApiService):
+    """Service class for the projects_locations_insights resource."""
+
+    _NAME = 'projects_locations_insights'
+
+    def __init__(self, client):
+      super(BeyondcorpV1alpha.ProjectsLocationsInsightsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def ConfiguredInsight(self, request, global_params=None):
+      r"""Gets the value for a selected particular insight based on the provided filters. Use the organization level path for fetching at org level and project level path for fetching the insight value specific to a particular project.
+
+      Args:
+        request: (BeyondcorpProjectsLocationsInsightsConfiguredInsightRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudBeyondcorpSaasplatformInsightsV1alphaConfiguredInsightResponse) The response message.
+      """
+      config = self.GetMethodConfig('ConfiguredInsight')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ConfiguredInsight.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/insights/{insightsId}:configuredInsight',
+        http_method='GET',
+        method_id='beyondcorp.projects.locations.insights.configuredInsight',
+        ordered_params=['insight'],
+        path_params=['insight'],
+        query_params=['aggregation', 'endTime', 'fieldFilter', 'group', 'pageSize', 'pageToken', 'startTime'],
+        relative_path='v1alpha/{+insight}:configuredInsight',
+        request_field='',
+        request_type_name='BeyondcorpProjectsLocationsInsightsConfiguredInsightRequest',
+        response_type_name='GoogleCloudBeyondcorpSaasplatformInsightsV1alphaConfiguredInsightResponse',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the value for a selected particular insight with default configuration. The default aggregation level is 'DAILY' and no grouping will be applied or default grouping if applicable. The data will be returned for recent 7 days. Use the organization level path for fetching at org level and project level path for fetching the insight value specific to a particular project. Setting the `view` to `BASIC` will only return the metadata for the insight.
+
+      Args:
+        request: (BeyondcorpProjectsLocationsInsightsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudBeyondcorpSaasplatformInsightsV1alphaInsight) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/insights/{insightsId}',
+        http_method='GET',
+        method_id='beyondcorp.projects.locations.insights.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['view'],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='BeyondcorpProjectsLocationsInsightsGetRequest',
+        response_type_name='GoogleCloudBeyondcorpSaasplatformInsightsV1alphaInsight',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists for all the available insights that could be fetched from the system. Allows to filter using category. Setting the `view` to `BASIC` will let you iterate over the list of insight metadatas.
+
+      Args:
+        request: (BeyondcorpProjectsLocationsInsightsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudBeyondcorpSaasplatformInsightsV1alphaListInsightsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/insights',
+        http_method='GET',
+        method_id='beyondcorp.projects.locations.insights.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken', 'view'],
+        relative_path='v1alpha/{+parent}/insights',
+        request_field='',
+        request_type_name='BeyondcorpProjectsLocationsInsightsListRequest',
+        response_type_name='GoogleCloudBeyondcorpSaasplatformInsightsV1alphaListInsightsResponse',
         supports_download=False,
     )
 

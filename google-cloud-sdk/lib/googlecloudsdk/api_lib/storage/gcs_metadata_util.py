@@ -23,10 +23,10 @@ import copy
 from apitools.base.py import encoding_helper
 
 from googlecloudsdk.api_lib.storage import gcs_metadata_field_converters
+from googlecloudsdk.api_lib.storage import metadata_util
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.command_lib.storage import encryption_util
 from googlecloudsdk.command_lib.storage import gzip_util
-from googlecloudsdk.command_lib.storage import posix_util
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage import user_request_args_factory
 from googlecloudsdk.command_lib.storage.resources import gcs_resource_reference
@@ -331,32 +331,20 @@ def update_object_metadata_from_request_config(object_metadata,
       indicated by the system_posix_data field on request_config.
   """
   resource_args = request_config.resource_args
+
   # Custom metadata & POSIX handling.
-  if (resource_args and
-      resource_args.custom_metadata is user_request_args_factory.CLEAR):
-    object_metadata.metadata = None
+  if not object_metadata.metadata:
+    existing_metadata = {}
   else:
-    should_parse_file_posix = request_config.system_posix_data and file_path
-    should_add_custom_metadata = (
-        resource_args and resource_args.custom_metadata is not None)
-    if should_parse_file_posix or should_add_custom_metadata:
-      messages = apis.GetMessagesModule('storage', 'v1')
-      if not object_metadata.metadata:
-        object_metadata.metadata = messages.Object.MetadataValue()
+    existing_metadata = encoding_helper.MessageToDict(
+        object_metadata.metadata)
 
-      custom_metadata_dict = encoding_helper.MessageToDict(
-          object_metadata.metadata)
-
-      if should_parse_file_posix:
-        posix_attributes = posix_util.get_posix_attributes_from_file(file_path)
-        posix_util.update_custom_metadata_dict_with_posix_attributes(
-            custom_metadata_dict, posix_attributes)
-
-      if should_add_custom_metadata:
-        custom_metadata_dict.update(resource_args.custom_metadata)
-
-      object_metadata.metadata = encoding_helper.DictToMessage(
-          custom_metadata_dict, messages.Object.MetadataValue)
+  custom_metadata_dict = metadata_util.get_updated_custom_metadata(
+      existing_metadata, request_config, file_path=file_path)
+  if custom_metadata_dict is not None:
+    messages = apis.GetMessagesModule('storage', 'v1')
+    object_metadata.metadata = encoding_helper.DictToMessage(
+        custom_metadata_dict, messages.Object.MetadataValue)
 
   # Gzip handling.
   should_gzip_locally = gzip_util.should_gzip_locally(

@@ -267,8 +267,8 @@ def ShouldUseGen2():
   return bool(properties.VALUES.functions.gen2.GetBool())
 
 
-def _ShouldHideV2Flags(track):
-  return track is base.ReleaseTrack.GA
+def _ShouldHideV2Flags(track):  # pylint: disable=unused-argument
+  return False
 
 
 def ShouldEnsureAllUsersInvoke(args):

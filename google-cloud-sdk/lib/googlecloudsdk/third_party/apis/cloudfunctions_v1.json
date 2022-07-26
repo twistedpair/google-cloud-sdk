@@ -425,6 +425,14 @@
             "CONTAINER_REGISTRY",
             "ARTIFACT_REGISTRY"
           ]
+        },
+        "buildpackStack": {
+          "description": "Specifies one of the Google provided buildpack stacks.",
+          "type": "string"
+        },
+        "customStackUri": {
+          "description": "The URL of a customer provided buildpack stack.",
+          "type": "string"
         }
       }
     },

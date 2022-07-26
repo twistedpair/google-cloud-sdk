@@ -373,7 +373,9 @@ class LogSink(proto.Message):
         writer_identity (str):
             Output only. An IAM identity-a service account or
             group-under which Cloud Logging writes the exported log
-            entries to the sink's destination. This field is set by
+            entries to the sink's destination. This field is either set
+            by specifying ``custom_writer_identity`` or set
+            automatically by
             [sinks.create][google.logging.v2.ConfigServiceV2.CreateSink]
             and
             [sinks.update][google.logging.v2.ConfigServiceV2.UpdateSink]
@@ -388,7 +390,7 @@ class LogSink(proto.Message):
             the appropriate IAM roles to assign to the identity.
 
             Sinks that have a destination that is a log bucket in the
-            same project as the sink do not have a writer_identity and
+            same project as the sink cannot have a writer_identity and
             no additional permissions are required.
         include_children (bool):
             Optional. This field applies only to sinks owned by

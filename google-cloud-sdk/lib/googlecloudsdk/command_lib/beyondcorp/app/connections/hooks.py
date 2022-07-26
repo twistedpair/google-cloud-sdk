@@ -20,6 +20,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.beyondcorp.app import util as api_util
+from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.beyondcorp.app import util as command_util
 from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.core import exceptions
@@ -31,6 +32,24 @@ APP_ENDPOINT_PARSE_ERROR = ('Error parsing application endpoint [{}]: endpoint '
 
 CONNECTOR_RESOURCE_NAME = ('projects/{}/locations/{}/connectors/{}')
 APPCONNECTOR_RESOURCE_NAME = ('projects/{}/locations/{}/appConnectors/{}')
+
+
+def GetVersionedConnectionMsg(args, msg):
+  if args.calliope_command.ReleaseTrack() == base.ReleaseTrack.ALPHA:
+    return msg.GoogleCloudBeyondcorpAppconnectionsV1alphaAppConnection
+  return msg.GoogleCloudBeyondcorpAppconnectionsV1AppConnection
+
+
+def GetVersionedEndpointMsg(args, msg):
+  if args.calliope_command.ReleaseTrack() == base.ReleaseTrack.ALPHA:
+    return msg.GoogleCloudBeyondcorpAppconnectionsV1alphaAppConnectionApplicationEndpoint
+  return msg.GoogleCloudBeyondcorpAppconnectionsV1AppConnectionApplicationEndpoint
+
+
+def GetVersionedConnectionReq(args, req):
+  if args.calliope_command.ReleaseTrack() == base.ReleaseTrack.ALPHA:
+    return req.googleCloudBeyondcorpAppconnectionsV1alphaAppConnection
+  return req.googleCloudBeyondcorpAppconnectionsV1AppConnection
 
 
 class ApplicationEndpointParseError(exceptions.Error):
@@ -59,16 +78,18 @@ def ValidateAndParseAppEndpoint(unused_ref, args, request):
     if len(endpoint_array) == 2 and endpoint_array[1].isdigit():
       messages = api_util.GetMessagesModule(
           args.calliope_command.ReleaseTrack())
-      app_connection = request.googleCloudBeyondcorpAppconnectionsV1alphaAppConnection
+      app_connection = GetVersionedConnectionReq(args, request)
       if app_connection is None:
-        app_connection = messages.GoogleCloudBeyondcorpAppconnectionsV1alphaAppConnection(
-        )
+        app_connection = GetVersionedConnectionMsg(args, messages)()
       if app_connection.applicationEndpoint is None:
-        app_connection.applicationEndpoint = messages.GoogleCloudBeyondcorpAppconnectionsV1alphaAppConnectionApplicationEndpoint(
-        )
+        app_connection.applicationEndpoint = GetVersionedEndpointMsg(
+            args, messages)()
       app_connection.applicationEndpoint.host = endpoint_array[0]
       app_connection.applicationEndpoint.port = int(endpoint_array[1])
-      request.googleCloudBeyondcorpAppconnectionsV1alphaAppConnection = app_connection
+      if args.calliope_command.ReleaseTrack() == base.ReleaseTrack.ALPHA:
+        request.googleCloudBeyondcorpAppconnectionsV1alphaAppConnection = app_connection
+      else:
+        request.googleCloudBeyondcorpAppconnectionsV1AppConnection = app_connection
     else:
       raise ApplicationEndpointParseError(
           APP_ENDPOINT_PARSE_ERROR.format(args.application_endpoint))
@@ -126,11 +147,15 @@ def SetConnectors(unused_ref, args, request):
     if not args.IsSpecified('project'):
       args.project = properties.VALUES.core.project.Get()
     for index, connector in enumerate(
-        request.googleCloudBeyondcorpAppconnectionsV1alphaAppConnection
-        .connectors):
-      request.googleCloudBeyondcorpAppconnectionsV1alphaAppConnection.connectors[
-          index] = APPCONNECTOR_RESOURCE_NAME.format(args.project,
-                                                     args.location, connector)
+        GetVersionedConnectionReq(args, request).connectors):
+      if args.calliope_command.ReleaseTrack() == base.ReleaseTrack.ALPHA:
+        request.googleCloudBeyondcorpAppconnectionsV1alphaAppConnection.connectors[
+            index] = APPCONNECTOR_RESOURCE_NAME.format(args.project,
+                                                       args.location, connector)
+      else:
+        request.googleCloudBeyondcorpAppconnectionsV1AppConnection.connectors[
+            index] = APPCONNECTOR_RESOURCE_NAME.format(args.project,
+                                                       args.location, connector)
   return request
 
 
@@ -192,13 +217,12 @@ def UpdateLabels(unused_ref, args, patch_request):
   if labels_diff.MayHaveUpdates():
     patch_request = command_util.AddFieldToUpdateMask('labels', patch_request)
     messages = api_util.GetMessagesModule(args.calliope_command.ReleaseTrack())
-    app_connection = patch_request.googleCloudBeyondcorpAppconnectionsV1alphaAppConnection
+    app_connection = GetVersionedConnectionReq(args, patch_request)
     if app_connection is None:
-      app_connection = messages.GoogleCloudBeyondcorpAppconnectionsV1alphaAppConnection(
-      )
+      app_connection = GetVersionedConnectionMsg(args, messages)()
     new_labels = labels_diff.Apply(
-        messages.GoogleCloudBeyondcorpAppconnectionsV1alphaAppConnection
-        .LabelsValue, app_connection.labels).GetOrNone()
+        GetVersionedConnectionMsg(args, messages).LabelsValue,
+        app_connection.labels).GetOrNone()
     if new_labels:
       app_connection.labels = new_labels
   return patch_request

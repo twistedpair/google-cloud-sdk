@@ -12791,7 +12791,8 @@ class GoogleCloudDialogflowV2QueryInput(_messages.Message):
     audioConfig: Instructs the speech recognizer how to process the speech
       audio.
     event: The event to be processed.
-    text: The natural language text to be processed.
+    text: The natural language text to be processed. Text length must not
+      exceed 256 character for virtual agent interactions.
   """
 
   audioConfig = _messages.MessageField('GoogleCloudDialogflowV2InputAudioConfig', 1)
@@ -13729,7 +13730,8 @@ class GoogleCloudDialogflowV2TextInput(_messages.Message):
       in the same session do not necessarily need to specify the same
       language.
     text: Required. The UTF-8 encoded natural language text to be processed.
-      Text length must not exceed 256 characters.
+      Text length must not exceed 256 characters for virtual agent
+      interactions.
   """
 
   languageCode = _messages.StringField(1)

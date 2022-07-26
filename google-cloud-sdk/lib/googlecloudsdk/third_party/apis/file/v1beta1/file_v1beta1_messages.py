@@ -15,11 +15,11 @@ package = 'file'
 
 
 class Backup(_messages.Message):
-  r"""A Cloud Filestore backup.
+  r"""A Filestore backup.
 
   Enums:
     SourceInstanceTierValueValuesEnum: Output only. The service tier of the
-      source Cloud Filestore instance that this backup is created from.
+      source Filestore instance that this backup is created from.
     StateValueValuesEnum: Output only. The backup state.
 
   Messages:
@@ -38,14 +38,14 @@ class Backup(_messages.Message):
     name: Output only. The resource name of the backup, in the format
       `projects/{project_id}/locations/{location_id}/backups/{backup_id}`.
     satisfiesPzs: Output only. Reserved for future use.
-    sourceFileShare: Name of the file share in the source Cloud Filestore
-      instance that the backup is created from.
-    sourceInstance: The resource name of the source Cloud Filestore instance,
-      in the format
+    sourceFileShare: Name of the file share in the source Filestore instance
+      that the backup is created from.
+    sourceInstance: The resource name of the source Filestore instance, in the
+      format
       `projects/{project_id}/locations/{location_id}/instances/{instance_id}`,
       used to create this backup.
-    sourceInstanceTier: Output only. The service tier of the source Cloud
-      Filestore instance that this backup is created from.
+    sourceInstanceTier: Output only. The service tier of the source Filestore
+      instance that this backup is created from.
     state: Output only. The backup state.
     storageBytes: Output only. The size of the storage used by the backup. As
       backups share storage, this number is expected to change with backup
@@ -53,8 +53,8 @@ class Backup(_messages.Message):
   """
 
   class SourceInstanceTierValueValuesEnum(_messages.Enum):
-    r"""Output only. The service tier of the source Cloud Filestore instance
-    that this backup is created from.
+    r"""Output only. The service tier of the source Filestore instance that
+    this backup is created from.
 
     Values:
       TIER_UNSPECIFIED: Not set.
@@ -220,7 +220,7 @@ class FileProjectsLocationsBackupsCreateRequest(_messages.Message):
       lowercase letter followed by up to 62 lowercase letters, numbers, or
       hyphens, and cannot end with a hyphen.
     parent: Required. The backup's project and location, in the format
-      `projects/{project_id}/locations/{location}`. In Cloud Filestore, backup
+      `projects/{project_id}/locations/{location}`. In Filestore, backup
       locations map to GCP regions, for example **us-west1**.
   """
 
@@ -263,9 +263,9 @@ class FileProjectsLocationsBackupsListRequest(_messages.Message):
       results to retrieve for this list request.
     parent: Required. The project and location for which to retrieve backup
       information, in the format `projects/{project_id}/locations/{location}`.
-      In Cloud Filestore, backup locations map to GCP regions, for example
-      **us-west1**. To retrieve backup information for all locations, use "-"
-      for the `{location}` value.
+      In Filestore, backup locations map to GCP regions, for example **us-
+      west1**. To retrieve backup information for all locations, use "-" for
+      the `{location}` value.
   """
 
   filter = _messages.StringField(1)
@@ -311,8 +311,8 @@ class FileProjectsLocationsInstancesCreateRequest(_messages.Message):
       with a lowercase letter followed by up to 62 lowercase letters, numbers,
       or hyphens, and cannot end with a hyphen.
     parent: Required. The instance's project and location, in the format
-      `projects/{project_id}/locations/{location}`. In Cloud Filestore,
-      locations map to GCP zones, for example **us-west1-b**.
+      `projects/{project_id}/locations/{location}`. In Filestore, locations
+      map to GCP zones, for example **us-west1-b**.
   """
 
   instance = _messages.MessageField('Instance', 1)
@@ -656,8 +656,8 @@ class FileShareConfig(_messages.Message):
   r"""File share configuration for the instance.
 
   Fields:
-    capacityGb: File share capacity in gigabytes (GB). Cloud Filestore defines
-      1 GB as 1024^3 bytes.
+    capacityGb: File share capacity in gigabytes (GB). Filestore defines 1 GB
+      as 1024^3 bytes.
     name: The name of the file share (must be 32 characters or less for
       Enterprise and High Scale SSD tiers and 16 characters or less for all
       other tiers).
@@ -1220,7 +1220,7 @@ class GoogleCloudSaasacceleratorManagementProvidersV1SloMetadata(_messages.Messa
 
 
 class Instance(_messages.Message):
-  r"""A Cloud Filestore instance.
+  r"""A Filestore instance.
 
   Enums:
     StateValueValuesEnum: Output only. The instance state.
@@ -1669,8 +1669,8 @@ class NetworkConfig(_messages.Message):
       that identifies the range of IP addresses reserved for this instance.
       For example, 10.0.0.0/29, 192.168.0.0/24, or 192.168.0.0/26,
       respectively. The range you specify can't overlap with either existing
-      subnets or assigned IP address ranges for other Cloud Filestore
-      instances in the selected VPC network.
+      subnets or assigned IP address ranges for other Filestore instances in
+      the selected VPC network.
   """
 
   class ConnectModeValueValuesEnum(_messages.Enum):
@@ -1914,8 +1914,8 @@ class RestoreInstanceRequest(_messages.Message):
   snapshot or backup.
 
   Fields:
-    fileShare: Required. Name of the file share in the Cloud Filestore
-      instance that the snapshot is being restored to.
+    fileShare: Required. Name of the file share in the Filestore instance that
+      the snapshot is being restored to.
     sourceBackup: The resource name of the backup, in the format
       `projects/{project_id}/locations/{location_id}/backups/{backup_id}`.
     sourceSnapshot: The resource name of the snapshot, in the format
@@ -1983,7 +1983,7 @@ class Schedule(_messages.Message):
 
 
 class Share(_messages.Message):
-  r"""A Cloud Filestore share.
+  r"""A Filestore share.
 
   Enums:
     StateValueValuesEnum: Output only. The share state.
@@ -1992,8 +1992,8 @@ class Share(_messages.Message):
     LabelsValue: Resource labels to represent user provided metadata.
 
   Fields:
-    capacityGb: File share capacity in gigabytes (GB). Cloud Filestore defines
-      1 GB as 1024^3 bytes. Must be greater than 0.
+    capacityGb: File share capacity in gigabytes (GB). Filestore defines 1 GB
+      as 1024^3 bytes. Must be greater than 0.
     createTime: Output only. The time when the share was created.
     description: A description of the share with 2048 characters or less.
       Requests with longer descriptions will be rejected.
@@ -2057,7 +2057,7 @@ class Share(_messages.Message):
 
 
 class Snapshot(_messages.Message):
-  r"""A Cloud Filestore snapshot.
+  r"""A Filestore snapshot.
 
   Enums:
     StateValueValuesEnum: Output only. The snapshot state.

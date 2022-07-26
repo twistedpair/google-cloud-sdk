@@ -288,6 +288,7 @@ class Container(_messages.Message):
 
 class Disk(_messages.Message):
   r"""A new persistent disk.
+  https://cloud.google.com/compute/docs/disks#pdspecs.
 
   Fields:
     image: Name of a public or custom image used as the data source.
@@ -999,6 +1000,7 @@ class Runnable(_messages.Message):
     ignoreExitStatus: Normally, a non-zero exit status causes the Task to
       fail. This flag allows execution of other Runnables to continue instead.
     script: Script runnable.
+    timeout: Timeout for this Runnable.
   """
 
   alwaysRun = _messages.BooleanField(1)
@@ -1008,6 +1010,7 @@ class Runnable(_messages.Message):
   environment = _messages.MessageField('Environment', 5)
   ignoreExitStatus = _messages.BooleanField(6)
   script = _messages.MessageField('Script', 7)
+  timeout = _messages.StringField(8)
 
 
 class Script(_messages.Message):

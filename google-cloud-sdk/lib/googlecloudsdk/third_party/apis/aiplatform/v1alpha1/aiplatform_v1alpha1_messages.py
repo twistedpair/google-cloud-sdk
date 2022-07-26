@@ -15114,6 +15114,11 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlImageClassificatio
       (i.e. assuming that for each image just up to one annotation may be
       applicable). If true, a multi-label Model will be trained (i.e. assuming
       that for each image multiple annotations may be applicable).
+    uptrainBaseModelId: The ID of `base` model for upTraining. If it is
+      specified, the new model will be upTrained based on the `base` model for
+      upTraining. Otherwise, the new model will be trained from scratch. The
+      `base` model for upTraining must be in the same Project and Location as
+      the new Model to train, and have the same modelType.
   """
 
   class ModelTypeValueValuesEnum(_messages.Enum):
@@ -15150,6 +15155,7 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlImageClassificatio
   disableEarlyStopping = _messages.BooleanField(3)
   modelType = _messages.EnumField('ModelTypeValueValuesEnum', 4)
   multiLabel = _messages.BooleanField(5)
+  uptrainBaseModelId = _messages.StringField(6)
 
 
 class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlImageClassificationMetadata(_messages.Message):
@@ -15259,6 +15265,10 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlImageObjectDetecti
         ModelService.ExportModel) and used on a mobile or edge device with
         TensorFlow afterwards. Expected to have a higher latency, but should
         also have a higher prediction quality than other mobile models.
+      CLOUD_STREAMING_1: A model best tailored to be used within Google Cloud,
+        and which cannot be exported. Expected to best support predictions in
+        streaming with lower latency and lower prediction quality than other
+        cloud models.
     """
     MODEL_TYPE_UNSPECIFIED = 0
     CLOUD_HIGH_ACCURACY_1 = 1
@@ -15266,6 +15276,7 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlImageObjectDetecti
     MOBILE_TF_LOW_LATENCY_1 = 3
     MOBILE_TF_VERSATILE_1 = 4
     MOBILE_TF_HIGH_ACCURACY_1 = 5
+    CLOUD_STREAMING_1 = 6
 
   budgetMilliNodeHours = _messages.IntegerField(1)
   disableEarlyStopping = _messages.BooleanField(2)
@@ -20285,7 +20296,7 @@ class GoogleCloudAiplatformV1alpha1ExportEvaluatedDataItemsRequestOutputConfig(_
       be created. If the Model has both instance and prediction schemata
       defined, the table will have columns that include: * Instances of the
       test data, as per the instance schema. * Ground truth of the test data,
-      as per the prediction schema. * Modle predicted results on the
+      as per the prediction schema. * Model predicted results on the
       instances. The column names are in the format of `predicted_`.
       field_name is the corresponding field of the prediction as per
       prediction schema. NOTE: For AutoML tabular Models, the ground truth is
@@ -30154,6 +30165,11 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageClassifi
       (i.e. assuming that for each image just up to one annotation may be
       applicable). If true, a multi-label Model will be trained (i.e. assuming
       that for each image multiple annotations may be applicable).
+    uptrainBaseModelId: The ID of `base` model for upTraining. If it is
+      specified, the new model will be upTrained based on the `base` model for
+      upTraining. Otherwise, the new model will be trained from scratch. The
+      `base` model for upTraining must be in the same Project and Location as
+      the new Model to train, and have the same modelType.
   """
 
   class ModelTypeValueValuesEnum(_messages.Enum):
@@ -30190,6 +30206,7 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageClassifi
   disableEarlyStopping = _messages.BooleanField(3)
   modelType = _messages.EnumField('ModelTypeValueValuesEnum', 4)
   multiLabel = _messages.BooleanField(5)
+  uptrainBaseModelId = _messages.StringField(6)
 
 
 class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageClassificationMetadata(_messages.Message):
@@ -30299,6 +30316,10 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageObjectDe
         ModelService.ExportModel) and used on a mobile or edge device with
         TensorFlow afterwards. Expected to have a higher latency, but should
         also have a higher prediction quality than other mobile models.
+      CLOUD_STREAMING_1: A model best tailored to be used within Google Cloud,
+        and which cannot be exported. Expected to best support predictions in
+        streaming with lower latency and lower prediction quality than other
+        cloud models.
     """
     MODEL_TYPE_UNSPECIFIED = 0
     CLOUD_HIGH_ACCURACY_1 = 1
@@ -30306,6 +30327,7 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageObjectDe
     MOBILE_TF_LOW_LATENCY_1 = 3
     MOBILE_TF_VERSATILE_1 = 4
     MOBILE_TF_HIGH_ACCURACY_1 = 5
+    CLOUD_STREAMING_1 = 6
 
   budgetMilliNodeHours = _messages.IntegerField(1)
   disableEarlyStopping = _messages.BooleanField(2)

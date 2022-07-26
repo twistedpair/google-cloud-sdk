@@ -370,6 +370,11 @@
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
+        },
+        "validationCheck": {
+          "description": "Output only. ValidationCheck represents the result of the preflight check job.",
+          "readOnly": true,
+          "$ref": "ValidationCheck"
         }
       }
     },
@@ -902,6 +907,102 @@
       "properties": {
         "username": {
           "description": "Required. The name of the user, e.g. `my-gcp-id@gmail.com`.",
+          "type": "string"
+        }
+      }
+    },
+    "ValidationCheck": {
+      "id": "ValidationCheck",
+      "description": "ValidationCheck represents the result of preflight check.",
+      "type": "object",
+      "properties": {
+        "option": {
+          "description": "Options used for the validation check",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value. Standard preflight validation check will be used.",
+            "Prevent failed preflight checks from failing.",
+            "Skip all preflight check validations."
+          ],
+          "enum": [
+            "OPTIONS_UNSPECIFIED",
+            "SKIP_VALIDATION_CHECK_BLOCKING",
+            "SKIP_VALIDATION_ALL"
+          ]
+        },
+        "status": {
+          "description": "Output only. The detailed validation check status.",
+          "readOnly": true,
+          "$ref": "ValidationCheckStatus"
+        },
+        "scenario": {
+          "description": "Output only. The scenario when the preflight checks were run.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Default value. This value is unused.",
+            "The validation check occurred during an create flow.",
+            "The validation check occurred during an update flow."
+          ],
+          "enum": [
+            "SCENARIO_UNSPECIFIED",
+            "CREATE",
+            "UPDATE"
+          ]
+        }
+      }
+    },
+    "ValidationCheckStatus": {
+      "id": "ValidationCheckStatus",
+      "description": "ValidationCheckStatus defines the detailed validation check status.",
+      "type": "object",
+      "properties": {
+        "result": {
+          "description": "Individual checks which failed as part of the Preflight check execution.",
+          "type": "array",
+          "items": {
+            "$ref": "ValidationCheckResult"
+          }
+        }
+      }
+    },
+    "ValidationCheckResult": {
+      "id": "ValidationCheckResult",
+      "description": "ValidationCheckResult defines the details about the validation check.",
+      "type": "object",
+      "properties": {
+        "state": {
+          "description": "The validation check state.",
+          "type": "string",
+          "enumDescriptions": [
+            "The default value. The check result is unknown.",
+            "The check failed.",
+            "The check was skipped.",
+            "The check itself failed to complete.",
+            "The check encountered a warning."
+          ],
+          "enum": [
+            "STATE_UNKNOWN",
+            "STATE_FAILURE",
+            "STATE_SKIPPED",
+            "STATE_FATAL",
+            "STATE_WARNING"
+          ]
+        },
+        "description": {
+          "description": "The description of the validation check.",
+          "type": "string"
+        },
+        "category": {
+          "description": "The category of the validation.",
+          "type": "string"
+        },
+        "reason": {
+          "description": "A human-readable message of the check failure.",
+          "type": "string"
+        },
+        "details": {
+          "description": "Detailed failure information, which might be unformatted.",
           "type": "string"
         }
       }

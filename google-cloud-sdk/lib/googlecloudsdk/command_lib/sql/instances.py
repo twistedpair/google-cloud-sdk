@@ -308,6 +308,12 @@ class _BaseInstances(object):
               'using [--storage-auto-increase-limit], '
               '[--storage-auto-increase] must be enabled.')
 
+      if ('enable_google_private_path' in args) and args.IsSpecified(
+          'enable_google_private_path'):
+        if not settings.ipConfiguration:
+          settings.ipConfiguration = sql_messages.IpConfiguration()
+        settings.ipConfiguration.enablePrivatePathForGoogleCloudServices = args.enable_google_private_path
+
     if _IsAlpha(release_track):
       if args.IsSpecified('workload_tier'):
         settings.workloadTier = _ParseWorkloadTier(sql_messages,

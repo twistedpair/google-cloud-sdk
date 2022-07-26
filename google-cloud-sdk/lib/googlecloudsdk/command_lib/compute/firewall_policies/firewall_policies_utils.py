@@ -21,6 +21,10 @@ from __future__ import unicode_literals
 import re
 import sys
 
+from googlecloudsdk.api_lib import network_services
+from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.command_lib.compute import exceptions as compute_exceptions
+from googlecloudsdk.command_lib.compute import reference_utils
 from googlecloudsdk.core import log
 
 ORGANIZATION_PREFIX = 'organizations/'
@@ -77,3 +81,65 @@ def GetFirewallPolicyId(firewall_policy_client,
     return ResolveFirewallPolicyId(firewall_policy_client, firewall_policy,
                                    ORGANIZATION_PREFIX + organization)
   return firewall_policy
+
+
+def GetFirewallPolicyOrganization(firewall_policy_client, firewall_policy_id,
+                                  optional_organization):
+  """Returns ID of the organization the given firewall policy belongs to.
+
+  Args:
+    firewall_policy_client: the organization firewall policy client.
+    firewall_policy_id: the short name or ID of the firewall policy to be
+      resolved.
+    optional_organization: organization if provided.
+
+  Returns:
+    Firewall policy resource ID.
+  """
+  if not re.match(r'\d{9,15}',
+                  firewall_policy_id) and optional_organization is None:
+    raise exceptions.RequiredArgumentException(
+        '--organization',
+        'Must set --organization=ORGANIZATION when short name [{0}]'
+        'is used.'.format(firewall_policy_id))
+  organization = optional_organization
+  if not organization:
+    fetched_policies = firewall_policy_client.Describe(fp_id=firewall_policy_id)
+    if not fetched_policies:
+      raise compute_exceptions.InvalidResourceError(
+          'Firewall Policy [{0}] does not exist.'.format(firewall_policy_id))
+    organization = fetched_policies[0].parent
+  if '/' in organization:
+    organization = organization.split('/')[1]
+  return organization
+
+
+def BuildSecurityProfileGroupUrl(security_profile_group, optional_organization,
+                                 firewall_policy_client, firewall_policy_id):
+  """Returns Full URL reference of Security Profile Group.
+
+  Args:
+    security_profile_group: reference string provided by the user.
+    optional_organization: organization if provided.
+    firewall_policy_client: the organization firewall policy client.
+    firewall_policy_id: the short name or ID of the firewall policy to be
+      resolved.
+
+  Returns:
+    URL to Security Profile Group.
+  """
+
+  # Probably Full URL or Full Resource Name -> pass without change
+  if '/' in security_profile_group:
+    return security_profile_group
+  # Create full resource name
+  organization = GetFirewallPolicyOrganization(
+      firewall_policy_client=firewall_policy_client,
+      firewall_policy_id=firewall_policy_id,
+      optional_organization=optional_organization)
+  return reference_utils.BuildFullResourceUrlForOrgBasedResource(
+      base_uri=network_services.GetApiBaseUrl(
+          network_services.base.ReleaseTrack.GA),
+      org_id=organization,
+      collection_name='securityProfileGroups',
+      resource_name=security_profile_group)

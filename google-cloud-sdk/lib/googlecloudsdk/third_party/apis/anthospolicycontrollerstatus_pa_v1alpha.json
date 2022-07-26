@@ -1,0 +1,1043 @@
+{
+  "kind": "discovery#restDescription",
+  "discoveryVersion": "v1",
+  "id": "anthospolicycontrollerstatus_pa:v1alpha",
+  "name": "anthospolicycontrollerstatus_pa",
+  "canonicalName": "Policy Controller Status",
+  "version": "v1alpha",
+  "revision": "0",
+  "title": "Policy Controller Status Private API",
+  "description": "anthospolicycontrollerstatus-pa.googleapis.com API.",
+  "ownerDomain": "google.com",
+  "ownerName": "Google",
+  "icons": {
+    "x16": "http://www.google.com/images/icons/product/search-16.gif",
+    "x32": "http://www.google.com/images/icons/product/search-32.gif"
+   },
+  "documentationLink": "https://cloud.google.com/anthos-config-management/docs/concepts/policy-controller",
+  "protocol": "rest",
+  "rootUrl": "https://anthospolicycontrollerstatus-pa.googleapis.com/",
+  "mtlsRootUrl": "https://anthospolicycontrollerstatus-pa.mtls.googleapis.com/",
+  "servicePath": "",
+  "baseUrl": "https://anthospolicycontrollerstatus-pa.googleapis.com/",
+  "batchPath": "batch",
+  "version_module": true,
+  "fullyEncodeReservedExpansion": true,
+  "parameters": {
+    "access_token": {
+      "type": "string",
+      "description": "OAuth access token.",
+      "location": "query"
+    },
+    "alt": {
+      "type": "string",
+      "description": "Data format for response.",
+      "default": "json",
+      "enum": [
+        "json",
+        "media",
+        "proto"
+      ],
+      "enumDescriptions": [
+        "Responses with Content-Type of application/json",
+        "Media download with context-dependent Content-Type",
+        "Responses with Content-Type of application/x-protobuf"
+      ],
+      "location": "query"
+    },
+    "callback": {
+      "type": "string",
+      "description": "JSONP",
+      "location": "query"
+    },
+    "fields": {
+      "type": "string",
+      "description": "Selector specifying which fields to include in a partial response.",
+      "location": "query"
+    },
+    "key": {
+      "type": "string",
+      "description": "API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.",
+      "location": "query"
+    },
+    "oauth_token": {
+      "type": "string",
+      "description": "OAuth 2.0 token for the current user.",
+      "location": "query"
+    },
+    "prettyPrint": {
+      "type": "boolean",
+      "description": "Returns response with indentations and line breaks.",
+      "default": "true",
+      "location": "query"
+    },
+    "quotaUser": {
+      "type": "string",
+      "description": "Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.",
+      "location": "query"
+    },
+    "upload_protocol": {
+      "type": "string",
+      "description": "Upload protocol for media (e.g. \"raw\", \"multipart\").",
+      "location": "query"
+    },
+    "uploadType": {
+      "type": "string",
+      "description": "Legacy upload protocol for media (e.g. \"media\", \"multipart\").",
+      "location": "query"
+    },
+    "$.xgafv": {
+      "type": "string",
+      "description": "V1 error format.",
+      "enum": [
+        "1",
+        "2"
+      ],
+      "enumDescriptions": [
+        "v1 error format",
+        "v2 error format"
+      ],
+      "location": "query"
+    }
+  },
+  "schemas": {
+    "FleetConstraintTemplate": {
+      "id": "FleetConstraintTemplate",
+      "description": "The fleet-wide info for a constraint template. Includes the number of constraints to avoid clients making serial round trips.",
+      "type": "object",
+      "properties": {
+        "ref": {
+          "description": "The constraint template this data refers to.",
+          "$ref": "ConstraintTemplateRef"
+        },
+        "numConstraints": {
+          "description": "The number of unique constraints using this constraint template.",
+          "type": "string",
+          "format": "int64"
+        },
+        "numMemberships": {
+          "description": "The number of memberships where this constraint template was found.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "ConstraintTemplateRef": {
+      "id": "ConstraintTemplateRef",
+      "description": "ConstraintTemplateRef represents a single constraint template. Base identifying resource.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The constraint template name.",
+          "type": "string"
+        }
+      }
+    },
+    "MembershipConstraintTemplate": {
+      "id": "MembershipConstraintTemplate",
+      "description": "Membership specific constraint template data.",
+      "type": "object",
+      "properties": {
+        "constraintTemplateRef": {
+          "description": "The constraint template this data refers to.",
+          "$ref": "ConstraintTemplateRef"
+        },
+        "membershipRef": {
+          "description": "The membership this data refers to.",
+          "$ref": "MembershipRef"
+        },
+        "description": {
+          "description": "annotations.description, may not be populated.",
+          "type": "string"
+        },
+        "metadata": {
+          "description": "Membership-specific constraint template metadata.",
+          "$ref": "MembershipConstraintTemplateMetadata"
+        },
+        "spec": {
+          "description": "Membership-specific constraint template spec.",
+          "$ref": "MembershipConstraintTemplateSpec"
+        },
+        "status": {
+          "description": "Membership-specific constraint template status.",
+          "$ref": "MembershipConstraintTemplateStatus"
+        }
+      }
+    },
+    "MembershipRef": {
+      "id": "MembershipRef",
+      "description": "Reference to a hub membership.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "The id of the membership, for identity purposes.",
+          "type": "string"
+        },
+        "name": {
+          "description": "The name of the membership, for display purposes.",
+          "type": "string"
+        }
+      }
+    },
+    "MembershipConstraintTemplateMetadata": {
+      "id": "MembershipConstraintTemplateMetadata",
+      "description": "MembershipConstraintTemplateMetadata contains relevant fields from constraint template metadata.",
+      "type": "object",
+      "properties": {
+        "creation": {
+          "description": "metadata.creation_timestamp from the constraint template.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "generation": {
+          "description": "metadata.generation from the constraint template.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "MembershipConstraintTemplateSpec": {
+      "id": "MembershipConstraintTemplateSpec",
+      "description": "The spec defining this constraint template. See https:\/\/github.com\/open-policy-agent\/frameworks\/tree\/master\/constraint#what-is-a-constraint-template.",
+      "type": "object",
+      "properties": {
+        "constraintKind": {
+          "description": "spec.crd.spec.names.kind.",
+          "type": "string"
+        },
+        "properties": {
+          "description": "spec.crd.spec.validation.openAPIV3Schema.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object."
+          }
+        },
+        "targets": {
+          "description": "spec.targets. Use a list of targets to account for multi-target templates.",
+          "type": "array",
+          "items": {
+            "$ref": "Target"
+          }
+        }
+      }
+    },
+    "Target": {
+      "id": "Target",
+      "description": "Target defines which resources this template targets.",
+      "type": "object",
+      "properties": {
+        "target": {
+          "description": "spec.targets.target.",
+          "type": "string"
+        },
+        "regoPolicy": {
+          "description": "Reserved: The policy defined using CEL. CELPolicy cel_policy = 3;",
+          "$ref": "RegoPolicy"
+        }
+      }
+    },
+    "RegoPolicy": {
+      "id": "RegoPolicy",
+      "description": "The rego policy defining this constraint template.",
+      "type": "object",
+      "properties": {
+        "policy": {
+          "description": "spec.targets.rego.",
+          "type": "string"
+        },
+        "libs": {
+          "description": "spec.targets.libs.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "MembershipConstraintTemplateStatus": {
+      "id": "MembershipConstraintTemplateStatus",
+      "description": "MembershipConstratinTemplateStatus contains a field to indicate whether the template was created.",
+      "type": "object",
+      "properties": {
+        "created": {
+          "description": "status.created from the constraint template.",
+          "type": "boolean"
+        }
+      }
+    },
+    "FleetConstraint": {
+      "id": "FleetConstraint",
+      "description": "The fleet-wide info for a constraint. Includes the number of constraints to avoid clients making serial round trips.",
+      "type": "object",
+      "properties": {
+        "ref": {
+          "description": "The constraint this data refers to.",
+          "$ref": "ConstraintRef"
+        },
+        "numViolations": {
+          "description": "The number of violations of this constraint.",
+          "type": "string",
+          "format": "int64"
+        },
+        "numMemberships": {
+          "description": "The number of memberships where this constraint was found.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "ConstraintRef": {
+      "id": "ConstraintRef",
+      "description": "Constraint represents a single constraint. Base identifying resource.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The constraint name.",
+          "type": "string"
+        },
+        "constraintTemplateName": {
+          "description": "The constraint template name, lowercase of the constraint kind. Used for identification, not for UI display.",
+          "type": "string"
+        }
+      }
+    },
+    "MembershipConstraint": {
+      "id": "MembershipConstraint",
+      "description": "Membership specific constraint data.",
+      "type": "object",
+      "properties": {
+        "constraintRef": {
+          "description": "The constraint this data refers to.",
+          "$ref": "ConstraintRef"
+        },
+        "membershipRef": {
+          "description": "The membership this data refers to.",
+          "$ref": "MembershipRef"
+        },
+        "kind": {
+          "description": "The kind of the constraint on this membership, for display purposes.",
+          "type": "string"
+        },
+        "metadata": {
+          "description": "Membership-specific constraint metadata.",
+          "$ref": "MembershipConstraintMetadata"
+        },
+        "spec": {
+          "description": "Membership-specific constraint spec.",
+          "$ref": "MembershipConstraintSpec"
+        },
+        "status": {
+          "description": "Membership-specific constraint status.",
+          "$ref": "MembershipConstraintStatus"
+        }
+      }
+    },
+    "MembershipConstraintMetadata": {
+      "id": "MembershipConstraintMetadata",
+      "description": "MembershipConstraintMetadata contains relevant fields from constraint metadata.",
+      "type": "object",
+      "properties": {
+        "creation": {
+          "description": "metadata.creation_timestamp from the constraint.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "generation": {
+          "description": "metadata.generation from the constraint.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "MembershipConstraintSpec": {
+      "id": "MembershipConstraintSpec",
+      "description": "The spec defining this constraint. See https:\/\/open-policy-agent.github.io\/gatekeeper\/website\/docs\/howto#constraints.",
+      "type": "object",
+      "properties": {
+        "enforcementAction": {
+          "description": "spec.enforcement_action.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified state for an enforcement action.",
+            "The resource is denied admission to the membership.",
+            "Allows testing constraints without enforcing them.",
+            "Provides immediate feedback on why a resource violates a constraint."
+          ],
+          "enum": [
+            "ENFORCEMENT_ACTION_UNSPECIFIED",
+            "ENFORCEMENT_ACTION_DENY",
+            "ENFORCEMENT_ACTION_DRYRUN",
+            "ENFORCEMENT_ACTION_WARN"
+          ]
+        },
+        "kubernetesMatch": {
+          "description": "Reserved: The match specified against GCP resources. GCPMatch gcp_match = 3;",
+          "$ref": "KubernetesMatch"
+        },
+        "parameters": {
+          "description": "The parameters a constraint expects.",
+          "$ref": "MembershipConstraintSpecParameters"
+        }
+      }
+    },
+    "KubernetesMatch": {
+      "id": "KubernetesMatch",
+      "description": "The scope of objects to which a given constraint will be applied",
+      "type": "object",
+      "properties": {
+        "groupKinds": {
+          "description": "Matcher to match on objects based on api group or kind.",
+          "type": "array",
+          "items": {
+            "$ref": "GroupKind"
+          }
+        },
+        "scope": {
+          "description": "Matcher to match on scope of objects.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified scope.",
+            "Scope `*`, match all resources.",
+            "Scope `Cluster`, match cluster-scoped resources.",
+            "Scope `Namespaced`, match namespace-scoped resources."
+          ],
+          "enum": [
+            "SCOPE_UNSPECIFIED",
+            "SCOPE_ALL",
+            "SCOPE_CLUSTER",
+            "SCOPE_NAMESPACED"
+          ]
+        },
+        "namespaces": {
+          "description": "Matcher to match on objects in given namespaces. Supports a prefix-based glob.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "excludedNamespaces": {
+          "description": "Matcher to match on objects not in excluded namespaces. Supports a prefix-based glob.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "labelSelector": {
+          "description": "Matcher to match objects based on label keys or values.",
+          "type": "string"
+        },
+        "namespaceSelector": {
+          "description": "Matcher to match on namespace.",
+          "type": "string"
+        },
+        "name": {
+          "description": "Matcher to match on an object's name. Supports a prefix-based glob.",
+          "type": "string"
+        }
+      }
+    },
+    "GroupKind": {
+      "id": "GroupKind",
+      "description": "GroupKind includes the group, kind of the K8s resource.",
+      "type": "object",
+      "properties": {
+        "apiGroup": {
+          "description": "The api group of the resource.",
+          "type": "string"
+        },
+        "kind": {
+          "description": "The api kind of the resource.",
+          "type": "string"
+        }
+      }
+    },
+    "MembershipConstraintSpecParameters": {
+      "id": "MembershipConstraintSpecParameters",
+      "description": "Parameters specified based on the schema defined in the constraint template.",
+      "type": "object",
+      "properties": {
+        "parameters": {
+          "description": "spec.parameters from the constraint.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object."
+          }
+        }
+      }
+    },
+    "MembershipConstraintStatus": {
+      "id": "MembershipConstraintStatus",
+      "description": "MembershipConstraintStatus contains high-level information from constraint status. Omits violation-level information from constraint status, which is in separate violation resources.",
+      "type": "object",
+      "properties": {
+        "auditTimestamp": {
+          "description": "status.audit_timestamp from the constraint.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "numViolations": {
+          "description": "status.total_violations from the constraint.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "ListFleetConstraintTemplatesResponse": {
+      "id": "ListFleetConstraintTemplatesResponse",
+      "description": "Response schema for ListFleetConstraintTemplates.",
+      "type": "object",
+      "properties": {
+        "fleetConstraintTemplates": {
+          "description": "List of fleet-wide constraint template info.",
+          "type": "array",
+          "items": {
+            "$ref": "FleetConstraintTemplate"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token, which can be sent as page_token to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "type": "string"
+        },
+        "totalSize": {
+          "description": "The number of fleet constraint templates in the response.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "ListMembershipConstraintTemplatesResponse": {
+      "id": "ListMembershipConstraintTemplatesResponse",
+      "description": "Response schema for ListMembershipConstraintTemplates.",
+      "type": "object",
+      "properties": {
+        "membershipConstraintTemplates": {
+          "description": "List of membership-level constraint template info.",
+          "type": "array",
+          "items": {
+            "$ref": "MembershipConstraintTemplate"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token, which can be sent as page_token to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "type": "string"
+        },
+        "totalSize": {
+          "description": "The number of membership constraint templates in the response.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "ListFleetConstraintsResponse": {
+      "id": "ListFleetConstraintsResponse",
+      "description": "Response schema for ListFleetConstraints.",
+      "type": "object",
+      "properties": {
+        "fleetConstraints": {
+          "description": "List of fleet-wide constraint info.",
+          "type": "array",
+          "items": {
+            "$ref": "FleetConstraint"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token, which can be sent as page_token to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "type": "string"
+        },
+        "totalSize": {
+          "description": "The number of fleet constraints in the response.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "ListMembershipConstraintsResponse": {
+      "id": "ListMembershipConstraintsResponse",
+      "description": "Response schema for ListMembershipConstraints.",
+      "type": "object",
+      "properties": {
+        "membershipConstraints": {
+          "description": "List of membership-level constraint info.",
+          "type": "array",
+          "items": {
+            "$ref": "MembershipConstraint"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token, which can be sent as page_token to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "type": "string"
+        },
+        "totalSize": {
+          "description": "The number of membership constraints in the response.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "ListMembershipConstraintAuditViolationsResponse": {
+      "id": "ListMembershipConstraintAuditViolationsResponse",
+      "description": "Response schema for ListMembershipConstraintAuditViolations.",
+      "type": "object",
+      "properties": {
+        "membershipConstraintAuditViolations": {
+          "description": "List of the membership-level constraint audit violation info.",
+          "type": "array",
+          "items": {
+            "$ref": "MembershipConstraintAuditViolation"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token, which can be sent as page_token to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "type": "string"
+        },
+        "totalSize": {
+          "description": "The number of membership constraint audit violations in the response.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "MembershipConstraintAuditViolation": {
+      "id": "MembershipConstraintAuditViolation",
+      "description": "MembershipConstraintAuditViolation contains violation information from constraint status.",
+      "type": "object",
+      "properties": {
+        "constraintRef": {
+          "description": "The constraint ref of the violated constraint.",
+          "$ref": "ConstraintRef"
+        },
+        "resourceRef": {
+          "description": "The resource ref of the violating K8S object.",
+          "$ref": "ResourceRef"
+        },
+        "membershipRef": {
+          "description": "The membership this violation occurs on.",
+          "$ref": "MembershipRef"
+        },
+        "enforcementAction": {
+          "description": "The enforcement_action of the violation.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified state for an enforcement action.",
+            "The resource is denied admission to the membership.",
+            "Allows testing constraints without enforcing them.",
+            "Provides immediate feedback on why a resource violates a constraint."
+          ],
+          "enum": [
+            "ENFORCEMENT_ACTION_UNSPECIFIED",
+            "ENFORCEMENT_ACTION_DENY",
+            "ENFORCEMENT_ACTION_DRYRUN",
+            "ENFORCEMENT_ACTION_WARN"
+          ]
+        },
+        "auditTimestamp": {
+          "description": "The audit timestamp when this violation was observed on the membership.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "errorMessage": {
+          "description": "An error message detailing the violation.",
+          "type": "string"
+        }
+      }
+    },
+    "ResourceRef": {
+      "id": "ResourceRef",
+      "description": "Reference to a K8S resource.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The name of the K8S resource.",
+          "type": "string"
+        },
+        "resourceNamespace": {
+          "description": "The namespace of the K8S resource. This field may be empty for errors that are associated with a cluster-scoped resource. Called resource_namespace because namespace is a C++ keyword.",
+          "type": "string"
+        },
+        "groupKind": {
+          "description": "GK is the GroupKind of the K8S resource. This field may be empty for errors that are not associated with a specific resource.",
+          "$ref": "GroupKind"
+        }
+      }
+    },
+    "ListMembershipsResponse": {
+      "id": "ListMembershipsResponse",
+      "description": "Response schema for ListMemberships.",
+      "type": "object",
+      "properties": {
+        "memberships": {
+          "description": "List of the memberships in a given fleet.",
+          "type": "array",
+          "items": {
+            "$ref": "Membership"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token, which can be sent as page_token to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "type": "string"
+        },
+        "totalSize": {
+          "description": "The number of memberships in the response.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "Membership": {
+      "id": "Membership",
+      "description": "Membership contains aggregate information about policy controller resources in a membership.",
+      "type": "object",
+      "properties": {
+        "ref": {
+          "description": "The membership this data refers to.",
+          "$ref": "MembershipRef"
+        },
+        "runtimeStatus": {
+          "description": "The status of the policy controller runtime configuration.",
+          "$ref": "MembershipRuntimeStatus"
+        }
+      }
+    },
+    "MembershipRuntimeStatus": {
+      "id": "MembershipRuntimeStatus",
+      "description": "MembershipRuntimeStatus contains aggregate data about policy controller resources in a membership.",
+      "type": "object",
+      "properties": {
+        "numConstraintTemplates": {
+          "description": "The number of constraint templates on the membership.",
+          "type": "string",
+          "format": "int64"
+        },
+        "numConstraints": {
+          "description": "The number of constraints on the membership.",
+          "type": "string",
+          "format": "int64"
+        },
+        "numConstraintViolations": {
+          "description": "The number of constraint violations on the membership.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    }
+  },
+  "resources": {
+    "projects": {
+      "resources": {
+        "fleetConstraintTemplates": {
+          "methods": {
+            "get": {
+              "id": "anthospolicycontrollerstatus_pa.projects.fleetConstraintTemplates.get",
+              "path": "v1alpha/{+name}",
+              "flatPath": "v1alpha/projects/{projectsId}/fleetConstraintTemplates/{fleetConstraintTemplatesId}",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Required. The name of the fleet constraint template to retrieve. Format: projects\/{project_id}\/fleetConstraintTemplate\/{constraint_template_name}.",
+                  "pattern": "^projects\/[^\/]+\/fleetConstraintTemplates\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "FleetConstraintTemplate"
+              },
+              "description": "GetFleetConstraintTemplate returns fleet-wide constraint template info."
+            },
+            "list": {
+              "id": "anthospolicycontrollerstatus_pa.projects.fleetConstraintTemplates.list",
+              "path": "v1alpha/{+parent}/fleetConstraintTemplates",
+              "flatPath": "v1alpha/projects/{projectsId}/fleetConstraintTemplates",
+              "httpMethod": "GET",
+              "parameters": {
+                "parent": {
+                  "description": "Required. The project id for which to fetch fleet constraint templates. Format: projects\/{project_id}.",
+                  "pattern": "^projects\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "The maximum number of fleet constraint templates to return. The service may return fewer than this value. If unspecified, defaults to 0 and returns all results without paginating. The maximum value is 1000; values above 1000 will be coerced to 1000.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "A page token, received from a previous ListFleetConstraintTemplates call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to ListFleetConstraintTemplates must match the call that provided the page token.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "response": {
+                "$ref": "ListFleetConstraintTemplatesResponse"
+              },
+              "description": "ListFleetConstraintTemplates returns fleet-wide constraint template info."
+            }
+          }
+        },
+        "membershipConstraintTemplates": {
+          "methods": {
+            "get": {
+              "id": "anthospolicycontrollerstatus_pa.projects.membershipConstraintTemplates.get",
+              "path": "v1alpha/{+name}",
+              "flatPath": "v1alpha/projects/{projectsId}/membershipConstraintTemplates/{membershipConstraintTemplatesId}",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Required. The name of the membership constraint template to retrieve. Format: projects\/{project_id}\/membershipConstraintTemplate\/{constraint_template_name}\/{membership_id}.",
+                  "pattern": "^projects\/[^\/]+\/membershipConstraintTemplates\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "MembershipConstraintTemplate"
+              },
+              "description": "GetMembershipConstraintTemplate returns membership constraint template info."
+            },
+            "list": {
+              "id": "anthospolicycontrollerstatus_pa.projects.membershipConstraintTemplates.list",
+              "path": "v1alpha/{+parent}/membershipConstraintTemplates",
+              "flatPath": "v1alpha/projects/{projectsId}/membershipConstraintTemplates",
+              "httpMethod": "GET",
+              "parameters": {
+                "parent": {
+                  "description": "Required. The project id for which to fetch membership constraint templates. Format: projects\/{project_id}.",
+                  "pattern": "^projects\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "The maximum number of membership constraint templates to return. The service may return fewer than this value. If unspecified, defaults to 0 and returns all results without paginating. The maximum value is 1000; values above 1000 will be coerced to 1000.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "A page token, received from a previous ListMembershipConstraintTemplates call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to ListMembershipConstraintTemplates must match the call that provided the page token.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "response": {
+                "$ref": "ListMembershipConstraintTemplatesResponse"
+              },
+              "description": "ListMembershipConstraintTemplates returns membership-specific constraint template info."
+            }
+          }
+        },
+        "fleetConstraints": {
+          "methods": {
+            "get": {
+              "id": "anthospolicycontrollerstatus_pa.projects.fleetConstraints.get",
+              "path": "v1alpha/{+name}",
+              "flatPath": "v1alpha/projects/{projectsId}/fleetConstraints/{fleetConstraintsId}",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Required. The name of the fleet constraint to retrieve. Format: projects\/{project_id}\/fleetConstraint\/{constraint_template_name}\/{constraint_name}.",
+                  "pattern": "^projects\/[^\/]+\/fleetConstraints\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "FleetConstraint"
+              },
+              "description": "GetFleetConstraint returns fleet-wide constraint info."
+            },
+            "list": {
+              "id": "anthospolicycontrollerstatus_pa.projects.fleetConstraints.list",
+              "path": "v1alpha/{+parent}/fleetConstraints",
+              "flatPath": "v1alpha/projects/{projectsId}/fleetConstraints",
+              "httpMethod": "GET",
+              "parameters": {
+                "parent": {
+                  "description": "Required. The project id for which to fetch fleet constraints. Format: projects\/{project_id}.",
+                  "pattern": "^projects\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "The maximum number of fleet constraints to return. The service may return fewer than this value. If unspecified, defaults to 0 and returns all results without paginating. The maximum value is 1000; values above 1000 will be coerced to 1000.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "A page token, received from a previous ListFleetConstraints call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to ListFleetConstraints must match the call that provided the page token.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "response": {
+                "$ref": "ListFleetConstraintsResponse"
+              },
+              "description": "ListFleetConstraints returns fleet-wide constraint info."
+            }
+          }
+        },
+        "membershipConstraints": {
+          "methods": {
+            "get": {
+              "id": "anthospolicycontrollerstatus_pa.projects.membershipConstraints.get",
+              "path": "v1alpha/{+name}",
+              "flatPath": "v1alpha/projects/{projectsId}/membershipConstraints/{membershipConstraintsId}",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Required. The name of the membership constraint to retrieve. Format: projects\/{project_id}\/membershipConstraint\/{constraint_template_name}\/{constraint_name}\/{membership_id}.",
+                  "pattern": "^projects\/[^\/]+\/membershipConstraints\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "MembershipConstraint"
+              },
+              "description": "GetMembershipConstraint returns membership constraint info."
+            },
+            "list": {
+              "id": "anthospolicycontrollerstatus_pa.projects.membershipConstraints.list",
+              "path": "v1alpha/{+parent}/membershipConstraints",
+              "flatPath": "v1alpha/projects/{projectsId}/membershipConstraints",
+              "httpMethod": "GET",
+              "parameters": {
+                "parent": {
+                  "description": "Required. The project id for which to fetch membership constraints. Format: projects\/{project_id}.",
+                  "pattern": "^projects\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "The maximum number of membership constraints to return. The service may return fewer than this value. If unspecified, defaults to 0 and returns all results without paginating. The maximum value is 1000; values above 1000 will be coerced to 1000.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "A page token, received from a previous ListMembershipConstraints call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to ListMembershipConstraints must match the call that provided the page token.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "response": {
+                "$ref": "ListMembershipConstraintsResponse"
+              },
+              "description": "ListMembershipConstraints returns membership-specific constraint info."
+            }
+          }
+        },
+        "membershipConstraintAuditViolations": {
+          "methods": {
+            "list": {
+              "id": "anthospolicycontrollerstatus_pa.projects.membershipConstraintAuditViolations.list",
+              "path": "v1alpha/{+parent}/membershipConstraintAuditViolations",
+              "flatPath": "v1alpha/projects/{projectsId}/membershipConstraintAuditViolations",
+              "httpMethod": "GET",
+              "parameters": {
+                "parent": {
+                  "description": "Required. The project id for which to fetch membership constraint audit violations. Format: projects\/{project_id}.",
+                  "pattern": "^projects\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "The maximum number of membership constraint audit violations to return. The service may return fewer than this value. If unspecified, defaults to 0 and returns all results without paginating. The maximum value is 1000; values above 1000 will be coerced to 1000.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "A page token, received from a previous ListMembershipConstraintAuditViolations call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to ListMembershipConstraintAuditViolations must match the call that provided the page token.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "response": {
+                "$ref": "ListMembershipConstraintAuditViolationsResponse"
+              },
+              "description": "ListMembershipConstraintAuditViolations returns membership specific constraint audit violation info."
+            }
+          }
+        },
+        "memberships": {
+          "methods": {
+            "list": {
+              "id": "anthospolicycontrollerstatus_pa.projects.memberships.list",
+              "path": "v1alpha/{+parent}/memberships",
+              "flatPath": "v1alpha/projects/{projectsId}/memberships",
+              "httpMethod": "GET",
+              "parameters": {
+                "parent": {
+                  "description": "Required. The project id for which to fetch memberships' policy controller status. Format: projects\/{project_id}.",
+                  "pattern": "^projects\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "The maximum number of memberships to return. The service may return fewer than this value. If unspecified, defaults to 0 and returns all results without paginating. The maximum value is 1000; values above 1000 will be coerced to 1000.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "A page token, received from a previous ListMemberships call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to ListMemberships must match the call that provided the page token.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "response": {
+                "$ref": "ListMembershipsResponse"
+              },
+              "description": "ListMemberships returns runtime status from memberships of a fleet."
+            }
+          }
+        }
+      }
+    }
+  },
+  "basePath": ""
+}

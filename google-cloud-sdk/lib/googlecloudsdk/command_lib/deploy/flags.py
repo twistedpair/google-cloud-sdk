@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 import textwrap
 
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import base
 
 _SOURCE_HELP_TEXT = """
 The location of the source that contains skaffold.yaml. The location can be a directory on a local disk or a gzipped archive file (.tar.gz) in Google Cloud Storage.
@@ -77,16 +78,6 @@ def AddImagesGroup(parser, hidden=False):
       '--build-artifacts',
       hidden=hidden,
       help='Reference to a Skaffold build artifacts output file from skaffold build --file-output=BUILD_ARTIFACTS. If you aren\'t using Skaffold, use the --images flag below to specify the image-names-to-tagged-image references.'
-  )
-
-
-def AddSourceFlag(parser, hidden=False):
-  """Adds source flag."""
-  parser.add_argument(
-      '--source',
-      hidden=hidden,
-      default='.',  # By default, the current directory is used.
-      help=_SOURCE_HELP_TEXT,
   )
 
 
@@ -193,7 +184,7 @@ def AddSkaffoldVersion(parser):
       '--skaffold-version', help='Version of the Skaffold binary.')
 
 
-def AddSkaffoldFileFlag(parser):
+def AddSkaffoldFileFlag():
   """Add --skaffold-file flag."""
   help_text = textwrap.dedent("""\
   Path of the skaffold file relative to the source directory.
@@ -205,20 +196,41 @@ def AddSkaffoldFileFlag(parser):
 
     $ {command} --source=/home/user/source --skaffold-file=config/skaffold.yaml
 
-    The skaffold file absolute file path is expected to be:
-    /home/user/source/config/skaffold.yaml
+  The skaffold file absolute file path is expected to be:
+  /home/user/source/config/skaffold.yaml
 
-""")
+  """)
+  return base.Argument('--skaffold-file', help=help_text)
 
-  parser.add_argument('--skaffold-file', help=help_text)
+
+def AddSourceFlag():
+  """Adds source flag."""
+  return base.Argument(
+      '--source', help=_SOURCE_HELP_TEXT,
+      default='.')  # By default, the current directory is used.
 
 
-def AddKubernetesFileFlag(parser):
-  parser.add_argument(
+def AddKubernetesFileFlag():
+  return base.Argument(
       '--from-k8s-manifest',
-      help='Path to kubernetes file. This will result in a Skaffold file being '
-      'generated',
-      hidden=True)
+      help=(
+          'The path to a Kubernetes manifest, which Cloud Deploy will use to '
+          'generate a skaffold.yaml file for you (for example, '
+          'foo/bar/k8.yaml). The generated Skaffold file will be available in '
+          'the Google Cloud Storage source staging directory (see '
+          '--gcs-source-staging-dir flag) after the release is complete.'))
+
+
+def AddSkaffoldSources(parser):
+  """Add Skaffold sources."""
+  skaffold_source_config_group = parser.add_mutually_exclusive_group()
+  # Add a group that contains the skaffold-file and source flags to a mutex
+  # group.
+  skaffold_source_group = skaffold_source_config_group.add_group(mutex=False)
+  AddSkaffoldFileFlag().AddToParser(skaffold_source_group)
+  AddSourceFlag().AddToParser(skaffold_source_group)
+  # Add the from-k8s-manifest flag to the mutex group.
+  AddKubernetesFileFlag().AddToParser(skaffold_source_config_group)
 
 
 def AddDescriptionFlag(parser):

@@ -4085,6 +4085,15 @@ class ImageConfig(_messages.Message):
       images.
 
   Fields:
+    additionalInfoTypes: Additional InfoTypes to redact in the images in
+      addition to those used by `text_redaction_mode`. Can only be used when
+      `text_redaction_mode` is set to `REDACT_SENSITIVE_TEXT`,
+      `REDACT_SENSITIVE_TEXT_CLEAN_DESCRIPTORS` or
+      `TEXT_REDACTION_MODE_UNSPECIFIED`.
+    excludeInfoTypes: InfoTypes to skip redacting, overriding those used by
+      `text_redaction_mode`. Can only be used when `text_redaction_mode` is
+      set to `REDACT_SENSITIVE_TEXT` or
+      `REDACT_SENSITIVE_TEXT_CLEAN_DESCRIPTORS`.
     textRedactionMode: Determines how to redact text from images.
   """
 
@@ -4099,13 +4108,25 @@ class ImageConfig(_messages.Message):
         DICOM InfoTypes](https://cloud.google.com/healthcare-api/docs/how-
         tos/dicom-deidentify#default_dicom_infotypes).
       REDACT_NO_TEXT: Do not redact text.
+      REDACT_SENSITIVE_TEXT_CLEAN_DESCRIPTORS: This mode is like
+        `REDACT_SENSITIVE_TEXT` with the addition of the [Clean Descriptors
+        Option] (https://dicom.nema.org/medical/dicom/2018e/output/chtml/part1
+        5/sect_E.3.5.html) enabled: When cleaning text, the process attempts
+        to transform phrases matching any of the tags marked for removal
+        (action codes D, Z, X, and U) in the [Basic Profile] (https://dicom.ne
+        ma.org/medical/dicom/2018e/output/chtml/part15/chapter_E.html). These
+        contextual phrases are replaced with the token "[CTX]". This mode uses
+        an additional InfoType during inspection.
     """
     TEXT_REDACTION_MODE_UNSPECIFIED = 0
     REDACT_ALL_TEXT = 1
     REDACT_SENSITIVE_TEXT = 2
     REDACT_NO_TEXT = 3
+    REDACT_SENSITIVE_TEXT_CLEAN_DESCRIPTORS = 4
 
-  textRedactionMode = _messages.EnumField('TextRedactionModeValueValuesEnum', 1)
+  additionalInfoTypes = _messages.StringField(1, repeated=True)
+  excludeInfoTypes = _messages.StringField(2, repeated=True)
+  textRedactionMode = _messages.EnumField('TextRedactionModeValueValuesEnum', 3)
 
 
 class ImportAnnotationsRequest(_messages.Message):

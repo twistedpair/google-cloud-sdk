@@ -67,8 +67,8 @@ def AddServiceCreateArg(parser):
   """Adds a service arg for create."""
   parser.add_argument(
       '--service',
-      required=True,
-      help='Name of the Cloud Run service to attach to the integration.')
+      help='Name of the Cloud Run service to attach to the integration. '
+      'It is required for some integrations.')
 
 
 def AddServiceUpdateArgs(parser):
@@ -102,11 +102,11 @@ def ValidateEnabledGcpApis(integration_type):
   validate.ValidateEnabledGcpApis()
 
 
-def ValidateCreateParameters(integration_type, parameters):
+def ValidateCreateParameters(integration_type, parameters, service):
   """Validates given params conform to what's expected from the integration."""
   types_utils.CheckValidIntegrationType(integration_type)
   validate = validator.GetIntegrationValidator(integration_type)
-  validate.ValidateCreateParameters(parameters)
+  validate.ValidateCreateParameters(parameters, service)
 
 
 def ValidateUpdateParameters(integration_type, parameters):

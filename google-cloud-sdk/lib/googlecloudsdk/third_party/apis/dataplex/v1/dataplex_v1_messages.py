@@ -37,7 +37,7 @@ class DataplexProjectsLocationsLakesActionsListRequest(_messages.Message):
       other parameters provided to ListLakeActions must match the call that
       provided the page token.
     parent: Required. The resource name of the parent lake:
-      projects/{project_number}/locations/{location_id}/lakes/{lake_id}
+      projects/{project_number}/locations/{location_id}/lakes/{lake_id}.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -396,7 +396,7 @@ class DataplexProjectsLocationsLakesDeleteRequest(_messages.Message):
 
   Fields:
     name: Required. The resource name of the lake:
-      projects/{project_number}/locations/{location_id}/lakes/{lake_id}
+      projects/{project_number}/locations/{location_id}/lakes/{lake_id}.
   """
 
   name = _messages.StringField(1, required=True)
@@ -413,7 +413,7 @@ class DataplexProjectsLocationsLakesEnvironmentsCreateRequest(_messages.Message)
     googleCloudDataplexV1Environment: A GoogleCloudDataplexV1Environment
       resource to be passed as the request body.
     parent: Required. The resource name of the parent lake:
-      projects/{project_id}/locations/{location_id}/lakes/{lake_id}
+      projects/{project_id}/locations/{location_id}/lakes/{lake_id}.
     validateOnly: Optional. Only validate the request, but do not perform
       mutations. The default is false.
   """
@@ -429,7 +429,7 @@ class DataplexProjectsLocationsLakesEnvironmentsDeleteRequest(_messages.Message)
 
   Fields:
     name: Required. The resource name of the environment: projects/{project_id
-      }/locations/{location_id}/lakes/{lake_id}/environments/{environment_id}`
+      }/locations/{location_id}/lakes/{lake_id}/environments/{environment_id}.
   """
 
   name = _messages.StringField(1, required=True)
@@ -464,7 +464,7 @@ class DataplexProjectsLocationsLakesEnvironmentsGetRequest(_messages.Message):
 
   Fields:
     name: Required. The resource name of the environment: projects/{project_id
-      }/locations/{location_id}/lakes/{lake_id}/environments/{environment_id}
+      }/locations/{location_id}/lakes/{lake_id}/environments/{environment_id}.
   """
 
   name = _messages.StringField(1, required=True)
@@ -485,7 +485,7 @@ class DataplexProjectsLocationsLakesEnvironmentsListRequest(_messages.Message):
       other parameters provided to ListEnvironments must match the call that
       provided the page token.
     parent: Required. The resource name of the parent lake:
-      projects/{project_id}/locations/{location_id}/lakes/{lake_id}
+      projects/{project_id}/locations/{location_id}/lakes/{lake_id}.
   """
 
   filter = _messages.StringField(1)
@@ -536,7 +536,7 @@ class DataplexProjectsLocationsLakesEnvironmentsSessionsListRequest(_messages.Me
       provided the page token.
     parent: Required. The resource name of the parent environment: projects/{p
       roject_number}/locations/{location_id}/lakes/{lake_id}/environment/{envi
-      ronment_id}
+      ronment_id}.
   """
 
   filter = _messages.StringField(1)
@@ -607,7 +607,7 @@ class DataplexProjectsLocationsLakesGetRequest(_messages.Message):
 
   Fields:
     name: Required. The resource name of the lake:
-      projects/{project_number}/locations/{location_id}/lakes/{lake_id}
+      projects/{project_number}/locations/{location_id}/lakes/{lake_id}.
   """
 
   name = _messages.StringField(1, required=True)
@@ -680,7 +680,7 @@ class DataplexProjectsLocationsLakesTasksCreateRequest(_messages.Message):
     googleCloudDataplexV1Task: A GoogleCloudDataplexV1Task resource to be
       passed as the request body.
     parent: Required. The resource name of the parent lake:
-      projects/{project_number}/locations/{location_id}/lakes/{lake_id}
+      projects/{project_number}/locations/{location_id}/lakes/{lake_id}.
     taskId: Required. Task identifier.
     validateOnly: Optional. Only validate the request, but do not perform
       mutations. The default is false.
@@ -696,9 +696,8 @@ class DataplexProjectsLocationsLakesTasksDeleteRequest(_messages.Message):
   r"""A DataplexProjectsLocationsLakesTasksDeleteRequest object.
 
   Fields:
-    name: Required. The resource name of the task:
-      projects/{project_number}/locations/{location_id}/lakes/{lake_id}
-      /task/{task_id}`
+    name: Required. The resource name of the task: projects/{project_number}/l
+      ocations/{location_id}/lakes/{lake_id}/task/{task_id}.
   """
 
   name = _messages.StringField(1, required=True)
@@ -732,9 +731,8 @@ class DataplexProjectsLocationsLakesTasksGetRequest(_messages.Message):
   r"""A DataplexProjectsLocationsLakesTasksGetRequest object.
 
   Fields:
-    name: Required. The resource name of the task:
-      projects/{project_number}/locations/{location_id}/lakes/{lake_id}
-      /tasks/{tasks_id}
+    name: Required. The resource name of the task: projects/{project_number}/l
+      ocations/{location_id}/lakes/{lake_id}/tasks/{tasks_id}.
   """
 
   name = _messages.StringField(1, required=True)
@@ -747,9 +745,8 @@ class DataplexProjectsLocationsLakesTasksJobsCancelRequest(_messages.Message):
     googleCloudDataplexV1CancelJobRequest: A
       GoogleCloudDataplexV1CancelJobRequest resource to be passed as the
       request body.
-    name: Required. The resource name of the job:
-      projects/{project_number}/locations/{location_id}/lakes/{lake_id}
-      /task/{task_id}/job/{job_id}`
+    name: Required. The resource name of the job: projects/{project_number}/lo
+      cations/{location_id}/lakes/{lake_id}/task/{task_id}/job/{job_id}.
   """
 
   googleCloudDataplexV1CancelJobRequest = _messages.MessageField('GoogleCloudDataplexV1CancelJobRequest', 1)
@@ -760,9 +757,8 @@ class DataplexProjectsLocationsLakesTasksJobsGetRequest(_messages.Message):
   r"""A DataplexProjectsLocationsLakesTasksJobsGetRequest object.
 
   Fields:
-    name: Required. The resource name of the job:
-      projects/{project_number}/locations/{location_id}/lakes/{lake_id}
-      /tasks/{task_id}/jobs/{job_id}
+    name: Required. The resource name of the job: projects/{project_number}/lo
+      cations/{location_id}/lakes/{lake_id}/tasks/{task_id}/jobs/{job_id}.
   """
 
   name = _messages.StringField(1, required=True)
@@ -781,7 +777,7 @@ class DataplexProjectsLocationsLakesTasksJobsListRequest(_messages.Message):
       parameters provided to ListJobs must match the call that provided the
       page token.
     parent: Required. The resource name of the parent environment: projects/{p
-      roject_number}/locations/{location_id}/lakes/{lake_id}/tasks/{task_id}
+      roject_number}/locations/{location_id}/lakes/{lake_id}/tasks/{task_id}.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -804,7 +800,7 @@ class DataplexProjectsLocationsLakesTasksListRequest(_messages.Message):
       parameters provided to ListZones must match the call that provided the
       page token.
     parent: Required. The resource name of the parent lake:
-      projects/{project_number}/locations/{location_id}/lakes/{lake_id}
+      projects/{project_number}/locations/{location_id}/lakes/{lake_id}.
   """
 
   filter = _messages.StringField(1)
@@ -896,7 +892,7 @@ class DataplexProjectsLocationsLakesZonesActionsListRequest(_messages.Message):
       other parameters provided to ListZoneActions must match the call that
       provided the page token.
     parent: Required. The resource name of the parent zone: projects/{project_
-      number}/locations/{location_id}/lakes/{lake_id}/zones/{zone_id}
+      number}/locations/{location_id}/lakes/{lake_id}/zones/{zone_id}.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -918,7 +914,7 @@ class DataplexProjectsLocationsLakesZonesAssetsActionsListRequest(_messages.Mess
       provided the page token.
     parent: Required. The resource name of the parent asset: projects/{project
       _number}/locations/{location_id}/lakes/{lake_id}/zones/{zone_id}/assets/
-      {asset_id}
+      {asset_id}.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -937,9 +933,8 @@ class DataplexProjectsLocationsLakesZonesAssetsCreateRequest(_messages.Message):
       be between 1-63 characters. * Must be unique within the zone.
     googleCloudDataplexV1Asset: A GoogleCloudDataplexV1Asset resource to be
       passed as the request body.
-    parent: Required. The resource name of the parent zone:
-      projects/{project_number}/locations/{location_id}/lakes/{lake_id}
-      /zones/{zone_id}`
+    parent: Required. The resource name of the parent zone: projects/{project_
+      number}/locations/{location_id}/lakes/{lake_id}/zones/{zone_id}.
     validateOnly: Optional. Only validate the request, but do not perform
       mutations. The default is false.
   """
@@ -954,9 +949,9 @@ class DataplexProjectsLocationsLakesZonesAssetsDeleteRequest(_messages.Message):
   r"""A DataplexProjectsLocationsLakesZonesAssetsDeleteRequest object.
 
   Fields:
-    name: Required. The resource name of the asset:
-      projects/{project_number}/locations/{location_id}/lakes/{lake_id}
-      /zones/{zone_id}/assets/{asset_id}
+    name: Required. The resource name of the asset: projects/{project_number}/
+      locations/{location_id}/lakes/{lake_id}/zones/{zone_id}/assets/{asset_id
+      }.
   """
 
   name = _messages.StringField(1, required=True)
@@ -990,9 +985,9 @@ class DataplexProjectsLocationsLakesZonesAssetsGetRequest(_messages.Message):
   r"""A DataplexProjectsLocationsLakesZonesAssetsGetRequest object.
 
   Fields:
-    name: Required. The resource name of the asset:
-      projects/{project_number}/locations/{location_id}/lakes/{lake_id}
-      /zones/{zone_id}/assets/{asset_id}
+    name: Required. The resource name of the asset: projects/{project_number}/
+      locations/{location_id}/lakes/{lake_id}/zones/{zone_id}/assets/{asset_id
+      }.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1012,9 +1007,8 @@ class DataplexProjectsLocationsLakesZonesAssetsListRequest(_messages.Message):
       Provide this to retrieve the subsequent page. When paginating, all other
       parameters provided to ListAssets must match the call that provided the
       page token.
-    parent: Required. The resource name of the parent zone:
-      projects/{project_number}/locations/{location_id}/lakes/{lake_id}
-      /zones/{zone_id}`
+    parent: Required. The resource name of the parent zone: projects/{project_
+      number}/locations/{location_id}/lakes/{lake_id}/zones/{zone_id}.
   """
 
   filter = _messages.StringField(1)
@@ -1084,7 +1078,7 @@ class DataplexProjectsLocationsLakesZonesCreateRequest(_messages.Message):
     googleCloudDataplexV1Zone: A GoogleCloudDataplexV1Zone resource to be
       passed as the request body.
     parent: Required. The resource name of the parent lake:
-      projects/{project_number}/locations/{location_id}/lakes/{lake_id}
+      projects/{project_number}/locations/{location_id}/lakes/{lake_id}.
     validateOnly: Optional. Only validate the request, but do not perform
       mutations. The default is false.
     zoneId: Required. Zone identifier. This ID will be used to generate names
@@ -1106,9 +1100,8 @@ class DataplexProjectsLocationsLakesZonesDeleteRequest(_messages.Message):
   r"""A DataplexProjectsLocationsLakesZonesDeleteRequest object.
 
   Fields:
-    name: Required. The resource name of the zone:
-      projects/{project_number}/locations/{location_id}/lakes/{lake_id}
-      /zones/{zone_id}`
+    name: Required. The resource name of the zone: projects/{project_number}/l
+      ocations/{location_id}/lakes/{lake_id}/zones/{zone_id}.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1360,9 +1353,8 @@ class DataplexProjectsLocationsLakesZonesGetRequest(_messages.Message):
   r"""A DataplexProjectsLocationsLakesZonesGetRequest object.
 
   Fields:
-    name: Required. The resource name of the zone:
-      projects/{project_number}/locations/{location_id}/lakes/{lake_id}
-      /zones/{zone_id}
+    name: Required. The resource name of the zone: projects/{project_number}/l
+      ocations/{location_id}/lakes/{lake_id}/zones/{zone_id}.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1383,7 +1375,7 @@ class DataplexProjectsLocationsLakesZonesListRequest(_messages.Message):
       parameters provided to ListZones must match the call that provided the
       page token.
     parent: Required. The resource name of the parent lake:
-      projects/{project_number}/locations/{location_id}/lakes/{lake_id}
+      projects/{project_number}/locations/{location_id}/lakes/{lake_id}.
   """
 
   filter = _messages.StringField(1)
@@ -2676,10 +2668,10 @@ class GoogleCloudDataplexV1Job(_messages.Message):
   Fields:
     endTime: Output only. The time when the job ended.
     message: Output only. Additional information about the current state.
-    name: Output only. The relative resource name of the job, of the form:
-      projects/{project_number}/locations/{location_id}/lakes/{lake_id}/
-      tasks/{task_id}/jobs/{job_id}.
-    retryCount: Output only. . The number of times the job has been retried
+    name: Output only. The relative resource name of the job, of the form: pro
+      jects/{project_number}/locations/{location_id}/lakes/{lake_id}/tasks/{ta
+      sk_id}/jobs/{job_id}.
+    retryCount: Output only. The number of times the job has been retried
       (excluding the initial attempt).
     service: Output only. The underlying service running a job.
     serviceJob: Output only. The full resource name for the job run under a
@@ -3367,11 +3359,16 @@ class GoogleCloudDataplexV1SessionEvent(_messages.Message):
     TypeValueValuesEnum: The type of the event.
 
   Fields:
+    eventSucceeded: The status of the event.
     message: The log message.
     query: The execution details of the query.
     sessionId: Unique identifier for the session.
     type: The type of the event.
-    userId: The information about the user that created the session.
+    unassignedDuration: The idle duration of a warm pooled session before it
+      is assigned to user.
+    userId: The information about the user that created the session. It will
+      be the email address of the user.
+    warmPoolEnabled: If the session is a warm pooled session.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
@@ -3379,20 +3376,26 @@ class GoogleCloudDataplexV1SessionEvent(_messages.Message):
 
     Values:
       EVENT_TYPE_UNSPECIFIED: An unspecified event type.
-      START: Event for start of a session.
+      CREATE: Event for creation of a cluster. It is not yet assigned to a
+        user.
+      START: Event when the session is assigned to a user.
       STOP: Event for stop of a session.
       QUERY: Query events in the session.
     """
     EVENT_TYPE_UNSPECIFIED = 0
-    START = 1
-    STOP = 2
-    QUERY = 3
+    CREATE = 1
+    START = 2
+    STOP = 3
+    QUERY = 4
 
-  message = _messages.StringField(1)
-  query = _messages.MessageField('GoogleCloudDataplexV1SessionEventQueryDetail', 2)
-  sessionId = _messages.StringField(3)
-  type = _messages.EnumField('TypeValueValuesEnum', 4)
-  userId = _messages.StringField(5)
+  eventSucceeded = _messages.BooleanField(1)
+  message = _messages.StringField(2)
+  query = _messages.MessageField('GoogleCloudDataplexV1SessionEventQueryDetail', 3)
+  sessionId = _messages.StringField(4)
+  type = _messages.EnumField('TypeValueValuesEnum', 5)
+  unassignedDuration = _messages.StringField(6)
+  userId = _messages.StringField(7)
+  warmPoolEnabled = _messages.BooleanField(8)
 
 
 class GoogleCloudDataplexV1SessionEventQueryDetail(_messages.Message):
@@ -3653,12 +3656,12 @@ class GoogleCloudDataplexV1TaskExecutionSpec(_messages.Message):
       the last argument.
     kmsKey: Optional. The Cloud KMS key to use for encryption, of the form:
       projects/{project_number}/locations/{location_id}/keyRings/{key-ring-
-      name}/cryptoKeys/{key-name}
+      name}/cryptoKeys/{key-name}.
     maxJobExecutionLifetime: Optional. The maximum duration after which the
       job execution is expired.
     project: Optional. The project in which jobs are run. By default, the
       project containing the Lake is used. If a project is provided, the
-      executionspec.service_account must belong to this same project.
+      ExecutionSpec.service_account must belong to this project.
     serviceAccount: Required. Service account to use to execute a task. If not
       provided, the default Compute service account for the project is used.
   """

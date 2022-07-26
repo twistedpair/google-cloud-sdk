@@ -557,7 +557,7 @@ class EdgecontainerV1alpha(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new Cluster in a given project and location.
+      r"""Creates a new VPN connection in a given project and location.
 
       Args:
         request: (EdgecontainerProjectsLocationsVpnConnectionsCreateRequest) input message
@@ -611,7 +611,7 @@ class EdgecontainerV1alpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single VpnConnection.
+      r"""Gets details of a single VPN connection.
 
       Args:
         request: (EdgecontainerProjectsLocationsVpnConnectionsGetRequest) input message
@@ -638,7 +638,7 @@ class EdgecontainerV1alpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists VpnConnections in a given project and location.
+      r"""Lists VPN connections in a given project and location.
 
       Args:
         request: (EdgecontainerProjectsLocationsVpnConnectionsListRequest) input message

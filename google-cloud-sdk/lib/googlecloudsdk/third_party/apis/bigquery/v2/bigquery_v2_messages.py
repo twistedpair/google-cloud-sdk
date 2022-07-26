@@ -771,6 +771,10 @@ class CsvOptions(_messages.Message):
       separator. The default value is a comma (',').
     null_marker: [Optional] An custom string that will represent a NULL value
       in CSV import data.
+    preserveAsciiControlCharacters: [Optional] Preserves the embedded ASCII
+      control characters (the first 32 characters in the ASCII-table, from
+      '\x00' to '\x1F') when loading from CSV. Only applicable to CSV, ignored
+      for other formats.
     quote: [Optional] The value that is used to quote data sections in a CSV
       file. BigQuery converts the string to ISO-8859-1 encoding, and then uses
       the first byte of the encoded string to split the data in its raw,
@@ -797,8 +801,9 @@ class CsvOptions(_messages.Message):
   encoding = _messages.StringField(3)
   fieldDelimiter = _messages.StringField(4)
   null_marker = _messages.StringField(5)
-  quote = _messages.StringField(6, default='"')
-  skipLeadingRows = _messages.IntegerField(7)
+  preserveAsciiControlCharacters = _messages.BooleanField(6)
+  quote = _messages.StringField(7, default='"')
+  skipLeadingRows = _messages.IntegerField(8)
 
 
 class Dataset(_messages.Message):
@@ -1363,6 +1368,8 @@ class ExternalDataConfiguration(_messages.Message):
       Cloud Bigtable, Google Cloud Datastore backups and Avro formats.
     parquetOptions: Additional properties to set if sourceFormat is set to
       Parquet.
+    referenceFileSchemaUri: [Optional] Provide a referencing file with the
+      expected table schema. Enabled for the format: AVRO, PARQUET, ORC.
     schema: [Optional] The schema for the data. Schema is required for CSV and
       JSON formats. Schema is disallowed for Google Cloud Bigtable, Cloud
       Datastore backups, and Avro formats.
@@ -1393,9 +1400,10 @@ class ExternalDataConfiguration(_messages.Message):
   ignoreUnknownValues = _messages.BooleanField(10)
   maxBadRecords = _messages.IntegerField(11, variant=_messages.Variant.INT32)
   parquetOptions = _messages.MessageField('ParquetOptions', 12)
-  schema = _messages.MessageField('TableSchema', 13)
-  sourceFormat = _messages.StringField(14)
-  sourceUris = _messages.StringField(15, repeated=True)
+  referenceFileSchemaUri = _messages.StringField(13)
+  schema = _messages.MessageField('TableSchema', 14)
+  sourceFormat = _messages.StringField(15)
+  sourceUris = _messages.StringField(16, repeated=True)
 
 
 class GetQueryResultsResponse(_messages.Message):
@@ -1818,6 +1826,8 @@ class JobConfigurationLoad(_messages.Message):
     rangePartitioning: [TrustedTester] Range partitioning specification for
       this table. Only one of timePartitioning and rangePartitioning should be
       specified.
+    referenceFileSchemaUri: User provided referencing file with the expected
+      reader schema, Available for the format: AVRO, PARQUET, ORC.
     schema: [Optional] The schema for the destination table. The schema can be
       omitted if the destination table already exists, or if you're loading
       data from Google Cloud Datastore.
@@ -1891,16 +1901,17 @@ class JobConfigurationLoad(_messages.Message):
   projectionFields = _messages.StringField(19, repeated=True)
   quote = _messages.StringField(20, default='"')
   rangePartitioning = _messages.MessageField('RangePartitioning', 21)
-  schema = _messages.MessageField('TableSchema', 22)
-  schemaInline = _messages.StringField(23)
-  schemaInlineFormat = _messages.StringField(24)
-  schemaUpdateOptions = _messages.StringField(25, repeated=True)
-  skipLeadingRows = _messages.IntegerField(26, variant=_messages.Variant.INT32)
-  sourceFormat = _messages.StringField(27)
-  sourceUris = _messages.StringField(28, repeated=True)
-  timePartitioning = _messages.MessageField('TimePartitioning', 29)
-  useAvroLogicalTypes = _messages.BooleanField(30)
-  writeDisposition = _messages.StringField(31)
+  referenceFileSchemaUri = _messages.StringField(22)
+  schema = _messages.MessageField('TableSchema', 23)
+  schemaInline = _messages.StringField(24)
+  schemaInlineFormat = _messages.StringField(25)
+  schemaUpdateOptions = _messages.StringField(26, repeated=True)
+  skipLeadingRows = _messages.IntegerField(27, variant=_messages.Variant.INT32)
+  sourceFormat = _messages.StringField(28)
+  sourceUris = _messages.StringField(29, repeated=True)
+  timePartitioning = _messages.MessageField('TimePartitioning', 30)
+  useAvroLogicalTypes = _messages.BooleanField(31)
+  writeDisposition = _messages.StringField(32)
 
 
 class JobConfigurationQuery(_messages.Message):
@@ -2934,8 +2945,8 @@ class QueryTimelineSample(_messages.Message):
       Providing additional slots for these units of work will speed up the
       query, provided no other query in the reservation needs additional
       slots.
-    pendingUnits: Total parallel units of work remaining for the active
-      stages.
+    pendingUnits: Total units of work remaining for the query. This number can
+      be revised (increased or decreased) while the query is running.
     totalSlotMs: Cumulative slot-ms consumed by the query.
   """
 

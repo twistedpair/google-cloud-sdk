@@ -170,6 +170,24 @@ class RegistrationsClient(object):
 
     return self._service.Transfer(req)
 
+  def Import(self, parent_ref, domain, labels):
+    """Imports a domain and creates a new Registration.
+
+    Args:
+      parent_ref: a Resource reference to a domains.projects.locations resource
+        for the parent of this registration.
+      domain: str, the name of the domain to import. Used as resource name.
+      labels: Unified GCP Labels for the resource.
+
+    Returns:
+      Operation: the long running operation to import a domain.
+    """
+    req = self.messages.DomainsProjectsLocationsRegistrationsImportRequest(
+        parent=parent_ref.RelativeName(),
+        importDomainRequest=self.messages.ImportDomainRequest(
+            domainName=domain, labels=labels))
+    return self._service.Import(req)
+
   def Export(self, registration_ref):
     req = self.messages.DomainsProjectsLocationsRegistrationsExportRequest(
         name=registration_ref.RelativeName())
@@ -196,6 +214,24 @@ class RegistrationsClient(object):
     req = self.messages.DomainsProjectsLocationsRegistrationsResetAuthorizationCodeRequest(
         registration=registration_ref.RelativeName())
     return self._service.ResetAuthorizationCode(req)
+
+  def RetrieveImportableDomains(self,
+                                parent_ref,
+                                limit=None,
+                                page_size=None,
+                                batch_size=None):
+    request = self.messages.DomainsProjectsLocationsRegistrationsRetrieveImportableDomainsRequest(
+        location=parent_ref.RelativeName(), pageSize=page_size)
+
+    return list_pager.YieldFromList(
+        self._service,
+        request,
+        method='RetrieveImportableDomains',
+        field='domains',
+        limit=limit,
+        batch_size=batch_size,
+        batch_size_attribute='pageSize',
+    )
 
   def List(self, parent_ref, limit=None, page_size=None, list_filter=None):
     """List the domain registrations in a given project.

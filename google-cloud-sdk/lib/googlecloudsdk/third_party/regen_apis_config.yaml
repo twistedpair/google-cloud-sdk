@@ -112,6 +112,10 @@ apis:
       discovery_doc: anthosevents_v1alpha1.json
     v1beta1:
       discovery_doc: anthosevents_v1beta1.json
+  anthospolicycontrollerstatus_pa:
+    v1alpha:
+      discovery_doc: anthospolicycontrollerstatus_pa_v1alpha.json
+      default: true
   apikeys:
     v2:
       discovery_doc: apikeys_v2.json
@@ -992,6 +996,11 @@ apis:
         simulator:
           path: simulator
       discovery_doc: policysimulator_v1.json
+    v1alpha:
+      resources:
+        simulator:
+          path: simulator
+      discovery_doc: policysimulator_v1alpha.json
   privateca:
     # TODO(b/158338643): Remove beta and set v1 as default when GA is public.
     v1beta1:
@@ -1347,3 +1356,7 @@ apis:
   workstations:
     v1alpha1:
       discovery_doc: workstations_v1alpha1.json
+  securesourcemanager:
+    v1:
+      discovery_doc: securesourcemanager_v1.json
+      default: true

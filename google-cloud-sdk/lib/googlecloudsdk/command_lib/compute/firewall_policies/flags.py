@@ -187,7 +187,7 @@ def AddAction(parser, required=True, support_ips=False):
   parser.add_argument(
       '--action',
       choices=['allow', 'deny', 'goto_next'] +
-      (['apply_profile_group'] if support_ips else []),
+      (['apply_security_profile_group'] if support_ips else []),
       type=lambda x: x.lower(),
       required=required,
       help='Action to take if the request matches the match condition.')
@@ -462,5 +462,13 @@ def AddSecurityProfileGroup(parser):
       required=False,
       hidden=True,
       help=(
-          'An org-based security profile group to be used with apply_profile_group action.'
+          'An org-based security profile group to be used with apply_security_profile_group action.'
+          'Allowed formats are:'
+          'a) http(s)://<namespace>/<api>/organizations/<org_id>/locations/global/securityProfileGroups/<profile>'
+          'b) (//)<namespace>/organizations/<org_id>/locations/global/securityProfileGroups/<profile>'
+          'c) <profile>'
+          'In case \'c\' gCloud CLI will create a reference matching format \'a\','
+          'but to make it work CLOUDSDK_API_ENDPOINT_OVERRIDES_NETWORKSERVICES property must be set.'
+          'In order to set this property, '
+          'please run the command \'gcloud config set api_endpoint_overrides/networkservices https://<namespace>/\''
       ))

@@ -55,26 +55,45 @@ legacy_display_name:
   help_text: |-
     An arbitrary user-provided name for the connection. Cannot exceed 64 characters.
 
-application_endpoint_host:
+application_endpoint_host_v1alpha:
   api_field: googleCloudBeyondcorpAppconnectionsV1alphaAppConnection.applicationEndpoint.host
   arg_name: application-endpoint-host
   help_text: |-
     Hostname or IP address of the remote application endpoint.
 
-application_endpoint_port:
+application_endpoint_host_v1:
+  api_field: googleCloudBeyondcorpAppconnectionsV1AppConnection.applicationEndpoint.host
+  arg_name: application-endpoint-host
+  help_text: |-
+    Hostname or IP address of the remote application endpoint.
+
+application_endpoint_port_v1alpha:
   api_field: googleCloudBeyondcorpAppconnectionsV1alphaAppConnection.applicationEndpoint.port
   arg_name: application-endpoint-port
   help_text: |-
     Port of the remote application endpoint.
 
-connectors:
+application_endpoint_port_v1:
+  api_field: googleCloudBeyondcorpAppconnectionsV1AppConnection.applicationEndpoint.port
+  arg_name: application-endpoint-port
+  help_text: |-
+    Port of the remote application endpoint.
+
+connectors_v1alpha:
   api_field: googleCloudBeyondcorpAppconnectionsV1alphaAppConnection.connectors
   arg_name: connectors
   required: false
   help_text: |-
     List of connectors names that are authorised to be associated with this Connection.
 
-connection_type:
+connectors_v1:
+  api_field: googleCloudBeyondcorpAppconnectionsV1AppConnection.connectors
+  arg_name: connectors
+  required: false
+  help_text: |-
+    List of connectors names that are authorised to be associated with this Connection.
+
+connection_type_v1alpha:
   api_field: googleCloudBeyondcorpAppconnectionsV1alphaAppConnection.type
   arg_name: type
   required: false
@@ -86,8 +105,27 @@ connection_type:
   help_text: |-
     The type of network connnectivity used by the connection.
 
-display_name:
+connection_type_v1:
+  api_field: googleCloudBeyondcorpAppconnectionsV1AppConnection.type
+  arg_name: type
+  required: false
+  choices:
+  - arg_value: tcp
+    enum_value: TCP_PROXY
+    help_text: TCP connection
+  default: "TCP_PROXY"
+  help_text: |-
+    The type of network connnectivity used by the connection.
+
+display_name_v1alpha:
   api_field: googleCloudBeyondcorpAppconnectionsV1alphaAppConnection.displayName
+  arg_name: display-name
+  required: false
+  help_text: |-
+    An arbitrary user-provided name for the connection. Cannot exceed 64 characters.
+
+display_name_v1:
+  api_field: googleCloudBeyondcorpAppconnectionsV1AppConnection.displayName
   arg_name: display-name
   required: false
   help_text: |-

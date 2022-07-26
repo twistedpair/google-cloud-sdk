@@ -145,7 +145,9 @@ class _UserObjectArgs:
       content_encoding=None,
       content_language=None,
       content_type=None,
-      custom_metadata=None,
+      custom_metadata_to_set=None,
+      custom_metadata_to_remove=None,
+      custom_metadata_to_update=None,
       custom_time=None,
       event_based_hold=None,
       md5_hash=None,
@@ -159,7 +161,9 @@ class _UserObjectArgs:
     self.content_encoding = content_encoding
     self.content_language = content_language
     self.content_type = content_type
-    self.custom_metadata = custom_metadata
+    self.custom_metadata_to_set = custom_metadata_to_set
+    self.custom_metadata_to_remove = custom_metadata_to_remove
+    self.custom_metadata_to_update = custom_metadata_to_update
     self.custom_time = custom_time
     self.event_based_hold = event_based_hold
     self.md5_hash = md5_hash
@@ -170,18 +174,21 @@ class _UserObjectArgs:
   def __eq__(self, other):
     if not isinstance(other, type(self)):
       return NotImplemented
-    return (self.cache_control == other.cache_control and
-            self.content_disposition == other.content_disposition and
-            self.content_encoding == other.content_encoding and
-            self.content_language == other.content_language and
-            self.content_type == other.content_type and
-            self.custom_metadata == other.custom_metadata and
-            self.custom_time == other.custom_time and
-            self.event_based_hold == other.event_based_hold and
-            self.md5_hash == other.md5_hash and
-            self.preserve_acl == other.preserve_acl and
-            self.storage_class == other.storage_class and
-            self.temporary_hold == other.temporary_hold)
+    return (
+        self.cache_control == other.cache_control and
+        self.content_disposition == other.content_disposition and
+        self.content_encoding == other.content_encoding and
+        self.content_language == other.content_language and
+        self.content_type == other.content_type and
+        self.custom_metadata_to_set == other.custom_metadata_to_set and
+        self.custom_metadata_to_remove == other.custom_metadata_to_remove and
+        self.custom_metadata_to_update == other.custom_metadata_to_update and
+        self.custom_time == other.custom_time and
+        self.event_based_hold == other.event_based_hold and
+        self.md5_hash == other.md5_hash and
+        self.preserve_acl == other.preserve_acl and
+        self.storage_class == other.storage_class and
+        self.temporary_hold == other.temporary_hold)
 
   def __repr__(self):
     return debug_output.generic_repr(self)
@@ -236,12 +243,14 @@ class _UserRequestArgs:
     return debug_output.generic_repr(self)
 
 
-def _get_clear_or_value_from_flag(args, clear_flag, setter_flag):
-  """Returns CLEAR if clear flag present or setter value."""
+def _get_value_or_clear_from_flag(args, clear_flag, setter_flag):
+  """Returns setter value or CLEAR value, prioritizing setter values."""
+  value = getattr(args, setter_flag, None)
+  if value is not None:
+    return value
   if getattr(args, clear_flag, None):
     return CLEAR
-  else:
-    return getattr(args, setter_flag, None)
+  return None
 
 
 def get_user_request_args_from_command_args(args, metadata_type=None):
@@ -249,26 +258,26 @@ def get_user_request_args_from_command_args(args, metadata_type=None):
   resource_args = None
   if metadata_type:
     if metadata_type == MetadataType.BUCKET:
-      cors_file_path = _get_clear_or_value_from_flag(args, 'clear_cors',
+      cors_file_path = _get_value_or_clear_from_flag(args, 'clear_cors',
                                                      'cors_file')
-      default_encryption_key = _get_clear_or_value_from_flag(
+      default_encryption_key = _get_value_or_clear_from_flag(
           args, 'clear_default_encryption_key', 'default_encryption_key')
-      default_storage_class = _get_clear_or_value_from_flag(
+      default_storage_class = _get_value_or_clear_from_flag(
           args, 'clear_default_storage_class', 'default_storage_class')
-      labels_file_path = _get_clear_or_value_from_flag(args, 'clear_labels',
+      labels_file_path = _get_value_or_clear_from_flag(args, 'clear_labels',
                                                        'labels_file')
-      lifecycle_file_path = _get_clear_or_value_from_flag(
+      lifecycle_file_path = _get_value_or_clear_from_flag(
           args, 'clear_lifecycle', 'lifecycle_file')
-      log_bucket = _get_clear_or_value_from_flag(args, 'clear_log_bucket',
+      log_bucket = _get_value_or_clear_from_flag(args, 'clear_log_bucket',
                                                  'log_bucket')
-      log_object_prefix = _get_clear_or_value_from_flag(
+      log_object_prefix = _get_value_or_clear_from_flag(
           args, 'clear_log_object_prefix', 'log_object_prefix')
-      retention_period = _get_clear_or_value_from_flag(
+      retention_period = _get_value_or_clear_from_flag(
           args, 'clear_retention_period', 'retention_period')
-      web_error_page = _get_clear_or_value_from_flag(args,
+      web_error_page = _get_value_or_clear_from_flag(args,
                                                      'clear_web_error_page',
                                                      'web_error_page')
-      web_main_page_suffix = _get_clear_or_value_from_flag(
+      web_main_page_suffix = _get_value_or_clear_from_flag(
           args, 'clear_web_main_page_suffix', 'web_main_page_suffix')
 
       resource_args = _UserBucketArgs(
@@ -284,7 +293,7 @@ def get_user_request_args_from_command_args(args, metadata_type=None):
           location=getattr(args, 'location', None),
           log_bucket=log_bucket,
           log_object_prefix=log_object_prefix,
-          public_access_prevention=_get_clear_or_value_from_flag(
+          public_access_prevention=_get_value_or_clear_from_flag(
               args, 'clear_public_access_prevention',
               'public_access_prevention'),
           requester_pays=getattr(args, 'requester_pays', None),
@@ -297,22 +306,21 @@ def get_user_request_args_from_command_args(args, metadata_type=None):
           web_main_page_suffix=web_main_page_suffix,
       )
     elif metadata_type == MetadataType.OBJECT:
-      cache_control = _get_clear_or_value_from_flag(args, 'clear_cache_control',
+      cache_control = _get_value_or_clear_from_flag(args, 'clear_cache_control',
                                                     'cache_control')
-      content_disposition = _get_clear_or_value_from_flag(
+      content_disposition = _get_value_or_clear_from_flag(
           args, 'clear_content_disposition', 'content_disposition')
-      content_encoding = _get_clear_or_value_from_flag(
+      content_encoding = _get_value_or_clear_from_flag(
           args, 'clear_content_encoding', 'content_encoding')
-      content_language = _get_clear_or_value_from_flag(
+      content_language = _get_value_or_clear_from_flag(
           args, 'clear_content_language', 'content_language')
-      md5_hash = _get_clear_or_value_from_flag(args, 'clear_content_md5',
+      md5_hash = _get_value_or_clear_from_flag(args, 'clear_content_md5',
                                                'content_md5')
-      content_type = _get_clear_or_value_from_flag(args, 'clear_content_type',
+      content_type = _get_value_or_clear_from_flag(args, 'clear_content_type',
                                                    'content_type')
-      custom_metadata = _get_clear_or_value_from_flag(args,
-                                                      'clear_custom_metadata',
-                                                      'custom_metadata')
-      custom_time = _get_clear_or_value_from_flag(args, 'clear_custom_time',
+      custom_metadata_to_set = _get_value_or_clear_from_flag(
+          args, 'clear_custom_metadata', 'custom_metadata')
+      custom_time = _get_value_or_clear_from_flag(args, 'clear_custom_time',
                                                   'custom_time')
 
       event_based_hold = getattr(args, 'event_based_hold', None)
@@ -326,7 +334,11 @@ def get_user_request_args_from_command_args(args, metadata_type=None):
           content_encoding=content_encoding,
           content_language=content_language,
           content_type=content_type,
-          custom_metadata=custom_metadata,
+          custom_metadata_to_set=custom_metadata_to_set,
+          custom_metadata_to_remove=getattr(
+              args, 'remove_custom_metadata', None),
+          custom_metadata_to_update=getattr(
+              args, 'update_custom_metadata', None),
           custom_time=custom_time,
           event_based_hold=event_based_hold,
           md5_hash=md5_hash,

@@ -151,7 +151,7 @@ class NameExpansionIterator:
 
   def _raise_error_if_multiple_sources_include_stdin(self, expanded_url):
     if (self._has_multiple_top_level_resources and isinstance(
-        expanded_url, storage_url.FileUrl) and expanded_url.is_stream):
+        expanded_url, storage_url.FileUrl) and expanded_url.is_stdio):
       raise errors.Error(
           'Multiple URL strings are not supported when transferring from'
           ' stdin.')

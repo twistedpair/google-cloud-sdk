@@ -64,7 +64,7 @@ def get_copy_task(source_resource,
 
   if (isinstance(source_url, storage_url.CloudUrl)
       and isinstance(destination_url, storage_url.FileUrl)):
-    if destination_url.is_pipe:
+    if destination_url.is_stream:
       return streaming_download_task.StreamingDownloadTask(
           source_resource,
           shared_stream,
@@ -79,7 +79,7 @@ def get_copy_task(source_resource,
 
   if (isinstance(source_url, storage_url.FileUrl)
       and isinstance(destination_url, storage_url.CloudUrl)):
-    if source_url.is_pipe:
+    if source_url.is_stream:
       return streaming_upload_task.StreamingUploadTask(
           source_resource,
           destination_resource,

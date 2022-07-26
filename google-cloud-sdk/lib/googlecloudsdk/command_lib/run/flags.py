@@ -1562,7 +1562,7 @@ def GetServiceConfigurationChanges(args):
         config_changes.CpuThrottlingChange(throttling=args.cpu_throttling))
   if FlagIsExplicitlySet(args, 'cpu_boost'):
     changes.append(
-        config_changes.StartupCpuBoostChange(throttling=args.cpu_boost))
+        config_changes.StartupCpuBoostChange(cpu_boost=args.cpu_boost))
   if FlagIsExplicitlySet(args, 'session_affinity'):
     if args.session_affinity:
       changes.append(
@@ -1627,7 +1627,10 @@ def PromptForRegion():
     client = global_methods.GetServerlessClientInstance()
     all_regions = global_methods.ListRegions(client)
     idx = console_io.PromptChoice(
-        all_regions, message='Please specify a region:\n', cancel_option=True)
+        all_regions,
+        message='Please specify a region:\n',
+        cancel_option=True,
+        allow_freeform=True)
     region = all_regions[idx]
     log.status.Print('To make this the default region, run '
                      '`gcloud config set run/region {}`.\n'.format(region))

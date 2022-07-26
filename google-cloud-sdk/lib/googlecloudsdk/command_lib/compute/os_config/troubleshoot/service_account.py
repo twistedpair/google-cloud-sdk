@@ -76,7 +76,7 @@ def CheckEnablement(project):
         project_number = str(util.GetProjectNumber(project.name))
         for member in binding.members:
           if project_number in member:
-            response_message += 'Yes\n'
+            response_message += 'Yes'
             continue_flag = True
             return utils.Response(continue_flag, response_message)
         service_account = 'service-{}@gcp-sa-osconfig.iam.gserviceaccount.com'.format(

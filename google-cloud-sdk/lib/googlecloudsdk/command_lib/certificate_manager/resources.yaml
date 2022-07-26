@@ -67,3 +67,16 @@ trustConfig:
     parameter_name: trustConfigsId
     attribute_name: trust_config
     help: Certificate Manager Trust Config
+
+
+certificateIssuanceConfig:
+  name: certificateIssuanceConfig
+  collection: certificatemanager.projects.locations.certificateIssuanceConfigs
+  request_id_field: certificateIssuanceConfigId
+  attributes:
+  - *project
+  - *location
+  - &certificateIssuanceConfig
+    parameter_name: certificateIssuanceConfigsId
+    attribute_name: certificate_issuance_config
+    help: Certificate Manager Certificate Issuance Config

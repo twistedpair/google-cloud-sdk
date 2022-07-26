@@ -166,11 +166,9 @@ class CertificateAuthorityConfig(_messages.Message):
   Fields:
     certificateAuthorityServiceConfig: Defines a
       CertificateAuthorityServiceConfig.
-    meshCaConfig: Defines a MeshCAConfig.
   """
 
   certificateAuthorityServiceConfig = _messages.MessageField('CertificateAuthorityServiceConfig', 1)
-  meshCaConfig = _messages.MessageField('MeshCAConfig', 2)
 
 
 class CertificateAuthorityServiceConfig(_messages.Message):
@@ -1413,10 +1411,6 @@ class ManagedCertificate(_messages.Message):
   issuanceConfig = _messages.StringField(4)
   provisioningIssue = _messages.MessageField('ProvisioningIssue', 5)
   state = _messages.EnumField('StateValueValuesEnum', 6)
-
-
-class MeshCAConfig(_messages.Message):
-  r"""Config for use of the default CA endpoint."""
 
 
 class Operation(_messages.Message):

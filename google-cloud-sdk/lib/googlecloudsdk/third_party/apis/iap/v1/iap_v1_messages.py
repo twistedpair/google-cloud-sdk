@@ -23,16 +23,20 @@ class AccessDeniedPageSettings(_messages.Message):
     accessDeniedPageUri: The URI to be redirected to when access is denied.
     generateTroubleshootingUri: Whether to generate a troubleshooting URL on
       access denied events to this application.
+    remediationTokenGenerationEnabled: Whether to generate remediation token
+      on access denied events to this application.
   """
 
   accessDeniedPageUri = _messages.StringField(1)
   generateTroubleshootingUri = _messages.BooleanField(2)
+  remediationTokenGenerationEnabled = _messages.BooleanField(3)
 
 
 class AccessSettings(_messages.Message):
   r"""Access related settings for IAP protected apps.
 
   Fields:
+    allowedDomainsSettings: Settings to configure and enable allowed domains.
     corsSettings: Configuration to allow cross-origin requests via IAP.
     gcipSettings: GCIP claims and endpoint configurations for 3p identity
       providers.
@@ -42,11 +46,25 @@ class AccessSettings(_messages.Message):
     reauthSettings: Settings to configure reauthentication policies in IAP.
   """
 
-  corsSettings = _messages.MessageField('CorsSettings', 1)
-  gcipSettings = _messages.MessageField('GcipSettings', 2)
-  oauthSettings = _messages.MessageField('OAuthSettings', 3)
-  policyDelegationSettings = _messages.MessageField('PolicyDelegationSettings', 4)
-  reauthSettings = _messages.MessageField('ReauthSettings', 5)
+  allowedDomainsSettings = _messages.MessageField('AllowedDomainsSettings', 1)
+  corsSettings = _messages.MessageField('CorsSettings', 2)
+  gcipSettings = _messages.MessageField('GcipSettings', 3)
+  oauthSettings = _messages.MessageField('OAuthSettings', 4)
+  policyDelegationSettings = _messages.MessageField('PolicyDelegationSettings', 5)
+  reauthSettings = _messages.MessageField('ReauthSettings', 6)
+
+
+class AllowedDomainsSettings(_messages.Message):
+  r"""Configuration for IAP allowed domains. Allows the customers to restrict
+  access to the app by only allowing requests from the listed trusted domains.
+
+  Fields:
+    domains: List of trusted domains.
+    enable: Configuration for customers to opt in for the feature.
+  """
+
+  domains = _messages.StringField(1, repeated=True)
+  enable = _messages.BooleanField(2)
 
 
 class ApplicationSettings(_messages.Message):
@@ -151,11 +169,11 @@ class CorsSettings(_messages.Message):
 
 
 class CsmSettings(_messages.Message):
-  r"""Configuration for RCTokens generated for service mesh workloads
-  protected by IAP. RCTokens are IAP generated JWTs that can be verified at
-  the application. The RCToken is primarily used for service mesh deployments,
-  and can be scoped to a single mesh by configuring the audience field
-  accordingly
+  r"""Configuration for RCToken generated for service mesh workloads protected
+  by IAP. RCToken are IAP generated JWTs that can be verified at the
+  application. The RCToken is primarily used for service mesh deployments, and
+  can be scoped to a single mesh by configuring the audience field
+  accordingly.
 
   Fields:
     rctokenAud: Audience claim set in the generated RCToken. This value is not
@@ -760,19 +778,12 @@ class ReauthSettings(_messages.Message):
 
     Values:
       METHOD_UNSPECIFIED: Reauthentication disabled.
-      LOGIN: Mimics the behavior as if the user had logged out and tried to
-        log in again. Users with 2SV (2-step verification) enabled see their
-        2SV challenges if they did not opt to have their second factor
-        responses saved. Apps Core (GSuites) admins can configure settings to
-        disable 2SV cookies and require 2SV for all Apps Core users in their
-        domains.
-      PASSWORD: User must type their password.
+      LOGIN: Prompts the user to log in again.
       SECURE_KEY: User must use their secure key 2nd factor device.
     """
     METHOD_UNSPECIFIED = 0
     LOGIN = 1
-    PASSWORD = 2
-    SECURE_KEY = 3
+    SECURE_KEY = 2
 
   class PolicyTypeValueValuesEnum(_messages.Enum):
     r"""How IAP determines the effective policy in cases of hierarchial

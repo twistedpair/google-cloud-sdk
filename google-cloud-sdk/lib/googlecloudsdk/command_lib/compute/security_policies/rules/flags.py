@@ -77,7 +77,11 @@ def AddAction(parser,
       'redirect-to-recaptcha':
           '(DEPRECATED) Redirects the request from HTTP(S) Load Balancing, for'
           ' reCAPTCHA Enterprise assessment. This flag choice is deprecated. '
-          'Use --action=redirect and --redirect-type=google-recaptcha instead.'
+          'Use --action=redirect and --redirect-type=google-recaptcha instead.',
+      'fairshare':
+          'When traffic reaches the threshold limit, requests from the clients'
+          ' matching this rule begin to be rate-limited using the Fair Share '
+          'algorithm.'
   }
   if support_redirect:
     actions.update({
@@ -140,7 +144,8 @@ def AddRedirectOptions(parser):
 
 def AddRateLimitOptions(parser,
                         support_tcp_ssl=False,
-                        support_exceed_redirect=True):
+                        support_exceed_redirect=True,
+                        support_exceed_action_rpc_status=False):
   """Adds rate limiting related arguments to the argparse."""
   parser.add_argument(
       '--rate-limit-threshold-count',
@@ -256,6 +261,16 @@ def AddRateLimitOptions(parser,
       the traffic will continue to be banned by the rate limit after
       the rate falls below the threshold.
       """)
+  if support_exceed_action_rpc_status:
+    parser.add_argument(
+        '--exceed-action-rpc-status-code',
+        type=int,
+        help=(
+            'Status code, which should be an enum value of [google.rpc.Code]'))
+
+    parser.add_argument(
+        '--exceed-action-rpc-status-message',
+        help=('Developer-facing error message, should be in English.'))
 
 
 def AddRequestHeadersToAdd(parser):

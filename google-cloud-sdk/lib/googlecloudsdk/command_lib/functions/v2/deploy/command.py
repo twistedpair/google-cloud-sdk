@@ -48,7 +48,6 @@ from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.args import map_util
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
-from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core import transports
 from googlecloudsdk.core.console import console_io
@@ -120,13 +119,18 @@ _ZIP_MIME_TYPE = 'application/zip'
 _DEPLOYMENT_TOOL_LABEL = 'deployment-tool'
 _DEPLOYMENT_TOOL_VALUE = 'cli-gcloud'
 
-# cs/symbol:google.cloud.functions.v2main.Stage.Name.SERVICE_ROLLBACK
+# Extra progress tracker stages that can appear during rollbacks.
+# cs/symbol:google.cloud.functions.v2main.Stage.Name
+_ARTIFACT_REGISTRY_STAGE = progress_tracker.Stage(
+    '[ArtifactRegistry]', key='ARTIFACT_REGISTRY')
 _SERVICE_ROLLBACK_STAGE = progress_tracker.Stage(
     '[Healthcheck]', key='SERVICE_ROLLBACK')
 _TRIGGER_ROLLBACK_STAGE = progress_tracker.Stage(
     '[Triggercheck]', key='TRIGGER_ROLLBACK')
 
-_EXTRA_STAGES = [_SERVICE_ROLLBACK_STAGE, _TRIGGER_ROLLBACK_STAGE]
+_EXTRA_STAGES = [
+    _ARTIFACT_REGISTRY_STAGE, _SERVICE_ROLLBACK_STAGE, _TRIGGER_ROLLBACK_STAGE
+]
 
 # GCF 2nd generation control plane valid memory units
 _GCF_GEN2_UNITS = [
@@ -290,8 +294,8 @@ def _GetSourceLocal(client, messages, region, function_name, source,
           messages
           .CloudfunctionsProjectsLocationsFunctionsGenerateUploadUrlRequest(
               generateUploadUrlRequest=messages.GenerateUploadUrlRequest(),
-              parent='projects/%s/locations/%s' %
-              (properties.VALUES.core.project.GetOrFail(), region)))
+              parent='projects/{}/locations/{}'.format(api_util.GetProject(),
+                                                       region)))
 
       _UploadToGeneratedUrl(zip_file_path, dest.uploadUrl)
 
@@ -371,9 +375,9 @@ def _GetServiceConfig(args, messages, existing_function):
 
   if secrets_config.IsArgsSpecified(args):
     try:
-      project = properties.VALUES.core.project.GetOrFail()
       new_secrets = secrets_config.ApplyFlags(
-          old_secrets, args, project, projects_util.GetProjectNumber(project))
+          old_secrets, args, api_util.GetProject(),
+          projects_util.GetProjectNumber(api_util.GetProject()))
     except ArgumentTypeError as error:
       core_exceptions.reraise(exceptions.FunctionsError(error))
   else:
@@ -524,6 +528,19 @@ def _GetEventTrigger(args, messages, existing_function):
     event_trigger.retryPolicy = retry_policy
     updated_fields_set = updated_fields_set.union(retry_updated_field)
 
+  if (event_trigger and
+      event_trigger.eventType == api_util.EA_PUBSUB_MESSAGE_PUBLISHED):
+    pubsub_sa = 'service-{}@gcp-sa-pubsub.iam.gserviceaccount.com'.format(
+        projects_util.GetProjectNumber(api_util.GetProject()))
+    if not api_util.HasRoleBinding(pubsub_sa,
+                                   'roles/pubsub.serviceAgent'):
+      api_util.PromptToBindRoleIfMissing(
+          pubsub_sa,
+          'roles/iam.serviceAccountTokenCreator',
+          reason=('Pub/Sub needs this role to create identity tokens. '
+                  'For more details, please see '
+                  'https://cloud.google.com/pubsub/docs/push#authentication'))
+
   return event_trigger, updated_fields_set
 
 
@@ -552,7 +569,6 @@ def _GetEventTriggerForEventType(args, messages):
 
   elif (trigger_event in api_util.EVENTARC_STORAGE_TYPES or
         trigger_event in api_util.EVENTFLOW_TO_EVENTARC_STORAGE_MAP):
-
     # name without prefix gs://
     bucket_name = storage_util.BucketReference.FromUrl(trigger_resource).bucket
     storage_event_type = api_util.EVENTFLOW_TO_EVENTARC_STORAGE_MAP.get(
@@ -564,6 +580,7 @@ def _GetEventTriggerForEventType(args, messages):
         ],
         serviceAccountEmail=service_account_email,
         triggerRegion=args.trigger_location)
+
   else:
     raise exceptions.InvalidArgumentException(
         '--trigger-event',
@@ -650,8 +667,7 @@ def _GetRetry(args, messages, event_trigger):
 
 
 def _BuildFullPubsubTopic(pubsub_topic):
-  return 'projects/{}/topics/{}'.format(
-      properties.VALUES.core.project.GetOrFail(), pubsub_topic)
+  return 'projects/{}/topics/{}'.format(api_util.GetProject(), pubsub_topic)
 
 
 def _GetBuildConfig(args, client, messages, region, function_name,
@@ -864,9 +880,9 @@ def _SetInvokerPermissions(args, function, is_new_function):
 
   with serverless_operations.Connect(run_connection_context) as operations:
     service_ref_k8s = resources.REGISTRY.ParseRelativeName(
-        'namespaces/{}/services/{}'.format(
-            properties.VALUES.core.project.GetOrFail(),
-            service_ref_one_platform.Name()), _CLOUD_RUN_SERVICE_COLLECTION_K8S)
+        'namespaces/{}/services/{}'.format(api_util.GetProject(),
+                                           service_ref_one_platform.Name()),
+        _CLOUD_RUN_SERVICE_COLLECTION_K8S)
 
     if allow_unauthenticated:
       operations.AddOrRemoveIamPolicyBinding(
@@ -918,8 +934,8 @@ def _CreateAndWait(client, messages, function_ref, function):
   Returns:
     None
   """
-  function_parent = 'projects/%s/locations/%s' % (
-      properties.VALUES.core.project.GetOrFail(), function_ref.locationsId)
+  function_parent = 'projects/{}/locations/{}'.format(api_util.GetProject(),
+                                                      function_ref.locationsId)
 
   create_request = messages.CloudfunctionsProjectsLocationsFunctionsCreateRequest(
       parent=function_parent, functionId=function_ref.Name(), function=function)
@@ -1042,6 +1058,6 @@ def Run(args, release_track):
       'You can view your function in the Cloud Console here: ' +
       'https://console.cloud.google.com/functions/details/{}/{}?project={}\n'
       .format(function_ref.locationsId, function_ref.Name(),
-              properties.VALUES.core.project.GetOrFail()))
+              api_util.GetProject()))
 
   return function

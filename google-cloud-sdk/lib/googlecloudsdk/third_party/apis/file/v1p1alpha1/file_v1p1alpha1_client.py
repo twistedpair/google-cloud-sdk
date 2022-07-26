@@ -201,6 +201,33 @@ class FileV1p1alpha1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def CopyInstance(self, request, global_params=None):
+      r"""Copies the fileshare content of a Basic instance to a High Scale or Enterprise tier instance. If the source instance is being written to during the copy, the copy will not be a consistent snapshot of the fileshare. If the target instance already has files, these files will be overwritten if the source instance has the same file but with different checksum values. Files that exist in the target but not in the source will be deleted. Hard links are copied as separate files. POSIX ACLs are not copied. The source and target instances must be on the same VPC and using the same `connect_mode`.
+
+      Args:
+        request: (FileProjectsLocationsInstancesCopyInstanceRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('CopyInstance')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CopyInstance.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1p1alpha1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:copyInstance',
+        http_method='POST',
+        method_id='file.projects.locations.instances.copyInstance',
+        ordered_params=['targetInstance'],
+        path_params=['targetInstance'],
+        query_params=[],
+        relative_path='v1p1alpha1/{+targetInstance}:copyInstance',
+        request_field='copyInstanceRequest',
+        request_type_name='FileProjectsLocationsInstancesCopyInstanceRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Create(self, request, global_params=None):
       r"""Creates an instance. When creating from a snapshot or backup, the capacity of the new instance needs to be equal to or larger than the capacity of the snapshot or backup (and also equal to or larger than the minimum capacity of the tier).
 

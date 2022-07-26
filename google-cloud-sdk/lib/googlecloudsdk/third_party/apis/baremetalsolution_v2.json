@@ -1436,7 +1436,11 @@
           "type": "string"
         },
         "instanceType": {
-          "description": "Instance type.",
+          "description": "Instance type. Deprecated: use gcp_service.",
+          "type": "string"
+        },
+        "gcpService": {
+          "description": "The gcp service of the provisioning quota.",
           "type": "string"
         },
         "location": {
@@ -1447,6 +1451,102 @@
           "description": "Number of machines than can be created for the given location and instance_type.",
           "type": "integer",
           "format": "int32"
+        }
+      }
+    },
+    "ListInstanceQuotasResponse": {
+      "id": "ListInstanceQuotasResponse",
+      "description": "Response message for the list of Instance provisioning quotas.",
+      "type": "object",
+      "properties": {
+        "instanceQuotas": {
+          "description": "The provisioning quotas registered in this project.",
+          "type": "array",
+          "items": {
+            "$ref": "InstanceQuota"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results, or empty if there are no more results in the list.",
+          "type": "string"
+        }
+      }
+    },
+    "ListNetworkQuotasResponse": {
+      "id": "ListNetworkQuotasResponse",
+      "description": "Response message for the list of Network provisioning quotas.",
+      "type": "object",
+      "properties": {
+        "networkQuotas": {
+          "description": "The provisioning quotas registered in this project.",
+          "type": "array",
+          "items": {
+            "$ref": "NetworkQuota"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results, or empty if there are no more results in the list.",
+          "type": "string"
+        }
+      }
+    },
+    "NetworkQuota": {
+      "id": "NetworkQuota",
+      "description": "A network provisioning quota.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The name of the provisioning quota.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "gcpService": {
+          "description": "The gcp service of the provisioning quota.",
+          "type": "string"
+        },
+        "availableBandwidthGbps": {
+          "description": "Network bandwidth, Gbps",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "ListStorageQuotasResponse": {
+      "id": "ListStorageQuotasResponse",
+      "description": "Response message for the list of Storage provisioning quotas.",
+      "type": "object",
+      "properties": {
+        "storageQuotas": {
+          "description": "The provisioning quotas registered in this project.",
+          "type": "array",
+          "items": {
+            "$ref": "StorageQuota"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results, or empty if there are no more results in the list.",
+          "type": "string"
+        }
+      }
+    },
+    "StorageQuota": {
+      "id": "StorageQuota",
+      "description": "A storage provisioning quota .",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The name of the provisioning quota.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "gcpService": {
+          "description": "The gcp service of the provisioning quota.",
+          "type": "string"
+        },
+        "availableGib": {
+          "description": "Storage size (GiB).",
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -3521,6 +3621,130 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "List the budget details to provision resources on a given project."
+                }
+              }
+            },
+            "quotas": {
+              "resources": {
+                "instances": {
+                  "methods": {
+                    "list": {
+                      "id": "baremetalsolution.projects.locations.quotas.instances.list",
+                      "path": "v2/{+parent}/quotas/instances",
+                      "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/quotas/instances",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. Parent value for ListProvisioningQuotasRequest.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "Requested page size. The server might return fewer items than requested. If unspecified, server will pick an appropriate default. Notice that page_size field is not supported and won't be respected in the API request for now, will be updated when pagination is supported.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "A token identifying a page of results from the server.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListInstanceQuotasResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "List Instance provisioning quotas."
+                    }
+                  }
+                },
+                "networks": {
+                  "methods": {
+                    "list": {
+                      "id": "baremetalsolution.projects.locations.quotas.networks.list",
+                      "path": "v2/{+parent}/quotas/networks",
+                      "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/quotas/networks",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. Parent value for ListProvisioningQuotasRequest.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "Requested page size. The server might return fewer items than requested. If unspecified, server will pick an appropriate default. Notice that page_size field is not supported and won't be respected in the API request for now, will be updated when pagination is supported.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "A token identifying a page of results from the server.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListNetworkQuotasResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "List Network provisioning quotas."
+                    }
+                  }
+                },
+                "storage": {
+                  "methods": {
+                    "list": {
+                      "id": "baremetalsolution.projects.locations.quotas.storage.list",
+                      "path": "v2/{+parent}/quotas/storage",
+                      "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/quotas/storage",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. Parent value for ListProvisioningQuotasRequest.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "Requested page size. The server might return fewer items than requested. If unspecified, server will pick an appropriate default. Notice that page_size field is not supported and won't be respected in the API request for now, will be updated when pagination is supported.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "A token identifying a page of results from the server.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListStorageQuotasResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "List Storage provisioning quotas."
+                    }
+                  }
                 }
               }
             },

@@ -175,7 +175,7 @@ class Channel(_messages.Message):
       ACTIVE: The ACTIVE state indicates that a Channel has been successfully
         connected with the event provider. An ACTIVE Channel is ready to
         receive and route events from the event provider.
-      INACTIVE: The INACTIVE state means that the Channel cannot receive
+      INACTIVE: The INACTIVE state indicates that the Channel cannot receive
         events permanently. There are two possible cases this state can
         happen: 1. The SaaS provider disconnected from this Channel. 2. The
         Channel activation token has expired but the SaaS provider wasn't
@@ -214,8 +214,8 @@ class ChannelConnection(_messages.Message):
       `projects/{project}/location/{location}/channels/{channel_id}` format.
     createTime: Output only. The creation time.
     name: Required. The name of the connection.
-    uid: Output only. / Output only. Server assigned ID of the resource. The
-      server guarantees uniqueness and immutability until deleted.
+    uid: Output only. Server assigned ID of the resource. The server
+      guarantees uniqueness and immutability until deleted.
     updateTime: Output only. The last-modified time.
   """
 
@@ -1166,8 +1166,9 @@ class ListChannelConnectionsResponse(_messages.Message):
   Fields:
     channelConnections: The requested channel connections, up to the number
       specified in `page_size`.
-    nextPageToken: A page token that can be sent to ListChannelConnections to
-      request the next page. If this is empty, then there are no more pages.
+    nextPageToken: A page token that can be sent to `ListChannelConnections`
+      to request the next page. If this is empty, then there are no more
+      pages.
     unreachable: Unreachable resources, if any.
   """
 
@@ -1182,7 +1183,7 @@ class ListChannelsResponse(_messages.Message):
   Fields:
     channels: The requested channels, up to the number specified in
       `page_size`.
-    nextPageToken: A page token that can be sent to ListChannels to request
+    nextPageToken: A page token that can be sent to `ListChannels` to request
       the next page. If this is empty, then there are no more pages.
     unreachable: Unreachable resources, if any.
   """
@@ -1209,7 +1210,7 @@ class ListProvidersResponse(_messages.Message):
   r"""The response message for the `ListProviders` method.
 
   Fields:
-    nextPageToken: A page token that can be sent to ListProviders to request
+    nextPageToken: A page token that can be sent to `ListProviders` to request
       the next page. If this is empty, then there are no more pages.
     providers: The requested providers, up to the number specified in
       `page_size`.
@@ -1225,7 +1226,7 @@ class ListTriggersResponse(_messages.Message):
   r"""The response message for the `ListTriggers` method.
 
   Fields:
-    nextPageToken: A page token that can be sent to ListTriggers to request
+    nextPageToken: A page token that can be sent to `ListTriggers` to request
       the next page. If this is empty, then there are no more pages.
     triggers: The requested triggers, up to the number specified in
       `page_size`.

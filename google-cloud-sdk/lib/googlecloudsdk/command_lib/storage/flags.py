@@ -58,14 +58,52 @@ def add_object_metadata_flags(parser, allow_patch=False):
       '--content-type',
       help='Type of data contained in the object (e.g. ``text/html\'\').')
   parser.add_argument(
-      '--custom-metadata',
-      metavar='CUSTOM_METADATA',
-      type=arg_parsers.ArgDict(),
-      help='Custom metadata fields set by user.')
-  parser.add_argument(
       '--custom-time',
       type=arg_parsers.Datetime.Parse,
       help='Custom time for Google Cloud Storage objects in RFC 3339 format.')
+
+  # TODO(b/238631069): Refactor to make use of command_lib/util/args/map_util.py
+  custom_metadata_group = parser.add_mutually_exclusive_group()
+  custom_metadata_group.add_argument(
+      '--custom-metadata',
+      metavar='CUSTOM_METADATA_KEYS_AND_VALUES',
+      type=arg_parsers.ArgDict(),
+      help=(
+          'Sets custom metadata on objects. When used with `--preserve-posix`,'
+          ' POSIX attributes are also stored in custom metadata.'))
+
+  custom_metadata_group.add_argument(
+      '--clear-custom-metadata',
+      action='store_true',
+      help=(
+          'Clears all custom metadata on objects. When used with'
+          ' `--preserve-posix`, POSIX attributes will still be stored in custom'
+          ' metadata.'))
+
+  update_custom_metadata_group = custom_metadata_group.add_group(
+      help=(
+          'Flags that preserve unspecified existing metadata cannot be used'
+          ' with `--custom-metadata` or `--clear-custom-metadata`, but can be'
+          ' specified together:'))
+  update_custom_metadata_group.add_argument(
+      '--update-custom-metadata',
+      metavar='CUSTOM_METADATA_KEYS_AND_VALUES',
+      type=arg_parsers.ArgDict(),
+      help=(
+          'Adds or sets individual custom metadata key value pairs on objects.'
+          ' Existing custom metadata not specified with this flag is not'
+          ' changed. This flag can be used with `--remove-custom-metadata`.'
+          ' When keys overlap with those provided by `--preserve-posix`, values'
+          ' specified by this flag are used.'))
+  update_custom_metadata_group.add_argument(
+      '--remove-custom-metadata',
+      metavar='METADATA_KEYS',
+      type=arg_parsers.ArgList(),
+      help=(
+          'Removes individual custom metadata keys from objects. This flag can'
+          ' be used with `--update-custom-metadata`. When used with'
+          ' `--preserve-posix`, POSIX attributes specified by this flag are not'
+          ' preserved.'))
 
   if allow_patch:
     parser.add_argument(
@@ -93,16 +131,12 @@ def add_object_metadata_flags(parser, allow_patch=False):
         action='store_true',
         help='Clears object content type.')
     parser.add_argument(
-        '--clear-custom-metadata',
-        action='store_true',
-        help='Clears object custom metadata.')
-    parser.add_argument(
         '--clear-custom-time',
         action='store_true',
         help='Clears object custom time.')
 
 
-def add_encryption_flags(parser, allow_patch=False, hidden=True):
+def add_encryption_flags(parser, allow_patch=False, hidden=False):
   """Adds flags for encryption and decryption keys."""
   parser.add_argument(
       '--encryption-key',

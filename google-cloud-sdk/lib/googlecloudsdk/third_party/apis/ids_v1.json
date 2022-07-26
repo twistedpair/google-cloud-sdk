@@ -295,6 +295,13 @@
             "CRITICAL"
           ]
         },
+        "threatExceptions": {
+          "description": "List of threat IDs to be excepted from generating alerts.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "state": {
           "description": "Output only. Current state of the endpoint.",
           "readOnly": true,

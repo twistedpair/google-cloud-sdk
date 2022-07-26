@@ -162,6 +162,9 @@ class AcceleratorTypeAggregatedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -207,24 +210,25 @@ class AcceleratorTypeAggregatedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -318,6 +322,9 @@ class AcceleratorTypeList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -363,24 +370,25 @@ class AcceleratorTypeList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -467,6 +475,9 @@ class AcceleratorTypesScopedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -512,24 +523,25 @@ class AcceleratorTypesScopedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -1054,6 +1066,9 @@ class AddressAggregatedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -1099,24 +1114,25 @@ class AddressAggregatedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -1210,6 +1226,9 @@ class AddressList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -1255,24 +1274,25 @@ class AddressList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -1358,6 +1378,9 @@ class AddressesScopedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -1403,24 +1426,25 @@ class AddressesScopedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -2438,6 +2462,9 @@ class AutoscalerAggregatedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -2483,24 +2510,25 @@ class AutoscalerAggregatedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -2594,6 +2622,9 @@ class AutoscalerList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -2639,24 +2670,25 @@ class AutoscalerList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -2930,6 +2962,9 @@ class AutoscalersScopedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -2975,24 +3010,25 @@ class AutoscalersScopedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -3798,6 +3834,9 @@ class BackendBucketList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -3843,24 +3882,25 @@ class BackendBucketList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -4488,6 +4528,9 @@ class BackendServiceAggregatedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -4533,24 +4576,25 @@ class BackendServiceAggregatedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -5098,6 +5142,9 @@ class BackendServiceList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -5143,24 +5190,25 @@ class BackendServiceList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -5378,6 +5426,9 @@ class BackendServicesScopedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -5423,24 +5474,25 @@ class BackendServicesScopedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -6374,6 +6426,9 @@ class CommitmentAggregatedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -6419,24 +6474,25 @@ class CommitmentAggregatedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -6530,6 +6586,9 @@ class CommitmentList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -6575,24 +6634,25 @@ class CommitmentList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -6678,6 +6738,9 @@ class CommitmentsScopedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -6723,24 +6786,25 @@ class CommitmentsScopedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -33596,6 +33660,9 @@ class DiskAggregatedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -33641,24 +33708,25 @@ class DiskAggregatedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -33874,6 +33942,9 @@ class DiskList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -33919,24 +33990,25 @@ class DiskList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -34249,6 +34321,9 @@ class DiskTypeAggregatedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -34294,24 +34369,25 @@ class DiskTypeAggregatedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -34405,6 +34481,9 @@ class DiskTypeList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -34450,24 +34529,25 @@ class DiskTypeList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -34553,6 +34633,9 @@ class DiskTypesScopedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -34598,24 +34681,25 @@ class DiskTypesScopedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -34728,6 +34812,9 @@ class DisksScopedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -34773,24 +34860,25 @@ class DisksScopedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -35134,6 +35222,9 @@ class ExchangedPeeringRoutesList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -35179,24 +35270,25 @@ class ExchangedPeeringRoutesList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -35472,6 +35564,9 @@ class ExternalVpnGatewayList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -35517,24 +35612,25 @@ class ExternalVpnGatewayList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -35845,6 +35941,9 @@ class FirewallList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -35890,24 +35989,25 @@ class FirewallList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -36178,6 +36278,9 @@ class FirewallPolicyList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -36223,24 +36326,25 @@ class FirewallPolicyList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -36950,6 +37054,9 @@ class ForwardingRuleAggregatedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -36995,24 +37102,25 @@ class ForwardingRuleAggregatedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -37105,6 +37213,9 @@ class ForwardingRuleList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -37150,24 +37261,25 @@ class ForwardingRuleList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -37283,6 +37395,9 @@ class ForwardingRulesScopedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -37328,24 +37443,25 @@ class ForwardingRulesScopedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -37603,6 +37719,9 @@ class FutureReservationsAggregatedListResponse(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -37648,24 +37767,25 @@ class FutureReservationsAggregatedListResponse(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -37762,6 +37882,9 @@ class FutureReservationsListResponse(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -37807,24 +37930,25 @@ class FutureReservationsListResponse(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -37912,6 +38036,9 @@ class FutureReservationsScopedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -37957,24 +38084,25 @@ class FutureReservationsScopedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -38301,6 +38429,7 @@ class GuestOsFeature(_messages.Message):
       MULTI_IP_SUBNET: <no description>
       SECURE_BOOT: <no description>
       SEV_CAPABLE: <no description>
+      SEV_LIVE_MIGRATABLE: <no description>
       SEV_SNP_CAPABLE: <no description>
       UEFI_COMPATIBLE: <no description>
       VIRTIO_SCSI_MULTIQUEUE: <no description>
@@ -38312,10 +38441,11 @@ class GuestOsFeature(_messages.Message):
     MULTI_IP_SUBNET = 3
     SECURE_BOOT = 4
     SEV_CAPABLE = 5
-    SEV_SNP_CAPABLE = 6
-    UEFI_COMPATIBLE = 7
-    VIRTIO_SCSI_MULTIQUEUE = 8
-    WINDOWS = 9
+    SEV_LIVE_MIGRATABLE = 6
+    SEV_SNP_CAPABLE = 7
+    UEFI_COMPATIBLE = 8
+    VIRTIO_SCSI_MULTIQUEUE = 9
+    WINDOWS = 10
 
   type = _messages.EnumField('TypeValueValuesEnum', 1)
 
@@ -38811,6 +38941,9 @@ class HealthCheckList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -38856,24 +38989,25 @@ class HealthCheckList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -39158,6 +39292,9 @@ class HealthCheckServiceAggregatedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -39203,24 +39340,25 @@ class HealthCheckServiceAggregatedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -39329,6 +39467,9 @@ class HealthCheckServicesList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -39374,24 +39515,25 @@ class HealthCheckServicesList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -39477,6 +39619,9 @@ class HealthCheckServicesScopedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -39522,24 +39667,25 @@ class HealthCheckServicesScopedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -39654,6 +39800,9 @@ class HealthChecksAggregatedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -39699,24 +39848,25 @@ class HealthChecksAggregatedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -39803,6 +39953,9 @@ class HealthChecksScopedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -39848,24 +40001,25 @@ class HealthChecksScopedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -40377,6 +40531,9 @@ class HttpHealthCheckList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -40422,24 +40579,25 @@ class HttpHealthCheckList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -40975,6 +41133,9 @@ class HttpsHealthCheckList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -41020,24 +41181,25 @@ class HttpsHealthCheckList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -41438,6 +41600,9 @@ class ImageList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -41483,24 +41648,25 @@ class ImageList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -41974,6 +42140,9 @@ class InstanceAggregatedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -42019,24 +42188,25 @@ class InstanceAggregatedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -42254,6 +42424,9 @@ class InstanceGroupAggregatedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -42299,24 +42472,25 @@ class InstanceGroupAggregatedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -42410,6 +42584,9 @@ class InstanceGroupList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -42455,24 +42632,25 @@ class InstanceGroupList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -42820,6 +42998,9 @@ class InstanceGroupManagerAggregatedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -42865,24 +43046,25 @@ class InstanceGroupManagerAggregatedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -43137,6 +43319,9 @@ class InstanceGroupManagerList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -43182,24 +43367,25 @@ class InstanceGroupManagerList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -43377,6 +43563,9 @@ class InstanceGroupManagerResizeRequestsListResponse(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -43422,24 +43611,25 @@ class InstanceGroupManagerResizeRequestsListResponse(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -44056,6 +44246,9 @@ class InstanceGroupManagersListPerInstanceConfigsResp(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -44101,24 +44294,25 @@ class InstanceGroupManagersListPerInstanceConfigsResp(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -44265,6 +44459,9 @@ class InstanceGroupManagersScopedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -44310,24 +44507,25 @@ class InstanceGroupManagersScopedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -44523,6 +44721,9 @@ class InstanceGroupsListInstances(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -44568,24 +44769,25 @@ class InstanceGroupsListInstances(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -44714,6 +44916,9 @@ class InstanceGroupsScopedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -44759,24 +44964,25 @@ class InstanceGroupsScopedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -44883,6 +45089,9 @@ class InstanceList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -44928,24 +45137,25 @@ class InstanceList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -45038,6 +45248,9 @@ class InstanceListReferrers(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -45083,24 +45296,25 @@ class InstanceListReferrers(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -45719,6 +45933,9 @@ class InstanceTemplateList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -45764,24 +45981,25 @@ class InstanceTemplateList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -46022,6 +46240,9 @@ class InstancesScopedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -46067,24 +46288,25 @@ class InstancesScopedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -46471,6 +46693,9 @@ class InstantSnapshotAggregatedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -46516,24 +46741,25 @@ class InstantSnapshotAggregatedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -46667,6 +46893,9 @@ class InstantSnapshotList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -46712,24 +46941,25 @@ class InstantSnapshotList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -46836,6 +47066,9 @@ class InstantSnapshotsScopedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -46881,24 +47114,25 @@ class InstantSnapshotsScopedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -47306,6 +47540,8 @@ class InterconnectAttachment(_messages.Message):
     cloudRouterIpv6Address: [Output Only] IPv6 address + prefix length to be
       configured on Cloud Router Interface for this interconnect attachment.
     cloudRouterIpv6InterfaceId: This field is not available.
+    configurationConstraints: [Output Only] Constraints for this attachment,
+      if any. The attachment does not work if these constraints are not met.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     customerRouterIpAddress: [Output Only] IPv4 address + prefix length to be
@@ -47406,6 +47642,12 @@ class InterconnectAttachment(_messages.Message):
     region: [Output Only] URL of the region where the regional interconnect
       attachment resides. You must specify this field as part of the HTTP
       request URL. It is not settable as a field in the request body.
+    remoteService: [Output Only] If the attachment is on a Cross-Cloud
+      Interconnect connection, this field contains the interconnect's remote
+      location service provider. Example values: "Amazon Web Services"
+      "Microsoft Azure". The field is set only for attachments on Cross-Cloud
+      Interconnect connections. Its value is copied from the
+      InterconnectRemoteLocation remoteService field.
     router: URL of the Cloud Router to be used for dynamic routing. This
       router must be in the same region as this InterconnectAttachment. The
       InterconnectAttachment will automatically connect the Interconnect to
@@ -47437,6 +47679,14 @@ class InterconnectAttachment(_messages.Message):
       deleted externally and is no longer functional. This could be because
       the associated Interconnect was removed, or because the other side of a
       Partner attachment was deleted.
+    subnetLength: Length of the IPv4 subnet mask. Allowed values: - 29
+      (default) - 30 The default value is 29, except for Cross-Cloud
+      Interconnect connections that use an InterconnectRemoteLocation with a
+      constraints.subnetLengthRange.min equal to 30. For example, connections
+      that use an Azure remote location fall into this category. In these
+      cases, the default value is 30, and requesting 29 returns an error.
+      Where both 29 and 30 are allowed, 29 is preferred, because it gives
+      Google Cloud Support more debugging visibility.
     type: The type of interconnect attachment this is, which can take one of
       the following values: - DEDICATED: an attachment to a Dedicated
       Interconnect. - PARTNER: an attachment to a Partner Interconnect,
@@ -47654,37 +47904,40 @@ class InterconnectAttachment(_messages.Message):
   cloudRouterIpAddress = _messages.StringField(5)
   cloudRouterIpv6Address = _messages.StringField(6)
   cloudRouterIpv6InterfaceId = _messages.StringField(7)
-  creationTimestamp = _messages.StringField(8)
-  customerRouterIpAddress = _messages.StringField(9)
-  customerRouterIpv6Address = _messages.StringField(10)
-  customerRouterIpv6InterfaceId = _messages.StringField(11)
-  dataplaneVersion = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  description = _messages.StringField(13)
-  edgeAvailabilityDomain = _messages.EnumField('EdgeAvailabilityDomainValueValuesEnum', 14)
-  encryption = _messages.EnumField('EncryptionValueValuesEnum', 15)
-  googleReferenceId = _messages.StringField(16)
-  id = _messages.IntegerField(17, variant=_messages.Variant.UINT64)
-  interconnect = _messages.StringField(18)
-  ipsecInternalAddresses = _messages.StringField(19, repeated=True)
-  kind = _messages.StringField(20, default='compute#interconnectAttachment')
-  labelFingerprint = _messages.BytesField(21)
-  labels = _messages.MessageField('LabelsValue', 22)
-  mtu = _messages.IntegerField(23, variant=_messages.Variant.INT32)
-  name = _messages.StringField(24)
-  operationalStatus = _messages.EnumField('OperationalStatusValueValuesEnum', 25)
-  pairingKey = _messages.StringField(26)
-  partnerAsn = _messages.IntegerField(27)
-  partnerMetadata = _messages.MessageField('InterconnectAttachmentPartnerMetadata', 28)
-  privateInterconnectInfo = _messages.MessageField('InterconnectAttachmentPrivateInfo', 29)
-  region = _messages.StringField(30)
-  router = _messages.StringField(31)
-  satisfiesPzs = _messages.BooleanField(32)
-  selfLink = _messages.StringField(33)
-  selfLinkWithId = _messages.StringField(34)
-  stackType = _messages.EnumField('StackTypeValueValuesEnum', 35)
-  state = _messages.EnumField('StateValueValuesEnum', 36)
-  type = _messages.EnumField('TypeValueValuesEnum', 37)
-  vlanTag8021q = _messages.IntegerField(38, variant=_messages.Variant.INT32)
+  configurationConstraints = _messages.MessageField('InterconnectAttachmentConfigurationConstraints', 8)
+  creationTimestamp = _messages.StringField(9)
+  customerRouterIpAddress = _messages.StringField(10)
+  customerRouterIpv6Address = _messages.StringField(11)
+  customerRouterIpv6InterfaceId = _messages.StringField(12)
+  dataplaneVersion = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  description = _messages.StringField(14)
+  edgeAvailabilityDomain = _messages.EnumField('EdgeAvailabilityDomainValueValuesEnum', 15)
+  encryption = _messages.EnumField('EncryptionValueValuesEnum', 16)
+  googleReferenceId = _messages.StringField(17)
+  id = _messages.IntegerField(18, variant=_messages.Variant.UINT64)
+  interconnect = _messages.StringField(19)
+  ipsecInternalAddresses = _messages.StringField(20, repeated=True)
+  kind = _messages.StringField(21, default='compute#interconnectAttachment')
+  labelFingerprint = _messages.BytesField(22)
+  labels = _messages.MessageField('LabelsValue', 23)
+  mtu = _messages.IntegerField(24, variant=_messages.Variant.INT32)
+  name = _messages.StringField(25)
+  operationalStatus = _messages.EnumField('OperationalStatusValueValuesEnum', 26)
+  pairingKey = _messages.StringField(27)
+  partnerAsn = _messages.IntegerField(28)
+  partnerMetadata = _messages.MessageField('InterconnectAttachmentPartnerMetadata', 29)
+  privateInterconnectInfo = _messages.MessageField('InterconnectAttachmentPrivateInfo', 30)
+  region = _messages.StringField(31)
+  remoteService = _messages.StringField(32)
+  router = _messages.StringField(33)
+  satisfiesPzs = _messages.BooleanField(34)
+  selfLink = _messages.StringField(35)
+  selfLinkWithId = _messages.StringField(36)
+  stackType = _messages.EnumField('StackTypeValueValuesEnum', 37)
+  state = _messages.EnumField('StateValueValuesEnum', 38)
+  subnetLength = _messages.IntegerField(39, variant=_messages.Variant.INT32)
+  type = _messages.EnumField('TypeValueValuesEnum', 40)
+  vlanTag8021q = _messages.IntegerField(41, variant=_messages.Variant.INT32)
 
 
 class InterconnectAttachmentAggregatedList(_messages.Message):
@@ -47776,6 +48029,9 @@ class InterconnectAttachmentAggregatedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -47821,24 +48077,25 @@ class InterconnectAttachmentAggregatedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -47869,6 +48126,96 @@ class InterconnectAttachmentAggregatedList(_messages.Message):
   selfLink = _messages.StringField(5)
   unreachables = _messages.StringField(6, repeated=True)
   warning = _messages.MessageField('WarningValue', 7)
+
+
+class InterconnectAttachmentConfigurationConstraints(_messages.Message):
+  r"""A InterconnectAttachmentConfigurationConstraints object.
+
+  Enums:
+    BgpMd5ValueValuesEnum: [Output Only] Whether the attachment's BGP session
+      requires/allows/disallows BGP MD5 authentication. This can take one of
+      the following values: MD5_OPTIONAL, MD5_REQUIRED, MD5_UNSUPPORTED. For
+      example, a Cross-Cloud Interconnect connection to a remote cloud
+      provider that requires BGP MD5 authentication has the
+      interconnectRemoteLocation attachment_configuration_constraints.bgp_md5
+      field set to MD5_REQUIRED, and that property is propagated to the
+      attachment. Similarly, if BGP MD5 is MD5_UNSUPPORTED, an error is
+      returned if MD5 is requested.
+    NetworkConnectivityCenterValueValuesEnum: [Output Only] Network
+      Connectivity Center constraints, which can take one of the following
+      values: NCC_UNCONSTRAINED, NCC_SPOKE_REQUIRED
+
+  Fields:
+    bgpMd5: [Output Only] Whether the attachment's BGP session
+      requires/allows/disallows BGP MD5 authentication. This can take one of
+      the following values: MD5_OPTIONAL, MD5_REQUIRED, MD5_UNSUPPORTED. For
+      example, a Cross-Cloud Interconnect connection to a remote cloud
+      provider that requires BGP MD5 authentication has the
+      interconnectRemoteLocation attachment_configuration_constraints.bgp_md5
+      field set to MD5_REQUIRED, and that property is propagated to the
+      attachment. Similarly, if BGP MD5 is MD5_UNSUPPORTED, an error is
+      returned if MD5 is requested.
+    bgpPeerAsnRanges: [Output Only] List of ASN ranges that the remote
+      location is known to support. Formatted as an array of inclusive ranges
+      {min: min-value, max: max-value}. For example, [{min: 123, max: 123},
+      {min: 64512, max: 65534}] allows the peer ASN to be 123 or anything in
+      the range 64512-65534. This field is only advisory. Although the API
+      accepts other ranges, these are the ranges that we recommend.
+    networkConnectivityCenter: [Output Only] Network Connectivity Center
+      constraints, which can take one of the following values:
+      NCC_UNCONSTRAINED, NCC_SPOKE_REQUIRED
+  """
+
+  class BgpMd5ValueValuesEnum(_messages.Enum):
+    r"""[Output Only] Whether the attachment's BGP session
+    requires/allows/disallows BGP MD5 authentication. This can take one of the
+    following values: MD5_OPTIONAL, MD5_REQUIRED, MD5_UNSUPPORTED. For
+    example, a Cross-Cloud Interconnect connection to a remote cloud provider
+    that requires BGP MD5 authentication has the interconnectRemoteLocation
+    attachment_configuration_constraints.bgp_md5 field set to MD5_REQUIRED,
+    and that property is propagated to the attachment. Similarly, if BGP MD5
+    is MD5_UNSUPPORTED, an error is returned if MD5 is requested.
+
+    Values:
+      MD5_OPTIONAL: MD5_OPTIONAL: BGP MD5 authentication is supported and can
+        optionally be configured.
+      MD5_REQUIRED: MD5_REQUIRED: BGP MD5 authentication must be configured.
+      MD5_UNSUPPORTED: MD5_UNSUPPORTED: BGP MD5 authentication must not be
+        configured
+    """
+    MD5_OPTIONAL = 0
+    MD5_REQUIRED = 1
+    MD5_UNSUPPORTED = 2
+
+  class NetworkConnectivityCenterValueValuesEnum(_messages.Enum):
+    r"""[Output Only] Network Connectivity Center constraints, which can take
+    one of the following values: NCC_UNCONSTRAINED, NCC_SPOKE_REQUIRED
+
+    Values:
+      NCC_SPOKE_REQUIRED: If NCC_SPOKE_REQUIRED, the attachment is disabled
+        until the attachment is included in a Network Connectivity Center
+        spoke. This is true for attachments on Cross-Cloud Interconnect
+        connections.
+      NCC_UNCONSTRAINED: UNCONSTRAINED means there is no constraint.
+    """
+    NCC_SPOKE_REQUIRED = 0
+    NCC_UNCONSTRAINED = 1
+
+  bgpMd5 = _messages.EnumField('BgpMd5ValueValuesEnum', 1)
+  bgpPeerAsnRanges = _messages.MessageField('InterconnectAttachmentConfigurationConstraintsBgpPeerASNRange', 2, repeated=True)
+  networkConnectivityCenter = _messages.EnumField('NetworkConnectivityCenterValueValuesEnum', 3)
+
+
+class InterconnectAttachmentConfigurationConstraintsBgpPeerASNRange(_messages.Message):
+  r"""A InterconnectAttachmentConfigurationConstraintsBgpPeerASNRange object.
+
+  Fields:
+    max: A integer attribute.
+    min: A integer attribute.
+  """
+
+  max = _messages.IntegerField(1, variant=_messages.Variant.UINT32)
+  min = _messages.IntegerField(2, variant=_messages.Variant.UINT32)
 
 
 class InterconnectAttachmentList(_messages.Message):
@@ -47934,6 +48281,9 @@ class InterconnectAttachmentList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -47979,24 +48329,25 @@ class InterconnectAttachmentList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -48118,6 +48469,9 @@ class InterconnectAttachmentsScopedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -48163,24 +48517,25 @@ class InterconnectAttachmentsScopedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -48513,6 +48868,9 @@ class InterconnectList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -48558,24 +48916,25 @@ class InterconnectList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -48789,6 +49148,9 @@ class InterconnectLocationList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -48834,24 +49196,25 @@ class InterconnectLocationList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -49139,6 +49502,9 @@ class InterconnectRemoteLocation(_messages.Message):
     ContinentValueValuesEnum: [Output Only] Continent for this location, which
       can take one of the following values: - AFRICA - ASIA_PAC - EUROPE -
       NORTH_AMERICA - SOUTH_AMERICA
+    LacpValueValuesEnum: [Output Only] Link Aggregation Control Protocol
+      (LACP) constraints, which can take one of the following values:
+      LACP_SUPPORTED, LACP_UNSUPPORTED
     StatusValueValuesEnum: [Output Only] The status of this
       InterconnectRemoteLocation, which can take one of the following values:
       - CLOSED: The InterconnectRemoteLocation is closed and is unavailable
@@ -49149,9 +49515,14 @@ class InterconnectRemoteLocation(_messages.Message):
   Fields:
     address: [Output Only] The postal address of the Point of Presence, each
       line in the address is separated by a newline character.
+    attachmentConfigurationConstraints: [Output Only] Subset of fields from
+      InterconnectAttachment's |configurationConstraints| field that apply to
+      all attachments for this remote location.
     city: [Output Only] Metropolitan area designator that indicates which city
       an interconnect is located. For example: "Chicago, IL", "Amsterdam,
       Netherlands".
+    constraints: [Output Only] Constraints on the parameters for creating
+      Cross-Cloud Interconnect and associated InterconnectAttachments.
     continent: [Output Only] Continent for this location, which can take one
       of the following values: - AFRICA - ASIA_PAC - EUROPE - NORTH_AMERICA -
       SOUTH_AMERICA
@@ -49166,10 +49537,16 @@ class InterconnectRemoteLocation(_messages.Message):
       is defined by the server.
     kind: [Output Only] Type of the resource. Always
       compute#interconnectRemoteLocation for interconnect remote locations.
+    lacp: [Output Only] Link Aggregation Control Protocol (LACP) constraints,
+      which can take one of the following values: LACP_SUPPORTED,
+      LACP_UNSUPPORTED
+    maxLagSize100Gbps: [Output Only] The maximum number of 100 Gbps ports
+      supported in a link aggregation group (LAG). When linkType is 100 Gbps,
+      requestedLinkCount cannot exceed max_lag_size_100_gbps.
     name: [Output Only] Name of the resource.
     peeringdbFacilityId: [Output Only] The peeringdb identifier for this
       facility (corresponding with a netfac type in peeringdb).
-    permittedConnections: [Output-only] Permitted connections.
+    permittedConnections: [Output Only] Permitted connections.
     remoteService: [Output Only] Indicates the service provider present at the
       remote location. Example values: "Amazon Web Services", "Microsoft
       Azure".
@@ -49202,6 +49579,22 @@ class InterconnectRemoteLocation(_messages.Message):
     NORTH_AMERICA = 3
     SOUTH_AMERICA = 4
 
+  class LacpValueValuesEnum(_messages.Enum):
+    r"""[Output Only] Link Aggregation Control Protocol (LACP) constraints,
+    which can take one of the following values: LACP_SUPPORTED,
+    LACP_UNSUPPORTED
+
+    Values:
+      LACP_SUPPORTED: LACP_SUPPORTED: LACP is supported, and enabled by
+        default on the Cross-Cloud Interconnect.
+      LACP_UNSUPPORTED: LACP_UNSUPPORTED: LACP is not supported and will not
+        be enabled on this port. GetDiagnostics will show
+        bundleAggregationType as "static". GCP does not support LAGs without
+        LACP, so requestedLinkCount must be 1.
+    """
+    LACP_SUPPORTED = 0
+    LACP_UNSUPPORTED = 1
+
   class StatusValueValuesEnum(_messages.Enum):
     r"""[Output Only] The status of this InterconnectRemoteLocation, which can
     take one of the following values: - CLOSED: The InterconnectRemoteLocation
@@ -49219,21 +49612,124 @@ class InterconnectRemoteLocation(_messages.Message):
     CLOSED = 1
 
   address = _messages.StringField(1)
-  city = _messages.StringField(2)
-  continent = _messages.EnumField('ContinentValueValuesEnum', 3)
-  creationTimestamp = _messages.StringField(4)
-  description = _messages.StringField(5)
-  facilityProvider = _messages.StringField(6)
-  facilityProviderFacilityId = _messages.StringField(7)
-  id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(9, default='compute#interconnectRemoteLocation')
-  name = _messages.StringField(10)
-  peeringdbFacilityId = _messages.StringField(11)
-  permittedConnections = _messages.MessageField('InterconnectRemoteLocationPermittedConnections', 12)
-  remoteService = _messages.StringField(13)
-  selfLink = _messages.StringField(14)
-  selfLinkWithId = _messages.StringField(15)
-  status = _messages.EnumField('StatusValueValuesEnum', 16)
+  attachmentConfigurationConstraints = _messages.MessageField('InterconnectAttachmentConfigurationConstraints', 2)
+  city = _messages.StringField(3)
+  constraints = _messages.MessageField('InterconnectRemoteLocationConstraints', 4)
+  continent = _messages.EnumField('ContinentValueValuesEnum', 5)
+  creationTimestamp = _messages.StringField(6)
+  description = _messages.StringField(7)
+  facilityProvider = _messages.StringField(8)
+  facilityProviderFacilityId = _messages.StringField(9)
+  id = _messages.IntegerField(10, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(11, default='compute#interconnectRemoteLocation')
+  lacp = _messages.EnumField('LacpValueValuesEnum', 12)
+  maxLagSize100Gbps = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  name = _messages.StringField(14)
+  peeringdbFacilityId = _messages.StringField(15)
+  permittedConnections = _messages.MessageField('InterconnectRemoteLocationPermittedConnections', 16, repeated=True)
+  remoteService = _messages.StringField(17)
+  selfLink = _messages.StringField(18)
+  selfLinkWithId = _messages.StringField(19)
+  status = _messages.EnumField('StatusValueValuesEnum', 20)
+
+
+class InterconnectRemoteLocationConstraints(_messages.Message):
+  r"""A InterconnectRemoteLocationConstraints object.
+
+  Enums:
+    PortPairRemoteLocationValueValuesEnum: [Output Only] Port pair remote
+      location constraints, which can take one of the following values:
+      PORT_PAIR_UNCONSTRAINED_REMOTE_LOCATION,
+      PORT_PAIR_MATCHING_REMOTE_LOCATION. GCP's API refers only to individual
+      ports, but the UI uses this field when ordering a pair of ports, to
+      prevent users from accidentally ordering something that is incompatible
+      with their cloud provider. Specifically, when ordering a redundant pair
+      of Cross-Cloud Interconnect ports, and one of them uses a remote
+      location with portPairMatchingRemoteLocation set to matching, the UI
+      will require that both ports use the same remote location.
+    PortPairVlanValueValuesEnum: [Output Only] Port pair VLAN constraints,
+      which can take one of the following values:
+      PORT_PAIR_UNCONSTRAINED_VLAN, PORT_PAIR_MATCHING_VLAN
+
+  Fields:
+    portPairRemoteLocation: [Output Only] Port pair remote location
+      constraints, which can take one of the following values:
+      PORT_PAIR_UNCONSTRAINED_REMOTE_LOCATION,
+      PORT_PAIR_MATCHING_REMOTE_LOCATION. GCP's API refers only to individual
+      ports, but the UI uses this field when ordering a pair of ports, to
+      prevent users from accidentally ordering something that is incompatible
+      with their cloud provider. Specifically, when ordering a redundant pair
+      of Cross-Cloud Interconnect ports, and one of them uses a remote
+      location with portPairMatchingRemoteLocation set to matching, the UI
+      will require that both ports use the same remote location.
+    portPairVlan: [Output Only] Port pair VLAN constraints, which can take one
+      of the following values: PORT_PAIR_UNCONSTRAINED_VLAN,
+      PORT_PAIR_MATCHING_VLAN
+    subnetLengthRange: [Output Only] [min-length, max-length] The minimum and
+      maximum value (inclusive) for the IPv4 subnet length. For example, an
+      interconnectRemoteLocation for Azure has {min: 30, max: 30} because
+      Azure requires /30 subnets. This range specifies the values supported by
+      both cloud providers. Interconnect currently supports /29 and /30 IPv4
+      subnet lengths. If a remote cloud has no constraint on IPv4 subnet
+      length, the range would thus be {min: 29, max: 30}.
+  """
+
+  class PortPairRemoteLocationValueValuesEnum(_messages.Enum):
+    r"""[Output Only] Port pair remote location constraints, which can take
+    one of the following values: PORT_PAIR_UNCONSTRAINED_REMOTE_LOCATION,
+    PORT_PAIR_MATCHING_REMOTE_LOCATION. GCP's API refers only to individual
+    ports, but the UI uses this field when ordering a pair of ports, to
+    prevent users from accidentally ordering something that is incompatible
+    with their cloud provider. Specifically, when ordering a redundant pair of
+    Cross-Cloud Interconnect ports, and one of them uses a remote location
+    with portPairMatchingRemoteLocation set to matching, the UI will require
+    that both ports use the same remote location.
+
+    Values:
+      PORT_PAIR_MATCHING_REMOTE_LOCATION: If
+        PORT_PAIR_MATCHING_REMOTE_LOCATION, the remote cloud provider
+        allocates ports in pairs, and the user should choose the same remote
+        location for both ports.
+      PORT_PAIR_UNCONSTRAINED_REMOTE_LOCATION: If
+        PORT_PAIR_UNCONSTRAINED_REMOTE_LOCATION, a user may opt to provision a
+        redundant pair of Cross-Cloud Interconnects using two different remote
+        locations in the same city.
+    """
+    PORT_PAIR_MATCHING_REMOTE_LOCATION = 0
+    PORT_PAIR_UNCONSTRAINED_REMOTE_LOCATION = 1
+
+  class PortPairVlanValueValuesEnum(_messages.Enum):
+    r"""[Output Only] Port pair VLAN constraints, which can take one of the
+    following values: PORT_PAIR_UNCONSTRAINED_VLAN, PORT_PAIR_MATCHING_VLAN
+
+    Values:
+      PORT_PAIR_MATCHING_VLAN: If PORT_PAIR_MATCHING_VLAN, the Interconnect
+        for this attachment is part of a pair of ports that should have
+        matching VLAN allocations. This occurs with Cross-Cloud Interconnect
+        to Azure remote locations. While GCP's API does not explicitly group
+        pairs of ports, the UI uses this field to ensure matching VLAN ids
+        when configuring a redundant VLAN pair.
+      PORT_PAIR_UNCONSTRAINED_VLAN: PORT_PAIR_UNCONSTRAINED_VLAN means there
+        is no constraint.
+    """
+    PORT_PAIR_MATCHING_VLAN = 0
+    PORT_PAIR_UNCONSTRAINED_VLAN = 1
+
+  portPairRemoteLocation = _messages.EnumField('PortPairRemoteLocationValueValuesEnum', 1)
+  portPairVlan = _messages.EnumField('PortPairVlanValueValuesEnum', 2)
+  subnetLengthRange = _messages.MessageField('InterconnectRemoteLocationConstraintsSubnetLengthRange', 3)
+
+
+class InterconnectRemoteLocationConstraintsSubnetLengthRange(_messages.Message):
+  r"""A InterconnectRemoteLocationConstraintsSubnetLengthRange object.
+
+  Fields:
+    max: A integer attribute.
+    min: A integer attribute.
+  """
+
+  max = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  min = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class InterconnectRemoteLocationList(_messages.Message):
@@ -49299,6 +49795,9 @@ class InterconnectRemoteLocationList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -49344,24 +49843,25 @@ class InterconnectRemoteLocationList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -49397,7 +49897,7 @@ class InterconnectRemoteLocationPermittedConnections(_messages.Message):
   r"""A InterconnectRemoteLocationPermittedConnections object.
 
   Fields:
-    interconnectLocation: [Output-only] URL of an Interconnect location that
+    interconnectLocation: [Output Only] URL of an Interconnect location that
       is permitted to connect to this Interconnect remote location.
   """
 
@@ -49543,6 +50043,9 @@ class IpAddressesList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -49588,24 +50091,25 @@ class IpAddressesList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -49698,6 +50202,9 @@ class IpOwnerList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -49743,24 +50250,25 @@ class IpOwnerList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -50043,6 +50551,9 @@ class LicensesListResponse(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -50088,24 +50599,25 @@ class LicensesListResponse(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -50534,6 +51046,9 @@ class MachineImageList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -50579,24 +51094,25 @@ class MachineImageList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -50802,6 +51318,9 @@ class MachineTypeAggregatedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -50847,24 +51366,25 @@ class MachineTypeAggregatedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -50958,6 +51478,9 @@ class MachineTypeList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -51003,24 +51526,25 @@ class MachineTypeList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -51107,6 +51631,9 @@ class MachineTypesScopedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -51152,24 +51679,25 @@ class MachineTypesScopedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -51991,6 +52519,9 @@ class NetworkEdgeSecurityServiceAggregatedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -52036,24 +52567,25 @@ class NetworkEdgeSecurityServiceAggregatedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -52142,6 +52674,9 @@ class NetworkEdgeSecurityServicesScopedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -52187,24 +52722,25 @@ class NetworkEdgeSecurityServicesScopedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -52544,6 +53080,9 @@ class NetworkEndpointGroupAggregatedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -52589,24 +53128,25 @@ class NetworkEndpointGroupAggregatedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -52654,9 +53194,9 @@ class NetworkEndpointGroupAppEngine(_messages.Message):
       having to create multiple Network Endpoint Groups and backend services.
       For example, the request URLs "foo1-dot-appname.appspot.com/v1" and
       "foo1-dot-appname.appspot.com/v2" can be backed by the same Serverless
-      NEG with URL mask "-dot-appname.appspot.com/". The URL mask will parse
-      them to { service = "foo1", version = "v1" } and { service = "foo1",
-      version = "v2" } respectively.
+      NEG with URL mask "<service>-dot-appname.appspot.com/<version>". The URL
+      mask will parse them to { service = "foo1", version = "v1" } and {
+      service = "foo1", version = "v2" } respectively.
     version: Optional serving version. The version name is case-sensitive and
       must be 1-100 characters long. Example value: "v1", "v2".
   """
@@ -52679,8 +53219,8 @@ class NetworkEndpointGroupCloudFunction(_messages.Message):
       allows for routing to multiple Cloud Functions without having to create
       multiple Network Endpoint Groups and backend services. For example,
       request URLs " mydomain.com/function1" and "mydomain.com/function2" can
-      be backed by the same Serverless NEG with URL mask "/". The URL mask
-      will parse them to { function = "function1" } and { function =
+      be backed by the same Serverless NEG with URL mask "/<function>". The
+      URL mask will parse them to { function = "function1" } and { function =
       "function2" } respectively.
   """
 
@@ -52799,6 +53339,9 @@ class NetworkEndpointGroupList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -52844,24 +53387,25 @@ class NetworkEndpointGroupList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -53053,6 +53597,9 @@ class NetworkEndpointGroupsListNetworkEndpoints(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -53098,24 +53645,25 @@ class NetworkEndpointGroupsListNetworkEndpoints(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -53201,6 +53749,9 @@ class NetworkEndpointGroupsScopedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -53246,24 +53797,25 @@ class NetworkEndpointGroupsScopedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -53543,6 +54095,9 @@ class NetworkList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -53588,24 +54143,25 @@ class NetworkList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -54129,6 +54685,9 @@ class NodeGroupAggregatedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -54174,24 +54733,25 @@ class NodeGroupAggregatedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -54321,6 +54881,9 @@ class NodeGroupList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -54366,24 +54929,25 @@ class NodeGroupList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -54585,6 +55149,9 @@ class NodeGroupsListNodes(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -54630,24 +55197,25 @@ class NodeGroupsListNodes(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -54733,6 +55301,9 @@ class NodeGroupsScopedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -54778,24 +55349,25 @@ class NodeGroupsScopedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -55053,6 +55625,9 @@ class NodeTemplateAggregatedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -55098,24 +55673,25 @@ class NodeTemplateAggregatedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -55209,6 +55785,9 @@ class NodeTemplateList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -55254,24 +55833,25 @@ class NodeTemplateList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -55372,6 +55952,9 @@ class NodeTemplatesScopedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -55417,24 +56000,25 @@ class NodeTemplatesScopedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -55598,6 +56182,9 @@ class NodeTypeAggregatedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -55643,24 +56230,25 @@ class NodeTypeAggregatedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -55754,6 +56342,9 @@ class NodeTypeList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -55799,24 +56390,25 @@ class NodeTypeList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -55902,6 +56494,9 @@ class NodeTypesScopedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -55947,24 +56542,25 @@ class NodeTypesScopedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -56120,6 +56716,9 @@ class NotificationEndpointAggregatedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -56165,24 +56764,25 @@ class NotificationEndpointAggregatedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -56304,6 +56904,9 @@ class NotificationEndpointList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -56349,24 +56952,25 @@ class NotificationEndpointList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -56452,6 +57056,9 @@ class NotificationEndpointsScopedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -56497,24 +57104,25 @@ class NotificationEndpointsScopedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -56754,6 +57362,9 @@ class Operation(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -56799,24 +57410,25 @@ class Operation(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -56956,6 +57568,9 @@ class OperationAggregatedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -57001,24 +57616,25 @@ class OperationAggregatedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -57112,6 +57728,9 @@ class OperationList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -57157,24 +57776,25 @@ class OperationList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -57260,6 +57880,9 @@ class OperationsScopedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -57305,24 +57928,25 @@ class OperationsScopedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -57664,6 +58288,9 @@ class PacketMirroringAggregatedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -57709,24 +58336,25 @@ class PacketMirroringAggregatedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -57873,6 +58501,9 @@ class PacketMirroringList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -57918,24 +58549,25 @@ class PacketMirroringList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -58082,6 +58714,9 @@ class PacketMirroringsScopedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -58127,24 +58762,25 @@ class PacketMirroringsScopedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -59229,6 +59865,9 @@ class PublicAdvertisedPrefixList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -59274,24 +59913,25 @@ class PublicAdvertisedPrefixList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -59536,6 +60176,9 @@ class PublicDelegatedPrefixAggregatedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -59581,24 +60224,25 @@ class PublicDelegatedPrefixAggregatedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -59692,6 +60336,9 @@ class PublicDelegatedPrefixList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -59737,24 +60384,25 @@ class PublicDelegatedPrefixList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -59882,6 +60530,9 @@ class PublicDelegatedPrefixesScopedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -59927,24 +60578,25 @@ class PublicDelegatedPrefixesScopedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -60111,6 +60763,9 @@ class QueuedResourceList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -60156,24 +60811,25 @@ class QueuedResourceList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -60809,6 +61465,9 @@ class RegionAutoscalerList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -60854,24 +61513,25 @@ class RegionAutoscalerList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -60975,6 +61635,9 @@ class RegionDiskTypeList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -61020,24 +61683,25 @@ class RegionDiskTypeList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -61212,6 +61876,9 @@ class RegionInstanceGroupList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -61257,24 +61924,25 @@ class RegionInstanceGroupList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -61379,6 +62047,9 @@ class RegionInstanceGroupManagerList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -61424,24 +62095,25 @@ class RegionInstanceGroupManagerList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -61727,6 +62399,9 @@ class RegionInstanceGroupManagersListInstanceConfigsResp(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -61772,24 +62447,25 @@ class RegionInstanceGroupManagersListInstanceConfigsResp(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -62023,6 +62699,9 @@ class RegionInstanceGroupsListInstances(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -62068,24 +62747,25 @@ class RegionInstanceGroupsListInstances(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -62236,6 +62916,9 @@ class RegionList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -62281,24 +62964,25 @@ class RegionList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -62447,8 +63131,7 @@ class RegionTargetHttpsProxiesSetSslCertificatesRequest(_messages.Message):
 
   Fields:
     sslCertificates: New set of SslCertificate resources to associate with
-      this TargetHttpsProxy resource. Currently exactly one SslCertificate
-      resource must be specified.
+      this TargetHttpsProxy resource.
   """
 
   sslCertificates = _messages.StringField(1, repeated=True)
@@ -62473,7 +63156,10 @@ class RequestMirrorPolicy(_messages.Message):
 
   Fields:
     backendService: The full or partial URL to the BackendService resource
-      being mirrored to.
+      being mirrored to. The backend service configured for a mirroring policy
+      must reference backends that are of the same type as the original
+      backend service matched in the URL map. Serverless NEG backends are not
+      currently supported as a mirrored backend service.
   """
 
   backendService = _messages.StringField(1)
@@ -62728,6 +63414,9 @@ class ReservationAggregatedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -62773,24 +63462,25 @@ class ReservationAggregatedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -62884,6 +63574,9 @@ class ReservationList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -62929,24 +63622,25 @@ class ReservationList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -63043,6 +63737,9 @@ class ReservationsScopedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -63088,24 +63785,25 @@ class ReservationsScopedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -63239,6 +63937,9 @@ class ResourcePoliciesScopedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -63284,24 +63985,25 @@ class ResourcePoliciesScopedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -63492,6 +64194,9 @@ class ResourcePolicyAggregatedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -63537,24 +64242,25 @@ class ResourcePolicyAggregatedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -63806,6 +64512,9 @@ class ResourcePolicyList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -63851,24 +64560,25 @@ class ResourcePolicyList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -64159,12 +64869,15 @@ class ResourceStatus(_messages.Message):
   (intent) in their instance CRUD calls.
 
   Fields:
+    physicalHost: [Output Only] An opaque ID of the host on which the VM is
+      running.
     scheduling: A ResourceStatusScheduling attribute.
     upcomingMaintenance: A ResourceStatusUpcomingMaintenance attribute.
   """
 
-  scheduling = _messages.MessageField('ResourceStatusScheduling', 1)
-  upcomingMaintenance = _messages.MessageField('ResourceStatusUpcomingMaintenance', 2)
+  physicalHost = _messages.StringField(1)
+  scheduling = _messages.MessageField('ResourceStatusScheduling', 2)
+  upcomingMaintenance = _messages.MessageField('ResourceStatusUpcomingMaintenance', 3)
 
 
 class ResourceStatusScheduling(_messages.Message):
@@ -64440,6 +65153,9 @@ class Route(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -64485,24 +65201,25 @@ class Route(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -64662,6 +65379,9 @@ class RouteList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -64707,24 +65427,25 @@ class RouteList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -64913,6 +65634,9 @@ class RouterAggregatedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -64958,24 +65682,25 @@ class RouterAggregatedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -65510,6 +66235,9 @@ class RouterList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -65555,24 +66283,25 @@ class RouterList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -66161,6 +66890,9 @@ class RoutersScopedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -66206,24 +66938,25 @@ class RoutersScopedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -66597,7 +67330,7 @@ class ScalingScheduleStatus(_messages.Message):
 
 
 class Scheduling(_messages.Message):
-  r"""Sets the scheduling options for an Instance. NextID: 21
+  r"""Sets the scheduling options for an Instance.
 
   Enums:
     InstanceTerminationActionValueValuesEnum: Specifies the termination action
@@ -66888,6 +67621,9 @@ class SecurityPoliciesAggregatedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -66933,24 +67669,25 @@ class SecurityPoliciesAggregatedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -67048,6 +67785,9 @@ class SecurityPoliciesScopedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -67093,24 +67833,25 @@ class SecurityPoliciesScopedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -67533,6 +68274,9 @@ class SecurityPolicyList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -67578,24 +68322,25 @@ class SecurityPolicyList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -68389,6 +69134,9 @@ class ServiceAttachmentAggregatedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -68434,24 +69182,25 @@ class ServiceAttachmentAggregatedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -68596,6 +69345,9 @@ class ServiceAttachmentList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -68641,24 +69393,25 @@ class ServiceAttachmentList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -68744,6 +69497,9 @@ class ServiceAttachmentsScopedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -68789,24 +69545,25 @@ class ServiceAttachmentsScopedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -69163,6 +69920,8 @@ class Snapshot(_messages.Message):
     locationHint: An opaque location hint used to place the snapshot close to
       other resources. This field is for use by internal tools that use the
       public API.
+    maxRetentionDays: Number of days the snapshot should be retained before
+      being deleted automatically.
     name: Name of the resource; provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -69321,24 +70080,25 @@ class Snapshot(_messages.Message):
   licenseCodes = _messages.IntegerField(15, repeated=True)
   licenses = _messages.StringField(16, repeated=True)
   locationHint = _messages.StringField(17)
-  name = _messages.StringField(18)
-  satisfiesPzs = _messages.BooleanField(19)
-  selfLink = _messages.StringField(20)
-  selfLinkWithId = _messages.StringField(21)
-  snapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 22)
-  snapshotType = _messages.EnumField('SnapshotTypeValueValuesEnum', 23)
-  sourceDisk = _messages.StringField(24)
-  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 25)
-  sourceDiskId = _messages.StringField(26)
-  sourceInstantSnapshot = _messages.StringField(27)
-  sourceInstantSnapshotId = _messages.StringField(28)
-  sourceSnapshotSchedulePolicy = _messages.StringField(29)
-  sourceSnapshotSchedulePolicyId = _messages.StringField(30)
-  status = _messages.EnumField('StatusValueValuesEnum', 31)
-  storageBytes = _messages.IntegerField(32)
-  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 33)
-  storageLocations = _messages.StringField(34, repeated=True)
-  userLicenses = _messages.StringField(35, repeated=True)
+  maxRetentionDays = _messages.IntegerField(18, variant=_messages.Variant.INT32)
+  name = _messages.StringField(19)
+  satisfiesPzs = _messages.BooleanField(20)
+  selfLink = _messages.StringField(21)
+  selfLinkWithId = _messages.StringField(22)
+  snapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 23)
+  snapshotType = _messages.EnumField('SnapshotTypeValueValuesEnum', 24)
+  sourceDisk = _messages.StringField(25)
+  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 26)
+  sourceDiskId = _messages.StringField(27)
+  sourceInstantSnapshot = _messages.StringField(28)
+  sourceInstantSnapshotId = _messages.StringField(29)
+  sourceSnapshotSchedulePolicy = _messages.StringField(30)
+  sourceSnapshotSchedulePolicyId = _messages.StringField(31)
+  status = _messages.EnumField('StatusValueValuesEnum', 32)
+  storageBytes = _messages.IntegerField(33)
+  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 34)
+  storageLocations = _messages.StringField(35, repeated=True)
+  userLicenses = _messages.StringField(36, repeated=True)
 
 
 class SnapshotList(_messages.Message):
@@ -69401,6 +70161,9 @@ class SnapshotList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -69446,24 +70209,25 @@ class SnapshotList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -69833,6 +70597,9 @@ class SslCertificateAggregatedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -69878,24 +70645,25 @@ class SslCertificateAggregatedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -69988,6 +70756,9 @@ class SslCertificateList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -70033,24 +70804,25 @@ class SslCertificateList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -70261,6 +71033,9 @@ class SslCertificatesScopedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -70306,24 +71081,25 @@ class SslCertificatesScopedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -70440,6 +71216,9 @@ class SslPoliciesAggregatedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -70485,24 +71264,25 @@ class SslPoliciesAggregatedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -70597,6 +71377,9 @@ class SslPoliciesList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -70642,24 +71425,25 @@ class SslPoliciesList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -70755,6 +71539,9 @@ class SslPoliciesScopedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -70800,24 +71587,25 @@ class SslPoliciesScopedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -70984,6 +71772,9 @@ class SslPolicy(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -71029,24 +71820,25 @@ class SslPolicy(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -71803,6 +72595,9 @@ class SubnetworkAggregatedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -71848,24 +72643,25 @@ class SubnetworkAggregatedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -71959,6 +72755,9 @@ class SubnetworkList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -72004,24 +72803,25 @@ class SubnetworkList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -72226,6 +73026,9 @@ class SubnetworksScopedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -72271,24 +73074,25 @@ class SubnetworksScopedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -72595,6 +73399,9 @@ class TargetGrpcProxyList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -72640,24 +73447,25 @@ class TargetGrpcProxyList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -72743,6 +73551,9 @@ class TargetHttpProxiesScopedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -72788,24 +73599,25 @@ class TargetHttpProxiesScopedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -73002,6 +73814,9 @@ class TargetHttpProxyAggregatedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -73047,24 +73862,25 @@ class TargetHttpProxyAggregatedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -73158,6 +73974,9 @@ class TargetHttpProxyList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -73203,24 +74022,25 @@ class TargetHttpProxyList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -73306,6 +74126,9 @@ class TargetHttpsProxiesScopedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -73351,24 +74174,25 @@ class TargetHttpsProxiesScopedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -73693,6 +74517,9 @@ class TargetHttpsProxyAggregatedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -73738,24 +74565,25 @@ class TargetHttpsProxyAggregatedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -73849,6 +74677,9 @@ class TargetHttpsProxyList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -73894,24 +74725,25 @@ class TargetHttpsProxyList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -73950,8 +74782,9 @@ class TargetInstance(_messages.Message):
   ESP, AH, TCP, or UDP. For more information, read Target instances.
 
   Enums:
-    NatPolicyValueValuesEnum: NAT option controlling how IPs are NAT'ed to the
-      instance. Currently only NO_NAT (default value) is supported.
+    NatPolicyValueValuesEnum: Must have a value of NO_NAT. Protocol forwarding
+      delivers packets while preserving the destination IP address of the
+      forwarding rule referencing the target instance.
 
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
@@ -73976,8 +74809,9 @@ class TargetInstance(_messages.Message):
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
-    natPolicy: NAT option controlling how IPs are NAT'ed to the instance.
-      Currently only NO_NAT (default value) is supported.
+    natPolicy: Must have a value of NO_NAT. Protocol forwarding delivers
+      packets while preserving the destination IP address of the forwarding
+      rule referencing the target instance.
     network: The URL of the network this target instance uses to forward
       traffic. If not specified, the traffic will be forwarded to the network
       that the default network interface belongs to.
@@ -73990,8 +74824,9 @@ class TargetInstance(_messages.Message):
   """
 
   class NatPolicyValueValuesEnum(_messages.Enum):
-    r"""NAT option controlling how IPs are NAT'ed to the instance. Currently
-    only NO_NAT (default value) is supported.
+    r"""Must have a value of NO_NAT. Protocol forwarding delivers packets
+    while preserving the destination IP address of the forwarding rule
+    referencing the target instance.
 
     Values:
       NO_NAT: No NAT performed.
@@ -74098,6 +74933,9 @@ class TargetInstanceAggregatedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -74143,24 +74981,25 @@ class TargetInstanceAggregatedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -74253,6 +75092,9 @@ class TargetInstanceList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -74298,24 +75140,25 @@ class TargetInstanceList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -74401,6 +75244,9 @@ class TargetInstancesScopedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -74446,24 +75292,25 @@ class TargetInstancesScopedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -74713,6 +75560,9 @@ class TargetPoolAggregatedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -74758,24 +75608,25 @@ class TargetPoolAggregatedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -74883,6 +75734,9 @@ class TargetPoolList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -74928,24 +75782,25 @@ class TargetPoolList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -75081,6 +75936,9 @@ class TargetPoolsScopedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -75126,24 +75984,25 @@ class TargetPoolsScopedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -75369,6 +76228,9 @@ class TargetSslProxyList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -75414,24 +76276,25 @@ class TargetSslProxyList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -75627,6 +76490,9 @@ class TargetTcpProxyList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -75672,24 +76538,25 @@ class TargetTcpProxyList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -75922,6 +76789,9 @@ class TargetVpnGatewayAggregatedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -75967,24 +76837,25 @@ class TargetVpnGatewayAggregatedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -76078,6 +76949,9 @@ class TargetVpnGatewayList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -76123,24 +76997,25 @@ class TargetVpnGatewayList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -76227,6 +77102,9 @@ class TargetVpnGatewaysScopedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -76272,24 +77150,25 @@ class TargetVpnGatewaysScopedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -76750,6 +77629,9 @@ class UrlMapList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -76795,24 +77677,25 @@ class UrlMapList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -77019,6 +77902,9 @@ class UrlMapsAggregatedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -77064,24 +77950,25 @@ class UrlMapsAggregatedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -77168,6 +78055,9 @@ class UrlMapsScopedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -77213,24 +78103,25 @@ class UrlMapsScopedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -77555,6 +78446,9 @@ class UsableSubnetworksAggregatedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -77600,24 +78494,25 @@ class UsableSubnetworksAggregatedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -77809,6 +78704,9 @@ class VmEndpointNatMappingsList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -77854,24 +78752,25 @@ class VmEndpointNatMappingsList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -78096,6 +78995,9 @@ class VpnGatewayAggregatedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -78141,24 +79043,25 @@ class VpnGatewayAggregatedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -78252,6 +79155,9 @@ class VpnGatewayList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -78297,24 +79203,25 @@ class VpnGatewayList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -78541,6 +79448,9 @@ class VpnGatewaysScopedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -78586,24 +79496,25 @@ class VpnGatewaysScopedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -78947,6 +79858,9 @@ class VpnTunnelAggregatedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -78992,24 +79906,25 @@ class VpnTunnelAggregatedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -79103,6 +80018,9 @@ class VpnTunnelList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -79148,24 +80066,25 @@ class VpnTunnelList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -79251,6 +80170,9 @@ class VpnTunnelsScopedList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -79296,24 +80218,25 @@ class VpnTunnelsScopedList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -79467,6 +80390,9 @@ class XpnHostList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -79512,24 +80438,25 @@ class XpnHostList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -79700,6 +80627,9 @@ class ZoneList(_messages.Message):
           overridden. Deprecated unused field.
         INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
           kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
         LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
           exceedingly large number of resources
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
@@ -79745,24 +80675,25 @@ class ZoneList(_messages.Message):
       EXTERNAL_API_WARNING = 5
       FIELD_VALUE_OVERRIDEN = 6
       INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 12
-      NEXT_HOP_INSTANCE_NOT_FOUND = 13
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 14
-      NEXT_HOP_NOT_RUNNING = 15
-      NOT_CRITICAL_ERROR = 16
-      NO_RESULTS_ON_PAGE = 17
-      PARTIAL_SUCCESS = 18
-      REQUIRED_TOS_AGREEMENT = 19
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 20
-      RESOURCE_NOT_DELETED = 21
-      SCHEMA_VALIDATION_IGNORED = 22
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 23
-      UNDECLARED_PROPERTIES = 24
-      UNREACHABLE = 25
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.

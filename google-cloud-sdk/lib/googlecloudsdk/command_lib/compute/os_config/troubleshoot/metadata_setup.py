@@ -43,7 +43,7 @@ def _DisabledMessage(instance, release_track):
   return ('No\n'
           'OS Config agent is not enabled for this VM instance. To enable for'
           ' all VMs in this project, run:\n\n' + project_command + '\n\n'
-          'To enable for this VM, run:\n\n' + instance_command + '\n')
+          'To enable for this VM, run:\n\n' + instance_command)
 
 
 def _EnabledWithDisabledFeaturesMessage(disabled_features):
@@ -52,7 +52,7 @@ def _EnabledWithDisabledFeaturesMessage(disabled_features):
       'OS Config agent is enabled for this VM instance, but the following '
       'features are disabled:\n[' + disabled_features + '].\nSee '
       'https://cloud.google.com/compute/docs/manage-os#disable-features'
-      ' for instructions on how to make changes to this setting.\n'
+      ' for instructions on how to make changes to this setting.'
       )
 
 
@@ -103,7 +103,7 @@ def Check(project, instance, release_track, exception=None):
             disabled_features)
       else:
         continue_flag = True
-        response_message += 'Yes\n'
+        response_message += 'Yes'
     else:
       response_message += _DisabledMessage(instance, release_track)
   else:

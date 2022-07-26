@@ -215,6 +215,20 @@ def AddAssignIp(parser):
       action=arg_parsers.StoreTrueFalseAction)
 
 
+def AddEnableGooglePrivatePath(parser):
+  kwargs = _GetKwargsForBoolFlag(False)
+  parser.add_argument(
+      '--enable-google-private-path',
+      required=False,
+      hidden=True,
+      help='Enable private path for Google Cloud services. '
+      'This field specifies whether the instance should be '
+      'accessible to Google internal Cloud services, e.g. BigQuery. '
+      'This is only applicable to MySQL and Postgres instances that use '
+      'private IP.  Currently SQL Server isn\'t supported.',
+      **kwargs)
+
+
 def AddAuthorizedGAEApps(parser, update=False):
   help_ = (
       'First Generation instances only. List of project IDs for App Engine '

@@ -474,6 +474,57 @@ class BaremetalsolutionProjectsLocationsProvisioningQuotasListRequest(_messages.
   parent = _messages.StringField(3, required=True)
 
 
+class BaremetalsolutionProjectsLocationsQuotasInstancesListRequest(_messages.Message):
+  r"""A BaremetalsolutionProjectsLocationsQuotasInstancesListRequest object.
+
+  Fields:
+    pageSize: Requested page size. The server might return fewer items than
+      requested. If unspecified, server will pick an appropriate default.
+      Notice that page_size field is not supported and won't be respected in
+      the API request for now, will be updated when pagination is supported.
+    pageToken: A token identifying a page of results from the server.
+    parent: Required. Parent value for ListProvisioningQuotasRequest.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class BaremetalsolutionProjectsLocationsQuotasNetworksListRequest(_messages.Message):
+  r"""A BaremetalsolutionProjectsLocationsQuotasNetworksListRequest object.
+
+  Fields:
+    pageSize: Requested page size. The server might return fewer items than
+      requested. If unspecified, server will pick an appropriate default.
+      Notice that page_size field is not supported and won't be respected in
+      the API request for now, will be updated when pagination is supported.
+    pageToken: A token identifying a page of results from the server.
+    parent: Required. Parent value for ListProvisioningQuotasRequest.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class BaremetalsolutionProjectsLocationsQuotasStorageListRequest(_messages.Message):
+  r"""A BaremetalsolutionProjectsLocationsQuotasStorageListRequest object.
+
+  Fields:
+    pageSize: Requested page size. The server might return fewer items than
+      requested. If unspecified, server will pick an appropriate default.
+      Notice that page_size field is not supported and won't be respected in
+      the API request for now, will be updated when pagination is supported.
+    pageToken: A token identifying a page of results from the server.
+    parent: Required. Parent value for ListProvisioningQuotasRequest.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class BaremetalsolutionProjectsLocationsSnapshotSchedulePoliciesCreateRequest(_messages.Message):
   r"""A
   BaremetalsolutionProjectsLocationsSnapshotSchedulePoliciesCreateRequest
@@ -1094,15 +1145,17 @@ class InstanceQuota(_messages.Message):
   Fields:
     availableMachineCount: Number of machines than can be created for the
       given location and instance_type.
-    instanceType: Instance type.
+    gcpService: The gcp service of the provisioning quota.
+    instanceType: Instance type. Deprecated: use gcp_service.
     location: Location where the quota applies.
     name: Output only. The name of the instance quota.
   """
 
   availableMachineCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  instanceType = _messages.StringField(2)
-  location = _messages.StringField(3)
-  name = _messages.StringField(4)
+  gcpService = _messages.StringField(2)
+  instanceType = _messages.StringField(3)
+  location = _messages.StringField(4)
+  name = _messages.StringField(5)
 
 
 class IntakeVlanAttachment(_messages.Message):
@@ -1115,6 +1168,19 @@ class IntakeVlanAttachment(_messages.Message):
 
   id = _messages.StringField(1)
   pairingKey = _messages.StringField(2)
+
+
+class ListInstanceQuotasResponse(_messages.Message):
+  r"""Response message for the list of Instance provisioning quotas.
+
+  Fields:
+    instanceQuotas: The provisioning quotas registered in this project.
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+  """
+
+  instanceQuotas = _messages.MessageField('InstanceQuota', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
 class ListInstancesResponse(_messages.Message):
@@ -1156,6 +1222,19 @@ class ListLunsResponse(_messages.Message):
   luns = _messages.MessageField('Lun', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
   unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListNetworkQuotasResponse(_messages.Message):
+  r"""Response message for the list of Network provisioning quotas.
+
+  Fields:
+    networkQuotas: The provisioning quotas registered in this project.
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+  """
+
+  networkQuotas = _messages.MessageField('NetworkQuota', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
 class ListNetworkUsageResponse(_messages.Message):
@@ -1234,6 +1313,19 @@ class ListSnapshotSchedulePoliciesResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   snapshotSchedulePolicies = _messages.MessageField('SnapshotSchedulePolicy', 2, repeated=True)
+
+
+class ListStorageQuotasResponse(_messages.Message):
+  r"""Response message for the list of Storage provisioning quotas.
+
+  Fields:
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+    storageQuotas: The provisioning quotas registered in this project.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  storageQuotas = _messages.MessageField('StorageQuota', 2, repeated=True)
 
 
 class ListVolumeSnapshotsResponse(_messages.Message):
@@ -1678,6 +1770,20 @@ class NetworkConfig(_messages.Message):
   userNote = _messages.StringField(9)
   vlanAttachments = _messages.MessageField('IntakeVlanAttachment', 10, repeated=True)
   vlanSameProject = _messages.BooleanField(11)
+
+
+class NetworkQuota(_messages.Message):
+  r"""A network provisioning quota.
+
+  Fields:
+    availableBandwidthGbps: Network bandwidth, Gbps
+    gcpService: The gcp service of the provisioning quota.
+    name: Output only. The name of the provisioning quota.
+  """
+
+  availableBandwidthGbps = _messages.IntegerField(1)
+  gcpService = _messages.StringField(2)
+  name = _messages.StringField(3)
 
 
 class NetworkUsage(_messages.Message):
@@ -2356,6 +2462,20 @@ class Status(_messages.Message):
 
 class StopInstanceRequest(_messages.Message):
   r"""Message requesting to stop a server."""
+
+
+class StorageQuota(_messages.Message):
+  r"""A storage provisioning quota .
+
+  Fields:
+    availableGib: Storage size (GiB).
+    gcpService: The gcp service of the provisioning quota.
+    name: Output only. The name of the provisioning quota.
+  """
+
+  availableGib = _messages.IntegerField(1)
+  gcpService = _messages.StringField(2)
+  name = _messages.StringField(3)
 
 
 class SubmitProvisioningConfigRequest(_messages.Message):

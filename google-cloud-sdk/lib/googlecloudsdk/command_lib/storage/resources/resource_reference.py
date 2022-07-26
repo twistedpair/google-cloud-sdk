@@ -101,12 +101,16 @@ class CloudResource(Resource):
     # TODO(b/168690302): Stop using string scheme in storage_url.py.
     return self.storage_url.scheme
 
-  def get_full_metadata_string(self, formatter, show_version_in_url=False):
+  def get_full_metadata_string(self,
+                               formatter,
+                               show_acl=True,
+                               show_version_in_url=False):
     """Returns a string representing the ls -L formatted output.
 
     Args:
       formatter (full_resource_formatter.FullResourceFormatter): A formatter
         instance that defines how the Resource metadata should be formatted.
+      show_acl (bool): Include ACLs list in resource display.
       show_version_in_url (bool): Display extended URL with versioning info.
 
     Returns:
@@ -173,9 +177,12 @@ class BucketResource(CloudResource):
   def is_container(self):
     return True
 
-  def get_full_metadata_string(self, formatter, show_version_in_url=False):
+  def get_full_metadata_string(self,
+                               formatter,
+                               show_acl=True,
+                               show_version_in_url=False):
     """See parent class."""
-    del show_version_in_url  # Unused.
+    del show_acl, show_version_in_url  # Unused.
     return formatter.format_bucket(self.storage_url,
                                    self.get_displayable_bucket_data())
 
@@ -265,11 +272,15 @@ class ObjectResource(CloudResource):
     """To be overridden by child classes."""
     raise NotImplementedError
 
-  def get_full_metadata_string(self, formatter, show_version_in_url=False):
+  def get_full_metadata_string(self,
+                               formatter,
+                               show_acl=True,
+                               show_version_in_url=False):
     """See parent class."""
     return formatter.format_object(
         self.storage_url,
         self.get_displayable_object_data(),
+        show_acl=show_acl,
         show_version_in_url=show_version_in_url)
 
 
@@ -320,7 +331,7 @@ class FileObjectResource(Resource):
   @property
   def size(self):
     """Returns file size or None if pipe or stream."""
-    if self.storage_url.is_pipe:
+    if self.storage_url.is_stream:
       return None
     return os.path.getsize(self.storage_url.object_name)
 
@@ -570,8 +581,12 @@ class DisplayableObjectData(DisplayableResourceData):
     self.kms_key = kms_key
     self.md5_hash = md5_hash
     self.metageneration = metageneration
-    self.noncurrent_time = noncurrent_time
-    self.retention_expiration = retention_expiration
+    self.noncurrent_time = (
+        resource_util.get_formatted_timestamp_in_utc(noncurrent_time)
+        if noncurrent_time is not None else None)
+    self.retention_expiration = (
+        resource_util.get_formatted_timestamp_in_utc(retention_expiration)
+        if retention_expiration is not None else None)
     self.storage_class = storage_class
     self.storage_class_update_time = (
         resource_util.get_formatted_timestamp_in_utc(storage_class_update_time)

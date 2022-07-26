@@ -1653,6 +1653,99 @@ class TestIamPermissionsResponse(_messages.Message):
   permissions = _messages.StringField(1, repeated=True)
 
 
+class ValidationCheck(_messages.Message):
+  r"""ValidationCheck represents the result of preflight check.
+
+  Enums:
+    OptionValueValuesEnum: Options used for the validation check
+    ScenarioValueValuesEnum: Output only. The scenario when the preflight
+      checks were run.
+
+  Fields:
+    option: Options used for the validation check
+    scenario: Output only. The scenario when the preflight checks were run.
+    status: Output only. The detailed validation check status.
+  """
+
+  class OptionValueValuesEnum(_messages.Enum):
+    r"""Options used for the validation check
+
+    Values:
+      OPTIONS_UNSPECIFIED: Default value. Standard preflight validation check
+        will be used.
+      SKIP_VALIDATION_CHECK_BLOCKING: Prevent failed preflight checks from
+        failing.
+      SKIP_VALIDATION_ALL: Skip all preflight check validations.
+    """
+    OPTIONS_UNSPECIFIED = 0
+    SKIP_VALIDATION_CHECK_BLOCKING = 1
+    SKIP_VALIDATION_ALL = 2
+
+  class ScenarioValueValuesEnum(_messages.Enum):
+    r"""Output only. The scenario when the preflight checks were run.
+
+    Values:
+      SCENARIO_UNSPECIFIED: Default value. This value is unused.
+      CREATE: The validation check occurred during an create flow.
+      UPDATE: The validation check occurred during an update flow.
+    """
+    SCENARIO_UNSPECIFIED = 0
+    CREATE = 1
+    UPDATE = 2
+
+  option = _messages.EnumField('OptionValueValuesEnum', 1)
+  scenario = _messages.EnumField('ScenarioValueValuesEnum', 2)
+  status = _messages.MessageField('ValidationCheckStatus', 3)
+
+
+class ValidationCheckResult(_messages.Message):
+  r"""ValidationCheckResult defines the details about the validation check.
+
+  Enums:
+    StateValueValuesEnum: The validation check state.
+
+  Fields:
+    category: The category of the validation.
+    description: The description of the validation check.
+    details: Detailed failure information, which might be unformatted.
+    reason: A human-readable message of the check failure.
+    state: The validation check state.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""The validation check state.
+
+    Values:
+      STATE_UNKNOWN: The default value. The check result is unknown.
+      STATE_FAILURE: The check failed.
+      STATE_SKIPPED: The check was skipped.
+      STATE_FATAL: The check itself failed to complete.
+      STATE_WARNING: The check encountered a warning.
+    """
+    STATE_UNKNOWN = 0
+    STATE_FAILURE = 1
+    STATE_SKIPPED = 2
+    STATE_FATAL = 3
+    STATE_WARNING = 4
+
+  category = _messages.StringField(1)
+  description = _messages.StringField(2)
+  details = _messages.StringField(3)
+  reason = _messages.StringField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+
+
+class ValidationCheckStatus(_messages.Message):
+  r"""ValidationCheckStatus defines the detailed validation check status.
+
+  Fields:
+    result: Individual checks which failed as part of the Preflight check
+      execution.
+  """
+
+  result = _messages.MessageField('ValidationCheckResult', 1, repeated=True)
+
+
 class VmwareAAGConfig(_messages.Message):
   r"""VmwareAAGConfig specifies anti affinity group config for VMware User
   Cluster.
@@ -1779,6 +1872,8 @@ class VmwareCluster(_messages.Message):
     uid: Output only. The unique identifier of the VMware User Cluster.
     updateTime: Output only. The time at which VMware User Cluster was last
       updated.
+    validationCheck: Output only. ValidationCheck represents the result of the
+      preflight check job.
     vcenter: Output only. VmwareVCenterConfig specifies vCenter config for the
       user cluster. Inherited from the admin cluster.
     vmTrackingEnabled: Enable VM tracking.
@@ -1870,9 +1965,10 @@ class VmwareCluster(_messages.Message):
   storage = _messages.MessageField('VmwareStorageConfig', 22)
   uid = _messages.StringField(23)
   updateTime = _messages.StringField(24)
-  vcenter = _messages.MessageField('VmwareVCenterConfig', 25)
-  vmTrackingEnabled = _messages.BooleanField(26)
-  workloadIdentity = _messages.MessageField('VmwareWorkloadIdentityConfig', 27)
+  validationCheck = _messages.MessageField('ValidationCheck', 25)
+  vcenter = _messages.MessageField('VmwareVCenterConfig', 26)
+  vmTrackingEnabled = _messages.BooleanField(27)
+  workloadIdentity = _messages.MessageField('VmwareWorkloadIdentityConfig', 28)
 
 
 class VmwareControlPlaneNodeConfig(_messages.Message):

@@ -2168,33 +2168,6 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def Patch(self, request, global_params=None):
-      r"""Update a DeploymentResourcePool.
-
-      Args:
-        request: (AiplatformProjectsLocationsDeploymentResourcePoolsPatchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleLongrunningOperation) The response message.
-      """
-      config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/deploymentResourcePools/{deploymentResourcePoolsId}',
-        http_method='PATCH',
-        method_id='aiplatform.projects.locations.deploymentResourcePools.patch',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['updateMask'],
-        relative_path='v1beta1/{+name}',
-        request_field='googleCloudAiplatformV1beta1DeploymentResourcePool',
-        request_type_name='AiplatformProjectsLocationsDeploymentResourcePoolsPatchRequest',
-        response_type_name='GoogleLongrunningOperation',
-        supports_download=False,
-    )
-
     def QueryDeployedModels(self, request, global_params=None):
       r"""List DeployedModels that have been deployed on this DeploymentResourcePool.
 

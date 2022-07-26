@@ -29,7 +29,7 @@ class GkemulticloudProjectsLocationsAwsClustersAwsNodePoolsCreateRequest(_messag
       within the parent resource. The provided ID will be part of the
       AwsNodePool resource name formatted as
       `projects//locations//awsClusters//awsNodePools/`. Valid characters are
-      `/a-z-/`. Cannot be longer than 40 characters.
+      `/a-z-/`. Cannot be longer than 63 characters.
     googleCloudGkemulticloudV1AwsNodePool: A
       GoogleCloudGkemulticloudV1AwsNodePool resource to be passed as the
       request body.
@@ -156,7 +156,7 @@ class GkemulticloudProjectsLocationsAwsClustersCreateRequest(_messages.Message):
       within the parent resource. The provided ID will be part of the
       AwsCluster resource name formatted as
       `projects//locations//awsClusters/`. Valid characters are `/a-z-/`.
-      Cannot be longer than 40 characters.
+      Cannot be longer than 63 characters.
     googleCloudGkemulticloudV1AwsCluster: A
       GoogleCloudGkemulticloudV1AwsCluster resource to be passed as the
       request body.
@@ -321,7 +321,7 @@ class GkemulticloudProjectsLocationsAzureClientsCreateRequest(_messages.Message)
       within the parent resource. The provided ID will be part of the
       AzureClient resource name formatted as
       `projects//locations//azureClients/`. Valid characters are `/a-z-/`.
-      Cannot be longer than 40 characters.
+      Cannot be longer than 63 characters.
     googleCloudGkemulticloudV1AzureClient: A
       GoogleCloudGkemulticloudV1AzureClient resource to be passed as the
       request body.
@@ -405,7 +405,7 @@ class GkemulticloudProjectsLocationsAzureClustersAzureNodePoolsCreateRequest(_me
       unique within the parent resource. The provided ID will be part of the
       AzureNodePool resource name formatted as
       `projects//locations//azureClusters//azureNodePools/`. Valid characters
-      are `/a-z-/`. Cannot be longer than 40 characters.
+      are `/a-z-/`. Cannot be longer than 63 characters.
     googleCloudGkemulticloudV1AzureNodePool: A
       GoogleCloudGkemulticloudV1AzureNodePool resource to be passed as the
       request body.
@@ -524,7 +524,7 @@ class GkemulticloudProjectsLocationsAzureClustersCreateRequest(_messages.Message
       unique within the parent resource. The provided ID will be part of the
       AzureCluster resource name formatted as
       `projects//locations//azureClusters/`. Valid characters are `/a-z-/`.
-      Cannot be longer than 40 characters.
+      Cannot be longer than 63 characters.
     googleCloudGkemulticloudV1AzureCluster: A
       GoogleCloudGkemulticloudV1AzureCluster resource to be passed as the
       request body.

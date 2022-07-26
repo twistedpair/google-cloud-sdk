@@ -2146,6 +2146,7 @@ class RRSetRoutingPolicy(_messages.Message):
     geo: A RRSetRoutingPolicyGeoPolicy attribute.
     geoPolicy: A RRSetRoutingPolicyGeoPolicy attribute.
     kind: A string attribute.
+    primaryBackup: A RRSetRoutingPolicyPrimaryBackupPolicy attribute.
     wrr: A RRSetRoutingPolicyWrrPolicy attribute.
     wrrPolicy: A RRSetRoutingPolicyWrrPolicy attribute.
   """
@@ -2153,8 +2154,9 @@ class RRSetRoutingPolicy(_messages.Message):
   geo = _messages.MessageField('RRSetRoutingPolicyGeoPolicy', 1)
   geoPolicy = _messages.MessageField('RRSetRoutingPolicyGeoPolicy', 2)
   kind = _messages.StringField(3, default='dns#rRSetRoutingPolicy')
-  wrr = _messages.MessageField('RRSetRoutingPolicyWrrPolicy', 4)
-  wrrPolicy = _messages.MessageField('RRSetRoutingPolicyWrrPolicy', 5)
+  primaryBackup = _messages.MessageField('RRSetRoutingPolicyPrimaryBackupPolicy', 4)
+  wrr = _messages.MessageField('RRSetRoutingPolicyWrrPolicy', 5)
+  wrrPolicy = _messages.MessageField('RRSetRoutingPolicyWrrPolicy', 6)
 
 
 class RRSetRoutingPolicyGeoPolicy(_messages.Message):
@@ -2162,19 +2164,30 @@ class RRSetRoutingPolicyGeoPolicy(_messages.Message):
   the querying user.
 
   Fields:
+    enableFencing: Without fencing, if health check fails for all configured
+      items in the current geo bucket, we'll failover to the next nearest geo
+      bucket. With fencing, if health check is enabled, as long as some
+      targets in the current geo bucket are healthy, we'll return only the
+      healthy targets. However, if they're all unhealthy, we won't failover to
+      the next nearest bucket, we'll simply return all the items in the
+      current bucket even though they're unhealthy.
     items: The primary geo routing configuration. If there are multiple items
       with the same location, an error is returned instead.
     kind: A string attribute.
   """
 
-  items = _messages.MessageField('RRSetRoutingPolicyGeoPolicyGeoPolicyItem', 1, repeated=True)
-  kind = _messages.StringField(2, default='dns#rRSetRoutingPolicyGeoPolicy')
+  enableFencing = _messages.BooleanField(1)
+  items = _messages.MessageField('RRSetRoutingPolicyGeoPolicyGeoPolicyItem', 2, repeated=True)
+  kind = _messages.StringField(3, default='dns#rRSetRoutingPolicyGeoPolicy')
 
 
 class RRSetRoutingPolicyGeoPolicyGeoPolicyItem(_messages.Message):
   r"""ResourceRecordSet data for one geo location.
 
   Fields:
+    healthCheckedTargets: For A and AAAA types only. Endpoints to return in
+      the query result only if they are healthy. These can be specified along
+      with rrdata within this item.
     kind: A string attribute.
     location: The geo-location granularity is a GCP region. This location
       string should correspond to a GCP region. e.g. "us-east1",
@@ -2185,10 +2198,98 @@ class RRSetRoutingPolicyGeoPolicyGeoPolicyItem(_messages.Message):
       enabled zones, there's a restriction of 1 ip per item. .
   """
 
-  kind = _messages.StringField(1, default='dns#rRSetRoutingPolicyGeoPolicyGeoPolicyItem')
-  location = _messages.StringField(2)
-  rrdatas = _messages.StringField(3, repeated=True)
-  signatureRrdatas = _messages.StringField(4, repeated=True)
+  healthCheckedTargets = _messages.MessageField('RRSetRoutingPolicyHealthCheckTargets', 1)
+  kind = _messages.StringField(2, default='dns#rRSetRoutingPolicyGeoPolicyGeoPolicyItem')
+  location = _messages.StringField(3)
+  rrdatas = _messages.StringField(4, repeated=True)
+  signatureRrdatas = _messages.StringField(5, repeated=True)
+
+
+class RRSetRoutingPolicyHealthCheckTargets(_messages.Message):
+  r"""HealthCheckTargets describes endpoints to health-check when responding
+  to Routing Policy queries. Only the healthy endpoints will be included in
+  the response.
+
+  Fields:
+    internalLoadBalancers: A RRSetRoutingPolicyLoadBalancerTarget attribute.
+  """
+
+  internalLoadBalancers = _messages.MessageField('RRSetRoutingPolicyLoadBalancerTarget', 1, repeated=True)
+
+
+class RRSetRoutingPolicyLoadBalancerTarget(_messages.Message):
+  r"""A RRSetRoutingPolicyLoadBalancerTarget object.
+
+  Enums:
+    IpProtocolValueValuesEnum:
+    LoadBalancerTypeValueValuesEnum:
+
+  Fields:
+    ipAddress: The frontend IP address of the
+    ipProtocol: A IpProtocolValueValuesEnum attribute.
+    kind: A string attribute.
+    loadBalancerType: A LoadBalancerTypeValueValuesEnum attribute.
+    networkUrl: The fully qualified url of the network on which the ILB is
+    port: Load Balancer to health check. The configured port of the Load
+      Balancer.
+    project: present. This should be formatted like https://www.googleapis.com
+      /compute/v1/projects/{project}/global/networks/{network} The project ID
+      in which the ILB exists.
+    region: The region for regional ILBs.
+  """
+
+  class IpProtocolValueValuesEnum(_messages.Enum):
+    r"""IpProtocolValueValuesEnum enum type.
+
+    Values:
+      tcp: <no description>
+      udp: <no description>
+      undefined: <no description>
+    """
+    tcp = 0
+    udp = 1
+    undefined = 2
+
+  class LoadBalancerTypeValueValuesEnum(_messages.Enum):
+    r"""LoadBalancerTypeValueValuesEnum enum type.
+
+    Values:
+      none: <no description>
+      regionalL4ilb: <no description>
+    """
+    none = 0
+    regionalL4ilb = 1
+
+  ipAddress = _messages.StringField(1)
+  ipProtocol = _messages.EnumField('IpProtocolValueValuesEnum', 2)
+  kind = _messages.StringField(3, default='dns#rRSetRoutingPolicyLoadBalancerTarget')
+  loadBalancerType = _messages.EnumField('LoadBalancerTypeValueValuesEnum', 4)
+  networkUrl = _messages.StringField(5)
+  port = _messages.StringField(6)
+  project = _messages.StringField(7)
+  region = _messages.StringField(8)
+
+
+class RRSetRoutingPolicyPrimaryBackupPolicy(_messages.Message):
+  r"""Configures a RRSetRoutingPolicy such that all queries are responded with
+  the primary_targets if they are healthy. And if all of them are unhealthy,
+  then we fallback to a geo localized policy.
+
+  Fields:
+    backupGeoTargets: Backup targets provide a regional failover policy for
+      the otherwise global primary targets. If serving state is set to BACKUP,
+      this policy essentially becomes a geo routing policy.
+    kind: A string attribute.
+    primaryTargets: A RRSetRoutingPolicyHealthCheckTargets attribute.
+    trickleTraffic: When serving state is PRIMARY, this field provides the
+      option of sending a small percentage of the traffic to the backup
+      targets.
+  """
+
+  backupGeoTargets = _messages.MessageField('RRSetRoutingPolicyGeoPolicy', 1)
+  kind = _messages.StringField(2, default='dns#rRSetRoutingPolicyPrimaryBackupPolicy')
+  primaryTargets = _messages.MessageField('RRSetRoutingPolicyHealthCheckTargets', 3)
+  trickleTraffic = _messages.FloatField(4)
 
 
 class RRSetRoutingPolicyWrrPolicy(_messages.Message):
@@ -2208,6 +2309,12 @@ class RRSetRoutingPolicyWrrPolicyWrrPolicyItem(_messages.Message):
   r"""A routing block which contains the routing information for one WRR item.
 
   Fields:
+    healthCheckedTargets: endpoints that need to be health checked before
+      making the routing decision. The unhealthy endpoints will be omitted
+      from the result. If all endpoints within a buckete are unhealthy, we'll
+      choose a different bucket (sampled w.r.t. its weight) for responding.
+      Note that if DNSSEC is enabled for this zone, only one of rrdata or
+      health_checked_targets can be set.
     kind: A string attribute.
     rrdatas: A string attribute.
     signatureRrdatas: DNSSEC generated signatures for all the rrdata within
@@ -2219,10 +2326,11 @@ class RRSetRoutingPolicyWrrPolicyWrrPolicyItem(_messages.Message):
       weights configured for all items. This weight should be non-negative.
   """
 
-  kind = _messages.StringField(1, default='dns#rRSetRoutingPolicyWrrPolicyWrrPolicyItem')
-  rrdatas = _messages.StringField(2, repeated=True)
-  signatureRrdatas = _messages.StringField(3, repeated=True)
-  weight = _messages.FloatField(4)
+  healthCheckedTargets = _messages.MessageField('RRSetRoutingPolicyHealthCheckTargets', 1)
+  kind = _messages.StringField(2, default='dns#rRSetRoutingPolicyWrrPolicyWrrPolicyItem')
+  rrdatas = _messages.StringField(3, repeated=True)
+  signatureRrdatas = _messages.StringField(4, repeated=True)
+  weight = _messages.FloatField(5)
 
 
 class ResourceRecordSet(_messages.Message):
@@ -2426,7 +2534,12 @@ class ResponsePolicyRule(_messages.Message):
         public Internet instead. For instance, if these rules exist:
         *.example.com -> LocalData 1.2.3.4 foo.example.com -> Behavior
         'bypassResponsePolicy' Then a query for 'foo.example.com' skips the
-        wildcard.
+        wildcard. This additionally functions to facilitate the allowlist
+        feature. RPZs can be applied to multiple levels in the (eventually
+        org, folder, project, network) hierarchy. If a rule is applied at a
+        higher level of the hierarchy, adding a passthru rule at a lower level
+        will supersede that, and a query from an affected vm to that domain
+        will be exempt from the RPZ and proceed to normal resolution behavior.
     """
     behaviorUnspecified = 0
     bypassResponsePolicy = 1

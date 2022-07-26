@@ -717,12 +717,12 @@
           "type": "string",
           "enumDescriptions": [
             "Not allowed.",
-            "Allow connection to the backend even if certificate chain verification of the client certificate failed or no client certificate was presented. The proof of possession of the private key is always checked if client certificate was presented. This mode requires the backend to implement processing of data extracted from a client certificate to authenticate the peer, or to reject connections if the client certificate fingerprint is missing.",
-            "Require a client certificate and allow connection to the backend only if verification of the client certificate passed. If no trust stores are specified it will require any client certificate and force the backend to perform authentication of the peer."
+            "Allow connection to the backend even if certificate chain validation of the client certificate failed or no client certificate was presented. The proof of possession of the private key is always checked if client certificate was presented. This mode requires the backend to implement processing of data extracted from a client certificate to authenticate the peer, or to reject connections if the client certificate fingerprint is missing.",
+            "Require a client certificate and allow connection to the backend only if validation of the client certificate passed. If no trust stores are specified it will require any client certificate and force the backend to perform authentication of the peer."
           ],
           "enum": [
             "CLIENT_VALIDATION_MODE_UNSPECIFIED",
-            "ALLOW_UNVERIFIED_OR_MISSING_CLIENT_CERT",
+            "ALLOW_INVALID_OR_MISSING_CLIENT_CERT",
             "REJECT_INVALID"
           ]
         },

@@ -22,8 +22,8 @@ import base64
 import binascii
 import re
 
+from googlecloudsdk.api_lib.storage import metadata_util
 from googlecloudsdk.api_lib.storage import s3_metadata_field_converters
-from googlecloudsdk.command_lib.storage import posix_util
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage import user_request_args_factory
 from googlecloudsdk.command_lib.storage.resources import resource_reference
@@ -223,11 +223,13 @@ def _process_value_or_clear_flag(metadata, key, value):
     metadata[key] = value
 
 
-def get_object_metadata_dict_from_request_config(request_config,
-                                                 file_path=None):
+def update_object_metadata_dict_from_request_config(object_metadata,
+                                                    request_config,
+                                                    file_path=None):
   """Returns S3 object metadata dict fields based on RequestConfig.
 
   Args:
+    object_metadata (dict): Existing object metadata.
     request_config (request_config): May contain data to add to object_metadata.
     file_path (str|None): If present, used for parsing POSIX data from a file on
       the system for the --preserve-posix flag. This flag's presence is
@@ -236,45 +238,32 @@ def get_object_metadata_dict_from_request_config(request_config,
   Returns:
     dict: Metadata for API request.
   """
-  metadata = {}
   if request_config.predefined_acl_string is not None:
-    metadata['ACL'] = translate_predefined_acl_string_to_s3(
+    object_metadata['ACL'] = translate_predefined_acl_string_to_s3(
         request_config.predefined_acl_string)
 
   resource_args = request_config.resource_args
-  if (resource_args and
-      resource_args.custom_metadata is user_request_args_factory.CLEAR):
-    metadata['Metadata'] = None
-  else:
-    should_parse_file_posix = request_config.system_posix_data and file_path
-    should_add_custom_metadata = (
-        resource_args and resource_args.custom_metadata is not None)
-    if should_parse_file_posix or should_add_custom_metadata:
-      custom_metadata = {}
 
-      if should_parse_file_posix:
-        posix_attributes = posix_util.get_posix_attributes_from_file(file_path)
-        posix_util.update_custom_metadata_dict_with_posix_attributes(
-            custom_metadata, posix_attributes)
+  existing_metadata = object_metadata.get('Metadata', {})
 
-      if should_add_custom_metadata:
-        custom_metadata.update(resource_args.custom_metadata)
-
-      metadata['Metadata'] = custom_metadata
+  custom_metadata_dict = metadata_util.get_updated_custom_metadata(
+      existing_metadata, request_config, file_path=file_path)
+  if custom_metadata_dict is not None:
+    object_metadata['Metadata'] = custom_metadata_dict
 
   if resource_args:
-    _process_value_or_clear_flag(metadata, 'CacheControl',
+    _process_value_or_clear_flag(object_metadata, 'CacheControl',
                                  resource_args.cache_control)
-    _process_value_or_clear_flag(metadata, 'ContentDisposition',
+    _process_value_or_clear_flag(object_metadata, 'ContentDisposition',
                                  resource_args.content_disposition)
-    _process_value_or_clear_flag(metadata, 'ContentEncoding',
+    _process_value_or_clear_flag(object_metadata, 'ContentEncoding',
                                  resource_args.content_encoding)
-    _process_value_or_clear_flag(metadata, 'ContentLanguage',
+    _process_value_or_clear_flag(object_metadata, 'ContentLanguage',
                                  resource_args.content_language)
-    _process_value_or_clear_flag(metadata, 'ContentType',
+    _process_value_or_clear_flag(object_metadata, 'ContentType',
                                  resource_args.content_type)
-    _process_value_or_clear_flag(metadata, 'ContentMD5', resource_args.md5_hash)
-    _process_value_or_clear_flag(metadata, 'StorageClass',
+    _process_value_or_clear_flag(object_metadata, 'ContentMD5',
+                                 resource_args.md5_hash)
+    _process_value_or_clear_flag(object_metadata, 'StorageClass',
                                  resource_args.storage_class)
 
-  return metadata

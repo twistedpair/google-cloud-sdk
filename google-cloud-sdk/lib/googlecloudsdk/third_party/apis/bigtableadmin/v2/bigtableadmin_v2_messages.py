@@ -1321,7 +1321,7 @@ class CopyBackupMetadata(_messages.Message):
       Values are of the form `projects//instances//clusters//backups/`.
     progress: The progress of the CopyBackup operation.
     sourceBackup: The name of the source backup that is being copied from.
-      Values are of the form `projects//instances//backups/`.
+      Values are of the form `projects//instances//clusters//backups/`.
   """
 
   name = _messages.StringField(1)

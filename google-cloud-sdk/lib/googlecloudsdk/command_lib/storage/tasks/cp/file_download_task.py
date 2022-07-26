@@ -98,8 +98,8 @@ def _log_or_raise_crc32c_issues(resource):
 
 def _should_perform_sliced_download(source_resource, destination_resource):
   """Returns True if conditions are right for a sliced download."""
-  if destination_resource.storage_url.is_pipe:
-    # Can't write to different indices of pipe.
+  if destination_resource.storage_url.is_stream:
+    # Can't write to different indices of streams.
     return False
   if (not source_resource.crc32c_hash and
       properties.VALUES.storage.check_hashes.Get() !=

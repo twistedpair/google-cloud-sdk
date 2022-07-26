@@ -33,7 +33,7 @@ def Check(instance_ref, release_track):
     service_enabled = enable_api.IsServiceEnabled(instance_ref.project,
                                                   'osconfig.googleapis.com')
     if service_enabled:
-      response_message += 'Yes\n'
+      response_message += 'Yes'
       continue_flag = True
     else:
       # Format the release_track.

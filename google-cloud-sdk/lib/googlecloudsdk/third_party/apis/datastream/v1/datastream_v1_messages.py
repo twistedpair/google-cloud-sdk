@@ -1291,10 +1291,14 @@ class MysqlSourceConfig(_messages.Message):
   Fields:
     excludeObjects: MySQL objects to exclude from the stream.
     includeObjects: MySQL objects to retrieve from the source.
+    maxConcurrentCdcTasks: Maximum number of concurrent CDC tasks. The number
+      should be non negative. If not set (or set to 0), the system's default
+      value will be used.
   """
 
   excludeObjects = _messages.MessageField('MysqlRdbms', 1)
   includeObjects = _messages.MessageField('MysqlRdbms', 2)
+  maxConcurrentCdcTasks = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class MysqlSslConfig(_messages.Message):
@@ -1592,11 +1596,17 @@ class OracleSourceConfig(_messages.Message):
     dropLargeObjects: Drop large object values.
     excludeObjects: Oracle objects to exclude from the stream.
     includeObjects: Oracle objects to include in the stream.
+    maxConcurrentCdcTasks: Maximum number of concurrent CDC tasks. The number
+      should be non negative. If not set (or set to 0), the system's default
+      value will be used.
+    streamLargeObjects: Stream large object values.
   """
 
   dropLargeObjects = _messages.MessageField('DropLargeObjects', 1)
   excludeObjects = _messages.MessageField('OracleRdbms', 2)
   includeObjects = _messages.MessageField('OracleRdbms', 3)
+  maxConcurrentCdcTasks = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  streamLargeObjects = _messages.MessageField('StreamLargeObjects', 5)
 
 
 class OracleTable(_messages.Message):
@@ -2045,6 +2055,10 @@ class Stream(_messages.Message):
   sourceConfig = _messages.MessageField('SourceConfig', 10)
   state = _messages.EnumField('StateValueValuesEnum', 11)
   updateTime = _messages.StringField(12)
+
+
+class StreamLargeObjects(_messages.Message):
+  r"""Configuration to stream large object values."""
 
 
 class StreamObject(_messages.Message):

@@ -183,6 +183,16 @@ def SecurityPolicyFromFile(input_file, messages, file_format):
                   ['intervalSec']),
               conformAction=rate_limit_options['conformAction'],
               exceedAction=rate_limit_options['exceedAction']))
+      if 'exceedActionRpcStatus' in rate_limit_options:
+        exceed_action_rpc_status = messages.SecurityPolicyRuleRateLimitOptionsRpcStatus(
+        )
+        if 'code' in rate_limit_options['exceedActionRpcStatus']:
+          exceed_action_rpc_status.code = rate_limit_options[
+              'exceedActionRpcStatus']['code']
+        if 'message' in rate_limit_options['exceedActionRpcStatus']:
+          exceed_action_rpc_status.message = rate_limit_options[
+              'exceedActionRpcStatus']['message']
+        security_policy_rule.rateLimitOptions.exceedActionRpcStatus = exceed_action_rpc_status
       if 'exceedRedirectOptions' in rate_limit_options:
         exceed_redirect_options = messages.SecurityPolicyRuleRedirectOptions()
         if 'type' in rate_limit_options['exceedRedirectOptions']:
@@ -387,7 +397,7 @@ def CreateRecaptchaOptionsConfig(client, args,
   return recaptcha_options_config
 
 
-def CreateRateLimitOptions(client, args):
+def CreateRateLimitOptions(client, args, support_exceed_action_rpc_status):
   """Returns a SecurityPolicyRuleRateLimitOptions message."""
 
   messages = client.messages
@@ -444,6 +454,18 @@ def CreateRateLimitOptions(client, args):
 
   if args.IsSpecified('ban_duration_sec'):
     rate_limit_options.banDurationSec = args.ban_duration_sec
+    is_updated = True
+
+  if support_exceed_action_rpc_status and (
+      args.IsSpecified('exceed_action_rpc_status_code') or
+      args.IsSpecified('exceed_action_rpc_status_message')):
+    exceed_action_rpc_status = messages.SecurityPolicyRuleRateLimitOptionsRpcStatus(
+    )
+    if args.IsSpecified('exceed_action_rpc_status_code'):
+      exceed_action_rpc_status.code = args.exceed_action_rpc_status_code
+    if args.IsSpecified('exceed_action_rpc_status_message'):
+      exceed_action_rpc_status.message = args.exceed_action_rpc_status_message
+    rate_limit_options.exceedActionRpcStatus = exceed_action_rpc_status
     is_updated = True
 
   return rate_limit_options if is_updated else None

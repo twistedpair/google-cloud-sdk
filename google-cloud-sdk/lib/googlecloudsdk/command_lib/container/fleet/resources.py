@@ -141,6 +141,7 @@ def AddMembershipResourceArg(parser,
   concept_parsers.ConceptParser.ForResource(
       flag_name,
       spec,
-      'The group of arguments defining a membership resource.',
+      'The group of arguments defining one or more memberships.'
+      if plural else 'The group of arguments defining a membership.',
       plural=plural,
       required=membership_required).AddToParser(parser)

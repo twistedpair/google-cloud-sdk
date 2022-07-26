@@ -139,8 +139,8 @@ class FileWildcardIterator(WildcardIterator):
     self._ignore_symlinks = ignore_symlinks
 
   def __iter__(self):
-    # Files named '-' will not be copied, as that string makes is_stream true.
-    if self._url.is_stream:
+    # Files named '-' will not be copied, as that string makes is_stdio true.
+    if self._url.is_stdio:
       yield resource_reference.FileObjectResource(self._url)
 
     recursion_needed = '**' in self._path

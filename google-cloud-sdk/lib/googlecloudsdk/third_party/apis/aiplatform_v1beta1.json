@@ -19306,6 +19306,10 @@
         "multiLabel": {
           "description": "If false, a single-label (multi-class) Model will be trained (i.e. assuming that for each image just up to one annotation may be applicable). If true, a multi-label Model will be trained (i.e. assuming that for each image multiple annotations may be applicable).",
           "type": "boolean"
+        },
+        "uptrainBaseModelId": {
+          "description": "The ID of `base` model for upTraining. If it is specified, the new model will be upTrained based on the `base` model for upTraining. Otherwise, the new model will be trained from scratch. The `base` model for upTraining must be in the same Project and Location as the new Model to train, and have the same modelType.",
+          "type": "string"
         }
       }
     },
@@ -19361,7 +19365,8 @@
             "A model best tailored to be used within Google Cloud, and which cannot be exported. Expected to have a low latency, but may have lower prediction quality than other cloud models.",
             "A model that, in addition to being available within Google Cloud can also be exported (see ModelService.ExportModel) and used on a mobile or edge device with TensorFlow afterwards. Expected to have low latency, but may have lower prediction quality than other mobile models.",
             "A model that, in addition to being available within Google Cloud can also be exported (see ModelService.ExportModel) and used on a mobile or edge device with TensorFlow afterwards.",
-            "A model that, in addition to being available within Google Cloud, can also be exported (see ModelService.ExportModel) and used on a mobile or edge device with TensorFlow afterwards. Expected to have a higher latency, but should also have a higher prediction quality than other mobile models."
+            "A model that, in addition to being available within Google Cloud, can also be exported (see ModelService.ExportModel) and used on a mobile or edge device with TensorFlow afterwards. Expected to have a higher latency, but should also have a higher prediction quality than other mobile models.",
+            "A model best tailored to be used within Google Cloud, and which cannot be exported. Expected to best support predictions in streaming with lower latency and lower prediction quality than other cloud models."
           ],
           "enum": [
             "MODEL_TYPE_UNSPECIFIED",
@@ -19369,7 +19374,8 @@
             "CLOUD_LOW_LATENCY_1",
             "MOBILE_TF_LOW_LATENCY_1",
             "MOBILE_TF_VERSATILE_1",
-            "MOBILE_TF_HIGH_ACCURACY_1"
+            "MOBILE_TF_HIGH_ACCURACY_1",
+            "CLOUD_STREAMING_1"
           ]
         },
         "budgetMilliNodeHours": {
@@ -23994,6 +24000,10 @@
         "multiLabel": {
           "description": "If false, a single-label (multi-class) Model will be trained (i.e. assuming that for each image just up to one annotation may be applicable). If true, a multi-label Model will be trained (i.e. assuming that for each image multiple annotations may be applicable).",
           "type": "boolean"
+        },
+        "uptrainBaseModelId": {
+          "description": "The ID of `base` model for upTraining. If it is specified, the new model will be upTrained based on the `base` model for upTraining. Otherwise, the new model will be trained from scratch. The `base` model for upTraining must be in the same Project and Location as the new Model to train, and have the same modelType.",
+          "type": "string"
         }
       }
     },
@@ -24049,7 +24059,8 @@
             "A model best tailored to be used within Google Cloud, and which cannot be exported. Expected to have a low latency, but may have lower prediction quality than other cloud models.",
             "A model that, in addition to being available within Google Cloud can also be exported (see ModelService.ExportModel) and used on a mobile or edge device with TensorFlow afterwards. Expected to have low latency, but may have lower prediction quality than other mobile models.",
             "A model that, in addition to being available within Google Cloud can also be exported (see ModelService.ExportModel) and used on a mobile or edge device with TensorFlow afterwards.",
-            "A model that, in addition to being available within Google Cloud, can also be exported (see ModelService.ExportModel) and used on a mobile or edge device with TensorFlow afterwards. Expected to have a higher latency, but should also have a higher prediction quality than other mobile models."
+            "A model that, in addition to being available within Google Cloud, can also be exported (see ModelService.ExportModel) and used on a mobile or edge device with TensorFlow afterwards. Expected to have a higher latency, but should also have a higher prediction quality than other mobile models.",
+            "A model best tailored to be used within Google Cloud, and which cannot be exported. Expected to best support predictions in streaming with lower latency and lower prediction quality than other cloud models."
           ],
           "enum": [
             "MODEL_TYPE_UNSPECIFIED",
@@ -24057,7 +24068,8 @@
             "CLOUD_LOW_LATENCY_1",
             "MOBILE_TF_LOW_LATENCY_1",
             "MOBILE_TF_VERSATILE_1",
-            "MOBILE_TF_HIGH_ACCURACY_1"
+            "MOBILE_TF_HIGH_ACCURACY_1",
+            "CLOUD_STREAMING_1"
           ]
         },
         "budgetMilliNodeHours": {
@@ -29179,40 +29191,6 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "List DeploymentResourcePools in a location."
-                },
-                "patch": {
-                  "id": "aiplatform.projects.locations.deploymentResourcePools.patch",
-                  "path": "v1beta1/{+name}",
-                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/deploymentResourcePools/{deploymentResourcePoolsId}",
-                  "httpMethod": "PATCH",
-                  "parameters": {
-                    "name": {
-                      "description": "Output only. The resource name of the DeploymentResourcePool. Format: projects\/{project}\/locations\/{location}\/deploymentResourcePools\/{deployment_resource_pool}",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deploymentResourcePools\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "updateMask": {
-                      "description": "Required. The list of fields to update.",
-                      "location": "query",
-                      "type": "string",
-                      "format": "google-fieldmask"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "request": {
-                    "$ref": "GoogleCloudAiplatformV1beta1DeploymentResourcePool"
-                  },
-                  "response": {
-                    "$ref": "GoogleLongrunningOperation"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Update a DeploymentResourcePool."
                 },
                 "delete": {
                   "id": "aiplatform.projects.locations.deploymentResourcePools.delete",

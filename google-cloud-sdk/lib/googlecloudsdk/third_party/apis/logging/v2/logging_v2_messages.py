@@ -1107,10 +1107,26 @@ class LogEntry(_messages.Message):
       LogSeverity.DEFAULT.
     sourceLocation: Optional. Source code location information associated with
       the log entry, if any.
-    spanId: Optional. The span ID within the trace associated with the log
-      entry.For Trace spans, this is the same format that the Trace API v2
-      uses: a 16-character hexadecimal encoding of an 8-byte array, such as
-      000000000000004a.
+    spanId: Optional. The ID of the Cloud Trace
+      (https://cloud.google.com/trace) span associated with the current
+      operation in which the log is being written. For example, if a span has
+      the REST resource name of "projects/some-project/traces/some-
+      trace/spans/some-span-id", then the span_id field is "some-span-id".A
+      Span (https://cloud.google.com/trace/docs/reference/v2/rest/v2/projects.
+      traces/batchWrite#Span) represents a single operation within a trace.
+      Whereas a trace may involve multiple different microservices running on
+      multiple different machines, a span generally corresponds to a single
+      logical operation being performed in a single instance of a microservice
+      on one specific machine. Spans are the nodes within the tree that is a
+      trace.Applications that are instrumented for tracing
+      (https://cloud.google.com/trace/docs/setup) will generally assign a new,
+      unique span ID on each incoming request. It is also common to create and
+      record additional spans corresponding to internal processing elements as
+      well as issuing requests to dependencies.The span ID is expected to be a
+      16-character, hexadecimal encoding of an 8-byte array and should not be
+      zero. It should be unique within the trace and should, ideally, be
+      generated in a manner that is uniformly random.Example values:
+      000000000000004a 7a2190356c3fc94b 0000f00300090021 d39223e101960076
     split: Optional. Information indicating this LogEntry is part of a
       sequence of multiple log entries split from a single LogEntry.
     textPayload: The log entry payload, represented as a Unicode string
@@ -1125,10 +1141,14 @@ class LogEntry(_messages.Message):
       (https://cloud.google.com/logging/quotas#logs_retention_periods) in the
       past, and that don't exceed 24 hours in the future. Log entries outside
       those time boundaries aren't ingested by Logging.
-    trace: Optional. Resource name of the trace associated with the log entry,
-      if any. If it contains a relative resource name, the name is assumed to
-      be relative to //tracing.googleapis.com. Example: projects/my-
-      projectid/traces/06796866738c859f2f19b7cfb3214824
+    trace: Optional. The REST resource name of the trace being written to
+      Cloud Trace (https://cloud.google.com/trace) in association with this
+      log entry. For example, if your trace data is stored in the Cloud
+      project "my-trace-project" and if the service that is creating the log
+      entry receives a trace header that includes the trace ID "12345", then
+      the service should use "projects/my-tracing-project/traces/12345".The
+      trace field provides the link between logs and traces. By using this
+      field, you can navigate from a log entry to a trace.
     traceSampled: Optional. The sampling decision of the trace associated with
       the log entry.True means that the trace resource name in the trace field
       was sampled for storage in a trace backend. False means that the trace
@@ -1640,15 +1660,17 @@ class LogSink(_messages.Message):
       may not be present for older sinks.
     writerIdentity: Output only. An IAM identity-a service account or group-
       under which Cloud Logging writes the exported log entries to the sink's
-      destination. This field is set by sinks.create and sinks.update based on
-      the value of unique_writer_identity in those methods.Until you grant
-      this identity write-access to the destination, log entry exports from
-      this sink will fail. For more information, see Granting Access for a
-      Resource (https://cloud.google.com/iam/docs/granting-roles-to-service-
+      destination. This field is either set by specifying
+      custom_writer_identity or set automatically by sinks.create and
+      sinks.update based on the value of unique_writer_identity in those
+      methods.Until you grant this identity write-access to the destination,
+      log entry exports from this sink will fail. For more information, see
+      Granting Access for a Resource
+      (https://cloud.google.com/iam/docs/granting-roles-to-service-
       accounts#granting_access_to_a_service_account_for_a_resource). Consult
       the destination service's documentation to determine the appropriate IAM
       roles to assign to the identity.Sinks that have a destination that is a
-      log bucket in the same project as the sink do not have a writer_identity
+      log bucket in the same project as the sink cannot have a writer_identity
       and no additional permissions are required.
   """
 
@@ -2283,6 +2305,11 @@ class LoggingBillingAccountsSinksCreateRequest(_messages.Message):
   r"""A LoggingBillingAccountsSinksCreateRequest object.
 
   Fields:
+    customWriterIdentity: Optional. A service account provided by the caller
+      that will be used to write the log entries. Must be of format
+      serviceAccount:some@email. This can only be specified if writing to a
+      destination outside the sink's project. If not specified, a p4 service
+      account will automatically be generated.
     logSink: A LogSink resource to be passed as the request body.
     parent: Required. The resource in which to create the sink:
       "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
@@ -2300,9 +2327,10 @@ class LoggingBillingAccountsSinksCreateRequest(_messages.Message):
       more information, see writer_identity in LogSink.
   """
 
-  logSink = _messages.MessageField('LogSink', 1)
-  parent = _messages.StringField(2, required=True)
-  uniqueWriterIdentity = _messages.BooleanField(3)
+  customWriterIdentity = _messages.StringField(1)
+  logSink = _messages.MessageField('LogSink', 2)
+  parent = _messages.StringField(3, required=True)
+  uniqueWriterIdentity = _messages.BooleanField(4)
 
 
 class LoggingBillingAccountsSinksDeleteRequest(_messages.Message):
@@ -2361,6 +2389,11 @@ class LoggingBillingAccountsSinksPatchRequest(_messages.Message):
   r"""A LoggingBillingAccountsSinksPatchRequest object.
 
   Fields:
+    customWriterIdentity: Optional. A service account provided by the caller
+      that will be used to write the log entries. Must be of format
+      serviceAccount:some@email. This can only be specified if writing to a
+      destination outside the sink's project. If not specified, a p4 service
+      account will automatically be generated.
     logSink: A LogSink resource to be passed as the request body.
     sinkName: Required. The full resource name of the sink to update,
       including the parent resource and the sink identifier:
@@ -2390,16 +2423,22 @@ class LoggingBillingAccountsSinksPatchRequest(_messages.Message):
       example: updateMask=filter
   """
 
-  logSink = _messages.MessageField('LogSink', 1)
-  sinkName = _messages.StringField(2, required=True)
-  uniqueWriterIdentity = _messages.BooleanField(3)
-  updateMask = _messages.StringField(4)
+  customWriterIdentity = _messages.StringField(1)
+  logSink = _messages.MessageField('LogSink', 2)
+  sinkName = _messages.StringField(3, required=True)
+  uniqueWriterIdentity = _messages.BooleanField(4)
+  updateMask = _messages.StringField(5)
 
 
 class LoggingBillingAccountsSinksUpdateRequest(_messages.Message):
   r"""A LoggingBillingAccountsSinksUpdateRequest object.
 
   Fields:
+    customWriterIdentity: Optional. A service account provided by the caller
+      that will be used to write the log entries. Must be of format
+      serviceAccount:some@email. This can only be specified if writing to a
+      destination outside the sink's project. If not specified, a p4 service
+      account will automatically be generated.
     logSink: A LogSink resource to be passed as the request body.
     sinkName: Required. The full resource name of the sink to update,
       including the parent resource and the sink identifier:
@@ -2429,10 +2468,11 @@ class LoggingBillingAccountsSinksUpdateRequest(_messages.Message):
       example: updateMask=filter
   """
 
-  logSink = _messages.MessageField('LogSink', 1)
-  sinkName = _messages.StringField(2, required=True)
-  uniqueWriterIdentity = _messages.BooleanField(3)
-  updateMask = _messages.StringField(4)
+  customWriterIdentity = _messages.StringField(1)
+  logSink = _messages.MessageField('LogSink', 2)
+  sinkName = _messages.StringField(3, required=True)
+  uniqueWriterIdentity = _messages.BooleanField(4)
+  updateMask = _messages.StringField(5)
 
 
 class LoggingExclusionsCreateRequest(_messages.Message):
@@ -3081,6 +3121,11 @@ class LoggingFoldersSinksCreateRequest(_messages.Message):
   r"""A LoggingFoldersSinksCreateRequest object.
 
   Fields:
+    customWriterIdentity: Optional. A service account provided by the caller
+      that will be used to write the log entries. Must be of format
+      serviceAccount:some@email. This can only be specified if writing to a
+      destination outside the sink's project. If not specified, a p4 service
+      account will automatically be generated.
     logSink: A LogSink resource to be passed as the request body.
     parent: Required. The resource in which to create the sink:
       "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
@@ -3098,9 +3143,10 @@ class LoggingFoldersSinksCreateRequest(_messages.Message):
       more information, see writer_identity in LogSink.
   """
 
-  logSink = _messages.MessageField('LogSink', 1)
-  parent = _messages.StringField(2, required=True)
-  uniqueWriterIdentity = _messages.BooleanField(3)
+  customWriterIdentity = _messages.StringField(1)
+  logSink = _messages.MessageField('LogSink', 2)
+  parent = _messages.StringField(3, required=True)
+  uniqueWriterIdentity = _messages.BooleanField(4)
 
 
 class LoggingFoldersSinksDeleteRequest(_messages.Message):
@@ -3159,6 +3205,11 @@ class LoggingFoldersSinksPatchRequest(_messages.Message):
   r"""A LoggingFoldersSinksPatchRequest object.
 
   Fields:
+    customWriterIdentity: Optional. A service account provided by the caller
+      that will be used to write the log entries. Must be of format
+      serviceAccount:some@email. This can only be specified if writing to a
+      destination outside the sink's project. If not specified, a p4 service
+      account will automatically be generated.
     logSink: A LogSink resource to be passed as the request body.
     sinkName: Required. The full resource name of the sink to update,
       including the parent resource and the sink identifier:
@@ -3188,16 +3239,22 @@ class LoggingFoldersSinksPatchRequest(_messages.Message):
       example: updateMask=filter
   """
 
-  logSink = _messages.MessageField('LogSink', 1)
-  sinkName = _messages.StringField(2, required=True)
-  uniqueWriterIdentity = _messages.BooleanField(3)
-  updateMask = _messages.StringField(4)
+  customWriterIdentity = _messages.StringField(1)
+  logSink = _messages.MessageField('LogSink', 2)
+  sinkName = _messages.StringField(3, required=True)
+  uniqueWriterIdentity = _messages.BooleanField(4)
+  updateMask = _messages.StringField(5)
 
 
 class LoggingFoldersSinksUpdateRequest(_messages.Message):
   r"""A LoggingFoldersSinksUpdateRequest object.
 
   Fields:
+    customWriterIdentity: Optional. A service account provided by the caller
+      that will be used to write the log entries. Must be of format
+      serviceAccount:some@email. This can only be specified if writing to a
+      destination outside the sink's project. If not specified, a p4 service
+      account will automatically be generated.
     logSink: A LogSink resource to be passed as the request body.
     sinkName: Required. The full resource name of the sink to update,
       including the parent resource and the sink identifier:
@@ -3227,10 +3284,11 @@ class LoggingFoldersSinksUpdateRequest(_messages.Message):
       example: updateMask=filter
   """
 
-  logSink = _messages.MessageField('LogSink', 1)
-  sinkName = _messages.StringField(2, required=True)
-  uniqueWriterIdentity = _messages.BooleanField(3)
-  updateMask = _messages.StringField(4)
+  customWriterIdentity = _messages.StringField(1)
+  logSink = _messages.MessageField('LogSink', 2)
+  sinkName = _messages.StringField(3, required=True)
+  uniqueWriterIdentity = _messages.BooleanField(4)
+  updateMask = _messages.StringField(5)
 
 
 class LoggingFoldersUpdateSettingsRequest(_messages.Message):
@@ -4259,6 +4317,11 @@ class LoggingOrganizationsSinksCreateRequest(_messages.Message):
   r"""A LoggingOrganizationsSinksCreateRequest object.
 
   Fields:
+    customWriterIdentity: Optional. A service account provided by the caller
+      that will be used to write the log entries. Must be of format
+      serviceAccount:some@email. This can only be specified if writing to a
+      destination outside the sink's project. If not specified, a p4 service
+      account will automatically be generated.
     logSink: A LogSink resource to be passed as the request body.
     parent: Required. The resource in which to create the sink:
       "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
@@ -4276,9 +4339,10 @@ class LoggingOrganizationsSinksCreateRequest(_messages.Message):
       more information, see writer_identity in LogSink.
   """
 
-  logSink = _messages.MessageField('LogSink', 1)
-  parent = _messages.StringField(2, required=True)
-  uniqueWriterIdentity = _messages.BooleanField(3)
+  customWriterIdentity = _messages.StringField(1)
+  logSink = _messages.MessageField('LogSink', 2)
+  parent = _messages.StringField(3, required=True)
+  uniqueWriterIdentity = _messages.BooleanField(4)
 
 
 class LoggingOrganizationsSinksDeleteRequest(_messages.Message):
@@ -4337,6 +4401,11 @@ class LoggingOrganizationsSinksPatchRequest(_messages.Message):
   r"""A LoggingOrganizationsSinksPatchRequest object.
 
   Fields:
+    customWriterIdentity: Optional. A service account provided by the caller
+      that will be used to write the log entries. Must be of format
+      serviceAccount:some@email. This can only be specified if writing to a
+      destination outside the sink's project. If not specified, a p4 service
+      account will automatically be generated.
     logSink: A LogSink resource to be passed as the request body.
     sinkName: Required. The full resource name of the sink to update,
       including the parent resource and the sink identifier:
@@ -4366,16 +4435,22 @@ class LoggingOrganizationsSinksPatchRequest(_messages.Message):
       example: updateMask=filter
   """
 
-  logSink = _messages.MessageField('LogSink', 1)
-  sinkName = _messages.StringField(2, required=True)
-  uniqueWriterIdentity = _messages.BooleanField(3)
-  updateMask = _messages.StringField(4)
+  customWriterIdentity = _messages.StringField(1)
+  logSink = _messages.MessageField('LogSink', 2)
+  sinkName = _messages.StringField(3, required=True)
+  uniqueWriterIdentity = _messages.BooleanField(4)
+  updateMask = _messages.StringField(5)
 
 
 class LoggingOrganizationsSinksUpdateRequest(_messages.Message):
   r"""A LoggingOrganizationsSinksUpdateRequest object.
 
   Fields:
+    customWriterIdentity: Optional. A service account provided by the caller
+      that will be used to write the log entries. Must be of format
+      serviceAccount:some@email. This can only be specified if writing to a
+      destination outside the sink's project. If not specified, a p4 service
+      account will automatically be generated.
     logSink: A LogSink resource to be passed as the request body.
     sinkName: Required. The full resource name of the sink to update,
       including the parent resource and the sink identifier:
@@ -4405,10 +4480,11 @@ class LoggingOrganizationsSinksUpdateRequest(_messages.Message):
       example: updateMask=filter
   """
 
-  logSink = _messages.MessageField('LogSink', 1)
-  sinkName = _messages.StringField(2, required=True)
-  uniqueWriterIdentity = _messages.BooleanField(3)
-  updateMask = _messages.StringField(4)
+  customWriterIdentity = _messages.StringField(1)
+  logSink = _messages.MessageField('LogSink', 2)
+  sinkName = _messages.StringField(3, required=True)
+  uniqueWriterIdentity = _messages.BooleanField(4)
+  updateMask = _messages.StringField(5)
 
 
 class LoggingOrganizationsUpdateCmekSettingsRequest(_messages.Message):
@@ -5086,6 +5162,11 @@ class LoggingProjectsSinksCreateRequest(_messages.Message):
   r"""A LoggingProjectsSinksCreateRequest object.
 
   Fields:
+    customWriterIdentity: Optional. A service account provided by the caller
+      that will be used to write the log entries. Must be of format
+      serviceAccount:some@email. This can only be specified if writing to a
+      destination outside the sink's project. If not specified, a p4 service
+      account will automatically be generated.
     logSink: A LogSink resource to be passed as the request body.
     parent: Required. The resource in which to create the sink:
       "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
@@ -5103,9 +5184,10 @@ class LoggingProjectsSinksCreateRequest(_messages.Message):
       more information, see writer_identity in LogSink.
   """
 
-  logSink = _messages.MessageField('LogSink', 1)
-  parent = _messages.StringField(2, required=True)
-  uniqueWriterIdentity = _messages.BooleanField(3)
+  customWriterIdentity = _messages.StringField(1)
+  logSink = _messages.MessageField('LogSink', 2)
+  parent = _messages.StringField(3, required=True)
+  uniqueWriterIdentity = _messages.BooleanField(4)
 
 
 class LoggingProjectsSinksDeleteRequest(_messages.Message):
@@ -5164,6 +5246,11 @@ class LoggingProjectsSinksPatchRequest(_messages.Message):
   r"""A LoggingProjectsSinksPatchRequest object.
 
   Fields:
+    customWriterIdentity: Optional. A service account provided by the caller
+      that will be used to write the log entries. Must be of format
+      serviceAccount:some@email. This can only be specified if writing to a
+      destination outside the sink's project. If not specified, a p4 service
+      account will automatically be generated.
     logSink: A LogSink resource to be passed as the request body.
     sinkName: Required. The full resource name of the sink to update,
       including the parent resource and the sink identifier:
@@ -5193,16 +5280,22 @@ class LoggingProjectsSinksPatchRequest(_messages.Message):
       example: updateMask=filter
   """
 
-  logSink = _messages.MessageField('LogSink', 1)
-  sinkName = _messages.StringField(2, required=True)
-  uniqueWriterIdentity = _messages.BooleanField(3)
-  updateMask = _messages.StringField(4)
+  customWriterIdentity = _messages.StringField(1)
+  logSink = _messages.MessageField('LogSink', 2)
+  sinkName = _messages.StringField(3, required=True)
+  uniqueWriterIdentity = _messages.BooleanField(4)
+  updateMask = _messages.StringField(5)
 
 
 class LoggingProjectsSinksUpdateRequest(_messages.Message):
   r"""A LoggingProjectsSinksUpdateRequest object.
 
   Fields:
+    customWriterIdentity: Optional. A service account provided by the caller
+      that will be used to write the log entries. Must be of format
+      serviceAccount:some@email. This can only be specified if writing to a
+      destination outside the sink's project. If not specified, a p4 service
+      account will automatically be generated.
     logSink: A LogSink resource to be passed as the request body.
     sinkName: Required. The full resource name of the sink to update,
       including the parent resource and the sink identifier:
@@ -5232,16 +5325,22 @@ class LoggingProjectsSinksUpdateRequest(_messages.Message):
       example: updateMask=filter
   """
 
-  logSink = _messages.MessageField('LogSink', 1)
-  sinkName = _messages.StringField(2, required=True)
-  uniqueWriterIdentity = _messages.BooleanField(3)
-  updateMask = _messages.StringField(4)
+  customWriterIdentity = _messages.StringField(1)
+  logSink = _messages.MessageField('LogSink', 2)
+  sinkName = _messages.StringField(3, required=True)
+  uniqueWriterIdentity = _messages.BooleanField(4)
+  updateMask = _messages.StringField(5)
 
 
 class LoggingSinksCreateRequest(_messages.Message):
   r"""A LoggingSinksCreateRequest object.
 
   Fields:
+    customWriterIdentity: Optional. A service account provided by the caller
+      that will be used to write the log entries. Must be of format
+      serviceAccount:some@email. This can only be specified if writing to a
+      destination outside the sink's project. If not specified, a p4 service
+      account will automatically be generated.
     logSink: A LogSink resource to be passed as the request body.
     parent: Required. The resource in which to create the sink:
       "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
@@ -5259,9 +5358,10 @@ class LoggingSinksCreateRequest(_messages.Message):
       more information, see writer_identity in LogSink.
   """
 
-  logSink = _messages.MessageField('LogSink', 1)
-  parent = _messages.StringField(2, required=True)
-  uniqueWriterIdentity = _messages.BooleanField(3)
+  customWriterIdentity = _messages.StringField(1)
+  logSink = _messages.MessageField('LogSink', 2)
+  parent = _messages.StringField(3, required=True)
+  uniqueWriterIdentity = _messages.BooleanField(4)
 
 
 class LoggingSinksDeleteRequest(_messages.Message):
@@ -5320,6 +5420,11 @@ class LoggingSinksUpdateRequest(_messages.Message):
   r"""A LoggingSinksUpdateRequest object.
 
   Fields:
+    customWriterIdentity: Optional. A service account provided by the caller
+      that will be used to write the log entries. Must be of format
+      serviceAccount:some@email. This can only be specified if writing to a
+      destination outside the sink's project. If not specified, a p4 service
+      account will automatically be generated.
     logSink: A LogSink resource to be passed as the request body.
     sinkName: Required. The full resource name of the sink to update,
       including the parent resource and the sink identifier:
@@ -5349,10 +5454,11 @@ class LoggingSinksUpdateRequest(_messages.Message):
       example: updateMask=filter
   """
 
-  logSink = _messages.MessageField('LogSink', 1)
-  sinkName = _messages.StringField(2, required=True)
-  uniqueWriterIdentity = _messages.BooleanField(3)
-  updateMask = _messages.StringField(4)
+  customWriterIdentity = _messages.StringField(1)
+  logSink = _messages.MessageField('LogSink', 2)
+  sinkName = _messages.StringField(3, required=True)
+  uniqueWriterIdentity = _messages.BooleanField(4)
+  updateMask = _messages.StringField(5)
 
 
 class LoggingUpdateCmekSettingsRequest(_messages.Message):

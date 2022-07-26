@@ -60,8 +60,13 @@ class StorageUrl(six.with_metaclass(abc.ABCMeta)):
     """Returns the delimiter for the url."""
 
   @property
-  def is_pipe(self):
-    """Returns if URL points to a named pipe (FIFO) or stream."""
+  def is_stream(self):
+    """Returns True if the URL points to a named pipe (FIFO) or other stream."""
+    raise NotImplementedError
+
+  @property
+  def is_stdio(self):
+    """Returns True if the URL points to stdin or stdout."""
     raise NotImplementedError
 
   @abc.abstractproperty
@@ -180,14 +185,14 @@ class FileUrl(StorageUrl):
 
   @property
   def is_stream(self):
-    """Returns True when stdin is requested."""
-    return self.object_name == '-'
+    """Returns True if the URL points to a named pipe (FIFO) or other stream."""
+    return self.is_stdio or (os.path.exists(self.object_name) and
+                             stat.S_ISFIFO(os.stat(self.object_name).st_mode))
 
   @property
-  def is_pipe(self):
-    """Returns if URL points to a named pipe (FIFO) or stream."""
-    return self.is_stream or (os.path.exists(self.object_name) and
-                              stat.S_ISFIFO(os.stat(self.object_name).st_mode))
+  def is_stdio(self):
+    """Returns True if the URL points to stdin or stdout."""
+    return self.object_name == '-'
 
   def exists(self):
     """Returns True if the file/directory exists."""
@@ -216,7 +221,7 @@ class PosixFileSystemUrl(StorageUrl):
   This class is different from FileUrl in many ways:
   1) It supports only POSIX file systems (not Windows).
   2) It can represent file systems on external machines.
-  3) It cannot run checks on the address of the URL like "exists" or "is_pipe"
+  3) It cannot run checks on the address of the URL like "exists" or "is_stream"
      because the URL may point to a different machine.
   4) The class is intended for use in "agent transfers". This is when a
      Transfer Service customer installs agents on one machine or multiple and
@@ -335,6 +340,16 @@ class CloudUrl(StorageUrl):
     if self.object_name == '.' or self.object_name == '..':
       raise errors.InvalidUrlError('%s is an invalid root-level object name.' %
                                    self.object_name)
+
+  @property
+  def is_stream(self):
+    """Cloud URLs cannot represent named pipes (FIFO) or other streams."""
+    return False
+
+  @property
+  def is_stdio(self):
+    """Cloud URLs cannot represent stdin or stdout."""
+    return False
 
   @property
   def url_string(self):

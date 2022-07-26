@@ -116,9 +116,18 @@ def AddServiceProxyConfigArgs(parser, hide_arguments=False,
   if release_track == base.ReleaseTrack.ALPHA:
     service_proxy_spec.update({
         'intercept-dns': None,
+        'source': str,
     })
     service_proxy_help += textwrap.dedent("""
     *intercept-dns*::: Enables interception of UDP traffic by the service proxy.
+
+    *source*::: The Google Cloud Storage bucket location source
+    for the Envoy. The service-proxy-agent will download the archive from Envoy
+    and install it on the virtual machine, unpacking it into the root (/)
+    directory of the virtual machine. Therefore, the archive must contain not
+    only the executable and license files but they must be located in the
+    correct directories within the archive. For example:
+    /usr/local/bin/envoy and /usr/local/doc/envoy-LICENSE
     """)
 
   if (release_track == base.ReleaseTrack.ALPHA or

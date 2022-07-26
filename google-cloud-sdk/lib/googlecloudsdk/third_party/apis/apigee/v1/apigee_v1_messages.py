@@ -689,8 +689,8 @@ class ApigeeOrganizationsDeleteRequest(_messages.Message):
   r"""A ApigeeOrganizationsDeleteRequest object.
 
   Enums:
-    RetentionValueValuesEnum: Optional. This setting is only applicable for
-      organizations that are soft-deleted (i.e. BillingType is not
+    RetentionValueValuesEnum: Optional. This setting is applicable only for
+      organizations that are soft-deleted (i.e., BillingType is not
       EVALUATION). It controls how long Organization data will be retained
       after the initial delete operation completes. During this period, the
       Organization may be restored to its last known state. After this period,
@@ -699,8 +699,8 @@ class ApigeeOrganizationsDeleteRequest(_messages.Message):
   Fields:
     name: Required. Name of the organization. Use the following structure in
       your request: `organizations/{org}`
-    retention: Optional. This setting is only applicable for organizations
-      that are soft-deleted (i.e. BillingType is not EVALUATION). It controls
+    retention: Optional. This setting is applicable only for organizations
+      that are soft-deleted (i.e., BillingType is not EVALUATION). It controls
       how long Organization data will be retained after the initial delete
       operation completes. During this period, the Organization may be
       restored to its last known state. After this period, the Organization
@@ -708,16 +708,16 @@ class ApigeeOrganizationsDeleteRequest(_messages.Message):
   """
 
   class RetentionValueValuesEnum(_messages.Enum):
-    r"""Optional. This setting is only applicable for organizations that are
-    soft-deleted (i.e. BillingType is not EVALUATION). It controls how long
+    r"""Optional. This setting is applicable only for organizations that are
+    soft-deleted (i.e., BillingType is not EVALUATION). It controls how long
     Organization data will be retained after the initial delete operation
     completes. During this period, the Organization may be restored to its
     last known state. After this period, the Organization will no longer be
     able to be restored.
 
     Values:
-      DELETION_RETENTION_UNSPECIFIED: Default data retention settings will be
-        applied.
+      DELETION_RETENTION_UNSPECIFIED: Default data retention setting of seven
+        days will be applied.
       MINIMUM: Organization data will be retained for the minimum period of 24
         hours.
     """
@@ -4508,7 +4508,22 @@ class GoogleCloudApigeeV1ApiProduct(_messages.Message):
       quota set for itself.
 
   Fields:
-    apiResources: A string attribute.
+    apiResources: Comma-separated list of API resources to be bundled in the
+      API product. By default, the resource paths are mapped from the
+      `proxy.pathsuffix` variable. The proxy path suffix is defined as the URI
+      fragment following the ProxyEndpoint base path. For example, if the
+      `apiResources` element is defined to be `/forecastrss` and the base path
+      defined for the API proxy is `/weather`, then only requests to
+      `/weather/forecastrss` are permitted by the API product. You can select
+      a specific path, or you can select all subpaths with the following
+      wildcard: - `/**`: Indicates that all sub-URIs are included. - `/*` :
+      Indicates that only URIs one level down are included. By default, /
+      supports the same resources as /** as well as the base path defined by
+      the API proxy. For example, if the base path of the API proxy is
+      `/v1/weatherapikey`, then the API product supports requests to
+      `/v1/weatherapikey` and to any sub-URIs, such as
+      `/v1/weatherapikey/forecastrss`, `/v1/weatherapikey/region/CA`, and so
+      on. For more information, see Managing API products.
     approvalType: Flag that specifies how API keys are approved to access the
       APIs defined by the API product. If set to `manual`, the consumer key is
       generated and returned in "pending" state. In this case, the API keys
@@ -4529,22 +4544,7 @@ class GoogleCloudApigeeV1ApiProduct(_messages.Message):
     createdAt: Response only. Creation time of this environment as
       milliseconds since epoch.
     description: Description of the API product. Include key information about
-      the API product that is not captured by other fields. Comma-separated
-      list of API resources to be bundled in the API product. By default, the
-      resource paths are mapped from the `proxy.pathsuffix` variable. The
-      proxy path suffix is defined as the URI fragment following the
-      ProxyEndpoint base path. For example, if the `apiResources` element is
-      defined to be `/forecastrss` and the base path defined for the API proxy
-      is `/weather`, then only requests to `/weather/forecastrss` are
-      permitted by the API product. You can select a specific path, or you can
-      select all subpaths with the following wildcard: - `/**`: Indicates that
-      all sub-URIs are included. - `/*` : Indicates that only URIs one level
-      down are included. By default, / supports the same resources as /** as
-      well as the base path defined by the API proxy. For example, if the base
-      path of the API proxy is `/v1/weatherapikey`, then the API product
-      supports requests to `/v1/weatherapikey` and to any sub-URIs, such as
-      `/v1/weatherapikey/forecastrss`, `/v1/weatherapikey/region/CA`, and so
-      on. For more information, see Managing API products.
+      the API product that is not captured by other fields.
     displayName: Name displayed in the UI or developer portal to developers
       registering for API access.
     environments: Comma-separated list of environment names to which the API
@@ -6847,15 +6847,15 @@ class GoogleCloudApigeeV1Instance(_messages.Message):
       Apigee endpoint is enabled for the instance.
     host: Output only. Internal hostname or IP address of the Apigee endpoint
       used by clients to connect to the service.
-    ipRange: Optional. IP range represents the customer-provided CIDR block of
-      length 22 that will be used for the Apigee instance creation. This
-      optional range, if provided, should be freely available as part of
-      larger named range the customer has allocated to the Service Networking
-      peering. If this is not provided, Apigee will automatically request for
-      any available /22 CIDR block from Service Networking. The customer
-      should use this CIDR block for configuring their firewall needs to allow
-      traffic from Apigee. Input format: "a.b.c.d/22", Output format:
-      a.b.c.d/22, e.f.g.h/28"
+    ipRange: Optional. Comma-separated list of CIDR blocks of length 22 and/or
+      28 used to create the Apigee instance. Providing CIDR ranges is
+      optional. You can provide just /22 or /28 or both (or neither). Ranges
+      you provide should be freely available as part of a larger named range
+      you have allocated to the Service Networking peering. If this parameter
+      is not provided, Apigee automatically requests an available /22 and /28
+      CIDR block from Service Networking. Use the /22 CIDR block for
+      configuring your firewall needs to allow traffic from Apigee. Input
+      formats: `a.b.c.d/22` or `e.f.g.h/28` or `a.b.c.d/22,e.f.g.h/28`
     labels: Optional. Labels associated with the instance.
     lastModifiedAt: Output only. Time the instance was last modified in
       milliseconds since epoch.

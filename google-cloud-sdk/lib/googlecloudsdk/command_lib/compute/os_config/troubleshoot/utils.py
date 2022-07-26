@@ -25,7 +25,7 @@ def UnknownMessage(exception):
   return (
       'Unknown\n'
       'The troubleshooter encountered ' + type(exception).__name__ + ' while '
-      'checking your instance.\n'
+      'checking your instance.'
   )
 
 

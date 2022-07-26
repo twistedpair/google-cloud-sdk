@@ -99,7 +99,8 @@ def _downscope_credential(creds, scopes):
   cred_type = c_creds.CredentialTypeGoogleAuth.FromCredentials(creds)
   if cred_type not in [
       c_creds.CredentialTypeGoogleAuth.USER_ACCOUNT,
-      c_creds.CredentialTypeGoogleAuth.SERVICE_ACCOUNT
+      c_creds.CredentialTypeGoogleAuth.SERVICE_ACCOUNT,
+      c_creds.CredentialTypeGoogleAuth.IMPERSONATED_ACCOUNT,
   ]:
     # TODO(b/223649175): Add support for other credential types(e.g GCE).
     log.warning(

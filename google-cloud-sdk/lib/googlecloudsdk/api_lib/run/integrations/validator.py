@@ -96,7 +96,7 @@ class Validator:
     ]
     return apis_not_enabled
 
-  def ValidateCreateParameters(self, parameters):
+  def ValidateCreateParameters(self, parameters, service):
     """Validates parameters provided for creating an integration.
 
     Three things are done for all integrations created:
@@ -112,8 +112,11 @@ class Validator:
 
     Args:
       parameters: A dict where the key, value mapping is provided by the user.
+      service: str, the service to bind to the new integration.
     """
     self._ValidateProvidedParams(parameters)
+    self._CheckServiceFlag(service, required=True)
+    self._CheckForInvalidCreateParameters(parameters)
     self._ValidateRequiredParams(parameters)
     self._SetupDefaultParams(parameters)
 
@@ -129,6 +132,20 @@ class Validator:
     self._ValidateProvidedParams(parameters)
     self._CheckForInvalidUpdateParameters(parameters)
 
+  def _CheckForInvalidCreateParameters(self, user_provided_params):
+    """Raises an exception that lists the parameters that can't be changed."""
+    invalid_params = []
+    for param_name, param in self.integration['parameters'].items():
+      allowed = param.get('create_allowed', True)
+      if not allowed and param_name in user_provided_params:
+        invalid_params.append(param_name)
+
+    if invalid_params:
+      raise exceptions.ArgumentError(
+          ('The following parameters are not allowed in create command: {}')
+          .format(self._RemoveEncoding(invalid_params))
+      )
+
   def _CheckForInvalidUpdateParameters(self, user_provided_params):
     """Raises an exception that lists the parameters that can't be changed."""
     invalid_params = []
@@ -143,6 +160,33 @@ class Validator:
            'integration has been created')
           .format(self._RemoveEncoding(invalid_params))
       )
+
+    for exclusive_groups in self.integration.get('update_exclusive_groups', []):
+      found = 0
+      group_params = set(exclusive_groups.get('params'))
+      for param_name in group_params:
+        if param_name in user_provided_params:
+          found += 1
+      if found > 1:
+        raise exceptions.ArgumentError(
+            ('At most one of these parameters can be specified: {}')
+            .format(', '.join(group_params))
+        )
+      if exclusive_groups.get('required') and found == 0:
+        raise exceptions.ArgumentError(
+            ('At least one of these parameters must be specified: {}')
+            .format(', '.join(group_params))
+        )
+
+  def _CheckServiceFlag(self, service, required=False):
+    """Raises an exception that lists the parameters that can't be changed."""
+    disable_service_flags = self.integration.get('disable_service_flags')
+    if disable_service_flags and service:
+      raise exceptions.ArgumentError(
+          ('--service not allowed for integration type [{}]'.format(
+              self.integration['integration_type'])))
+    if not disable_service_flags and not service and required:
+      raise exceptions.ArgumentError(('--service is required'))
 
   def _ValidateProvidedParams(self, user_provided_params):
     """Checks that the user provided parameters exist in the mapping."""

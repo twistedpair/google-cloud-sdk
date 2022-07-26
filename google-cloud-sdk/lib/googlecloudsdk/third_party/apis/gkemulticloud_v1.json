@@ -2054,7 +2054,7 @@
                       "type": "string"
                     },
                     "awsClusterId": {
-                      "description": "Required. A client provided ID the resource. Must be unique within the parent resource. The provided ID will be part of the AwsCluster resource name formatted as `projects\/\/locations\/\/awsClusters\/`. Valid characters are `\/a-z-\/`. Cannot be longer than 40 characters.",
+                      "description": "Required. A client provided ID the resource. Must be unique within the parent resource. The provided ID will be part of the AwsCluster resource name formatted as `projects\/\/locations\/\/awsClusters\/`. Valid characters are `\/a-z-\/`. Cannot be longer than 63 characters.",
                       "location": "query",
                       "type": "string"
                     },
@@ -2287,7 +2287,7 @@
                           "type": "string"
                         },
                         "awsNodePoolId": {
-                          "description": "Required. A client provided ID the resource. Must be unique within the parent resource. The provided ID will be part of the AwsNodePool resource name formatted as `projects\/\/locations\/\/awsClusters\/\/awsNodePools\/`. Valid characters are `\/a-z-\/`. Cannot be longer than 40 characters.",
+                          "description": "Required. A client provided ID the resource. Must be unique within the parent resource. The provided ID will be part of the AwsNodePool resource name formatted as `projects\/\/locations\/\/awsClusters\/\/awsNodePools\/`. Valid characters are `\/a-z-\/`. Cannot be longer than 63 characters.",
                           "location": "query",
                           "type": "string"
                         },
@@ -2500,7 +2500,7 @@
                       "type": "string"
                     },
                     "azureClientId": {
-                      "description": "Required. A client provided ID the resource. Must be unique within the parent resource. The provided ID will be part of the AzureClient resource name formatted as `projects\/\/locations\/\/azureClients\/`. Valid characters are `\/a-z-\/`. Cannot be longer than 40 characters.",
+                      "description": "Required. A client provided ID the resource. Must be unique within the parent resource. The provided ID will be part of the AzureClient resource name formatted as `projects\/\/locations\/\/azureClients\/`. Valid characters are `\/a-z-\/`. Cannot be longer than 63 characters.",
                       "location": "query",
                       "type": "string"
                     },
@@ -2638,7 +2638,7 @@
                       "type": "string"
                     },
                     "azureClusterId": {
-                      "description": "Required. A client provided ID the resource. Must be unique within the parent resource. The provided ID will be part of the AzureCluster resource name formatted as `projects\/\/locations\/\/azureClusters\/`. Valid characters are `\/a-z-\/`. Cannot be longer than 40 characters.",
+                      "description": "Required. A client provided ID the resource. Must be unique within the parent resource. The provided ID will be part of the AzureCluster resource name formatted as `projects\/\/locations\/\/azureClusters\/`. Valid characters are `\/a-z-\/`. Cannot be longer than 63 characters.",
                       "location": "query",
                       "type": "string"
                     },
@@ -2871,7 +2871,7 @@
                           "type": "string"
                         },
                         "azureNodePoolId": {
-                          "description": "Required. A client provided ID the resource. Must be unique within the parent resource. The provided ID will be part of the AzureNodePool resource name formatted as `projects\/\/locations\/\/azureClusters\/\/azureNodePools\/`. Valid characters are `\/a-z-\/`. Cannot be longer than 40 characters.",
+                          "description": "Required. A client provided ID the resource. Must be unique within the parent resource. The provided ID will be part of the AzureNodePool resource name formatted as `projects\/\/locations\/\/azureClusters\/\/azureNodePools\/`. Valid characters are `\/a-z-\/`. Cannot be longer than 63 characters.",
                           "location": "query",
                           "type": "string"
                         },

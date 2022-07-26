@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import datetime
+
 from googlecloudsdk.core.util import scaled_integer
 
 _BUCKET_FIELDS_WITH_PRESENT_VALUE = ('cors_config', 'lifecycle_config',
@@ -89,3 +91,22 @@ def replace_object_values_with_encryption_string(displayable_object_data,
   for key in ('md5_hash', '_crc32c_hash'):
     if getattr(displayable_object_data, key) is None:
       setattr(displayable_object_data, key, encrypted_marker_string)
+
+
+def replace_time_values_with_gsutil_style_strings(displayable_resource_data):
+  """Updates fields in gcloud time format to gsutil time format."""
+  # Convert "2022-06-30T16:02:49Z" to "Thu, 30 Jun 2022 16:02:49 GMT".
+  for key in (
+      'creation_time',
+      'custom_time',
+      'noncurrent_time',
+      'retention_expiration',
+      'storage_class_update_time',
+      'update_time',
+  ):
+    gcloud_datetime_string = getattr(displayable_resource_data, key, None)
+    if gcloud_datetime_string is not None:
+      datetime_object = datetime.datetime.strptime(gcloud_datetime_string,
+                                                   '%Y-%m-%dT%H:%M:%SZ')
+      setattr(displayable_resource_data, key,
+              datetime_object.strftime('%a, %d %b %Y %H:%M:%S GMT'))

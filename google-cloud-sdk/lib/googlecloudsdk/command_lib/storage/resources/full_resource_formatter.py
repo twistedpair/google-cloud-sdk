@@ -27,6 +27,9 @@ from googlecloudsdk.command_lib.storage.resources import resource_util
 import six
 
 
+ACL_KEY = 'acl'
+
+
 class FieldDisplayTitleAndDefault(object):
   """Holds the title and default value to be displayed for a resource field."""
 
@@ -68,7 +71,7 @@ BucketDisplayTitlesAndDefaults = collections.namedtuple(
         'metageneration',
         'bucket_policy_only_enabled',
         'satisifes_pzs',
-        'acl',
+        ACL_KEY,
         'default_acl',
     ))
 
@@ -102,7 +105,7 @@ ObjectDisplayTitlesAndDefaults = collections.namedtuple(
         'etag',
         'generation',
         'metageneration',
-        'acl',
+        ACL_KEY,
     ))
 
 
@@ -125,6 +128,7 @@ def _get_formatted_line(display_name, value, default_value=None):
 def get_formatted_string(url,
                          displayable_resource_data,
                          display_titles_and_defaults,
+                         show_acl=True,
                          show_version_in_url=False):
   """Returns the formatted string representing the resource.
 
@@ -135,6 +139,7 @@ def get_formatted_string(url,
     display_titles_and_defaults (ObjectDisplayTitlesAndDefaults): Holds the
       display titles and default values for each field present in
       DisplayableResourceData.
+    show_acl (bool): Include ACLs list in resource display.
     show_version_in_url (bool): Display extended URL with versioning info.
 
   Returns:
@@ -144,6 +149,8 @@ def get_formatted_string(url,
   # In namedtuple, to prevent conflicts with field names,
   # the method and attribute names start with an underscore.
   for key in display_titles_and_defaults._fields:
+    if not show_acl and key == ACL_KEY:
+      continue
     field_display_title_and_default = getattr(display_titles_and_defaults, key)
     # The field_name present in field_display_title_and_default takes
     # precedence over the key in display_titles_and_defaults.
@@ -192,6 +199,7 @@ class FullResourceFormatter(six.with_metaclass(abc.ABCMeta, object)):
   def format_object(self,
                     url,
                     displayable_object_data,
+                    show_acl=True,
                     show_version_in_url=False):
     """Returns a formatted string representing the ObjectResource.
 
@@ -199,6 +207,7 @@ class FullResourceFormatter(six.with_metaclass(abc.ABCMeta, object)):
       url (StorageUrl): URL representing the object.
       displayable_object_data (resource_reference.DisplayableResourceData): A
         DisplayableObjectData instance.
+      show_acl (bool): Include ACLs list in resource display.
       show_version_in_url (bool): Display extended URL with versioning info.
 
     Returns:

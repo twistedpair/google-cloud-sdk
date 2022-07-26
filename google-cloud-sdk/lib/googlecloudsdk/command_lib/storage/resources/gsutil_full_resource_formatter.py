@@ -139,6 +139,8 @@ class GsutilFullResourceFormatter(base.FullResourceFormatter):
 
   def format_bucket(self, url, displayable_bucket_data):
     """See super class."""
+    resource_formatter_util.replace_time_values_with_gsutil_style_strings(
+        displayable_bucket_data)
     resource_formatter_util.replace_bucket_values_with_present_string(
         displayable_bucket_data)
     return base.get_formatted_string(url, displayable_bucket_data,
@@ -147,12 +149,16 @@ class GsutilFullResourceFormatter(base.FullResourceFormatter):
   def format_object(self,
                     url,
                     displayable_object_data,
+                    show_acl=True,
                     show_version_in_url=False):
     """See super class."""
+    resource_formatter_util.replace_time_values_with_gsutil_style_strings(
+        displayable_object_data)
     resource_formatter_util.replace_object_values_with_encryption_string(
         displayable_object_data, 'encrypted')
     return base.get_formatted_string(
         url,
         displayable_object_data,
         _OBJECT_DISPLAY_TITLES_AND_DEFAULTS,
+        show_acl=show_acl,
         show_version_in_url=show_version_in_url)

@@ -1366,7 +1366,7 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1ModifyOrderMetadata(_message
 
 
 class GoogleCloudCommerceConsumerProcurementV1alpha1ModifyOrderRequest(_messages.Message):
-  r"""Request message for ConsumerProcurementService.ModifyOrder. Next Id: 8
+  r"""Request message for ConsumerProcurementService.ModifyOrder. Next Id: 9
 
   Fields:
     displayName: Optional. Updated display name of the order, leave as empty

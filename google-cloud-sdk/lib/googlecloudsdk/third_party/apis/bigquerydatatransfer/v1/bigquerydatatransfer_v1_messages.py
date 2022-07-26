@@ -1431,8 +1431,10 @@ class TransferConfig(_messages.Message):
       every day BigQuery reingests data for [today-10, today-1], rather than
       ingesting data for just [today-1]. Only valid if the data source
       supports the feature. Set the value to 0 to use the default value.
-    dataSourceId: Data source id. Cannot be changed once data transfer is
-      created.
+    dataSourceId: Data source ID. This cannot be changed once data transfer is
+      created. The full list of available data source IDs can be returned
+      through an API call: https://cloud.google.com/bigquery-transfer/docs/ref
+      erence/datatransfer/rest/v1/projects.locations.dataSources/list
     datasetRegion: Output only. Region in which BigQuery dataset is located.
     destinationDatasetId: The BigQuery target dataset id.
     disabled: Is this config disabled. When set to true, no runs are scheduled

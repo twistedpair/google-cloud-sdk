@@ -107,7 +107,7 @@ class FileUploadTask(copy_util.CopyTaskWithExitHandler):
         getattr(self._user_request_args, 'gzip_settings', None),
         original_source_path)
 
-    if source_url.is_pipe:
+    if source_url.is_stream:
       size = None
       source_path = original_source_path
     else:
@@ -126,7 +126,7 @@ class FileUploadTask(copy_util.CopyTaskWithExitHandler):
         # task-level. Porting because in the process of solving a major bug.
         gcs_api.MAX_OBJECTS_PER_COMPOSE_CALL)
     should_perform_single_transfer = (
-        source_url.is_pipe or size < self._composite_upload_threshold or
+        source_url.is_stream or size < self._composite_upload_threshold or
         not self._composite_upload_threshold or
         cloud_api.Capability.COMPOSE_OBJECTS not in api_capabilties or
         not task_util.should_use_parallelism() or component_count <= 1)

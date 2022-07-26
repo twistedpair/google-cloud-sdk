@@ -875,21 +875,20 @@ class MTLSPolicy(_messages.Message):
 
     Values:
       CLIENT_VALIDATION_MODE_UNSPECIFIED: Not allowed.
-      ALLOW_UNVERIFIED_OR_MISSING_CLIENT_CERT: Allow connection to the backend
-        even if certificate chain verification of the client certificate
-        failed or no client certificate was presented. The proof of possession
-        of the private key is always checked if client certificate was
-        presented. This mode requires the backend to implement processing of
-        data extracted from a client certificate to authenticate the peer, or
-        to reject connections if the client certificate fingerprint is
-        missing.
+      ALLOW_INVALID_OR_MISSING_CLIENT_CERT: Allow connection to the backend
+        even if certificate chain validation of the client certificate failed
+        or no client certificate was presented. The proof of possession of the
+        private key is always checked if client certificate was presented.
+        This mode requires the backend to implement processing of data
+        extracted from a client certificate to authenticate the peer, or to
+        reject connections if the client certificate fingerprint is missing.
       REJECT_INVALID: Require a client certificate and allow connection to the
-        backend only if verification of the client certificate passed. If no
+        backend only if validation of the client certificate passed. If no
         trust stores are specified it will require any client certificate and
         force the backend to perform authentication of the peer.
     """
     CLIENT_VALIDATION_MODE_UNSPECIFIED = 0
-    ALLOW_UNVERIFIED_OR_MISSING_CLIENT_CERT = 1
+    ALLOW_INVALID_OR_MISSING_CLIENT_CERT = 1
     REJECT_INVALID = 2
 
   clientValidationCa = _messages.MessageField('ValidationCA', 1, repeated=True)

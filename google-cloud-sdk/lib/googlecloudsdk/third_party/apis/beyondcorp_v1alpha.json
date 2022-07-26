@@ -7,7 +7,7 @@
   "version": "v1alpha",
   "revision": "0",
   "title": "BeyondCorp API",
-  "description": "Beyondcorp Enterprise provides identity and context aware access controls for enterprise resources and enables zero-trust access. Using the Beyondcorp Enterprise APIs, enterprises can set up multi-cloud and on-prem connectivity using the App Connector hybrid connectivity solution.",
+  "description": "Beyondcorp Enterprise provides identity and context aware access controls for enterprise resources and enables zero-trust access. Using the Beyondcorp Enterprise APIs, enterprises can set up multi-cloud and on-prem connectivity solutions.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {
@@ -361,7 +361,7 @@
           "format": "int32"
         },
         "appGateway": {
-          "description": "Required. AppGateway name in following format: projects\/{project_id}\/locations\/{location_id}\/appgateways\/{gateway_id}",
+          "description": "Required. AppGateway name in following format: `projects\/{project_id}\/locations\/{location_id}\/appgateways\/{gateway_id}`",
           "type": "string"
         }
       }
@@ -401,7 +401,7 @@
           "$ref": "GoogleCloudBeyondcorpAppconnectionsV1alphaAppConnection"
         },
         "recentMigVms": {
-          "description": "If type=GCP_REGIONAL_MIG, contains most recent VM instances, like \"https:\/\/www.googleapis.com\/compute\/v1\/projects\/{project_id}\/zones\/{zone_id}\/instances\/{instance_id}\".",
+          "description": "If type=GCP_REGIONAL_MIG, contains most recent VM instances, like `https:\/\/www.googleapis.com\/compute\/v1\/projects\/{project_id}\/zones\/{zone_id}\/instances\/{instance_id}`.",
           "type": "array",
           "items": {
             "type": "string"
@@ -1504,6 +1504,272 @@
         }
       }
     },
+    "GoogleCloudBeyondcorpSaasplatformInsightsV1alphaInsight": {
+      "id": "GoogleCloudBeyondcorpSaasplatformInsightsV1alphaInsight",
+      "description": "The Insight object with configuration that was returned and actual list of records.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The insight resource name. e.g. `organizations\/{organization_id}\/locations\/{location_id}\/insights\/{insight_id}` OR `projects\/{project_id}\/locations\/{location_id}\/insights\/{insight_id}`.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "metadata": {
+          "description": "Output only. Metadata for the Insight.",
+          "readOnly": true,
+          "$ref": "GoogleCloudBeyondcorpSaasplatformInsightsV1alphaInsightMetadata"
+        },
+        "appliedConfig": {
+          "description": "Output only. Applied insight config to generate the result data rows.",
+          "readOnly": true,
+          "$ref": "GoogleCloudBeyondcorpSaasplatformInsightsV1alphaAppliedConfig"
+        },
+        "rows": {
+          "description": "Output only. Result rows returned containing the required value(s).",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudBeyondcorpSaasplatformInsightsV1alphaRow"
+          }
+        }
+      }
+    },
+    "GoogleCloudBeyondcorpSaasplatformInsightsV1alphaInsightMetadata": {
+      "id": "GoogleCloudBeyondcorpSaasplatformInsightsV1alphaInsightMetadata",
+      "description": "Insight filters, groupings and aggregations that can be applied for the insight. Examples: aggregations, groups, field filters.",
+      "type": "object",
+      "properties": {
+        "displayName": {
+          "description": "Output only. Common name of the insight.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "type": {
+          "description": "Output only. Type of the insight. It is metadata describing whether the insight is a metric (e.g. count) or a report (e.g. list, status).",
+          "readOnly": true,
+          "type": "string"
+        },
+        "category": {
+          "description": "Output only. Category of the insight.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "subCategory": {
+          "description": "Output only. Sub-Category of the insight.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "fields": {
+          "description": "Output only. List of fields available for insight.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudBeyondcorpSaasplatformInsightsV1alphaInsightMetadataField"
+          }
+        },
+        "aggregations": {
+          "description": "Output only. List of aggregation types available for insight.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enumDescriptions": [
+              "Unspecified.",
+              "Insight should be aggregated at hourly level.",
+              "Insight should be aggregated at daily level.",
+              "Insight should be aggregated at weekly level.",
+              "Insight should be aggregated at monthly level.",
+              "Insight should be aggregated at the custom date range passed in as the start and end time in the request."
+            ],
+            "enum": [
+              "AGGREGATION_UNSPECIFIED",
+              "HOURLY",
+              "DAILY",
+              "WEEKLY",
+              "MONTHLY",
+              "CUSTOM_DATE_RANGE"
+            ]
+          }
+        },
+        "groups": {
+          "description": "Output only. List of groupings available for insight.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GoogleCloudBeyondcorpSaasplatformInsightsV1alphaInsightMetadataField": {
+      "id": "GoogleCloudBeyondcorpSaasplatformInsightsV1alphaInsightMetadataField",
+      "description": "Field metadata. Commonly understandable name and description for the field. Multiple such fields constitute the Insight.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "Output only. Field id for which this is the metadata.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "displayName": {
+          "description": "Output only. Name of the field.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "filterAlias": {
+          "description": "Output only. Field name to be used in filter while requesting configured insight filtered on this field.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "description": {
+          "description": "Output only. Description of the field.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "filterable": {
+          "description": "Output only. Indicates whether the field can be used for filtering.",
+          "readOnly": true,
+          "type": "boolean"
+        }
+      }
+    },
+    "GoogleCloudBeyondcorpSaasplatformInsightsV1alphaAppliedConfig": {
+      "id": "GoogleCloudBeyondcorpSaasplatformInsightsV1alphaAppliedConfig",
+      "description": "The configuration that was applied to generate the result.",
+      "type": "object",
+      "properties": {
+        "group": {
+          "description": "Output only. Group id of the grouping applied.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "fieldFilter": {
+          "description": "Output only. Filters applied.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "startTime": {
+          "description": "Output only. Starting time for the duration for which insight was pulled.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "Output only. Ending time for the duration for which insight was pulled.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "aggregation": {
+          "description": "Output only. Aggregation type applied.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified.",
+            "Insight should be aggregated at hourly level.",
+            "Insight should be aggregated at daily level.",
+            "Insight should be aggregated at weekly level.",
+            "Insight should be aggregated at monthly level.",
+            "Insight should be aggregated at the custom date range passed in as the start and end time in the request."
+          ],
+          "enum": [
+            "AGGREGATION_UNSPECIFIED",
+            "HOURLY",
+            "DAILY",
+            "WEEKLY",
+            "MONTHLY",
+            "CUSTOM_DATE_RANGE"
+          ]
+        }
+      }
+    },
+    "GoogleCloudBeyondcorpSaasplatformInsightsV1alphaRow": {
+      "id": "GoogleCloudBeyondcorpSaasplatformInsightsV1alphaRow",
+      "description": "Row of the fetch response consisting of a set of entries.",
+      "type": "object",
+      "properties": {
+        "fieldValues": {
+          "description": "Output only. Columns\/entries\/key-vals in the result.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudBeyondcorpSaasplatformInsightsV1alphaRowFieldVal"
+          }
+        }
+      }
+    },
+    "GoogleCloudBeyondcorpSaasplatformInsightsV1alphaRowFieldVal": {
+      "id": "GoogleCloudBeyondcorpSaasplatformInsightsV1alphaRowFieldVal",
+      "description": "Column or key value pair from the request as part of key to use in query or a single pair of the fetch response.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "Output only. Field id.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "filterAlias": {
+          "description": "Output only. Field name to be used in filter while requesting configured insight filtered on this field.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "displayName": {
+          "description": "Output only. Name of the field.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "value": {
+          "description": "Output only. Value of the field in string format. Acceptable values are strings or numbers.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudBeyondcorpSaasplatformInsightsV1alphaConfiguredInsightResponse": {
+      "id": "GoogleCloudBeyondcorpSaasplatformInsightsV1alphaConfiguredInsightResponse",
+      "description": "The response for the configured insight.",
+      "type": "object",
+      "properties": {
+        "rows": {
+          "description": "Output only. Result rows returned containing the required value(s) for configured insight.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudBeyondcorpSaasplatformInsightsV1alphaRow"
+          }
+        },
+        "appliedConfig": {
+          "description": "Output only. Applied insight config to generate the result data rows.",
+          "readOnly": true,
+          "$ref": "GoogleCloudBeyondcorpSaasplatformInsightsV1alphaAppliedConfig"
+        },
+        "nextPageToken": {
+          "description": "Output only. Next page token to be fetched. Set to empty or NULL if there are no more pages available.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudBeyondcorpSaasplatformInsightsV1alphaListInsightsResponse": {
+      "id": "GoogleCloudBeyondcorpSaasplatformInsightsV1alphaListInsightsResponse",
+      "description": "The response for the list of insights.",
+      "type": "object",
+      "properties": {
+        "insights": {
+          "description": "Output only. List of all insights.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudBeyondcorpSaasplatformInsightsV1alphaInsight"
+          }
+        },
+        "nextPageToken": {
+          "description": "Output only. Next page token to be fetched. Set to empty or NULL if there are no more pages available.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
     "GoogleCloudLocationListLocationsResponse": {
       "id": "GoogleCloudLocationListLocationsResponse",
       "description": "The response message for Locations.ListLocations.",
@@ -1768,6 +2034,50 @@
         }
       }
     },
+    "GoogleCloudBeyondcorpAppconnectionsV1AppConnectionOperationMetadata": {
+      "id": "GoogleCloudBeyondcorpAppconnectionsV1AppConnectionOperationMetadata",
+      "description": "Represents the metadata of the long-running operation.",
+      "type": "object",
+      "properties": {
+        "createTime": {
+          "description": "Output only. The time the operation was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "Output only. The time the operation finished running.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "target": {
+          "description": "Output only. Server-defined resource path for the target of the operation.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "verb": {
+          "description": "Output only. Name of the verb executed by the operation.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "statusMessage": {
+          "description": "Output only. Human-readable status of the operation, if any.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "requestedCancellation": {
+          "description": "Output only. Identifies whether the user has requested cancellation of the operation. Operations that have successfully been cancelled have Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.",
+          "readOnly": true,
+          "type": "boolean"
+        },
+        "apiVersion": {
+          "description": "Output only. API version used to start the operation.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
     "GoogleCloudBeyondcorpAppconnectorsV1alphaAppConnectorOperationMetadata": {
       "id": "GoogleCloudBeyondcorpAppconnectorsV1alphaAppConnectorOperationMetadata",
       "description": "Represents the metadata of the long-running operation.",
@@ -1812,8 +2122,96 @@
         }
       }
     },
+    "GoogleCloudBeyondcorpAppconnectorsV1AppConnectorOperationMetadata": {
+      "id": "GoogleCloudBeyondcorpAppconnectorsV1AppConnectorOperationMetadata",
+      "description": "Represents the metadata of the long-running operation.",
+      "type": "object",
+      "properties": {
+        "createTime": {
+          "description": "Output only. The time the operation was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "Output only. The time the operation finished running.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "target": {
+          "description": "Output only. Server-defined resource path for the target of the operation.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "verb": {
+          "description": "Output only. Name of the verb executed by the operation.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "statusMessage": {
+          "description": "Output only. Human-readable status of the operation, if any.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "requestedCancellation": {
+          "description": "Output only. Identifies whether the user has requested cancellation of the operation. Operations that have successfully been cancelled have Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.",
+          "readOnly": true,
+          "type": "boolean"
+        },
+        "apiVersion": {
+          "description": "Output only. API version used to start the operation.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
     "AppGatewayOperationMetadata": {
       "id": "AppGatewayOperationMetadata",
+      "description": "Represents the metadata of the long-running operation.",
+      "type": "object",
+      "properties": {
+        "createTime": {
+          "description": "Output only. The time the operation was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "Output only. The time the operation finished running.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "target": {
+          "description": "Output only. Server-defined resource path for the target of the operation.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "verb": {
+          "description": "Output only. Name of the verb executed by the operation.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "statusMessage": {
+          "description": "Output only. Human-readable status of the operation, if any.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "requestedCancellation": {
+          "description": "Output only. Identifies whether the user has requested cancellation of the operation. Operations that have successfully been cancelled have Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.",
+          "readOnly": true,
+          "type": "boolean"
+        },
+        "apiVersion": {
+          "description": "Output only. API version used to start the operation.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudBeyondcorpAppgatewaysV1AppGatewayOperationMetadata": {
+      "id": "GoogleCloudBeyondcorpAppgatewaysV1AppGatewayOperationMetadata",
       "description": "Represents the metadata of the long-running operation.",
       "type": "object",
       "properties": {
@@ -2027,8 +2425,96 @@
         }
       }
     },
+    "GoogleCloudBeyondcorpClientconnectorservicesV1ClientConnectorServiceOperationMetadata": {
+      "id": "GoogleCloudBeyondcorpClientconnectorservicesV1ClientConnectorServiceOperationMetadata",
+      "description": "Represents the metadata of the long-running operation.",
+      "type": "object",
+      "properties": {
+        "createTime": {
+          "description": "Output only. The time the operation was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "Output only. The time the operation finished running.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "target": {
+          "description": "Output only. Server-defined resource path for the target of the operation.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "verb": {
+          "description": "Output only. Name of the verb executed by the operation.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "statusMessage": {
+          "description": "Output only. Human-readable status of the operation, if any.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "requestedCancellation": {
+          "description": "Output only. Identifies whether the user has requested cancellation of the operation. Operations that have successfully been cancelled have Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.",
+          "readOnly": true,
+          "type": "boolean"
+        },
+        "apiVersion": {
+          "description": "Output only. API version used to start the operation.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
     "ClientGatewayOperationMetadata": {
       "id": "ClientGatewayOperationMetadata",
+      "description": "Represents the metadata of the long-running operation.",
+      "type": "object",
+      "properties": {
+        "createTime": {
+          "description": "Output only. The time the operation was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "Output only. The time the operation finished running.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "target": {
+          "description": "Output only. Server-defined resource path for the target of the operation.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "verb": {
+          "description": "Output only. Name of the verb executed by the operation.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "statusMessage": {
+          "description": "Output only. Human-readable status of the operation, if any.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "requestedCancellation": {
+          "description": "Output only. Identifies whether the user has requested cancellation of the operation. Operations that have been cancelled successfully have Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.",
+          "readOnly": true,
+          "type": "boolean"
+        },
+        "apiVersion": {
+          "description": "Output only. API version used to start the operation.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudBeyondcorpClientgatewaysV1ClientGatewayOperationMetadata": {
+      "id": "GoogleCloudBeyondcorpClientgatewaysV1ClientGatewayOperationMetadata",
       "description": "Represents the metadata of the long-running operation.",
       "type": "object",
       "properties": {
@@ -2078,6 +2564,13 @@
       "properties": {
       }
     },
+    "GoogleCloudBeyondcorpAppconnectorsV1RemoteAgentDetails": {
+      "id": "GoogleCloudBeyondcorpAppconnectorsV1RemoteAgentDetails",
+      "description": "RemoteAgentDetails reflects the details of a remote agent.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "RemoteAgentDetails": {
       "id": "RemoteAgentDetails",
       "description": "RemoteAgentDetails reflects the details of a remote agent.",
@@ -2087,6 +2580,32 @@
     },
     "GoogleCloudBeyondcorpAppconnectorsV1alphaContainerHealthDetails": {
       "id": "GoogleCloudBeyondcorpAppconnectorsV1alphaContainerHealthDetails",
+      "description": "ContainerHealthDetails reflects the health details of a container.",
+      "type": "object",
+      "properties": {
+        "expectedConfigVersion": {
+          "description": "The version of the expected config.",
+          "type": "string"
+        },
+        "currentConfigVersion": {
+          "description": "The version of the current config.",
+          "type": "string"
+        },
+        "extendedStatus": {
+          "description": "The extended status. Such as ExitCode, StartedAt, FinishedAt, etc.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "errorMsg": {
+          "description": "The latest error message.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudBeyondcorpAppconnectorsV1ContainerHealthDetails": {
+      "id": "GoogleCloudBeyondcorpAppconnectorsV1ContainerHealthDetails",
       "description": "ContainerHealthDetails reflects the health details of a container.",
       "type": "object",
       "properties": {
@@ -3014,7 +3533,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Get instance config for a given AppConnector. An internal method called by a AppConnector to get its container config."
+                  "description": "Gets instance configuration for a given AppConnector. An internal method called by a AppConnector to get its container config."
                 },
                 "reportStatus": {
                   "id": "beyondcorp.projects.locations.appConnectors.reportStatus",
@@ -3503,7 +4022,7 @@
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "Required. Field mask is used to specify the fields to be overwritten in the ClientConnectorService resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten. Mutable fields: display_name.",
+                      "description": "Required. Field mask is used to specify the fields to be overwritten in the ClientConnectorService resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten. Mutable fields: display_name, ingress.config.destination_routes.",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
@@ -4450,7 +4969,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Get instance config for a given connector. An internal method called by a connector to get its container config."
+                  "description": "Gets instance configuration for a given connector. An internal method called by a connector to get its container config."
                 },
                 "reportStatus": {
                   "id": "beyondcorp.projects.locations.connectors.reportStatus",
@@ -4569,6 +5088,190 @@
                 }
               }
             },
+            "insights": {
+              "methods": {
+                "get": {
+                  "id": "beyondcorp.projects.locations.insights.get",
+                  "path": "v1alpha/{+name}",
+                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/insights/{insightsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The resource name of the insight using the form: `organizations\/{organization_id}\/locations\/{location_id}\/insights\/{insight_id}` `projects\/{project_id}\/locations\/{location_id}\/insights\/{insight_id}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/insights\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "view": {
+                      "description": "Required. Metadata only or full data view.",
+                      "location": "query",
+                      "type": "string",
+                      "enumDescriptions": [
+                        "The default \/ unset value. The API will default to the BASIC view.",
+                        "Include basic metadata about the insight, but not the insight data. This is the default value (for both ListInsights and GetInsight).",
+                        "Include everything."
+                      ],
+                      "enum": [
+                        "INSIGHT_VIEW_UNSPECIFIED",
+                        "BASIC",
+                        "FULL"
+                      ]
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "GoogleCloudBeyondcorpSaasplatformInsightsV1alphaInsight"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets the value for a selected particular insight with default configuration. The default aggregation level is 'DAILY' and no grouping will be applied or default grouping if applicable. The data will be returned for recent 7 days. Use the organization level path for fetching at org level and project level path for fetching the insight value specific to a particular project. Setting the `view` to `BASIC` will only return the metadata for the insight."
+                },
+                "configuredInsight": {
+                  "id": "beyondcorp.projects.locations.insights.configuredInsight",
+                  "path": "v1alpha/{+insight}:configuredInsight",
+                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/insights/{insightsId}:configuredInsight",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "insight": {
+                      "description": "Required. The resource name of the insight using the form: `organizations\/{organization_id}\/locations\/{location_id}\/insights\/{insight_id}` `projects\/{project_id}\/locations\/{location_id}\/insights\/{insight_id}`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/insights\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "group": {
+                      "description": "Optional. Group id of the available groupings for the insight. Available groupings could be fetched by calling insight list and get APIs in `BASIC` view.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "fieldFilter": {
+                      "description": "Optional. Other filterable\/configurable parameters as applicable to the selected insight. Available fields could be fetched by calling insight list and get APIs in `BASIC` view. `=` is the only comparison operator supported. `AND` is the only logical operator supported. Usage: field_filter=\"fieldName1=fieldVal1 AND fieldName2=fieldVal2\". NOTE: Only `AND` conditions are allowed. NOTE: Use the `filter_alias` from `Insight.Metadata.Field` message for the filtering the corresponding fields in this filter field. (These expressions are based on the filter language described at https:\/\/google.aip.dev\/160).",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "startTime": {
+                      "description": "Required. Starting time for the duration for which insight is to be pulled.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-datetime"
+                    },
+                    "endTime": {
+                      "description": "Required. Ending time for the duration for which insight is to be pulled.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-datetime"
+                    },
+                    "aggregation": {
+                      "description": "Optional. Aggregation type. Available aggregation could be fetched by calling insight list and get APIs in `BASIC` view.",
+                      "location": "query",
+                      "type": "string",
+                      "enumDescriptions": [
+                        "Unspecified.",
+                        "Insight should be aggregated at hourly level.",
+                        "Insight should be aggregated at daily level.",
+                        "Insight should be aggregated at weekly level.",
+                        "Insight should be aggregated at monthly level.",
+                        "Insight should be aggregated at the custom date range passed in as the start and end time in the request."
+                      ],
+                      "enum": [
+                        "AGGREGATION_UNSPECIFIED",
+                        "HOURLY",
+                        "DAILY",
+                        "WEEKLY",
+                        "MONTHLY",
+                        "CUSTOM_DATE_RANGE"
+                      ]
+                    },
+                    "pageSize": {
+                      "description": "Optional. Requested page size. Server may return fewer items than requested. If unspecified, server will pick an appropriate default.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "Optional. Used to fetch the page represented by the token. Fetches the first page when not set.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "insight"
+                  ],
+                  "response": {
+                    "$ref": "GoogleCloudBeyondcorpSaasplatformInsightsV1alphaConfiguredInsightResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets the value for a selected particular insight based on the provided filters. Use the organization level path for fetching at org level and project level path for fetching the insight value specific to a particular project."
+                },
+                "list": {
+                  "id": "beyondcorp.projects.locations.insights.list",
+                  "path": "v1alpha/{+parent}/insights",
+                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/insights",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The resource name of InsightMetadata using the form: `organizations\/{organization_id}\/locations\/{location}` `projects\/{project_id}\/locations\/{location_id}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Optional. Requested page size. Server may return fewer items than requested. If unspecified, server will pick an appropriate default. NOTE: Default page size is 50.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "Optional. A token identifying a page of results the server should return.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "Optional. Filter expression to restrict the insights returned. Supported filter fields: * `type` * `category` * `subCategory` Examples: * \"category = application AND type = count\" * \"category = application AND subCategory = iap\" * \"type = status\" Allowed values: * type: [count, latency, status, list] * category: [application, device, request, security] * subCategory: [iap, webprotect] NOTE: Only equality based comparison is allowed. Only `AND` conjunction is allowed. NOTE: The 'AND' in the filter field needs to be in capital letters only. NOTE: Just filtering on `subCategory` is not allowed. It should be passed in with the parent `category` too. (These expressions are based on the filter language described at https:\/\/google.aip.dev\/160).",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "orderBy": {
+                      "description": "Optional. Hint for how to order the results. This is currently ignored.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "view": {
+                      "description": "Required. List only metadata or full data.",
+                      "location": "query",
+                      "type": "string",
+                      "enumDescriptions": [
+                        "The default \/ unset value. The API will default to the BASIC view.",
+                        "Include basic metadata about the insight, but not the insight data. This is the default value (for both ListInsights and GetInsight).",
+                        "Include everything."
+                      ],
+                      "enum": [
+                        "INSIGHT_VIEW_UNSPECIFIED",
+                        "BASIC",
+                        "FULL"
+                      ]
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "GoogleCloudBeyondcorpSaasplatformInsightsV1alphaListInsightsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists for all the available insights that could be fetched from the system. Allows to filter using category. Setting the `view` to `BASIC` will let you iterate over the list of insight metadatas."
+                }
+              }
+            },
             "applications": {
               "methods": {
                 "setIamPolicy": {
@@ -4657,6 +5360,198 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "organizations": {
+      "resources": {
+        "locations": {
+          "resources": {
+            "insights": {
+              "methods": {
+                "get": {
+                  "id": "beyondcorp.organizations.locations.insights.get",
+                  "path": "v1alpha/{+name}",
+                  "flatPath": "v1alpha/organizations/{organizationsId}/locations/{locationsId}/insights/{insightsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The resource name of the insight using the form: `organizations\/{organization_id}\/locations\/{location_id}\/insights\/{insight_id}` `projects\/{project_id}\/locations\/{location_id}\/insights\/{insight_id}`",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/insights\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "view": {
+                      "description": "Required. Metadata only or full data view.",
+                      "location": "query",
+                      "type": "string",
+                      "enumDescriptions": [
+                        "The default \/ unset value. The API will default to the BASIC view.",
+                        "Include basic metadata about the insight, but not the insight data. This is the default value (for both ListInsights and GetInsight).",
+                        "Include everything."
+                      ],
+                      "enum": [
+                        "INSIGHT_VIEW_UNSPECIFIED",
+                        "BASIC",
+                        "FULL"
+                      ]
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "GoogleCloudBeyondcorpSaasplatformInsightsV1alphaInsight"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets the value for a selected particular insight with default configuration. The default aggregation level is 'DAILY' and no grouping will be applied or default grouping if applicable. The data will be returned for recent 7 days. Use the organization level path for fetching at org level and project level path for fetching the insight value specific to a particular project. Setting the `view` to `BASIC` will only return the metadata for the insight."
+                },
+                "configuredInsight": {
+                  "id": "beyondcorp.organizations.locations.insights.configuredInsight",
+                  "path": "v1alpha/{+insight}:configuredInsight",
+                  "flatPath": "v1alpha/organizations/{organizationsId}/locations/{locationsId}/insights/{insightsId}:configuredInsight",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "insight": {
+                      "description": "Required. The resource name of the insight using the form: `organizations\/{organization_id}\/locations\/{location_id}\/insights\/{insight_id}` `projects\/{project_id}\/locations\/{location_id}\/insights\/{insight_id}`.",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/insights\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "group": {
+                      "description": "Optional. Group id of the available groupings for the insight. Available groupings could be fetched by calling insight list and get APIs in `BASIC` view.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "fieldFilter": {
+                      "description": "Optional. Other filterable\/configurable parameters as applicable to the selected insight. Available fields could be fetched by calling insight list and get APIs in `BASIC` view. `=` is the only comparison operator supported. `AND` is the only logical operator supported. Usage: field_filter=\"fieldName1=fieldVal1 AND fieldName2=fieldVal2\". NOTE: Only `AND` conditions are allowed. NOTE: Use the `filter_alias` from `Insight.Metadata.Field` message for the filtering the corresponding fields in this filter field. (These expressions are based on the filter language described at https:\/\/google.aip.dev\/160).",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "startTime": {
+                      "description": "Required. Starting time for the duration for which insight is to be pulled.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-datetime"
+                    },
+                    "endTime": {
+                      "description": "Required. Ending time for the duration for which insight is to be pulled.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-datetime"
+                    },
+                    "aggregation": {
+                      "description": "Optional. Aggregation type. Available aggregation could be fetched by calling insight list and get APIs in `BASIC` view.",
+                      "location": "query",
+                      "type": "string",
+                      "enumDescriptions": [
+                        "Unspecified.",
+                        "Insight should be aggregated at hourly level.",
+                        "Insight should be aggregated at daily level.",
+                        "Insight should be aggregated at weekly level.",
+                        "Insight should be aggregated at monthly level.",
+                        "Insight should be aggregated at the custom date range passed in as the start and end time in the request."
+                      ],
+                      "enum": [
+                        "AGGREGATION_UNSPECIFIED",
+                        "HOURLY",
+                        "DAILY",
+                        "WEEKLY",
+                        "MONTHLY",
+                        "CUSTOM_DATE_RANGE"
+                      ]
+                    },
+                    "pageSize": {
+                      "description": "Optional. Requested page size. Server may return fewer items than requested. If unspecified, server will pick an appropriate default.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "Optional. Used to fetch the page represented by the token. Fetches the first page when not set.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "insight"
+                  ],
+                  "response": {
+                    "$ref": "GoogleCloudBeyondcorpSaasplatformInsightsV1alphaConfiguredInsightResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets the value for a selected particular insight based on the provided filters. Use the organization level path for fetching at org level and project level path for fetching the insight value specific to a particular project."
+                },
+                "list": {
+                  "id": "beyondcorp.organizations.locations.insights.list",
+                  "path": "v1alpha/{+parent}/insights",
+                  "flatPath": "v1alpha/organizations/{organizationsId}/locations/{locationsId}/insights",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The resource name of InsightMetadata using the form: `organizations\/{organization_id}\/locations\/{location}` `projects\/{project_id}\/locations\/{location_id}`",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Optional. Requested page size. Server may return fewer items than requested. If unspecified, server will pick an appropriate default. NOTE: Default page size is 50.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "Optional. A token identifying a page of results the server should return.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "Optional. Filter expression to restrict the insights returned. Supported filter fields: * `type` * `category` * `subCategory` Examples: * \"category = application AND type = count\" * \"category = application AND subCategory = iap\" * \"type = status\" Allowed values: * type: [count, latency, status, list] * category: [application, device, request, security] * subCategory: [iap, webprotect] NOTE: Only equality based comparison is allowed. Only `AND` conjunction is allowed. NOTE: The 'AND' in the filter field needs to be in capital letters only. NOTE: Just filtering on `subCategory` is not allowed. It should be passed in with the parent `category` too. (These expressions are based on the filter language described at https:\/\/google.aip.dev\/160).",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "orderBy": {
+                      "description": "Optional. Hint for how to order the results. This is currently ignored.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "view": {
+                      "description": "Required. List only metadata or full data.",
+                      "location": "query",
+                      "type": "string",
+                      "enumDescriptions": [
+                        "The default \/ unset value. The API will default to the BASIC view.",
+                        "Include basic metadata about the insight, but not the insight data. This is the default value (for both ListInsights and GetInsight).",
+                        "Include everything."
+                      ],
+                      "enum": [
+                        "INSIGHT_VIEW_UNSPECIFIED",
+                        "BASIC",
+                        "FULL"
+                      ]
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "GoogleCloudBeyondcorpSaasplatformInsightsV1alphaListInsightsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists for all the available insights that could be fetched from the system. Allows to filter using category. Setting the `view` to `BASIC` will let you iterate over the list of insight metadatas."
                 }
               }
             }

@@ -1289,6 +1289,7 @@ class GoogleCloudDatacatalogV1ColumnSchema(_messages.Message):
     description: Optional. Description of the column. Default value is an
       empty string. The description must be a UTF-8 string with the maximum
       size of 2000 bytes.
+    lookerColumnSpec: Looker specific column info of this column.
     mode: Optional. A column's mode indicates whether values in this column
       are required, nullable, or repeated. Only `NULLABLE`, `REQUIRED`, and
       `REPEATED` values are supported. Default mode is `NULLABLE`.
@@ -1300,9 +1301,41 @@ class GoogleCloudDatacatalogV1ColumnSchema(_messages.Message):
 
   column = _messages.StringField(1)
   description = _messages.StringField(2)
-  mode = _messages.StringField(3)
-  subcolumns = _messages.MessageField('GoogleCloudDatacatalogV1ColumnSchema', 4, repeated=True)
-  type = _messages.StringField(5)
+  lookerColumnSpec = _messages.MessageField('GoogleCloudDatacatalogV1ColumnSchemaLookerColumnSpec', 3)
+  mode = _messages.StringField(4)
+  subcolumns = _messages.MessageField('GoogleCloudDatacatalogV1ColumnSchema', 5, repeated=True)
+  type = _messages.StringField(6)
+
+
+class GoogleCloudDatacatalogV1ColumnSchemaLookerColumnSpec(_messages.Message):
+  r"""Column info specific to Looker System.
+
+  Enums:
+    TypeValueValuesEnum: Looker specific column type of this column.
+
+  Fields:
+    type: Looker specific column type of this column.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Looker specific column type of this column.
+
+    Values:
+      LOOKER_COLUMN_TYPE_UNSPECIFIED: Unspecified.
+      DIMENSION: Dimension.
+      DIMENSION_GROUP: Dimension group - parent for Dimension.
+      FILTER: Filter.
+      MEASURE: Measure.
+      PAREMETER: Parameter.
+    """
+    LOOKER_COLUMN_TYPE_UNSPECIFIED = 0
+    DIMENSION = 1
+    DIMENSION_GROUP = 2
+    FILTER = 3
+    MEASURE = 4
+    PAREMETER = 5
+
+  type = _messages.EnumField('TypeValueValuesEnum', 1)
 
 
 class GoogleCloudDatacatalogV1Contacts(_messages.Message):

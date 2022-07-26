@@ -50,7 +50,7 @@ def AddIamDestGroupArgs(parser):
       capture some information, but behaves like an ArgumentParser.
   """
   parser.add_argument(
-      '--group-name',
+      '--dest-group',
       required=True,
       help='Name of the Destination Group.')
   parser.add_argument(
@@ -535,8 +535,11 @@ def ParseIapDestGroupResource(release_track, args):
     The specified IAP TCP DestGroup resource.
   """
   project = properties.VALUES.core.project.GetOrFail()
+  group = getattr(args, 'group_name', None)
+  if group is None:
+    group = args.dest_group
   return iap_api.IapTunnelDestGroupResource(release_track, project, args.region,
-                                            args.group_name)
+                                            group)
 
 
 def ParseIapDestGroupResourceWithNoGroupId(release_track, args):

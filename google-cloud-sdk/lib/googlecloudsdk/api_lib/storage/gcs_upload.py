@@ -26,6 +26,7 @@ from apitools.base.py import transfer
 from googlecloudsdk.api_lib.storage import errors
 from googlecloudsdk.api_lib.storage import gcs_metadata_util
 from googlecloudsdk.api_lib.storage import retry_util
+from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.command_lib.storage.tasks.cp import copy_util
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import scaled_integer
@@ -66,17 +67,19 @@ class _Upload(six.with_metaclass(abc.ABCMeta, object)):
     self._request_config = request_config
     self._source_resource = source_resource
 
+    self._messages = apis.GetMessagesModule('storage', 'v1')
+
   def _get_validated_insert_request(self):
     """Get an insert request that includes validated object metadata."""
     if self._request_config.predefined_acl_string:
       predefined_acl = getattr(
-          self._gcs_api.messages.StorageObjectsInsertRequest
+          self._messages.StorageObjectsInsertRequest
           .PredefinedAclValueValuesEnum,
           self._request_config.predefined_acl_string)
     else:
       predefined_acl = None
 
-    object_metadata = self._gcs_api.messages.Object(
+    object_metadata = self._messages.Object(
         name=self._destination_resource.storage_url.object_name,
         bucket=self._destination_resource.storage_url.bucket_name)
 
@@ -87,7 +90,7 @@ class _Upload(six.with_metaclass(abc.ABCMeta, object)):
     gcs_metadata_util.update_object_metadata_from_request_config(
         object_metadata, self._request_config, source_file_path)
 
-    return self._gcs_api.messages.StorageObjectsInsertRequest(
+    return self._messages.StorageObjectsInsertRequest(
         bucket=object_metadata.bucket,
         object=object_metadata,
         ifGenerationMatch=copy_util.get_generation_match_value(

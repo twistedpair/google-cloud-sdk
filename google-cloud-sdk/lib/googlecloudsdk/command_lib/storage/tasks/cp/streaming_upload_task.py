@@ -58,7 +58,7 @@ class StreamingUploadTask(task.Task):
     request_config = request_config_factory.get_request_config(
         self._destination_resource.storage_url,
         content_type=upload_util.get_content_type(
-            self._source_resource.storage_url.object_name, is_pipe=True),
+            self._source_resource.storage_url.object_name, is_stream=True),
         md5_hash=self._source_resource.md5_hash,
         user_request_args=self._user_request_args)
 

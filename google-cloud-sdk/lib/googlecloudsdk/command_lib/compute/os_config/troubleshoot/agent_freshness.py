@@ -98,5 +98,5 @@ def Check(project, instance, zone, release_track):
       return utils.Response(continue_flag, response_message)
 
   continue_flag = True
-  response_message += 'Yes\n'
+  response_message += 'Yes'
   return utils.Response(continue_flag, response_message)

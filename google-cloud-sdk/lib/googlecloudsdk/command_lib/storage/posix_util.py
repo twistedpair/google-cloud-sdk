@@ -420,11 +420,11 @@ def raise_if_source_and_destination_not_valid_for_preserve_posix(
   if not (user_request_args and user_request_args.system_posix_data):
     return
 
-  if isinstance(source_url, storage_url.FileUrl) and source_url.is_pipe:
+  if isinstance(source_url, storage_url.FileUrl) and source_url.is_stream:
     raise ValueError(
         'Cannot preserve POSIX data from pipe: {}'.format(source_url))
   if isinstance(destination_url,
-                storage_url.FileUrl) and destination_url.is_pipe:
+                storage_url.FileUrl) and destination_url.is_stream:
     raise ValueError(
         'Cannot write POSIX data to pipe: {}'.format(destination_url))
   if isinstance(source_url, storage_url.CloudUrl) and isinstance(

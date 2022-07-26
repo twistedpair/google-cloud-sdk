@@ -1156,6 +1156,37 @@
           "items": {
             "$ref": "GoogleCloudDatacatalogV1ColumnSchema"
           }
+        },
+        "lookerColumnSpec": {
+          "description": "Looker specific column info of this column.",
+          "$ref": "GoogleCloudDatacatalogV1ColumnSchemaLookerColumnSpec"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1ColumnSchemaLookerColumnSpec": {
+      "id": "GoogleCloudDatacatalogV1ColumnSchemaLookerColumnSpec",
+      "description": "Column info specific to Looker System.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "Looker specific column type of this column.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified.",
+            "Dimension.",
+            "Dimension group - parent for Dimension.",
+            "Filter.",
+            "Measure.",
+            "Parameter."
+          ],
+          "enum": [
+            "LOOKER_COLUMN_TYPE_UNSPECIFIED",
+            "DIMENSION",
+            "DIMENSION_GROUP",
+            "FILTER",
+            "MEASURE",
+            "PAREMETER"
+          ]
         }
       }
     },

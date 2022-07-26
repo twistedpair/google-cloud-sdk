@@ -99,6 +99,7 @@ _INTEGRATION_TYPES = frozenset([
                         'description':
                             'Set a route mapping from a path to a service. ' +
                             'Format: set-mapping=[DOMAIN]/[PATH]:[SERVICE]',
+                        'required': True,
                         'type':
                             'domain-path-service',
                     }),
@@ -119,6 +120,15 @@ _INTEGRATION_TYPES = frozenset([
                         'create_allowed': False,
                     }),
             }),
+        'update_exclusive_groups':
+            frozenset({
+                frozendict({
+                    'params':
+                        frozenset(
+                            {'set-mapping', 'remove-mapping', 'remove-domain'}),
+                })
+            }),
+        'disable_service_flags': True,
         'required_apis':
             frozenset({'compute.googleapis.com'}),
     }),

@@ -112,8 +112,8 @@ LIST_HELP = {
         To see the DS records for every key-signing DnsKey in a managed zone,
         run:
 
-          $ {command} --zone=my_zone 3 --format='value(ds_record())' \
-              --filter='type=keySigning'
+          $ {command} --zone=my_zone --filter='type=keySigning' \
+              --format='value(ds_record())'
         """
 }
 

@@ -319,6 +319,7 @@ class AuditLogConfig(_messages.Message):
   Fields:
     exemptedMembers: Specifies the identities that do not cause logging for
       this type of permission. Follows the same format of Binding.members.
+    ignoreChildExemptions: A boolean attribute.
     logType: The log type that this config enables.
   """
 
@@ -337,7 +338,8 @@ class AuditLogConfig(_messages.Message):
     DATA_READ = 3
 
   exemptedMembers = _messages.StringField(1, repeated=True)
-  logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
+  ignoreChildExemptions = _messages.BooleanField(2)
+  logType = _messages.EnumField('LogTypeValueValuesEnum', 3)
 
 
 class AuthMethod(_messages.Message):
@@ -346,15 +348,47 @@ class AuthMethod(_messages.Message):
 
   Fields:
     azureadConfig: AzureAD specific configuration.
+    googleConfig: GoogleConfig specific configuration
     name: Identifier for auth config.
     oidcConfig: OIDC specific configuration.
     proxy: Proxy server address to use for auth method.
   """
 
   azureadConfig = _messages.MessageField('AzureADConfig', 1)
-  name = _messages.StringField(2)
-  oidcConfig = _messages.MessageField('OidcConfig', 3)
-  proxy = _messages.StringField(4)
+  googleConfig = _messages.MessageField('GoogleConfig', 2)
+  name = _messages.StringField(3)
+  oidcConfig = _messages.MessageField('OidcConfig', 4)
+  proxy = _messages.StringField(5)
+
+
+class AuthorizationLoggingOptions(_messages.Message):
+  r"""Authorization-related information used by Cloud Audit Logging.
+
+  Enums:
+    PermissionTypeValueValuesEnum: The type of the permission that was
+      checked.
+
+  Fields:
+    permissionType: The type of the permission that was checked.
+  """
+
+  class PermissionTypeValueValuesEnum(_messages.Enum):
+    r"""The type of the permission that was checked.
+
+    Values:
+      PERMISSION_TYPE_UNSPECIFIED: Default. Should not be used.
+      ADMIN_READ: A read of admin (meta) data.
+      ADMIN_WRITE: A write of admin (meta) data.
+      DATA_READ: A read of standard data.
+      DATA_WRITE: A write of standard data.
+    """
+    PERMISSION_TYPE_UNSPECIFIED = 0
+    ADMIN_READ = 1
+    ADMIN_WRITE = 2
+    DATA_READ = 3
+    DATA_WRITE = 4
+
+  permissionType = _messages.EnumField('PermissionTypeValueValuesEnum', 1)
 
 
 class AuthorizerFeatureSpec(_messages.Message):
@@ -377,8 +411,9 @@ class AzureADConfig(_messages.Message):
   Fields:
     clientId: ID for the registered client application that makes
       authentication requests to the Azure AD identity provider.
-    clientSecret: Raw client secret will be passed to the GKE Hub CLH.
-    encryptedClientSecret: Encrypted AzureAD client secrets.
+    clientSecret: Input only. Unencrypted AzureAD client secret will be passed
+      to the GKE Hub CLH.
+    encryptedClientSecret: Output only. Encrypted AzureAD client secret.
     kubectlRedirectUri: The redirect URL that kubectl uses for authorization.
     tenant: Kind of Azure AD account to be authenticated. Supported values are
       or for accounts belonging to a specific tenant.
@@ -444,6 +479,7 @@ class Binding(_messages.Message):
   r"""Associates `members`, or principals, with a `role`.
 
   Fields:
+    bindingId: A string attribute.
     condition: The condition that is associated with this binding. If the
       condition evaluates to `true`, then this binding applies to the current
       request. If the condition evaluates to `false`, then this binding does
@@ -487,9 +523,10 @@ class Binding(_messages.Message):
       example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
 
-  condition = _messages.MessageField('Expr', 1)
-  members = _messages.StringField(2, repeated=True)
-  role = _messages.StringField(3)
+  bindingId = _messages.StringField(1)
+  condition = _messages.MessageField('Expr', 2)
+  members = _messages.StringField(3, repeated=True)
+  role = _messages.StringField(4)
 
 
 class CancelOperationRequest(_messages.Message):
@@ -516,6 +553,35 @@ class CloudAuditLoggingFeatureState(_messages.Message):
   FeatureStateDetails requires a state.
   """
 
+
+
+class CloudAuditOptions(_messages.Message):
+  r"""Write a Cloud Audit log
+
+  Enums:
+    LogNameValueValuesEnum: The log_name to populate in the Cloud Audit
+      Record.
+
+  Fields:
+    authorizationLoggingOptions: Information used by the Cloud Audit Logging
+      pipeline.
+    logName: The log_name to populate in the Cloud Audit Record.
+  """
+
+  class LogNameValueValuesEnum(_messages.Enum):
+    r"""The log_name to populate in the Cloud Audit Record.
+
+    Values:
+      UNSPECIFIED_LOG_NAME: Default. Should not be used.
+      ADMIN_ACTIVITY: Corresponds to "cloudaudit.googleapis.com/activity"
+      DATA_ACCESS: Corresponds to "cloudaudit.googleapis.com/data_access"
+    """
+    UNSPECIFIED_LOG_NAME = 0
+    ADMIN_ACTIVITY = 1
+    DATA_ACCESS = 2
+
+  authorizationLoggingOptions = _messages.MessageField('AuthorizationLoggingOptions', 1)
+  logName = _messages.EnumField('LogNameValueValuesEnum', 2)
 
 
 class CloudBuildFeatureSpec(_messages.Message):
@@ -601,6 +667,208 @@ class CloudBuildMembershipConfig(_messages.Message):
 
   securityPolicy = _messages.EnumField('SecurityPolicyValueValuesEnum', 1)
   version = _messages.StringField(2)
+
+
+class ClusterUpgradeFeatureSpec(_messages.Message):
+  r"""ClusterUpgradeFeatureSpec contains the input for the ClusterUpgrade
+  feature.
+
+  Fields:
+    gkeUpgradeOverrides: Allow users to override some properties of each GKE
+      upgrade.
+    internalGkeUpgradeFeatureSpec: internal_gke_upgrade_feature_spec contains
+      the desired GKE upgrades. It will only be updated by the controller. We
+      will hide initially and decide whether we really need to expose it
+      later.
+    postConditions: Post conditions to evaluate to mark an upgrade COMPLETE.
+    upstreamFleets: This fleet consumes upgrades that have COMPLETE status
+      code in the upstream fleets. See FleetGKEUpgradeState.Code for code
+      definitions. This field can be either project id or number of the fleet
+      host project per go/aip/2510. This is defined as repeated for future
+      proof reasons. Initial implementation will enforce at most one upstream
+      fleet.
+  """
+
+  gkeUpgradeOverrides = _messages.MessageField('GKEUpgradeOverride', 1, repeated=True)
+  internalGkeUpgradeFeatureSpec = _messages.MessageField('GKEUpgradeFeatureSpec', 2)
+  postConditions = _messages.MessageField('PostConditions', 3)
+  upstreamFleets = _messages.StringField(4, repeated=True)
+
+
+class ClusterUpgradeFeatureState(_messages.Message):
+  r"""ClusterUpgradeFeatureState contains the status fields specific to the
+  ClusterUpgrade feature.
+
+  Messages:
+    IgnoredValue: A list of memberships ignored by the feature. For example,
+      manually upgraded clusters can be ignored if they are newer than the
+      default versions of its release channel. The membership resource is in
+      the format:
+      `projects/[project_id]/locations/[location]/membership/[membership_id]`.
+
+  Fields:
+    downstreamFleets: This fleets whose upstream_fleets contain the current
+      fleet. This field can be either project id or number of the fleet host
+      project per go/aip/2510.
+    gkeState: Feature state for GKE clusters.
+    ignored: A list of memberships ignored by the feature. For example,
+      manually upgraded clusters can be ignored if they are newer than the
+      default versions of its release channel. The membership resource is in
+      the format:
+      `projects/[project_id]/locations/[location]/membership/[membership_id]`.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class IgnoredValue(_messages.Message):
+    r"""A list of memberships ignored by the feature. For example, manually
+    upgraded clusters can be ignored if they are newer than the default
+    versions of its release channel. The membership resource is in the format:
+    `projects/[project_id]/locations/[location]/membership/[membership_id]`.
+
+    Messages:
+      AdditionalProperty: An additional property for a IgnoredValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type IgnoredValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a IgnoredValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A IgnoredMembership attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('IgnoredMembership', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  downstreamFleets = _messages.StringField(1, repeated=True)
+  gkeState = _messages.MessageField('GKEUpgradeFeatureState', 2)
+  ignored = _messages.MessageField('IgnoredValue', 3)
+
+
+class Condition(_messages.Message):
+  r"""A condition to be met.
+
+  Enums:
+    IamValueValuesEnum: Trusted attributes supplied by the IAM system.
+    OpValueValuesEnum: An operator to apply the subject with.
+    SysValueValuesEnum: Trusted attributes supplied by any service that owns
+      resources and uses the IAM system for access control.
+
+  Fields:
+    iam: Trusted attributes supplied by the IAM system.
+    op: An operator to apply the subject with.
+    svc: Trusted attributes discharged by the service.
+    sys: Trusted attributes supplied by any service that owns resources and
+      uses the IAM system for access control.
+    values: The objects of the condition.
+  """
+
+  class IamValueValuesEnum(_messages.Enum):
+    r"""Trusted attributes supplied by the IAM system.
+
+    Values:
+      NO_ATTR: Default non-attribute.
+      AUTHORITY: Either principal or (if present) authority selector.
+      ATTRIBUTION: The principal (even if an authority selector is present),
+        which must only be used for attribution, not authorization.
+      SECURITY_REALM: Any of the security realms in the IAMContext
+        (go/security-realms). When used with IN, the condition indicates "any
+        of the request's realms match one of the given values; with NOT_IN,
+        "none of the realms match any of the given values". Note that a value
+        can be: - 'self:campus' (i.e., clients that are in the same campus) -
+        'self:metro' (i.e., clients that are in the same metro) - 'self:cloud-
+        region' (i.e., allow connections from clients that are in the same
+        cloud region) - 'self:prod-region' (i.e., allow connections from
+        clients that are in the same prod region) - 'guardians' (i.e., allow
+        connections from its guardian realms. See go/security-realms-
+        glossary#guardian for more information.) - 'self' [DEPRECATED] (i.e.,
+        allow connections from clients that are in the same security realm,
+        which is currently but not guaranteed to be campus-sized) - a realm
+        (e.g., 'campus-abc') - a realm group (e.g., 'realms-for-borg-cell-xx',
+        see: go/realm-groups) A match is determined by a realm group
+        membership check performed by a RealmAclRep object (go/realm-acl-
+        howto). It is not permitted to grant access based on the *absence* of
+        a realm, so realm conditions can only be used in a "positive" context
+        (e.g., ALLOW/IN or DENY/NOT_IN).
+      APPROVER: An approver (distinct from the requester) that has authorized
+        this request. When used with IN, the condition indicates that one of
+        the approvers associated with the request matches the specified
+        principal, or is a member of the specified group. Approvers can only
+        grant additional access, and are thus only used in a strictly positive
+        context (e.g. ALLOW/IN or DENY/NOT_IN).
+      JUSTIFICATION_TYPE: What types of justifications have been supplied with
+        this request. String values should match enum names from
+        security.credentials.JustificationType, e.g. "MANUAL_STRING". It is
+        not permitted to grant access based on the *absence* of a
+        justification, so justification conditions can only be used in a
+        "positive" context (e.g., ALLOW/IN or DENY/NOT_IN). Multiple
+        justifications, e.g., a Buganizer ID and a manually-entered reason,
+        are normal and supported.
+      CREDENTIALS_TYPE: What type of credentials have been supplied with this
+        request. String values should match enum names from
+        security_loas_l2.CredentialsType - currently, only
+        CREDS_TYPE_EMERGENCY is supported. It is not permitted to grant access
+        based on the *absence* of a credentials type, so the conditions can
+        only be used in a "positive" context (e.g., ALLOW/IN or DENY/NOT_IN).
+      CREDS_ASSERTION: EXPERIMENTAL -- DO NOT USE. The conditions can only be
+        used in a "positive" context (e.g., ALLOW/IN or DENY/NOT_IN).
+    """
+    NO_ATTR = 0
+    AUTHORITY = 1
+    ATTRIBUTION = 2
+    SECURITY_REALM = 3
+    APPROVER = 4
+    JUSTIFICATION_TYPE = 5
+    CREDENTIALS_TYPE = 6
+    CREDS_ASSERTION = 7
+
+  class OpValueValuesEnum(_messages.Enum):
+    r"""An operator to apply the subject with.
+
+    Values:
+      NO_OP: Default no-op.
+      EQUALS: DEPRECATED. Use IN instead.
+      NOT_EQUALS: DEPRECATED. Use NOT_IN instead.
+      IN: The condition is true if the subject (or any element of it if it is
+        a set) matches any of the supplied values.
+      NOT_IN: The condition is true if the subject (or every element of it if
+        it is a set) matches none of the supplied values.
+      DISCHARGED: Subject is discharged
+    """
+    NO_OP = 0
+    EQUALS = 1
+    NOT_EQUALS = 2
+    IN = 3
+    NOT_IN = 4
+    DISCHARGED = 5
+
+  class SysValueValuesEnum(_messages.Enum):
+    r"""Trusted attributes supplied by any service that owns resources and
+    uses the IAM system for access control.
+
+    Values:
+      NO_ATTR: Default non-attribute type
+      REGION: Region of the resource
+      SERVICE: Service name
+      NAME: Resource name
+      IP: IP address of the caller
+    """
+    NO_ATTR = 0
+    REGION = 1
+    SERVICE = 2
+    NAME = 3
+    IP = 4
+
+  iam = _messages.EnumField('IamValueValuesEnum', 1)
+  op = _messages.EnumField('OpValueValuesEnum', 2)
+  svc = _messages.StringField(3)
+  sys = _messages.EnumField('SysValueValuesEnum', 4)
+  values = _messages.StringField(5, repeated=True)
 
 
 class ConfigManagementFeatureSpec(_messages.Message):
@@ -1000,6 +1268,82 @@ class ControlPlaneRevision(_messages.Message):
   version = _messages.StringField(7)
 
 
+class CounterOptions(_messages.Message):
+  r"""Increment a streamz counter with the specified metric and field names.
+  Metric names should start with a '/', generally be lowercase-only, and end
+  in "_count". Field names should not contain an initial slash. The actual
+  exported metric names will have "/iam/policy" prepended. Field names
+  correspond to IAM request parameters and field values are their respective
+  values. Supported field names: - "authority", which is "[token]" if
+  IAMContext.token is present, otherwise the value of
+  IAMContext.authority_selector if present, and otherwise a representation of
+  IAMContext.principal; or - "iam_principal", a representation of
+  IAMContext.principal even if a token or authority selector is present; or -
+  "" (empty string), resulting in a counter with no fields. Examples: counter
+  { metric: "/debug_access_count" field: "iam_principal" } ==> increment
+  counter /iam/policy/debug_access_count {iam_principal=[value of
+  IAMContext.principal]}
+
+  Fields:
+    customFields: Custom fields.
+    field: The field value to attribute.
+    metric: The metric to update.
+  """
+
+  customFields = _messages.MessageField('CustomField', 1, repeated=True)
+  field = _messages.StringField(2)
+  metric = _messages.StringField(3)
+
+
+class CustomField(_messages.Message):
+  r"""Custom fields. These can be used to create a counter with arbitrary
+  field/value pairs. See: go/rpcsp-custom-fields.
+
+  Fields:
+    name: Name is the field name.
+    value: Value is the field value. It is important that in contrast to the
+      CounterOptions.field, the value here is a constant that is not derived
+      from the IAMContext.
+  """
+
+  name = _messages.StringField(1)
+  value = _messages.StringField(2)
+
+
+class DataAccessOptions(_messages.Message):
+  r"""Write a Data Access (Gin) log
+
+  Enums:
+    LogModeValueValuesEnum:
+
+  Fields:
+    logMode: A LogModeValueValuesEnum attribute.
+  """
+
+  class LogModeValueValuesEnum(_messages.Enum):
+    r"""LogModeValueValuesEnum enum type.
+
+    Values:
+      LOG_MODE_UNSPECIFIED: Client is not required to write a partial Gin log
+        immediately after the authorization check. If client chooses to write
+        one and it fails, client may either fail open (allow the operation to
+        continue) or fail closed (handle as a DENY outcome).
+      LOG_FAIL_CLOSED: The application's operation in the context of which
+        this authorization check is being made may only be performed if it is
+        successfully logged to Gin. For instance, the authorization library
+        may satisfy this obligation by emitting a partial log entry at
+        authorization check time and only returning ALLOW to the application
+        if it succeeds. If a matching Rule has this directive, but the client
+        has not indicated that it will honor such requirements, then the IAM
+        check will result in authorization failure by setting
+        CheckPolicyResponse.success=false.
+    """
+    LOG_MODE_UNSPECIFIED = 0
+    LOG_FAIL_CLOSED = 1
+
+  logMode = _messages.EnumField('LogModeValueValuesEnum', 1)
+
+
 class DataPlaneManagement(_messages.Message):
   r"""Status of data plane management. Only reported per-member.
 
@@ -1118,6 +1462,7 @@ class Feature(_messages.Message):
     cloudauditloggingFeatureSpec: The specification for Anthos Cloud Audit
       Logging.
     cloudbuildFeatureSpec: The specification for Cloud Build for Anthos.
+    clusterupgradeFeatureSpec: The specification for ClusterUpgrade feature.
     configmanagementFeatureSpec: The specification for Anthos Config
       Management.
     createTime: Output only. When the Feature was created.
@@ -1134,6 +1479,7 @@ class Feature(_messages.Message):
       Cluster Service Discovery.
     name: Output only. The full, unique name of this Feature resource in the
       format `projects/*/locations/global/features/*`.
+    policycontrollerFeatureSpec: The specification for Policy Controller.
     rbacrolebindingactuationFeatureSpec: The specification for RBAC Role
       Binding Actuation.
     servicedirectoryFeatureSpec: The specification for Service Directory.
@@ -1174,23 +1520,25 @@ class Feature(_messages.Message):
   authorizerFeatureSpec = _messages.MessageField('AuthorizerFeatureSpec', 5)
   cloudauditloggingFeatureSpec = _messages.MessageField('CloudAuditLoggingFeatureSpec', 6)
   cloudbuildFeatureSpec = _messages.MessageField('CloudBuildFeatureSpec', 7)
-  configmanagementFeatureSpec = _messages.MessageField('ConfigManagementFeatureSpec', 8)
-  createTime = _messages.StringField(9)
-  deleteTime = _messages.StringField(10)
-  description = _messages.StringField(11)
-  featureState = _messages.MessageField('FeatureState', 12)
-  helloworldFeatureSpec = _messages.MessageField('HelloWorldFeatureSpec', 13)
-  identityserviceFeatureSpec = _messages.MessageField('IdentityServiceFeatureSpec', 14)
-  labels = _messages.MessageField('LabelsValue', 15)
-  meteringFeatureSpec = _messages.MessageField('MeteringFeatureSpec', 16)
-  multiclusteringressFeatureSpec = _messages.MessageField('MultiClusterIngressFeatureSpec', 17)
-  multiclusterservicediscoveryFeatureSpec = _messages.MessageField('MultiClusterServiceDiscoveryFeatureSpec', 18)
-  name = _messages.StringField(19)
-  rbacrolebindingactuationFeatureSpec = _messages.MessageField('RBACRoleBindingActuationFeatureSpec', 20)
-  servicedirectoryFeatureSpec = _messages.MessageField('ServiceDirectoryFeatureSpec', 21)
-  servicemeshFeatureSpec = _messages.MessageField('ServiceMeshFeatureSpec', 22)
-  updateTime = _messages.StringField(23)
-  workloadcertificateFeatureSpec = _messages.MessageField('WorkloadCertificateFeatureSpec', 24)
+  clusterupgradeFeatureSpec = _messages.MessageField('ClusterUpgradeFeatureSpec', 8)
+  configmanagementFeatureSpec = _messages.MessageField('ConfigManagementFeatureSpec', 9)
+  createTime = _messages.StringField(10)
+  deleteTime = _messages.StringField(11)
+  description = _messages.StringField(12)
+  featureState = _messages.MessageField('FeatureState', 13)
+  helloworldFeatureSpec = _messages.MessageField('HelloWorldFeatureSpec', 14)
+  identityserviceFeatureSpec = _messages.MessageField('IdentityServiceFeatureSpec', 15)
+  labels = _messages.MessageField('LabelsValue', 16)
+  meteringFeatureSpec = _messages.MessageField('MeteringFeatureSpec', 17)
+  multiclusteringressFeatureSpec = _messages.MessageField('MultiClusterIngressFeatureSpec', 18)
+  multiclusterservicediscoveryFeatureSpec = _messages.MessageField('MultiClusterServiceDiscoveryFeatureSpec', 19)
+  name = _messages.StringField(20)
+  policycontrollerFeatureSpec = _messages.MessageField('PolicyControllerFeatureSpec', 21)
+  rbacrolebindingactuationFeatureSpec = _messages.MessageField('RBACRoleBindingActuationFeatureSpec', 22)
+  servicedirectoryFeatureSpec = _messages.MessageField('ServiceDirectoryFeatureSpec', 23)
+  servicemeshFeatureSpec = _messages.MessageField('ServiceMeshFeatureSpec', 24)
+  updateTime = _messages.StringField(25)
+  workloadcertificateFeatureSpec = _messages.MessageField('WorkloadCertificateFeatureSpec', 26)
 
 
 class FeatureState(_messages.Message):
@@ -1285,6 +1633,7 @@ class FeatureStateDetails(_messages.Message):
     authorizerFeatureState: State for the Authorizer Feature.
     cloudauditloggingFeatureState: The state of the Anthos Cloud Audit Logging
       feature.
+    clusterupgradeFeatureState: State for the ClusterUpgrade Feature.
     code: The code describes, at a high level, if the Feature is operating
       correctly. Non-`OK` codes should have details in the `description`
       describing what actions (if any) need to be taken to return the Feature
@@ -1334,20 +1683,21 @@ class FeatureStateDetails(_messages.Message):
   appdevexperienceFeatureState = _messages.MessageField('AppDevExperienceFeatureState', 4)
   authorizerFeatureState = _messages.MessageField('AuthorizerFeatureState', 5)
   cloudauditloggingFeatureState = _messages.MessageField('CloudAuditLoggingFeatureState', 6)
-  code = _messages.EnumField('CodeValueValuesEnum', 7)
-  configmanagementFeatureState = _messages.MessageField('ConfigManagementFeatureState', 8)
-  description = _messages.StringField(9)
-  helloworldFeatureState = _messages.MessageField('HelloWorldFeatureState', 10)
-  identityserviceFeatureState = _messages.MessageField('IdentityServiceFeatureState', 11)
-  meteringFeatureState = _messages.MessageField('MeteringFeatureState', 12)
-  multiclusteringressFeatureState = _messages.MessageField('MultiClusterIngressFeatureState', 13)
-  multiclusterservicediscoveryFeatureState = _messages.MessageField('MultiClusterServiceDiscoveryFeatureState', 14)
-  policycontrollerFeatureState = _messages.MessageField('PolicyControllerFeatureState', 15)
-  rbacrolebindingactuationFeatureState = _messages.MessageField('RBACRoleBindingActuationFeatureState', 16)
-  servicedirectoryFeatureState = _messages.MessageField('ServiceDirectoryFeatureState', 17)
-  servicemeshFeatureState = _messages.MessageField('ServiceMeshFeatureState', 18)
-  updateTime = _messages.StringField(19)
-  workloadcertificateFeatureState = _messages.MessageField('WorkloadCertificateFeatureState', 20)
+  clusterupgradeFeatureState = _messages.MessageField('ClusterUpgradeFeatureState', 7)
+  code = _messages.EnumField('CodeValueValuesEnum', 8)
+  configmanagementFeatureState = _messages.MessageField('ConfigManagementFeatureState', 9)
+  description = _messages.StringField(10)
+  helloworldFeatureState = _messages.MessageField('HelloWorldFeatureState', 11)
+  identityserviceFeatureState = _messages.MessageField('IdentityServiceFeatureState', 12)
+  meteringFeatureState = _messages.MessageField('MeteringFeatureState', 13)
+  multiclusteringressFeatureState = _messages.MessageField('MultiClusterIngressFeatureState', 14)
+  multiclusterservicediscoveryFeatureState = _messages.MessageField('MultiClusterServiceDiscoveryFeatureState', 15)
+  policycontrollerFeatureState = _messages.MessageField('PolicyControllerFeatureState', 16)
+  rbacrolebindingactuationFeatureState = _messages.MessageField('RBACRoleBindingActuationFeatureState', 17)
+  servicedirectoryFeatureState = _messages.MessageField('ServiceDirectoryFeatureState', 18)
+  servicemeshFeatureState = _messages.MessageField('ServiceMeshFeatureState', 19)
+  updateTime = _messages.StringField(20)
+  workloadcertificateFeatureState = _messages.MessageField('WorkloadCertificateFeatureState', 21)
 
 
 class FeatureTest(_messages.Message):
@@ -1444,6 +1794,63 @@ class FeatureTest(_messages.Message):
   third = _messages.EnumField('ThirdValueValuesEnum', 9)
 
 
+class FleetGKEUpgrade(_messages.Message):
+  r"""FleetGKEUpgrade is a GKEUpgrade and its eligibility at the fleet scope.
+
+  Fields:
+    memberships: A list of eligible clusters to be upgraded to the given
+      GKEUpgrade. Each membership resource is in the following format:
+      `projects/[project_id]/locations/[location]/membership/[membership_id]`.
+    upgrade: Which upgrade to perform on the fleet.
+  """
+
+  memberships = _messages.StringField(1, repeated=True)
+  upgrade = _messages.MessageField('GKEUpgrade', 2)
+
+
+class FleetGKEUpgradeState(_messages.Message):
+  r"""FleetGKEUpgradeState is a GKEUpgrade and its state at the fleet scope.
+
+  Messages:
+    StatsValue: Number of GKE clusters in each status code.
+
+  Fields:
+    lastUpdateTime: Last update timestamp of the state change.
+    stats: Number of GKE clusters in each status code.
+    status: Status of the upgrade.
+    upgrade: Which upgrade to track the state.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class StatsValue(_messages.Message):
+    r"""Number of GKE clusters in each status code.
+
+    Messages:
+      AdditionalProperty: An additional property for a StatsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type StatsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a StatsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.IntegerField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  lastUpdateTime = _messages.StringField(1)
+  stats = _messages.MessageField('StatsValue', 2)
+  status = _messages.MessageField('UpgradeStatus', 3)
+  upgrade = _messages.MessageField('GKEUpgrade', 4)
+
+
 class FooBar(_messages.Message):
   r"""Nested Message.
 
@@ -1454,6 +1861,91 @@ class FooBar(_messages.Message):
 
   first = _messages.StringField(1)
   second = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class GKEUpgrade(_messages.Message):
+  r"""GKEUpgrade represents a GKE provided upgrade, e.g., control plane
+  upgrade.
+
+  Fields:
+    name: Name of the upgrade, e.g., "k8s_control_plane".
+    policy: Policy associated with the upgrade.
+    version: Version of the upgrade, e.g., "1.22.1-gke.100".
+  """
+
+  name = _messages.StringField(1)
+  policy = _messages.MessageField('GKEUpgradePolicy', 2)
+  version = _messages.StringField(3)
+
+
+class GKEUpgradeFeatureSpec(_messages.Message):
+  r"""GKEUpgradeFeatureSpec contains feature spec for GKE clusters per release
+  channel. This includes upgrades that are eligible for a subset of clusters
+  (partially eligible upgrades). Partially eligible upgrades will be applied
+  on the current fleet, but won't be propagated to the downstream fleet.
+
+  Fields:
+    rapid: Desired upgrades for clusters in the rapid release channel.
+    regular: Desired upgrades for clusters in the regular release channel.
+    stable: Desired upgrades for clusters in the stable release channel.
+  """
+
+  rapid = _messages.MessageField('FleetGKEUpgrade', 1, repeated=True)
+  regular = _messages.MessageField('FleetGKEUpgrade', 2, repeated=True)
+  stable = _messages.MessageField('FleetGKEUpgrade', 3, repeated=True)
+
+
+class GKEUpgradeFeatureState(_messages.Message):
+  r"""GKEUpgradeFeatureState contains feature states for GKE clusters in the
+  fleet.
+
+  Fields:
+    rapid: Rapid channel upgrade state.
+    rapidHistory: Store the last N (N=100) upgrades for debugging purpose.
+      Rapid channel upgrade history.
+    regular: Regular channel upgrade state.
+    regularHistory: Regular channel upgrade history.
+    stable: Stable channel upgrade state.
+    stableHistory: Stable channel upgrade history.
+  """
+
+  rapid = _messages.MessageField('FleetGKEUpgradeState', 1, repeated=True)
+  rapidHistory = _messages.MessageField('FleetGKEUpgradeState', 2, repeated=True)
+  regular = _messages.MessageField('FleetGKEUpgradeState', 3, repeated=True)
+  regularHistory = _messages.MessageField('FleetGKEUpgradeState', 4, repeated=True)
+  stable = _messages.MessageField('FleetGKEUpgradeState', 5, repeated=True)
+  stableHistory = _messages.MessageField('FleetGKEUpgradeState', 6, repeated=True)
+
+
+class GKEUpgradeOverride(_messages.Message):
+  r"""Properties of an GKE upgrade that can be overridden by the user. For
+  example, a user can skip soaking by overriding the soaking to 0.
+
+  Fields:
+    postConditions: Post conditions to override for the specified upgrade
+      (name + version).
+    upgrade: Which upgrade to override.
+  """
+
+  postConditions = _messages.MessageField('PostConditions', 1)
+  upgrade = _messages.MessageField('GKEUpgrade', 2)
+
+
+class GKEUpgradePolicy(_messages.Message):
+  r"""GKEUpgradePolicy is a serialized rollout policy string that rollout
+  server can actuate on.
+
+  Fields:
+    componentPolicy: Policy for (mitosis) component upgrade.
+    masterUpgradePolicy: Policy for master (control plane) upgrade.
+    monolithComponentPolicy: Policy for monolith component upgrade.
+    nodeUpgradePolicy: Policy for nodepool upgrade.
+  """
+
+  componentPolicy = _messages.StringField(1)
+  masterUpgradePolicy = _messages.StringField(2)
+  monolithComponentPolicy = _messages.StringField(3)
+  nodeUpgradePolicy = _messages.StringField(4)
 
 
 class GatekeeperDeploymentState(_messages.Message):
@@ -1709,6 +2201,8 @@ class GkehubProjectsLocationsListRequest(_messages.Message):
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
+    includeUnrevealedLocations: If true, the returned list will include
+      locations which are not yet revealed.
     name: The resource that owns the locations collection, if applicable.
     pageSize: The maximum number of results to return. If not set, the service
       selects a default.
@@ -1717,9 +2211,10 @@ class GkehubProjectsLocationsListRequest(_messages.Message):
   """
 
   filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
+  includeUnrevealedLocations = _messages.BooleanField(2)
+  name = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
 
 
 class GkehubProjectsLocationsOperationsCancelRequest(_messages.Message):
@@ -1769,6 +2264,17 @@ class GkehubProjectsLocationsOperationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class GoogleConfig(_messages.Message):
+  r"""Configuration for the Google Plugin Auth flow.
+
+  Fields:
+    disable: Disable automatic configuration of Google Plugin on supported
+      platforms.
+  """
+
+  disable = _messages.BooleanField(1)
 
 
 class GoogleRpcStatus(_messages.Message):
@@ -2020,6 +2526,20 @@ class IdentityServiceFeatureState(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 4)
 
 
+class IgnoredMembership(_messages.Message):
+  r"""IgnoredMembership represents a membership ignored by the feature. A
+  membership can be ignored because it was manually upgraded to a newer
+  version than RC default.
+
+  Fields:
+    ignoredTime: Time when the membership was first set to ignored.
+    reason: Reason why the membership is ignored.
+  """
+
+  ignoredTime = _messages.StringField(1)
+  reason = _messages.StringField(2)
+
+
 class InstallError(_messages.Message):
   r"""Errors pertaining to the installation of ACM
 
@@ -2183,6 +2703,20 @@ class Location(_messages.Message):
   locationId = _messages.StringField(3)
   metadata = _messages.MessageField('MetadataValue', 4)
   name = _messages.StringField(5)
+
+
+class LogConfig(_messages.Message):
+  r"""Specifies what kind of log the caller must write
+
+  Fields:
+    cloudAudit: Cloud audit options.
+    counter: Counter options.
+    dataAccess: Data access options.
+  """
+
+  cloudAudit = _messages.MessageField('CloudAuditOptions', 1)
+  counter = _messages.MessageField('CounterOptions', 2)
+  dataAccess = _messages.MessageField('DataAccessOptions', 3)
 
 
 class MemberConfig(_messages.Message):
@@ -2599,6 +3133,13 @@ class Policy(_messages.Message):
       `etag` field whenever you call `setIamPolicy`. If you omit this field,
       then IAM allows you to overwrite a version `3` policy with a version `1`
       policy, and all of the conditions in the version `3` policy are lost.
+    rules: If more than one rule is specified, the rules are applied in the
+      following manner: - All matching LOG rules are always applied. - If any
+      DENY/DENY_WITH_LOG rule matches, permission is denied. Logging will be
+      applied if one or more matching rule requires logging. - Otherwise, if
+      any ALLOW/ALLOW_WITH_LOG rule matches, permission is granted. Logging
+      will be applied if one or more matching rule requires logging. -
+      Otherwise, if no rule applies, permission is denied.
     version: Specifies the format of the policy. Valid values are `0`, `1`,
       and `3`. Requests that specify an invalid value are rejected. Any
       operation that affects conditional role bindings must specify version
@@ -2621,7 +3162,8 @@ class Policy(_messages.Message):
   auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)
   bindings = _messages.MessageField('Binding', 2, repeated=True)
   etag = _messages.BytesField(3)
-  version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  rules = _messages.MessageField('Rule', 4, repeated=True)
+  version = _messages.IntegerField(5, variant=_messages.Variant.INT32)
 
 
 class PolicyController(_messages.Message):
@@ -2654,6 +3196,44 @@ class PolicyController(_messages.Message):
   mutationEnabled = _messages.BooleanField(6)
   referentialRulesEnabled = _messages.BooleanField(7)
   templateLibraryInstalled = _messages.BooleanField(8)
+
+
+class PolicyControllerFeatureSpec(_messages.Message):
+  r"""Spec for Policy Controller.
+
+  Messages:
+    MembershipSpecsValue: Map of Membership IDs to individual specs.
+
+  Fields:
+    membershipSpecs: Map of Membership IDs to individual specs.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MembershipSpecsValue(_messages.Message):
+    r"""Map of Membership IDs to individual specs.
+
+    Messages:
+      AdditionalProperty: An additional property for a MembershipSpecsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type MembershipSpecsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MembershipSpecsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A PolicyControllerMembershipSpec attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('PolicyControllerMembershipSpec', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  membershipSpecs = _messages.MessageField('MembershipSpecsValue', 1)
 
 
 class PolicyControllerFeatureState(_messages.Message):
@@ -2887,6 +3467,18 @@ class PolicyControllerVersion(_messages.Message):
   version = _messages.StringField(1)
 
 
+class PostConditions(_messages.Message):
+  r"""Post conditional checks after an upgrade has been applied on all
+  eligible clusters.
+
+  Fields:
+    soaking: Amount of time to "soak" after a rollout has been finished before
+      marking it COMPLETE
+  """
+
+  soaking = _messages.StringField(1)
+
+
 class RBACRoleBindingActuationFeatureSpec(_messages.Message):
   r"""**RBAC RoleBinding Actuation**: The Hub-wide input for the
   RBACRoleBindingActuation feature.
@@ -2903,6 +3495,59 @@ class RBACRoleBindingActuationFeatureState(_messages.Message):
   wide Feature state.
   """
 
+
+
+class Rule(_messages.Message):
+  r"""A rule to be applied in a Policy.
+
+  Enums:
+    ActionValueValuesEnum: Required
+
+  Fields:
+    action: Required
+    conditions: Additional restrictions that must be met. All conditions must
+      pass for the rule to match.
+    description: Human-readable description of the rule.
+    in_: If one or more 'in' clauses are specified, the rule matches if the
+      PRINCIPAL/AUTHORITY_SELECTOR is in at least one of these entries.
+    logConfig: The config returned to callers of CheckPolicy for any entries
+      that match the LOG action.
+    notIn: If one or more 'not_in' clauses are specified, the rule matches if
+      the PRINCIPAL/AUTHORITY_SELECTOR is in none of the entries. The format
+      for in and not_in entries can be found at in the Local IAM documentation
+      (see go/local-iam#features).
+    permissions: A permission is a string of form '..' (e.g.,
+      'storage.buckets.list'). A value of '*' matches all permissions, and a
+      verb part of '*' (e.g., 'storage.buckets.*') matches all verbs.
+  """
+
+  class ActionValueValuesEnum(_messages.Enum):
+    r"""Required
+
+    Values:
+      NO_ACTION: Default no action.
+      ALLOW: Matching 'Entries' grant access.
+      ALLOW_WITH_LOG: Matching 'Entries' grant access and the caller promises
+        to log the request per the returned log_configs.
+      DENY: Matching 'Entries' deny access.
+      DENY_WITH_LOG: Matching 'Entries' deny access and the caller promises to
+        log the request per the returned log_configs.
+      LOG: Matching 'Entries' tell IAM.Check callers to generate logs.
+    """
+    NO_ACTION = 0
+    ALLOW = 1
+    ALLOW_WITH_LOG = 2
+    DENY = 3
+    DENY_WITH_LOG = 4
+    LOG = 5
+
+  action = _messages.EnumField('ActionValueValuesEnum', 1)
+  conditions = _messages.MessageField('Condition', 2, repeated=True)
+  description = _messages.StringField(3)
+  in_ = _messages.StringField(4, repeated=True)
+  logConfig = _messages.MessageField('LogConfig', 5, repeated=True)
+  notIn = _messages.StringField(6, repeated=True)
+  permissions = _messages.StringField(7, repeated=True)
 
 
 class ServiceDirectoryFeatureSpec(_messages.Message):
@@ -3451,6 +4096,48 @@ class Type(_messages.Message):
   displayName = _messages.StringField(2)
 
 
+class UpgradeStatus(_messages.Message):
+  r"""UpgradeStatus provides status information for each upgrade.
+
+  Enums:
+    CodeValueValuesEnum: Status code of the upgrade.
+
+  Fields:
+    code: Status code of the upgrade.
+    reason: Reason for this status.
+  """
+
+  class CodeValueValuesEnum(_messages.Enum):
+    r"""Status code of the upgrade.
+
+    Values:
+      CODE_UNSPECIFIED: Required by https://linter.aip.dev/126/unspecified.
+      INELIGIBLE: The upgrade is ineligible. At the fleet scope, this means
+        the upgrade is ineligible for all the clusters in the fleet.
+      PENDING: The upgrade is pending. At the fleet scope, this means the
+        upgrade is pending for all the clusters in the fleet.
+      IN_PROGRESS: The upgrade is in progress. At the fleet scope, this means
+        the upgrade is in progress for at least one cluster in the fleet.
+      SOAKING: The upgrade has finished and is soaking until the soaking time
+        is up. At the fleet scope, this means at least one cluster is in
+        soaking while the rest are either soaking or complete.
+      FORCED_SOAKING: A cluster will be forced to enter soaking if an upgrade
+        doesn't finish within a certain limit, despite it's actual status.
+      COMPLETE: The upgrade has passed all post conditions (soaking). At the
+        fleet scope, this means all eligible clusters are in COMPLETE status.
+    """
+    CODE_UNSPECIFIED = 0
+    INELIGIBLE = 1
+    PENDING = 2
+    IN_PROGRESS = 3
+    SOAKING = 4
+    FORCED_SOAKING = 5
+    COMPLETE = 6
+
+  code = _messages.EnumField('CodeValueValuesEnum', 1)
+  reason = _messages.StringField(2)
+
+
 class WorkloadCertificateFeatureSpec(_messages.Message):
   r"""WorkloadCertificateFeatureSpec contains the input for the workload
   identity platform feature. This is required since Feature proto requires a
@@ -3547,6 +4234,8 @@ class WorkloadCertificateMembershipSpec(_messages.Message):
   certificateManagement = _messages.EnumField('CertificateManagementValueValuesEnum', 1)
 
 
+encoding.AddCustomJsonFieldMapping(
+    Rule, 'in_', 'in')
 encoding.AddCustomJsonFieldMapping(
     StandardQueryParameters, 'f__xgafv', '$.xgafv')
 encoding.AddCustomJsonEnumMapping(

@@ -21,7 +21,7 @@ from __future__ import unicode_literals
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core import resources
 
-LIENS_API_VERSION = 'v3'
+LIENS_API_VERSION = 'v1'
 
 
 def LiensClient():

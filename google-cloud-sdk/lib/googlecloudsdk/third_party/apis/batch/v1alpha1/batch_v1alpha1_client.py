@@ -39,88 +39,12 @@ class BatchV1alpha1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
-    self.projects_locations_jobs_taskGroups_tasks = self.ProjectsLocationsJobsTaskGroupsTasksService(self)
-    self.projects_locations_jobs_taskGroups = self.ProjectsLocationsJobsTaskGroupsService(self)
     self.projects_locations_jobs = self.ProjectsLocationsJobsService(self)
     self.projects_locations_nodes = self.ProjectsLocationsNodesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_tasks = self.ProjectsLocationsTasksService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
-
-  class ProjectsLocationsJobsTaskGroupsTasksService(base_api.BaseApiService):
-    """Service class for the projects_locations_jobs_taskGroups_tasks resource."""
-
-    _NAME = 'projects_locations_jobs_taskGroups_tasks'
-
-    def __init__(self, client):
-      super(BatchV1alpha1.ProjectsLocationsJobsTaskGroupsTasksService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Get(self, request, global_params=None):
-      r"""Return a single Task.
-
-      Args:
-        request: (BatchProjectsLocationsJobsTaskGroupsTasksGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Task) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/jobs/{jobsId}/taskGroups/{taskGroupsId}/tasks/{tasksId}',
-        http_method='GET',
-        method_id='batch.projects.locations.jobs.taskGroups.tasks.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha1/{+name}',
-        request_field='',
-        request_type_name='BatchProjectsLocationsJobsTaskGroupsTasksGetRequest',
-        response_type_name='Task',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""List Tasks associated with a job.
-
-      Args:
-        request: (BatchProjectsLocationsJobsTaskGroupsTasksListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListTasksResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/jobs/{jobsId}/taskGroups/{taskGroupsId}/tasks',
-        http_method='GET',
-        method_id='batch.projects.locations.jobs.taskGroups.tasks.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['filter', 'pageSize', 'pageToken'],
-        relative_path='v1alpha1/{+parent}/tasks',
-        request_field='',
-        request_type_name='BatchProjectsLocationsJobsTaskGroupsTasksListRequest',
-        response_type_name='ListTasksResponse',
-        supports_download=False,
-    )
-
-  class ProjectsLocationsJobsTaskGroupsService(base_api.BaseApiService):
-    """Service class for the projects_locations_jobs_taskGroups resource."""
-
-    _NAME = 'projects_locations_jobs_taskGroups'
-
-    def __init__(self, client):
-      super(BatchV1alpha1.ProjectsLocationsJobsTaskGroupsService, self).__init__(client)
-      self._upload_configs = {
-          }
 
   class ProjectsLocationsJobsService(base_api.BaseApiService):
     """Service class for the projects_locations_jobs resource."""
@@ -131,87 +55,6 @@ class BatchV1alpha1(base_api.BaseApiClient):
       super(BatchV1alpha1.ProjectsLocationsJobsService, self).__init__(client)
       self._upload_configs = {
           }
-
-    def Create(self, request, global_params=None):
-      r"""Create a Job.
-
-      Args:
-        request: (BatchProjectsLocationsJobsCreateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Job) The response message.
-      """
-      config = self.GetMethodConfig('Create')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/jobs',
-        http_method='POST',
-        method_id='batch.projects.locations.jobs.create',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['jobId', 'requestId'],
-        relative_path='v1alpha1/{+parent}/jobs',
-        request_field='job',
-        request_type_name='BatchProjectsLocationsJobsCreateRequest',
-        response_type_name='Job',
-        supports_download=False,
-    )
-
-    def Delete(self, request, global_params=None):
-      r"""Delete a Job.
-
-      Args:
-        request: (BatchProjectsLocationsJobsDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/jobs/{jobsId}',
-        http_method='DELETE',
-        method_id='batch.projects.locations.jobs.delete',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['reason', 'requestId'],
-        relative_path='v1alpha1/{+name}',
-        request_field='',
-        request_type_name='BatchProjectsLocationsJobsDeleteRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def Get(self, request, global_params=None):
-      r"""Get a Job specified by its resource name.
-
-      Args:
-        request: (BatchProjectsLocationsJobsGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Job) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/jobs/{jobsId}',
-        http_method='GET',
-        method_id='batch.projects.locations.jobs.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha1/{+name}',
-        request_field='',
-        request_type_name='BatchProjectsLocationsJobsGetRequest',
-        response_type_name='Job',
-        supports_download=False,
-    )
 
     def GetIamPolicy(self, request, global_params=None):
       r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
@@ -237,33 +80,6 @@ class BatchV1alpha1(base_api.BaseApiClient):
         request_field='',
         request_type_name='BatchProjectsLocationsJobsGetIamPolicyRequest',
         response_type_name='Policy',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""List all Jobs for a project within a region.
-
-      Args:
-        request: (BatchProjectsLocationsJobsListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListJobsResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/jobs',
-        http_method='GET',
-        method_id='batch.projects.locations.jobs.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['filter', 'pageSize', 'pageToken'],
-        relative_path='v1alpha1/{+parent}/jobs',
-        request_field='',
-        request_type_name='BatchProjectsLocationsJobsListRequest',
-        response_type_name='ListJobsResponse',
         supports_download=False,
     )
 

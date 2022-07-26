@@ -145,6 +145,7 @@ class GcloudFullResourceFormatter(base.FullResourceFormatter):
   def format_object(self,
                     url,
                     displayable_object_data,
+                    show_acl=True,
                     show_version_in_url=False):
     """See super class."""
     resource_formatter_util.replace_object_values_with_encryption_string(
@@ -153,4 +154,5 @@ class GcloudFullResourceFormatter(base.FullResourceFormatter):
         url,
         displayable_object_data,
         _OBJECT_DISPLAY_TITLES_AND_DEFAULTS,
+        show_acl=show_acl,
         show_version_in_url=show_version_in_url)

@@ -15,11 +15,11 @@ package = 'file'
 
 
 class Backup(_messages.Message):
-  r"""A Cloud Filestore backup.
+  r"""A Filestore backup.
 
   Enums:
     SourceInstanceTierValueValuesEnum: Output only. The service tier of the
-      source Cloud Filestore instance that this backup is created from.
+      source Filestore instance that this backup is created from.
     StateValueValuesEnum: Output only. The backup state.
 
   Messages:
@@ -38,13 +38,13 @@ class Backup(_messages.Message):
     name: Output only. The resource name of the backup, in the format
       `projects/{project_number}/locations/{location_id}/backups/{backup_id}`.
     satisfiesPzs: Output only. Reserved for future use.
-    sourceFileShare: Name of the file share in the source Cloud Filestore
-      instance that the backup is created from.
-    sourceInstance: The resource name of the source Cloud Filestore instance,
-      in the format `projects/{project_number}/locations/{location_id}/instanc
-      es/{instance_id}`, used to create this backup.
-    sourceInstanceTier: Output only. The service tier of the source Cloud
-      Filestore instance that this backup is created from.
+    sourceFileShare: Name of the file share in the source Filestore instance
+      that the backup is created from.
+    sourceInstance: The resource name of the source Filestore instance, in the
+      format `projects/{project_number}/locations/{location_id}/instances/{ins
+      tance_id}`, used to create this backup.
+    sourceInstanceTier: Output only. The service tier of the source Filestore
+      instance that this backup is created from.
     state: Output only. The backup state.
     storageBytes: Output only. The size of the storage used by the backup. As
       backups share storage, this number is expected to change with backup
@@ -52,8 +52,8 @@ class Backup(_messages.Message):
   """
 
   class SourceInstanceTierValueValuesEnum(_messages.Enum):
-    r"""Output only. The service tier of the source Cloud Filestore instance
-    that this backup is created from.
+    r"""Output only. The service tier of the source Filestore instance that
+    this backup is created from.
 
     Values:
       TIER_UNSPECIFIED: Not set.
@@ -219,8 +219,8 @@ class FileProjectsLocationsBackupsCreateRequest(_messages.Message):
       hyphens, and cannot end with a hyphen. Values that do not match this
       pattern will trigger an INVALID_ARGUMENT error.
     parent: Required. The backup's project and location, in the format
-      `projects/{project_number}/locations/{location}`. In Cloud Filestore,
-      backup locations map to GCP regions, for example **us-west1**.
+      `projects/{project_number}/locations/{location}`. In Filestore, backup
+      locations map to GCP regions, for example **us-west1**.
   """
 
   backup = _messages.MessageField('Backup', 1)
@@ -262,10 +262,10 @@ class FileProjectsLocationsBackupsListRequest(_messages.Message):
       results to retrieve for this list request.
     parent: Required. The project and location for which to retrieve backup
       information, in the format
-      `projects/{project_number}/locations/{location}`. In Cloud Filestore,
-      backup locations map to GCP regions, for example **us-west1**. To
-      retrieve backup information for all locations, use "-" for the
-      `{location}` value.
+      `projects/{project_number}/locations/{location}`. In Filestore, backup
+      locations map to GCP regions, for example **us-west1**. To retrieve
+      backup information for all locations, use "-" for the `{location}`
+      value.
   """
 
   filter = _messages.StringField(1)
@@ -309,8 +309,8 @@ class FileProjectsLocationsInstancesCreateRequest(_messages.Message):
     instanceId: Required. The name of the instance to create. The name must be
       unique for the specified project and location.
     parent: Required. The instance's project and location, in the format
-      `projects/{project_id}/locations/{location}`. In Cloud Filestore,
-      locations map to GCP zones, for example **us-west1-b**.
+      `projects/{project_id}/locations/{location}`. In Filestore, locations
+      map to GCP zones, for example **us-west1-b**.
   """
 
   instance = _messages.MessageField('Instance', 1)
@@ -557,8 +557,8 @@ class FileShareConfig(_messages.Message):
   r"""File share configuration for the instance.
 
   Fields:
-    capacityGb: File share capacity in gigabytes (GB). Cloud Filestore defines
-      1 GB as 1024^3 bytes.
+    capacityGb: File share capacity in gigabytes (GB). Filestore defines 1 GB
+      as 1024^3 bytes.
     name: The name of the file share (must be 16 characters or less).
     nfsExportOptions: Nfs Export Options. There is a limit of 10 export
       options per file share.
@@ -1119,7 +1119,7 @@ class GoogleCloudSaasacceleratorManagementProvidersV1SloMetadata(_messages.Messa
 
 
 class Instance(_messages.Message):
-  r"""A Cloud Filestore instance.
+  r"""A Filestore instance.
 
   Enums:
     StateValueValuesEnum: Output only. The instance state.
@@ -1536,8 +1536,8 @@ class NetworkConfig(_messages.Message):
       that identifies the range of IP addresses reserved for this instance.
       For example, 10.0.0.0/29, 192.168.0.0/24 or 192.168.0.0/26,
       respectively. The range you specify can't overlap with either existing
-      subnets or assigned IP address ranges for other Cloud Filestore
-      instances in the selected VPC network.
+      subnets or assigned IP address ranges for other Filestore instances in
+      the selected VPC network.
   """
 
   class ConnectModeValueValuesEnum(_messages.Enum):
@@ -1781,8 +1781,8 @@ class RestoreInstanceRequest(_messages.Message):
   backup.
 
   Fields:
-    fileShare: Required. Name of the file share in the Cloud Filestore
-      instance that the backup is being restored to.
+    fileShare: Required. Name of the file share in the Filestore instance that
+      the backup is being restored to.
     sourceBackup: The resource name of the backup, in the format
       `projects/{project_number}/locations/{location_id}/backups/{backup_id}`.
   """

@@ -854,9 +854,11 @@ class IamLocationsWorkforcePoolsSubjectsDeleteRequest(_messages.Message):
   r"""A IamLocationsWorkforcePoolsSubjectsDeleteRequest object.
 
   Fields:
-    name: Required. The name of the WorkforcePoolSubject to delete. Format: `l
-      ocations/{location}/workforcePools/{workforce_pool_id}/subjects/{subject
-      _id}`
+    name: Required. The resource name of the WorkforcePoolSubject. Special
+      characters, like '/' and ':', must be escaped, because all URLs need to
+      conform to the "When to Escape and Unescape" section of
+      [RFC3986](https://www.ietf.org/rfc/rfc2396.txt). Format: `locations/{loc
+      ation}/workforcePools/{workforce_pool_id}/subjects/{subject_id}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -876,9 +878,11 @@ class IamLocationsWorkforcePoolsSubjectsUndeleteRequest(_messages.Message):
   r"""A IamLocationsWorkforcePoolsSubjectsUndeleteRequest object.
 
   Fields:
-    name: Required. The name of the WorkforcePoolSubject to undelete. Format:
-      `locations/{location}/workforcePools/{workforce_pool_id}/subjects/{subje
-      ct_id}`
+    name: Required. The resource name of the WorkforcePoolSubject. Special
+      characters, like '/' and ':', must be escaped, because all URLs need to
+      conform to the "When to Escape and Unescape" section of
+      [RFC3986](https://www.ietf.org/rfc/rfc2396.txt). Format: `locations/{loc
+      ation}/workforcePools/{workforce_pool_id}/subjects/{subject_id}`
     undeleteWorkforcePoolSubjectRequest: A UndeleteWorkforcePoolSubjectRequest
       resource to be passed as the request body.
   """

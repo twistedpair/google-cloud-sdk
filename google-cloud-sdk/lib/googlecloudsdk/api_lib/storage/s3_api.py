@@ -338,9 +338,8 @@ class S3Api(cloud_api.CloudApi):
               source_resource.metadata,
           ), kwargs)
 
-    kwargs.update(
-        s3_metadata_util.get_object_metadata_dict_from_request_config(
-            request_config))
+    s3_metadata_util.update_object_metadata_dict_from_request_config(
+        kwargs, request_config)
 
     response = self.client.copy_object(**kwargs)
     return s3_metadata_util.get_object_resource_from_s3_response(
@@ -596,7 +595,7 @@ class S3Api(cloud_api.CloudApi):
                     tracker_callback=None,
                     upload_strategy=cloud_api.UploadStrategy.SIMPLE):
     """See super class."""
-    del serialization_data, source_resource, tracker_callback  # Unused.
+    del serialization_data, tracker_callback  # Unused.
 
     if upload_strategy == cloud_api.UploadStrategy.RESUMABLE:
       raise command_errors.Error(
@@ -604,8 +603,17 @@ class S3Api(cloud_api.CloudApi):
 
     # All fields common to both put_object and upload_fileobj are added
     # to the extra_args dict.
-    extra_args = s3_metadata_util.get_object_metadata_dict_from_request_config(
-        request_config)
+    extra_args = {}
+    if source_resource:
+      file_path = source_resource.storage_url.object_name
+    else:
+      file_path = None
+
+    s3_metadata_util.update_object_metadata_dict_from_request_config(
+        extra_args,
+        request_config,
+        file_path=file_path,
+    )
 
     md5_hash = getattr(request_config.resource_args, 'md5_hash', None)
     if md5_hash:

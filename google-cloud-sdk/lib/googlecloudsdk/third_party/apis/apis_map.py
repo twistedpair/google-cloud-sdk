@@ -281,6 +281,17 @@ MAP = {
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },
+    'anthospolicycontrollerstatus_pa': {
+        'v1alpha':
+            APIDef(
+                ApitoolsClientDef(
+                    class_path='googlecloudsdk.third_party.apis.anthospolicycontrollerstatus_pa.v1alpha',
+                    client_classpath='anthospolicycontrollerstatus_pa_v1alpha_client.AnthospolicycontrollerstatusPaV1alpha',
+                    messages_modulepath='anthospolicycontrollerstatus_pa_v1alpha_messages'),
+                default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+    },
     'apigateway': {
         'v1':
             APIDef(
@@ -2317,6 +2328,15 @@ MAP = {
                 default_version=True,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
+        'v1alpha':
+            APIDef(
+                ApitoolsClientDef(
+                    class_path='googlecloudsdk.third_party.apis.policysimulator.v1alpha',
+                    client_classpath='policysimulator_v1alpha_client.PolicysimulatorV1alpha',
+                    messages_modulepath='policysimulator_v1alpha_messages'),
+                default_version=False,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
         'v1beta1':
             APIDef(
                 ApitoolsClientDef(
@@ -2601,6 +2621,17 @@ MAP = {
                 default_version=True,
                 enable_mtls=True,
                 mtls_endpoint_override='https://securedlandingzone.mtls.googleapis.com/'),
+    },
+    'securesourcemanager': {
+        'v1':
+            APIDef(
+                ApitoolsClientDef(
+                    class_path='googlecloudsdk.third_party.apis.securesourcemanager.v1',
+                    client_classpath='securesourcemanager_v1_client.SecuresourcemanagerV1',
+                    messages_modulepath='securesourcemanager_v1_messages'),
+                default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
     },
     'securitycenter': {
         'v1':

@@ -23,11 +23,11 @@ import os
 import re
 
 from googlecloudsdk.api_lib.cloudresourcemanager import projects_api
+from googlecloudsdk.command_lib.container.fleet import util as hub_util
 from googlecloudsdk.command_lib.container.fleet.memberships import errors as memberships_errors
 from googlecloudsdk.command_lib.projects import util as projects_util
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
-from googlecloudsdk.core import properties
 
 CLUSTER_ROLE = 'clusterrole'
 NAMESPACE_ROLE = 'role'
@@ -150,8 +150,8 @@ def ValidateRole(role):
 def ValidateArgs(args):
   """Validate Args in correct format."""
   # Validate the confliction between '--anthos-support' and '--role'.
-  if not args.revoke and ((args.anthos_support and args.role) or (
-      not args.anthos_support and not args.role)):
+  if not args.revoke and ((args.anthos_support and args.role) or
+                          (not args.anthos_support and not args.role)):
     raise InvalidArgsError(
         'Please specify either --role or --anthos-support in the flags.')
   if args.role:
@@ -194,12 +194,14 @@ def GetAnthosSupportUser(project_id):
   """Get P4SA account name for Anthos Support when user not specified."""
   project_number = projects_api.Get(
       projects_util.ParseProject(project_id)).projectNumber
-  endpoint_overrides = properties.VALUES.api_endpoint_overrides.AllValues()
-  hub_endpoint_override = endpoint_overrides.get('gkehub', '')
-  if not hub_endpoint_override:
+  hub_endpoint_override = hub_util.APIEndpoint()
+  if hub_endpoint_override == hub_util.PROD_API:
     return ANTHOS_SUPPORT_USER.format(
         project_number=project_number, instance_name='')
-  elif 'autopush-gkehub' in hub_endpoint_override:
+  elif hub_endpoint_override == hub_util.STAGING_API:
+    return ANTHOS_SUPPORT_USER.format(
+        project_number=project_number, instance_name='staging-')
+  elif hub_endpoint_override == hub_util.AUTOPUSH_API:
     return ANTHOS_SUPPORT_USER.format(
         project_number=project_number, instance_name='autopush-')
   else:

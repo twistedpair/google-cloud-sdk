@@ -4,7 +4,7 @@
  "id": "bigquery:v2",
  "name": "bigquery",
  "version": "v2",
- "revision": "20220624",
+ "revision": "20220718",
  "title": "BigQuery API",
  "description": "A data platform for customers to create, manage, share and query data.",
  "ownerDomain": "google.com",
@@ -390,6 +390,10 @@
     "null_marker": {
      "type": "string",
      "description": "[Optional] An custom string that will represent a NULL value in CSV import data."
+    },
+    "preserveAsciiControlCharacters": {
+     "type": "boolean",
+     "description": "[Optional] Preserves the embedded ASCII control characters (the first 32 characters in the ASCII-table, from '\\x00' to '\\x1F') when loading from CSV. Only applicable to CSV, ignored for other formats."
     },
     "quote": {
      "type": "string",
@@ -965,6 +969,10 @@
      "$ref": "ParquetOptions",
      "description": "Additional properties to set if sourceFormat is set to Parquet."
     },
+    "referenceFileSchemaUri": {
+     "type": "string",
+     "description": "[Optional] Provide a referencing file with the expected table schema. Enabled for the format: AVRO, PARQUET, ORC."
+    },
     "schema": {
      "$ref": "TableSchema",
      "description": "[Optional] The schema for the data. Schema is required for CSV and JSON formats. Schema is disallowed for Google Cloud Bigtable, Cloud Datastore backups, and Avro formats."
@@ -1392,6 +1400,10 @@
     "rangePartitioning": {
      "$ref": "RangePartitioning",
      "description": "[TrustedTester] Range partitioning specification for this table. Only one of timePartitioning and rangePartitioning should be specified."
+    },
+    "referenceFileSchemaUri": {
+     "type": "string",
+     "description": "User provided referencing file with the expected reader schema, Available for the format: AVRO, PARQUET, ORC."
     },
     "schema": {
      "$ref": "TableSchema",
@@ -2514,7 +2526,7 @@
     },
     "pendingUnits": {
      "type": "string",
-     "description": "Total parallel units of work remaining for the active stages.",
+     "description": "Total units of work remaining for the query. This number can be revised (increased or decreased) while the query is running.",
      "format": "int64"
     },
     "totalSlotMs": {

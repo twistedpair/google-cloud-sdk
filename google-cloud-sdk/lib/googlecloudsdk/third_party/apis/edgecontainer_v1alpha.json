@@ -1629,7 +1629,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Lists VpnConnections in a given project and location."
+                  "description": "Lists VPN connections in a given project and location."
                 },
                 "get": {
                   "id": "edgecontainer.projects.locations.vpnConnections.get",
@@ -1654,7 +1654,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Gets details of a single VpnConnection."
+                  "description": "Gets details of a single VPN connection."
                 },
                 "create": {
                   "id": "edgecontainer.projects.locations.vpnConnections.create",
@@ -1692,7 +1692,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Creates a new Cluster in a given project and location."
+                  "description": "Creates a new VPN connection in a given project and location."
                 },
                 "delete": {
                   "id": "edgecontainer.projects.locations.vpnConnections.delete",

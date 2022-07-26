@@ -22,7 +22,7 @@ from __future__ import unicode_literals
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import base
 
-VERSION_MAP = {base.ReleaseTrack.ALPHA: 'v1alpha'}
+VERSION_MAP = {base.ReleaseTrack.ALPHA: 'v1alpha', base.ReleaseTrack.BETA: 'v1'}
 
 
 def GetMessagesModule(release_track=base.ReleaseTrack.ALPHA):

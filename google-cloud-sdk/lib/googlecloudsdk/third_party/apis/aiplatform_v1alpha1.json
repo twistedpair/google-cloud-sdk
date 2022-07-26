@@ -5142,7 +5142,7 @@
       "type": "object",
       "properties": {
         "bigqueryDestination": {
-          "description": "Required. The BigQuery location where the output is to be written to. In the given project a new dataset will be created with name `export_evaluated_dataitems__` where `` will be made BigQuery-dataset-name compatible (e.g. most special characters will become underscores), and timestamp will be in YYYY_MM_DDThh_mm_ss_sssZ \"based on ISO-8601\" format. In the dataset an `evaluated_dataitems` table will be created. If the Model has both instance and prediction schemata defined, the table will have columns that include: * Instances of the test data, as per the instance schema. * Ground truth of the test data, as per the prediction schema. * Modle predicted results on the instances. The column names are in the format of `predicted_`. field_name is the corresponding field of the prediction as per prediction schema. NOTE: For AutoML tabular Models, the ground truth is the target column. There is one prediction column, named `predicted_`.",
+          "description": "Required. The BigQuery location where the output is to be written to. In the given project a new dataset will be created with name `export_evaluated_dataitems__` where `` will be made BigQuery-dataset-name compatible (e.g. most special characters will become underscores), and timestamp will be in YYYY_MM_DDThh_mm_ss_sssZ \"based on ISO-8601\" format. In the dataset an `evaluated_dataitems` table will be created. If the Model has both instance and prediction schemata defined, the table will have columns that include: * Instances of the test data, as per the instance schema. * Ground truth of the test data, as per the prediction schema. * Model predicted results on the instances. The column names are in the format of `predicted_`. field_name is the corresponding field of the prediction as per prediction schema. NOTE: For AutoML tabular Models, the ground truth is the target column. There is one prediction column, named `predicted_`.",
           "$ref": "GoogleCloudAiplatformV1alpha1BigQueryDestination"
         }
       }
@@ -17870,6 +17870,10 @@
         "multiLabel": {
           "description": "If false, a single-label (multi-class) Model will be trained (i.e. assuming that for each image just up to one annotation may be applicable). If true, a multi-label Model will be trained (i.e. assuming that for each image multiple annotations may be applicable).",
           "type": "boolean"
+        },
+        "uptrainBaseModelId": {
+          "description": "The ID of `base` model for upTraining. If it is specified, the new model will be upTrained based on the `base` model for upTraining. Otherwise, the new model will be trained from scratch. The `base` model for upTraining must be in the same Project and Location as the new Model to train, and have the same modelType.",
+          "type": "string"
         }
       }
     },
@@ -17925,7 +17929,8 @@
             "A model best tailored to be used within Google Cloud, and which cannot be exported. Expected to have a low latency, but may have lower prediction quality than other cloud models.",
             "A model that, in addition to being available within Google Cloud can also be exported (see ModelService.ExportModel) and used on a mobile or edge device with TensorFlow afterwards. Expected to have low latency, but may have lower prediction quality than other mobile models.",
             "A model that, in addition to being available within Google Cloud can also be exported (see ModelService.ExportModel) and used on a mobile or edge device with TensorFlow afterwards.",
-            "A model that, in addition to being available within Google Cloud, can also be exported (see ModelService.ExportModel) and used on a mobile or edge device with TensorFlow afterwards. Expected to have a higher latency, but should also have a higher prediction quality than other mobile models."
+            "A model that, in addition to being available within Google Cloud, can also be exported (see ModelService.ExportModel) and used on a mobile or edge device with TensorFlow afterwards. Expected to have a higher latency, but should also have a higher prediction quality than other mobile models.",
+            "A model best tailored to be used within Google Cloud, and which cannot be exported. Expected to best support predictions in streaming with lower latency and lower prediction quality than other cloud models."
           ],
           "enum": [
             "MODEL_TYPE_UNSPECIFIED",
@@ -17933,7 +17938,8 @@
             "CLOUD_LOW_LATENCY_1",
             "MOBILE_TF_LOW_LATENCY_1",
             "MOBILE_TF_VERSATILE_1",
-            "MOBILE_TF_HIGH_ACCURACY_1"
+            "MOBILE_TF_HIGH_ACCURACY_1",
+            "CLOUD_STREAMING_1"
           ]
         },
         "budgetMilliNodeHours": {
@@ -23182,6 +23188,10 @@
         "multiLabel": {
           "description": "If false, a single-label (multi-class) Model will be trained (i.e. assuming that for each image just up to one annotation may be applicable). If true, a multi-label Model will be trained (i.e. assuming that for each image multiple annotations may be applicable).",
           "type": "boolean"
+        },
+        "uptrainBaseModelId": {
+          "description": "The ID of `base` model for upTraining. If it is specified, the new model will be upTrained based on the `base` model for upTraining. Otherwise, the new model will be trained from scratch. The `base` model for upTraining must be in the same Project and Location as the new Model to train, and have the same modelType.",
+          "type": "string"
         }
       }
     },
@@ -23237,7 +23247,8 @@
             "A model best tailored to be used within Google Cloud, and which cannot be exported. Expected to have a low latency, but may have lower prediction quality than other cloud models.",
             "A model that, in addition to being available within Google Cloud can also be exported (see ModelService.ExportModel) and used on a mobile or edge device with TensorFlow afterwards. Expected to have low latency, but may have lower prediction quality than other mobile models.",
             "A model that, in addition to being available within Google Cloud can also be exported (see ModelService.ExportModel) and used on a mobile or edge device with TensorFlow afterwards.",
-            "A model that, in addition to being available within Google Cloud, can also be exported (see ModelService.ExportModel) and used on a mobile or edge device with TensorFlow afterwards. Expected to have a higher latency, but should also have a higher prediction quality than other mobile models."
+            "A model that, in addition to being available within Google Cloud, can also be exported (see ModelService.ExportModel) and used on a mobile or edge device with TensorFlow afterwards. Expected to have a higher latency, but should also have a higher prediction quality than other mobile models.",
+            "A model best tailored to be used within Google Cloud, and which cannot be exported. Expected to best support predictions in streaming with lower latency and lower prediction quality than other cloud models."
           ],
           "enum": [
             "MODEL_TYPE_UNSPECIFIED",
@@ -23245,7 +23256,8 @@
             "CLOUD_LOW_LATENCY_1",
             "MOBILE_TF_LOW_LATENCY_1",
             "MOBILE_TF_VERSATILE_1",
-            "MOBILE_TF_HIGH_ACCURACY_1"
+            "MOBILE_TF_HIGH_ACCURACY_1",
+            "CLOUD_STREAMING_1"
           ]
         },
         "budgetMilliNodeHours": {

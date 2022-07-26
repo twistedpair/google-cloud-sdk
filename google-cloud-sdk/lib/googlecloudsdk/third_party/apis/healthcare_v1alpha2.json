@@ -1304,14 +1304,30 @@
             "No text redaction specified. Same as REDACT_NO_TEXT.",
             "Redact all text.",
             "Redact sensitive text. Uses the set of [Default DICOM InfoTypes](https:\/\/cloud.google.com\/healthcare-api\/docs\/how-tos\/dicom-deidentify#default_dicom_infotypes).",
-            "Do not redact text."
+            "Do not redact text.",
+            "This mode is like `REDACT_SENSITIVE_TEXT` with the addition of the [Clean Descriptors Option] (https:\/\/dicom.nema.org\/medical\/dicom\/2018e\/output\/chtml\/part15\/sect_E.3.5.html) enabled: When cleaning text, the process attempts to transform phrases matching any of the tags marked for removal (action codes D, Z, X, and U) in the [Basic Profile] (https:\/\/dicom.nema.org\/medical\/dicom\/2018e\/output\/chtml\/part15\/chapter_E.html). These contextual phrases are replaced with the token \"[CTX]\". This mode uses an additional InfoType during inspection."
           ],
           "enum": [
             "TEXT_REDACTION_MODE_UNSPECIFIED",
             "REDACT_ALL_TEXT",
             "REDACT_SENSITIVE_TEXT",
-            "REDACT_NO_TEXT"
+            "REDACT_NO_TEXT",
+            "REDACT_SENSITIVE_TEXT_CLEAN_DESCRIPTORS"
           ]
+        },
+        "additionalInfoTypes": {
+          "description": "Additional InfoTypes to redact in the images in addition to those used by `text_redaction_mode`. Can only be used when `text_redaction_mode` is set to `REDACT_SENSITIVE_TEXT`, `REDACT_SENSITIVE_TEXT_CLEAN_DESCRIPTORS` or `TEXT_REDACTION_MODE_UNSPECIFIED`.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "excludeInfoTypes": {
+          "description": "InfoTypes to skip redacting, overriding those used by `text_redaction_mode`. Can only be used when `text_redaction_mode` is set to `REDACT_SENSITIVE_TEXT` or `REDACT_SENSITIVE_TEXT_CLEAN_DESCRIPTORS`.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
