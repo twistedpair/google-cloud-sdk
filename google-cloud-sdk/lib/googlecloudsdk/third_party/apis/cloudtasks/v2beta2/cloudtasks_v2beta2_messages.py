@@ -170,6 +170,8 @@ class AppEngineHttpRequest(_messages.Message):
       HEAD: HTTP HEAD
       PUT: HTTP PUT
       DELETE: HTTP DELETE
+      PATCH: HTTP PATCH
+      OPTIONS: HTTP OPTIONS
     """
     HTTP_METHOD_UNSPECIFIED = 0
     POST = 1
@@ -177,6 +179,8 @@ class AppEngineHttpRequest(_messages.Message):
     HEAD = 3
     PUT = 4
     DELETE = 5
+    PATCH = 6
+    OPTIONS = 7
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class HeadersValue(_messages.Message):
@@ -1241,6 +1245,8 @@ class HttpRequest(_messages.Message):
       HEAD: HTTP HEAD
       PUT: HTTP PUT
       DELETE: HTTP DELETE
+      PATCH: HTTP PATCH
+      OPTIONS: HTTP OPTIONS
     """
     HTTP_METHOD_UNSPECIFIED = 0
     POST = 1
@@ -1248,6 +1254,8 @@ class HttpRequest(_messages.Message):
     HEAD = 3
     PUT = 4
     DELETE = 5
+    PATCH = 6
+    OPTIONS = 7
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class HeadersValue(_messages.Message):
@@ -1357,6 +1365,8 @@ class HttpTarget(_messages.Message):
       HEAD: HTTP HEAD
       PUT: HTTP PUT
       DELETE: HTTP DELETE
+      PATCH: HTTP PATCH
+      OPTIONS: HTTP OPTIONS
     """
     HTTP_METHOD_UNSPECIFIED = 0
     POST = 1
@@ -1364,6 +1374,8 @@ class HttpTarget(_messages.Message):
     HEAD = 3
     PUT = 4
     DELETE = 5
+    PATCH = 6
+    OPTIONS = 7
 
   headerOverrides = _messages.MessageField('HeaderOverride', 1, repeated=True)
   httpMethod = _messages.EnumField('HttpMethodValueValuesEnum', 2)

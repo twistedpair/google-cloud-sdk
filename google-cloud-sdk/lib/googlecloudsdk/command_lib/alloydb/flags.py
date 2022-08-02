@@ -36,6 +36,7 @@ import re
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.calliope.concepts import concepts
+from googlecloudsdk.command_lib.kms import resource_args as kms_resource_args
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 
 
@@ -370,6 +371,14 @@ def AddAutomatedBackupFlags(parser, alloydb_messages, update=False):
             'There is no upper bound on the window. If not set, '
             'it will default to 1 hour.'))
 
+  kms_resource_args.AddKmsKeyResourceArg(
+      policy_group,
+      'automated backups',
+      flag_overrides=GetAutomatedBackupKmsFlagOverrides(),
+      permission_info="The 'AlloyDB Service Agent' service account must hold permission 'Cloud KMS CryptoKey Encrypter/Decrypter'",
+      name='--automated-backup-encryption-key'
+  )
+
   if update:
     group.add_argument(
         '--clear-automated-backup',
@@ -427,18 +436,42 @@ def GetKmsKeyResourceSpec():
       projectsId=KmsProjectAttributeConfig())
 
 
-def GetAndValidateKmsKeyName(args):
+def GetAndValidateKmsKeyName(args, flag_overrides=None):
   """Parse the KMS key resource arg, make sure the key format is correct."""
-  kms_ref = args.CONCEPTS.kms_key.Parse()
+  kms_flags = {
+      'kms-key': '--kms-key',
+      'kms-keyring': '--kms-keyring',
+      'kms-location': '--kms-location',
+      'kms-project': '--kms-project'
+  }
+  kms_flags = flag_overrides if flag_overrides else kms_flags
+
+  kms_ref = getattr(args.CONCEPTS,
+                    kms_flags['kms-key'][2:].replace('-', '_')).Parse()
   if kms_ref:
     return kms_ref.RelativeName()
   else:
     # If parsing failed but args were specified, raise error
-    for keyword in ['kms-key', 'kms-keyring', 'kms-location', 'kms-project']:
-      if getattr(args, keyword.replace('-', '_'), None):
-        raise exceptions.InvalidArgumentException(
-            '--kms-project --kms-location --kms-keyring --kms-key',
-            'Specify fully qualified KMS key ID with --kms-key, or use ' +
-            'combination of --kms-project, --kms-location, --kms-keyring and ' +
-            '--kms-key to specify the key ID in pieces.')
+    for keyword in kms_flags.values():
+      if getattr(args, keyword[2:].replace('-', '_'), None):
+        parameter_name = '{} {} {} {}'.format(kms_flags['kms-project'],
+                                              kms_flags['kms-location'],
+                                              kms_flags['kms-keyring'],
+                                              kms_flags['kms-key'])
+        message = ('Specify fully qualified KMS key ID with {}, or use '
+                   'combination of {}, {}, {} and {} to specify the key ID in '
+                   'pieces.')
+        message = message.format(kms_flags['kms-key'], kms_flags['kms-project'],
+                                 kms_flags['kms-location'],
+                                 kms_flags['kms-keyring'], kms_flags['kms-key'])
+        raise exceptions.InvalidArgumentException(parameter_name, message)
     return None  # User didn't specify KMS key
+
+
+def GetAutomatedBackupKmsFlagOverrides():
+  return {
+      'kms-key': '--automated-backup-encryption-key',
+      'kms-keyring': '--automated-backup-encryption-key-keyring',
+      'kms-location': '--automated-backup-encryption-key-location',
+      'kms-project': '--automated-backup-encryption-key-project'
+  }

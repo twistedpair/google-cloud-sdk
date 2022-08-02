@@ -46,13 +46,12 @@ def _UpdateApplicationStage(create):
   return progress_tracker.Stage(message, key=UPDATE_APPLICATION)
 
 
-def IntegrationStages(create, match_type_names):
+def IntegrationStages(create, resource_types):
   """Returns the progress tracker Stages for creating or updating an Integration.
 
   Args:
     create: whether it's for the create command.
-    match_type_names: list of dict typed names. Dict is of the form:
-                      {'type':string, 'name':string}.
+    resource_types: set of resource type strings to deploy.
 
   Returns:
     dict of stage key to progress_tracker Stage.
@@ -61,7 +60,7 @@ def IntegrationStages(create, match_type_names):
   stages = {UPDATE_APPLICATION: _UpdateApplicationStage(create)}
   stages[CREATE_DEPLOYMENT] = progress_tracker.Stage(
       'Configuring Integration...', key=CREATE_DEPLOYMENT)
-  deploy_stages = _DeployStages(match_type_names, 'Configuring ')
+  deploy_stages = _DeployStages(resource_types, 'Configuring ')
   stages.update(deploy_stages)
 
   return stages
@@ -90,31 +89,29 @@ def _TypeToDescriptiveName(resource_type):
   return resource_type
 
 
-def IntegrationDeleteStages(service_match_type_names, delete_match_type_names):
+def IntegrationDeleteStages(destroy_resource_types,
+                            should_configure_service):
   """Returns the progress tracker Stages for deleting an Integration.
 
   Args:
-    service_match_type_names: the (selector) match type names for services that
-      must be updated, as a  list of dicts. Dict is of the form: {'type':string,
-      'name':string}.
-    delete_match_type_names: the (selector) match type names for resoruces that
-      must be destroyed, , as a  list of dicts. Dict is of the form:
-      {'type':string, 'name':string}.
+    destroy_resource_types: the set of resource type strings to destroy.
+    should_configure_service: bool, Whether a step to configure service binding
+      is required.
 
   Returns:
     list of progress_tracker.Stage
   """
   stages = {}
-  if service_match_type_names:
+  if should_configure_service:
     stages[UPDATE_APPLICATION] = progress_tracker.Stage(
         'Unbinding services...', key=UPDATE_APPLICATION)
     stages[CREATE_DEPLOYMENT] = progress_tracker.Stage(
         'Configuring resources...', key=CREATE_DEPLOYMENT)
-    service_stages = _DeployStages(service_match_type_names, 'Configuring ')
+    service_stages = _DeployStages({'service'}, 'Configuring ')
     stages.update(service_stages)
   stages[UNDEPLOY_RESOURCE] = progress_tracker.Stage(
       'Deleting resources...', key=UNDEPLOY_RESOURCE)
-  undeploy_stages = _DeployStages(delete_match_type_names, 'Deleting ')
+  undeploy_stages = _DeployStages(destroy_resource_types, 'Deleting ')
   stages.update(undeploy_stages)
   stages[CLEANUP_CONFIGURATION] = progress_tracker.Stage(
       'Saving Integration configurations...', key=CLEANUP_CONFIGURATION)
@@ -146,24 +143,19 @@ def StageKeyForResourceDeployment(resource_type):
   return _DEPLOY_STAGE_PREFIX + resource_type
 
 
-def _DeployStages(match_type_names, stage_prefix):
+def _DeployStages(resource_types, stage_prefix):
   """Appends a deploy stage for each resource type in match_type_names.
 
   Args:
-    match_type_names: The (selector) match type names as a list of dict of
-      {'type': string, 'name': string}
+    resource_types: The set of resource type strings in the stage.
     stage_prefix: string. The prefix to add to the stage message.
 
   Returns:
     dict of stage key to progress_tracker Stage.
   """
-  if not match_type_names:
+  if not resource_types:
     return {}
   stages = {}
-  resource_types = set()
-  for type_name in match_type_names:
-    resource_types.add(type_name['type'])
-
   for resource_type in resource_types:
     message = stage_prefix + _TypeToDescriptiveName(resource_type) + '...'
     stages[StageKeyForResourceDeployment(

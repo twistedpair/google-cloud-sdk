@@ -633,7 +633,7 @@ def ExecWithStreamingOutput(args,
           args = [encoding.Encode(a) for a in args]
         p = subprocess.Popen(args, env=env, stderr=subprocess.PIPE,
                              stdout=subprocess.PIPE, **extra_popen_kwargs)
-
+        process_holder.process = p
         if in_str:
           in_str = six.text_type(in_str).encode('utf-8')
           try:
@@ -665,7 +665,6 @@ def ExecWithStreamingOutput(args,
         elif err.errno == errno.ENOENT:
           raise InvalidCommandError(args[0])
         raise
-      process_holder.process = p
 
       if process_holder.signum is not None:
         # This covers the small possibility that process_holder handled a

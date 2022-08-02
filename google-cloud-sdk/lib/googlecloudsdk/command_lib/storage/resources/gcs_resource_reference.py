@@ -66,6 +66,7 @@ class GcsBucketResource(resource_reference.BucketResource):
 
   def get_displayable_bucket_data(self):
     """Returns the DisplaybleBucketData instance."""
+    # TODO(b/240444753): Make better use of ObjectResource attributes.
     if self.metadata.labels is not None:
       labels = encoding.MessageToDict(self.metadata.labels)
     else:
@@ -142,7 +143,7 @@ class GcsObjectResource(resource_reference.ObjectResource):
         encryption_key_sha256=getattr(self.metadata.customerEncryption,
                                       'keySha256', None),
         etag=self.etag,
-        event_based_hold=self.metadata.eventBasedHold,
+        event_based_hold=True if self.metadata.eventBasedHold else None,
         generation=self.generation,
         kms_key=self.metadata.kmsKeyName,
         md5_hash=self.metadata.md5Hash,
@@ -151,7 +152,7 @@ class GcsObjectResource(resource_reference.ObjectResource):
         retention_expiration=self.metadata.retentionExpirationTime,
         storage_class=self.metadata.storageClass,
         storage_class_update_time=self.metadata.timeStorageClassUpdated,
-        temporary_hold=self.metadata.temporaryHold,
+        temporary_hold=True if self.metadata.temporaryHold else None,
         update_time=self.metadata.updated)
 
   def get_json_dump(self):

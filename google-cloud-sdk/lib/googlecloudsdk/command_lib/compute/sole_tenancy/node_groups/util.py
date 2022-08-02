@@ -77,4 +77,5 @@ def BuildShareSettings(messages, args):
     return messages.ShareSettings(
         shareType=(
             messages.ShareSettings.ShareTypeValueValuesEnum.ORGANIZATION))
-  return None
+  return messages.ShareSettings(
+      shareType=(messages.ShareSettings.ShareTypeValueValuesEnum.LOCAL))

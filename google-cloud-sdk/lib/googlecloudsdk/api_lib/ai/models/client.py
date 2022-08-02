@@ -24,7 +24,14 @@ from googlecloudsdk.command_lib.ai import constants
 
 
 class ModelsClient(object):
-  """High-level client for the AI Platform models surface."""
+  """High-level client for the AI Platform models surface.
+
+  Attributes:
+    client: An instance of the given client, or the API client aiplatform of
+      Beta version.
+    messages: The messages module for the given client, or the API client
+      aiplatform of Beta version.
+  """
 
   def __init__(self, client=None, messages=None):
     self.client = client or apis.GetClientInstance(
@@ -48,8 +55,192 @@ class ModelsClient(object):
                     explanation_spec=None,
                     parent_model=None,
                     model_id=None,
-                    version_aliases=None):
-    """Constructs, sends an UploadModel request and returns the LRO to be done."""
+                    version_aliases=None,
+                    labels=None):
+    """Constructs, sends an UploadModel request and returns the LRO to be done.
+
+    Args:
+      region_ref: The resource reference for a given region. None if the region
+        reference is not provided.
+      display_name: The display name of the Model. The name can be up
+        to 128 characters long and can be consist of any UTF-8 characters.
+      description: The description of the Model.
+      artifact_uri: The path to the directory containing the Model
+        artifact and any of its supporting files. Not present for AutoML Models.
+      container_image_uri: Immutable. URI of the Docker image to be used as the
+        custom container for serving predictions. This URI must identify an
+        image in Artifact Registry or Container Registry. Learn more about the
+        [container publishing requirements](https://cloud.google.com/vertex-
+        ai/docs/predictions/custom-container-requirements#publishing), including
+        permissions requirements for the Vertex AI Service Agent. The container
+        image is ingested upon ModelService.UploadModel, stored internally, and
+        this original path is afterwards not used. To learn about the
+        requirements for the Docker image itself, see [Custom container
+        requirements](https://cloud.google.com/vertex-
+        ai/docs/predictions/custom-container-requirements#). You can use the URI
+        to one of Vertex AI's [pre-built container images for
+        prediction](https://cloud.google.com/vertex-ai/docs/predictions/pre-
+        built-containers) in this field.
+      container_command: Specifies the command that runs when the container
+        starts. This overrides the container's [ENTRYPOINT](https://docs.docker.
+        com/engine/reference/builder/#entrypoint). Specify this field as an
+        array of executable and arguments, similar to a Docker `ENTRYPOINT`'s
+        "exec" form, not its "shell" form. If you do not specify this field,
+        then the container's `ENTRYPOINT` runs, in conjunction with the args
+        field or the container's
+        [`CMD`](https://docs.docker.com/engine/reference/builder/#cmd), if
+        either exists. If this field is not specified and the container does not
+        have an `ENTRYPOINT`, then refer to the Docker documentation about [how
+        `CMD` and `ENTRYPOINT`
+        interact](https://docs.docker.com/engine/reference/builder/#understand-
+        how-cmd-and-entrypoint-interact). If you specify this field, then you
+        can also specify the `args` field to provide additional arguments for
+        this command. However, if you specify this field, then the container's
+        `CMD` is ignored. See the [Kubernetes documentation about how the
+        `command` and `args` fields interact with a container's `ENTRYPOINT` and
+        `CMD`](https://kubernetes.io/docs/tasks/inject-data-application/define-
+        command-argument-container/#notes). In this field, you can reference
+        [environment variables set by Vertex
+        AI](https://cloud.google.com/vertex-ai/docs/predictions/custom-
+        container-requirements#aip-variables) and environment variables set in
+        the env field. You cannot reference environment variables set in the
+        Docker image. In order for environment variables to be expanded,
+        reference them by using the following syntax: $( VARIABLE_NAME) Note
+        that this differs from Bash variable expansion, which does not use
+        parentheses. If a variable cannot be resolved, the reference in the
+        input string is used unchanged. To avoid variable expansion, you can
+        escape this syntax with `$$`; for example: $$(VARIABLE_NAME) This field
+        corresponds to the `command` field of the Kubernetes Containers [v1 core
+        API](https://kubernetes.io/docs/reference/generated/kubernetes-
+        api/v1.23/#container-v1-core).
+      container_args: Specifies arguments for the command that runs when the
+        container starts. This overrides the container's
+        [`CMD`](https://docs.docker.com/engine/reference/builder/#cmd). Specify
+        this field as an array of executable and arguments, similar to a Docker
+        `CMD`'s "default parameters" form. If you don't specify this field but
+        do specify the command field, then the command from the `command` field
+        runs without any additional arguments. See the [Kubernetes documentation
+        about how the `command` and `args` fields interact with a container's
+        `ENTRYPOINT` and `CMD`](https://kubernetes.io/docs/tasks/inject-data-
+        application/define-command-argument-container/#notes). If you don't
+        specify this field and don't specify the `command` field, then the
+        container's
+        [`ENTRYPOINT`](https://docs.docker.com/engine/reference/builder/#cmd)
+        and `CMD` determine what runs based on their default behavior. See the
+        Docker documentation about [how `CMD` and `ENTRYPOINT`
+        interact](https://docs.docker.com/engine/reference/builder/#understand-
+        how-cmd-and-entrypoint-interact). In this field, you can reference
+        [environment variables set by Vertex
+        AI](https://cloud.google.com/vertex-ai/docs/predictions/custom-
+        container-requirements#aip-variables) and environment variables set in
+        the env field. You cannot reference environment variables set in the
+        Docker image. In order for environment variables to be expanded,
+        reference them by using the following syntax: $( VARIABLE_NAME) Note
+        that this differs from Bash variable expansion, which does not use
+        parentheses. If a variable cannot be resolved, the reference in the
+        input string is used unchanged. To avoid variable expansion, you can
+        escape this syntax with `$$`; for example: $$(VARIABLE_NAME) This field
+        corresponds to the `args` field of the Kubernetes Containers [v1 core
+        API](https://kubernetes.io/docs/reference/generated/kubernetes-
+        api/v1.23/#container-v1-core)..
+      container_env_vars: List of environment variables to set in the container.
+        After the container starts running, code running in the container can
+        read these environment variables. Additionally, the command and args
+        fields can reference these variables. Later entries in this list can
+        also reference earlier entries. For example, the following example sets
+        the variable `VAR_2` to have the value `foo bar`: ```json [ { "name":
+        "VAR_1", "value": "foo" }, { "name": "VAR_2", "value": "$(VAR_1) bar" }
+        ] ``` If you switch the order of the variables in the example, then the
+        expansion does not occur. This field corresponds to the `env` field of
+        the Kubernetes Containers [v1 core
+        API](https://kubernetes.io/docs/reference/generated/kubernetes-
+        api/v1.23/#container-v1-core).
+      container_ports: List of ports to expose from the container. Vertex AI
+        sends any prediction requests that it receives to the first port on this
+        list. Vertex AI also sends [liveness and health
+        checks](https://cloud.google.com/vertex-ai/docs/predictions/custom-
+        container-requirements#liveness) to this port. If you do not specify
+        this field, it defaults to following value: ```json [ { "containerPort":
+        8080 } ] ``` Vertex AI does not use ports other than the first one
+        listed. This field corresponds to the `ports` field of the Kubernetes
+        Containers [v1 core
+        API](https://kubernetes.io/docs/reference/generated/kubernetes-
+        api/v1.23/#container-v1-core).
+      container_predict_route: HTTP path on the container to send prediction
+        requests to. Vertex AI forwards requests sent using
+        projects.locations.endpoints.predict to this path on the container's IP
+        address and port. Vertex AI then returns the container's response in the
+        API response. For example, if you set this field to `/foo`, then when
+        Vertex AI receives a prediction request, it forwards the request body in
+        a POST request to the `/foo` path on the port of your container
+        specified by the first value of this `ModelContainerSpec`'s ports field.
+        If you don't specify this field, it defaults to the following value when
+        you deploy this Model to an Endpoint:
+        /v1/endpoints/ENDPOINT/deployedModels/DEPLOYED_MODEL:predict The
+        placeholders in this value are replaced as follows: * ENDPOINT: The last
+        segment (following `endpoints/`)of the Endpoint.name][] field of the
+        Endpoint where this Model has been deployed. (Vertex AI makes this value
+        available to your container code as the [`AIP_ENDPOINT_ID` environment
+        variable](https://cloud.google.com/vertex-ai/docs/predictions/custom-
+        container-requirements#aip-variables).) * DEPLOYED_MODEL:
+        DeployedModel.id of the `DeployedModel`. (Vertex AI makes this value
+        available to your container code as the [`AIP_DEPLOYED_MODEL_ID`
+        environment variable](https://cloud.google.com/vertex-
+        ai/docs/predictions/custom-container-requirements#aip-variables).)
+      container_health_route: HTTP path on the container to send health checks
+        to. Vertex AI intermittently sends GET requests to this path on the
+        container's IP address and port to check that the container is healthy.
+        Read more about [health checks](https://cloud.google.com/vertex-
+        ai/docs/predictions/custom-container-requirements#health). For example,
+        if you set this field to `/bar`, then Vertex AI intermittently sends a
+        GET request to the `/bar` path on the port of your container specified
+        by the first value of this `ModelContainerSpec`'s ports field. If you
+        don't specify this field, it defaults to the following value when you
+        deploy this Model to an Endpoint: /v1/endpoints/ENDPOINT/deployedModels/
+        DEPLOYED_MODEL:predict The placeholders in this value are replaced as
+        follows * ENDPOINT: The last segment (following `endpoints/`)of the
+        Endpoint.name][] field of the Endpoint where this Model has been
+        deployed. (Vertex AI makes this value available to your container code
+        as the [`AIP_ENDPOINT_ID` environment
+        variable](https://cloud.google.com/vertex-ai/docs/predictions/custom-
+        container-requirements#aip-variables).) * DEPLOYED_MODEL:
+        DeployedModel.id of the `DeployedModel`. (Vertex AI makes this value
+        available to your container code as the [`AIP_DEPLOYED_MODEL_ID`
+        environment variable](https://cloud.google.com/vertex-
+        ai/docs/predictions/custom-container-requirements#aip-variables).)
+      explanation_spec: The default explanation specification for this Model.
+        The Model can be used for requesting explanation after being deployed if
+        it is populated. The Model can be used for batch explanation if it is
+        populated. All fields of the explanation_spec can be overridden by
+        explanation_spec of DeployModelRequest.deployed_model, or
+        explanation_spec of BatchPredictionJob. If the default explanation
+        specification is not set for this Model, this Model can still be used
+        for requesting explanation by setting explanation_spec of
+        DeployModelRequest.deployed_model and for batch explanation by setting
+        explanation_spec of BatchPredictionJob.
+      parent_model: The resource name of the model into which to upload the
+        version. Only specify this field when uploading a new version.
+      model_id: The ID to use for the uploaded Model, which will become the
+        final component of the model resource name. This value may be up to 63
+        characters, and valid characters are `[a-z0-9_-]`. The first character
+        cannot be a number or hyphen..
+      version_aliases: User provided version aliases so that a model version can
+        be referenced via alias (i.e. projects/{project}/locations/{location}/mo
+        dels/{model_id}@{version_alias} instead of auto-generated version id
+        (i.e.
+        projects/{project}/locations/{location}/models/{model_id}@{version_id}).
+        The format is a-z{0,126}[a-z0-9] to distinguish from version_id. A
+        default version alias will be created for the first version of the
+        model, and there must be exactly one default version alias for a model.
+      labels: The labels with user-defined metadata to organize your Models.
+        Label keys and values can be no longer than 64 characters (Unicode
+        codepoints), can only contain lowercase letters, numeric characters,
+        underscores and dashes. International characters are allowed. See
+        https://goo.gl/xmQnxf for more information and examples of labels.
+
+    Returns:
+      Response from calling upload model with given request arguments.
+    """
     container_spec = self.messages.GoogleCloudAiplatformV1beta1ModelContainerSpec(
         healthRoute=container_health_route,
         imageUri=container_image_uri,
@@ -77,6 +268,13 @@ class ModelsClient(object):
         explanationSpec=explanation_spec)
     if version_aliases:
       model.versionAliases = version_aliases
+    if labels:
+      additional_properties = []
+      for key, value in sorted(labels.items()):
+        additional_properties.append(model.LabelsValue().AdditionalProperty(
+            key=key, value=value))
+      model.labels = model.LabelsValue(
+          additionalProperties=additional_properties)
 
     return self._service.Upload(
         self.messages.AiplatformProjectsLocationsModelsUploadRequest(
@@ -102,8 +300,192 @@ class ModelsClient(object):
                explanation_spec=None,
                parent_model=None,
                model_id=None,
-               version_aliases=None):
-    """Constructs, sends an UploadModel request and returns the LRO to be done."""
+               version_aliases=None,
+               labels=None):
+    """Constructs, sends an UploadModel request and returns the LRO to be done.
+
+    Args:
+      region_ref: The resource reference for a given region. None if the region
+        reference is not provided.
+      display_name: The display name of the Model. The name can be up
+        to 128 characters long and can be consist of any UTF-8 characters.
+      description: The description of the Model.
+      artifact_uri: The path to the directory containing the Model
+        artifact and any of its supporting files. Not present for AutoML Models.
+      container_image_uri: Immutable. URI of the Docker image to be used as the
+        custom container for serving predictions. This URI must identify an
+        image in Artifact Registry or Container Registry. Learn more about the
+        [container publishing requirements](https://cloud.google.com/vertex-
+        ai/docs/predictions/custom-container-requirements#publishing), including
+        permissions requirements for the Vertex AI Service Agent. The container
+        image is ingested upon ModelService.UploadModel, stored internally, and
+        this original path is afterwards not used. To learn about the
+        requirements for the Docker image itself, see [Custom container
+        requirements](https://cloud.google.com/vertex-
+        ai/docs/predictions/custom-container-requirements#). You can use the URI
+        to one of Vertex AI's [pre-built container images for
+        prediction](https://cloud.google.com/vertex-ai/docs/predictions/pre-
+        built-containers) in this field.
+      container_command: Specifies the command that runs when the container
+        starts. This overrides the container's [ENTRYPOINT](https://docs.docker.
+        com/engine/reference/builder/#entrypoint). Specify this field as an
+        array of executable and arguments, similar to a Docker `ENTRYPOINT`'s
+        "exec" form, not its "shell" form. If you do not specify this field,
+        then the container's `ENTRYPOINT` runs, in conjunction with the args
+        field or the container's
+        [`CMD`](https://docs.docker.com/engine/reference/builder/#cmd), if
+        either exists. If this field is not specified and the container does not
+        have an `ENTRYPOINT`, then refer to the Docker documentation about [how
+        `CMD` and `ENTRYPOINT`
+        interact](https://docs.docker.com/engine/reference/builder/#understand-
+        how-cmd-and-entrypoint-interact). If you specify this field, then you
+        can also specify the `args` field to provide additional arguments for
+        this command. However, if you specify this field, then the container's
+        `CMD` is ignored. See the [Kubernetes documentation about how the
+        `command` and `args` fields interact with a container's `ENTRYPOINT` and
+        `CMD`](https://kubernetes.io/docs/tasks/inject-data-application/define-
+        command-argument-container/#notes). In this field, you can reference
+        [environment variables set by Vertex
+        AI](https://cloud.google.com/vertex-ai/docs/predictions/custom-
+        container-requirements#aip-variables) and environment variables set in
+        the env field. You cannot reference environment variables set in the
+        Docker image. In order for environment variables to be expanded,
+        reference them by using the following syntax: $( VARIABLE_NAME) Note
+        that this differs from Bash variable expansion, which does not use
+        parentheses. If a variable cannot be resolved, the reference in the
+        input string is used unchanged. To avoid variable expansion, you can
+        escape this syntax with `$$`; for example: $$(VARIABLE_NAME) This field
+        corresponds to the `command` field of the Kubernetes Containers [v1 core
+        API](https://kubernetes.io/docs/reference/generated/kubernetes-
+        api/v1.23/#container-v1-core).
+      container_args: Specifies arguments for the command that runs when the
+        container starts. This overrides the container's
+        [`CMD`](https://docs.docker.com/engine/reference/builder/#cmd). Specify
+        this field as an array of executable and arguments, similar to a Docker
+        `CMD`'s "default parameters" form. If you don't specify this field but
+        do specify the command field, then the command from the `command` field
+        runs without any additional arguments. See the [Kubernetes documentation
+        about how the `command` and `args` fields interact with a container's
+        `ENTRYPOINT` and `CMD`](https://kubernetes.io/docs/tasks/inject-data-
+        application/define-command-argument-container/#notes). If you don't
+        specify this field and don't specify the `command` field, then the
+        container's
+        [`ENTRYPOINT`](https://docs.docker.com/engine/reference/builder/#cmd)
+        and `CMD` determine what runs based on their default behavior. See the
+        Docker documentation about [how `CMD` and `ENTRYPOINT`
+        interact](https://docs.docker.com/engine/reference/builder/#understand-
+        how-cmd-and-entrypoint-interact). In this field, you can reference
+        [environment variables set by Vertex
+        AI](https://cloud.google.com/vertex-ai/docs/predictions/custom-
+        container-requirements#aip-variables) and environment variables set in
+        the env field. You cannot reference environment variables set in the
+        Docker image. In order for environment variables to be expanded,
+        reference them by using the following syntax: $( VARIABLE_NAME) Note
+        that this differs from Bash variable expansion, which does not use
+        parentheses. If a variable cannot be resolved, the reference in the
+        input string is used unchanged. To avoid variable expansion, you can
+        escape this syntax with `$$`; for example: $$(VARIABLE_NAME) This field
+        corresponds to the `args` field of the Kubernetes Containers [v1 core
+        API](https://kubernetes.io/docs/reference/generated/kubernetes-
+        api/v1.23/#container-v1-core)..
+      container_env_vars: List of environment variables to set in the container.
+        After the container starts running, code running in the container can
+        read these environment variables. Additionally, the command and args
+        fields can reference these variables. Later entries in this list can
+        also reference earlier entries. For example, the following example sets
+        the variable `VAR_2` to have the value `foo bar`: ```json [ { "name":
+        "VAR_1", "value": "foo" }, { "name": "VAR_2", "value": "$(VAR_1) bar" }
+        ] ``` If you switch the order of the variables in the example, then the
+        expansion does not occur. This field corresponds to the `env` field of
+        the Kubernetes Containers [v1 core
+        API](https://kubernetes.io/docs/reference/generated/kubernetes-
+        api/v1.23/#container-v1-core).
+      container_ports: List of ports to expose from the container. Vertex AI
+        sends any prediction requests that it receives to the first port on this
+        list. Vertex AI also sends [liveness and health
+        checks](https://cloud.google.com/vertex-ai/docs/predictions/custom-
+        container-requirements#liveness) to this port. If you do not specify
+        this field, it defaults to following value: ```json [ { "containerPort":
+        8080 } ] ``` Vertex AI does not use ports other than the first one
+        listed. This field corresponds to the `ports` field of the Kubernetes
+        Containers [v1 core
+        API](https://kubernetes.io/docs/reference/generated/kubernetes-
+        api/v1.23/#container-v1-core).
+      container_predict_route: HTTP path on the container to send prediction
+        requests to. Vertex AI forwards requests sent using
+        projects.locations.endpoints.predict to this path on the container's IP
+        address and port. Vertex AI then returns the container's response in the
+        API response. For example, if you set this field to `/foo`, then when
+        Vertex AI receives a prediction request, it forwards the request body in
+        a POST request to the `/foo` path on the port of your container
+        specified by the first value of this `ModelContainerSpec`'s ports field.
+        If you don't specify this field, it defaults to the following value when
+        you deploy this Model to an Endpoint:
+        /v1/endpoints/ENDPOINT/deployedModels/DEPLOYED_MODEL:predict The
+        placeholders in this value are replaced as follows: * ENDPOINT: The last
+        segment (following `endpoints/`)of the Endpoint.name][] field of the
+        Endpoint where this Model has been deployed. (Vertex AI makes this value
+        available to your container code as the [`AIP_ENDPOINT_ID` environment
+        variable](https://cloud.google.com/vertex-ai/docs/predictions/custom-
+        container-requirements#aip-variables).) * DEPLOYED_MODEL:
+        DeployedModel.id of the `DeployedModel`. (Vertex AI makes this value
+        available to your container code as the [`AIP_DEPLOYED_MODEL_ID`
+        environment variable](https://cloud.google.com/vertex-
+        ai/docs/predictions/custom-container-requirements#aip-variables).)
+      container_health_route: HTTP path on the container to send health checks
+        to. Vertex AI intermittently sends GET requests to this path on the
+        container's IP address and port to check that the container is healthy.
+        Read more about [health checks](https://cloud.google.com/vertex-
+        ai/docs/predictions/custom-container-requirements#health). For example,
+        if you set this field to `/bar`, then Vertex AI intermittently sends a
+        GET request to the `/bar` path on the port of your container specified
+        by the first value of this `ModelContainerSpec`'s ports field. If you
+        don't specify this field, it defaults to the following value when you
+        deploy this Model to an Endpoint: /v1/endpoints/ENDPOINT/deployedModels/
+        DEPLOYED_MODEL:predict The placeholders in this value are replaced as
+        follows * ENDPOINT: The last segment (following `endpoints/`)of the
+        Endpoint.name][] field of the Endpoint where this Model has been
+        deployed. (Vertex AI makes this value available to your container code
+        as the [`AIP_ENDPOINT_ID` environment
+        variable](https://cloud.google.com/vertex-ai/docs/predictions/custom-
+        container-requirements#aip-variables).) * DEPLOYED_MODEL:
+        DeployedModel.id of the `DeployedModel`. (Vertex AI makes this value
+        available to your container code as the [`AIP_DEPLOYED_MODEL_ID`
+        environment variable](https://cloud.google.com/vertex-
+        ai/docs/predictions/custom-container-requirements#aip-variables).)
+      explanation_spec: The default explanation specification for this Model.
+        The Model can be used for requesting explanation after being deployed if
+        it is populated. The Model can be used for batch explanation if it is
+        populated. All fields of the explanation_spec can be overridden by
+        explanation_spec of DeployModelRequest.deployed_model, or
+        explanation_spec of BatchPredictionJob. If the default explanation
+        specification is not set for this Model, this Model can still be used
+        for requesting explanation by setting explanation_spec of
+        DeployModelRequest.deployed_model and for batch explanation by setting
+        explanation_spec of BatchPredictionJob.
+      parent_model: The resource name of the model into which to upload the
+        version. Only specify this field when uploading a new version.
+      model_id: The ID to use for the uploaded Model, which will become the
+        final component of the model resource name. This value may be up to 63
+        characters, and valid characters are `[a-z0-9_-]`. The first character
+        cannot be a number or hyphen..
+      version_aliases: User provided version aliases so that a model version can
+        be referenced via alias (i.e. projects/{project}/locations/{location}/mo
+        dels/{model_id}@{version_alias} instead of auto-generated version id
+        (i.e.
+        projects/{project}/locations/{location}/models/{model_id}@{version_id}).
+        The format is a-z{0,126}[a-z0-9] to distinguish from version_id. A
+        default version alias will be created for the first version of the
+        model, and there must be exactly one default version alias for a model.
+      labels: The labels with user-defined metadata to organize your Models.
+        Label keys and values can be no longer than 64 characters (Unicode
+        codepoints), can only contain lowercase letters, numeric characters,
+        underscores and dashes. International characters are allowed. See
+        https://goo.gl/xmQnxf for more information and examples of labels.
+
+    Returns:
+      Response from calling upload model with given request arguments.
+    """
     container_spec = self.messages.GoogleCloudAiplatformV1ModelContainerSpec(
         healthRoute=container_health_route,
         imageUri=container_image_uri,
@@ -131,6 +513,13 @@ class ModelsClient(object):
         explanationSpec=explanation_spec)
     if version_aliases:
       model.versionAliases = version_aliases
+    if labels:
+      additional_properties = []
+      for key, value in sorted(labels.items()):
+        additional_properties.append(model.LabelsValue().AdditionalProperty(
+            key=key, value=value))
+      model.labels = model.LabelsValue(
+          additionalProperties=additional_properties)
 
     return self._service.Upload(
         self.messages.AiplatformProjectsLocationsModelsUploadRequest(
@@ -142,11 +531,29 @@ class ModelsClient(object):
                 modelId=model_id)))
 
   def Get(self, model_ref):
+    """Gets (describe) the given model.
+
+    Args:
+      model_ref: The resource reference for a given model. None if model
+        resource reference is not provided.
+
+    Returns:
+      Response from calling get model with request containing given model.
+    """
     request = self.messages.AiplatformProjectsLocationsModelsGetRequest(
         name=model_ref.RelativeName())
     return self._service.Get(request)
 
   def Delete(self, model_ref):
+    """Deletes the given model.
+
+    Args:
+      model_ref: The resource reference for a given model. None if model
+        resource reference is not provided.
+
+    Returns:
+      Response from calling delete model with request containing given model.
+    """
     request = self.messages.AiplatformProjectsLocationsModelsDeleteRequest(
         name=model_ref.RelativeName())
     return self._service.Delete(request)
@@ -166,6 +573,18 @@ class ModelsClient(object):
     return self._service.DeleteVersion(request)
 
   def List(self, limit=None, region_ref=None):
+    """List all models in the given region.
+
+    Args:
+      limit: int, The maximum number of records to yield. None if all available
+        records should be yielded.
+      region_ref: The resource reference for a given region. None if the region
+        reference is not provided.
+
+    Returns:
+      Response from calling list models with request containing given models
+      and limit.
+    """
     return list_pager.YieldFromList(
         self._service,
         self.messages.AiplatformProjectsLocationsModelsListRequest(

@@ -248,6 +248,15 @@ def AddServeAllTrafficLatestRevisionFlag(parser, track):
       help=help_text)
 
 
+def AddBuildpackStackFlag(parser):
+  """Add flag for specifying function memory to the parser."""
+  # TODO(b/211892283): refer to Buildpack stacks guide, once it is available
+  help_text = """\
+  Specifies one of the Google provided buildpack stacks.
+  """
+  parser.add_argument('--buildpack-stack', type=str, help=help_text)
+
+
 def AddGen2Flag(parser, track):
   """Add the --gen2 flag."""
   help_text = (

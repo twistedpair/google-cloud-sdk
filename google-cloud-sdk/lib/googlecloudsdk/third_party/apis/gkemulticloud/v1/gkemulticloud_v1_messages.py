@@ -807,7 +807,7 @@ class GoogleCloudGkemulticloudV1AwsCluster(_messages.Message):
     etag: Allows clients to perform consistent read-modify-writes through
       optimistic concurrency control. Can be sent on update and delete
       requests to ensure the client has an up-to-date value before proceeding.
-    fleet: Optional. Fleet configuration.
+    fleet: Required. Fleet configuration.
     loggingConfig: Optional. Logging configuration for this cluster.
     name: The name of this resource. Cluster names are formatted as
       `projects//locations//awsClusters/`. See [Resource
@@ -1620,7 +1620,7 @@ class GoogleCloudGkemulticloudV1AzureCluster(_messages.Message):
     etag: Allows clients to perform consistent read-modify-writes through
       optimistic concurrency control. Can be sent on update and delete
       requests to ensure the client has an up-to-date value before proceeding.
-    fleet: Optional. Fleet configuration.
+    fleet: Required. Fleet configuration.
     loggingConfig: Optional. Logging configuration for this cluster.
     managedResources: Output only. Managed Azure resources for this cluster.
     name: The name of this resource. Cluster names are formatted as

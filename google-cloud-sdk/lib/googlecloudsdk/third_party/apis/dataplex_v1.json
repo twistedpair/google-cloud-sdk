@@ -2956,17 +2956,17 @@
           "type": "string",
           "enumDescriptions": [
             "An unspecified event type.",
-            "Event for creation of a cluster. It is not yet assigned to a user.",
             "Event when the session is assigned to a user.",
             "Event for stop of a session.",
-            "Query events in the session."
+            "Query events in the session.",
+            "Event for creation of a cluster. It is not yet assigned to a user. This comes before START in the sequence"
           ],
           "enum": [
             "EVENT_TYPE_UNSPECIFIED",
-            "CREATE",
             "START",
             "STOP",
-            "QUERY"
+            "QUERY",
+            "CREATE"
           ]
         },
         "query": {

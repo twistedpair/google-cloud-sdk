@@ -305,7 +305,7 @@
           "type": "string"
         },
         "fleet": {
-          "description": "Optional. Fleet configuration.",
+          "description": "Required. Fleet configuration.",
           "$ref": "GoogleCloudGkemulticloudV1Fleet"
         },
         "loggingConfig": {
@@ -1245,7 +1245,7 @@
           "type": "string"
         },
         "fleet": {
-          "description": "Optional. Fleet configuration.",
+          "description": "Required. Fleet configuration.",
           "$ref": "GoogleCloudGkemulticloudV1Fleet"
         },
         "managedResources": {

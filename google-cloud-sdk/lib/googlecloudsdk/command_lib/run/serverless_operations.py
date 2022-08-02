@@ -50,6 +50,7 @@ from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.command_lib.run import artifact_registry
 from googlecloudsdk.command_lib.run import config_changes as config_changes_mod
 from googlecloudsdk.command_lib.run import exceptions as serverless_exceptions
+from googlecloudsdk.command_lib.run import messages_util
 from googlecloudsdk.command_lib.run import name_generator
 from googlecloudsdk.command_lib.run import resource_name_conversion
 from googlecloudsdk.command_lib.run import stages
@@ -1479,7 +1480,8 @@ class ServerlessOperations(object):
              job_ref,
              wait=False,
              tracker=None,
-             asyn=False):
+             asyn=False,
+             release_track=None):
     """Run a Cloud Run Job, creating an Execution.
 
     Args:
@@ -1487,6 +1489,7 @@ class ServerlessOperations(object):
       wait: boolean, True to wait until the job is complete
       tracker: StagedProgressTracker, to report on the progress of running
       asyn: bool, if True, return without waiting for anything.
+      release_track: ReleaseTrack, the release track of a command calling this
 
     Returns:
       An Execution Resource in its state when RunJob returns.
@@ -1524,7 +1527,12 @@ class ServerlessOperations(object):
         tracker,
         terminal_condition,
         dependencies=stages.ExecutionDependencies())
-    self.WaitForCondition(poller)
+    try:
+      self.WaitForCondition(poller)
+    except serverless_exceptions.ExecutionFailedError:
+      raise serverless_exceptions.ExecutionFailedError(
+          'The execution failed.' +
+          messages_util.GetExecutionCreatedMessage(release_track, ex))
     return self.GetExecution(execution_ref)
 
   def GetJob(self, job_ref):

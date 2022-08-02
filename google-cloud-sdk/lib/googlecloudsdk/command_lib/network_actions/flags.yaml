@@ -1,0 +1,23 @@
+wasmPluginVersion:
+  image:
+    arg_name: image
+    api_field: wasmPluginVersion.imageUri
+    required: true
+    help_text: |
+      URI of the container image containing the WasmPlugin, stored in the
+      Artifact Registry.
+
+  config:
+    arg_name: config
+    api_field: wasmPluginVersion.proxyWasmPluginConfig
+    help_text: |
+      Configuration for the WasmPlugin, provided to the Proxy-Wasm
+      plugin at runtime via the proxy_on_configure Proxy-Wasm ABI.
+
+wasmPlugin:
+  mainVersion:
+    arg_name: main_version
+    api_field: wasmPlugin.mainVersionId
+    help_text: |
+      The ID of the WasmPluginVersion that should be the currently serving
+      one. The version referred to must be a child of this WasmPlugin.

@@ -5,6 +5,63 @@ Copyright 2014-2022 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 396.0.0 (2022-08-02)
+
+### AI
+
+* Added `--labels` flag to `gcloud ai models upload` to support setting labels. Use `--labels` flag to set metadata to organize your models and model versions. Label keys and values can be no longer than 64 characters (Unicode codepoints), can only contain lowercase letters, numeric characters, underscores and dashes. International characters are allowed. See <https://goo.gl/xmQnxf> for more information and examples of labels.
+
+### Cloud Identity-Aware Proxy
+
+*  Promoted `gcloud iap tcp dest-groups` to GA.
+
+### Cloud Logging
+
+*   Promoted `--index` flag of `gcloud logging buckets create` to GA.
+*   Promoted `--clear-indexes` flag of `gcloud logging buckets update` to GA.
+*   Promoted `--remove-indexes` flag of `gcloud logging buckets update` to GA.
+*   Promoted `--add-index` flag of `gcloud logging buckets update` to GA.
+*   Promoted `--update-index` flag of `gcloud logging buckets update` to GA.
+
+### Compute Engine
+
+* Promoted `--maintenance-interval` flag of `gcloud compute commitments create` to beta.
+
+### Compute OS Config
+
+*   Promoted `gcloud compute os-config troubleshoot` to GA.
+    * Troubleshoot common issues with VM Manager.
+
+### Config Connector
+
+* Updated Google Cloud Config Connector to version 1.90.0.
+  See Config Connector Overview for more details [https://cloud.google.com/config-connector/docs/overview](https://cloud.google.com/config-connector/docs/overview).
+
+### Database Migration
+
+* Fixed issue where creation of a migration job in a project inside a VPC-SC perimeter constantly failed.
+* Fixed issue where creation of a connection profile in a project inside a VPC-SC perimeter constantly failed.
+
+### Identity Groups
+
+*   Fixed issue where `gcloud identity groups create` will fail when specifying
+    `--group-type=security`.
+
+### Identity and Access Management
+
+* Added `--service-account-token-lifetime-seconds` flag to `gcloud iam <workforce-pools|workload-identity-pools> create-cred-config` command to allow configuring the access token lifespan for service account impersonation.
+
+### Recommender
+
+*   Added support for `gcloud recommender recommender-config describe`.
+*   Added support for `gcloud recommender recommender-config update`.
+*   Added support for `gcloud recommender insight-type-config describe`.
+*   Added support for `gcloud recommender insight-type-config update`.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 395.0.0 (2022-07-26)
 
 ### AI
@@ -165,11 +222,6 @@ to GA.
 
 * Promoted `gcloud batch` to alpha and beta which enables the CLI to use Batch APIs.
 
-### CLOUD SDK
-
-*   Replaced the default login flow when a browser is not detected from
-    `--no-browser` to `--no-launch-browser`.
-
 ### Cloud Deploy
 
 * Changed the default bucket name upload path on release create to use the pipeline UUID.
@@ -193,6 +245,11 @@ to GA.
 
 * Added `--layer7-ddos-defense-auto-deploy-load-threshold`, `--layer7-ddos-defense-auto-deploy-confidence-threshold`, `--layer7-ddos-defense-auto-deploy-impacted-baseline-threshold`, and `--layer7-ddos-defense-auto-deploy-expiration-sec` to `gcloud compute security-policies update` to `gcloud beta compute security-policies update`.
 * Promoted flags `--enable-strong-affinity` of `gcloud compute backend-services create` and `gcloud compute backend-services update` to GA.
+
+### Google Cloud CLI
+
+*   Replaced the default login flow when a browser is not detected from
+    `--no-browser` to `--no-launch-browser`.
 
 ### Identity and Access Management
 
@@ -352,12 +409,6 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
   Please visit the following release notes for details:
   <https://cloud.google.com/appengine/docs/java/release-notes>.
 
-### CLOUD SDK
-
-*   Updated login flow initiated by `gcloud auth login --no-launch-browser` and
-    `gcloud auth application-default login --no-launch-browser` to address a
-    security issue.
-
 ### Certificate Authority Service
 
 * Added `--unconstrained-chain-length` flag to `gcloud privateca subordinates create`
@@ -415,6 +466,12 @@ the Dataproc Metastore service can be accessed to GA.
     a channel.
 * Added `--crypto-key` flag to `gcloud eventarc channels create` to configure
     crypto keys on a new channel.
+
+### Google Cloud CLI
+
+*   Updated login flow initiated by `gcloud auth login --no-launch-browser` and
+    `gcloud auth application-default login --no-launch-browser` to address a
+    security issue.
 
 ### Kubernetes Engine
 
@@ -2517,7 +2574,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 * Promoted `gcloud access-context-manager policiesremove iam-policy-binding` to
   GA.
 * Promoted `gcloud access-context-manager policies set-iam-policy` to GA.
-* Promoted `ggcloud access-context-manager policies get-iam-policy` to GA.
+* Promoted `gcloud access-context-manager policies get-iam-policy` to GA.
 
 ### Cloud Bigtable
 
@@ -2671,10 +2728,10 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 ### Kubernetes Engine
 
 *   Added `filter` option to `notification-config` flag on `gcloud container
-    clusters create` and `gcloud container clutsers update` commands to specify
+    clusters create` and `gcloud container clusters update` commands to specify
     specific pubsub message types to receive.
 *   Added `--enable-managed-prometheus` flag to `gcloud beta container clusters create`
-    and `gcloud beta container clutsers update` to deploy Google Cloud Managed
+    and `gcloud beta container clusters update` to deploy Google Cloud Managed
     Service for Prometheus managed collection to a Kubernetes cluster.
 *   Added `--disable-managed-prometheus` flag to `gcloud beta container clusters update`
     to tear down Google Cloud Managed Service for Prometheus managed collection
@@ -2945,7 +3002,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Kubernetes Engine
 
-* Added `--enable-image-streaming` flag to `gcloud container clusters/node-pools create/update` to allow creating clusters/node-pools with image streaming enabled, and enabling image streaming on exisitng clusters/node-pools.
+* Added `--enable-image-streaming` flag to `gcloud container clusters/node-pools create/update` to allow creating clusters/node-pools with image streaming enabled, and enabling image streaming on existing clusters/node-pools.
 
 ### Secret Manager
 
@@ -4695,11 +4752,11 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### AI Platform
 
-*  Added beta commands for the AI platform tensorboard suite.
-*  Added `gcloud beta ai tensorboards` commands to manage a Tensorboard on the unified AI platform.
-*  Added `gcloud beta ai tensorboard-experiments` commands to manage a Tensorboard Experiment on the unified AI platform.
-*  Added `gcloud beta ai tensorboard-runs` commands to manage a Tensorboard Run on the unified AI platform.
-*  Added `gcloud beta ai tensorboard-time-series` commands to manage a Tensorboard Time Series on the unified AI platform.
+*  Added beta commands for the AI Platform TensorBoard suite.
+*  Added `gcloud beta ai tensorboards` commands to manage a TensorBoard on the unified AI Platform.
+*  Added `gcloud beta ai tensorboard-experiments` commands to manage a TensorBoard Experiment on the unified AI Platform.
+*  Added `gcloud beta ai tensorboard-runs` commands to manage a TensorBoard Run on the unified AI Platform.
+*  Added `gcloud beta ai tensorboard-time-series` commands to manage a TensorBoard Time Series on the unified AI Platform.
 
 ### App Engine
 
@@ -9392,7 +9449,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Cloud Access Context Manager
 
-* Modified Access Context Manger beta commands to call the ACM v1 API instead of
+* Modified Access Context Manager beta commands to call the ACM v1 API instead of
   v1beta.
 
 ### Cloud Data Catalog
@@ -15342,7 +15399,7 @@ labels.
   property, which will, in a future release, be the default behavior. If set
   to true, `compute-rw`, `devstorage-ro`, `service-control`, and
   `service-management` scopes are no longer added to what is specified in
-  `--scopes`, `compute-rw` is no longer inluded in the default scopes, and
+  `--scopes`, `compute-rw` is no longer included in the default scopes, and
   `--[no-]enable-cloud-endpoints` flags are not allowed. This is now the
   default behavior for alpha and beta, so this property has no effect for
   those tracks.
@@ -15689,7 +15746,7 @@ Added support for `.gcloudignore` files to `container builds submit` command.
 
 ### Google Cloud Deployment Manager
 
-*   Updated `gcloud deployment-manger` to use latest public API version.
+*   Updated `gcloud deployment-manager` to use latest public API version.
 
 
 ## 179.0.0 (2017-11-08)
@@ -17854,7 +17911,7 @@ disabled on existing clusters via the
 
 ### Google Cloud Source Repositories
 
-*   Mirrored respositories now display the url of the repository being mirrored.
+*   Mirrored repositories now display the URL of the repository being mirrored.
 
 ### Cloud Tools for PowerShell
 
@@ -18782,7 +18839,7 @@ The alpha commands will remain, as is, until at least March of 2017.
 
 ### Google Container Engine
 
-* Added support for for creating new clusters and nodepools on preemptible
+* Added support for creating new clusters and nodepools on preemptible
   VM instances in Beta by adding `--preemptible`. See
   `gcloud beta container clusters create --help` and
   `gcloud beta container node-pools create --help` for more details.
@@ -21302,12 +21359,12 @@ command surface.
 
 ## 0.9.42 (2015-01-08)
 
-*   Suport for local ssds in instance templates for gcloud compute.
+*   Support for local SSDs in instance templates for gcloud compute.
 
 ## 0.9.41 (2014-12-17)
 
-*   Progress Bars.
-*   Compute Instances start/ stop commands.
+*   Progress bars.
+*   Compute Instances start and stop commands.
 
 ## 0.9.40 (2014-12-09)
 

@@ -105,6 +105,7 @@ _V1_ONLY_FLAGS = [
     ('clear_kms_key', '--clear-kms-key'),
     ('docker_repository', '--docker-repository'),
     ('kms_key', '--kms-key'),
+    ('buildpack_stack', '--buildpack-stack'),
 ]
 _V1_ONLY_FLAG_ERROR = (
     '`%s` is only supported in Cloud Functions (First generation).')
@@ -810,7 +811,7 @@ def _GetVpcAndVpcEgressSettings(args, messages, existing_function):
 
 def _ValidateV1OnlyFlags(args):
   for flag_variable, flag_name in _V1_ONLY_FLAGS:
-    if args.IsSpecified(flag_variable):
+    if args.IsKnownAndSpecified(flag_variable):
       raise exceptions.FunctionsError(_V1_ONLY_FLAG_ERROR % flag_name)
 
 

@@ -374,7 +374,7 @@
       "type": "object",
       "properties": {
         "databaseId": {
-          "description": "If not empty, the ID of the database against which to make the request.",
+          "description": "The ID of the database against which to make the request. '(default)' is not allowed; please use empty string '' to refer the default database.",
           "type": "string"
         },
         "readOptions": {
@@ -662,7 +662,7 @@
       "type": "object",
       "properties": {
         "databaseId": {
-          "description": "If not empty, the ID of the database against which to make the request.",
+          "description": "The ID of the database against which to make the request. '(default)' is not allowed; please use empty string '' to refer the default database.",
           "type": "string"
         },
         "partitionId": {
@@ -1023,7 +1023,7 @@
       "type": "object",
       "properties": {
         "databaseId": {
-          "description": "If not empty, the ID of the database against which to make the request.",
+          "description": "The ID of the database against which to make the request. '(default)' is not allowed; please use empty string '' to refer the default database.",
           "type": "string"
         },
         "transactionOptions": {
@@ -1089,7 +1089,7 @@
       "type": "object",
       "properties": {
         "databaseId": {
-          "description": "If not empty, the ID of the database against which to make the request.",
+          "description": "The ID of the database against which to make the request. '(default)' is not allowed; please use empty string '' to refer the default database.",
           "type": "string"
         },
         "mode": {
@@ -1208,7 +1208,7 @@
       "type": "object",
       "properties": {
         "databaseId": {
-          "description": "If not empty, the ID of the database against which to make the request.",
+          "description": "The ID of the database against which to make the request. '(default)' is not allowed; please use empty string '' to refer the default database.",
           "type": "string"
         },
         "transaction": {
@@ -1231,7 +1231,7 @@
       "type": "object",
       "properties": {
         "databaseId": {
-          "description": "If not empty, the ID of the database against which to make the request.",
+          "description": "The ID of the database against which to make the request. '(default)' is not allowed; please use empty string '' to refer the default database.",
           "type": "string"
         },
         "keys": {
@@ -1263,7 +1263,7 @@
       "type": "object",
       "properties": {
         "databaseId": {
-          "description": "If not empty, the ID of the database against which to make the request.",
+          "description": "The ID of the database against which to make the request. '(default)' is not allowed; please use empty string '' to refer the default database.",
           "type": "string"
         },
         "keys": {

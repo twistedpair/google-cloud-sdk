@@ -379,7 +379,7 @@
     },
     "StreamInstance": {
       "id": "StreamInstance",
-      "description": "Message describing StreamInstance object",
+      "description": "Message describing StreamInstance object Next ID: 12",
       "type": "object",
       "properties": {
         "name": {
@@ -409,6 +409,13 @@
           "type": "array",
           "items": {
             "$ref": "RealmConfig"
+          }
+        },
+        "locationConfigs": {
+          "description": "Deployment configuration of the instance by locations (only regions are supported now). Map keys are regions in the string form.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "LocationConfig"
           }
         },
         "lifecycleState": {
@@ -472,6 +479,22 @@
         "contentBuildVersion": {
           "description": "The user-specified version tag and build ID of the content served by this instance.",
           "$ref": "BuildVersion"
+        }
+      }
+    },
+    "LocationConfig": {
+      "id": "LocationConfig",
+      "description": "Deployment configuration of an instance in a given location.",
+      "type": "object",
+      "properties": {
+        "location": {
+          "description": "The location in which the instance is deployed. We only use region for now.",
+          "type": "string"
+        },
+        "capacity": {
+          "description": "The maximum number of concurrent streaming sessions that the instance can support in this location.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },

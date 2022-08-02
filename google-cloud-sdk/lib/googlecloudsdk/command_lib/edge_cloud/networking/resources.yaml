@@ -102,6 +102,20 @@ router:
     help: Google Distributed Cloud Edge router.
   disable_auto_completers: false
 
+route:
+  name: route
+  collection: edgenetwork.projects.locations.zones.routes
+  request_id_field: routeId
+  attributes:
+  - *project
+  - *location
+  - *zone
+  - &route
+    parameter_name: routesId
+    attribute_name: route
+    help: Google Distributed Cloud Edge route.
+  disable_auto_completers: false
+
 operation:
   name: operation
   collection: edgenetwork.projects.locations.operations

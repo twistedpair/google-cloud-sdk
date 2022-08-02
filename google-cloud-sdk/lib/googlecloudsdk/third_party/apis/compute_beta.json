@@ -4,7 +4,7 @@
   "id": "compute:beta",
   "name": "compute",
   "version": "beta",
-  "revision": "20220718",
+  "revision": "20220722",
   "title": "Compute Engine API",
   "description": "Creates and runs virtual machines on Google Cloud Platform. ",
   "ownerDomain": "google.com",
@@ -3210,6 +3210,10 @@
             "STANDARD"
           ]
         },
+        "jsonCustomConfig": {
+          "description": "Custom configuration to apply the JSON parsing. Only applicable when json_parsing is set to STANDARD.",
+          "$ref": "SecurityPolicyAdvancedOptionsConfigJsonCustomConfig"
+        },
         "logLevel": {
           "type": "string",
           "enumDescriptions": [
@@ -3220,6 +3224,19 @@
             "NORMAL",
             "VERBOSE"
           ]
+        }
+      }
+    },
+    "SecurityPolicyAdvancedOptionsConfigJsonCustomConfig": {
+      "id": "SecurityPolicyAdvancedOptionsConfigJsonCustomConfig",
+      "type": "object",
+      "properties": {
+        "contentTypes": {
+          "description": "A list of custom Content-Type header values to apply the JSON parsing. As per RFC 1341, a Content-Type header value has the following format: Content-Type := type \"\/\" subtype *[\";\" parameter] When configuring a custom Content-Type header value, only the type\/subtype needs to be specified, and the parameters should be excluded.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },

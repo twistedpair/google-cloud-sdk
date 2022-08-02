@@ -410,6 +410,8 @@ _KNOWN_ERRORS = {
         core_exceptions.NetworkIssueError,
     'apitools.base.py.exceptions.TransferRetryError':
         core_exceptions.NetworkIssueError,
+    'google.auth.exceptions.GoogleAuthError':
+        creds_exceptions.TokenRefreshError,
     'googlecloudsdk.calliope.parser_errors.ArgumentError':
         lambda x: None,
     'googlecloudsdk.core.util.files.Error':

@@ -27,46 +27,30 @@ def ProjectLocation(project, location):
   return 'projects/{}/locations/{}'.format(project, location)
 
 
-def ParseRealmConfigsFromArg(realm_configs_arg):
-  """Converts realm configs arguments into a list of RealmConfig proto messages.
+def ParseLocationConfigsFromArg(region_configs_arg):
+  """Converts region configs args into a LocationConfigsValue proto message.
 
   Args:
-    realm_configs_arg: List of realm config dicts of the form:
-        [{'realm': realm1, 'capacity': capacity1}, ...] It is expected that the
-          realms are valid RealmValueValuesEnum instances and capacities are
-          string representations of integer values
+    region_configs_arg: List of region config dicts of the form: [{'region':
+      region1, 'capacity': capacity1}, ...]. Both region and capacity fields are
+      in string format.
 
   Returns:
-    A list of repeated RealmConfig proto messages
+    A LocationConfigsValue proto message.
   """
   messages = api_util.GetMessages()
 
-  realm_configs = []
-  for realm_config in realm_configs_arg:
-    realm = messages.RealmConfig.RealmValueValuesEnum(realm_config['realm'])
-    realm_configs.append(
-        messages.RealmConfig(
-            realm=realm, capacity=int(realm_config['capacity'])))
-  return realm_configs
+  location_configs_value = messages.StreamInstance.LocationConfigsValue()
+  for region_config in region_configs_arg:
+    region = region_config['region']
+    capacity = int(region_config['capacity'])
+    location_config = messages.LocationConfig(
+        location=region, capacity=capacity)
+    location_configs_value.additionalProperties.append(
+        messages.StreamInstance.LocationConfigsValue.AdditionalProperty(
+            key=region, value=location_config))
 
-
-def ValidateRealmExists(current_realm_configs, realm_configs_arg):
-  """Validates the realm in the argument exists in current_realm_configs.
-
-  Args:
-    current_realm_configs: List of repeated RealmConfig proto messages. This
-      should be the current realm configs of an existing instance.
-    realm_configs_arg: List of a single realm config dict of the form:
-        [{'realm': realm1, 'capacity': capacity1}]
-
-  Returns:
-    A boolean indicating if the realm argument exists in current_realm_configs.
-  """
-  new_realm_configs = ParseRealmConfigsFromArg(realm_configs_arg)
-  if not new_realm_configs:
-    return False
-  return any((realm_config.realm == new_realm_configs[0].realm
-              for realm_config in current_realm_configs))
+  return location_configs_value
 
 
 def Get(instance_relative_name):
@@ -87,7 +71,7 @@ def Get(instance_relative_name):
           name=instance_relative_name))
 
 
-def Create(instance_name, content, location, version, realm_configs):
+def Create(instance_name, content, location, version, region_configs):
   """Create a new Immersive Stream for XR service instance.
 
   Args:
@@ -96,9 +80,9 @@ def Create(instance_name, content, location, version, realm_configs):
       the instance
     location: string - location where the resource will be created
     version: string - content build version tag
-    realm_configs: List of realm config dicts of the form:
-      [{'realm': realm1, 'capacity': capacity1}, ...] These specify the
-        deployment configuration of the instance in realms.
+    region_configs: List of region config dicts of the form: [{'region':
+      region1, 'capacity': capacity1}, ...] These specify the deployment
+      configuration of the instance in regions.
 
   Returns:
     An Operation object which can be used to check on the progress of the
@@ -112,7 +96,7 @@ def Create(instance_name, content, location, version, realm_configs):
       content=content,
       contentBuildVersion=build_version,
       name=instance_name,
-      realmConfigs=ParseRealmConfigsFromArg(realm_configs))
+      locationConfigs=ParseLocationConfigsFromArg(region_configs))
   service = client.ProjectsLocationsStreamInstancesService(client)
   return service.Create(
       messages.StreamProjectsLocationsStreamInstancesCreateRequest(
@@ -122,16 +106,16 @@ def Create(instance_name, content, location, version, realm_configs):
           streamInstanceId=instance_name))
 
 
-def UpdateCapacity(instance_ref, current_instance, realm_configs):
-  """Update capacity of a realm for an Immersive Stream for XR service instance.
+def UpdateCapacity(instance_ref, current_instance, region_configs):
+  """Update capacity of a region for an Immersive Stream for XR service instance.
 
   Args:
     instance_ref: resource object - service instance to be updated
     current_instance: instance object - current state of the service instance
       before update
-    realm_configs: List of a single realm config dict of the form:
-      [{'realm': realm1, 'capacity': capacity1}]. This specifies the deployment
-        configuration of the instance in the realm.
+    region_configs: List of a single region config dict of the form: [{'region':
+      region1, 'capacity': capacity1}]. This specifies the deployment
+      configuration of the instance in the region.
 
   Returns:
     An Operation object which can be used to check on the progress of the
@@ -140,26 +124,44 @@ def UpdateCapacity(instance_ref, current_instance, realm_configs):
   client = api_util.GetClient()
   messages = api_util.GetMessages()
   service = client.ProjectsLocationsStreamInstancesService(client)
-  new_realm_configs = ParseRealmConfigsFromArg(realm_configs)
   # TODO(b/230366148)
-  if not new_realm_configs:
-    raise exceptions.Error('Realm configs must not be empty')
+  if not region_configs:
+    raise exceptions.Error('Region configs must not be empty')
+  new_location_configs = ParseLocationConfigsFromArg(region_configs)
 
-  new_realm_config = ParseRealmConfigsFromArg(realm_configs)[0]
+  # Stores current location_configs into a dict
+  location_configs_dict = {}
+  for location_config in current_instance.locationConfigs.additionalProperties:
+    location_configs_dict[location_config.key] = location_config.value
 
+  # Merges current location_configs with new location_configs
+  for location_config in new_location_configs.additionalProperties:
+    if location_config.key not in location_configs_dict:
+      error_message = (
+          '{} is not an existing region for instance {}. Capacity'
+          ' updates can only be applied to existing regions, '
+          'adding a new region is not currently supported.').format(
+              location_config.key, instance_ref.RelativeName())
+      # TODO(b/240487545): create ISXR own subclass of exceptions.
+      raise exceptions.Error(error_message)
+    location_configs_dict[location_config.key] = location_config.value
+
+  # Puts merged location_configs into a StreamInstance
   instance = messages.StreamInstance()
-  instance.realmConfigs = []
-  for realm_config in current_instance.realmConfigs:
-    if realm_config.realm == new_realm_config.realm:
-      instance.realmConfigs.append(new_realm_config)
-    else:
-      instance.realmConfigs.append(realm_config)
+  instance.locationConfigs = messages.StreamInstance.LocationConfigsValue()
+  # NOTE: we need this sort to make sure the order is fixed. Otherwise, tests
+  # may pass in one platform but fail in another one.
+  for key in sorted(location_configs_dict):
+    location_config = location_configs_dict[key]
+    item = messages.StreamInstance.LocationConfigsValue.AdditionalProperty(
+        key=location_config.location, value=location_config)
+    instance.locationConfigs.additionalProperties.append(item)
 
   return service.Patch(
       messages.StreamProjectsLocationsStreamInstancesPatchRequest(
           name=instance_ref.RelativeName(),
           streamInstance=instance,
-          updateMask='realm_configs'))
+          updateMask='location_configs'))
 
 
 def UpdateContentBuildVersion(instance_ref, version):

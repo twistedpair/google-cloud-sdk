@@ -48,3 +48,16 @@ class NodePoolsClient(object):
     req = self.messages.GkeonpremProjectsLocationsVmwareClustersVmwareNodePoolsGetRequest(
         name=resource_ref.RelativeName())
     return self._service.Get(req)
+
+  def Delete(self,
+             resource_ref,
+             allow_missing=False,
+             etag=None,
+             validate_only=False):
+    """Deletes a gkeonprem node pool API resource."""
+    req = self.messages.GkeonpremProjectsLocationsVmwareClustersVmwareNodePoolsDeleteRequest(
+        allowMissing=allow_missing,
+        etag=etag,
+        name=resource_ref.RelativeName(),
+        validateOnly=validate_only)
+    return self._service.Delete(req)

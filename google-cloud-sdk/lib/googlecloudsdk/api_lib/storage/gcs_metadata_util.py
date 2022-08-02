@@ -183,10 +183,21 @@ def get_object_resource_from_metadata(metadata):
   else:
     decryption_key_hash = None
 
+  if metadata.metadata:
+    custom_metadata = encoding_helper.MessageToDict(metadata.metadata)
+  else:
+    custom_metadata = None
+
   return gcs_resource_reference.GcsObjectResource(
       url,
+      cache_control=metadata.cacheControl,
+      content_disposition=metadata.contentDisposition,
+      content_encoding=metadata.contentEncoding,
+      content_language=metadata.contentLanguage,
       content_type=metadata.contentType,
       creation_time=metadata.timeCreated,
+      custom_metadata=custom_metadata,
+      custom_time=metadata.customTime,
       decryption_key_hash=decryption_key_hash,
       kms_key=metadata.kmsKeyName,
       etag=metadata.etag,
@@ -230,7 +241,8 @@ def update_bucket_metadata_from_request_config(bucket_metadata, request_config):
   if (resource_args.log_bucket is not None or
       resource_args.log_object_prefix is not None):
     bucket_metadata.logging = gcs_metadata_field_converters.process_log_config(
-        resource_args.log_bucket, resource_args.log_object_prefix)
+        bucket_metadata.name, resource_args.log_bucket,
+        resource_args.log_object_prefix)
   if resource_args.public_access_prevention is not None:
     bucket_metadata.iamConfiguration = (
         gcs_metadata_field_converters.process_public_access_prevention(

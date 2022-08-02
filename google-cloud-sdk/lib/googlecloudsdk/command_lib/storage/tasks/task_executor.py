@@ -111,6 +111,7 @@ def execute_tasks(task_iterator,
     An integer indicating the exit_code. Zero indicates no fatal errors were
       raised.
   """
+  task_util.require_python_3_5()
   plurality_checkable_task_iterator = (
       plurality_checkable_iterator.PluralityCheckableIterator(task_iterator))
   optimize_parameters_util.detect_and_set_best_config(

@@ -31,6 +31,7 @@ from googlecloudsdk.command_lib.storage.tasks.cp import streaming_upload_task
 def get_copy_task(source_resource,
                   destination_resource,
                   do_not_decompress=False,
+                  force_daisy_chain=False,
                   print_created_message=False,
                   shared_stream=None,
                   user_request_args=None):
@@ -42,6 +43,8 @@ def get_copy_task(source_resource,
       to copy file to.
     do_not_decompress (bool): Prevents automatically decompressing downloaded
       gzips.
+    force_daisy_chain (bool): If True, yields daisy chain copy tasks in place
+      of intra-cloud copy tasks.
     print_created_message (bool): Print the versioned URL of each successfully
       copied object.
     shared_stream (stream): Multiple tasks may reuse this read or write stream.
@@ -94,7 +97,7 @@ def get_copy_task(source_resource,
 
   if (isinstance(source_url, storage_url.CloudUrl)
       and isinstance(destination_url, storage_url.CloudUrl)):
-    if source_url.scheme != destination_url.scheme:
+    if source_url.scheme != destination_url.scheme or force_daisy_chain:
       if getattr(user_request_args.resource_args, 'preserve_acl', False):
         raise ValueError(
             'Cannot preserve ACLs while copying between cloud providers.')

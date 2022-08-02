@@ -193,6 +193,18 @@ class BeyondcorpOrganizationsLocationsInsightsConfiguredInsightRequest(_messages
   Fields:
     aggregation: Optional. Aggregation type. Available aggregation could be
       fetched by calling insight list and get APIs in `BASIC` view.
+    customGrouping_fieldFilter: Optional. Filterable parameters to be added to
+      the grouping clause. Available fields could be fetched by calling
+      insight list and get APIs in `BASIC` view. `=` is the only comparison
+      operator supported. `AND` is the only logical operator supported. Usage:
+      field_filter="fieldName1=fieldVal1 AND fieldName2=fieldVal2". NOTE: Only
+      `AND` conditions are allowed. NOTE: Use the `filter_alias` from
+      `Insight.Metadata.Field` message for the filtering the corresponding
+      fields in this filter field. (These expressions are based on the filter
+      language described at https://google.aip.dev/160).
+    customGrouping_groupFields: Required. Fields to be used for grouping.
+      NOTE: Use the `filter_alias` from `Insight.Metadata.Field` message for
+      declaring the fields to be grouped-by here.
     endTime: Required. Ending time for the duration for which insight is to be
       pulled.
     fieldFilter: Optional. Other filterable/configurable parameters as
@@ -240,13 +252,15 @@ class BeyondcorpOrganizationsLocationsInsightsConfiguredInsightRequest(_messages
     CUSTOM_DATE_RANGE = 5
 
   aggregation = _messages.EnumField('AggregationValueValuesEnum', 1)
-  endTime = _messages.StringField(2)
-  fieldFilter = _messages.StringField(3)
-  group = _messages.StringField(4)
-  insight = _messages.StringField(5, required=True)
-  pageSize = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(7)
-  startTime = _messages.StringField(8)
+  customGrouping_fieldFilter = _messages.StringField(2)
+  customGrouping_groupFields = _messages.StringField(3, repeated=True)
+  endTime = _messages.StringField(4)
+  fieldFilter = _messages.StringField(5)
+  group = _messages.StringField(6)
+  insight = _messages.StringField(7, required=True)
+  pageSize = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(9)
+  startTime = _messages.StringField(10)
 
 
 class BeyondcorpOrganizationsLocationsInsightsGetRequest(_messages.Message):
@@ -1776,6 +1790,18 @@ class BeyondcorpProjectsLocationsInsightsConfiguredInsightRequest(_messages.Mess
   Fields:
     aggregation: Optional. Aggregation type. Available aggregation could be
       fetched by calling insight list and get APIs in `BASIC` view.
+    customGrouping_fieldFilter: Optional. Filterable parameters to be added to
+      the grouping clause. Available fields could be fetched by calling
+      insight list and get APIs in `BASIC` view. `=` is the only comparison
+      operator supported. `AND` is the only logical operator supported. Usage:
+      field_filter="fieldName1=fieldVal1 AND fieldName2=fieldVal2". NOTE: Only
+      `AND` conditions are allowed. NOTE: Use the `filter_alias` from
+      `Insight.Metadata.Field` message for the filtering the corresponding
+      fields in this filter field. (These expressions are based on the filter
+      language described at https://google.aip.dev/160).
+    customGrouping_groupFields: Required. Fields to be used for grouping.
+      NOTE: Use the `filter_alias` from `Insight.Metadata.Field` message for
+      declaring the fields to be grouped-by here.
     endTime: Required. Ending time for the duration for which insight is to be
       pulled.
     fieldFilter: Optional. Other filterable/configurable parameters as
@@ -1823,13 +1849,15 @@ class BeyondcorpProjectsLocationsInsightsConfiguredInsightRequest(_messages.Mess
     CUSTOM_DATE_RANGE = 5
 
   aggregation = _messages.EnumField('AggregationValueValuesEnum', 1)
-  endTime = _messages.StringField(2)
-  fieldFilter = _messages.StringField(3)
-  group = _messages.StringField(4)
-  insight = _messages.StringField(5, required=True)
-  pageSize = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(7)
-  startTime = _messages.StringField(8)
+  customGrouping_fieldFilter = _messages.StringField(2)
+  customGrouping_groupFields = _messages.StringField(3, repeated=True)
+  endTime = _messages.StringField(4)
+  fieldFilter = _messages.StringField(5)
+  group = _messages.StringField(6)
+  insight = _messages.StringField(7, required=True)
+  pageSize = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(9)
+  startTime = _messages.StringField(10)
 
 
 class BeyondcorpProjectsLocationsInsightsGetRequest(_messages.Message):
@@ -2826,6 +2854,7 @@ class GoogleCloudBeyondcorpAppconnectionsV1alphaAppConnectionGateway(_messages.M
       `projects/{project_id}/locations/{location_id}/appgateways/{gateway_id}`
     ingressPort: Output only. Ingress port reserved on the gateways for this
       AppConnection, if not specified or zero, the default port is 19443.
+    l7psc: Output only. L7 private service connection for this resource.
     type: Required. The type of hosting used by the gateway.
     uri: Output only. Server-defined URI for this resource.
   """
@@ -2843,8 +2872,9 @@ class GoogleCloudBeyondcorpAppconnectionsV1alphaAppConnectionGateway(_messages.M
 
   appGateway = _messages.StringField(1)
   ingressPort = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  type = _messages.EnumField('TypeValueValuesEnum', 3)
-  uri = _messages.StringField(4)
+  l7psc = _messages.StringField(3)
+  type = _messages.EnumField('TypeValueValuesEnum', 4)
+  uri = _messages.StringField(5)
 
 
 class GoogleCloudBeyondcorpAppconnectionsV1alphaAppConnectionOperationMetadata(_messages.Message):
@@ -3503,6 +3533,7 @@ class GoogleCloudBeyondcorpSaasplatformInsightsV1alphaAppliedConfig(_messages.Me
 
   Fields:
     aggregation: Output only. Aggregation type applied.
+    customGrouping: Output only. Customised grouping applied.
     endTime: Output only. Ending time for the duration for which insight was
       pulled.
     fieldFilter: Output only. Filters applied.
@@ -3531,10 +3562,11 @@ class GoogleCloudBeyondcorpSaasplatformInsightsV1alphaAppliedConfig(_messages.Me
     CUSTOM_DATE_RANGE = 5
 
   aggregation = _messages.EnumField('AggregationValueValuesEnum', 1)
-  endTime = _messages.StringField(2)
-  fieldFilter = _messages.StringField(3)
-  group = _messages.StringField(4)
-  startTime = _messages.StringField(5)
+  customGrouping = _messages.MessageField('GoogleCloudBeyondcorpSaasplatformInsightsV1alphaCustomGrouping', 2)
+  endTime = _messages.StringField(3)
+  fieldFilter = _messages.StringField(4)
+  group = _messages.StringField(5)
+  startTime = _messages.StringField(6)
 
 
 class GoogleCloudBeyondcorpSaasplatformInsightsV1alphaConfiguredInsightResponse(_messages.Message):
@@ -3552,6 +3584,29 @@ class GoogleCloudBeyondcorpSaasplatformInsightsV1alphaConfiguredInsightResponse(
   appliedConfig = _messages.MessageField('GoogleCloudBeyondcorpSaasplatformInsightsV1alphaAppliedConfig', 1)
   nextPageToken = _messages.StringField(2)
   rows = _messages.MessageField('GoogleCloudBeyondcorpSaasplatformInsightsV1alphaRow', 3, repeated=True)
+
+
+class GoogleCloudBeyondcorpSaasplatformInsightsV1alphaCustomGrouping(_messages.Message):
+  r"""Customised grouping option that allows setting the group_by fields and
+  also the filters togather for a configured insight request.
+
+  Fields:
+    fieldFilter: Optional. Filterable parameters to be added to the grouping
+      clause. Available fields could be fetched by calling insight list and
+      get APIs in `BASIC` view. `=` is the only comparison operator supported.
+      `AND` is the only logical operator supported. Usage:
+      field_filter="fieldName1=fieldVal1 AND fieldName2=fieldVal2". NOTE: Only
+      `AND` conditions are allowed. NOTE: Use the `filter_alias` from
+      `Insight.Metadata.Field` message for the filtering the corresponding
+      fields in this filter field. (These expressions are based on the filter
+      language described at https://google.aip.dev/160).
+    groupFields: Required. Fields to be used for grouping. NOTE: Use the
+      `filter_alias` from `Insight.Metadata.Field` message for declaring the
+      fields to be grouped-by here.
+  """
+
+  fieldFilter = _messages.StringField(1)
+  groupFields = _messages.StringField(2, repeated=True)
 
 
 class GoogleCloudBeyondcorpSaasplatformInsightsV1alphaInsight(_messages.Message):
@@ -3632,6 +3687,8 @@ class GoogleCloudBeyondcorpSaasplatformInsightsV1alphaInsightMetadataField(_mess
       configured insight filtered on this field.
     filterable: Output only. Indicates whether the field can be used for
       filtering.
+    groupable: Output only. Indicates whether the field can be used for
+      grouping in custom grouping request.
     id: Output only. Field id for which this is the metadata.
   """
 
@@ -3639,7 +3696,8 @@ class GoogleCloudBeyondcorpSaasplatformInsightsV1alphaInsightMetadataField(_mess
   displayName = _messages.StringField(2)
   filterAlias = _messages.StringField(3)
   filterable = _messages.BooleanField(4)
-  id = _messages.StringField(5)
+  groupable = _messages.BooleanField(5)
+  id = _messages.StringField(6)
 
 
 class GoogleCloudBeyondcorpSaasplatformInsightsV1alphaListInsightsResponse(_messages.Message):

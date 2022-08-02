@@ -49,7 +49,7 @@ def CheckExistence(instance):
         ' on how to create a service account for an instance.'
         )
     return utils.Response(False, response_message)
-  response_message += 'Yes\n'
+  response_message += 'Yes'
   return utils.Response(True, response_message)
 
 

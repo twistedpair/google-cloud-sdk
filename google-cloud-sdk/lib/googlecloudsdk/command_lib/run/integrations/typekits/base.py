@@ -155,3 +155,43 @@ class TypeKit(object):
       list of dict typed names.
     """
     return [{'type': self.resource_type, 'name': integration_name}]
+
+  def GetCreateComponentTypes(self, selectors, app_dict):
+    """Returns a list of component types included in a create/update deployment.
+
+    Args:
+      selectors: list of dict of type names (string) that will be deployed.
+      app_dict: The application resource as dictionary.
+
+    Returns:
+      set of component types as strings. The component types can also include
+      hidden resource types that should be called out as part of the deployment
+      progress output.
+    """
+    del app_dict  # Unused.
+    if not selectors:
+      return {}
+    rtypes = set()
+    for type_name in selectors:
+      rtypes.add(type_name['type'])
+    return rtypes
+
+  def GetDeleteComponentTypes(self, selectors, app_dict):
+    """Returns a list of component types included in a delete deployment.
+
+    Args:
+      selectors: list of dict of type names (string) that will be deployed.
+      app_dict: The application resource as dictionary.
+
+    Returns:
+      set of component types as strings. The component types can also include
+      hidden resource types that should be called out as part of the deployment
+      progress output.
+    """
+    del app_dict  # Unused.
+    if not selectors:
+      return {}
+    rtypes = set()
+    for type_name in selectors:
+      rtypes.add(type_name['type'])
+    return rtypes

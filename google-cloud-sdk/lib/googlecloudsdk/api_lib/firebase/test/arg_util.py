@@ -506,10 +506,12 @@ def AddAndroidBetaArgs(parser):
       the sharding mechanism AndroidJUnitRunner uses, there is no guarantee that
       test cases will be distributed with perfect uniformity.
 
-      The number of shards should be less than the total number of test
-      cases. When one or more physical devices are selected, the number of
-      shards specified must be >= 1 and <= 50. When no physical devices are
-      selected, the number of shards specified must be >= 1 and <= 500.
+      The number of shards specified must always be a positive number that is no
+      greater than the total number of test cases. When you select one or more
+      physical devices, the number of shards specified must be <= 50. When you
+      select one or more ARM virtual devices, the number of shards specified
+      must be <= 100. When you select only x86 virtual devices, the number of
+      shards specified must be <= 500.
       """)
   sharding_options.add_argument(
       '--test-targets-for-shard',
@@ -517,14 +519,15 @@ def AddAndroidBetaArgs(parser):
       action='append',
       help="""\
       Specifies a group of packages, classes, and/or test cases to run in
-      each shard (a group of test cases). The shards are run in parallel on
-      separate devices. You can repeat this flag up to 50 times to specify
-      multiple shards when one or more physical devices are selected, or up to
-      500 times when no physical devices are selected.
+      each shard (a group of test cases). Each time this flag is repeated, it
+      creates a new shard. The shards are run in parallel on separate devices.
+      You can repeat this flag up to 50 times when you select one or more
+      physical devices, up to 100 times when you select one or more ARM virtual
+      devices, and up to 500 times when you select only x86 virtual devices.
 
-      Note: If you include the flags --environment-variable or --test-targets
-      when running --test-targets-for-shard, the flags are applied to all the
-      shards you create.
+      Note: If you include the flags *--environment-variable* or
+      *--test-targets* when running *--test-targets-for-shard*, the former flags
+      are applied to all of the shards you create.
 
       Examples:
 
@@ -541,8 +544,8 @@ def AddAndroidBetaArgs(parser):
       "class com.foo.ClassForShard2#testMethod1,com.foo.ClassForShard2#testMethod2"
       ```
 
-      To specify both package and class in the same shard, separate
-      package and class with semi-colons:
+      To specify both package and class in the same shard, separate `package`
+      and `class` with semicolons:
 
       ```
       --test-targets-for-shard

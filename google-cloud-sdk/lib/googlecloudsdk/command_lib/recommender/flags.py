@@ -40,17 +40,17 @@ def AddParentFlagsToParser(parser):
   resource_group.add_argument(
       '--billing-account',
       metavar='BILLING_ACCOUNT',
-      help='The Google Cloud Platform Billing Account ID to use for this invocation.'
+      help='The Google Cloud Platform billing account ID to use for this invocation.'
   )
   resource_group.add_argument(
       '--organization',
       metavar='ORGANIZATION_ID',
-      help='The Google Cloud Platform Organization ID to use for this invocation.'
+      help='The Google Cloud Platform organization ID to use for this invocation.'
   )
   resource_group.add_argument(
       '--folder',
       metavar='FOLDER_ID',
-      help='Folder ID to use for this invocation.')
+      help='The Google Cloud Platform folder ID to use for this invocation.')
 
 
 def AddEntityFlagsToParser(parser, entities):
@@ -67,20 +67,20 @@ def AddEntityFlagsToParser(parser, entities):
     resource_group.add_argument(
         '--organization',
         metavar='ORGANIZATION_ID',
-        help='The Google Cloud Organization ID to use for this invocation.')
+        help='The Google Cloud organization ID to use for this invocation.')
   if base.EntityType.FOLDER in entities:
     resource_group.add_argument(
         '--folder',
         metavar='FOLDER_ID',
-        help='The Google Cloud Folder ID to use for this invocation.')
+        help='The Google Cloud folder ID to use for this invocation.')
   if base.EntityType.BILLING_ACCOUNT in entities:
     resource_group.add_argument(
         '--billing-account',
         metavar='BILLING_ACCOUNT',
-        help='The Google Cloud Billing Account ID to use for this invocation.')
+        help='The Google Cloud billing account ID to use for this invocation.')
   if base.EntityType.PROJECT in entities:
     common_args.ProjectArgument(
-        help_text_to_overwrite='The Google Cloud Project ID.').AddToParser(
+        help_text_to_overwrite='The Google Cloud project ID.').AddToParser(
             resource_group)
 
 

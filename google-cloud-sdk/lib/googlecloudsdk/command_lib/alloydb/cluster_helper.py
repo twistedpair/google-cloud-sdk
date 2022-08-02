@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.command_lib.alloydb import flags
+
 
 def ConstructPatchRequestFromArgs(alloydb_messages, cluster_ref, args):
   """Returns the cluster patch request based on args."""
@@ -47,6 +49,12 @@ def ConstructPatchRequestFromArgs(alloydb_messages, cluster_ref, args):
     if args.automated_backup_window:
       backup_policy.backupWindow = '{}s'.format(
           args.automated_backup_window)
+    kms_key = flags.GetAndValidateKmsKeyName(
+        args, flag_overrides=flags.GetAutomatedBackupKmsFlagOverrides())
+    if kms_key:
+      encryption_config = alloydb_messages.EncryptionConfig()
+      encryption_config.kmsKeyName = kms_key
+      backup_policy.encryptionConfig = encryption_config
     backup_policy.location = args.region
     cluster.automatedBackupPolicy = backup_policy
     update_masks.append(backup_policy_mask)

@@ -32,6 +32,7 @@ import six
 from six.moves import urllib
 
 
+SCHEME_DELIMITER = '://'
 TEMPORARY_FILE_SUFFIX = '_.gstmp'
 
 
@@ -205,7 +206,8 @@ class FileUrl(StorageUrl):
   @property
   def url_string(self):
     """Returns the string representation of the instance."""
-    return '%s://%s' % (self.scheme.value, self.object_name)
+    return '{}{}{}'.format(self.scheme.value, SCHEME_DELIMITER,
+                           self.object_name)
 
   @property
   def versionless_url_string(self):
@@ -247,12 +249,13 @@ class PosixFileSystemUrl(StorageUrl):
     self.scheme = ProviderPrefix.POSIX
     self.bucket_name = None
     # Use object_name to represent a schemeless root URL.
-    self.object_name = url_string[len(ProviderPrefix.POSIX.value + '://'):]
+    self.object_name = url_string[len(ProviderPrefix.POSIX.value +
+                                      SCHEME_DELIMITER):]
     if not self.object_name.startswith(self.delimiter):
       log.warning(
           'POSIX URLs typically start at the root directory. Did you mean:'
-          ' {}://{}{}'.format(self.scheme.value, self.delimiter,
-                              self.object_name))
+          ' {}{}{}{}'.format(self.scheme.value, SCHEME_DELIMITER,
+                             self.delimiter, self.object_name))
 
     self.generation = None
 
@@ -264,7 +267,8 @@ class PosixFileSystemUrl(StorageUrl):
   @property
   def url_string(self):
     """Returns the string representation of the instance."""
-    return '%s://%s' % (self.scheme.value, self.object_name)
+    return '{}{}{}'.format(self.scheme.value, SCHEME_DELIMITER,
+                           self.object_name)
 
   @property
   def versionless_url_string(self):
@@ -316,12 +320,12 @@ class CloudUrl(StorageUrl):
     scheme = _get_scheme_from_url_string(url_string)
 
     # gs://a/b/c/d#num => a/b/c/d#num
-    schemeless_url_string = url_string[len(scheme.value + '://'):]
+    schemeless_url_string = url_string[len(scheme.value + SCHEME_DELIMITER):]
 
     if schemeless_url_string.startswith('/'):
       raise errors.InvalidUrlError(
-          'Cloud URL scheme should be followed by colon and two slashes: "://".'
-          ' Found: "{}"'.format(url_string))
+          ('Cloud URL scheme should be followed by colon and two slashes: "{}".'
+           ' Found: "{}"').format(SCHEME_DELIMITER, url_string))
 
     # a/b/c/d#num => a, b/c/d#num
     bucket_name, _, object_name = schemeless_url_string.partition(
@@ -361,11 +365,12 @@ class CloudUrl(StorageUrl):
   @property
   def versionless_url_string(self):
     if self.is_provider():
-      return '%s://' % self.scheme.value
+      return '{}{}'.format(self.scheme.value, SCHEME_DELIMITER)
     elif self.is_bucket():
-      return '%s://%s/' % (self.scheme.value, self.bucket_name)
-    return '%s://%s/%s' % (self.scheme.value, self.bucket_name,
-                           self.object_name)
+      return '{}{}{}/'.format(self.scheme.value, SCHEME_DELIMITER,
+                              self.bucket_name)
+    return '{}{}{}/{}'.format(self.scheme.value, SCHEME_DELIMITER,
+                              self.bucket_name, self.object_name)
 
   @property
   def delimiter(self):
@@ -430,7 +435,7 @@ class AzureUrl(CloudUrl):
     # &versionId=<DateTime>
     # -> account.blob.core.windows.net/container/blob?snapshot=<DateTime>
     # &versionId=<DateTime>
-    schemeless_url_string = url_string[len(scheme.value + '://'):]
+    schemeless_url_string = url_string[len(scheme.value + SCHEME_DELIMITER):]
     # account.blob.core.windows.net/container/blob?snapshot=<DateTime>
     # &versionId=<DateTime>
     # -> account.blob.core.windows.net,
@@ -490,18 +495,19 @@ class AzureUrl(CloudUrl):
   @property
   def versionless_url_string(self):
     if self.is_provider():
-      return '{}://{}.{}'.format(self.scheme.value, self.account, AZURE_DOMAIN)
+      return '{}{}{}.{}'.format(self.scheme.value, SCHEME_DELIMITER,
+                                self.account, AZURE_DOMAIN)
     elif self.is_bucket():
-      return '{}://{}.{}/{}'.format(self.scheme.value, self.account,
-                                    AZURE_DOMAIN, self.bucket_name)
-    return '{}://{}.{}/{}/{}'.format(self.scheme.value, self.account,
-                                     AZURE_DOMAIN, self.bucket_name,
-                                     self.object_name)
+      return '{}{}{}.{}/{}'.format(self.scheme.value, SCHEME_DELIMITER,
+                                   self.account, AZURE_DOMAIN, self.bucket_name)
+    return '{}{}{}.{}/{}/{}'.format(self.scheme.value, SCHEME_DELIMITER,
+                                    self.account, AZURE_DOMAIN,
+                                    self.bucket_name, self.object_name)
 
 
 def _get_scheme_from_url_string(url_string):
   """Returns scheme component of a URL string."""
-  end_scheme_idx = url_string.find('://')
+  end_scheme_idx = url_string.find(SCHEME_DELIMITER)
   if end_scheme_idx == -1:
     # File is the default scheme.
     return ProviderPrefix.FILE
@@ -572,14 +578,24 @@ def switch_scheme(original_url, new_scheme):
   Returns:
     StorageUrl with updated scheme and best-effort transformation.
   """
-  _, old_url_string_no_scheme = original_url.versionless_url_string.split('://')
-  unprocessed_new_url = storage_url_from_string('{}://{}'.format(
-      new_scheme.value, old_url_string_no_scheme))
+  _, old_url_string_no_scheme = original_url.versionless_url_string.split(
+      SCHEME_DELIMITER)
+  unprocessed_new_url = storage_url_from_string('{}{}{}'.format(
+      new_scheme.value, SCHEME_DELIMITER, old_url_string_no_scheme))
 
   if original_url.delimiter == unprocessed_new_url.delimiter:
     return unprocessed_new_url
 
   old_url_string_no_scheme_correct_delimiter = old_url_string_no_scheme.replace(
       original_url.delimiter, unprocessed_new_url.delimiter)
-  return storage_url_from_string('{}://{}'.format(
-      new_scheme.value, old_url_string_no_scheme_correct_delimiter))
+  return storage_url_from_string('{}{}{}'.format(
+      new_scheme.value, SCHEME_DELIMITER,
+      old_url_string_no_scheme_correct_delimiter))
+
+
+def remove_scheme(url_string):
+  """Removes ProviderPrefix or other scheme from URL string."""
+  if SCHEME_DELIMITER not in url_string:
+    return url_string
+  _, _, schemeless_url = url_string.partition(SCHEME_DELIMITER)
+  return schemeless_url

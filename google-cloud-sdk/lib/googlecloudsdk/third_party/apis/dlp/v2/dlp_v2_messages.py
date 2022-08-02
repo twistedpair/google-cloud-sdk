@@ -118,11 +118,11 @@ class DlpOrganizationsDeidentifyTemplatesListRequest(_messages.Message):
       `desc` postfix. This list is case-insensitive, default sorting order is
       ascending, redundant space characters are insignificant. Example: `name
       asc,update_time, create_time desc` Supported fields are: -
-      `create_time`: corresponds to time the template was created. -
-      `update_time`: corresponds to time the template was last updated. -
-      `name`: corresponds to template's name. - `display_name`: corresponds to
-      template's display name.
-    pageSize: Size of the page, can be limited by server. If zero server
+      `create_time`: corresponds to the time the template was created. -
+      `update_time`: corresponds to the time the template was last updated. -
+      `name`: corresponds to the template's name. - `display_name`:
+      corresponds to the template's display name.
+    pageSize: Size of the page, can be limited by the server. If zero server
       returns a page of max size 100.
     pageToken: Page token to continue retrieval. Comes from previous call to
       `ListDeidentifyTemplates`.
@@ -228,11 +228,11 @@ class DlpOrganizationsInspectTemplatesListRequest(_messages.Message):
       `desc` postfix. This list is case-insensitive, default sorting order is
       ascending, redundant space characters are insignificant. Example: `name
       asc,update_time, create_time desc` Supported fields are: -
-      `create_time`: corresponds to time the template was created. -
-      `update_time`: corresponds to time the template was last updated. -
-      `name`: corresponds to template's name. - `display_name`: corresponds to
-      template's display name.
-    pageSize: Size of the page, can be limited by server. If zero server
+      `create_time`: corresponds to the time the template was created. -
+      `update_time`: corresponds to the time the template was last updated. -
+      `name`: corresponds to the template's name. - `display_name`:
+      corresponds to the template's display name.
+    pageSize: Size of the page, can be limited by the server. If zero server
       returns a page of max size 100.
     pageToken: Page token to continue retrieval. Comes from previous call to
       `ListInspectTemplates`.
@@ -338,11 +338,11 @@ class DlpOrganizationsLocationsDeidentifyTemplatesListRequest(_messages.Message)
       `desc` postfix. This list is case-insensitive, default sorting order is
       ascending, redundant space characters are insignificant. Example: `name
       asc,update_time, create_time desc` Supported fields are: -
-      `create_time`: corresponds to time the template was created. -
-      `update_time`: corresponds to time the template was last updated. -
-      `name`: corresponds to template's name. - `display_name`: corresponds to
-      template's display name.
-    pageSize: Size of the page, can be limited by server. If zero server
+      `create_time`: corresponds to the time the template was created. -
+      `update_time`: corresponds to the time the template was last updated. -
+      `name`: corresponds to the template's name. - `display_name`:
+      corresponds to the template's display name.
+    pageSize: Size of the page, can be limited by the server. If zero server
       returns a page of max size 100.
     pageToken: Page token to continue retrieval. Comes from previous call to
       `ListDeidentifyTemplates`.
@@ -399,16 +399,16 @@ class DlpOrganizationsLocationsDlpJobsListRequest(_messages.Message):
       `AND`. * A restriction has the form of `{field} {operator} {value}`. *
       Supported fields/values for inspect jobs: - `state` -
       PENDING|RUNNING|CANCELED|FINISHED|FAILED - `inspected_storage` -
-      DATASTORE|CLOUD_STORAGE|BIGQUERY - `trigger_name` - The resource name of
-      the trigger that created job. - 'end_time` - Corresponds to time the job
-      finished. - 'start_time` - Corresponds to time the job finished. *
-      Supported fields for risk analysis jobs: - `state` -
-      RUNNING|CANCELED|FINISHED|FAILED - 'end_time` - Corresponds to time the
-      job finished. - 'start_time` - Corresponds to time the job finished. *
-      The operator must be `=` or `!=`. Examples: * inspected_storage =
-      cloud_storage AND state = done * inspected_storage = cloud_storage OR
-      inspected_storage = bigquery * inspected_storage = cloud_storage AND
-      (state = done OR state = canceled) * end_time >
+      DATASTORE|CLOUD_STORAGE|BIGQUERY - `trigger_name` - The name of the
+      trigger that created the job. - 'end_time` - Corresponds to the time the
+      job finished. - 'start_time` - Corresponds to the time the job finished.
+      * Supported fields for risk analysis jobs: - `state` -
+      RUNNING|CANCELED|FINISHED|FAILED - 'end_time` - Corresponds to the time
+      the job finished. - 'start_time` - Corresponds to the time the job
+      finished. * The operator must be `=` or `!=`. Examples: *
+      inspected_storage = cloud_storage AND state = done * inspected_storage =
+      cloud_storage OR inspected_storage = bigquery * inspected_storage =
+      cloud_storage AND (state = done OR state = canceled) * end_time >
       \"2017-12-12T00:00:00+00:00\" The length of this field should be no more
       than 500 characters.
     locationId: Deprecated. This field has no effect.
@@ -416,9 +416,9 @@ class DlpOrganizationsLocationsDlpJobsListRequest(_messages.Message):
       `desc` postfix. This list is case-insensitive, default sorting order is
       ascending, redundant space characters are insignificant. Example: `name
       asc, end_time asc, create_time desc` Supported fields are: -
-      `create_time`: corresponds to time the job was created. - `end_time`:
-      corresponds to time the job ended. - `name`: corresponds to job's name.
-      - `state`: corresponds to `state`
+      `create_time`: corresponds to the time the job was created. -
+      `end_time`: corresponds to tehe time the job ended. - `name`:
+      corresponds to the job's name. - `state`: corresponds to `state`
     pageSize: The standard list page size.
     pageToken: The standard list page token.
     parent: Required. Parent resource name. The format of this value varies
@@ -517,11 +517,11 @@ class DlpOrganizationsLocationsInspectTemplatesListRequest(_messages.Message):
       `desc` postfix. This list is case-insensitive, default sorting order is
       ascending, redundant space characters are insignificant. Example: `name
       asc,update_time, create_time desc` Supported fields are: -
-      `create_time`: corresponds to time the template was created. -
-      `update_time`: corresponds to time the template was last updated. -
-      `name`: corresponds to template's name. - `display_name`: corresponds to
-      template's display name.
-    pageSize: Size of the page, can be limited by server. If zero server
+      `create_time`: corresponds to the time the template was created. -
+      `update_time`: corresponds to the time the template was last updated. -
+      `name`: corresponds to the template's name. - `display_name`:
+      corresponds to the template's display name.
+    pageSize: Size of the page, can be limited by the server. If zero server
       returns a page of max size 100.
     pageToken: Page token to continue retrieval. Comes from previous call to
       `ListInspectTemplates`.
@@ -638,12 +638,12 @@ class DlpOrganizationsLocationsJobTriggersListRequest(_messages.Message):
       by `asc` or `desc` postfix. This list is case-insensitive, default
       sorting order is ascending, redundant space characters are
       insignificant. Example: `name asc,update_time, create_time desc`
-      Supported fields are: - `create_time`: corresponds to time the
-      JobTrigger was created. - `update_time`: corresponds to time the
+      Supported fields are: - `create_time`: corresponds to the time the
+      JobTrigger was created. - `update_time`: corresponds to tge time the
       JobTrigger was last updated. - `last_run_time`: corresponds to the last
-      time the JobTrigger ran. - `name`: corresponds to JobTrigger's name. -
-      `display_name`: corresponds to JobTrigger's display name. - `status`:
-      corresponds to JobTrigger's status.
+      time the JobTrigger ran. - `name`: corresponds to the JobTrigger's name.
+      - `display_name`: corresponds to the JobTrigger's display name. -
+      `status`: corresponds to JobTrigger's status.
     pageSize: Size of the page, can be limited by a server.
     pageToken: Page token to continue retrieval. Comes from previous call to
       ListJobTriggers. `order_by` field must not change for subsequent calls.
@@ -756,11 +756,11 @@ class DlpOrganizationsLocationsStoredInfoTypesListRequest(_messages.Message):
       `desc` postfix. This list is case-insensitive, default sorting order is
       ascending, redundant space characters are insignificant. Example: `name
       asc, display_name, create_time desc` Supported fields are: -
-      `create_time`: corresponds to time the most recent version of the
+      `create_time`: corresponds to the time the most recent version of the
       resource was created. - `state`: corresponds to the state of the
       resource. - `name`: corresponds to resource name. - `display_name`:
       corresponds to info type's display name.
-    pageSize: Size of the page, can be limited by server. If zero server
+    pageSize: Size of the page, can be limited by the server. If zero server
       returns a page of max size 100.
     pageToken: Page token to continue retrieval. Comes from previous call to
       `ListStoredInfoTypes`.
@@ -863,11 +863,11 @@ class DlpOrganizationsStoredInfoTypesListRequest(_messages.Message):
       `desc` postfix. This list is case-insensitive, default sorting order is
       ascending, redundant space characters are insignificant. Example: `name
       asc, display_name, create_time desc` Supported fields are: -
-      `create_time`: corresponds to time the most recent version of the
+      `create_time`: corresponds to the time the most recent version of the
       resource was created. - `state`: corresponds to the state of the
       resource. - `name`: corresponds to resource name. - `display_name`:
       corresponds to info type's display name.
-    pageSize: Size of the page, can be limited by server. If zero server
+    pageSize: Size of the page, can be limited by the server. If zero server
       returns a page of max size 100.
     pageToken: Page token to continue retrieval. Comes from previous call to
       `ListStoredInfoTypes`.
@@ -1041,11 +1041,11 @@ class DlpProjectsDeidentifyTemplatesListRequest(_messages.Message):
       `desc` postfix. This list is case-insensitive, default sorting order is
       ascending, redundant space characters are insignificant. Example: `name
       asc,update_time, create_time desc` Supported fields are: -
-      `create_time`: corresponds to time the template was created. -
-      `update_time`: corresponds to time the template was last updated. -
-      `name`: corresponds to template's name. - `display_name`: corresponds to
-      template's display name.
-    pageSize: Size of the page, can be limited by server. If zero server
+      `create_time`: corresponds to the time the template was created. -
+      `update_time`: corresponds to the time the template was last updated. -
+      `name`: corresponds to the template's name. - `display_name`:
+      corresponds to the template's display name.
+    pageSize: Size of the page, can be limited by the server. If zero server
       returns a page of max size 100.
     pageToken: Page token to continue retrieval. Comes from previous call to
       `ListDeidentifyTemplates`.
@@ -1159,16 +1159,16 @@ class DlpProjectsDlpJobsListRequest(_messages.Message):
       `AND`. * A restriction has the form of `{field} {operator} {value}`. *
       Supported fields/values for inspect jobs: - `state` -
       PENDING|RUNNING|CANCELED|FINISHED|FAILED - `inspected_storage` -
-      DATASTORE|CLOUD_STORAGE|BIGQUERY - `trigger_name` - The resource name of
-      the trigger that created job. - 'end_time` - Corresponds to time the job
-      finished. - 'start_time` - Corresponds to time the job finished. *
-      Supported fields for risk analysis jobs: - `state` -
-      RUNNING|CANCELED|FINISHED|FAILED - 'end_time` - Corresponds to time the
-      job finished. - 'start_time` - Corresponds to time the job finished. *
-      The operator must be `=` or `!=`. Examples: * inspected_storage =
-      cloud_storage AND state = done * inspected_storage = cloud_storage OR
-      inspected_storage = bigquery * inspected_storage = cloud_storage AND
-      (state = done OR state = canceled) * end_time >
+      DATASTORE|CLOUD_STORAGE|BIGQUERY - `trigger_name` - The name of the
+      trigger that created the job. - 'end_time` - Corresponds to the time the
+      job finished. - 'start_time` - Corresponds to the time the job finished.
+      * Supported fields for risk analysis jobs: - `state` -
+      RUNNING|CANCELED|FINISHED|FAILED - 'end_time` - Corresponds to the time
+      the job finished. - 'start_time` - Corresponds to the time the job
+      finished. * The operator must be `=` or `!=`. Examples: *
+      inspected_storage = cloud_storage AND state = done * inspected_storage =
+      cloud_storage OR inspected_storage = bigquery * inspected_storage =
+      cloud_storage AND (state = done OR state = canceled) * end_time >
       \"2017-12-12T00:00:00+00:00\" The length of this field should be no more
       than 500 characters.
     locationId: Deprecated. This field has no effect.
@@ -1176,9 +1176,9 @@ class DlpProjectsDlpJobsListRequest(_messages.Message):
       `desc` postfix. This list is case-insensitive, default sorting order is
       ascending, redundant space characters are insignificant. Example: `name
       asc, end_time asc, create_time desc` Supported fields are: -
-      `create_time`: corresponds to time the job was created. - `end_time`:
-      corresponds to time the job ended. - `name`: corresponds to job's name.
-      - `state`: corresponds to `state`
+      `create_time`: corresponds to the time the job was created. -
+      `end_time`: corresponds to tehe time the job ended. - `name`:
+      corresponds to the job's name. - `state`: corresponds to `state`
     pageSize: The standard list page size.
     pageToken: The standard list page token.
     parent: Required. Parent resource name. The format of this value varies
@@ -1300,11 +1300,11 @@ class DlpProjectsInspectTemplatesListRequest(_messages.Message):
       `desc` postfix. This list is case-insensitive, default sorting order is
       ascending, redundant space characters are insignificant. Example: `name
       asc,update_time, create_time desc` Supported fields are: -
-      `create_time`: corresponds to time the template was created. -
-      `update_time`: corresponds to time the template was last updated. -
-      `name`: corresponds to template's name. - `display_name`: corresponds to
-      template's display name.
-    pageSize: Size of the page, can be limited by server. If zero server
+      `create_time`: corresponds to the time the template was created. -
+      `update_time`: corresponds to the time the template was last updated. -
+      `name`: corresponds to the template's name. - `display_name`:
+      corresponds to the template's display name.
+    pageSize: Size of the page, can be limited by the server. If zero server
       returns a page of max size 100.
     pageToken: Page token to continue retrieval. Comes from previous call to
       `ListInspectTemplates`.
@@ -1436,12 +1436,12 @@ class DlpProjectsJobTriggersListRequest(_messages.Message):
       by `asc` or `desc` postfix. This list is case-insensitive, default
       sorting order is ascending, redundant space characters are
       insignificant. Example: `name asc,update_time, create_time desc`
-      Supported fields are: - `create_time`: corresponds to time the
-      JobTrigger was created. - `update_time`: corresponds to time the
+      Supported fields are: - `create_time`: corresponds to the time the
+      JobTrigger was created. - `update_time`: corresponds to tge time the
       JobTrigger was last updated. - `last_run_time`: corresponds to the last
-      time the JobTrigger ran. - `name`: corresponds to JobTrigger's name. -
-      `display_name`: corresponds to JobTrigger's display name. - `status`:
-      corresponds to JobTrigger's status.
+      time the JobTrigger ran. - `name`: corresponds to the JobTrigger's name.
+      - `display_name`: corresponds to the JobTrigger's display name. -
+      `status`: corresponds to JobTrigger's status.
     pageSize: Size of the page, can be limited by a server.
     pageToken: Page token to continue retrieval. Comes from previous call to
       ListJobTriggers. `order_by` field must not change for subsequent calls.
@@ -1625,11 +1625,11 @@ class DlpProjectsLocationsDeidentifyTemplatesListRequest(_messages.Message):
       `desc` postfix. This list is case-insensitive, default sorting order is
       ascending, redundant space characters are insignificant. Example: `name
       asc,update_time, create_time desc` Supported fields are: -
-      `create_time`: corresponds to time the template was created. -
-      `update_time`: corresponds to time the template was last updated. -
-      `name`: corresponds to template's name. - `display_name`: corresponds to
-      template's display name.
-    pageSize: Size of the page, can be limited by server. If zero server
+      `create_time`: corresponds to the time the template was created. -
+      `update_time`: corresponds to the time the template was last updated. -
+      `name`: corresponds to the template's name. - `display_name`:
+      corresponds to the template's display name.
+    pageSize: Size of the page, can be limited by the server. If zero server
       returns a page of max size 100.
     pageToken: Page token to continue retrieval. Comes from previous call to
       `ListDeidentifyTemplates`.
@@ -1772,16 +1772,16 @@ class DlpProjectsLocationsDlpJobsListRequest(_messages.Message):
       `AND`. * A restriction has the form of `{field} {operator} {value}`. *
       Supported fields/values for inspect jobs: - `state` -
       PENDING|RUNNING|CANCELED|FINISHED|FAILED - `inspected_storage` -
-      DATASTORE|CLOUD_STORAGE|BIGQUERY - `trigger_name` - The resource name of
-      the trigger that created job. - 'end_time` - Corresponds to time the job
-      finished. - 'start_time` - Corresponds to time the job finished. *
-      Supported fields for risk analysis jobs: - `state` -
-      RUNNING|CANCELED|FINISHED|FAILED - 'end_time` - Corresponds to time the
-      job finished. - 'start_time` - Corresponds to time the job finished. *
-      The operator must be `=` or `!=`. Examples: * inspected_storage =
-      cloud_storage AND state = done * inspected_storage = cloud_storage OR
-      inspected_storage = bigquery * inspected_storage = cloud_storage AND
-      (state = done OR state = canceled) * end_time >
+      DATASTORE|CLOUD_STORAGE|BIGQUERY - `trigger_name` - The name of the
+      trigger that created the job. - 'end_time` - Corresponds to the time the
+      job finished. - 'start_time` - Corresponds to the time the job finished.
+      * Supported fields for risk analysis jobs: - `state` -
+      RUNNING|CANCELED|FINISHED|FAILED - 'end_time` - Corresponds to the time
+      the job finished. - 'start_time` - Corresponds to the time the job
+      finished. * The operator must be `=` or `!=`. Examples: *
+      inspected_storage = cloud_storage AND state = done * inspected_storage =
+      cloud_storage OR inspected_storage = bigquery * inspected_storage =
+      cloud_storage AND (state = done OR state = canceled) * end_time >
       \"2017-12-12T00:00:00+00:00\" The length of this field should be no more
       than 500 characters.
     locationId: Deprecated. This field has no effect.
@@ -1789,9 +1789,9 @@ class DlpProjectsLocationsDlpJobsListRequest(_messages.Message):
       `desc` postfix. This list is case-insensitive, default sorting order is
       ascending, redundant space characters are insignificant. Example: `name
       asc, end_time asc, create_time desc` Supported fields are: -
-      `create_time`: corresponds to time the job was created. - `end_time`:
-      corresponds to time the job ended. - `name`: corresponds to job's name.
-      - `state`: corresponds to `state`
+      `create_time`: corresponds to the time the job was created. -
+      `end_time`: corresponds to tehe time the job ended. - `name`:
+      corresponds to the job's name. - `state`: corresponds to `state`
     pageSize: The standard list page size.
     pageToken: The standard list page token.
     parent: Required. Parent resource name. The format of this value varies
@@ -1913,11 +1913,11 @@ class DlpProjectsLocationsInspectTemplatesListRequest(_messages.Message):
       `desc` postfix. This list is case-insensitive, default sorting order is
       ascending, redundant space characters are insignificant. Example: `name
       asc,update_time, create_time desc` Supported fields are: -
-      `create_time`: corresponds to time the template was created. -
-      `update_time`: corresponds to time the template was last updated. -
-      `name`: corresponds to template's name. - `display_name`: corresponds to
-      template's display name.
-    pageSize: Size of the page, can be limited by server. If zero server
+      `create_time`: corresponds to the time the template was created. -
+      `update_time`: corresponds to the time the template was last updated. -
+      `name`: corresponds to the template's name. - `display_name`:
+      corresponds to the template's display name.
+    pageSize: Size of the page, can be limited by the server. If zero server
       returns a page of max size 100.
     pageToken: Page token to continue retrieval. Comes from previous call to
       `ListInspectTemplates`.
@@ -2064,12 +2064,12 @@ class DlpProjectsLocationsJobTriggersListRequest(_messages.Message):
       by `asc` or `desc` postfix. This list is case-insensitive, default
       sorting order is ascending, redundant space characters are
       insignificant. Example: `name asc,update_time, create_time desc`
-      Supported fields are: - `create_time`: corresponds to time the
-      JobTrigger was created. - `update_time`: corresponds to time the
+      Supported fields are: - `create_time`: corresponds to the time the
+      JobTrigger was created. - `update_time`: corresponds to tge time the
       JobTrigger was last updated. - `last_run_time`: corresponds to the last
-      time the JobTrigger ran. - `name`: corresponds to JobTrigger's name. -
-      `display_name`: corresponds to JobTrigger's display name. - `status`:
-      corresponds to JobTrigger's status.
+      time the JobTrigger ran. - `name`: corresponds to the JobTrigger's name.
+      - `display_name`: corresponds to the JobTrigger's display name. -
+      `status`: corresponds to JobTrigger's status.
     pageSize: Size of the page, can be limited by a server.
     pageToken: Page token to continue retrieval. Comes from previous call to
       ListJobTriggers. `order_by` field must not change for subsequent calls.
@@ -2182,11 +2182,11 @@ class DlpProjectsLocationsStoredInfoTypesListRequest(_messages.Message):
       `desc` postfix. This list is case-insensitive, default sorting order is
       ascending, redundant space characters are insignificant. Example: `name
       asc, display_name, create_time desc` Supported fields are: -
-      `create_time`: corresponds to time the most recent version of the
+      `create_time`: corresponds to the time the most recent version of the
       resource was created. - `state`: corresponds to the state of the
       resource. - `name`: corresponds to resource name. - `display_name`:
       corresponds to info type's display name.
-    pageSize: Size of the page, can be limited by server. If zero server
+    pageSize: Size of the page, can be limited by the server. If zero server
       returns a page of max size 100.
     pageToken: Page token to continue retrieval. Comes from previous call to
       `ListStoredInfoTypes`.
@@ -2289,11 +2289,11 @@ class DlpProjectsStoredInfoTypesListRequest(_messages.Message):
       `desc` postfix. This list is case-insensitive, default sorting order is
       ascending, redundant space characters are insignificant. Example: `name
       asc, display_name, create_time desc` Supported fields are: -
-      `create_time`: corresponds to time the most recent version of the
+      `create_time`: corresponds to the time the most recent version of the
       resource was created. - `state`: corresponds to the state of the
       resource. - `name`: corresponds to resource name. - `display_name`:
       corresponds to info type's display name.
-    pageSize: Size of the page, can be limited by server. If zero server
+    pageSize: Size of the page, can be limited by the server. If zero server
       returns a page of max size 100.
     pageToken: Page token to continue retrieval. Comes from previous call to
       `ListStoredInfoTypes`.
@@ -2634,7 +2634,7 @@ class GooglePrivacyDlpV2CategoricalStatsHistogramBucket(_messages.Message):
     bucketSize: Total number of values in this bucket.
     bucketValueCount: Total number of distinct values in this bucket.
     bucketValues: Sample of value frequencies in this bucket. The total number
-      of values returned per bucket is capped at 20.
+      of values returned per bucket are capped at 20.
     valueFrequencyLowerBound: Lower bound on the value frequency of the values
       in this bucket.
     valueFrequencyUpperBound: Upper bound on the value frequency of the values
@@ -3042,13 +3042,13 @@ class GooglePrivacyDlpV2ContentLocation(_messages.Message):
       storage containers are formatted as follows: * BigQuery tables:
       `{project_id}:{dataset_id}.{table_id}` * Cloud Storage files:
       `gs://{bucket}/{path}` * Datastore namespace: {namespace} Nested names
-      could be absent if the embedded object has no string identifier (for an
+      could be absent if the embedded object has no string identifier (for
       example an image contained within a document).
-    containerTimestamp: Findings container modification timestamp, if
-      applicable. For Google Cloud Storage contains last file modification
-      timestamp. For BigQuery table contains last_modified_time property. For
-      Datastore - not populated.
-    containerVersion: Findings container version, if available ("generation"
+    containerTimestamp: Finding container modification timestamp, if
+      applicable. For Google Cloud Storage contains the last file modification
+      timestamp. For BigQuery table contains the last_modified_time property.
+      For Datastore - not populated.
+    containerVersion: Finding container version, if available ("generation"
       for Google Cloud Storage).
     documentLocation: Location data for document files.
     imageLocation: Location within an image's pixels.
@@ -3171,8 +3171,8 @@ class GooglePrivacyDlpV2CryptoDeterministicConfig(_messages.Message):
       present when transforming a given value or 2. the field is not present
       when transforming a given value, plaintext would be used as is for
       encryption. Note that case (1) is expected when an
-      `InfoTypeTransformation` is applied to both structured and non-
-      structured `ContentItem`s.
+      `InfoTypeTransformation` is applied to both structured and unstructured
+      `ContentItem`s.
     cryptoKey: The key used by the encryption function. For deterministic
       encryption using AES-SIV, the provided key is internally expanded to 64
       bytes prior to use.
@@ -3262,8 +3262,8 @@ class GooglePrivacyDlpV2CryptoReplaceFfxFpeConfig(_messages.Message):
       the context is set but: 1. there is no record present when transforming
       a given value or 1. the field is not present when transforming a given
       value, a default tweak will be used. Note that case (1) is expected when
-      an `InfoTypeTransformation` is applied to both structured and non-
-      structured `ContentItem`s. Currently, the referenced field may be of
+      an `InfoTypeTransformation` is applied to both structured and
+      unstructured `ContentItem`s. Currently, the referenced field may be of
       value type integer or string. The tweak is constructed as a sequence of
       bytes in big endian byte order such that: - a 64 bit integer is encoded
       followed by a single byte of value 1 - a string is encoded in UTF-8
@@ -3485,9 +3485,9 @@ class GooglePrivacyDlpV2DataProfilePubSubCondition(_messages.Message):
 
 
 class GooglePrivacyDlpV2DataProfilePubSubMessage(_messages.Message):
-  r"""The message that will be published to a Pub/Sub topic. To receive a
-  message of protocol buffer schema type, convert the message data to an
-  object of this proto class.
+  r"""Pub/Sub topic message for a DataProfileAction.PubSubNotification event.
+  To receive a message of protocol buffer schema type, convert the message
+  data to an object of this proto class.
   https://cloud.google.com/pubsub/docs/samples/pubsub-subscribe-proto-messages
 
   Enums:
@@ -3526,7 +3526,7 @@ class GooglePrivacyDlpV2DataProfilePubSubMessage(_messages.Message):
 
 class GooglePrivacyDlpV2DataRiskLevel(_messages.Message):
   r"""Score is a summary of all elements in the data profile. A higher number
-  means more risky.
+  means more risk.
 
   Enums:
     ScoreValueValuesEnum: The score applied to the resource.
@@ -3544,8 +3544,8 @@ class GooglePrivacyDlpV2DataRiskLevel(_messages.Message):
         have additional access restrictions in place or no indication of
         sensitive data found.
       RISK_MODERATE: Medium risk - Sensitive data may be present but
-        additional access or fine grain access restrictions appears to be
-        present. Consider limiting access even further or transforming data to
+        additional access or fine grain access restrictions appear to be
+        present. Consider limiting access even further or transform data to
         mask.
       RISK_HIGH: High risk \u2013 SPII may be present. Access controls may
         include public ACLs. Exfiltration of data may lead to user data loss.
@@ -3674,7 +3674,7 @@ class GooglePrivacyDlpV2DeidentifyConfig(_messages.Message):
 
 
 class GooglePrivacyDlpV2DeidentifyContentRequest(_messages.Message):
-  r"""Request to de-identify a list of items.
+  r"""Request to de-identify a ContentItem.
 
   Fields:
     deidentifyConfig: Configuration for the de-identification of the content
@@ -3791,7 +3791,7 @@ class GooglePrivacyDlpV2DeltaPresenceEstimationQuasiIdValues(_messages.Message):
 
   Fields:
     estimatedProbability: The estimated probability that a given individual
-      sharing these quasi-identifier values is in the dataset. This value,
+      sharing these quasi-identifier values are in the dataset. This value,
       typically called \u03b4, is the ratio between the number of records in
       the dataset with these quasi-identifier values, and the total number of
       individuals (inside *and* outside the dataset) with these quasi-
@@ -3897,12 +3897,12 @@ class GooglePrivacyDlpV2DlpJob(_messages.Message):
       RUNNING: The job is currently running. Once a job has finished it will
         transition to FAILED or DONE.
       DONE: The job is no longer running.
-      CANCELED: The job was canceled before it could complete.
+      CANCELED: The job was canceled before it could be completed.
       FAILED: The job had an error and did not complete.
       ACTIVE: The job is currently accepting findings via hybridInspect. A
         hybrid job in ACTIVE state may continue to have findings added to it
-        through calling of hybridInspect. After the job has finished no more
-        calls to hybridInspect may be made. ACTIVE jobs can transition to
+        through the calling of hybridInspect. After the job has finished no
+        more calls to hybridInspect may be made. ACTIVE jobs can transition to
         DONE.
     """
     JOB_STATE_UNSPECIFIED = 0
@@ -3977,7 +3977,7 @@ class GooglePrivacyDlpV2Error(_messages.Message):
 
 
 class GooglePrivacyDlpV2ExcludeInfoTypes(_messages.Message):
-  r"""List of exclude infoTypes.
+  r"""List of excluded infoTypes.
 
   Fields:
     infoTypes: InfoType list in ExclusionRule rule drops a finding when it
@@ -4053,7 +4053,7 @@ class GooglePrivacyDlpV2Export(_messages.Message):
 
 
 class GooglePrivacyDlpV2Expressions(_messages.Message):
-  r"""An expression, consisting or an operator and conditions.
+  r"""An expression, consisting of an operator and conditions.
 
   Enums:
     LogicalOperatorValueValuesEnum: The operator to apply to the result of
@@ -4247,7 +4247,11 @@ class GooglePrivacyDlpV2Finding(_messages.Message):
 
 class GooglePrivacyDlpV2FindingLimits(_messages.Message):
   r"""Configuration to control the number of findings returned for inspection.
-  This is not used for de-identification or data profiling.
+  This is not used for de-identification or data profiling. When redacting
+  sensitive data from images, finding limits don't apply. They can cause
+  unexpected or inconsistent results, where only some data is redacted. Don't
+  include finding limits in RedactImage requests. Otherwise, Cloud DLP returns
+  an error.
 
   Fields:
     maxFindingsPerInfoType: Configuration of findings limit given for
@@ -4756,6 +4760,7 @@ class GooglePrivacyDlpV2InfoTypeDescription(_messages.Message):
     displayName: Human readable form of the infoType name.
     name: Internal name of the infoType.
     supportedBy: Which parts of the API supports this InfoType.
+    versions: A list of available versions for the infotype.
   """
 
   class SupportedByValueListEntryValuesEnum(_messages.Enum):
@@ -4775,6 +4780,7 @@ class GooglePrivacyDlpV2InfoTypeDescription(_messages.Message):
   displayName = _messages.StringField(3)
   name = _messages.StringField(4)
   supportedBy = _messages.EnumField('SupportedByValueListEntryValuesEnum', 5, repeated=True)
+  versions = _messages.MessageField('GooglePrivacyDlpV2VersionDescription', 6, repeated=True)
 
 
 class GooglePrivacyDlpV2InfoTypeLimit(_messages.Message):
@@ -4877,7 +4883,10 @@ class GooglePrivacyDlpV2InspectConfig(_messages.Message):
       should specify specific InfoTypes listed in the reference, otherwise a
       default list will be used, which may change over time.
     limits: Configuration to control the number of findings returned. This is
-      not used for data profiling.
+      not used for data profiling. When redacting sensitive data from images,
+      finding limits don't apply. They can cause unexpected or inconsistent
+      results, where only some data is redacted. Don't include finding limits
+      in RedactImage requests. Otherwise, Cloud DLP returns an error.
     minLikelihood: Only returns findings equal or above this threshold. The
       default is POSSIBLE. See https://cloud.google.com/dlp/docs/likelihood to
       learn more.
@@ -5395,7 +5404,7 @@ class GooglePrivacyDlpV2LargeCustomDictionaryConfig(_messages.Message):
   [limits](https://cloud.google.com/dlp/limits) page. The artifacts of
   dictionary creation are stored in the specified Google Cloud Storage
   location. Consider using `CustomInfoType.Dictionary` for smaller
-  dictionaries that satisfy the size requirements.
+  dictionaries that satisfies the size requirements.
 
   Fields:
     bigQueryField: Field in a BigQuery table where each cell represents a
@@ -5674,14 +5683,14 @@ class GooglePrivacyDlpV2OutputStorageConfig(_messages.Message):
     table: Store findings in an existing table or a new table in an existing
       dataset. If table_id is not set a new one will be generated for you with
       the following format: dlp_googleapis_yyyy_mm_dd_[dlp_job_id]. Pacific
-      timezone will be used for generating the date details. For Inspect, each
-      column in an existing output table must have the same name, type, and
-      mode of a field in the `Finding` object. For Risk, an existing output
-      table should be the output of a previous Risk analysis job run on the
-      same source table, with the same privacy metric and quasi-identifiers.
-      Risk jobs that analyze the same table but compute a different privacy
-      metric, or use different sets of quasi-identifiers, cannot store their
-      results in the same table.
+      time zone will be used for generating the date details. For Inspect,
+      each column in an existing output table must have the same name, type,
+      and mode of a field in the `Finding` object. For Risk, an existing
+      output table should be the output of a previous Risk analysis job run on
+      the same source table, with the same privacy metric and quasi-
+      identifiers. Risk jobs that analyze the same table but compute a
+      different privacy metric, or use different sets of quasi-identifiers,
+      cannot store their results in the same table.
   """
 
   class OutputSchemaValueValuesEnum(_messages.Enum):
@@ -5992,8 +6001,8 @@ class GooglePrivacyDlpV2PublishSummaryToCscc(_messages.Message):
   r"""Publish the result summary of a DlpJob to the Cloud Security Command
   Center (CSCC Alpha). This action is only available for projects which are
   parts of an organization and whitelisted for the alpha Cloud Security
-  Command Center. The action will publish count of finding instances and their
-  info types. The summary of findings will be persisted in CSCC and are
+  Command Center. The action will publish the count of finding instances and
+  their info types. The summary of findings will be persisted in CSCC and are
   governed by CSCC service-specific policy, see
   https://cloud.google.com/terms/service-terms Only a single instance of this
   action can be specified. Compatible with: Inspect
@@ -6002,7 +6011,7 @@ class GooglePrivacyDlpV2PublishSummaryToCscc(_messages.Message):
 
 
 class GooglePrivacyDlpV2PublishToPubSub(_messages.Message):
-  r"""Publish a message into given Pub/Sub topic when DlpJob has completed.
+  r"""Publish a message into a given Pub/Sub topic when DlpJob has completed.
   The message contains a single field, `DlpJobName`, which is equal to the
   finished job's [`DlpJob.name`](https://cloud.google.com/dlp/docs/reference/r
   est/v2/projects.dlpJobs#DlpJob). Compatible with: Inspect, Risk
@@ -6160,7 +6169,7 @@ class GooglePrivacyDlpV2RecordTransformations(_messages.Message):
     fieldTransformations: Transform the record by applying various field
       transformations.
     recordSuppressions: Configuration defining which records get suppressed
-      entirely. Records that match any suppression rule are omitted from the
+      entirely. Records that match any suppression rule is omitted from the
       output.
   """
 
@@ -6268,7 +6277,7 @@ class GooglePrivacyDlpV2ReidentifyContentRequest(_messages.Message):
 
 
 class GooglePrivacyDlpV2ReidentifyContentResponse(_messages.Message):
-  r"""Results of re-identifying a item.
+  r"""Results of re-identifying an item.
 
   Fields:
     item: The re-identified item.
@@ -6389,7 +6398,7 @@ class GooglePrivacyDlpV2Schedule(_messages.Message):
   r"""Schedule for inspect job triggers.
 
   Fields:
-    recurrencePeriodDuration: With this option a job is started a regular
+    recurrencePeriodDuration: With this option a job is started on a regular
       periodic basis. For example: every day (86400 seconds). A scheduled
       start time will be skipped if the previous execution has not ended when
       its scheduled time occurs. This value must be set to a time duration
@@ -6567,7 +6576,7 @@ class GooglePrivacyDlpV2StoredInfoTypeVersion(_messages.Message):
       FAILED: StoredInfoType creation failed. All relevant error messages are
         returned in the `StoredInfoTypeVersion` message.
       INVALID: StoredInfoType is no longer valid because artifacts stored in
-        user-controlled storage were modified. To fix an invalid
+        user-controlled storage was modified. To fix an invalid
         StoredInfoType, use the `UpdateStoredInfoType` method to create a new
         version.
     """
@@ -6926,7 +6935,9 @@ class GooglePrivacyDlpV2TimespanConfig(_messages.Message):
       start and end times. If an entity does not contain the provided
       timestamp property or contains empty or invalid values, then it is
       included. Valid data types of the provided timestamp property are:
-      `TIMESTAMP`.
+      `TIMESTAMP`. See the [known
+      issue](https://cloud.google.com/dlp/docs/known-issues#bq-timespan)
+      related to this operation.
   """
 
   enableAutoPopulationOfTimespanConfig = _messages.BooleanField(1)
@@ -7145,6 +7156,18 @@ class GooglePrivacyDlpV2ValueFrequency(_messages.Message):
 
   count = _messages.IntegerField(1)
   value = _messages.MessageField('GooglePrivacyDlpV2Value', 2)
+
+
+class GooglePrivacyDlpV2VersionDescription(_messages.Message):
+  r"""Details about each available version for an infotype.
+
+  Fields:
+    description: Description of the version.
+    version: Name of the version
+  """
+
+  description = _messages.StringField(1)
+  version = _messages.StringField(2)
 
 
 class GooglePrivacyDlpV2WordList(_messages.Message):

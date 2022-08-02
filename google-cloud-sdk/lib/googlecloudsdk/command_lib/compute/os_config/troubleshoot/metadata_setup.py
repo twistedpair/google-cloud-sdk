@@ -34,12 +34,12 @@ _DISABLED_FEATURES = 'osconfig-disabled-features'
 
 
 def _DisabledMessage(instance, release_track):
-  project_command = ' '.join(
-      ('$ gcloud', release_track, 'compute', 'project_info', 'add-metadata',
-       '--metadata=enable-osconfig=true'))
-  instance_command = ' '.join(
-      ('$ gcloud', release_track, 'compute', 'instances', 'add-metadata',
-       instance.name, '--metadata=enable-osconfig=true'))
+  command_args = ['compute', 'project_info', 'add-metadata',
+                  '--metadata=enable-osconfig=true']
+  project_command = utils.GetCommandString(command_args, release_track)
+  instance_args = ['compute', 'instances', 'add-metadata', instance.name,
+                   '--metadata=enable-osconfig=true']
+  instance_command = utils.GetCommandString(instance_args, release_track)
   return ('No\n'
           'OS Config agent is not enabled for this VM instance. To enable for'
           ' all VMs in this project, run:\n\n' + project_command + '\n\n'
@@ -98,11 +98,11 @@ def Check(project, instance, release_track, exception=None):
 
   if enable_osconfig:
     if enable_osconfig.lower() in _METADATA_BOOL:
+      continue_flag = True
       if disabled_features:
         response_message += _EnabledWithDisabledFeaturesMessage(
             disabled_features)
       else:
-        continue_flag = True
         response_message += 'Yes'
     else:
       response_message += _DisabledMessage(instance, release_track)

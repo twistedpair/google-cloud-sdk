@@ -30,6 +30,10 @@ class HashMismatchError(Error):
   """Error raised when hashes don't match after operation."""
 
 
+class InvalidPythonVersionError(Error):
+  """Error raised for an invalid Python version."""
+
+
 class InvalidUrlError(Error):
   """Error raised when the url string is not in the expected format."""
 

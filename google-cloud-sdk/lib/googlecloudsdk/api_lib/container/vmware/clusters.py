@@ -47,3 +47,38 @@ class ClustersClient(object):
     req = self.messages.GkeonpremProjectsLocationsVmwareClustersGetRequest(
         name=resource_ref.RelativeName())
     return self._service.Get(req)
+
+  def Enroll(self, admin_cluster_membership_ref, resource_ref, local_name=None):
+    """Enrolls a VMware cluster to Anthos."""
+    enroll_vmware_cluster_request = self.messages.EnrollVmwareClusterRequest(
+        adminClusterMembership=admin_cluster_membership_ref.RelativeName(),
+        vmwareClusterId=resource_ref.Name(),
+        localName=local_name,
+    )
+    req = self.messages.GkeonpremProjectsLocationsVmwareClustersEnrollRequest(
+        parent=resource_ref.Parent().RelativeName(),
+        enrollVmwareClusterRequest=enroll_vmware_cluster_request,
+    )
+    return self._service.Enroll(req)
+
+  def Unenroll(self, resource_ref, force=False):
+    """Unenrolls an Anthos cluster on VMware."""
+    req = self.messages.GkeonpremProjectsLocationsVmwareClustersUnenrollRequest(
+        name=resource_ref.RelativeName(),
+        force=force,
+    )
+    return self._service.Unenroll(req)
+
+  def Delete(self,
+             resource_ref,
+             allow_missing=False,
+             validate_only=False,
+             force=False):
+    """Deletes an Anthos cluster on VMware."""
+    req = self.messages.GkeonpremProjectsLocationsVmwareClustersDeleteRequest(
+        name=resource_ref.RelativeName(),
+        allowMissing=allow_missing,
+        validateOnly=validate_only,
+        force=force,
+    )
+    return self._service.Delete(req)

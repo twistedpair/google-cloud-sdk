@@ -286,7 +286,7 @@ class ConnectionProfilesClient(object):
     settings = self._GetCloudSqlSettings(args)
     return self.messages.CloudSqlConnectionProfile(settings=settings)
 
-  def _GetConnectionProfile(self, cp_type, connection_profile_id, args):
+  def _GetConnectionProfile(self, cp_type, args):
     """Returns a connection profile according to type."""
     connection_profile_type = self.messages.ConnectionProfile
     labels = labels_util.ParseCreateArgs(
@@ -306,7 +306,6 @@ class ConnectionProfilesClient(object):
       postgresql_connection_profile = self._GetPostgreSqlConnectionProfile(args)
       params['postgresql'] = postgresql_connection_profile
     return connection_profile_type(
-        name=connection_profile_id,
         labels=labels,
         state=connection_profile_type.StateValueValuesEnum.CREATING,
         displayName=args.display_name,
@@ -371,17 +370,15 @@ class ConnectionProfilesClient(object):
     """
     self._ValidateArgs(args)
 
-    connection_profile = self._GetConnectionProfile(cp_type,
-                                                    connection_profile_id, args)
+    connection_profile = self._GetConnectionProfile(cp_type, args)
 
     request_id = api_util.GenerateRequestId()
     create_req_type = self.messages.DatamigrationProjectsLocationsConnectionProfilesCreateRequest
     create_req = create_req_type(
         connectionProfile=connection_profile,
-        connectionProfileId=connection_profile.name,
+        connectionProfileId=connection_profile_id,
         parent=parent_ref,
-        requestId=request_id
-        )
+        requestId=request_id)
 
     return self._service.Create(create_req)
 

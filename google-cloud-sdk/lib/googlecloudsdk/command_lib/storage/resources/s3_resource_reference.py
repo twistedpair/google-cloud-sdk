@@ -137,8 +137,13 @@ class S3ObjectResource(resource_reference.ObjectResource):
 
   def __init__(self,
                storage_url_object,
+               cache_control=None,
+               content_disposition=None,
+               content_encoding=None,
+               content_language=None,
                content_type=None,
                creation_time=None,
+               custom_metadata=None,
                etag=None,
                crc32c_hash=None,
                md5_hash=None,
@@ -149,8 +154,13 @@ class S3ObjectResource(resource_reference.ObjectResource):
     """Initializes resource. Args are a subset of attributes."""
     super(S3ObjectResource, self).__init__(
         storage_url_object,
+        cache_control=cache_control,
+        content_disposition=content_disposition,
+        content_encoding=content_encoding,
+        content_language=content_language,
         content_type=content_type,
         creation_time=creation_time,
+        custom_metadata=custom_metadata,
         etag=etag,
         crc32c_hash=None,
         md5_hash=md5_hash,
@@ -160,6 +170,7 @@ class S3ObjectResource(resource_reference.ObjectResource):
         storage_class=storage_class)
 
   def get_displayable_object_data(self):
+    # TODO(b/240444753): Make better use of ObjectResource attributes.
     return resource_reference.DisplayableObjectData(
         name=self.name,
         bucket=self.bucket,

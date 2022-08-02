@@ -581,17 +581,19 @@
           "$ref": "OperationError"
         },
         "type": {
-          "description": "The type of this run; can be either \"AUTOMATED\" or \"ON_DEMAND\". This field defaults to \"ON_DEMAND\" and is ignored, when specified for insert requests.",
+          "description": "The type of this run; can be either \"AUTOMATED\" or \"ON_DEMAND\" or \"FINAL\". This field defaults to \"ON_DEMAND\" and is ignored, when specified for insert requests.",
           "type": "string",
           "enumDescriptions": [
             "This is an unknown BackupRun type.",
             "The backup schedule automatically triggers a backup.",
-            "The user manually triggers a backup."
+            "The user manually triggers a backup.",
+            "The backup created when instance is deleted."
           ],
           "enum": [
             "SQL_BACKUP_RUN_TYPE_UNSPECIFIED",
             "AUTOMATED",
-            "ON_DEMAND"
+            "ON_DEMAND",
+            "FINAL"
           ]
         },
         "description": {
@@ -640,6 +642,10 @@
         "backupDatabaseInstalledVersion": {
           "description": "Output only. Currently installed database version on the instance, including minor versions, such as `MYSQL_8_0_18`.",
           "readOnly": true,
+          "type": "string"
+        },
+        "timeZone": {
+          "description": "Backup time zone to prevent restores to an instance with a different time zone. Now relevant only to SQL Server.",
           "type": "string"
         }
       }
@@ -1660,6 +1666,10 @@
         "deletionProtectionEnabled": {
           "description": "Configuration to protect against accidental instance deletion.",
           "type": "boolean"
+        },
+        "timeZone": {
+          "description": "Server timezone, relevant only for Cloud SQL for SQL Server.",
+          "type": "string"
         }
       }
     },

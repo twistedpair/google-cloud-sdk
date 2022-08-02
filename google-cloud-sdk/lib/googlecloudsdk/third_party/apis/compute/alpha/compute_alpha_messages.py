@@ -1521,6 +1521,27 @@ class AliasIpRange(_messages.Message):
   subnetworkRangeName = _messages.StringField(2)
 
 
+class AllocationResourceStatus(_messages.Message):
+  r"""[Output Only] Contains output only fields.
+
+  Fields:
+    specificSkuAllocation: Allocation Properties of this reservation.
+  """
+
+  specificSkuAllocation = _messages.MessageField('AllocationResourceStatusSpecificSKUAllocation', 1)
+
+
+class AllocationResourceStatusSpecificSKUAllocation(_messages.Message):
+  r"""Contains Properties set for the reservation.
+
+  Fields:
+    sourceInstanceTemplateId: ID of the instance template used to populate
+      reservation properties.
+  """
+
+  sourceInstanceTemplateId = _messages.StringField(1)
+
+
 class AllocationSpecificSKUAllocationAllocatedInstancePropertiesReservedDisk(_messages.Message):
   r"""A AllocationSpecificSKUAllocationAllocatedInstancePropertiesReservedDisk
   object.
@@ -1615,12 +1636,15 @@ class AllocationSpecificSKUReservation(_messages.Message):
     count: Specifies the number of resources that are allocated.
     inUseCount: [Output Only] Indicates how many instances are in use.
     instanceProperties: The instance properties for the reservation.
+    sourceInstanceTemplate: Specific URL of the instance template used in the
+      reservation
   """
 
   assuredCount = _messages.IntegerField(1)
   count = _messages.IntegerField(2)
   inUseCount = _messages.IntegerField(3)
   instanceProperties = _messages.MessageField('AllocationSpecificSKUAllocationReservedInstanceProperties', 4)
+  sourceInstanceTemplate = _messages.StringField(5)
 
 
 class AttachedDisk(_messages.Message):
@@ -36411,8 +36435,8 @@ class FirewallPolicyRule(_messages.Message):
     securityProfileGroup: A fully-qualified URL of a SecurityProfile resource
       instance. Example: https://networksecurity.googleapis.com/v1/projects/{p
       roject}/locations/{location}/securityProfileGroups/my-security-profile-
-      group Must be specified if action = 'apply_profile_group' and cannot be
-      specified for other actions.
+      group Must be specified if action = 'apply_security_profile_group' and
+      cannot be specified for other actions.
     targetResources: A list of network resource URLs to which this rule
       applies. This field allows you to control which network's VMs get this
       rule. If this field is left blank, all VMs within the organization will
@@ -37492,6 +37516,10 @@ class ForwardingRulesScopedList(_messages.Message):
 class FutureReservation(_messages.Message):
   r"""A FutureReservation object.
 
+  Enums:
+    PlanningStatusValueValuesEnum: Planning state before being submitted for
+      evaluation
+
   Fields:
     creationTimestamp: [Output Only] The creation timestamp for this future
       reservation in RFC3339 text format.
@@ -37512,6 +37540,7 @@ class FutureReservation(_messages.Message):
       delivery. The name prefix must comply with RFC1035. Maximum allowed
       length for name prefix is 20. Automatically created reservations name
       format will be -date-####.
+    planningStatus: Planning state before being submitted for evaluation
     selfLink: [Output Only] Server-defined fully-qualified URL for this
       resource.
     selfLinkWithId: [Output Only] Server-defined URL for this resource with
@@ -37524,19 +37553,32 @@ class FutureReservation(_messages.Message):
     zone: [Output Only] URL of the Zone where this future reservation resides.
   """
 
+  class PlanningStatusValueValuesEnum(_messages.Enum):
+    r"""Planning state before being submitted for evaluation
+
+    Values:
+      DRAFT: Future Reservation is being drafted.
+      PLANNING_STATUS_UNSPECIFIED: <no description>
+      SUBMITTED: Future Reservation has been submitted for evaluation by GCP.
+    """
+    DRAFT = 0
+    PLANNING_STATUS_UNSPECIFIED = 1
+    SUBMITTED = 2
+
   creationTimestamp = _messages.StringField(1)
   description = _messages.StringField(2)
   id = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
   kind = _messages.StringField(4, default='compute#futureReservation')
   name = _messages.StringField(5)
   namePrefix = _messages.StringField(6)
-  selfLink = _messages.StringField(7)
-  selfLinkWithId = _messages.StringField(8)
-  shareSettings = _messages.MessageField('ShareSettings', 9)
-  specificSkuProperties = _messages.MessageField('FutureReservationSpecificSKUProperties', 10)
-  status = _messages.MessageField('FutureReservationStatus', 11)
-  timeWindow = _messages.MessageField('FutureReservationTimeWindow', 12)
-  zone = _messages.StringField(13)
+  planningStatus = _messages.EnumField('PlanningStatusValueValuesEnum', 7)
+  selfLink = _messages.StringField(8)
+  selfLinkWithId = _messages.StringField(9)
+  shareSettings = _messages.MessageField('ShareSettings', 10)
+  specificSkuProperties = _messages.MessageField('FutureReservationSpecificSKUProperties', 11)
+  status = _messages.MessageField('FutureReservationStatus', 12)
+  timeWindow = _messages.MessageField('FutureReservationTimeWindow', 13)
+  zone = _messages.StringField(14)
 
 
 class FutureReservationSpecificSKUProperties(_messages.Message):
@@ -37544,12 +37586,15 @@ class FutureReservationSpecificSKUProperties(_messages.Message):
 
   Fields:
     instanceProperties: Properties of the SKU instances being reserved.
+    sourceInstanceTemplate: The instance template that will be used to
+      populate the ReservedInstanceProperties of the future reservation
     totalCount: Total number of instances for which capacity assurance is
       requested at a future time period.
   """
 
   instanceProperties = _messages.MessageField('AllocationSpecificSKUAllocationReservedInstanceProperties', 1)
-  totalCount = _messages.IntegerField(2)
+  sourceInstanceTemplate = _messages.StringField(2)
+  totalCount = _messages.IntegerField(3)
 
 
 class FutureReservationStatus(_messages.Message):
@@ -37570,6 +37615,8 @@ class FutureReservationStatus(_messages.Message):
       an RFC3339 string. The procurement_status will transition to PROCURING
       state at this time.
     procurementStatus: Current state of this Future Reservation
+    specificSkuProperties: A FutureReservationStatusSpecificSKUProperties
+      attribute.
   """
 
   class ProcurementStatusValueValuesEnum(_messages.Enum):
@@ -37580,6 +37627,8 @@ class FutureReservationStatus(_messages.Message):
       CANCELLED: Future reservation is cancelled by the customer.
       COMMITTED: Future reservation is committed by the customer.
       DECLINED: Future reservation is rejected by GCP.
+      DRAFTING: Related status for PlanningStatus.Draft. Transitions to
+        PENDING_APPROVAL upon user submitting FR.
       FAILED: Future reservation failed. No additional reservations were
         provided.
       FAILED_PARTIALLY_FULFILLED: Future reservation is partially fulfilled.
@@ -37600,18 +37649,31 @@ class FutureReservationStatus(_messages.Message):
     CANCELLED = 1
     COMMITTED = 2
     DECLINED = 3
-    FAILED = 4
-    FAILED_PARTIALLY_FULFILLED = 5
-    FULFILLED = 6
-    PENDING_APPROVAL = 7
-    PROCUREMENT_STATUS_UNSPECIFIED = 8
-    PROCURING = 9
-    PROVISIONING = 10
+    DRAFTING = 4
+    FAILED = 5
+    FAILED_PARTIALLY_FULFILLED = 6
+    FULFILLED = 7
+    PENDING_APPROVAL = 8
+    PROCUREMENT_STATUS_UNSPECIFIED = 9
+    PROCURING = 10
+    PROVISIONING = 11
 
   autoCreatedReservations = _messages.StringField(1, repeated=True)
   fulfilledCount = _messages.IntegerField(2)
   lockTime = _messages.StringField(3)
   procurementStatus = _messages.EnumField('ProcurementStatusValueValuesEnum', 4)
+  specificSkuProperties = _messages.MessageField('FutureReservationStatusSpecificSKUProperties', 5)
+
+
+class FutureReservationStatusSpecificSKUProperties(_messages.Message):
+  r"""Properties to be set for the Future Reservation.
+
+  Fields:
+    sourceInstanceTemplateId: ID of the instance template used to populate the
+      Future Reservation properties.
+  """
+
+  sourceInstanceTemplateId = _messages.StringField(1)
 
 
 class FutureReservationTimeWindow(_messages.Message):
@@ -63199,6 +63261,7 @@ class Reservation(_messages.Message):
     resourcePolicies: Resource policies to be added to this reservation. The
       key is defined by user, and the value is resource policy url. This is to
       define placement policy with reservation.
+    resourceStatus: [Output Only] Status information for Reservation resource.
     satisfiesPzs: [Output Only] Reserved for future use.
     selfLink: [Output Only] Server-defined fully-qualified URL for this
       resource.
@@ -63267,14 +63330,15 @@ class Reservation(_messages.Message):
   kind = _messages.StringField(5, default='compute#reservation')
   name = _messages.StringField(6)
   resourcePolicies = _messages.MessageField('ResourcePoliciesValue', 7)
-  satisfiesPzs = _messages.BooleanField(8)
-  selfLink = _messages.StringField(9)
-  selfLinkWithId = _messages.StringField(10)
-  shareSettings = _messages.MessageField('ShareSettings', 11)
-  specificReservation = _messages.MessageField('AllocationSpecificSKUReservation', 12)
-  specificReservationRequired = _messages.BooleanField(13)
-  status = _messages.EnumField('StatusValueValuesEnum', 14)
-  zone = _messages.StringField(15)
+  resourceStatus = _messages.MessageField('AllocationResourceStatus', 8)
+  satisfiesPzs = _messages.BooleanField(9)
+  selfLink = _messages.StringField(10)
+  selfLinkWithId = _messages.StringField(11)
+  shareSettings = _messages.MessageField('ShareSettings', 12)
+  specificReservation = _messages.MessageField('AllocationSpecificSKUReservation', 13)
+  specificReservationRequired = _messages.BooleanField(14)
+  status = _messages.EnumField('StatusValueValuesEnum', 15)
+  zone = _messages.StringField(16)
 
 
 class ReservationAffinity(_messages.Message):
@@ -68134,6 +68198,8 @@ class SecurityPolicyAdvancedOptionsConfig(_messages.Message):
     LogLevelValueValuesEnum:
 
   Fields:
+    jsonCustomConfig: Custom configuration to apply the JSON parsing. Only
+      applicable when json_parsing is set to STANDARD.
     jsonParsing: A JsonParsingValueValuesEnum attribute.
     logLevel: A LogLevelValueValuesEnum attribute.
   """
@@ -68158,8 +68224,23 @@ class SecurityPolicyAdvancedOptionsConfig(_messages.Message):
     NORMAL = 0
     VERBOSE = 1
 
-  jsonParsing = _messages.EnumField('JsonParsingValueValuesEnum', 1)
-  logLevel = _messages.EnumField('LogLevelValueValuesEnum', 2)
+  jsonCustomConfig = _messages.MessageField('SecurityPolicyAdvancedOptionsConfigJsonCustomConfig', 1)
+  jsonParsing = _messages.EnumField('JsonParsingValueValuesEnum', 2)
+  logLevel = _messages.EnumField('LogLevelValueValuesEnum', 3)
+
+
+class SecurityPolicyAdvancedOptionsConfigJsonCustomConfig(_messages.Message):
+  r"""A SecurityPolicyAdvancedOptionsConfigJsonCustomConfig object.
+
+  Fields:
+    contentTypes: A list of custom Content-Type header values to apply the
+      JSON parsing. As per RFC 1341, a Content-Type header value has the
+      following format: Content-Type := type "/" subtype *[";" parameter] When
+      configuring a custom Content-Type header value, only the type/subtype
+      needs to be specified, and the parameters should be excluded.
+  """
+
+  contentTypes = _messages.StringField(1, repeated=True)
 
 
 class SecurityPolicyAssociation(_messages.Message):

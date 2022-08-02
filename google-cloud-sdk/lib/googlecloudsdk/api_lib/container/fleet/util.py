@@ -18,8 +18,11 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import re
+
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import base
+from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import resources
 
 VERSION_MAP = {
@@ -58,6 +61,15 @@ def MembershipResourceName(project, membership, location='global'):
       locationsId=location,
       membershipsId=membership,
   ).RelativeName()
+
+
+def MembershipPartialName(full_name):
+  resources.REGISTRY.ParseRelativeName(full_name)
+  matches = re.search('projects/.*/locations/(.*)/memberships/(.*)', full_name)
+  if matches:
+    return matches.group(1) + '/' + matches.group(2)
+  raise exceptions.Error(
+      'Invalid membership resource name: {}'.format(full_name))
 
 
 def MembershipShortname(full_name):

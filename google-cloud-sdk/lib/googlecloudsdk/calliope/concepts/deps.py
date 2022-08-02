@@ -12,7 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Classes to handle dependencies for concepts.
 
 At runtime, resources can be parsed and initialized using the information given
@@ -113,15 +112,12 @@ class _FallthroughBase(six.with_metaclass(abc.ABCMeta, object)):
     return hash(self.hint) + hash(self.active)
 
   def __eq__(self, other):
-    return (isinstance(other, self.__class__)
-            and other.hint == self.hint
-            and other.active == self.active
-            and other.plural == self.plural)
+    return (isinstance(other, self.__class__) and other.hint == self.hint and
+            other.active == self.active and other.plural == self.plural)
 
 
 class Fallthrough(_FallthroughBase):
-  """A fallthrough that can get an attribute value from an arbitrary function.
-  """
+  """A fallthrough that can get an attribute value from an arbitrary function."""
 
   def __init__(self, function, hint, active=False, plural=False):
     """Initializes a fallthrough to an arbitrary function.
@@ -150,8 +146,8 @@ class Fallthrough(_FallthroughBase):
     return self._function()
 
   def __eq__(self, other):
-    return (super(Fallthrough, self).__eq__(other)
-            and other._function == self._function)  # pylint: disable=protected-access
+    return (super(Fallthrough, self).__eq__(other) and
+            other._function == self._function)  # pylint: disable=protected-access
 
 
 class PropertyFallthrough(_FallthroughBase):
@@ -201,12 +197,12 @@ class ArgFallthrough(_FallthroughBase):
     """
     super(ArgFallthrough, self).__init__(
         'provide the argument `{}` on the command line'.format(arg_name),
-        active=True, plural=plural)
+        active=True,
+        plural=plural)
     self.arg_name = arg_name
 
   def _Call(self, parsed_args):
-    arg_value = getattr(parsed_args, util.NamespaceFormat(self.arg_name),
-                        None)
+    arg_value = getattr(parsed_args, util.NamespaceFormat(self.arg_name), None)
     return arg_value
 
   def _Pluralize(self, value):
@@ -232,7 +228,10 @@ class ArgFallthrough(_FallthroughBase):
 class FullySpecifiedAnchorFallthrough(_FallthroughBase):
   """A fallthrough that gets a parameter from the value of the anchor."""
 
-  def __init__(self, fallthrough, collection_info, parameter_name,
+  def __init__(self,
+               fallthrough,
+               collection_info,
+               parameter_name,
                plural=False):
     """Initializes a fallthrough getting a parameter from the anchor.
 
@@ -246,7 +245,8 @@ class FullySpecifiedAnchorFallthrough(_FallthroughBase):
         False for everything except the "anchor" arguments in a case where a
         resource argument is plural (i.e. parses to a list).
     """
-    hint = fallthrough.hint + (' with a fully specified name')
+    hint = fallthrough.hint + (' with fully specified names'
+                               if plural else ' with a fully specified name')
     super(FullySpecifiedAnchorFallthrough, self).__init__(
         hint, active=fallthrough.active, plural=plural)
     self.fallthrough = fallthrough
@@ -259,8 +259,7 @@ class FullySpecifiedAnchorFallthrough(_FallthroughBase):
   def _GetFromAnchor(self, anchor_value):
     try:
       resource_ref = self._resources.Parse(
-          anchor_value,
-          collection=self.collection_info.full_name)
+          anchor_value, collection=self.collection_info.full_name)
     except resources.Error:
       return None
     # This should only be called for final parsing when the anchor attribute
@@ -278,14 +277,17 @@ class FullySpecifiedAnchorFallthrough(_FallthroughBase):
     return self._GetFromAnchor(anchor_value)
 
   def __eq__(self, other):
-    return (isinstance(other, self.__class__)
-            and other.fallthrough == self.fallthrough
-            and other.collection_info == self.collection_info
-            and other.parameter_name == self.parameter_name)
+    return (isinstance(other, self.__class__) and
+            other.fallthrough == self.fallthrough and
+            other.collection_info == self.collection_info and
+            other.parameter_name == self.parameter_name)
 
   def __hash__(self):
-    return sum(map(hash, [self.fallthrough, six.text_type(self.collection_info),
-                          self.parameter_name]))
+    return sum(
+        map(hash, [
+            self.fallthrough,
+            six.text_type(self.collection_info), self.parameter_name
+        ]))
 
 
 def Get(attribute_name, attribute_to_fallthroughs_map, parsed_args=None):
@@ -308,8 +310,8 @@ def Get(attribute_name, attribute_to_fallthroughs_map, parsed_args=None):
     AttributeNotFoundError: if no value can be found.
   """
   fallthroughs = attribute_to_fallthroughs_map.get(attribute_name, [])
-  return GetFromFallthroughs(fallthroughs, parsed_args,
-                             attribute_name=attribute_name)
+  return GetFromFallthroughs(
+      fallthroughs, parsed_args, attribute_name=attribute_name)
 
 
 def GetFromFallthroughs(fallthroughs, parsed_args, attribute_name=None):

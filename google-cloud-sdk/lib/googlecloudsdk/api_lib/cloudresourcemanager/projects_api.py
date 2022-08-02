@@ -55,6 +55,35 @@ def List(limit=None,
       batch_size_attribute='pageSize')
 
 
+def Search(limit=None,
+           query=None,
+           batch_size=500,
+           api_version='v3'):
+  """Make API calls to search projects for which the user has resourcemanager.projects.get permission.
+
+  Args:
+    limit: The number of projects to limit the results to. This limit is passed
+      to the server and the server does the limiting.
+    query: The server side filter expression.
+    batch_size: The number of projects to get with each request.
+    api_version: The version of the api.
+
+  Returns:
+    Generator that yields projects.
+  """
+  client = projects_util.GetClient(api_version)
+  messages = projects_util.GetMessages(api_version)
+  return list_pager.YieldFromList(
+      client.projects,
+      messages.CloudresourcemanagerProjectsSearchRequest(
+          query=query),
+      method='Search',
+      batch_size=batch_size,
+      limit=limit,
+      field='projects',
+      batch_size_attribute='pageSize')
+
+
 def _AddActiveProjectFilterIfNotSpecified(filter_expr):
   if not filter_expr:
     return 'lifecycleState:ACTIVE'

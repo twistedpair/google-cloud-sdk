@@ -196,6 +196,7 @@ class CopyTaskIterator:
                destination_string,
                custom_md5_digest=None,
                do_not_decompress=False,
+               force_daisy_chain=False,
                print_created_message=False,
                shared_stream=None,
                skip_unsupported=True,
@@ -211,6 +212,8 @@ class CopyTaskIterator:
         for validating a single resource upload.
       do_not_decompress (bool): Prevents automatically decompressing
         downloaded gzips.
+      force_daisy_chain (bool): If True, yields daisy chain copy tasks in place
+        of intra-cloud copy tasks.
       print_created_message (bool): Print the versioned URL of each successfully
         copied object.
       shared_stream (stream): Multiple tasks may reuse a read or write stream.
@@ -230,6 +233,7 @@ class CopyTaskIterator:
 
     self._custom_md5_digest = custom_md5_digest
     self._do_not_decompress = do_not_decompress
+    self._force_daisy_chain = force_daisy_chain
     self._print_created_message = print_created_message
     self._shared_stream = shared_stream
     self._skip_unsupported = skip_unsupported
@@ -363,6 +367,7 @@ class CopyTaskIterator:
           source.resource,
           destination_resource,
           do_not_decompress=self._do_not_decompress,
+          force_daisy_chain=self._force_daisy_chain,
           print_created_message=self._print_created_message,
           shared_stream=self._shared_stream,
           user_request_args=self._user_request_args)

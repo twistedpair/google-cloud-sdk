@@ -1459,7 +1459,7 @@ class CloudresourcemanagerV3(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Retrieves TagValue. If the TagValue or namespaced name does not exist, or if the user does not have permission to view it, this method will return `PERMISSION_DENIED`.
+      r"""Retrieves a TagValue. This method will return `PERMISSION_DENIED` if the value does not exist or the user does not have permission to view it.
 
       Args:
         request: (CloudresourcemanagerTagValuesGetRequest) input message

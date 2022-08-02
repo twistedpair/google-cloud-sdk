@@ -193,8 +193,16 @@ class ObjectResource(CloudResource):
   Attributes:
     TYPE_STRING (str): String representing the resource's type.
     storage_url (StorageUrl): A StorageUrl object representing the object.
+    cache_control (str|None): Describes the object's cache settings.
+    content_disposition (str|None): Whether the object should be displayed or
+        downloaded.
+    content_encoding (str|None): Encodings that have been applied to the object.
+    content_language (str|None): Language used in the object's content.
     content_type (str|None): A MIME type describing the object's content.
     creation_time (datetime|None): Time the object was created.
+    custom_metadata (dict|None): Custom key-value pairs set by users.
+    custom_time (datetime): A timestamp in RFC 3339 format specified by the user
+        for an object.
     decryption_key_hash (str|Nne): Digest of a customer-supplied encryption key.
     kms_key (str|None): Resource identifier of a Google-managed encryption key.
     etag (str|None): HTTP version identifier.
@@ -214,8 +222,14 @@ class ObjectResource(CloudResource):
 
   def __init__(self,
                storage_url_object,
+               cache_control=None,
+               content_disposition=None,
+               content_encoding=None,
+               content_language=None,
                content_type=None,
                creation_time=None,
+               custom_metadata=None,
+               custom_time=None,
                decryption_key_hash=None,
                kms_key=None,
                etag=None,
@@ -227,8 +241,14 @@ class ObjectResource(CloudResource):
                storage_class=None):
     """Initializes resource. Args are a subset of attributes."""
     super(ObjectResource, self).__init__(storage_url_object)
+    self.cache_control = cache_control
+    self.content_disposition = content_disposition
+    self.content_encoding = content_encoding
+    self.content_language = content_language
     self.content_type = content_type
     self.creation_time = creation_time
+    self.custom_metadata = custom_metadata
+    self.custom_time = custom_time
     self.decryption_key_hash = decryption_key_hash
     self.kms_key = kms_key
     self.etag = etag
@@ -253,7 +273,14 @@ class ObjectResource(CloudResource):
 
   def __eq__(self, other):
     return (super(ObjectResource, self).__eq__(other) and
+            self.cache_control == other.cache_control and
+            self.content_disposition == other.content_disposition and
+            self.content_encoding == other.content_encoding and
+            self.content_language == other.content_language and
             self.content_type == other.content_type and
+            self.creation_time == other.creation_time and
+            self.custom_metadata == other.custom_metadata and
+            self.custom_time == other.custom_time and
             self.decryption_key_hash == other.decryption_key_hash and
             self.kms_key == other.kms_key and self.etag == other.etag and
             self.generation == other.generation and

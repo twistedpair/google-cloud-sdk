@@ -203,6 +203,50 @@ class UpdateCommand(FeatureCommand, base.UpdateCommand):
     return self.v1alpha1_client.projects_locations_global_features.Patch(req)
 
 
+# This will get full membership resource name format which should be used most
+# of the time, this is a supported format in resource args,
+# API function request/response objects, etc.
+def ListMembershipsFull():
+  """Lists full Membership names in the fleet for the current project.
+
+  Returns:
+    A list of Membership full resource names in the fleet in the form
+    'projects/*/locations/*/memberships/*'.
+    A list of locations which were unreachable.
+  """
+  client = core_apis.GetClientInstance('gkehub', 'v1beta1')
+  response = client.projects_locations_memberships.List(
+      client.MESSAGES_MODULE.GkehubProjectsLocationsMembershipsListRequest(
+          parent=hub_base.HubCommand.LocationResourceName(location='-')))
+
+  return [
+      m.name for m in response.resources if not _ClusterMissing(m.endpoint)
+  ], response.unreachable
+
+
+# This should be used for lists in CLI output, the LOCATION/ID
+# format is more readable than the full resource name
+def ListMembershipsPartial():
+  """Lists partial Membership names in the fleet for the current project.
+
+  Returns:
+    A list of Membership names in the fleet in the form 'LOCATION/ID'.
+    A list of locations which were unreachable.
+  """
+  client = core_apis.GetClientInstance('gkehub', 'v1beta1')
+  response = client.projects_locations_memberships.List(
+      client.MESSAGES_MODULE.GkehubProjectsLocationsMembershipsListRequest(
+          parent=hub_base.HubCommand.LocationResourceName(location='-')))
+
+  return [
+      util.MembershipPartialName(m.name)
+      for m in response.resources
+      if not _ClusterMissing(m.endpoint)
+  ], response.unreachable
+
+
+# This should not be used in the future and will be deleted
+# once all features support regional memberships
 def ListMemberships():
   """Lists Membership IDs in the fleet for the current project.
 
@@ -225,4 +269,3 @@ def _ClusterMissing(m):
   for t in ['gkeCluster', 'multiCloudCluster', 'onPremCluster']:
     if hasattr(m, t):
       return getattr(getattr(m, t), 'clusterMissing', False)
-

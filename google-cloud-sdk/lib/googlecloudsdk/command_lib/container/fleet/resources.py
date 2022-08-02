@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.api_lib.container.fleet import util
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.command_lib.container.fleet.features import base
@@ -68,11 +69,10 @@ def PromptForMembership():
   """
 
   if console_io.CanPrompt():
-    all_memberships = base.ListMemberships()
+    all_memberships = base.ListMembershipsFull()
+    partial = [util.MembershipPartialName(m) for m in all_memberships]
     idx = console_io.PromptChoice(
-        all_memberships,
-        message='Please specify a membership:\n',
-        cancel_option=True)
+        partial, message='Please specify a membership:\n', cancel_option=True)
     membership = all_memberships[idx]
     return membership
 
@@ -145,3 +145,41 @@ def AddMembershipResourceArg(parser,
       if plural else 'The group of arguments defining a membership.',
       plural=plural,
       required=membership_required).AddToParser(parser)
+
+
+def PositionalMembershipResourceName(args):
+  """Gets a membership resource name from a resource argument MEMBERSHIP_NAME.
+
+  Args:
+    args: arguments provided to a command, including a membership resource arg
+
+  Returns:
+    The membership resource name (e.g. projects/x/locations/y/memberships/z)
+  """
+  return args.CONCEPTS.membership_name.Parse().RelativeName()
+
+
+def MembershipResourceName(args):
+  """Gets a membership resource name from a --membership resource argument.
+
+  Args:
+    args: arguments provided to a command, including a membership resource arg
+
+  Returns:
+    The membership resource name (e.g. projects/x/locations/y/memberships/z)
+  """
+  return args.CONCEPTS.membership.Parse().RelativeName()
+
+
+def PluralMembershipsResourceNames(args):
+  """Gets a list of membership resource names from a --memberships resource arg.
+
+  Args:
+    args: arguments provided to a command, including a plural memberships
+      resource arg
+
+  Returns:
+    A list of membership resource names (e.g.
+    projects/x/locations/y/memberships/z)
+  """
+  return [m.RelativeName() for m in args.CONCEPTS.memberships.Parse()]

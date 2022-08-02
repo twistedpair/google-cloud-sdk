@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 from apitools.base.py import exceptions
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.compute.os_config.troubleshoot import utils
 
 _API_CLIENT_NAME = 'osconfig'
@@ -31,7 +32,7 @@ _UNKNOWN_MESSAGE = (
 
 
 def _GetReleaseTrack(release_track):
-  return 'v1alpha' if release_track == 'alpha' else 'v1'
+  return 'v1alpha' if release_track == base.ReleaseTrack.ALPHA else 'v1'
 
 
 def Check(project, instance, zone, release_track):

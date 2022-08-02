@@ -2073,6 +2073,17 @@ MAP = {
                 enable_mtls=True,
                 mtls_endpoint_override='https://monitoring.mtls.googleapis.com/'),
     },
+    'netapp': {
+        'v1alpha1':
+            APIDef(
+                ApitoolsClientDef(
+                    class_path='googlecloudsdk.third_party.apis.netapp.v1alpha1',
+                    client_classpath='netapp_v1alpha1_client.NetappV1alpha1',
+                    messages_modulepath='netapp_v1alpha1_messages'),
+                default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+    },
     'networkconnectivity': {
         'v1':
             APIDef(

@@ -467,7 +467,7 @@ def AddAcceleratorArgs(parser,
       '--accelerator',
       type=arg_parsers.ArgDict(
           spec=spec, required_keys=['type'], max_length=len(spec)),
-      metavar='type=TYPE,[count=COUNT]',
+      metavar='type=TYPE,[count=COUNT,gpu-partition-size=GPU_PARTITION_SIZE,gpu-sharing-strategy=GPU_SHARING_STRATEGY,max-shared-clients-per-gpu=MAX_SHARED_CLIENTS_PER_GPU]',
       help="""\
       Attaches accelerators (e.g. GPUs) to all nodes.
 
@@ -477,6 +477,17 @@ def AddAcceleratorArgs(parser,
 
       *count*::: (Optional) The number of accelerators to attach to the
       instances. The default value is 1.
+
+      *gpu-partition-size*::: (Optional) The GPU partition size used when running multi-instance GPUs.
+      For information about multi-instance GPUs,
+      refer to: https://cloud.google.com/kubernetes-engine/docs/how-to/gpus-multi
+
+      *gpu-sharing-strategy*::: (Optional) The GPU sharing strategy (e.g. time-sharing) to use.
+      For information about GPU sharing,
+      refer to: https://cloud.google.com/kubernetes-engine/docs/concepts/timesharing-gpus
+
+      *max-shared-clients-per-gpu*::: (Optional) The max number of containers allowed
+      to share each GPU on the node. This field is used together with `gpu-sharing-strategy`.
       """)
 
 

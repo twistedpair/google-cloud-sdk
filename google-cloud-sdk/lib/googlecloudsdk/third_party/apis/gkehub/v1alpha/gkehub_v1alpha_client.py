@@ -960,6 +960,33 @@ class GkehubV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ValidateCreate(self, request, global_params=None):
+      r"""ValidateCreateMembership is a preflight check for CreateMembership. It checks the following: 1. Caller has the required `gkehub.memberships.create` permission. 2. The membership_id is still available.
+
+      Args:
+        request: (GkehubProjectsLocationsMembershipsValidateCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ValidateCreateMembershipResponse) The response message.
+      """
+      config = self.GetMethodConfig('ValidateCreate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ValidateCreate.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/memberships:validateCreate',
+        http_method='POST',
+        method_id='gkehub.projects.locations.memberships.validateCreate',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1alpha/{+parent}/memberships:validateCreate',
+        request_field='validateCreateMembershipRequest',
+        request_type_name='GkehubProjectsLocationsMembershipsValidateCreateRequest',
+        response_type_name='ValidateCreateMembershipResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsNamespacesRbacrolebindingsService(base_api.BaseApiService):
     """Service class for the projects_locations_namespaces_rbacrolebindings resource."""
 

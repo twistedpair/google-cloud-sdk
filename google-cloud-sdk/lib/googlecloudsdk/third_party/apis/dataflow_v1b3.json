@@ -1960,12 +1960,14 @@
           "enumDescriptions": [
             "UNKNOWN Language.",
             "Java.",
-            "Python."
+            "Python.",
+            "Go."
           ],
           "enum": [
             "UNKNOWN",
             "JAVA",
-            "PYTHON"
+            "PYTHON",
+            "GO"
           ]
         },
         "version": {

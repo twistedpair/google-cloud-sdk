@@ -54,6 +54,16 @@ class AptArtifact(_messages.Message):
   packageType = _messages.EnumField('PackageTypeValueValuesEnum', 6)
 
 
+class ArtifactregistryMediaDownloadRequest(_messages.Message):
+  r"""A ArtifactregistryMediaDownloadRequest object.
+
+  Fields:
+    name: Required. The name of the file to download.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class ArtifactregistryProjectsGetProjectSettingsRequest(_messages.Message):
   r"""A ArtifactregistryProjectsGetProjectSettingsRequest object.
 
@@ -604,6 +614,10 @@ class Binding(_messages.Message):
   condition = _messages.MessageField('Expr', 1)
   members = _messages.StringField(2, repeated=True)
   role = _messages.StringField(3)
+
+
+class DownloadFileResponse(_messages.Message):
+  r"""The response to download a file."""
 
 
 class Empty(_messages.Message):

@@ -912,6 +912,10 @@ apis:
         # This is required in order to properly generate a PatchRequest message. Without this, the
         # generated client will simply use the Dashboard message as the request message for PATCH.
         - monitoring.projects.dashboards.patch
+  netapp:
+    v1alpha1:
+      discovery_doc: netapp_v1alpha1.json
+      default: true
   networkconnectivity:
     v1alpha1:
       discovery_doc: networkconnectivity_v1alpha1.json

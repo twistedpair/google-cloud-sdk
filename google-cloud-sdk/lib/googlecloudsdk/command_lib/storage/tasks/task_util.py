@@ -19,6 +19,9 @@ from __future__ import division
 from __future__ import unicode_literals
 
 
+import sys
+
+from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.core import properties
 
 
@@ -42,3 +45,20 @@ def should_use_parallelism():
   process_count = properties.VALUES.storage.process_count.GetInt()
   thread_count = properties.VALUES.storage.thread_count.GetInt()
   return process_count > 1 or thread_count > 1
+
+
+def require_python_3_5():
+  """Task execution assumes Python versions >=3.5.
+
+  Raises:
+    InvalidPythonVersionError: if the Python version is not 3.5+.
+  """
+  if sys.version_info.major < 3 or (sys.version_info.major == 3 and
+                                    sys.version_info.minor < 5):
+    raise errors.InvalidPythonVersionError(
+        'This functionality does not support Python {}.{}.{}. Please upgrade '
+        'to Python 3.5 or greater.'.format(
+            sys.version_info.major,
+            sys.version_info.minor,
+            sys.version_info.micro,
+        ))

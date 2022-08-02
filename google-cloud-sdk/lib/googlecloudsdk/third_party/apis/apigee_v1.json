@@ -5682,8 +5682,22 @@
           "type": "string"
         },
         "windowSize": {
-          "description": "Required. Time buckets to group the stats by. Example, 1d, 2h, 24h, etc. Sequence of decimal numbers with a time unit suffix. Valid units include `m` (minute), `h` (hour)",
-          "type": "string"
+          "description": "Time buckets to group the stats by.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified window size. Default is 1 hour.",
+            "1 Minute window",
+            "1 Hour window",
+            "1 Day window",
+            "1 Month window"
+          ],
+          "enum": [
+            "WINDOW_SIZE_UNSPECIFIED",
+            "MINUTE",
+            "HOUR",
+            "DAY",
+            "MONTH"
+          ]
         },
         "timeRange": {
           "description": "Required. Time range for the stats.",
@@ -6744,7 +6758,7 @@
     },
     "GoogleCloudApigeeV1EndpointAttachment": {
       "id": "GoogleCloudApigeeV1EndpointAttachment",
-      "description": "Apigee endpoint attachment. For more information, see Southbound networking patterns.",
+      "description": "Apigee endpoint attachment. For more information, see [Southbound networking patterns] (https:\/\/cloud.google.com\/apigee\/docs\/api-platform\/architecture\/southbound-networking-patterns-endpoints).",
       "type": "object",
       "properties": {
         "name": {
@@ -6781,6 +6795,31 @@
             "ACTIVE",
             "DELETING",
             "UPDATING"
+          ]
+        },
+        "connectionState": {
+          "description": "Output only. State of the endpoint attachment connection to the service attachment.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "The connection state has not been set.",
+            "The connection state is unavailable at this time, possibly because the endpoint attachment is currently being provisioned.",
+            "The connection is pending acceptance by the PSC producer.",
+            "The connection has been accepted by the PSC producer.",
+            "The connection has been rejected by the PSC producer.",
+            "The connection has been closed by the PSC producer and will not serve traffic going forward.",
+            "The connection has been frozen by the PSC producer and will not serve traffic.",
+            "The connection has been accepted by the PSC producer, but it is not ready to serve the traffic due to producer side issues."
+          ],
+          "enum": [
+            "CONNECTION_STATE_UNSPECIFIED",
+            "UNAVAILABLE",
+            "PENDING",
+            "ACCEPTED",
+            "REJECTED",
+            "CLOSED",
+            "FROZEN",
+            "NEEDS_ATTENTION"
           ]
         }
       }
@@ -14021,7 +14060,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Manages access to a developer app by enabling you to: * Approve or revoke a developer app * Generate a new consumer key and secret for a developer app To approve or revoke a developer app, set the `action` query parameter to `approved` or `revoked`, respectively, and the `Content-Type` header to `application\/octet-stream`. If a developer app is revoked, none of its API keys are valid for API calls even though the keys are still `approved`. If successful, the API call returns the following HTTP status code: `204 No Content` To generate a new consumer key and secret for a developer app, pass the new key\/secret details. Rather than replace an existing key, this API generates a new key. In this case, multiple key pairs may be associated with a single developer app. Each key pair has an independent status (`approved` or `revoked`) and expiration time. Any approved, non-expired key can be used in an API call. For example, if you're using API key rotation, you can generate new keys with expiration times that overlap keys that are going to expire. You might also generate a new consumer key\/secret if the security of the original key\/secret is compromised. The `keyExpiresIn` property defines the expiration time for the API key in milliseconds. If you don't set this property or set it to `-1`, the API key never expires. **Notes**: * When generating a new key\/secret, this API replaces the existing attributes, notes, and callback URLs with those specified in the request. Include or exclude any existing information that you want to retain or delete, respectively. * To migrate existing consumer keys and secrets to hybrid from another system, see the CreateDeveloperAppKey API."
+                  "description": "Manages access to a developer app by enabling you to: * Approve or revoke a developer app * Generate a new consumer key and secret for a developer app To approve or revoke a developer app, set the `action` query parameter to `approve` or `revoke`, respectively, and the `Content-Type` header to `application\/octet-stream`. If a developer app is revoked, none of its API keys are valid for API calls even though the keys are still approved. If successful, the API call returns the following HTTP status code: `204 No Content` To generate a new consumer key and secret for a developer app, pass the new key\/secret details. Rather than replace an existing key, this API generates a new key. In this case, multiple key pairs may be associated with a single developer app. Each key pair has an independent status (`approve` or `revoke`) and expiration time. Any approved, non-expired key can be used in an API call. For example, if you're using API key rotation, you can generate new keys with expiration times that overlap keys that are going to expire. You might also generate a new consumer key\/secret if the security of the original key\/secret is compromised. The `keyExpiresIn` property defines the expiration time for the API key in milliseconds. If you don't set this property or set it to `-1`, the API key never expires. **Notes**: * When generating a new key\/secret, this API replaces the existing attributes, notes, and callback URLs with those specified in the request. Include or exclude any existing information that you want to retain or delete, respectively. * To migrate existing consumer keys and secrets to hybrid from another system, see the CreateDeveloperAppKey API."
                 },
                 "create": {
                   "id": "apigee.organizations.developers.apps.create",

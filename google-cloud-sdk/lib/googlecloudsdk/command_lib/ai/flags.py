@@ -631,6 +631,20 @@ inclusive.
       action=arg_parsers.UpdateAction,
       help='Aliases used to reference a model version instead of auto-generated version ID. The aliases mentioned in the flag will replace the aliases set in the model.'
   )
+  parser.add_argument(
+      '--labels',
+      metavar='KEY=VALUE',
+      type=arg_parsers.ArgDict(),
+      action=arg_parsers.UpdateAction,
+      help="""\
+Labels with user-defined metadata to organize your Models.
+
+Label keys and values can be no longer than 64 characters
+(Unicode codepoints), can only contain lowercase letters, numeric
+characters, underscores and dashes. International characters are allowed.
+
+See https://goo.gl/xmQnxf for more information and examples of labels.
+""")
 
 
 def GetMetadataFilePathArg(noun, required=False):

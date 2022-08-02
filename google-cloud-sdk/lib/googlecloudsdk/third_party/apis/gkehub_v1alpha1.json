@@ -319,6 +319,10 @@
           "description": "The specification for RBAC Role Binding Actuation.",
           "$ref": "RBACRoleBindingActuationFeatureSpec"
         },
+        "fleetobservabilityFeatureSpec": {
+          "description": "The specification for FleetObservability feature.",
+          "$ref": "FleetObservabilityFeatureSpec"
+        },
         "featureState": {
           "description": "Output only. State of the Feature resource itself.",
           "readOnly": true,
@@ -1480,6 +1484,13 @@
         }
       }
     },
+    "FleetObservabilityFeatureSpec": {
+      "id": "FleetObservabilityFeatureSpec",
+      "description": "An empty spec for FleetObservability feature. This is required since Feature proto requires a spec.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "FeatureState": {
       "id": "FeatureState",
       "description": "FeatureState describes the state of a Feature resource.",
@@ -1618,6 +1629,10 @@
         "rbacrolebindingactuationFeatureState": {
           "description": "State for RBAC Role Binding Actuation.",
           "$ref": "RBACRoleBindingActuationFeatureState"
+        },
+        "fleetobservabilityFeatureState": {
+          "description": "State for the FleetObservability Feature.",
+          "$ref": "FleetObservabilityFeatureState"
         },
         "updateTime": {
           "description": "The last update time of this status by the controllers",
@@ -2930,6 +2945,13 @@
     "RBACRoleBindingActuationFeatureState": {
       "id": "RBACRoleBindingActuationFeatureState",
       "description": "**RBAC RoleBinding Actuation**: An empty state left as an example Hub-wide Feature state.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "FleetObservabilityFeatureState": {
+      "id": "FleetObservabilityFeatureState",
+      "description": "An empty state for FleetObservability feature. This is required since FeatureStateDetails requires a state.",
       "type": "object",
       "properties": {
       }

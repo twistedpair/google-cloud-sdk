@@ -30,8 +30,8 @@ from googlecloudsdk.core import resources
 FOLDERS_API_VERSION = 'v2'
 
 
-def FoldersClient():
-  return apis.GetClientInstance('cloudresourcemanager', FOLDERS_API_VERSION)
+def FoldersClient(api_version=FOLDERS_API_VERSION):
+  return apis.GetClientInstance('cloudresourcemanager', api_version)
 
 
 def FoldersRegistry():
@@ -40,12 +40,12 @@ def FoldersRegistry():
   return registry
 
 
-def FoldersService():
-  return FoldersClient().folders
+def FoldersService(api_version=FOLDERS_API_VERSION):
+  return FoldersClient(api_version).folders
 
 
-def FoldersMessages():
-  return apis.GetMessagesModule('cloudresourcemanager', FOLDERS_API_VERSION)
+def FoldersMessages(api_version=FOLDERS_API_VERSION):
+  return apis.GetMessagesModule('cloudresourcemanager', api_version)
 
 
 def FolderNameToId(folder_name):

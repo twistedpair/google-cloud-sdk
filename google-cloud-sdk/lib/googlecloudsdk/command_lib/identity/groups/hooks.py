@@ -124,9 +124,9 @@ def SetLabelsCreate(unused_ref, args, request):
   if args.IsSpecified('labels'):
     labels = args.labels
   elif args.IsKnownAndSpecified('group_type'):
-    labels = ' '.join(GROUP_TYPE_MAP[args.group_type])
+    labels = ','.join(GROUP_TYPE_MAP[args.group_type])
   else:
-    labels = ' '.join(GROUP_TYPE_MAP['discussion'])
+    labels = ','.join(GROUP_TYPE_MAP['discussion'])
 
   if hasattr(request.group, 'labels'):
     request.group.labels = ReformatLabels(args, labels)

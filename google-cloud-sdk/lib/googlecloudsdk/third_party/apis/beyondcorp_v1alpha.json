@@ -363,6 +363,11 @@
         "appGateway": {
           "description": "Required. AppGateway name in following format: `projects\/{project_id}\/locations\/{location_id}\/appgateways\/{gateway_id}`",
           "type": "string"
+        },
+        "l7psc": {
+          "description": "Output only. L7 private service connection for this resource.",
+          "readOnly": true,
+          "type": "string"
         }
       }
     },
@@ -1630,6 +1635,11 @@
           "description": "Output only. Indicates whether the field can be used for filtering.",
           "readOnly": true,
           "type": "boolean"
+        },
+        "groupable": {
+          "description": "Output only. Indicates whether the field can be used for grouping in custom grouping request.",
+          "readOnly": true,
+          "type": "boolean"
         }
       }
     },
@@ -1647,6 +1657,11 @@
           "description": "Output only. Filters applied.",
           "readOnly": true,
           "type": "string"
+        },
+        "customGrouping": {
+          "description": "Output only. Customised grouping applied.",
+          "readOnly": true,
+          "$ref": "GoogleCloudBeyondcorpSaasplatformInsightsV1alphaCustomGrouping"
         },
         "startTime": {
           "description": "Output only. Starting time for the duration for which insight was pulled.",
@@ -1680,6 +1695,24 @@
             "MONTHLY",
             "CUSTOM_DATE_RANGE"
           ]
+        }
+      }
+    },
+    "GoogleCloudBeyondcorpSaasplatformInsightsV1alphaCustomGrouping": {
+      "id": "GoogleCloudBeyondcorpSaasplatformInsightsV1alphaCustomGrouping",
+      "description": "Customised grouping option that allows setting the group_by fields and also the filters togather for a configured insight request.",
+      "type": "object",
+      "properties": {
+        "groupFields": {
+          "description": "Required. Fields to be used for grouping. NOTE: Use the `filter_alias` from `Insight.Metadata.Field` message for declaring the fields to be grouped-by here.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "fieldFilter": {
+          "description": "Optional. Filterable parameters to be added to the grouping clause. Available fields could be fetched by calling insight list and get APIs in `BASIC` view. `=` is the only comparison operator supported. `AND` is the only logical operator supported. Usage: field_filter=\"fieldName1=fieldVal1 AND fieldName2=fieldVal2\". NOTE: Only `AND` conditions are allowed. NOTE: Use the `filter_alias` from `Insight.Metadata.Field` message for the filtering the corresponding fields in this filter field. (These expressions are based on the filter language described at https:\/\/google.aip.dev\/160).",
+          "type": "string"
         }
       }
     },
@@ -5153,6 +5186,17 @@
                       "location": "query",
                       "type": "string"
                     },
+                    "customGrouping.groupFields": {
+                      "description": "Required. Fields to be used for grouping. NOTE: Use the `filter_alias` from `Insight.Metadata.Field` message for declaring the fields to be grouped-by here.",
+                      "location": "query",
+                      "repeated": true,
+                      "type": "string"
+                    },
+                    "customGrouping.fieldFilter": {
+                      "description": "Optional. Filterable parameters to be added to the grouping clause. Available fields could be fetched by calling insight list and get APIs in `BASIC` view. `=` is the only comparison operator supported. `AND` is the only logical operator supported. Usage: field_filter=\"fieldName1=fieldVal1 AND fieldName2=fieldVal2\". NOTE: Only `AND` conditions are allowed. NOTE: Use the `filter_alias` from `Insight.Metadata.Field` message for the filtering the corresponding fields in this filter field. (These expressions are based on the filter language described at https:\/\/google.aip.dev\/160).",
+                      "location": "query",
+                      "type": "string"
+                    },
                     "startTime": {
                       "description": "Required. Starting time for the duration for which insight is to be pulled.",
                       "location": "query",
@@ -5433,6 +5477,17 @@
                     },
                     "fieldFilter": {
                       "description": "Optional. Other filterable\/configurable parameters as applicable to the selected insight. Available fields could be fetched by calling insight list and get APIs in `BASIC` view. `=` is the only comparison operator supported. `AND` is the only logical operator supported. Usage: field_filter=\"fieldName1=fieldVal1 AND fieldName2=fieldVal2\". NOTE: Only `AND` conditions are allowed. NOTE: Use the `filter_alias` from `Insight.Metadata.Field` message for the filtering the corresponding fields in this filter field. (These expressions are based on the filter language described at https:\/\/google.aip.dev\/160).",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "customGrouping.groupFields": {
+                      "description": "Required. Fields to be used for grouping. NOTE: Use the `filter_alias` from `Insight.Metadata.Field` message for declaring the fields to be grouped-by here.",
+                      "location": "query",
+                      "repeated": true,
+                      "type": "string"
+                    },
+                    "customGrouping.fieldFilter": {
+                      "description": "Optional. Filterable parameters to be added to the grouping clause. Available fields could be fetched by calling insight list and get APIs in `BASIC` view. `=` is the only comparison operator supported. `AND` is the only logical operator supported. Usage: field_filter=\"fieldName1=fieldVal1 AND fieldName2=fieldVal2\". NOTE: Only `AND` conditions are allowed. NOTE: Use the `filter_alias` from `Insight.Metadata.Field` message for the filtering the corresponding fields in this filter field. (These expressions are based on the filter language described at https:\/\/google.aip.dev\/160).",
                       "location": "query",
                       "type": "string"
                     },

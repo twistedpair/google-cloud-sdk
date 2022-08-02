@@ -1190,9 +1190,10 @@ class GoogleCloudAssuredworkloadsVersioningV1mainWorkloadComplianceStatus(_messa
   r"""Represents the Compliance Status of this workload
 
   Fields:
-    acknowledgedViolationCount: Count of acknowledged violations in the
-      Workload.
-    activeViolationCount: Count of active Violations in the Workload.
+    acknowledgedViolationCount: Count of active Violations which are
+      acknowledged in the Workload.
+    activeViolationCount: Count of active Violations which haven't been
+      acknowledged.
   """
 
   acknowledgedViolationCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)

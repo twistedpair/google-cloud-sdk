@@ -36,14 +36,13 @@ def Check(instance_ref, release_track):
       response_message += 'Yes'
       continue_flag = True
     else:
-      # Format the release_track.
-      release_track_str = '' if release_track is None else release_track + ' '
+      command_args = ['services', 'enable', 'osconfig.googleapis.com']
+      command = utils.GetCommandString(command_args, release_track)
+
       response_message += (
           'No\n'
-          'OS Config is not enabled for this instance. To enable, run\n\n'
-          '$ gcloud ' + release_track_str + 'services enable '
-          'osconfig.googleapis.com'
-          )
+          'OS Config is not enabled for this instance. To enable, run\n\n{}'
+          .format(command))
   except (exceptions.GetServicePermissionDeniedException,
           apitools_exceptions.HttpError) as err:
     response_message += utils.UnknownMessage(err)

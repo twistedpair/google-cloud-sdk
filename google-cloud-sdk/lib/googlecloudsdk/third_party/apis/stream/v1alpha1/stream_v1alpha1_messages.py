@@ -234,6 +234,20 @@ class Location(_messages.Message):
   name = _messages.StringField(5)
 
 
+class LocationConfig(_messages.Message):
+  r"""Deployment configuration of an instance in a given location.
+
+  Fields:
+    capacity: The maximum number of concurrent streaming sessions that the
+      instance can support in this location.
+    location: The location in which the instance is deployed. We only use
+      region for now.
+  """
+
+  capacity = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  location = _messages.StringField(2)
+
+
 class Operation(_messages.Message):
   r"""This resource represents a long-running operation that is the result of
   a network API call.
@@ -577,10 +591,13 @@ class StreamContent(_messages.Message):
 
 
 class StreamInstance(_messages.Message):
-  r"""Message describing StreamInstance object
+  r"""Message describing StreamInstance object Next ID: 12
 
   Messages:
     LabelsValue: Labels as key value pairs
+    LocationConfigsValue: Deployment configuration of the instance by
+      locations (only regions are supported now). Map keys are regions in the
+      string form.
 
   Fields:
     apiEndpoint: Output only. The API endpoint to which an Stream client can
@@ -593,6 +610,9 @@ class StreamInstance(_messages.Message):
     createTime: Output only. [Output only] Create time stamp
     labels: Labels as key value pairs
     lifecycleState: Output only. Current status of the instance.
+    locationConfigs: Deployment configuration of the instance by locations
+      (only regions are supported now). Map keys are regions in the string
+      form.
     name: name of resource
     realmConfigs: Deployment configuration of the instance in realms. Note
       that this is not defined as a map for enum types (Realm) cannot be used
@@ -624,6 +644,32 @@ class StreamInstance(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LocationConfigsValue(_messages.Message):
+    r"""Deployment configuration of the instance by locations (only regions
+    are supported now). Map keys are regions in the string form.
+
+    Messages:
+      AdditionalProperty: An additional property for a LocationConfigsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type LocationConfigsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LocationConfigsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A LocationConfig attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('LocationConfig', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   apiEndpoint = _messages.StringField(1)
   apiKey = _messages.StringField(2)
   content = _messages.StringField(3)
@@ -631,9 +677,10 @@ class StreamInstance(_messages.Message):
   createTime = _messages.StringField(5)
   labels = _messages.MessageField('LabelsValue', 6)
   lifecycleState = _messages.MessageField('LifecycleState', 7)
-  name = _messages.StringField(8)
-  realmConfigs = _messages.MessageField('RealmConfig', 9, repeated=True)
-  updateTime = _messages.StringField(10)
+  locationConfigs = _messages.MessageField('LocationConfigsValue', 8)
+  name = _messages.StringField(9)
+  realmConfigs = _messages.MessageField('RealmConfig', 10, repeated=True)
+  updateTime = _messages.StringField(11)
 
 
 class StreamProjectsLocationsGetRequest(_messages.Message):

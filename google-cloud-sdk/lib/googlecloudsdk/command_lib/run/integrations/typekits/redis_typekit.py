@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+from googlecloudsdk.api_lib.run.integrations import api_utils
 from googlecloudsdk.command_lib.run.integrations.typekits import base
 
 
@@ -70,3 +71,60 @@ class RedisTypeKit(base.TypeKit):
     selectors = super(RedisTypeKit, self).GetDeleteSelectors(integration_name)
     selectors.append({'type': 'vpc', 'name': '*'})
     return selectors
+
+  def GetCreateComponentTypes(self, selectors, app_dict):
+    """Returns a list of component types included in a create/update deployment.
+
+    Args:
+      selectors: list of dict of type names (string) that will be deployed.
+      app_dict: The application resource as dictionary.
+
+    Returns:
+      set of component types as strings. The component types can also include
+      hidden resource types that should be called out as part of the deployment
+      progress output.
+    """
+    rtypes = super(RedisTypeKit,
+                   self).GetCreateComponentTypes(selectors,
+                                                 app_dict)
+    rtypes.add('vpc')
+    return rtypes
+
+  def GetDeleteComponentTypes(self, selectors, app_dict):
+    """Returns a list of component types included in a delete deployment.
+
+    Args:
+      selectors: list of dict of type names (string) that will be deployed.
+      app_dict: The application resource as dictionary.
+
+    Returns:
+      set of component types as strings. The component types can also include
+      hidden resource types that should be called out as part of the deployment
+      progress output.
+    """
+    rtypes = super(RedisTypeKit,
+                   self).GetCreateComponentTypes(selectors,
+                                                 app_dict)
+    num_redis = self._NumberOfRedisInApp(app_dict)
+    if num_redis == 1:
+      rtypes.add('vpc')
+    elif 'vpc' in rtypes:
+      rtypes.remove('vpc')
+    return rtypes
+
+  def _NumberOfRedisInApp(self, app_dict):
+    """Returns a cound of redis resources in the application.
+
+    Args:
+      app_dict: The application resource as dictionary.
+
+    Returns:
+      count of redis resources.
+    """
+    resources_map = app_dict[api_utils.APP_DICT_CONFIG_KEY][
+        api_utils.APP_CONFIG_DICT_RESOURCES_KEY]
+    count = 0
+    for resource in resources_map.values():
+      if 'redis' in resource:
+        count += 1
+    return count

@@ -360,7 +360,7 @@ class ArtifactregistryV1(base_api.BaseApiClient):
               resumable_multipart=None,
               resumable_path=None,
               simple_multipart=True,
-              simple_path='/upload/v1/{+parent}/goArtifacts:create',
+              simple_path='/upload/v1/{+parent}/goModules:create',
           ),
           }
 
@@ -382,13 +382,13 @@ class ArtifactregistryV1(base_api.BaseApiClient):
           upload=upload, upload_config=upload_config)
 
     Upload.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/goArtifacts:create',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/goModules:create',
         http_method='POST',
         method_id='artifactregistry.projects.locations.repositories.goModules.upload',
         ordered_params=['parent'],
         path_params=['parent'],
         query_params=[],
-        relative_path='v1/{+parent}/goArtifacts:create',
+        relative_path='v1/{+parent}/goModules:create',
         request_field='uploadGoModuleRequest',
         request_type_name='ArtifactregistryProjectsLocationsRepositoriesGoModulesUploadRequest',
         response_type_name='UploadGoModuleMediaResponse',

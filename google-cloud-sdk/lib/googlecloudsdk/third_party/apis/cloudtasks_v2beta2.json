@@ -306,7 +306,9 @@
             "HTTP GET",
             "HTTP HEAD",
             "HTTP PUT",
-            "HTTP DELETE"
+            "HTTP DELETE",
+            "HTTP PATCH",
+            "HTTP OPTIONS"
           ],
           "enum": [
             "HTTP_METHOD_UNSPECIFIED",
@@ -314,7 +316,9 @@
             "GET",
             "HEAD",
             "PUT",
-            "DELETE"
+            "DELETE",
+            "PATCH",
+            "OPTIONS"
           ]
         },
         "headerOverrides": {
@@ -765,7 +769,9 @@
             "HTTP GET",
             "HTTP HEAD",
             "HTTP PUT",
-            "HTTP DELETE"
+            "HTTP DELETE",
+            "HTTP PATCH",
+            "HTTP OPTIONS"
           ],
           "enum": [
             "HTTP_METHOD_UNSPECIFIED",
@@ -773,7 +779,9 @@
             "GET",
             "HEAD",
             "PUT",
-            "DELETE"
+            "DELETE",
+            "PATCH",
+            "OPTIONS"
           ]
         },
         "appEngineRouting": {
@@ -832,7 +840,9 @@
             "HTTP GET",
             "HTTP HEAD",
             "HTTP PUT",
-            "HTTP DELETE"
+            "HTTP DELETE",
+            "HTTP PATCH",
+            "HTTP OPTIONS"
           ],
           "enum": [
             "HTTP_METHOD_UNSPECIFIED",
@@ -840,7 +850,9 @@
             "GET",
             "HEAD",
             "PUT",
-            "DELETE"
+            "DELETE",
+            "PATCH",
+            "OPTIONS"
           ]
         },
         "headers": {

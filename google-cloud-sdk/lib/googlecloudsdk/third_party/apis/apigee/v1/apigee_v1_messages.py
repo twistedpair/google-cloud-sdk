@@ -6135,14 +6135,19 @@ class GoogleCloudApigeeV1DimensionMetric(_messages.Message):
 
 
 class GoogleCloudApigeeV1EndpointAttachment(_messages.Message):
-  r"""Apigee endpoint attachment. For more information, see Southbound
-  networking patterns.
+  r"""Apigee endpoint attachment. For more information, see [Southbound
+  networking patterns] (https://cloud.google.com/apigee/docs/api-
+  platform/architecture/southbound-networking-patterns-endpoints).
 
   Enums:
+    ConnectionStateValueValuesEnum: Output only. State of the endpoint
+      attachment connection to the service attachment.
     StateValueValuesEnum: Output only. State of the endpoint attachment.
       Values other than `ACTIVE` mean the resource is not ready to use.
 
   Fields:
+    connectionState: Output only. State of the endpoint attachment connection
+      to the service attachment.
     host: Output only. Host that can be used in either the HTTP target
       endpoint directly or as the host in target server.
     location: Required. Location of the endpoint attachment.
@@ -6152,6 +6157,33 @@ class GoogleCloudApigeeV1EndpointAttachment(_messages.Message):
     state: Output only. State of the endpoint attachment. Values other than
       `ACTIVE` mean the resource is not ready to use.
   """
+
+  class ConnectionStateValueValuesEnum(_messages.Enum):
+    r"""Output only. State of the endpoint attachment connection to the
+    service attachment.
+
+    Values:
+      CONNECTION_STATE_UNSPECIFIED: The connection state has not been set.
+      UNAVAILABLE: The connection state is unavailable at this time, possibly
+        because the endpoint attachment is currently being provisioned.
+      PENDING: The connection is pending acceptance by the PSC producer.
+      ACCEPTED: The connection has been accepted by the PSC producer.
+      REJECTED: The connection has been rejected by the PSC producer.
+      CLOSED: The connection has been closed by the PSC producer and will not
+        serve traffic going forward.
+      FROZEN: The connection has been frozen by the PSC producer and will not
+        serve traffic.
+      NEEDS_ATTENTION: The connection has been accepted by the PSC producer,
+        but it is not ready to serve the traffic due to producer side issues.
+    """
+    CONNECTION_STATE_UNSPECIFIED = 0
+    UNAVAILABLE = 1
+    PENDING = 2
+    ACCEPTED = 3
+    REJECTED = 4
+    CLOSED = 5
+    FROZEN = 6
+    NEEDS_ATTENTION = 7
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. State of the endpoint attachment. Values other than
@@ -6170,11 +6202,12 @@ class GoogleCloudApigeeV1EndpointAttachment(_messages.Message):
     DELETING = 3
     UPDATING = 4
 
-  host = _messages.StringField(1)
-  location = _messages.StringField(2)
-  name = _messages.StringField(3)
-  serviceAttachment = _messages.StringField(4)
-  state = _messages.EnumField('StateValueValuesEnum', 5)
+  connectionState = _messages.EnumField('ConnectionStateValueValuesEnum', 1)
+  host = _messages.StringField(2)
+  location = _messages.StringField(3)
+  name = _messages.StringField(4)
+  serviceAttachment = _messages.StringField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
 
 
 class GoogleCloudApigeeV1EntityMetadata(_messages.Message):
@@ -8434,6 +8467,7 @@ class GoogleCloudApigeeV1QueryTimeSeriesStatsRequest(_messages.Message):
     TimestampOrderValueValuesEnum: Order the sequences in increasing or
       decreasing order of timestamps. Default is descending order of
       timestamps (latest first).
+    WindowSizeValueValuesEnum: Time buckets to group the stats by.
 
   Fields:
     dimensions: List of dimension names to group the aggregations by. If no
@@ -8451,9 +8485,7 @@ class GoogleCloudApigeeV1QueryTimeSeriesStatsRequest(_messages.Message):
     timeRange: Required. Time range for the stats.
     timestampOrder: Order the sequences in increasing or decreasing order of
       timestamps. Default is descending order of timestamps (latest first).
-    windowSize: Required. Time buckets to group the stats by. Example, 1d, 2h,
-      24h, etc. Sequence of decimal numbers with a time unit suffix. Valid
-      units include `m` (minute), `h` (hour)
+    windowSize: Time buckets to group the stats by.
   """
 
   class TimestampOrderValueValuesEnum(_messages.Enum):
@@ -8469,6 +8501,22 @@ class GoogleCloudApigeeV1QueryTimeSeriesStatsRequest(_messages.Message):
     ASCENDING = 1
     DESCENDING = 2
 
+  class WindowSizeValueValuesEnum(_messages.Enum):
+    r"""Time buckets to group the stats by.
+
+    Values:
+      WINDOW_SIZE_UNSPECIFIED: Unspecified window size. Default is 1 hour.
+      MINUTE: 1 Minute window
+      HOUR: 1 Hour window
+      DAY: 1 Day window
+      MONTH: 1 Month window
+    """
+    WINDOW_SIZE_UNSPECIFIED = 0
+    MINUTE = 1
+    HOUR = 2
+    DAY = 3
+    MONTH = 4
+
   dimensions = _messages.StringField(1, repeated=True)
   filter = _messages.StringField(2)
   metrics = _messages.MessageField('GoogleCloudApigeeV1MetricAggregation', 3, repeated=True)
@@ -8476,7 +8524,7 @@ class GoogleCloudApigeeV1QueryTimeSeriesStatsRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   timeRange = _messages.MessageField('GoogleTypeInterval', 6)
   timestampOrder = _messages.EnumField('TimestampOrderValueValuesEnum', 7)
-  windowSize = _messages.StringField(8)
+  windowSize = _messages.EnumField('WindowSizeValueValuesEnum', 8)
 
 
 class GoogleCloudApigeeV1QueryTimeSeriesStatsResponse(_messages.Message):

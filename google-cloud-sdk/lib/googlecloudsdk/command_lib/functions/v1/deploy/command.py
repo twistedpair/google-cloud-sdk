@@ -27,6 +27,7 @@ from googlecloudsdk.api_lib.functions import secrets as secrets_util
 from googlecloudsdk.api_lib.functions.v1 import env_vars as env_vars_api_util
 from googlecloudsdk.api_lib.functions.v1 import exceptions as function_exceptions
 from googlecloudsdk.api_lib.functions.v1 import util as api_util
+from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.calliope.arg_parsers import ArgumentTypeError
 from googlecloudsdk.command_lib.functions import flags
@@ -280,6 +281,28 @@ def _GetActiveKMSKey(function, args):
   return kms_key
 
 
+def _ApplyBuildpackStackArgsToFunction(function, args, track):
+  """Populates the `buildpack_stack` field of a Cloud Function message.
+
+  Args:
+    function: Cloud function message to be populated.
+    args: All CLI arguments.
+    track: release track.
+
+  Returns:
+    updated_fields: update mask containing the list of fields to be updated.
+  """
+  if track is not base.ReleaseTrack.ALPHA:
+    return []
+
+  updated_fields = []
+  if args.IsSpecified('buildpack_stack'):
+    function.buildpackStack = args.buildpack_stack
+    updated_fields.append('buildpack_stack')
+
+  return updated_fields
+
+
 def _CreateBindPolicyCommand(function_ref):
   template = ('gcloud alpha functions add-iam-policy-binding %s --region=%s '
               '--member=allUsers --role=roles/cloudfunctions.invoker')
@@ -497,6 +520,10 @@ def Run(args, track=None, enable_runtime=True):
   # them, docker_repository, was already added as part of CMEK
   updated_fields.extend(
       _ApplyDockerRegistryArgsToFunction(function, args))
+
+  # Applies Buildpack stack args to the function.
+  updated_fields.extend(
+      _ApplyBuildpackStackArgsToFunction(function, args, track))
 
   api_enablement.PromptToEnableApiIfDisabled('cloudbuild.googleapis.com')
   if is_new_function:

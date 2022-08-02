@@ -580,6 +580,13 @@
         }
       }
     },
+    "DownloadFileResponse": {
+      "id": "DownloadFileResponse",
+      "description": "The response to download a file.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "ListTagsResponse": {
       "id": "ListTagsResponse",
       "description": "The response from listing tags.",
@@ -1014,6 +1021,38 @@
     }
   },
   "resources": {
+    "media": {
+      "methods": {
+        "download": {
+          "id": "artifactregistry.media.download",
+          "path": "v1beta2/{+name}:download",
+          "flatPath": "v1beta2/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/files/{filesId}:download",
+          "httpMethod": "GET",
+          "parameters": {
+            "name": {
+              "description": "Required. The name of the file to download.",
+              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+\/files\/[^\/]+$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "supportsMediaDownload": true,
+          "useMediaDownloadService": true,
+          "response": {
+            "$ref": "DownloadFileResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-platform.read-only"
+          ],
+          "description": "Download a file."
+        }
+      }
+    },
     "projects": {
       "methods": {
         "getProjectSettings": {

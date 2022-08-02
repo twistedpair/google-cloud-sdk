@@ -21,16 +21,16 @@ from __future__ import unicode_literals
 import abc
 import json
 
+from apitools.base.py import encoding_helper
 from apitools.base.py import transfer
-
 from googlecloudsdk.api_lib.storage import errors
 from googlecloudsdk.api_lib.storage import gcs_metadata_util
 from googlecloudsdk.api_lib.storage import retry_util
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.command_lib.storage.resources import resource_reference
 from googlecloudsdk.command_lib.storage.tasks.cp import copy_util
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import scaled_integer
-
 import six
 
 
@@ -56,8 +56,9 @@ class _Upload(six.with_metaclass(abc.ABCMeta, object)):
       should_gzip_in_flight (bool): Should gzip encode upload in flight.
       request_config (gcs_api.GcsRequestConfig): Tracks additional request
         preferences.
-      source_resource (resource_reference.FileObjectResource|None): Contains the
-        source StorageUrl. Can be None if source is pure stream.
+      source_resource (FileObjectResource|ObjectResource|None): Contains the
+        source StorageUrl and source object metadata for daisy chain transfers.
+        Can be None if source is pure stream.
     """
     self._gcs_api = gcs_api
     self._http_client = http_client
@@ -83,10 +84,17 @@ class _Upload(six.with_metaclass(abc.ABCMeta, object)):
         name=self._destination_resource.storage_url.object_name,
         bucket=self._destination_resource.storage_url.bucket_name)
 
-    if self._source_resource:
+    if isinstance(self._source_resource, resource_reference.FileObjectResource):
       source_file_path = self._source_resource.storage_url.object_name
     else:
       source_file_path = None
+
+    if (isinstance(self._source_resource, resource_reference.ObjectResource) and
+        self._source_resource.custom_metadata):
+      object_metadata.metadata = encoding_helper.DictToAdditionalPropertyMessage(
+          self._source_resource.custom_metadata,
+          self._messages.Object.MetadataValue)
+
     gcs_metadata_util.update_object_metadata_from_request_config(
         object_metadata, self._request_config, source_file_path)
 

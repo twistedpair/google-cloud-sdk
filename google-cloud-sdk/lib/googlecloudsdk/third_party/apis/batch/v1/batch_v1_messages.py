@@ -1273,6 +1273,7 @@ class TaskSpec(_messages.Message):
 
   Fields:
     computeResource: ComputeResource requirements.
+    environment: Environment variables to set before running the Task.
     environments: Environment variables to set before running the Task. You
       can set up to 100 environments.
     lifecyclePolicies: Lifecycle management schema when any task in a task
@@ -1327,12 +1328,13 @@ class TaskSpec(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   computeResource = _messages.MessageField('ComputeResource', 1)
-  environments = _messages.MessageField('EnvironmentsValue', 2)
-  lifecyclePolicies = _messages.MessageField('LifecyclePolicy', 3, repeated=True)
-  maxRetryCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  maxRunDuration = _messages.StringField(5)
-  runnables = _messages.MessageField('Runnable', 6, repeated=True)
-  volumes = _messages.MessageField('Volume', 7, repeated=True)
+  environment = _messages.MessageField('Environment', 2)
+  environments = _messages.MessageField('EnvironmentsValue', 3)
+  lifecyclePolicies = _messages.MessageField('LifecyclePolicy', 4, repeated=True)
+  maxRetryCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  maxRunDuration = _messages.StringField(6)
+  runnables = _messages.MessageField('Runnable', 7, repeated=True)
+  volumes = _messages.MessageField('Volume', 8, repeated=True)
 
 
 class TaskStatus(_messages.Message):

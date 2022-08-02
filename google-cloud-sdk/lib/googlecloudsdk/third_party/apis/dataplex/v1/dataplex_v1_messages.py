@@ -3376,17 +3376,17 @@ class GoogleCloudDataplexV1SessionEvent(_messages.Message):
 
     Values:
       EVENT_TYPE_UNSPECIFIED: An unspecified event type.
-      CREATE: Event for creation of a cluster. It is not yet assigned to a
-        user.
       START: Event when the session is assigned to a user.
       STOP: Event for stop of a session.
       QUERY: Query events in the session.
+      CREATE: Event for creation of a cluster. It is not yet assigned to a
+        user. This comes before START in the sequence
     """
     EVENT_TYPE_UNSPECIFIED = 0
-    CREATE = 1
-    START = 2
-    STOP = 3
-    QUERY = 4
+    START = 1
+    STOP = 2
+    QUERY = 3
+    CREATE = 4
 
   eventSucceeded = _messages.BooleanField(1)
   message = _messages.StringField(2)

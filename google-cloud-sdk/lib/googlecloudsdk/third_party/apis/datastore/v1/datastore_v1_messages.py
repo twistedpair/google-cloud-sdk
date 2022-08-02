@@ -19,8 +19,9 @@ class AllocateIdsRequest(_messages.Message):
   r"""The request for Datastore.AllocateIds.
 
   Fields:
-    databaseId: If not empty, the ID of the database against which to make the
-      request.
+    databaseId: The ID of the database against which to make the request.
+      '(default)' is not allowed; please use empty string '' to refer the
+      default database.
     keys: Required. A list of keys with incomplete key paths for which to
       allocate IDs. No key may be reserved/read-only.
   """
@@ -56,8 +57,9 @@ class BeginTransactionRequest(_messages.Message):
   r"""The request for Datastore.BeginTransaction.
 
   Fields:
-    databaseId: If not empty, the ID of the database against which to make the
-      request.
+    databaseId: The ID of the database against which to make the request.
+      '(default)' is not allowed; please use empty string '' to refer the
+      default database.
     transactionOptions: Options for a new transaction.
   """
 
@@ -83,8 +85,9 @@ class CommitRequest(_messages.Message):
       `TRANSACTIONAL`.
 
   Fields:
-    databaseId: If not empty, the ID of the database against which to make the
-      request.
+    databaseId: The ID of the database against which to make the request.
+      '(default)' is not allowed; please use empty string '' to refer the
+      default database.
     mode: The type of commit to perform. Defaults to `TRANSACTIONAL`.
     mutations: The mutations to perform. When mode is `TRANSACTIONAL`,
       mutations affecting a single entity are applied in order. The following
@@ -1539,8 +1542,9 @@ class LookupRequest(_messages.Message):
   r"""The request for Datastore.Lookup.
 
   Fields:
-    databaseId: If not empty, the ID of the database against which to make the
-      request.
+    databaseId: The ID of the database against which to make the request.
+      '(default)' is not allowed; please use empty string '' to refer the
+      default database.
     keys: Required. Keys of entities to look up.
     readOptions: The options for this lookup request.
   """
@@ -1962,8 +1966,9 @@ class ReserveIdsRequest(_messages.Message):
   r"""The request for Datastore.ReserveIds.
 
   Fields:
-    databaseId: If not empty, the ID of the database against which to make the
-      request.
+    databaseId: The ID of the database against which to make the request.
+      '(default)' is not allowed; please use empty string '' to refer the
+      default database.
     keys: Required. A list of keys with complete key paths whose numeric IDs
       should not be auto-allocated.
   """
@@ -1980,8 +1985,9 @@ class RollbackRequest(_messages.Message):
   r"""The request for Datastore.Rollback.
 
   Fields:
-    databaseId: If not empty, the ID of the database against which to make the
-      request.
+    databaseId: The ID of the database against which to make the request.
+      '(default)' is not allowed; please use empty string '' to refer the
+      default database.
     transaction: Required. The transaction identifier, returned by a call to
       Datastore.BeginTransaction.
   """
@@ -1998,8 +2004,9 @@ class RunQueryRequest(_messages.Message):
   r"""The request for Datastore.RunQuery.
 
   Fields:
-    databaseId: If not empty, the ID of the database against which to make the
-      request.
+    databaseId: The ID of the database against which to make the request.
+      '(default)' is not allowed; please use empty string '' to refer the
+      default database.
     gqlQuery: The GQL query to run. This query must be a non-aggregation
       query.
     partitionId: Entities are partitioned into subsets, identified by a

@@ -18,7 +18,23 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.calliope import base
 from googlecloudsdk.core import properties
+
+
+def GetCommandString(args, release_track):
+  """Gets the command string for the user to invoke.
+
+  Args:
+    args: the command args. These should be arguments put after 'gcloud'.
+    release_track: The release track.
+
+  Returns:
+    The command string, formatted as '$ gcloud [args]'.
+  """
+  if release_track != base.ReleaseTrack.GA:
+    args.insert(0, release_track.prefix)
+  return ' '.join(['$', 'gcloud'] + args)
 
 
 def UnknownMessage(exception):

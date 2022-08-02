@@ -35,7 +35,7 @@ config_from_file:
         "config":{
           "transportProtocol":"TCP",
           "destinationRoutes":[{
-            "address":"196.0.0.1",
+            "address":"196.0.0.0",
             "netmask":"255.255.255.0"
           }]
         }
@@ -58,3 +58,29 @@ display_name:
         * Must be 6 to 30 characters in length.
         * Can only contain lowercase letters, numbers and hyphens.
         * Must start with a letter.
+
+ingress_config_update:
+  arg_name: ingress-config
+  help_text: |-
+    Ingress config for client gateways.
+    Example - {"destinationRoutes":[{"address":"196.0.0.0", "netmask":"255.255.255.0"},{"address":"197.0.0.0","netmask":"255.255.255.0"}]}.
+
+config_from_file_update:
+  arg_name: config-from-file
+  help_text: |-
+    Path to json file containing client connector service configuration.
+    Example - "/file/path/config.json" where config.json contains -
+    ```
+    {
+      "ingress":{
+        "config":{
+          "transportProtocol":"TCP",
+          "destinationRoutes":[{
+            "address":"196.0.0.0",
+            "netmask":"255.255.255.0"
+          }]
+        }
+      },
+      "displayName":"my-service-resource"
+    }
+    ```

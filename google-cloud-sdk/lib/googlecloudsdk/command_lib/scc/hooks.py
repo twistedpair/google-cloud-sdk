@@ -22,13 +22,21 @@ from __future__ import unicode_literals
 import re
 
 from apitools.base.py import encoding
-
 from googlecloudsdk.api_lib.scc import securitycenter_client as sc_client
 from googlecloudsdk.command_lib.util.apis import yaml_data
 from googlecloudsdk.command_lib.util.args import resource_args
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import properties
+from googlecloudsdk.core import yaml
+
+
+class InvalidCustomConfigFileError(core_exceptions.Error):
+  """Error if a custom config file is improperly formatted."""
+
+
+class InvalidTestDataFileError(core_exceptions.Error):
+  """Error if a test data file is improperly formatted."""
 
 
 class InvalidSCCInputError(core_exceptions.Error):
@@ -151,9 +159,8 @@ def GetDefaultParent():
   if id_pattern.match(parent):
     # Prepend organizations/ if only number value is provided.
     parent = "organizations/" + parent
-  if not (organization_resource_pattern.match(parent) or \
-          parent.startswith("projects/") or \
-          parent.startswith("folders/")):
+  if not (organization_resource_pattern.match(parent) or
+          parent.startswith("projects/") or parent.startswith("folders/")):
     raise InvalidSCCInputError(
         """Parent must match either [0-9]+, organizations/[0-9]+, projects/.*
       or folders/.*.""")
@@ -194,3 +201,36 @@ def GetSourceParentFromResourceName(resource_name):
   list_source_components = resource_name.split("/")
   return (GetParentFromResourceName(resource_name) + "/" +
           list_source_components[2] + "/" + list_source_components[3])
+
+
+def ProcessCustomConfigFile(file_contents):
+  """Process the custom configuration file for the custom module."""
+  messages = sc_client.GetMessages()
+  try:
+    custom_config_dict = yaml.load(file_contents)
+    return encoding.DictToMessage(
+        custom_config_dict, messages.GoogleCloudSecuritycenterV1CustomConfig)
+  except yaml.YAMLParseError as ype:
+    raise InvalidCustomConfigFileError(
+        "Error parsing custom config file [{}]".format(ype))
+
+
+def ProcessTestResourceDataFile(file_contents):
+  """Process the test resource data file for the custom module to test against."""
+  messages = sc_client.GetMessages()
+  try:
+    test_data_dict = yaml.load(file_contents)
+
+    if not test_data_dict or not isinstance(test_data_dict, list):
+      raise InvalidTestDataFileError(
+          "Error parsing test data file: no data records defined in file")
+
+    test_data_messages = []
+    for field in test_data_dict:
+      test_data_messages.append(
+          encoding.DictToMessage(field, messages.TestData))
+
+    return test_data_messages
+  except yaml.YAMLParseError as ype:
+    raise InvalidTestDataFileError(
+        "Error parsing test data file [{}]".format(ype))

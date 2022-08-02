@@ -1058,6 +1058,7 @@ class _SectionApiClientOverrides(_Section):
     self.container = self._Add('container')
     self.speech = self._Add('speech')
     self.sql = self._Add('sql')
+    self.storage = self._Add('storage')
     self.run = self._Add('run')
     self.scc = self._Add('securitycenter')
 

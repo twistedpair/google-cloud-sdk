@@ -59279,6 +59279,8 @@ class SecurityPolicyAdvancedOptionsConfig(_messages.Message):
     LogLevelValueValuesEnum:
 
   Fields:
+    jsonCustomConfig: Custom configuration to apply the JSON parsing. Only
+      applicable when json_parsing is set to STANDARD.
     jsonParsing: A JsonParsingValueValuesEnum attribute.
     logLevel: A LogLevelValueValuesEnum attribute.
   """
@@ -59303,8 +59305,23 @@ class SecurityPolicyAdvancedOptionsConfig(_messages.Message):
     NORMAL = 0
     VERBOSE = 1
 
-  jsonParsing = _messages.EnumField('JsonParsingValueValuesEnum', 1)
-  logLevel = _messages.EnumField('LogLevelValueValuesEnum', 2)
+  jsonCustomConfig = _messages.MessageField('SecurityPolicyAdvancedOptionsConfigJsonCustomConfig', 1)
+  jsonParsing = _messages.EnumField('JsonParsingValueValuesEnum', 2)
+  logLevel = _messages.EnumField('LogLevelValueValuesEnum', 3)
+
+
+class SecurityPolicyAdvancedOptionsConfigJsonCustomConfig(_messages.Message):
+  r"""A SecurityPolicyAdvancedOptionsConfigJsonCustomConfig object.
+
+  Fields:
+    contentTypes: A list of custom Content-Type header values to apply the
+      JSON parsing. As per RFC 1341, a Content-Type header value has the
+      following format: Content-Type := type "/" subtype *[";" parameter] When
+      configuring a custom Content-Type header value, only the type/subtype
+      needs to be specified, and the parameters should be excluded.
+  """
+
+  contentTypes = _messages.StringField(1, repeated=True)
 
 
 class SecurityPolicyAssociation(_messages.Message):

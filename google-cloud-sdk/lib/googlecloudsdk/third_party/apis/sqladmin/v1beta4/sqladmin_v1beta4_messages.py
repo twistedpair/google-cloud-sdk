@@ -144,8 +144,8 @@ class BackupRun(_messages.Message):
       DEFAULT_SNAPSHOT.
     StatusValueValuesEnum: The status of this run.
     TypeValueValuesEnum: The type of this run; can be either "AUTOMATED" or
-      "ON_DEMAND". This field defaults to "ON_DEMAND" and is ignored, when
-      specified for insert requests.
+      "ON_DEMAND" or "FINAL". This field defaults to "ON_DEMAND" and is
+      ignored, when specified for insert requests.
 
   Fields:
     backupDatabaseInstalledVersion: Output only. Currently installed database
@@ -175,9 +175,11 @@ class BackupRun(_messages.Message):
       in [RFC 3339](https://tools.ietf.org/html/rfc3339) format, for example
       `2012-11-15T16:19:00.094Z`.
     status: The status of this run.
-    type: The type of this run; can be either "AUTOMATED" or "ON_DEMAND". This
-      field defaults to "ON_DEMAND" and is ignored, when specified for insert
-      requests.
+    timeZone: Backup time zone to prevent restores to an instance with a
+      different time zone. Now relevant only to SQL Server.
+    type: The type of this run; can be either "AUTOMATED" or "ON_DEMAND" or
+      "FINAL". This field defaults to "ON_DEMAND" and is ignored, when
+      specified for insert requests.
     windowStartTime: The start time of the backup window during which this the
       backup was attempted in [RFC 3339](https://tools.ietf.org/html/rfc3339)
       format, for example `2012-11-15T16:19:00.094Z`.
@@ -225,18 +227,20 @@ class BackupRun(_messages.Message):
     DELETED = 9
 
   class TypeValueValuesEnum(_messages.Enum):
-    r"""The type of this run; can be either "AUTOMATED" or "ON_DEMAND". This
-    field defaults to "ON_DEMAND" and is ignored, when specified for insert
-    requests.
+    r"""The type of this run; can be either "AUTOMATED" or "ON_DEMAND" or
+    "FINAL". This field defaults to "ON_DEMAND" and is ignored, when specified
+    for insert requests.
 
     Values:
       SQL_BACKUP_RUN_TYPE_UNSPECIFIED: This is an unknown BackupRun type.
       AUTOMATED: The backup schedule automatically triggers a backup.
       ON_DEMAND: The user manually triggers a backup.
+      FINAL: The backup created when instance is deleted.
     """
     SQL_BACKUP_RUN_TYPE_UNSPECIFIED = 0
     AUTOMATED = 1
     ON_DEMAND = 2
+    FINAL = 3
 
   backupDatabaseInstalledVersion = _messages.StringField(1)
   backupKind = _messages.EnumField('BackupKindValueValuesEnum', 2)
@@ -253,8 +257,9 @@ class BackupRun(_messages.Message):
   selfLink = _messages.StringField(13)
   startTime = _messages.StringField(14)
   status = _messages.EnumField('StatusValueValuesEnum', 15)
-  type = _messages.EnumField('TypeValueValuesEnum', 16)
-  windowStartTime = _messages.StringField(17)
+  timeZone = _messages.StringField(16)
+  type = _messages.EnumField('TypeValueValuesEnum', 17)
+  windowStartTime = _messages.StringField(18)
 
 
 class BackupRunsListResponse(_messages.Message):
@@ -2242,6 +2247,7 @@ class Settings(_messages.Message):
       there is no limit.
     tier: The tier (or machine type) for this instance, for example `db-
       custom-1-3840`. WARNING: Changing this restarts the instance.
+    timeZone: Server timezone, relevant only for Cloud SQL for SQL Server.
     userLabels: User-provided labels, represented as a dictionary where each
       label is a single key value pair.
     workloadTier: The workload tier for this instance. Can be STANDARD or
@@ -2397,8 +2403,9 @@ class Settings(_messages.Message):
   storageAutoResize = _messages.BooleanField(26)
   storageAutoResizeLimit = _messages.IntegerField(27)
   tier = _messages.StringField(28)
-  userLabels = _messages.MessageField('UserLabelsValue', 29)
-  workloadTier = _messages.EnumField('WorkloadTierValueValuesEnum', 30)
+  timeZone = _messages.StringField(29)
+  userLabels = _messages.MessageField('UserLabelsValue', 30)
+  workloadTier = _messages.EnumField('WorkloadTierValueValuesEnum', 31)
 
 
 class SqlActiveDirectoryConfig(_messages.Message):

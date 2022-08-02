@@ -29315,10 +29315,10 @@ class GoogleCloudAiplatformV1beta1SavedQuery(_messages.Message):
       of the SavedQuery.
     createTime: Output only. Timestamp when this SavedQuery was created.
     displayName: Required. The user-defined name of the SavedQuery. The name
-      can be up to 128 characters long and can be consist of any UTF-8
+      can be up to 128 characters long and can consist of any UTF-8
       characters.
-    etag: Used to perform a consistent read-modify-write updates. If not set,
-      a blind "overwrite" update happens.
+    etag: Used to perform consistent read-modify-write updates. If not set, a
+      blind "overwrite" update happens.
     metadata: Some additional information about the SavedQuery.
     name: Output only. Resource name of the SavedQuery.
     problemType: Required. Problem type of the SavedQuery. Allowed values: *

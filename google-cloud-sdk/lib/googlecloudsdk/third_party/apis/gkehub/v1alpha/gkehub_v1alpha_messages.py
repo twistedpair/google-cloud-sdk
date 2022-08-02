@@ -780,6 +780,7 @@ class CommonFeatureSpec(_messages.Message):
     appdevexperience: Appdevexperience specific spec.
     cloudauditlogging: Cloud Audit Logging-specific spec.
     clusterupgrade: Upgrade feature spec.
+    fleetobservability: FleetObservability feature spec.
     helloworld: Hello World-specific spec.
     multiclusteringress: Multicluster Ingress-specific spec.
     rbacrolebindingactuation: RBAC Role Binding Actuation feature spec
@@ -790,10 +791,11 @@ class CommonFeatureSpec(_messages.Message):
   appdevexperience = _messages.MessageField('AppDevExperienceFeatureSpec', 2)
   cloudauditlogging = _messages.MessageField('CloudAuditLoggingFeatureSpec', 3)
   clusterupgrade = _messages.MessageField('ClusterUpgradeFeatureSpec', 4)
-  helloworld = _messages.MessageField('HelloWorldFeatureSpec', 5)
-  multiclusteringress = _messages.MessageField('MultiClusterIngressFeatureSpec', 6)
-  rbacrolebindingactuation = _messages.MessageField('RBACRoleBindingActuationFeatureSpec', 7)
-  workloadcertificate = _messages.MessageField('FeatureSpec', 8)
+  fleetobservability = _messages.MessageField('FleetObservabilityFeatureSpec', 5)
+  helloworld = _messages.MessageField('HelloWorldFeatureSpec', 6)
+  multiclusteringress = _messages.MessageField('MultiClusterIngressFeatureSpec', 7)
+  rbacrolebindingactuation = _messages.MessageField('RBACRoleBindingActuationFeatureSpec', 8)
+  workloadcertificate = _messages.MessageField('FeatureSpec', 9)
 
 
 class CommonFeatureState(_messages.Message):
@@ -802,6 +804,7 @@ class CommonFeatureState(_messages.Message):
   Fields:
     appdevexperience: Appdevexperience specific state.
     clusterupgrade: Upgrade specific state.
+    fleetobservability: FleetObservability feature state.
     helloworld: Hello World-specific state.
     rbacrolebindingactuation: RBAC Role Binding Actuation feature state
     servicemesh: Service Mesh-specific state.
@@ -810,10 +813,11 @@ class CommonFeatureState(_messages.Message):
 
   appdevexperience = _messages.MessageField('AppDevExperienceFeatureState', 1)
   clusterupgrade = _messages.MessageField('ClusterUpgradeFeatureState', 2)
-  helloworld = _messages.MessageField('HelloWorldFeatureState', 3)
-  rbacrolebindingactuation = _messages.MessageField('RBACRoleBindingActuationFeatureState', 4)
-  servicemesh = _messages.MessageField('ServiceMeshFeatureState', 5)
-  state = _messages.MessageField('FeatureState', 6)
+  fleetobservability = _messages.MessageField('FleetObservabilityFeatureState', 3)
+  helloworld = _messages.MessageField('HelloWorldFeatureState', 4)
+  rbacrolebindingactuation = _messages.MessageField('RBACRoleBindingActuationFeatureState', 5)
+  servicemesh = _messages.MessageField('ServiceMeshFeatureState', 6)
+  state = _messages.MessageField('FeatureState', 7)
 
 
 class Condition(_messages.Message):
@@ -2146,6 +2150,34 @@ class FleetLifecycleState(_messages.Message):
   code = _messages.EnumField('CodeValueValuesEnum', 1)
 
 
+class FleetObservabilityFeatureSpec(_messages.Message):
+  r"""**Fleet Observability**: The Hub-wide input for the FleetObservability
+  feature.
+  """
+
+
+
+class FleetObservabilityFeatureState(_messages.Message):
+  r"""**FleetObservability**: An empty state left as an example Hub-wide
+  Feature state.
+  """
+
+
+
+class FleetObservabilityMembershipSpec(_messages.Message):
+  r"""**FleetObservability**: The membership-specific input for
+  FleetObservability feature.
+  """
+
+
+
+class FleetObservabilityMembershipState(_messages.Message):
+  r"""**FleetObservability**: An empty state left as an example membership-
+  specific Feature state.
+  """
+
+
+
 class GenerateConnectManifestResponse(_messages.Message):
   r"""GenerateConnectManifestResponse contains manifest information for
   installing/upgrading a Connect agent.
@@ -2854,6 +2886,20 @@ class GkehubProjectsLocationsMembershipsTestIamPermissionsRequest(_messages.Mess
 
   resource = _messages.StringField(1, required=True)
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class GkehubProjectsLocationsMembershipsValidateCreateRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsMembershipsValidateCreateRequest object.
+
+  Fields:
+    parent: Required. The parent (project and location) where the Memberships
+      will be created. Specified in the format `projects/*/locations/*`.
+    validateCreateMembershipRequest: A ValidateCreateMembershipRequest
+      resource to be passed as the request body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  validateCreateMembershipRequest = _messages.MessageField('ValidateCreateMembershipRequest', 2)
 
 
 class GkehubProjectsLocationsNamespacesCreateRequest(_messages.Message):
@@ -4040,6 +4086,7 @@ class MembershipFeatureSpec(_messages.Message):
     apigee: Apigee-specific spec.
     cloudbuild: Cloud Build-specific spec
     configmanagement: Config Management-specific spec.
+    fleetobservability: A FleetObservabilityMembershipSpec attribute.
     helloworld: Hello World-specific spec.
     identityservice: Identity Service-specific spec.
     mesh: Anthos Service Mesh-specific spec
@@ -4053,12 +4100,13 @@ class MembershipFeatureSpec(_messages.Message):
   apigee = _messages.MessageField('ApigeeMembershipSpec', 3)
   cloudbuild = _messages.MessageField('CloudBuildMembershipSpec', 4)
   configmanagement = _messages.MessageField('ConfigManagementMembershipSpec', 5)
-  helloworld = _messages.MessageField('HelloWorldMembershipSpec', 6)
-  identityservice = _messages.MessageField('IdentityServiceMembershipSpec', 7)
-  mesh = _messages.MessageField('ServiceMeshMembershipSpec', 8)
-  policycontroller = _messages.MessageField('PolicyControllerMembershipSpec', 9)
-  rbacrolebindingactuation = _messages.MessageField('RBACRoleBindingActuationMembershipSpec', 10)
-  workloadcertificate = _messages.MessageField('MembershipSpec', 11)
+  fleetobservability = _messages.MessageField('FleetObservabilityMembershipSpec', 6)
+  helloworld = _messages.MessageField('HelloWorldMembershipSpec', 7)
+  identityservice = _messages.MessageField('IdentityServiceMembershipSpec', 8)
+  mesh = _messages.MessageField('ServiceMeshMembershipSpec', 9)
+  policycontroller = _messages.MessageField('PolicyControllerMembershipSpec', 10)
+  rbacrolebindingactuation = _messages.MessageField('RBACRoleBindingActuationMembershipSpec', 11)
+  workloadcertificate = _messages.MessageField('MembershipSpec', 12)
 
 
 class MembershipFeatureState(_messages.Message):
@@ -4070,6 +4118,7 @@ class MembershipFeatureState(_messages.Message):
     appdevexperience: Appdevexperience specific state.
     clusterupgrade: ClusterUpgrade state.
     configmanagement: Config Management-specific state.
+    fleetobservability: A FleetObservabilityMembershipState attribute.
     helloworld: Hello World-specific state.
     identityservice: Identity Service-specific state.
     metering: Metering-specific state.
@@ -4083,13 +4132,14 @@ class MembershipFeatureState(_messages.Message):
   appdevexperience = _messages.MessageField('AppDevExperienceFeatureState', 2)
   clusterupgrade = _messages.MessageField('ClusterUpgradeMembershipState', 3)
   configmanagement = _messages.MessageField('ConfigManagementMembershipState', 4)
-  helloworld = _messages.MessageField('HelloWorldMembershipState', 5)
-  identityservice = _messages.MessageField('IdentityServiceMembershipState', 6)
-  metering = _messages.MessageField('MeteringMembershipState', 7)
-  policycontroller = _messages.MessageField('PolicyControllerMembershipState', 8)
-  rbacrolebindingactuation = _messages.MessageField('RBACRoleBindingActuationMembershipState', 9)
-  servicemesh = _messages.MessageField('ServiceMeshMembershipState', 10)
-  state = _messages.MessageField('FeatureState', 11)
+  fleetobservability = _messages.MessageField('FleetObservabilityMembershipState', 5)
+  helloworld = _messages.MessageField('HelloWorldMembershipState', 6)
+  identityservice = _messages.MessageField('IdentityServiceMembershipState', 7)
+  metering = _messages.MessageField('MeteringMembershipState', 8)
+  policycontroller = _messages.MessageField('PolicyControllerMembershipState', 9)
+  rbacrolebindingactuation = _messages.MessageField('RBACRoleBindingActuationMembershipState', 10)
+  servicemesh = _messages.MessageField('ServiceMeshMembershipState', 11)
+  state = _messages.MessageField('FeatureState', 12)
 
 
 class MembershipSpec(_messages.Message):
@@ -5638,6 +5688,60 @@ class TypeMeta(_messages.Message):
 
   apiVersion = _messages.StringField(1)
   kind = _messages.StringField(2)
+
+
+class ValidateCreateMembershipRequest(_messages.Message):
+  r"""Request message for the `GkeHub.ValidateCreateMembership` method.
+
+  Fields:
+    membership: Required. Membership resource to be created.
+    membershipId: Required. Client chosen membership id.
+  """
+
+  membership = _messages.MessageField('Membership', 1)
+  membershipId = _messages.StringField(2)
+
+
+class ValidateCreateMembershipResponse(_messages.Message):
+  r"""Response message for the `GkeHub.ValidateCreateMembership` method.
+
+  Fields:
+    validationResults: Wraps all the validator results.
+  """
+
+  validationResults = _messages.MessageField('ValidationResult', 1, repeated=True)
+
+
+class ValidationResult(_messages.Message):
+  r"""ValidationResults are results set by each validator running during
+  ValidateCreateMembership.
+
+  Enums:
+    ValidatorValueValuesEnum: Validator type to validate membership with.
+
+  Fields:
+    result: Additional information for the validation.
+    success: Whether the validation is passed or not.
+    validator: Validator type to validate membership with.
+  """
+
+  class ValidatorValueValuesEnum(_messages.Enum):
+    r"""Validator type to validate membership with.
+
+    Values:
+      VALIDATOR_TYPE_UNSPECIFIED: UNSPECIFIED validator.
+      MEMBERSHIP_ID: MEMBERSHIP_ID validator validates the membership_id is
+        still available.
+      CROSS_PROJECT_PERMISSION: CROSS_PROJECT_PERMISSION validator validates
+        the cross-project P4SA binding is in place.
+    """
+    VALIDATOR_TYPE_UNSPECIFIED = 0
+    MEMBERSHIP_ID = 1
+    CROSS_PROJECT_PERMISSION = 2
+
+  result = _messages.StringField(1)
+  success = _messages.BooleanField(2)
+  validator = _messages.EnumField('ValidatorValueValuesEnum', 3)
 
 
 class Workspace(_messages.Message):

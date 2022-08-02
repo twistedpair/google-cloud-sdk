@@ -32,6 +32,11 @@ from googlecloudsdk.core.util import retry
 API_NAME = 'runapps'
 API_VERSION = 'v1alpha1'
 
+# Key for the config field of application dictionary.
+APP_DICT_CONFIG_KEY = 'config'
+# Key for the resource field within config field of application dictionary.
+APP_CONFIG_DICT_RESOURCES_KEY = 'resources'
+
 # Max wait time before timing out, match timeout of CP
 _POLLING_TIMEOUT_MS = 30 * 60 * 1000
 # Max wait time between poll retries before timing out
@@ -64,6 +69,21 @@ def GetApplication(client, app_ref):
     return client.projects_locations_applications.Get(request)
   except api_exceptions.HttpNotFoundError:
     return None
+
+
+def ApplicationToDict(application):
+  """Converts application resource to a dictionary.
+
+  Args:
+    application: The application object.
+
+  Returns:
+    The application data in a dictionary format.
+  """
+  app_dict = apitools_encoding.MessageToDict(application)
+  app_dict.setdefault(APP_DICT_CONFIG_KEY,
+                      {}).setdefault(APP_CONFIG_DICT_RESOURCES_KEY, {})
+  return app_dict
 
 
 def GetApplicationStatus(client, app_ref, resource_name=None):

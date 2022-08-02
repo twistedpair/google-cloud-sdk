@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.storage import metadata_util
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage import user_request_args_factory
 from googlecloudsdk.core.util import iso_duration
 from googlecloudsdk.core.util import times
@@ -149,8 +150,17 @@ def process_lifecycle(file_path):
   return messages.Bucket.LifecycleValue(rule=apitools_lifecycle_rules)
 
 
-def process_log_config(log_bucket, log_object_prefix):
-  """Converts log setting strings to Apitools object."""
+def process_log_config(target_bucket, log_bucket, log_object_prefix):
+  """Converts log setting to Apitools object.
+
+  Args:
+    target_bucket (str): Bucket to track with logs.
+    log_bucket (str|None): Bucket to store logs in.
+    log_object_prefix (str|None): Prefix for objects to create logs for.
+
+  Returns:
+    messages.Bucket.LoggingValue: Apitools log settings object.
+  """
   if (log_bucket == user_request_args_factory.CLEAR and
       log_object_prefix == user_request_args_factory.CLEAR):
     return None
@@ -158,16 +168,22 @@ def process_log_config(log_bucket, log_object_prefix):
   messages = apis.GetMessagesModule('storage', 'v1')
   logging_value = messages.Bucket.LoggingValue()
 
-  if log_bucket == user_request_args_factory.CLEAR:
-    logging_value.logBucket = None
+  if log_bucket in (None, user_request_args_factory.CLEAR):
+    schemeless_bucket = None
   else:
-    logging_value.logBucket = log_bucket
+    schemeless_bucket = storage_url.remove_scheme(log_bucket)
+
+  logging_value.logBucket = schemeless_bucket
 
   if log_object_prefix == user_request_args_factory.CLEAR:
-    logging_value.logObjectPrefix = None
+    schemeless_prefix = None
+  elif log_object_prefix is not None:
+    schemeless_prefix = storage_url.remove_scheme(log_object_prefix)
   else:
-    logging_value.logObjectPrefix = log_object_prefix
+    # Use bucket user is setting logging on as object path prefix.
+    schemeless_prefix = storage_url.remove_scheme(target_bucket)
 
+  logging_value.logObjectPrefix = schemeless_prefix
   return logging_value
 
 

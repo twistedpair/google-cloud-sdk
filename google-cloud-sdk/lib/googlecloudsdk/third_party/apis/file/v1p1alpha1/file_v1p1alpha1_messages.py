@@ -2195,10 +2195,25 @@ class UpdatePolicy(_messages.Message):
       UPDATE_CHANNEL_UNSPECIFIED: Unspecified channel.
       EARLIER: Early channel within a customer project.
       LATER: Later channel within a customer project.
+      WEEK1: ! ! The follow channels can ONLY be used if you adopt the new MW
+        system! ! ! NOTE: all WEEK channels are assumed to be under a weekly
+        window. ! There is currently no dedicated channel definitions for
+        Daily windows. ! If you use Daily window, the system will assume a 1d
+        (24Hours) advanced ! notification period b/w EARLY and LATER. ! We may
+        consider support more flexible daily channel specifications in ! the
+        future. WEEK1 == EARLIER with minimum 7d advanced notification. {7d,
+        14d} The system will treat them equally and will use WEEK1 whenever it
+        can. New customers are encouraged to use this channel annotation.
+      WEEK2: WEEK2 == LATER with minimum 14d advanced notification {14d, 21d}.
+      WEEK5: WEEK5 == 40d support. minimum 35d advanced notification {35d,
+        42d}.
     """
     UPDATE_CHANNEL_UNSPECIFIED = 0
     EARLIER = 1
     LATER = 2
+    WEEK1 = 3
+    WEEK2 = 4
+    WEEK5 = 5
 
   channel = _messages.EnumField('ChannelValueValuesEnum', 1)
   denyMaintenancePeriods = _messages.MessageField('DenyMaintenancePeriod', 2, repeated=True)

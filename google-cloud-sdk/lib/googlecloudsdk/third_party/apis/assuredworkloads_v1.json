@@ -1255,12 +1255,12 @@
       "type": "object",
       "properties": {
         "activeViolationCount": {
-          "description": "Count of active Violations in the Workload.",
+          "description": "Count of active Violations which haven't been acknowledged.",
           "type": "integer",
           "format": "int32"
         },
         "acknowledgedViolationCount": {
-          "description": "Count of acknowledged violations in the Workload.",
+          "description": "Count of active Violations which are acknowledged in the Workload.",
           "type": "integer",
           "format": "int32"
         }

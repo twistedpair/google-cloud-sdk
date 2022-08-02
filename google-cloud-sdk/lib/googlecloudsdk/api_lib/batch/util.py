@@ -22,6 +22,8 @@ from __future__ import unicode_literals
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import base
 
+HTTP_ERROR_FORMAT = (
+    'ResponseError: code={status_code}, message={status_message}')
 
 VERSION_MAP = {base.ReleaseTrack.ALPHA: 'v1',
                base.ReleaseTrack.BETA: 'v1',

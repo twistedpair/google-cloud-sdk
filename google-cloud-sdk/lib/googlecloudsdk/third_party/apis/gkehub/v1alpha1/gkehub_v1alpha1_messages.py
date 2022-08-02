@@ -1469,6 +1469,8 @@ class Feature(_messages.Message):
     deleteTime: Output only. When the Feature was deleted.
     description: Description of the feature, limited to 63 characters.
     featureState: Output only. State of the Feature resource itself.
+    fleetobservabilityFeatureSpec: The specification for FleetObservability
+      feature.
     helloworldFeatureSpec: A Hello World feature for codelab examples and
       testing.
     identityserviceFeatureSpec: The specification for Anthos Identity Service.
@@ -1526,19 +1528,20 @@ class Feature(_messages.Message):
   deleteTime = _messages.StringField(11)
   description = _messages.StringField(12)
   featureState = _messages.MessageField('FeatureState', 13)
-  helloworldFeatureSpec = _messages.MessageField('HelloWorldFeatureSpec', 14)
-  identityserviceFeatureSpec = _messages.MessageField('IdentityServiceFeatureSpec', 15)
-  labels = _messages.MessageField('LabelsValue', 16)
-  meteringFeatureSpec = _messages.MessageField('MeteringFeatureSpec', 17)
-  multiclusteringressFeatureSpec = _messages.MessageField('MultiClusterIngressFeatureSpec', 18)
-  multiclusterservicediscoveryFeatureSpec = _messages.MessageField('MultiClusterServiceDiscoveryFeatureSpec', 19)
-  name = _messages.StringField(20)
-  policycontrollerFeatureSpec = _messages.MessageField('PolicyControllerFeatureSpec', 21)
-  rbacrolebindingactuationFeatureSpec = _messages.MessageField('RBACRoleBindingActuationFeatureSpec', 22)
-  servicedirectoryFeatureSpec = _messages.MessageField('ServiceDirectoryFeatureSpec', 23)
-  servicemeshFeatureSpec = _messages.MessageField('ServiceMeshFeatureSpec', 24)
-  updateTime = _messages.StringField(25)
-  workloadcertificateFeatureSpec = _messages.MessageField('WorkloadCertificateFeatureSpec', 26)
+  fleetobservabilityFeatureSpec = _messages.MessageField('FleetObservabilityFeatureSpec', 14)
+  helloworldFeatureSpec = _messages.MessageField('HelloWorldFeatureSpec', 15)
+  identityserviceFeatureSpec = _messages.MessageField('IdentityServiceFeatureSpec', 16)
+  labels = _messages.MessageField('LabelsValue', 17)
+  meteringFeatureSpec = _messages.MessageField('MeteringFeatureSpec', 18)
+  multiclusteringressFeatureSpec = _messages.MessageField('MultiClusterIngressFeatureSpec', 19)
+  multiclusterservicediscoveryFeatureSpec = _messages.MessageField('MultiClusterServiceDiscoveryFeatureSpec', 20)
+  name = _messages.StringField(21)
+  policycontrollerFeatureSpec = _messages.MessageField('PolicyControllerFeatureSpec', 22)
+  rbacrolebindingactuationFeatureSpec = _messages.MessageField('RBACRoleBindingActuationFeatureSpec', 23)
+  servicedirectoryFeatureSpec = _messages.MessageField('ServiceDirectoryFeatureSpec', 24)
+  servicemeshFeatureSpec = _messages.MessageField('ServiceMeshFeatureSpec', 25)
+  updateTime = _messages.StringField(26)
+  workloadcertificateFeatureSpec = _messages.MessageField('WorkloadCertificateFeatureSpec', 27)
 
 
 class FeatureState(_messages.Message):
@@ -1640,6 +1643,7 @@ class FeatureStateDetails(_messages.Message):
       to `OK`.
     configmanagementFeatureState: State for the Config Management Feature.
     description: Human readable description of the issue.
+    fleetobservabilityFeatureState: State for the FleetObservability Feature.
     helloworldFeatureState: State for the Hello World Feature.
     identityserviceFeatureState: State for the AIS Feature.
     meteringFeatureState: State for the Metering Feature.
@@ -1687,17 +1691,18 @@ class FeatureStateDetails(_messages.Message):
   code = _messages.EnumField('CodeValueValuesEnum', 8)
   configmanagementFeatureState = _messages.MessageField('ConfigManagementFeatureState', 9)
   description = _messages.StringField(10)
-  helloworldFeatureState = _messages.MessageField('HelloWorldFeatureState', 11)
-  identityserviceFeatureState = _messages.MessageField('IdentityServiceFeatureState', 12)
-  meteringFeatureState = _messages.MessageField('MeteringFeatureState', 13)
-  multiclusteringressFeatureState = _messages.MessageField('MultiClusterIngressFeatureState', 14)
-  multiclusterservicediscoveryFeatureState = _messages.MessageField('MultiClusterServiceDiscoveryFeatureState', 15)
-  policycontrollerFeatureState = _messages.MessageField('PolicyControllerFeatureState', 16)
-  rbacrolebindingactuationFeatureState = _messages.MessageField('RBACRoleBindingActuationFeatureState', 17)
-  servicedirectoryFeatureState = _messages.MessageField('ServiceDirectoryFeatureState', 18)
-  servicemeshFeatureState = _messages.MessageField('ServiceMeshFeatureState', 19)
-  updateTime = _messages.StringField(20)
-  workloadcertificateFeatureState = _messages.MessageField('WorkloadCertificateFeatureState', 21)
+  fleetobservabilityFeatureState = _messages.MessageField('FleetObservabilityFeatureState', 11)
+  helloworldFeatureState = _messages.MessageField('HelloWorldFeatureState', 12)
+  identityserviceFeatureState = _messages.MessageField('IdentityServiceFeatureState', 13)
+  meteringFeatureState = _messages.MessageField('MeteringFeatureState', 14)
+  multiclusteringressFeatureState = _messages.MessageField('MultiClusterIngressFeatureState', 15)
+  multiclusterservicediscoveryFeatureState = _messages.MessageField('MultiClusterServiceDiscoveryFeatureState', 16)
+  policycontrollerFeatureState = _messages.MessageField('PolicyControllerFeatureState', 17)
+  rbacrolebindingactuationFeatureState = _messages.MessageField('RBACRoleBindingActuationFeatureState', 18)
+  servicedirectoryFeatureState = _messages.MessageField('ServiceDirectoryFeatureState', 19)
+  servicemeshFeatureState = _messages.MessageField('ServiceMeshFeatureState', 20)
+  updateTime = _messages.StringField(21)
+  workloadcertificateFeatureState = _messages.MessageField('WorkloadCertificateFeatureState', 22)
 
 
 class FeatureTest(_messages.Message):
@@ -1849,6 +1854,20 @@ class FleetGKEUpgradeState(_messages.Message):
   stats = _messages.MessageField('StatsValue', 2)
   status = _messages.MessageField('UpgradeStatus', 3)
   upgrade = _messages.MessageField('GKEUpgrade', 4)
+
+
+class FleetObservabilityFeatureSpec(_messages.Message):
+  r"""An empty spec for FleetObservability feature. This is required since
+  Feature proto requires a spec.
+  """
+
+
+
+class FleetObservabilityFeatureState(_messages.Message):
+  r"""An empty state for FleetObservability feature. This is required since
+  FeatureStateDetails requires a state.
+  """
+
 
 
 class FooBar(_messages.Message):

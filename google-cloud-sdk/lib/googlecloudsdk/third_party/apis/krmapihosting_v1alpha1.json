@@ -405,7 +405,7 @@
           "$ref": "StandardManagementConfig"
         },
         "fullManagementConfig": {
-          "description": "Configuration of the full (Autopilot) cluster management",
+          "description": "Configuration of the full (Autopilot) cluster management. Full cluster management is a preview feature.",
           "$ref": "FullManagementConfig"
         }
       }

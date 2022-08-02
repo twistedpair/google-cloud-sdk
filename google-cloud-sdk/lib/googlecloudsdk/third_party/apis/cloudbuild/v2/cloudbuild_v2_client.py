@@ -286,6 +286,33 @@ class CloudbuildV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def FetchLinkableRepositories(self, request, global_params=None):
+      r"""FetchLinkableRepositories get repositories from SCM that are accessible and could be added to the connection.
+
+      Args:
+        request: (CloudbuildProjectsLocationsConnectionsFetchLinkableRepositoriesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (FetchLinkableRepositoriesResponse) The response message.
+      """
+      config = self.GetMethodConfig('FetchLinkableRepositories')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    FetchLinkableRepositories.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/connections/{connectionsId}:fetchLinkableRepositories',
+        http_method='GET',
+        method_id='cloudbuild.projects.locations.connections.fetchLinkableRepositories',
+        ordered_params=['connection'],
+        path_params=['connection'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+connection}:fetchLinkableRepositories',
+        request_field='',
+        request_type_name='CloudbuildProjectsLocationsConnectionsFetchLinkableRepositoriesRequest',
+        response_type_name='FetchLinkableRepositoriesResponse',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets details of a single connection.
 
@@ -310,6 +337,33 @@ class CloudbuildV2(base_api.BaseApiClient):
         request_field='',
         request_type_name='CloudbuildProjectsLocationsConnectionsGetRequest',
         response_type_name='Connection',
+        supports_download=False,
+    )
+
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
+
+      Args:
+        request: (CloudbuildProjectsLocationsConnectionsGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/connections/{connectionsId}:getIamPolicy',
+        http_method='GET',
+        method_id='cloudbuild.projects.locations.connections.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v2/{+resource}:getIamPolicy',
+        request_field='',
+        request_type_name='CloudbuildProjectsLocationsConnectionsGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -391,6 +445,60 @@ class CloudbuildV2(base_api.BaseApiClient):
         request_field='httpBody',
         request_type_name='CloudbuildProjectsLocationsConnectionsProcessWebhookRequest',
         response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
+
+      Args:
+        request: (CloudbuildProjectsLocationsConnectionsSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/connections/{connectionsId}:setIamPolicy',
+        http_method='POST',
+        method_id='cloudbuild.projects.locations.connections.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v2/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='CloudbuildProjectsLocationsConnectionsSetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
+
+      Args:
+        request: (CloudbuildProjectsLocationsConnectionsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/connections/{connectionsId}:testIamPermissions',
+        http_method='POST',
+        method_id='cloudbuild.projects.locations.connections.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v2/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='CloudbuildProjectsLocationsConnectionsTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 

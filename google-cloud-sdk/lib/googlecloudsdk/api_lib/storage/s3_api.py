@@ -30,6 +30,7 @@ from googlecloudsdk.api_lib.storage import s3_metadata_util
 from googlecloudsdk.command_lib.storage import errors as command_errors
 from googlecloudsdk.command_lib.storage import posix_util
 from googlecloudsdk.command_lib.storage import storage_url
+from googlecloudsdk.command_lib.storage.resources import resource_reference
 from googlecloudsdk.command_lib.storage.resources import s3_resource_reference
 from googlecloudsdk.command_lib.storage.tasks.cp import download_util
 from googlecloudsdk.core import exceptions as core_exceptions
@@ -604,10 +605,14 @@ class S3Api(cloud_api.CloudApi):
     # All fields common to both put_object and upload_fileobj are added
     # to the extra_args dict.
     extra_args = {}
-    if source_resource:
+    if isinstance(source_resource, resource_reference.FileObjectResource):
       file_path = source_resource.storage_url.object_name
     else:
       file_path = None
+
+    if isinstance(source_resource, resource_reference.ObjectResource):
+      if source_resource.custom_metadata:
+        extra_args['Metadata'] = source_resource.custom_metadata
 
     s3_metadata_util.update_object_metadata_dict_from_request_config(
         extra_args,

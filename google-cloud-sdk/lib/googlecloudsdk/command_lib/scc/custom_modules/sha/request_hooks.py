@@ -20,9 +20,30 @@ from __future__ import unicode_literals
 
 import re
 
+from googlecloudsdk.command_lib.scc.hooks import CleanUpUserInput
 from googlecloudsdk.command_lib.scc.hooks import InvalidSCCInputError
 
 _PARENT_SUFFIX = "/securityHealthAnalyticsSettings"
+
+
+def CreateSecurityHealthAnalyticsCustomModuleReqHook(ref, args, req):
+  """Creates a Security Health Analytics custom module."""
+  del ref
+  req.parent = _ValidateAndGetParent(args)
+  return req
+
+
+def DeleteSecurityHealthAnalyticsCustomModuleReqHook(ref, args, req):
+  """Deletes a Security Health Analytics custom module."""
+  del ref
+  parent = _ValidateAndGetParent(args)
+  if parent is not None:
+    custom_module_id = _ValidateAndGetCustomModuleId(args)
+    req.name = parent + "/customModules/" + custom_module_id
+  else:
+    custom_module = _ValidateAndGetCustomModuleFullResourceName(args)
+    req.name = custom_module
+  return req
 
 
 def GetSecurityHealthAnalyticsCustomModuleReqHook(ref, args, req):
@@ -72,8 +93,35 @@ def ListEffectiveSecurityHealthAnalyticsCustomModulesReqHook(ref, args, req):
   return req
 
 
+def TestSecurityHealthAnalyticsCustomModulesReqHook(ref, args, req):
+  """Test a Security Health Analytics custom module."""
+  del ref
+  parent = _ValidateAndGetParent(args)
+  if parent is not None:
+    custom_module_id = _ValidateAndGetCustomModuleId(args)
+    req.name = parent + "/customModules/" + custom_module_id
+  else:
+    custom_module = _ValidateAndGetCustomModuleFullResourceName(args)
+    req.name = custom_module
+  return req
+
+
+def UpdateSecurityHealthAnalyticsCustomModuleReqHook(ref, args, req):
+  """Updates a Security Health Analytics custom module."""
+  del ref
+  parent = _ValidateAndGetParent(args)
+  if parent is not None:
+    custom_module_id = _ValidateAndGetCustomModuleId(args)
+    req.name = parent + "/customModules/" + custom_module_id
+  else:
+    custom_module = _ValidateAndGetCustomModuleFullResourceName(args)
+    req.name = custom_module
+  req.updateMask = CleanUpUserInput(req.updateMask)
+  return req
+
+
 def _ValidateAndGetCustomModuleId(args):
-  """Validate customModuleId."""
+  """Validates customModuleId."""
   custom_module_id = args.custom_module
   pattern = re.compile("^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$")
   if not pattern.match(custom_module_id):

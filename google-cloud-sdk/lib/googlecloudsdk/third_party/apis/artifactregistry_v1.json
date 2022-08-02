@@ -2436,6 +2436,46 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Directly uploads a Go module. The returned Operation will complete once the Go module is uploaded. Package, Version, and File resources are created based on the uploaded Go module."
+                    },
+                    "upload": {
+                      "id": "artifactregistry.projects.locations.repositories.goModules.upload",
+                      "path": "v1/{+parent}/goModules:create",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/goModules:create",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "The resource name of the repository where the Go module will be uploaded.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "supportsMediaUpload": true,
+                      "mediaUpload": {
+                        "accept": [
+                          "*/*"
+                        ],
+                        "protocols": {
+                          "simple": {
+                            "multipart": true,
+                            "path": "/upload/v1/{+parent}/goModules:create"
+                          }
+                        }
+                      },
+                      "request": {
+                        "$ref": "UploadGoModuleRequest"
+                      },
+                      "response": {
+                        "$ref": "UploadGoModuleMediaResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Directly uploads a Go module. The returned Operation will complete once the Go module is uploaded. Package, Version, and File resources are created based on the uploaded Go module."
                     }
                   }
                 },

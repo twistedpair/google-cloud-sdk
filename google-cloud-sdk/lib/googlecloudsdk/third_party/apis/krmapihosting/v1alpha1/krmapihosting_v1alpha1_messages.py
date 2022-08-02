@@ -789,7 +789,7 @@ class ManagementConfig(_messages.Message):
 
   Fields:
     fullManagementConfig: Configuration of the full (Autopilot) cluster
-      management
+      management. Full cluster management is a preview feature.
     standardManagementConfig: Configuration of the standard (GKE) cluster
       management
   """

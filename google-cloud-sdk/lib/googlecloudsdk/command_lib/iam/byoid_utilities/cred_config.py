@@ -55,6 +55,13 @@ def create_credential_config(args, config_type):
           'https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/',
           args.service_account, ':generateAccessToken'))
 
+      service_account_impersonation = {}
+
+      if args.service_account_token_lifetime_seconds:
+        service_account_impersonation[
+            'token_lifetime_seconds'] = args.service_account_token_lifetime_seconds
+        output['service_account_impersonation'] = service_account_impersonation
+
     files.WriteFileContents(args.output_file, json.dumps(output, indent=2))
     log.CreatedResource(args.output_file, RESOURCE_TYPE)
   except GeneratorError as cce:

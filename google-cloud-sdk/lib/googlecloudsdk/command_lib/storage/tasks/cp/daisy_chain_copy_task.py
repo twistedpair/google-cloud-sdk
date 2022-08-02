@@ -481,6 +481,35 @@ class DaisyChainCopyTask(copy_util.CopyTaskWithExitHandler):
           self._source_resource, self._destination_resource)
     return self._source_resource.md5_hash
 
+  def _gapfill_request_config_field(self, resource_args,
+                                    request_config_field_name,
+                                    source_resource_field_name):
+    request_config_value = getattr(resource_args, request_config_field_name,
+                                   None)
+    if request_config_value is None:
+      setattr(resource_args, request_config_field_name,
+              getattr(self._source_resource, source_resource_field_name))
+
+  def _populate_request_config_with_resource_values(self, request_config):
+    resource_args = request_config.resource_args
+    self._gapfill_request_config_field(resource_args, 'cache_control',
+                                       'cache_control')
+    self._gapfill_request_config_field(resource_args, 'content_disposition',
+                                       'content_disposition')
+    self._gapfill_request_config_field(resource_args, 'content_encoding',
+                                       'content_encoding')
+    self._gapfill_request_config_field(resource_args, 'content_language',
+                                       'content_language')
+    self._gapfill_request_config_field(resource_args, 'content_type',
+                                       'content_type')
+    self._gapfill_request_config_field(resource_args, 'custom_time',
+                                       'custom_time')
+    self._gapfill_request_config_field(resource_args, 'md5_hash',
+                                       'md5_hash')
+    # Storage class is intentionally excluded here, since gsutil uses the
+    # bucket's default for daisy chain destinations:
+    # https://github.com/GoogleCloudPlatform/gsutil/blob/db22c6cf44e4f58a56864f0a6f9bcdf868a3c156/gslib/utils/copy_helper.py#L3860
+
   def execute(self, task_status_queue=None):
     """Copies file by downloading and uploading in parallel."""
     # TODO (b/168712813): Add option to use the Data Transfer component.
@@ -531,6 +560,7 @@ class DaisyChainCopyTask(copy_util.CopyTaskWithExitHandler):
         md5_hash=self._get_md5_hash(),
         size=self._source_resource.size,
         user_request_args=self._user_request_args)
+    self._populate_request_config_with_resource_values(request_config)
 
     result_resource = None
     try:

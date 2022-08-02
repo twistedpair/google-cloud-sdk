@@ -2132,15 +2132,17 @@ class GatewayAPIConfig(_messages.Message):
     Values:
       CHANNEL_UNSPECIFIED: Default value.
       CHANNEL_DISABLED: Gateway API support is disabled
-      CHANNEL_STABLE: Gateway API support is enabled, stable CRDs are
-        installed
+      CHANNEL_STABLE: This value is unused
       CHANNEL_EXPERIMENTAL: Gateway API support is enabled, experimental CRDs
         are installed
+      CHANNEL_STANDARD: Gateway API support is enabled, standard CRDs are
+        installed
     """
     CHANNEL_UNSPECIFIED = 0
     CHANNEL_DISABLED = 1
     CHANNEL_STABLE = 2
     CHANNEL_EXPERIMENTAL = 3
+    CHANNEL_STANDARD = 4
 
   channel = _messages.EnumField('ChannelValueValuesEnum', 1)
 

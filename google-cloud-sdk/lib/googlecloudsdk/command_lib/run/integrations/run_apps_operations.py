@@ -45,8 +45,6 @@ _POLLING_TIMEOUT_MS = 180000
 # Max wait time between poll retries before timing out
 _RETRY_TIMEOUT_MS = 1000
 
-_CONFIG_KEY = 'config'
-_RESOURCES_KEY = 'resources'
 _SERVICE_TYPE = 'service'
 
 _DEFAULT_APP_NAME = 'default'
@@ -285,7 +283,8 @@ class RunAppsOperations(object):
       The integration config.
     """
     try:
-      return self._GetDefaultAppDict()[_CONFIG_KEY][_RESOURCES_KEY][name]
+      return self._GetDefaultAppDict()[api_utils.APP_DICT_CONFIG_KEY][
+          api_utils.APP_CONFIG_DICT_RESOURCES_KEY][name]
     except KeyError:
       raise exceptions.IntegrationNotFoundError(
           'Integration [{}] cannot be found'.format(name))
@@ -325,7 +324,8 @@ class RunAppsOperations(object):
       The name of the integration.
     """
     app_dict = self._GetDefaultAppDict()
-    resources_map = app_dict[_CONFIG_KEY][_RESOURCES_KEY]
+    resources_map = app_dict[api_utils.APP_DICT_CONFIG_KEY][
+        api_utils.APP_CONFIG_DICT_RESOURCES_KEY]
     typekit = typekits_util.GetTypeKit(integration_type)
     if name and typekit.is_singleton:
       raise exceptions.ArgumentError(
@@ -357,10 +357,14 @@ class RunAppsOperations(object):
                                       resources_map)
     self.CheckCloudRunServices(services)
 
+    resource_stages = typekit.GetCreateComponentTypes(
+        selectors=match_type_names,
+        app_dict=app_dict)
+
     deploy_message = messages_util.GetDeployMessage(resource_type, create=True)
     application = encoding.DictToMessage(app_dict, self.messages.Application)
     stages_map = stages.IntegrationStages(
-        create=True, match_type_names=match_type_names)
+        create=True, resource_types=resource_stages)
 
     def StatusUpdate(tracker, operation, unused_status):
       self._UpdateDeploymentTracker(tracker, operation, stages_map)
@@ -408,7 +412,8 @@ class RunAppsOperations(object):
       The name of the integration.
     """
     app_dict = self._GetDefaultAppDict()
-    resources_map = app_dict[_CONFIG_KEY][_RESOURCES_KEY]
+    resources_map = app_dict[api_utils.APP_DICT_CONFIG_KEY][
+        api_utils.APP_CONFIG_DICT_RESOURCES_KEY]
     existing_resource = resources_map.get(name)
     if existing_resource is None:
       raise exceptions.IntegrationNotFoundError(
@@ -461,8 +466,12 @@ class RunAppsOperations(object):
 
     deploy_message = messages_util.GetDeployMessage(resource_type)
     application = encoding.DictToMessage(app_dict, self.messages.Application)
+
+    resource_stages = typekit.GetCreateComponentTypes(
+        selectors=match_type_names,
+        app_dict=app_dict)
     stages_map = stages.IntegrationStages(
-        create=False, match_type_names=match_type_names)
+        create=False, resource_types=resource_stages)
 
     def StatusUpdate(tracker, operation, unused_status):
       self._UpdateDeploymentTracker(tracker, operation, stages_map)
@@ -495,7 +504,8 @@ class RunAppsOperations(object):
       str, the type of the integration that is deleted.
     """
     app_dict = self._GetDefaultAppDict()
-    resources_map = app_dict[_CONFIG_KEY][_RESOURCES_KEY]
+    resources_map = app_dict[api_utils.APP_DICT_CONFIG_KEY][
+        api_utils.APP_CONFIG_DICT_RESOURCES_KEY]
     resource = resources_map.get(name)
     if resource is None:
       raise exceptions.IntegrationNotFoundError(
@@ -517,8 +527,13 @@ class RunAppsOperations(object):
             'name': service
         })
     delete_match_type_names = typekit.GetDeleteSelectors(name)
-    stages_map = stages.IntegrationDeleteStages(service_match_type_names,
-                                                delete_match_type_names)
+    should_configure_service = bool(services)
+    resource_stages = typekit.GetDeleteComponentTypes(
+        selectors=delete_match_type_names, app_dict=app_dict)
+    stages_map = stages.IntegrationDeleteStages(
+        destroy_resource_types=resource_stages,
+        should_configure_service=should_configure_service)
+
     def StatusUpdate(tracker, operation, unused_status):
       self._UpdateDeploymentTracker(tracker, operation, stages_map)
       return
@@ -574,7 +589,8 @@ class RunAppsOperations(object):
 
     # Get application again to refresh etag before update
     app_dict = self._GetDefaultAppDict()
-    del app_dict[_CONFIG_KEY][_RESOURCES_KEY][name]
+    del app_dict[api_utils.APP_DICT_CONFIG_KEY][
+        api_utils.APP_CONFIG_DICT_RESOURCES_KEY][name]
     application = encoding.DictToMessage(app_dict, self.messages.Application)
     tracker.StartStage(stages.CLEANUP_CONFIGURATION)
     self._UpdateApplication(
@@ -712,11 +728,9 @@ class RunAppsOperations(object):
                                            self.GetAppRef(_DEFAULT_APP_NAME))
     if not application:
       application = self.messages.Application(
-          name=_DEFAULT_APP_NAME, config={_RESOURCES_KEY: {}})
-    app_dict = encoding.MessageToDict(application)
-    app_dict.setdefault(_CONFIG_KEY, {})
-    app_dict[_CONFIG_KEY].setdefault(_RESOURCES_KEY, {})
-    return app_dict
+          name=_DEFAULT_APP_NAME,
+          config={api_utils.APP_CONFIG_DICT_RESOURCES_KEY: {}})
+    return api_utils.ApplicationToDict(application)
 
   def GetAppRef(self, name):
     """Returns the application resource object.

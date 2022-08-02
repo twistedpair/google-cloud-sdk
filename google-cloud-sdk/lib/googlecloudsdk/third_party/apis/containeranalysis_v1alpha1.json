@@ -1789,6 +1789,17 @@
             "INACTIVE"
           ]
         },
+        "analysisCompleted": {
+          "description": "The list of analysis that were completed for a resource.",
+          "$ref": "AnalysisCompleted"
+        },
+        "analysisError": {
+          "description": "Indicates any errors encountered during analysis of a resource. There could be 0 or more of these errors.",
+          "type": "array",
+          "items": {
+            "$ref": "Status"
+          }
+        },
         "analysisStatus": {
           "description": "The status of discovery for the resource.",
           "type": "string",
@@ -1796,6 +1807,7 @@
             "Unknown",
             "Resource is known but no action has been taken yet.",
             "Resource is being analyzed.",
+            "Analysis has completed",
             "Analysis has finished successfully.",
             "Analysis has finished unsuccessfully, the analysis itself is in a bad state.",
             "The resource is known not to be supported."
@@ -1804,6 +1816,7 @@
             "ANALYSIS_STATUS_UNSPECIFIED",
             "PENDING",
             "SCANNING",
+            "COMPLETE",
             "FINISHED_SUCCESS",
             "FINISHED_FAILED",
             "FINISHED_UNSUPPORTED"
@@ -1887,6 +1900,20 @@
               "type": "any",
               "description": "Properties of the object. Contains field @type with type URL."
             }
+          }
+        }
+      }
+    },
+    "AnalysisCompleted": {
+      "id": "AnalysisCompleted",
+      "description": "Indicates which analysis completed successfully. Multiple types of analysis can be performed on a single resource.",
+      "type": "object",
+      "properties": {
+        "analysisType": {
+          "description": "type of analysis that were completed on a resource.",
+          "type": "array",
+          "items": {
+            "type": "string"
           }
         }
       }

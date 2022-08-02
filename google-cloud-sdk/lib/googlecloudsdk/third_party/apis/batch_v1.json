@@ -270,6 +270,10 @@
           "items": {
             "$ref": "Volume"
           }
+        },
+        "environment": {
+          "description": "Environment variables to set before running the Task.",
+          "$ref": "Environment"
         }
       }
     },

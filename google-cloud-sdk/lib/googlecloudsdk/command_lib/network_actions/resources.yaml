@@ -1,0 +1,50 @@
+project:
+  name: project
+  collection: networkservices.projects
+  attributes:
+  - &project
+    parameter_name: projectsId
+    attribute_name: project
+    help: |
+      The project Id.
+    property: core/project
+
+location:
+  name: location
+  collection: networkservices.projects.locations
+  attributes:
+  - *project
+  - &location
+    parameter_name: locationsId
+    attribute_name: location
+    help: |
+      The location Id.
+    fallthroughs:
+    # If the location is not specified, assume 'global' by default.
+    - hook: googlecloudsdk.command_lib.network_actions.util:SetLocationAsGlobal
+      hint: use global location
+
+wasmPlugin:
+  name: WasmPlugin
+  collection: networkservices.projects.locations.wasmPlugins
+  request_id_field: wasmPluginId
+  attributes:
+  - *project
+  - *location
+  - &wasmPlugin
+    parameter_name: wasmPluginsId
+    attribute_name: wasm_plugin
+    help: The ID of the WasmPlugin.
+
+wasmPluginVersion:
+  name: WasmPluginVersion
+  collection: networkservices.projects.locations.wasmPlugins.versions
+  request_id_field: wasmPluginVersionId
+  attributes:
+  - *project
+  - *location
+  - *wasmPlugin
+  - &version
+    parameter_name: versionsId
+    attribute_name: wasm_plugin_version
+    help: The ID of the WasmPluginVersion.

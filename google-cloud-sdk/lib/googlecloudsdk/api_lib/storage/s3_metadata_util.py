@@ -151,7 +151,12 @@ def get_object_resource_from_s3_response(object_dict,
 
   return s3_resource_reference.S3ObjectResource(
       object_url,
+      cache_control=object_dict.get('CacheControl'),
+      content_disposition=object_dict.get('ContentDisposition'),
+      content_encoding=object_dict.get('ContentEncoding'),
+      content_language=object_dict.get('ContentLanguage'),
       content_type=object_dict.get('ContentType'),
+      custom_metadata=object_dict.get('Metadata'),
       etag=etag,
       md5_hash=_get_md5_hash_from_etag(etag, object_url),
       metadata=object_dict,

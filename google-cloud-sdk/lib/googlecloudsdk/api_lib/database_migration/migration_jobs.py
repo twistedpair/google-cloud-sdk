@@ -82,8 +82,7 @@ class MigrationJobsClient(object):
       migration_job.labels = update_result.labels
       update_fields.append('labels')
 
-  def _GetMigrationJob(self, migration_job_id,
-                       source_ref, destination_ref, args):
+  def _GetMigrationJob(self, source_ref, destination_ref, args):
     """Returns a migration job."""
     migration_job_type = self.messages.MigrationJob
     labels = labels_util.ParseCreateArgs(
@@ -99,7 +98,6 @@ class MigrationJobsClient(object):
     elif args.IsSpecified('static_ip'):
       params['staticIpConnectivity'] = self._GetStaticIpConnectivity()
     return migration_job_type(
-        name=migration_job_id,
         labels=labels,
         displayName=args.display_name,
         state=migration_job_type.StateValueValuesEnum.CREATING,
@@ -190,17 +188,15 @@ class MigrationJobsClient(object):
     """
     self._ValidateArgs(args)
 
-    migration_job = self._GetMigrationJob(
-        migration_job_id, source_ref, destination_ref, args)
+    migration_job = self._GetMigrationJob(source_ref, destination_ref, args)
 
     request_id = api_util.GenerateRequestId()
     create_req_type = self.messages.DatamigrationProjectsLocationsMigrationJobsCreateRequest
     create_req = create_req_type(
         migrationJob=migration_job,
-        migrationJobId=migration_job.name,
+        migrationJobId=migration_job_id,
         parent=parent_ref,
-        requestId=request_id
-    )
+        requestId=request_id)
 
     return self._service.Create(create_req)
 

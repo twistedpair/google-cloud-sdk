@@ -39,6 +39,7 @@ class ArtifactregistryV1beta2(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.media = self.MediaService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_repositories_aptArtifacts = self.ProjectsLocationsRepositoriesAptArtifactsService(self)
     self.projects_locations_repositories_files = self.ProjectsLocationsRepositoriesFilesService(self)
@@ -49,6 +50,46 @@ class ArtifactregistryV1beta2(base_api.BaseApiClient):
     self.projects_locations_repositories = self.ProjectsLocationsRepositoriesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class MediaService(base_api.BaseApiService):
+    """Service class for the media resource."""
+
+    _NAME = 'media'
+
+    def __init__(self, client):
+      super(ArtifactregistryV1beta2.MediaService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Download(self, request, global_params=None, download=None):
+      r"""Download a file.
+
+      Args:
+        request: (ArtifactregistryMediaDownloadRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+        download: (Download, default: None) If present, download
+            data from the request via this stream.
+      Returns:
+        (DownloadFileResponse) The response message.
+      """
+      config = self.GetMethodConfig('Download')
+      return self._RunMethod(
+          config, request, global_params=global_params,
+          download=download)
+
+    Download.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta2/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/files/{filesId}:download',
+        http_method='GET',
+        method_id='artifactregistry.media.download',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta2/{+name}:download',
+        request_field='',
+        request_type_name='ArtifactregistryMediaDownloadRequest',
+        response_type_name='DownloadFileResponse',
+        supports_download=True,
+    )
 
   class ProjectsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_operations resource."""
