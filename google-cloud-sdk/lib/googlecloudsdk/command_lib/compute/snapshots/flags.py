@@ -64,6 +64,14 @@ def AddSnapshotType(parser):
            """)
 
 
+def AddMaxRetentionDays(parser):
+  parser.add_argument(
+      '--max-retention-days',
+      help="""
+    Days for snapshot to live before being automatically deleted. If unspecified, the snapshot will live until manually deleted.
+    """)
+
+
 SOURCE_DISK_ARG = compute_flags.ResourceArgument(
     resource_name='source disk',
     name='--source-disk',

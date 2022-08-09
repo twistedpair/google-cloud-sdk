@@ -34,9 +34,9 @@ from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage import wildcard_iterator
 from googlecloudsdk.command_lib.storage.resources import gcloud_full_resource_formatter
 from googlecloudsdk.command_lib.storage.resources import gsutil_full_resource_formatter
-from googlecloudsdk.command_lib.storage.resources import resource_formatter_util
 from googlecloudsdk.command_lib.storage.resources import resource_reference
 from googlecloudsdk.command_lib.storage.resources import resource_util
+from googlecloudsdk.command_lib.storage.resources import shim_format_util
 from googlecloudsdk.command_lib.storage.tasks import task
 
 import six
@@ -174,7 +174,7 @@ class _ResourceFormatWrapper(_BaseFormatWrapper):
       etag_string = ''
 
     if self._readable_sizes and self.resource.size is not None:
-      size = resource_formatter_util.get_human_readable_byte_value(
+      size = shim_format_util.get_human_readable_byte_value(
           self.resource.size, use_gsutil_style=self._use_gsutil_style)
     else:
       # Also handles None values.
@@ -366,7 +366,7 @@ class CloudListTask(task.Task):
       # Long listing needs summary line.
       print('TOTAL: {} objects, {} bytes ({})'.format(
           object_count, int(total_bytes),
-          resource_formatter_util.get_human_readable_byte_value(
+          shim_format_util.get_human_readable_byte_value(
               total_bytes, self._use_gsutil_style)))
 
   def execute(self, task_status_queue=None):

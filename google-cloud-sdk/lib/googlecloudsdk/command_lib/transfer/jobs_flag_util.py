@@ -54,6 +54,11 @@ _DESTINATION_HELP_TEXT = (
 ).format(_POSIX_SOURCE_OR_DESTINATION_HELP_TEXT)
 
 
+class AuthMethod(enum.Enum):
+  AWS_SIGNATURE_V2 = 'AWS_SIGNATURE_V2'
+  AWS_SIGNATURE_V4 = 'AWS_SIGNATURE_V4'
+
+
 class DeleteOption(enum.Enum):
   DESTINATION_IF_UNIQUE = 'destination-if-unique'
   SOURCE_AFTER_TRANSFER = 'source-after-transfer'
@@ -87,10 +92,25 @@ class PreserveMetadataField(enum.Enum):
   UID = 'uid'
 
 
+class ListApi(enum.Enum):
+  LIST_OBJECTS = 'LIST_OBJECTS'
+  LIST_OBJECTS_V2 = 'LIST_OBJECTS_V2'
+
+
+class NetworkProtocol(enum.Enum):
+  HTTP = 'HTTP'
+  HTTPS = 'HTTPS'
+
+
 class OverwriteOption(enum.Enum):
   ALWAYS = 'always'
   DIFFERENT = 'different'
   NEVER = 'never'
+
+
+class RequestModel(enum.Enum):
+  PATH_STYLE = 'PATH_STYLE'
+  VIRTUAL_HOSTED_STYLE = 'VIRTUAL_HOSTED_STYLE'
 
 
 class StorageClass(enum.Enum):
@@ -133,7 +153,7 @@ def setup_parser(parser, is_update=False):
   if is_update:
     job_information.add_argument(
         '--status',
-        choices=sorted([status.value for status in JobStatus]),
+        choices=sorted(status.value for status in JobStatus),
         help='Specify this flag to change the status of the job. Options'
         " include 'enabled', 'disabled', 'deleted'.")
     job_information.add_argument('--source', help=_SOURCE_HELP_TEXT)
@@ -343,7 +363,7 @@ def setup_parser(parser, is_update=False):
         help='Reverts to using destination default storage class.')
   transfer_options.add_argument(
       '--overwrite-when',
-      choices=sorted([option.value for option in OverwriteOption]),
+      choices=sorted(option.value for option in OverwriteOption),
       help='Determine when destination objects are overwritten by source'
       ' objects. Options include:\n'
       " - 'different' - Overwrites files with the same name if the contents"
@@ -354,7 +374,7 @@ def setup_parser(parser, is_update=False):
       ' same name')
   transfer_options.add_argument(
       '--delete-from',
-      choices=sorted([option.value for option in DeleteOption]),
+      choices=sorted(option.value for option in DeleteOption),
       help="By default, transfer jobs won't delete any data from your source"
       ' or destination. These options enable you to delete data if'
       ' needed for your use case. Options include:\n'
@@ -366,7 +386,7 @@ def setup_parser(parser, is_update=False):
   transfer_options.add_argument(
       '--preserve-metadata',
       type=arg_parsers.ArgList(
-          choices=sorted([field.value for field in PreserveMetadataField])),
+          choices=sorted(field.value for field in PreserveMetadataField)),
       metavar='METADATA_FIELDS',
       help='Specify object metadata values that can optionally be preserved.'
       ' Example: --preserve-metadata=storage-class,uid\n\n'
@@ -428,7 +448,7 @@ def setup_parser(parser, is_update=False):
   logging_config.add_argument(
       '--log-actions',
       type=arg_parsers.ArgList(
-          choices=sorted([option.value for option in LogAction])),
+          choices=sorted(option.value for option in LogAction)),
       metavar='LOG_ACTIONS',
       help='Define the transfer operation actions to report in logs. Separate'
       ' multiple actions with commas, omitting spaces after the commas'
@@ -436,11 +456,79 @@ def setup_parser(parser, is_update=False):
   logging_config.add_argument(
       '--log-action-states',
       type=arg_parsers.ArgList(
-          choices=sorted([option.value for option in LogActionState])),
+          choices=sorted(option.value for option in LogActionState)),
       metavar='LOG_ACTION_STATES',
       help='The states in which the actions specified in --log-actions are'
       ' logged. Separate multiple states with a comma, omitting the space after'
       ' the comma (e.g., --log-action-states=succeeded,failed).')
+
+  additional_options = parser.add_group(
+      help='ADDITIONAL OPTIONS', sort_args=False)
+  additional_options.add_argument(
+      '--source-endpoint',
+      help='For transfers from S3-compatible sources, specify your storage'
+      " system's endpoint. Check with your provider for formatting (ex."
+      ' s3.us-east-1.amazonaws.com for Amazon S3).')
+  additional_options.add_argument(
+      '--source-signing-region',
+      help='For transfers from S3-compatible sources, specify a region for'
+      ' signing requests. You can leave this unspecified if your storage'
+      " provider doesn't require a signing region.")
+  additional_options.add_argument(
+      '--source-auth-method',
+      choices=sorted(option.value for option in AuthMethod),
+      help='For transfers from S3-compatible sources, choose a process for'
+      " adding authentication information to S3 API requests. Refer to AWS's"
+      ' SigV4 (https://docs.aws.amazon.com/general/latest/gr/signature-version'
+      '-4.html) and SigV2 (https://docs.aws.amazon.com/general/latest/gr/'
+      'signature-version-2.html) documentation for more information.')
+  additional_options.add_argument(
+      '--source-list-api',
+      choices=sorted(option.value for option in ListApi),
+      help='For transfers from S3-compatible sources, choose the version of the'
+      " S3 listing API for returning objects from the bucket. Refer to AWS's"
+      ' ListObjectsV2 (https://docs.aws.amazon.com/AmazonS3/latest/API/'
+      'API_ListObjectsV2.html) and ListObjects (https://docs.aws.amazon.com/'
+      'AmazonS3/latest/API/API_ListObjects.html) documentation for more'
+      ' information.')
+  additional_options.add_argument(
+      '--source-network-protocol',
+      choices=sorted(option.value for option in NetworkProtocol),
+      help='For transfers from S3-compatible sources, choose the network'
+      ' protocol agents should use for this job.')
+  additional_options.add_argument(
+      '--source-request-model',
+      choices=sorted(option.value for option in RequestModel),
+      help='For transfers from S3-compatible sources, choose which addressing'
+      ' style to use. Determines if the bucket name is in the hostname or part'
+      ' of the URL. For example, https://s3.region.amazonaws.com/bucket-name'
+      '/key-name for path style and Ex. https://bucket-name.s3.region.'
+      'amazonaws.com/key-name for virtual-hosted style.')
+  if is_update:
+    additional_options.add_argument(
+        '--clear-source-endpoint',
+        action='store_true',
+        help='Removes source endpoint.')
+    additional_options.add_argument(
+        '--clear-source-signing-region',
+        action='store_true',
+        help='Removes source signing region.')
+    additional_options.add_argument(
+        '--clear-source-auth-method',
+        action='store_true',
+        help='Removes source auth method.')
+    additional_options.add_argument(
+        '--clear-source-list-api',
+        action='store_true',
+        help='Removes source list API.')
+    additional_options.add_argument(
+        '--clear-source-network-protocol',
+        action='store_true',
+        help='Removes source network protocol.')
+    additional_options.add_argument(
+        '--clear-source-request-model',
+        action='store_true',
+        help='Removes source request model.')
 
   if not is_update:
     execution_options = parser.add_group(

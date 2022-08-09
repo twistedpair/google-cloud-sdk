@@ -4,7 +4,7 @@
   "id": "compute:beta",
   "name": "compute",
   "version": "beta",
-  "revision": "20220722",
+  "revision": "20220802",
   "title": "Compute Engine API",
   "description": "Creates and runs virtual machines on Google Cloud Platform. ",
   "ownerDomain": "google.com",
@@ -2924,6 +2924,10 @@
         "redirectOptions": {
           "description": "Parameters defining the redirect action. Cannot be specified for any other actions.",
           "$ref": "SecurityPolicyRuleRedirectOptions"
+        },
+        "preconfiguredWafConfig": {
+          "description": "Preconfigured WAF configuration to be applied for the rule. If the rule does not evaluate preconfigured WAF rules, i.e., if evaluatePreconfiguredWaf() is not used, this field will have no effect.",
+          "$ref": "SecurityPolicyRulePreconfiguredWafConfig"
         }
       }
     },
@@ -3115,6 +3119,92 @@
         "headerValue": {
           "description": "The value to set the named header to.",
           "type": "string"
+        }
+      }
+    },
+    "SecurityPolicyRulePreconfiguredWafConfig": {
+      "id": "SecurityPolicyRulePreconfiguredWafConfig",
+      "type": "object",
+      "properties": {
+        "exclusions": {
+          "description": "A list of exclusions to apply during preconfigured WAF evaluation.",
+          "type": "array",
+          "items": {
+            "$ref": "SecurityPolicyRulePreconfiguredWafConfigExclusion"
+          }
+        }
+      }
+    },
+    "SecurityPolicyRulePreconfiguredWafConfigExclusion": {
+      "id": "SecurityPolicyRulePreconfiguredWafConfigExclusion",
+      "type": "object",
+      "properties": {
+        "targetRuleSet": {
+          "description": "Target WAF rule set to apply the preconfigured WAF exclusion.",
+          "type": "string"
+        },
+        "targetRuleIds": {
+          "description": "A list of target rule IDs under the WAF rule set to apply the preconfigured WAF exclusion. If omitted, it refers to all the rule IDs under the WAF rule set.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "requestHeadersToExclude": {
+          "description": "A list of request header names whose value will be excluded from inspection during preconfigured WAF evaluation.",
+          "type": "array",
+          "items": {
+            "$ref": "SecurityPolicyRulePreconfiguredWafConfigExclusionFieldParams"
+          }
+        },
+        "requestCookiesToExclude": {
+          "description": "A list of request cookie names whose value will be excluded from inspection during preconfigured WAF evaluation.",
+          "type": "array",
+          "items": {
+            "$ref": "SecurityPolicyRulePreconfiguredWafConfigExclusionFieldParams"
+          }
+        },
+        "requestQueryParamsToExclude": {
+          "description": "A list of request query parameter names whose value will be excluded from inspection during preconfigured WAF evaluation. Note that the parameter can be in the query string or in the POST body.",
+          "type": "array",
+          "items": {
+            "$ref": "SecurityPolicyRulePreconfiguredWafConfigExclusionFieldParams"
+          }
+        },
+        "requestUrisToExclude": {
+          "description": "A list of request URIs from the request line to be excluded from inspection during preconfigured WAF evaluation. When specifying this field, the query or fragment part should be excluded.",
+          "type": "array",
+          "items": {
+            "$ref": "SecurityPolicyRulePreconfiguredWafConfigExclusionFieldParams"
+          }
+        }
+      }
+    },
+    "SecurityPolicyRulePreconfiguredWafConfigExclusionFieldParams": {
+      "id": "SecurityPolicyRulePreconfiguredWafConfigExclusionFieldParams",
+      "type": "object",
+      "properties": {
+        "val": {
+          "description": "The value of the field.",
+          "type": "string"
+        },
+        "op": {
+          "description": "The match operator for the field.",
+          "type": "string",
+          "enumDescriptions": [
+            "The operator matches if the field value contains the specified value.",
+            "The operator matches if the field value ends with the specified value.",
+            "The operator matches if the field value equals the specified value.",
+            "The operator matches if the field value is any value.",
+            "The operator matches if the field value starts with the specified value."
+          ],
+          "enum": [
+            "CONTAINS",
+            "ENDS_WITH",
+            "EQUALS",
+            "EQUALS_ANY",
+            "STARTS_WITH"
+          ]
         }
       }
     },
@@ -4419,6 +4509,13 @@
             "ARM64",
             "X86_64"
           ]
+        },
+        "resourceManagerTags": {
+          "description": "Resource manager tags to be bound to the disk. Tag keys and values have the same definition as resource manager tags. Keys must be in the format `tagKeys\/{tag_key_id}`, and values are in the format `tagValues\/456`. The field is ignored (both PUT & PATCH) when empty.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },
@@ -6082,6 +6179,13 @@
         "satisfiesPzs": {
           "description": "[Output Only] Reserved for future use.",
           "type": "boolean"
+        },
+        "resourcePolicies": {
+          "description": "Resource policies to be added to this reservation. The key is defined by user, and the value is resource policy url. This is to define placement policy with reservation.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },
@@ -14836,6 +14940,24 @@
         "locked": {
           "description": "[Output Only] The field indicates if the disk is created from a locked source image. Attachment of a disk created from a locked source image will cause the following operations to become irreversibly prohibited: - R\/W or R\/O disk attachment to any other instance - Disk detachment. And the disk can only be deleted when the instance is deleted - Creation of images or snapshots - Disk cloning Furthermore, the instance with at least one disk with locked flag set to true will be prohibited from performing the operations below: - Further attachment of secondary disks. - Detachment of any disks - Create machine images - Create instance template - Delete the instance with --keep-disk parameter set to true for locked disks - Attach a locked disk with --auto-delete parameter set to false ",
           "type": "boolean"
+        },
+        "params": {
+          "description": "Input only. [Input Only] Additional params passed with the request, but not persisted as part of resource payload.",
+          "$ref": "DiskParams"
+        }
+      }
+    },
+    "DiskParams": {
+      "id": "DiskParams",
+      "description": "Additional disk params.",
+      "type": "object",
+      "properties": {
+        "resourceManagerTags": {
+          "description": "Resource manager tags to be bound to the disk. Tag keys and values have the same definition as resource manager tags. Keys must be in the format `tagKeys\/{tag_key_id}`, and values are in the format `tagValues\/456`. The field is ignored (both PUT & PATCH) when empty.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },

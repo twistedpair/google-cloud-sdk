@@ -19,45 +19,42 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.command_lib.storage.resources import full_resource_formatter as base
-from googlecloudsdk.command_lib.storage.resources import resource_formatter_util
+from googlecloudsdk.command_lib.storage.resources import shim_format_util
 
 _BUCKET_DISPLAY_TITLES_AND_DEFAULTS = (
     base.BucketDisplayTitlesAndDefaults(
         # Using literal string 'None' as default so that it gets displayed
         # if the value is missing.
         storage_class=base.FieldDisplayTitleAndDefault(
-            title='Storage Class', default=resource_formatter_util.NONE_STRING),
+            title='Storage Class', default=shim_format_util.NONE_STRING),
         location_type=base.FieldDisplayTitleAndDefault(
             title='Location Type', default=None),
         location=base.FieldDisplayTitleAndDefault(
-            title='Location Constraint',
-            default=resource_formatter_util.NONE_STRING),
+            title='Location Constraint', default=shim_format_util.NONE_STRING),
         versioning_enabled=base.FieldDisplayTitleAndDefault(
-            title='Versioning Enabled',
-            default=resource_formatter_util.NONE_STRING),
+            title='Versioning Enabled', default=shim_format_util.NONE_STRING),
         logging_config=base.FieldDisplayTitleAndDefault(
             title='Logging Configuration',
-            default=resource_formatter_util.NONE_STRING),
+            default=shim_format_util.NONE_STRING),
         website_config=base.FieldDisplayTitleAndDefault(
             title='Website Configuration',
-            default=resource_formatter_util.NONE_STRING),
+            default=shim_format_util.NONE_STRING),
         cors_config=base.FieldDisplayTitleAndDefault(
             title='CORS Configuration',
-            default=resource_formatter_util.EMPTY_LIST_STRING),
+            default=shim_format_util.EMPTY_LIST_STRING),
         lifecycle_config=base.FieldDisplayTitleAndDefault(
             title='Lifecycle Configuration',
-            default=resource_formatter_util.NONE_STRING),
+            default=shim_format_util.NONE_STRING),
         requester_pays=base.FieldDisplayTitleAndDefault(
             title='Requester Pays Enabled',
-            default=resource_formatter_util.NONE_STRING),
+            default=shim_format_util.NONE_STRING),
         retention_policy=base.FieldDisplayTitleAndDefault(
             title='Retention Policy', default=None),
         default_event_based_hold=base.FieldDisplayTitleAndDefault(
             title='Default Event-Based Hold', default=None),
         labels=base.FieldDisplayTitleAndDefault(title='Labels', default=None),
         default_kms_key=base.FieldDisplayTitleAndDefault(
-            title='Default KMS Key',
-            default=resource_formatter_util.NONE_STRING),
+            title='Default KMS Key', default=shim_format_util.NONE_STRING),
         creation_time=base.FieldDisplayTitleAndDefault(
             title='Time Created', default=None),
         update_time=base.FieldDisplayTitleAndDefault(
@@ -71,7 +68,7 @@ _BUCKET_DISPLAY_TITLES_AND_DEFAULTS = (
         satisifes_pzs=base.FieldDisplayTitleAndDefault(
             title='Satisfies PZS', default=None),
         acl=base.FieldDisplayTitleAndDefault(
-            title='ACL', default=resource_formatter_util.EMPTY_LIST_STRING),
+            title='ACL', default=shim_format_util.EMPTY_LIST_STRING),
         default_acl=base.FieldDisplayTitleAndDefault(
             title='Default ACL', default=None),
     ))
@@ -102,10 +99,9 @@ _OBJECT_DISPLAY_TITLES_AND_DEFAULTS = (
         content_language=base.FieldDisplayTitleAndDefault(
             title='Content-Language', default=None),
         content_length=base.FieldDisplayTitleAndDefault(
-            title='Content-Length',
-            default=resource_formatter_util.NONE_STRING),
+            title='Content-Length', default=shim_format_util.NONE_STRING),
         content_type=base.FieldDisplayTitleAndDefault(
-            title='Content-Type', default=resource_formatter_util.NONE_STRING),
+            title='Content-Type', default=shim_format_util.NONE_STRING),
         component_count=base.FieldDisplayTitleAndDefault(
             title='Component-Count', default=None),
         custom_time=base.FieldDisplayTitleAndDefault(
@@ -128,7 +124,7 @@ _OBJECT_DISPLAY_TITLES_AND_DEFAULTS = (
         metageneration=base.FieldDisplayTitleAndDefault(
             title='Metageneration', default=None),
         acl=base.FieldDisplayTitleAndDefault(
-            title='ACL', default=resource_formatter_util.EMPTY_LIST_STRING),
+            title='ACL', default=shim_format_util.EMPTY_LIST_STRING),
     ))
 
 
@@ -137,7 +133,7 @@ class GcloudFullResourceFormatter(base.FullResourceFormatter):
 
   def format_bucket(self, url, displayable_bucket_data):
     """See super class."""
-    resource_formatter_util.replace_bucket_values_with_present_string(
+    shim_format_util.replace_bucket_values_with_present_string(
         displayable_bucket_data)
     return base.get_formatted_string(url, displayable_bucket_data,
                                      _BUCKET_DISPLAY_TITLES_AND_DEFAULTS)
@@ -148,7 +144,7 @@ class GcloudFullResourceFormatter(base.FullResourceFormatter):
                     show_acl=True,
                     show_version_in_url=False):
     """See super class."""
-    resource_formatter_util.replace_object_values_with_encryption_string(
+    shim_format_util.replace_object_values_with_encryption_string(
         displayable_object_data, 'Underlying data encrypted')
     return base.get_formatted_string(
         url,

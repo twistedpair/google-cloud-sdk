@@ -212,6 +212,7 @@
             "NPM package format.",
             "APT package format.",
             "YUM package format.",
+            "GooGet package format.",
             "Python package format."
           ],
           "enum": [
@@ -221,6 +222,7 @@
             "NPM",
             "APT",
             "YUM",
+            "GOOGET",
             "PYTHON"
           ]
         },

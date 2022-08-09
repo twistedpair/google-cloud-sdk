@@ -36,6 +36,19 @@ from googlecloudsdk.core.util import times
 
 import six
 
+_NAME_CONSTRAINT_CRITICAL = 'critical'
+
+_NAME_CONSTRAINT_MAPPINGS = {
+    'name_permitted_ip': 'permittedIpRanges',
+    'name_excluded_ip': 'excludedIpRanges',
+    'name_permitted_email': 'permittedEmailAddresses',
+    'name_excluded_email': 'excludedEmailAddresses',
+    'name_permitted_uri': 'permittedUris',
+    'name_excluded_uri': 'excludedUris',
+    'name_permitted_dns': 'permittedDnsNames',
+    'name_excluded_dns': 'excludedDnsNames',
+}
+
 _EMAIL_SAN_REGEX = re.compile('^[^@]+@[^@]+$')
 # Any number of labels (any character that is not a dot) concatenated by dots
 _DNS_SAN_REGEX = re.compile(r'^([^.]+\.)*[^.]+$')
@@ -256,6 +269,96 @@ def AddSkipGracePeriodFlag(parser):
       required=False).AddToParser(parser)
 
 
+def AddNameConstraintParameterFlags(parser):
+  """Adds flags for inline name constraint x509 parameters.
+
+  Args:
+    parser: The parser to add the flags to.
+  """
+  base.Argument(
+      '--name-constraints-critical',
+      help=(
+          'Indicates whether or not name constraints are marked as critical. '
+          'Name constraints are considered critical unless explicitly set to '
+          'false.'),
+      default=True,
+      action='store_true').AddToParser(parser)
+  base.Argument(
+      '--name-permitted-dns',
+      help=(
+          'One or more comma-separated  DNS names which are permitted to be '
+          'issued certificates. Any DNS name that can be constructed by simply '
+          'adding zero or more labels to the left-hand side of the name '
+          'satisfies the name constraint. For example, `example.com`, '
+          '`www.example.com`, `www.sub.example.com` would satisfy '
+          '`example.com`, while `example1.com` does not.'),
+      metavar='NAME_PERMITTED_DNS',
+      type=arg_parsers.ArgList(element_type=_StripVal)).AddToParser(parser)
+  base.Argument(
+      '--name-excluded-dns',
+      metavar='NAME_EXCLUDED_DNS',
+      help=(
+          'One or more comma-separated DNS names which are excluded from '
+          'being issued certificates. Any DNS name that can be constructed by '
+          'simply adding zero or more labels to the left-hand side of the name '
+          'satisfies the name constraint. For example, `example.com`, '
+          '`www.example.com`, `www.sub.example.com` would satisfy '
+          '`example.com`, while `example1.com` does not.'),
+      type=arg_parsers.ArgList(element_type=_StripVal)).AddToParser(parser)
+  base.Argument(
+      '--name-permitted-ip',
+      metavar='NAME_PERMITTED_IP',
+      help=(
+          'One or more comma-separated IP ranges which are permitted to be '
+          'issued certificates. For IPv4 addresses, the ranges are expressed '
+          'using CIDR notation as specified in RFC 4632. For IPv6 addresses, '
+          'the ranges are expressed in similar encoding as IPv4'),
+      type=arg_parsers.ArgList(element_type=_StripVal)).AddToParser(parser)
+  base.Argument(
+      '--name-excluded-ip',
+      metavar='NAME_EXCLUDED_IP',
+      help=(
+          'One or more comma-separated IP ranges which are excluded from being '
+          'issued certificates. For IPv4 addresses, the ranges are expressed '
+          'using CIDR notation as specified in RFC 4632. For IPv6 addresses, '
+          'the ranges are expressed in similar encoding as IPv4'),
+      type=arg_parsers.ArgList(element_type=_StripVal)).AddToParser(parser)
+  base.Argument(
+      '--name-permitted-email',
+      metavar='NAME_PERMITTED_EMAIL',
+      help=(
+          'One or more comma-separated email addresses which are permitted to '
+          'be issued certificates. The value can be a particular email '
+          'address, a hostname to indicate all email addresses on that host or '
+          'a domain with a leading period (e.g. `.example.com`) to indicate '
+          'all email addresses in that domain.'),
+      type=arg_parsers.ArgList(element_type=_StripVal)).AddToParser(parser)
+  base.Argument(
+      '--name-excluded-email',
+      metavar='NAME_EXCLUDED_EMAIL',
+      help=(
+          'One or more comma-separated emails which are excluded from being '
+          'issued certificates. The value can be a particular email '
+          'address, a hostname to indicate all email addresses on that host or '
+          'a domain with a leading period (e.g. `.example.com`) to indicate '
+          'all email addresses in that domain.'),
+      type=arg_parsers.ArgList(element_type=_StripVal)).AddToParser(parser)
+  base.Argument(
+      '--name-permitted-uri',
+      help=('One or more comma-separated URIs which are permitted to be issued '
+            'certificates. The value can be a hostname or a domain with a '
+            'leading period (like `.example.com`)'),
+      metavar='NAME_PERMITTED_URI',
+      type=arg_parsers.ArgList(element_type=_StripVal)).AddToParser(parser)
+  base.Argument(
+      '--name-excluded-uri',
+      metavar='NAME_EXCLUDED_URI',
+      help=('One or more comma-separated URIs which are excluded from being '
+            'issued certificates. The value can be a hostname or a domain with '
+            'a leading period (like `.example.com`)'),
+      type=arg_parsers.ArgList(element_type=_StripVal)).AddToParser(parser)
+
+
 def AddInlineX509ParametersFlags(parser,
                                  is_ca_command,
                                  default_max_chain_length=None):
@@ -286,6 +389,12 @@ def AddInlineX509ParametersFlags(parser,
       type=arg_parsers.ArgList(
           element_type=_StripVal,
           choices=_VALID_EXTENDED_KEY_USAGES)).AddToParser(group)
+
+  name_constraints_group = group.add_group(
+      hidden=True,
+      help='The x509 name constraints configurations')
+  AddNameConstraintParameterFlags(name_constraints_group)
+
   chain_length_group = group.add_group(mutex=True)
   base.Argument(
       '--max-chain-length',
@@ -890,6 +999,30 @@ def ParseKeySpec(args):
       algorithm=_KEY_ALGORITHM_MAPPER.GetEnumForChoice(args.key_algorithm))
 
 
+def ParseNameConstraints(args, messages):
+  """Parses the name constraints in x509Parameters.
+
+  Args:
+    args: The parsed argument values
+    messages: PrivateCA's messages modules
+
+  Returns:
+    A NameConstraints message object
+  """
+  name_constraint_dict = {}
+  for constraint_arg, constraint in _NAME_CONSTRAINT_MAPPINGS.items():
+    if args.IsKnownAndSpecified(constraint_arg):
+      name_constraint_dict[constraint] = getattr(args, constraint_arg)
+  if not name_constraint_dict:
+    return None
+  # Always set critical for name constraints even if the arg is not specified
+  # in which case we use the default value.
+  name_constraint_dict[
+      _NAME_CONSTRAINT_CRITICAL] = args.name_constraints_critical
+  return messages_util.DictToMessageWithErrorCheck(
+      name_constraint_dict, message_type=messages.NameConstraints)
+
+
 def ParseX509Parameters(args, is_ca_command):
   """Parses the X509 parameters flags into an API X509Parameters.
 
@@ -906,7 +1039,7 @@ def ParseX509Parameters(args, is_ca_command):
   inline_args = [
       'key_usages', 'extended_key_usages', 'max_chain_length', 'is_ca_cert',
       'unconstrained_chain_length'
-  ]
+  ] + list(_NAME_CONSTRAINT_MAPPINGS.keys())
 
   # TODO(b/183243757): Change to args.IsSpecified once --use-preset-profile flag
   # is registered.
@@ -950,7 +1083,8 @@ def ParseX509Parameters(args, is_ca_command):
           isCa=is_ca,
           # Don't include maxIssuerPathLength if it's None.
           maxIssuerPathLength=int(args.max_chain_length)
-          if is_ca and args.max_chain_length is not None else None))
+          if is_ca and args.max_chain_length is not None else None),
+      nameConstraints=ParseNameConstraints(args, messages))
 
 
 def X509ConfigFlagsAreSpecified(args):

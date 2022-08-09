@@ -143,6 +143,7 @@ _INTEGRATION_TYPES = frozenset([
         'example_command':
             '$ gcloud run integrations create --service=[SERVICE] '
             '--type=redis --parameters=memory-size-gb=2',
+        'backing_service': True,
         'parameters':
             frozendict({
                 'memory-size-gb':
@@ -175,6 +176,48 @@ _INTEGRATION_TYPES = frozenset([
             }),
         'required_apis':
             frozenset({'redis.googleapis.com', 'vpcaccess.googleapis.com'}),
+    }),
+    frozendict({
+        INTEGRATION_TYPE:
+            'cloudsql',
+        RESOURCE_TYPE:
+            'cloudsql',
+        'description':
+            'Configure a CloudSQL database instance and connect it '
+            'to a Cloud Run Service.',
+        'example_command':
+            '$ gcloud run integrations create --service=[SERVICE] '
+            '--type=cloudsql --parameters=version=MYSQL_8_0,tier=db-f1-micro',
+        'backing_service': True,
+        'parameters':
+            frozendict({
+                'tier':
+                    frozendict({
+                        'description':
+                            'The service tier of the instance. '
+                            'For example: db-f1-micro or db-g1-small.',
+                        'type': 'string',
+                        'update_allowed': False,
+                        'required': True,
+                    }),
+                'version':
+                    frozendict({
+                        'description':
+                            'The version of CloudSQL software. '
+                            'For example: MYSQL_8_0, POSTGRES_14, '
+                            'or SQLSERVER_2019_STANDARD. '
+                            'See https://cloud.google.com/sql/docs/mysql/admin-api/rest/v1beta4/SqlDatabaseVersion for more details.',
+                        'type': 'string',
+                        'update_allowed': False,
+                        'required': True,
+                    }),
+            }),
+        'required_apis':
+            frozenset({
+                'sqladmin.googleapis.com',
+                'cloudresourcemanager.googleapis.com',
+                'secretmanager.googleapis.com'
+            }),
     }),
 ])
 

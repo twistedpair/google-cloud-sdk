@@ -4656,13 +4656,14 @@ class PolicyControllerHubConfig(_messages.Message):
       INSTALL_SPEC_UNSPECIFIED: Spec is unknown.
       INSTALL_SPEC_NOT_INSTALLED: Request to uninstall Policy Controller.
       INSTALL_SPEC_ENABLED: Request to install and enable Policy Controller.
-      INSTALL_SPEC_DISABLED: Request to disable Policy Controller. If Policy
-        Controller is not installed, it will be installed but disabled.
+      INSTALL_SPEC_SUSPENDED: Request to suspend Policy Controller i.e. its
+        webhooks. If Policy Controller is not installed, it will be installed
+        but suspended.
     """
     INSTALL_SPEC_UNSPECIFIED = 0
     INSTALL_SPEC_NOT_INSTALLED = 1
     INSTALL_SPEC_ENABLED = 2
-    INSTALL_SPEC_DISABLED = 3
+    INSTALL_SPEC_SUSPENDED = 3
 
   auditIntervalSeconds = _messages.IntegerField(1)
   exemptableNamespaces = _messages.StringField(2, repeated=True)
@@ -4884,23 +4885,30 @@ class RBACRoleBinding(_messages.Message):
   Fields:
     createTime: Output only. When the rbacrolebinding was created.
     deleteTime: Output only. When the rbacrolebinding was deleted.
+    group: group is the group, as seen by the kubernetes cluster.
     name: The resource name for the rbacrolebinding `projects/{project}/locati
       ons/{location}/namespaces/{namespace}/rbacrolebindings/{rbacrolebinding}
       `
+    role: Required. Role to bind to the principal
     state: Output only. State of the rbacrolebinding resource.
     uid: Output only. Google-generated UUID for this resource. This is unique
       across all rbacrolebinding resources. If a rbacrolebinding resource is
       deleted and another resource with the same name is created, it gets a
       different uid.
     updateTime: Output only. When the rbacrolebinding was last updated.
+    user: user is the name of the user as seen by the kubernetes cluster,
+      example "alice" or "alice@domain.tld"
   """
 
   createTime = _messages.StringField(1)
   deleteTime = _messages.StringField(2)
-  name = _messages.StringField(3)
-  state = _messages.MessageField('RBACRoleBindingLifecycleState', 4)
-  uid = _messages.StringField(5)
-  updateTime = _messages.StringField(6)
+  group = _messages.StringField(3)
+  name = _messages.StringField(4)
+  role = _messages.MessageField('Role', 5)
+  state = _messages.MessageField('RBACRoleBindingLifecycleState', 6)
+  uid = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
+  user = _messages.StringField(9)
 
 
 class RBACRoleBindingActuationFeatureSpec(_messages.Message):
@@ -5027,6 +5035,34 @@ class ResourceOptions(_messages.Message):
   connectVersion = _messages.StringField(1)
   k8sVersion = _messages.StringField(2)
   v1beta1Crd = _messages.BooleanField(3)
+
+
+class Role(_messages.Message):
+  r"""Role is the type for Kubernetes roles
+
+  Enums:
+    PredefinedRoleValueValuesEnum: predefined_role is the Kubernetes default
+      role to use
+
+  Fields:
+    predefinedRole: predefined_role is the Kubernetes default role to use
+  """
+
+  class PredefinedRoleValueValuesEnum(_messages.Enum):
+    r"""predefined_role is the Kubernetes default role to use
+
+    Values:
+      UNKNOWN: UNKNOWN
+      ADMIN: ADMIN has EDIT and RBAC permissions
+      EDIT: EDIT can edit all resources except RBAC
+      VIEW: VIEW can only read resources
+    """
+    UNKNOWN = 0
+    ADMIN = 1
+    EDIT = 2
+    VIEW = 3
+
+  predefinedRole = _messages.EnumField('PredefinedRoleValueValuesEnum', 1)
 
 
 class Rule(_messages.Message):

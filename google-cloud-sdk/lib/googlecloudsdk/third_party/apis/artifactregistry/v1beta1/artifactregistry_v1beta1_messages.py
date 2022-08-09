@@ -980,6 +980,7 @@ class Repository(_messages.Message):
       NPM: NPM package format.
       APT: APT package format.
       YUM: YUM package format.
+      GOOGET: GooGet package format.
       PYTHON: Python package format.
     """
     FORMAT_UNSPECIFIED = 0
@@ -988,7 +989,8 @@ class Repository(_messages.Message):
     NPM = 3
     APT = 4
     YUM = 5
-    PYTHON = 6
+    GOOGET = 6
+    PYTHON = 7
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):

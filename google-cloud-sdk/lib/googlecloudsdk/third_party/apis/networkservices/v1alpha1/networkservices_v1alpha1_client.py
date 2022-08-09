@@ -56,6 +56,7 @@ class NetworkservicesV1alpha1(base_api.BaseApiClient):
     self.projects_locations_serviceLbPolicies = self.ProjectsLocationsServiceLbPoliciesService(self)
     self.projects_locations_tcpRoutes = self.ProjectsLocationsTcpRoutesService(self)
     self.projects_locations_tlsRoutes = self.ProjectsLocationsTlsRoutesService(self)
+    self.projects_locations_wasmActions = self.ProjectsLocationsWasmActionsService(self)
     self.projects_locations_wasmPlugins_versions = self.ProjectsLocationsWasmPluginsVersionsService(self)
     self.projects_locations_wasmPlugins = self.ProjectsLocationsWasmPluginsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
@@ -3522,6 +3523,124 @@ class NetworkservicesV1alpha1(base_api.BaseApiClient):
         request_field='testIamPermissionsRequest',
         request_type_name='NetworkservicesProjectsLocationsTlsRoutesTestIamPermissionsRequest',
         response_type_name='TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsWasmActionsService(base_api.BaseApiService):
+    """Service class for the projects_locations_wasmActions resource."""
+
+    _NAME = 'projects_locations_wasmActions'
+
+    def __init__(self, client):
+      super(NetworkservicesV1alpha1.ProjectsLocationsWasmActionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new WasmAction in a given project and location.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsWasmActionsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/wasmActions',
+        http_method='POST',
+        method_id='networkservices.projects.locations.wasmActions.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['wasmActionId'],
+        relative_path='v1alpha1/{+parent}/wasmActions',
+        request_field='wasmAction',
+        request_type_name='NetworkservicesProjectsLocationsWasmActionsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single WasmAction.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsWasmActionsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/wasmActions/{wasmActionsId}',
+        http_method='DELETE',
+        method_id='networkservices.projects.locations.wasmActions.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsWasmActionsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single WasmAction.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsWasmActionsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (WasmAction) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/wasmActions/{wasmActionsId}',
+        http_method='GET',
+        method_id='networkservices.projects.locations.wasmActions.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsWasmActionsGetRequest',
+        response_type_name='WasmAction',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists WasmActions in a given project and location.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsWasmActionsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListWasmActionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/wasmActions',
+        http_method='GET',
+        method_id='networkservices.projects.locations.wasmActions.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/wasmActions',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsWasmActionsListRequest',
+        response_type_name='ListWasmActionsResponse',
         supports_download=False,
     )
 

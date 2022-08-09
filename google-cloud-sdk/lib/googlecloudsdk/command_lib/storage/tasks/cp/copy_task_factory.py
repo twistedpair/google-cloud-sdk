@@ -30,6 +30,7 @@ from googlecloudsdk.command_lib.storage.tasks.cp import streaming_upload_task
 
 def get_copy_task(source_resource,
                   destination_resource,
+                  delete_source=False,
                   do_not_decompress=False,
                   force_daisy_chain=False,
                   print_created_message=False,
@@ -41,6 +42,8 @@ def get_copy_task(source_resource,
     source_resource (resource_reference.Resource): Reference to file to copy.
     destination_resource (resource_reference.Resource): Reference to destination
       to copy file to.
+    delete_source (bool): If copy completes successfully, delete the source
+        object afterwards.
     do_not_decompress (bool): Prevents automatically decompressing downloaded
       gzips.
     force_daisy_chain (bool): If True, yields daisy chain copy tasks in place
@@ -76,6 +79,7 @@ def get_copy_task(source_resource,
     return file_download_task.FileDownloadTask(
         source_resource,
         destination_resource,
+        delete_source=delete_source,
         do_not_decompress=do_not_decompress,
         print_created_message=print_created_message,
         user_request_args=user_request_args)
@@ -92,6 +96,7 @@ def get_copy_task(source_resource,
       return file_upload_task.FileUploadTask(
           source_resource,
           destination_resource,
+          delete_source=delete_source,
           print_created_message=print_created_message,
           user_request_args=user_request_args)
 
@@ -104,10 +109,12 @@ def get_copy_task(source_resource,
       return daisy_chain_copy_task.DaisyChainCopyTask(
           source_resource,
           destination_resource,
+          delete_source=delete_source,
           print_created_message=print_created_message,
           user_request_args=user_request_args)
     return intra_cloud_copy_task.IntraCloudCopyTask(
         source_resource,
         destination_resource,
+        delete_source=delete_source,
         print_created_message=print_created_message,
         user_request_args=user_request_args)

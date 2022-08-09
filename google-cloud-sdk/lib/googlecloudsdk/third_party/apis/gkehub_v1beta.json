@@ -817,13 +817,13 @@
             "Spec is unknown.",
             "Request to uninstall Policy Controller.",
             "Request to install and enable Policy Controller.",
-            "Request to disable Policy Controller. If Policy Controller is not installed, it will be installed but disabled."
+            "Request to suspend Policy Controller i.e. its webhooks. If Policy Controller is not installed, it will be installed but suspended."
           ],
           "enum": [
             "INSTALL_SPEC_UNSPECIFIED",
             "INSTALL_SPEC_NOT_INSTALLED",
             "INSTALL_SPEC_ENABLED",
-            "INSTALL_SPEC_DISABLED"
+            "INSTALL_SPEC_SUSPENDED"
           ]
         },
         "auditIntervalSeconds": {

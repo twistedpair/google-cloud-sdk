@@ -2125,6 +2125,29 @@ class GoogleCloudAssetV1ListConstraint(_messages.Message):
   supportsUnder = _messages.BooleanField(2)
 
 
+class GoogleCloudAssetV1QueryAssetsOutputConfigBigQueryDestination(_messages.Message):
+  r"""BigQuery destination.
+
+  Fields:
+    dataset: Required. The BigQuery dataset where the query results will be
+      saved. It has the format of "projects/{projectId}/datasets/{datasetId}".
+    table: Required. The BigQuery table where the query results will be saved.
+      If this table does not exist, a new table with the given name will be
+      created.
+    writeDisposition: Specifies the action that occurs if the destination
+      table or partition already exists. The following values are supported: *
+      WRITE_TRUNCATE: If the table or partition already exists, BigQuery
+      overwrites the entire table or all the partitions data. * WRITE_APPEND:
+      If the table or partition already exists, BigQuery appends the data to
+      the table or the latest partition. * WRITE_EMPTY: If the table already
+      exists and contains data, an error is returned.
+  """
+
+  dataset = _messages.StringField(1)
+  table = _messages.StringField(2)
+  writeDisposition = _messages.StringField(3)
+
+
 class GoogleCloudAssetV1Resource(_messages.Message):
   r"""A Google Cloud resource under analysis.
 
@@ -4104,12 +4127,30 @@ class PubsubDestination(_messages.Message):
   topic = _messages.StringField(1)
 
 
+class QueryAssetsOutputConfig(_messages.Message):
+  r"""Output configuration query assets.
+
+  Fields:
+    bigqueryDestination: BigQuery destination where the query results will be
+      saved.
+  """
+
+  bigqueryDestination = _messages.MessageField('GoogleCloudAssetV1QueryAssetsOutputConfigBigQueryDestination', 1)
+
+
 class QueryAssetsRequest(_messages.Message):
   r"""QueryAssets request.
 
   Fields:
     jobReference: Optional. Reference to the query job, which is from the
       `QueryAssetsResponse` of previous `QueryAssets` call.
+    outputConfig: Optional. Destination where the query results will be saved.
+      When this field is specified, the query results won't be saved in the
+      [QueryAssetsResponse.query_result]. Instead
+      [QueryAssetsResponse.output_config] will be set. Meanwhile,
+      [QueryAssetsResponse.job_reference] will be set and can be used to check
+      the status of the query job when passed to a following [QueryAssets] API
+      call.
     pageSize: Optional. The maximum number of rows to return in the results.
       Responses are limited to 10 MB and 1000 rows. By default, the maximum
       row count is 1000. When the byte or row count limit is reached, the rest
@@ -4117,6 +4158,11 @@ class QueryAssetsRequest(_messages.Message):
       [output_config] is specified.
     pageToken: Optional. A page token received from previous `QueryAssets`.
       The field will be ignored when [output_config] is specified.
+    readTime: Optional. Queries cloud assets as they appeared at the specified
+      point in time.
+    readTimeWindow: Optional. [start_time] is required. [start_time] must be
+      less than [end_time] Defaults [end_time] to now if [start_time] is set
+      and [end_time] isn't. Maximum permitted time range is 7 days.
     statement: Optional. A SQL statement that's compatible with [BigQuery
       Standard SQL](http://cloud/bigquery/docs/reference/standard-
       sql/enabling-standard-sql).
@@ -4133,10 +4179,13 @@ class QueryAssetsRequest(_messages.Message):
   """
 
   jobReference = _messages.StringField(1)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
-  statement = _messages.StringField(4)
-  timeout = _messages.StringField(5)
+  outputConfig = _messages.MessageField('QueryAssetsOutputConfig', 2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  readTime = _messages.StringField(5)
+  readTimeWindow = _messages.MessageField('TimeWindow', 6)
+  statement = _messages.StringField(7)
+  timeout = _messages.StringField(8)
 
 
 class QueryAssetsResponse(_messages.Message):
@@ -4149,13 +4198,17 @@ class QueryAssetsResponse(_messages.Message):
       exactly one of `error`, `query_result` or `output_config` will be set.
     error: Error status.
     jobReference: Reference to a query job.
+    outputConfig: Output configuration which indicates instead of being
+      returned in API response on the fly, the query result will be saved in a
+      specific output.
     queryResult: Result of the query.
   """
 
   done = _messages.BooleanField(1)
   error = _messages.MessageField('Status', 2)
   jobReference = _messages.StringField(3)
-  queryResult = _messages.MessageField('QueryResult', 4)
+  outputConfig = _messages.MessageField('QueryAssetsOutputConfig', 4)
+  queryResult = _messages.MessageField('QueryResult', 5)
 
 
 class QueryContent(_messages.Message):
@@ -4382,7 +4435,7 @@ class Resource(_messages.Message):
 
 class ResourceSearchResult(_messages.Message):
   r"""A result of Resource Search, containing information of a cloud resource.
-  Next ID: 28
+  Next ID: 29
 
   Messages:
     AdditionalAttributesValue: The additional searchable attributes of this

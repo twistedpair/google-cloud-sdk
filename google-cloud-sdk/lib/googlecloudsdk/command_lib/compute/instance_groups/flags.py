@@ -382,26 +382,6 @@ def AddListInstancesOutputFormat(parser, release_track=base.ReleaseTrack.GA):
       _RELEASE_TRACK_TO_LIST_INSTANCES_FORAMT[release_track])
 
 
-def AddSettingStatefulDisksFlag(parser, required=False):
-  """Add --stateful-disks and --no-stateful-disks flags to the parser."""
-  # TODO(b/69900323): merge this function with AddMigStatefulFlags
-  stateful_disks = parser.add_mutually_exclusive_group(required=required)
-  stateful_disks.add_argument(
-      '--stateful-disks',
-      metavar='DEVICE_NAME',
-      type=arg_parsers.ArgList(min_length=1),
-      help=('Disks, specified in the group\'s instance template, to consider '
-            'stateful. Usually, a managed instance group deletes and recreates '
-            'disks from their original images when recreating instances; '
-            'however, in the case of stateful disks, these disks are detached '
-            'and reattached when the instance is recreated.'),
-  )
-  stateful_disks.add_argument(
-      '--no-stateful-disks',
-      action='store_true',
-      help='The group will have no stateful disks.',
-  )
-
 # Rename ot HELP_BASE
 STATEFUL_DISKS_HELP_BASE = """
       Disks considered stateful by the instance group. Managed instance groups

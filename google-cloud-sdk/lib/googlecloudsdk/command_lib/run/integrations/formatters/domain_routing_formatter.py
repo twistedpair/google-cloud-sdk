@@ -86,7 +86,7 @@ class DomainRoutingFormatter(base_formatter.BaseFormatter):
       or None if no call to action is required.
     """
     resource_status = record.get('status')
-    if not resource_status or not resource_status:
+    if not resource_status:
       return None
 
     resource_components = resource_status.get('resourceComponentStatuses', {})

@@ -392,6 +392,20 @@
           "description": "The Cloud KMS resource name of the customer managed encryption key that's used to encrypt the contents of the Repository. Has the form: `projects\/my-project\/locations\/my-region\/keyRings\/my-kr\/cryptoKeys\/my-key`. This value may not be changed after the Repository has been created.",
           "type": "string"
         },
+        "mode": {
+          "description": "The mode of the repository.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified mode.",
+            "A standard repository storing artifacts.",
+            "A virtual repository to serve artifacts from one or more sources."
+          ],
+          "enum": [
+            "MODE_UNSPECIFIED",
+            "STANDARD_REPOSITORY",
+            "VIRTUAL_REPOSITORY"
+          ]
+        },
         "sizeBytes": {
           "description": "Output only. The size, in bytes, of all artifact storage in this repository. Repositories that are generally available or in public preview use this to calculate storage costs.",
           "readOnly": true,
@@ -1203,38 +1217,6 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Directly uploads a GooGet artifact. The returned Operation will complete once the resources are uploaded. Package, Version, and File resources are created based on the imported artifact. Imported artifacts that conflict with existing resources are ignored."
-                    }
-                  }
-                },
-                "gooGetArtifacts": {
-                  "methods": {
-                    "import": {
-                      "id": "artifactregistry.projects.locations.repositories.gooGetArtifacts.import",
-                      "path": "v1alpha1/{+parent}/gooGetArtifacts:import",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/gooGetArtifacts:import",
-                      "httpMethod": "POST",
-                      "parameters": {
-                        "parent": {
-                          "description": "The name of the parent resource where the artifacts will be imported.",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "parent"
-                      ],
-                      "request": {
-                        "$ref": "GoogleDevtoolsArtifactregistryV1alpha1ImportGoogetArtifactsRequest"
-                      },
-                      "response": {
-                        "$ref": "Operation"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Imports GooGet artifacts. The returned Operation will complete once the resources are imported. Package, Version, and File resources are created based on the imported artifacts. Imported artifacts that conflict with existing resources are ignored."
                     }
                   }
                 }

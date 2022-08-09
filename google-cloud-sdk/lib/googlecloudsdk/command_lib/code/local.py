@@ -337,7 +337,7 @@ class Settings(DataObject):
 
     # The secrets aliases are supposed to be specified in the revision Template
     # but we originally specified the wrong location.
-    if is_alpha and knative_service.template.IsFullObject():
+    if knative_service.template.IsFullObject():
       template_aliases = knative_service.template_annotations.get(
           container_resource.SECRETS_ANNOTATION, '')
       secret_aliases.update(

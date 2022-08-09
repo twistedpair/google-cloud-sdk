@@ -324,6 +324,10 @@
           "description": "An Azure Blob Storage data source.",
           "$ref": "AzureBlobStorageData"
         },
+        "awsS3CompatibleDataSource": {
+          "description": "An AWS S3 compatible data source.",
+          "$ref": "AwsS3CompatibleData"
+        },
         "gcsIntermediateDataLocation": {
           "description": "Cloud Storage intermediate data location.",
           "$ref": "GcsData"
@@ -459,6 +463,96 @@
         }
       }
     },
+    "AwsS3CompatibleData": {
+      "id": "AwsS3CompatibleData",
+      "description": "An AwsS3CompatibleData resource.",
+      "type": "object",
+      "properties": {
+        "bucketName": {
+          "description": "Required. Specifies the name of the bucket.",
+          "type": "string"
+        },
+        "path": {
+          "description": "Specifies the root path to transfer objects. Must be an empty string or full path name that ends with a '\/'. This field is treated as an object prefix. As such, it should generally not begin with a '\/'.",
+          "type": "string"
+        },
+        "endpoint": {
+          "description": "Required. Specifies the endpoint of the storage service.",
+          "type": "string"
+        },
+        "region": {
+          "description": "Specifies the region to sign requests with. This can be left blank if requests should be signed with an empty region.",
+          "type": "string"
+        },
+        "s3Metadata": {
+          "description": "A S3 compatible metadata.",
+          "$ref": "S3CompatibleMetadata"
+        }
+      }
+    },
+    "S3CompatibleMetadata": {
+      "id": "S3CompatibleMetadata",
+      "description": "S3CompatibleMetadata contains the metadata fields that apply to the basic types of S3-compatible data providers.",
+      "type": "object",
+      "properties": {
+        "authMethod": {
+          "description": "Specifies the authentication and authorization method used by the storage service. When not specified, Transfer Service will attempt to determine right auth method to use.",
+          "type": "string",
+          "enumDescriptions": [
+            "AuthMethod is not specified.",
+            "Auth requests with AWS SigV4.",
+            "Auth requests with AWS SigV2."
+          ],
+          "enum": [
+            "AUTH_METHOD_UNSPECIFIED",
+            "AUTH_METHOD_AWS_SIGNATURE_V4",
+            "AUTH_METHOD_AWS_SIGNATURE_V2"
+          ]
+        },
+        "requestModel": {
+          "description": "Specifies the API request model used to call the storage service. When not specified, the default value of RequestModel REQUEST_MODEL_VIRTUAL_HOSTED_STYLE is used.",
+          "type": "string",
+          "enumDescriptions": [
+            "RequestModel is not specified.",
+            "Perform requests using Virtual Hosted Style. Example: https:\/\/bucket-name.s3.region.amazonaws.com\/key-name",
+            "Perform requests using Path Style. Example: https:\/\/s3.region.amazonaws.com\/bucket-name\/key-name"
+          ],
+          "enum": [
+            "REQUEST_MODEL_UNSPECIFIED",
+            "REQUEST_MODEL_VIRTUAL_HOSTED_STYLE",
+            "REQUEST_MODEL_PATH_STYLE"
+          ]
+        },
+        "protocol": {
+          "description": "Specifies the network protocol of the agent. When not specified, the default value of NetworkProtocol NETWORK_PROTOCOL_HTTPS is used.",
+          "type": "string",
+          "enumDescriptions": [
+            "NetworkProtocol is not specified.",
+            "Perform requests using HTTPS.",
+            "Not recommended: This sends data in clear-text. This is only appropriate within a closed network or for publicly available data. Perform requests using HTTP."
+          ],
+          "enum": [
+            "NETWORK_PROTOCOL_UNSPECIFIED",
+            "NETWORK_PROTOCOL_HTTPS",
+            "NETWORK_PROTOCOL_HTTP"
+          ]
+        },
+        "listApi": {
+          "description": "The Listing API to use for discovering objects. When not specified, Transfer Service will attempt to determine the right API to use.",
+          "type": "string",
+          "enumDescriptions": [
+            "ListApi is not specified.",
+            "Perform listing using ListObjectsV2 API.",
+            "Legacy ListObjects API."
+          ],
+          "enum": [
+            "LIST_API_UNSPECIFIED",
+            "LIST_OBJECTS_V2",
+            "LIST_OBJECTS"
+          ]
+        }
+      }
+    },
     "ObjectConditions": {
       "id": "ObjectConditions",
       "description": "Conditions that determine which objects are transferred. Applies only to Cloud Data Sources such as S3, Azure, and Cloud Storage. The \"last modification time\" refers to the time of the last change to the object's content or metadata \u2014 specifically, this is the `updated` property of Cloud Storage objects, the `LastModified` field of S3 objects, and the `Last-Modified` header of Azure blobs. Transfers with a PosixFilesystem source or destination don't support `ObjectConditions`.",
@@ -534,7 +628,7 @@
           ]
         },
         "metadataOptions": {
-          "description": "Represents the selected metadata options for a transfer job. This feature is in Preview.",
+          "description": "Represents the selected metadata options for a transfer job.",
           "$ref": "MetadataOptions"
         }
       }

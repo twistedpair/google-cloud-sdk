@@ -186,12 +186,12 @@ class BeyondcorpOrganizationsLocationsInsightsConfiguredInsightRequest(_messages
   object.
 
   Enums:
-    AggregationValueValuesEnum: Optional. Aggregation type. Available
+    AggregationValueValuesEnum: Required. Aggregation type. Available
       aggregation could be fetched by calling insight list and get APIs in
       `BASIC` view.
 
   Fields:
-    aggregation: Optional. Aggregation type. Available aggregation could be
+    aggregation: Required. Aggregation type. Available aggregation could be
       fetched by calling insight list and get APIs in `BASIC` view.
     customGrouping_fieldFilter: Optional. Filterable parameters to be added to
       the grouping clause. Available fields could be fetched by calling
@@ -232,7 +232,7 @@ class BeyondcorpOrganizationsLocationsInsightsConfiguredInsightRequest(_messages
   """
 
   class AggregationValueValuesEnum(_messages.Enum):
-    r"""Optional. Aggregation type. Available aggregation could be fetched by
+    r"""Required. Aggregation type. Available aggregation could be fetched by
     calling insight list and get APIs in `BASIC` view.
 
     Values:
@@ -1783,12 +1783,12 @@ class BeyondcorpProjectsLocationsInsightsConfiguredInsightRequest(_messages.Mess
   r"""A BeyondcorpProjectsLocationsInsightsConfiguredInsightRequest object.
 
   Enums:
-    AggregationValueValuesEnum: Optional. Aggregation type. Available
+    AggregationValueValuesEnum: Required. Aggregation type. Available
       aggregation could be fetched by calling insight list and get APIs in
       `BASIC` view.
 
   Fields:
-    aggregation: Optional. Aggregation type. Available aggregation could be
+    aggregation: Required. Aggregation type. Available aggregation could be
       fetched by calling insight list and get APIs in `BASIC` view.
     customGrouping_fieldFilter: Optional. Filterable parameters to be added to
       the grouping clause. Available fields could be fetched by calling
@@ -1829,7 +1829,7 @@ class BeyondcorpProjectsLocationsInsightsConfiguredInsightRequest(_messages.Mess
   """
 
   class AggregationValueValuesEnum(_messages.Enum):
-    r"""Optional. Aggregation type. Available aggregation could be fetched by
+    r"""Required. Aggregation type. Available aggregation could be fetched by
     calling insight list and get APIs in `BASIC` view.
 
     Values:

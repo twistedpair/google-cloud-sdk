@@ -950,13 +950,13 @@ class ExtensionChain(_messages.Message):
 
   Messages:
     AnnotationsValue: Optional. Unstructured key-value map holding arbitrary
-      metadata. Introduced to satisfy https://google.aip.dev/128.
+      metadata.
     LabelsValue: Optional. Set of label tags associated with the
       ExtensionChain resource.
 
   Fields:
     annotations: Optional. Unstructured key-value map holding arbitrary
-      metadata. Introduced to satisfy https://google.aip.dev/128.
+      metadata.
     createTime: Output only. The timestamp when the resource was created.
     description: Optional. A human-readable description of the resource.
     httpExtensions: List of Extension resources that can process http
@@ -972,7 +972,6 @@ class ExtensionChain(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
     r"""Optional. Unstructured key-value map holding arbitrary metadata.
-    Introduced to satisfy https://google.aip.dev/128.
 
     Messages:
       AdditionalProperty: An additional property for a AnnotationsValue
@@ -2472,6 +2471,21 @@ class ListTlsRoutesResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   tlsRoutes = _messages.MessageField('TlsRoute', 2, repeated=True)
+
+
+class ListWasmActionsResponse(_messages.Message):
+  r"""Response returned by the ListWasmActions method.
+
+  Fields:
+    nextPageToken: If there might be more results than those appearing in this
+      response, then `next_page_token` is included. To get the next set of
+      results, call this method again using the value of `next_page_token` as
+      `page_token`.
+    wasmActions: List of WasmAction resources.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  wasmActions = _messages.MessageField('WasmAction', 2, repeated=True)
 
 
 class ListWasmPluginVersionsResponse(_messages.Message):
@@ -4876,6 +4890,63 @@ class NetworkservicesProjectsLocationsTlsRoutesTestIamPermissionsRequest(_messag
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
+class NetworkservicesProjectsLocationsWasmActionsCreateRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsWasmActionsCreateRequest object.
+
+  Fields:
+    parent: Required. The parent resource of the WasmAction. Must be in the
+      format `projects/*/locations/global`.
+    wasmAction: A WasmAction resource to be passed as the request body.
+    wasmActionId: Required. User-provided ID of the WasmAction resource to be
+      created.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  wasmAction = _messages.MessageField('WasmAction', 2)
+  wasmActionId = _messages.StringField(3)
+
+
+class NetworkservicesProjectsLocationsWasmActionsDeleteRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsWasmActionsDeleteRequest object.
+
+  Fields:
+    name: Required. A name of the WasmAction to delete. Must be in the format
+      `projects/*/locations/global/wasmActions/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsWasmActionsGetRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsWasmActionsGetRequest object.
+
+  Fields:
+    name: Required. A name of the WasmAction to get. Must be in the format
+      `projects/*/locations/global/wasmActions/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsWasmActionsListRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsWasmActionsListRequest object.
+
+  Fields:
+    pageSize: Maximum number of WasmAction to return per call. If unspecified,
+      at most 50 WasmActions will be returned. The maximum value is 1000;
+      values above 1000 will be coerced to 1000.
+    pageToken: The value returned by the last `ListWasmActionsResponse`
+      Indicates that this is a continuation of a prior `ListWasmActions` call,
+      and that the system should return the next page of data.
+    parent: Required. The project and location from which the WasmActions
+      should be listed, specified in the format `projects/*/locations/global`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class NetworkservicesProjectsLocationsWasmPluginsCreateRequest(_messages.Message):
   r"""A NetworkservicesProjectsLocationsWasmPluginsCreateRequest object.
 
@@ -6175,19 +6246,103 @@ class UrlRewrite(_messages.Message):
   pathTemplateRewrite = _messages.StringField(3)
 
 
+class WasmAction(_messages.Message):
+  r"""WasmAction is a resource representing a connection between a WasmPlugin
+  and a WasmPlugin consumer (for example an EdgeCacheService resource). Once
+  created, a WasmAction cannot change its reference to a WasmPlugin.
+
+  Messages:
+    AnnotationsValue: Optional. Unstructured key-value map holding arbitrary
+      metadata.
+    LabelsValue: Optional. Set of label tags associated with the WasmAction
+      resource.
+
+  Fields:
+    annotations: Optional. Unstructured key-value map holding arbitrary
+      metadata.
+    createTime: Output only. The timestamp when the resource was created.
+    description: Optional. A human-readable description of the resource.
+    labels: Optional. Set of label tags associated with the WasmAction
+      resource.
+    name: Required. Name of the WasmAction resource. It matches pattern
+      `projects/{project}/locations/{location}/wasmActions/{wasm_action}`.
+    updateTime: Output only. The timestamp when the resource was updated.
+    wasmPlugin: Required. The relative resource name of the WasmPlugin
+      resource to execute in format:
+      projects/{project}/locations/{location}/wasmPlugins/{wasm_plugin}.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""Optional. Unstructured key-value map holding arbitrary metadata.
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Set of label tags associated with the WasmAction resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  updateTime = _messages.StringField(6)
+  wasmPlugin = _messages.StringField(7)
+
+
 class WasmPlugin(_messages.Message):
   r"""WasmPlugin is a resource representing a service executing a customer-
   provided Wasm module.
 
   Messages:
     AnnotationsValue: Optional. Unstructured key-value map holding arbitrary
-      metadata. Introduced to satisfy https://google.aip.dev/128.
+      metadata.
     LabelsValue: Optional. Set of label tags associated with the WasmPlugin
       resource.
 
   Fields:
     annotations: Optional. Unstructured key-value map holding arbitrary
-      metadata. Introduced to satisfy https://google.aip.dev/128.
+      metadata.
     createTime: Output only. The timestamp when the resource was created.
     description: Optional. A human-readable description of the resource.
     labels: Optional. Set of label tags associated with the WasmPlugin
@@ -6212,7 +6367,6 @@ class WasmPlugin(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
     r"""Optional. Unstructured key-value map holding arbitrary metadata.
-    Introduced to satisfy https://google.aip.dev/128.
 
     Messages:
       AdditionalProperty: An additional property for a AnnotationsValue
@@ -6317,13 +6471,13 @@ class WasmPluginVersion(_messages.Message):
 
   Messages:
     AnnotationsValue: Optional. Unstructured key-value map holding arbitrary
-      metadata. Introduced to satisfy https://google.aip.dev/128.
+      metadata.
     LabelsValue: Optional. Set of label tags associated with the
       WasmPluginVersion resource.
 
   Fields:
     annotations: Optional. Unstructured key-value map holding arbitrary
-      metadata. Introduced to satisfy https://google.aip.dev/128.
+      metadata.
     createTime: Output only. The timestamp when the resource was created.
     description: Optional. A human-readable description of the resource.
     imageDigest: Output only. The resolved digest for the image specified in
@@ -6352,7 +6506,6 @@ class WasmPluginVersion(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
     r"""Optional. Unstructured key-value map holding arbitrary metadata.
-    Introduced to satisfy https://google.aip.dev/128.
 
     Messages:
       AdditionalProperty: An additional property for a AnnotationsValue

@@ -230,14 +230,16 @@ class ArtifactregistryProjectsLocationsRepositoriesGenericArtifactsUploadRequest
   object.
 
   Fields:
+    name: The resource name of the generic artifact.
     parent: The resource name of the repository where the generic artifact
       will be uploaded.
     uploadGenericArtifactRequest: A UploadGenericArtifactRequest resource to
       be passed as the request body.
   """
 
-  parent = _messages.StringField(1, required=True)
-  uploadGenericArtifactRequest = _messages.MessageField('UploadGenericArtifactRequest', 2)
+  name = _messages.StringField(1, required=True)
+  parent = _messages.StringField(2, required=True)
+  uploadGenericArtifactRequest = _messages.MessageField('UploadGenericArtifactRequest', 3)
 
 
 class ArtifactregistryProjectsLocationsRepositoriesGetIamPolicyRequest(_messages.Message):
@@ -290,6 +292,38 @@ class ArtifactregistryProjectsLocationsRepositoriesGoModulesUploadRequest(_messa
 
   parent = _messages.StringField(1, required=True)
   uploadGoModuleRequest = _messages.MessageField('UploadGoModuleRequest', 2)
+
+
+class ArtifactregistryProjectsLocationsRepositoriesGoogetArtifactsImportRequest(_messages.Message):
+  r"""A
+  ArtifactregistryProjectsLocationsRepositoriesGoogetArtifactsImportRequest
+  object.
+
+  Fields:
+    importGoogetArtifactsRequest: A ImportGoogetArtifactsRequest resource to
+      be passed as the request body.
+    parent: The name of the parent resource where the artifacts will be
+      imported.
+  """
+
+  importGoogetArtifactsRequest = _messages.MessageField('ImportGoogetArtifactsRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class ArtifactregistryProjectsLocationsRepositoriesGoogetArtifactsUploadRequest(_messages.Message):
+  r"""A
+  ArtifactregistryProjectsLocationsRepositoriesGoogetArtifactsUploadRequest
+  object.
+
+  Fields:
+    parent: The name of the parent resource where the artifacts will be
+      uploaded.
+    uploadGoogetArtifactRequest: A UploadGoogetArtifactRequest resource to be
+      passed as the request body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  uploadGoogetArtifactRequest = _messages.MessageField('UploadGoogetArtifactRequest', 2)
 
 
 class ArtifactregistryProjectsLocationsRepositoriesListRequest(_messages.Message):
@@ -1014,6 +1048,29 @@ class ImportAptArtifactsResponse(_messages.Message):
 
   aptArtifacts = _messages.MessageField('AptArtifact', 1, repeated=True)
   errors = _messages.MessageField('ImportAptArtifactsErrorInfo', 2, repeated=True)
+
+
+class ImportGoogetArtifactsGcsSource(_messages.Message):
+  r"""Google Cloud Storage location where the artifacts currently reside.
+
+  Fields:
+    uris: Cloud Storage paths URI (e.g., gs://my_bucket/my_object).
+    useWildcards: Supports URI wildcards for matching multiple objects from a
+      single URI.
+  """
+
+  uris = _messages.StringField(1, repeated=True)
+  useWildcards = _messages.BooleanField(2)
+
+
+class ImportGoogetArtifactsRequest(_messages.Message):
+  r"""The request to import new googet artifacts.
+
+  Fields:
+    gcsSource: Google Cloud Storage location where input content is located.
+  """
+
+  gcsSource = _messages.MessageField('ImportGoogetArtifactsGcsSource', 1)
 
 
 class ImportYumArtifactsErrorInfo(_messages.Message):
@@ -1789,6 +1846,7 @@ class Repository(_messages.Message):
       NPM: NPM package format.
       APT: APT package format.
       YUM: YUM package format.
+      GOOGET: GooGet package format.
       PYTHON: Python package format.
       KFP: Kubeflow Pipelines package format.
       GO: GO package format.
@@ -1800,10 +1858,11 @@ class Repository(_messages.Message):
     NPM = 3
     APT = 4
     YUM = 5
-    PYTHON = 6
-    KFP = 7
-    GO = 8
-    GENERIC = 9
+    GOOGET = 6
+    PYTHON = 7
+    KFP = 8
+    GO = 9
+    GENERIC = 10
 
   class ModeValueValuesEnum(_messages.Enum):
     r"""The mode of the repository.
@@ -2122,6 +2181,20 @@ class UploadGoModuleMetadata(_messages.Message):
 
 class UploadGoModuleRequest(_messages.Message):
   r"""The request to upload a Go module."""
+
+
+class UploadGoogetArtifactMediaResponse(_messages.Message):
+  r"""The response to upload an artifact.
+
+  Fields:
+    operation: Operation to be returned to the user.
+  """
+
+  operation = _messages.MessageField('Operation', 1)
+
+
+class UploadGoogetArtifactRequest(_messages.Message):
+  r"""The request to upload an artifact."""
 
 
 class UploadYumArtifactMediaResponse(_messages.Message):

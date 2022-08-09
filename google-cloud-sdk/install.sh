@@ -24,17 +24,6 @@ _cloudsdk_which() {
   which "$1" 2>/dev/null || command -v "$1" 2>/dev/null
 }
 
-# Check whether passed in python command reports major version 3.
-_is_python3() {
-  echo "$("$1" -V 2>&1)" | grep -E "Python 3" > /dev/null
-}
-
-# For Python 3, gsutil requires Python 3.5+.
-_py3_interpreter_compat_with_gsutil () {
-  # Some environments (e.g. macOS) don't support grep -P, so we use grep -E.
-  echo "$("$1" -V 2>&1)" | grep -E "Python 3[.]([5-9]|[1-9][0-9])" > /dev/null
-}
-
 order_python() {
   selected_version=""
   for python_version in "$@"

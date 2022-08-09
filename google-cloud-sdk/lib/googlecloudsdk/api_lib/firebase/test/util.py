@@ -270,13 +270,14 @@ def ParseRoboDirectiveKey(key):
   return (action_type, resource_name)
 
 
-def GetDeprecatedTagWarning(models):
+def GetDeprecatedTagWarning(models, platform='android'):
   """Returns a warning string iff any device model is marked deprecated."""
   for model in models:
     for tag in model.tags:
       if 'deprecated' in tag:
         return ('Some devices are deprecated. Learn more at https://firebase.'
-                'google.com/docs/test-lab/available-testing-devices#deprecated')
+                'google.com/docs/test-lab/%s/'
+                'available-testing-devices#deprecated' % platform)
   return None
 
 

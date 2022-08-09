@@ -1271,6 +1271,18 @@ def AddUserDiscardDualPassword(parser):
       **kwargs)
 
 
+def AddSqlServerTimeZone(parser):
+  """Adds the `--time-zone` flag to the parser."""
+  parser.add_argument(
+      '--time-zone',
+      required=False,
+      hidden=True,
+      help=(
+          'Set a non-default time zone. '
+          'Only available for SQL Server instances.'
+          ))
+
+
 INSTANCES_USERLABELS_FORMAT = ':(settings.userLabels:alias=labels:label=LABELS)'
 
 INSTANCES_FORMAT_COLUMNS = [

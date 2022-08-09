@@ -37,14 +37,14 @@ class RegionNotSpecified(apitools_exceptions.Error):
   """Must specify a region to use this command."""
 
 
-def create(args, product_name, enum_value):
+def create(region, product_name, enum_value):
   """Helper for implementing Firestore database create comamnds.
 
   Guides the user through the gcloud app creation process and then updates the
   database type to the requested type.
 
   Args:
-    args: Arguments from gcloud
+    region: The region of Firestore database.
     product_name: The product name of the database trying to be created.
     enum_value: Enum value representing the product name in the API.
 
@@ -60,47 +60,44 @@ def create(args, product_name, enum_value):
   try:
     app = api_client.GetApplication()
   except apitools_exceptions.HttpNotFoundError:
-    if args.region is None:
+    if region is None:
       raise AppEngineAppDoesNotExist(
-          'You must first create a'
-          ' Google App Engine app by running:\n'
+          'You must first create a Google App Engine app by running:\n'
           'gcloud app create\n'
           'The region you create the App Engine app in is '
           'the same region that the Firestore database will be created in. '
           'Once an App Engine region has been chosen it cannot be changed.')
     else:
       raise AppEngineAppDoesNotExist(
-          'You must first create an'
-          ' Google App Engine app in the corresponding region by running:\n'
-          'gcloud app create --region={region}'.format(region=args.region))
+          'You must first create an Google App Engine app in the '
+          'corresponding region by running:\n'
+          'gcloud app create --region={region}'.format(region=region))
 
   current_region = app.locationId
 
-  if not args.region:
+  if not region:
     raise RegionNotSpecified(
         'You must specify a region using the --region flag to use this '
         'command. The region needs to match the Google App Engine region: '
-        '--region={app_region}'.format(app_region=current_region))
+        '--region={current_region}'.format(current_region=current_region))
 
-  if current_region != args.region:
+  if current_region != region:
     raise AppEngineAppRegionDoesNotMatch(
-        'The app engine region is {app_region} which is not the same as '
-        '{args_region}. Right now the Firestore region must match '
-        'the App Engine region.\n'
-        'Try running this command with --region={app_region}'.format(
-            app_region=current_region, args_region=args.region))
+        'The app engine region is {current_region} which is not the same as '
+        '{region}. Right now the Firestore region must match the App Engine '
+        'region.\n'
+        'Try running this command with --region={current_region}'.format(
+            current_region=current_region, region=region))
+  project = properties.VALUES.core.project.Get(required=True)
   # Set the DB Type to the desired type (if needed)
   if app.databaseType != enum_value:
     api_client.UpdateDatabaseType(enum_value)
   else:
     log.status.Print(
         'Success! Confirmed selection of a {product_name} database for {project}'
-        .format(
-            product_name=product_name,
-            project=properties.VALUES.core.project.Get(required=True)))
+        .format(product_name=product_name, project=project))
     return
 
   log.status.Print(
       'Success! Selected {product_name} database for {project}'.format(
-          product_name=product_name,
-          project=properties.VALUES.core.project.Get(required=True)))
+          product_name=product_name, project=project))

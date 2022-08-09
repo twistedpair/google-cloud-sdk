@@ -124,23 +124,6 @@ class ArtifactregistryProjectsLocationsRepositoriesGetRequest(_messages.Message)
   name = _messages.StringField(1, required=True)
 
 
-class ArtifactregistryProjectsLocationsRepositoriesGooGetArtifactsImportRequest(_messages.Message):
-  r"""A
-  ArtifactregistryProjectsLocationsRepositoriesGooGetArtifactsImportRequest
-  object.
-
-  Fields:
-    googleDevtoolsArtifactregistryV1alpha1ImportGoogetArtifactsRequest: A
-      GoogleDevtoolsArtifactregistryV1alpha1ImportGoogetArtifactsRequest
-      resource to be passed as the request body.
-    parent: The name of the parent resource where the artifacts will be
-      imported.
-  """
-
-  googleDevtoolsArtifactregistryV1alpha1ImportGoogetArtifactsRequest = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1ImportGoogetArtifactsRequest', 1)
-  parent = _messages.StringField(2, required=True)
-
-
 class ArtifactregistryProjectsLocationsRepositoriesGoogetArtifactsImportRequest(_messages.Message):
   r"""A
   ArtifactregistryProjectsLocationsRepositoriesGoogetArtifactsImportRequest
@@ -456,6 +439,7 @@ class GoogleDevtoolsArtifactregistryV1alpha1Repository(_messages.Message):
   Enums:
     FormatValueValuesEnum: The format of packages that are stored in the
       repository.
+    ModeValueValuesEnum: The mode of the repository.
 
   Messages:
     LabelsValue: Labels with user-defined metadata. This field may contain up
@@ -476,6 +460,7 @@ class GoogleDevtoolsArtifactregistryV1alpha1Repository(_messages.Message):
       entries. Label keys and values may be no longer than 63 characters.
       Label keys must begin with a lowercase letter and may only contain
       lowercase letters, numeric characters, underscores, and dashes.
+    mode: The mode of the repository.
     name: The name of the repository, for example: "projects/p1/locations/us-
       central1/repositories/repo1".
     sizeBytes: Output only. The size, in bytes, of all artifact storage in
@@ -505,6 +490,19 @@ class GoogleDevtoolsArtifactregistryV1alpha1Repository(_messages.Message):
     YUM = 5
     GOOGET = 6
     PYTHON = 7
+
+  class ModeValueValuesEnum(_messages.Enum):
+    r"""The mode of the repository.
+
+    Values:
+      MODE_UNSPECIFIED: Unspecified mode.
+      STANDARD_REPOSITORY: A standard repository storing artifacts.
+      VIRTUAL_REPOSITORY: A virtual repository to serve artifacts from one or
+        more sources.
+    """
+    MODE_UNSPECIFIED = 0
+    STANDARD_REPOSITORY = 1
+    VIRTUAL_REPOSITORY = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -538,9 +536,10 @@ class GoogleDevtoolsArtifactregistryV1alpha1Repository(_messages.Message):
   format = _messages.EnumField('FormatValueValuesEnum', 3)
   kmsKeyName = _messages.StringField(4)
   labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  sizeBytes = _messages.IntegerField(7)
-  updateTime = _messages.StringField(8)
+  mode = _messages.EnumField('ModeValueValuesEnum', 6)
+  name = _messages.StringField(7)
+  sizeBytes = _messages.IntegerField(8)
+  updateTime = _messages.StringField(9)
 
 
 class GoogleDevtoolsArtifactregistryV1alpha1UploadAptArtifactMediaResponse(_messages.Message):

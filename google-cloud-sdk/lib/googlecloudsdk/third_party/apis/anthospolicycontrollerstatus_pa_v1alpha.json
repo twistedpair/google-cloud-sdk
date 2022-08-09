@@ -103,7 +103,7 @@
   "schemas": {
     "FleetConstraintTemplate": {
       "id": "FleetConstraintTemplate",
-      "description": "The fleet-wide info for a constraint template. Includes the number of constraints to avoid clients making serial round trips.",
+      "description": "FleetConstraintTemplate contains aggregate status for a single constraint template. The aggregation is across all member clusters in a fleet.",
       "type": "object",
       "properties": {
         "ref": {
@@ -111,12 +111,12 @@
           "$ref": "ConstraintTemplateRef"
         },
         "numConstraints": {
-          "description": "The number of unique constraints using this constraint template.",
+          "description": "The number of unique constraints using this constraint template. This is included so avoid clients don't have to make serial round trips.",
           "type": "string",
           "format": "int64"
         },
         "numMemberships": {
-          "description": "The number of memberships where this constraint template was found.",
+          "description": "The number of member clusters on which this constraint template was found.",
           "type": "string",
           "format": "int64"
         }
@@ -124,7 +124,7 @@
     },
     "ConstraintTemplateRef": {
       "id": "ConstraintTemplateRef",
-      "description": "ConstraintTemplateRef represents a single constraint template. Base identifying resource.",
+      "description": "ConstraintTemplateRef identifies a constraint template.",
       "type": "object",
       "properties": {
         "name": {
@@ -135,7 +135,7 @@
     },
     "MembershipConstraintTemplate": {
       "id": "MembershipConstraintTemplate",
-      "description": "Membership specific constraint template data.",
+      "description": "MembershipConstraintTemplate contains runtime status relevant to a single constraint template on a single member cluster.",
       "type": "object",
       "properties": {
         "constraintTemplateRef": {
@@ -166,7 +166,7 @@
     },
     "MembershipRef": {
       "id": "MembershipRef",
-      "description": "Reference to a hub membership.",
+      "description": "Reference to a GKE Hub membership.",
       "type": "object",
       "properties": {
         "id": {
@@ -257,7 +257,7 @@
     },
     "MembershipConstraintTemplateStatus": {
       "id": "MembershipConstraintTemplateStatus",
-      "description": "MembershipConstratinTemplateStatus contains a field to indicate whether the template was created.",
+      "description": "MembershipConstratinTemplateStatus contains status information, e.g. whether the template has been created on the member cluster.",
       "type": "object",
       "properties": {
         "created": {
@@ -601,7 +601,7 @@
     },
     "MembershipConstraintAuditViolation": {
       "id": "MembershipConstraintAuditViolation",
-      "description": "MembershipConstraintAuditViolation contains violation information from constraint status.",
+      "description": "MembershipConstraintAuditViolation encodes info relevant to a violation of a single constraint on a single member cluster.",
       "type": "object",
       "properties": {
         "constraintRef": {
@@ -687,7 +687,7 @@
     },
     "Membership": {
       "id": "Membership",
-      "description": "Membership contains aggregate information about policy controller resources in a membership.",
+      "description": "Membership contains aggregate information about policy controller resources on a member cluster.",
       "type": "object",
       "properties": {
         "ref": {
@@ -695,28 +695,28 @@
           "$ref": "MembershipRef"
         },
         "runtimeStatus": {
-          "description": "The status of the policy controller runtime configuration.",
+          "description": "The status of the policy controller runtime configuration. If runtime_status is empty, then the server could not find any existing constraint or templates to report status.",
           "$ref": "MembershipRuntimeStatus"
         }
       }
     },
     "MembershipRuntimeStatus": {
       "id": "MembershipRuntimeStatus",
-      "description": "MembershipRuntimeStatus contains aggregate data about policy controller resources in a membership.",
+      "description": "MembershipRuntimeStatus contains aggregate data about policy controller resources on a cluster that is a member of a fleet.",
       "type": "object",
       "properties": {
         "numConstraintTemplates": {
-          "description": "The number of constraint templates on the membership.",
+          "description": "The number of constraint templates on the member cluster.",
           "type": "string",
           "format": "int64"
         },
         "numConstraints": {
-          "description": "The number of constraints on the membership.",
+          "description": "The number of constraints on the member cluster.",
           "type": "string",
           "format": "int64"
         },
         "numConstraintViolations": {
-          "description": "The number of constraint violations on the membership.",
+          "description": "The number of constraint violations on the member cluster.",
           "type": "string",
           "format": "int64"
         }
@@ -748,7 +748,7 @@
               "response": {
                 "$ref": "FleetConstraintTemplate"
               },
-              "description": "GetFleetConstraintTemplate returns fleet-wide constraint template info."
+              "description": "Retrieves status for a single constraint template. The status is aggregated across all member clusters in a fleet."
             },
             "list": {
               "id": "anthospolicycontrollerstatus_pa.projects.fleetConstraintTemplates.list",
@@ -781,7 +781,7 @@
               "response": {
                 "$ref": "ListFleetConstraintTemplatesResponse"
               },
-              "description": "ListFleetConstraintTemplates returns fleet-wide constraint template info."
+              "description": "Lists aggregate status for constraint templates within a fleet. Each entry in the response contains status for a particular template aggregated across all clusters within a single fleet, in pseudocode the response's shape is: [FleetWideStatusForConstraintTemplate1, FleetWideStatusForConstraintTemplate2, FleetWideStatusForConstraintTemplate3, ...]"
             }
           }
         },
@@ -807,7 +807,7 @@
               "response": {
                 "$ref": "MembershipConstraintTemplate"
               },
-              "description": "GetMembershipConstraintTemplate returns membership constraint template info."
+              "description": "Retrieves status for a single membership constraint template on a single member cluster."
             },
             "list": {
               "id": "anthospolicycontrollerstatus_pa.projects.membershipConstraintTemplates.list",
@@ -840,7 +840,7 @@
               "response": {
                 "$ref": "ListMembershipConstraintTemplatesResponse"
               },
-              "description": "ListMembershipConstraintTemplates returns membership-specific constraint template info."
+              "description": "Lists status for constraint templates. Each entry in the response has a ConstraintTemplateRef and MembershipRef, corresponding to status aggregated across all resources within a single member cluster, in pseudocode the response's shape is: [StatusForConstraintTemplate1OnMemberClusterA, StatusForConstraintTemplate2OnMemberClusterA, StatusForConstraintTemplate1OnMemberClusterB, StatusForConstraintTemplate3OnMemberClusterC, ...]"
             }
           }
         },
@@ -866,7 +866,7 @@
               "response": {
                 "$ref": "FleetConstraint"
               },
-              "description": "GetFleetConstraint returns fleet-wide constraint info."
+              "description": "Retrieves fleet-wide constraint info."
             },
             "list": {
               "id": "anthospolicycontrollerstatus_pa.projects.fleetConstraints.list",
@@ -925,7 +925,7 @@
               "response": {
                 "$ref": "MembershipConstraint"
               },
-              "description": "GetMembershipConstraint returns membership constraint info."
+              "description": "Retrieves status for a single constraints a a single member cluster."
             },
             "list": {
               "id": "anthospolicycontrollerstatus_pa.projects.membershipConstraints.list",
@@ -958,7 +958,7 @@
               "response": {
                 "$ref": "ListMembershipConstraintsResponse"
               },
-              "description": "ListMembershipConstraints returns membership-specific constraint info."
+              "description": "ListMembershipConstraints returns per-membership runtime status for constraints. The response contains a list of MembershipConstraints. Each MembershipConstraint contains a MembershipRef indicating which member cluster the constraint status corresponds to. Note that if the request is ListMembershipConstraints(parent=project1) and clusterA is registered to project2 via a Membership in project1, then clusterA's info will appear in the response."
             }
           }
         },

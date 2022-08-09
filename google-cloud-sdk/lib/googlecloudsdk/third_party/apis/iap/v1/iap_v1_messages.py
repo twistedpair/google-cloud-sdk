@@ -55,8 +55,8 @@ class AccessSettings(_messages.Message):
 
 
 class AllowedDomainsSettings(_messages.Message):
-  r"""Configuration for IAP allowed domains. Allows the customers to restrict
-  access to the app by only allowing requests from the listed trusted domains.
+  r"""Configuration for IAP allowed domains. Lets you to restrict access to an
+  app and allow access to only the domains that you list.
 
   Fields:
     domains: List of trusted domains.

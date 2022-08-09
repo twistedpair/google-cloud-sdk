@@ -941,16 +941,14 @@ class BigtableadminProjectsInstancesTablesPatchRequest(_messages.Message):
       `projects/{project}/instances/{instance}/tables/_a-zA-Z0-9*`. Views:
       `NAME_ONLY`, `SCHEMA_VIEW`, `REPLICATION_VIEW`, `FULL`
     table: A Table resource to be passed as the request body.
-    updateMask: The list of fields to update. A mask specifying which fields
-      (e.g. `change_stream_config`) in the `table` field should be updated.
-      This mask is relative to the `table` field, not to the request message.
-      If an update mask is not provided, it is treated as an implied mask
-      equivalent to all fields that are set on the `table`. Currently
-      UpdateTable is only supported for the following fields: *
+    updateMask: Required. The list of fields to update. A mask specifying
+      which fields (e.g. `change_stream_config`) in the `table` field should
+      be updated. This mask is relative to the `table` field, not to the
+      request message. The wildcard (*) path is currently not supported.
+      Currently UpdateTable is only supported for the following fields: *
       `change_stream_config` * `change_stream_config.retention_period` If
-      other fields in `update_mask` are set, it will return an
-      INVALID_ARGUMENT error. Fields set on the `table` but not in
-      `update_mask` will be ignored.
+      `column_families` is set in `update_mask`, it will return an
+      UNIMPLEMENTED error.
   """
 
   name = _messages.StringField(1, required=True)

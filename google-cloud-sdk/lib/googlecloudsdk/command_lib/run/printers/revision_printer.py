@@ -127,4 +127,6 @@ class RevisionPrinter(cp.CustomPrinterBase):
         ('CPU Allocation', RevisionPrinter.GetCpuAllocation(record)),
         ('Execution Environment', RevisionPrinter.GetExecutionEnv(record)),
         ('Session Affinity', RevisionPrinter.GetSessionAffinity(record)),
+        ('Startup Probe', k8s_util.GetStartupProbe(record)),
+        ('Liveness Probe', k8s_util.GetLivenessProbe(record)),
     ])

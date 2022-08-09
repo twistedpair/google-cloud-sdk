@@ -38,6 +38,17 @@ class Collections(enum.Enum):
       ['projectsId', 'locationsId'],
       True
   )
+  PROJECTS_LOCATIONS_ATTACHEDCLUSTERS = (
+      'projects.locations.attachedClusters',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'attachedClusters/{attachedClustersId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_AWSCLUSTERS = (
       'projects.locations.awsClusters',
       '{+name}',

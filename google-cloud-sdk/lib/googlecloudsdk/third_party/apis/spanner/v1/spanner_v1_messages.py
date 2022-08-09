@@ -491,6 +491,18 @@ class CreateDatabaseRequest(_messages.Message):
       newly created database. Statements can create tables, indexes, etc.
       These statements execute atomically with the creation of the database:
       if there is an error in any statement, the database is not created.
+    protoDescriptors: Optional. Proto descriptors used by CREATE/ALTER PROTO
+      BUNDLE statements in 'extra_statements' above. Contains a protobuf-
+      serialized [google.protobuf.FileDescriptorSet](https://github.com/protoc
+      olbuffers/protobuf/blob/main/src/google/protobuf/descriptor.proto). To
+      generate it, [install](https://grpc.io/docs/protoc-installation/) and
+      run `protoc` with --include_imports and --descriptor_set_out. For
+      example, to generate for moon/shot/app.proto, run " " " $protoc
+      --proto_path=/app_path --proto_path=/lib_path \ --include_imports \
+      --descriptor_set_out=descriptors.data \ moon/shot/app.proto " " " For
+      more details, see protobuffer [self
+      description](https://developers.google.com/protocol-
+      buffers/docs/techniques#self-description).
   """
 
   class DatabaseDialectValueValuesEnum(_messages.Enum):
@@ -510,6 +522,7 @@ class CreateDatabaseRequest(_messages.Message):
   databaseDialect = _messages.EnumField('DatabaseDialectValueValuesEnum', 2)
   encryptionConfig = _messages.MessageField('EncryptionConfig', 3)
   extraStatements = _messages.StringField(4, repeated=True)
+  protoDescriptors = _messages.BytesField(5)
 
 
 class CreateInstanceConfigMetadata(_messages.Message):
@@ -1107,15 +1120,65 @@ class Field(_messages.Message):
   type = _messages.MessageField('Type', 2)
 
 
+class FreeInstanceMetadata(_messages.Message):
+  r"""Free instance specific metadata that is kept even after an instance has
+  been upgraded for tracking purposes.
+
+  Enums:
+    ExpireBehaviorValueValuesEnum: Specifies the expiration behavior of a free
+      instance. The default of ExpireBehavior is `REMOVE_AFTER_GRACE_PERIOD`.
+      This can be modified during or after creation, and before expiration.
+
+  Fields:
+    expireBehavior: Specifies the expiration behavior of a free instance. The
+      default of ExpireBehavior is `REMOVE_AFTER_GRACE_PERIOD`. This can be
+      modified during or after creation, and before expiration.
+    expireTime: Output only. Timestamp after which the instance will either be
+      upgraded or scheduled for deletion after a grace period. ExpireBehavior
+      is used to choose between upgrading or scheduling the free instance for
+      deletion. This timestamp is set during the creation of a free instance.
+    upgradeTime: Output only. If present, the timestamp at which the free
+      instance was upgraded to a provisioned instance.
+  """
+
+  class ExpireBehaviorValueValuesEnum(_messages.Enum):
+    r"""Specifies the expiration behavior of a free instance. The default of
+    ExpireBehavior is `REMOVE_AFTER_GRACE_PERIOD`. This can be modified during
+    or after creation, and before expiration.
+
+    Values:
+      EXPIRE_BEHAVIOR_UNSPECIFIED: Not specified.
+      FREE_TO_PROVISIONED: When the free instance expires, upgrade the
+        instance to a provisioned instance.
+      REMOVE_AFTER_GRACE_PERIOD: When the free instance expires, disable the
+        instance, and delete it after the grace period passes if it has not
+        been upgraded.
+    """
+    EXPIRE_BEHAVIOR_UNSPECIFIED = 0
+    FREE_TO_PROVISIONED = 1
+    REMOVE_AFTER_GRACE_PERIOD = 2
+
+  expireBehavior = _messages.EnumField('ExpireBehaviorValueValuesEnum', 1)
+  expireTime = _messages.StringField(2)
+  upgradeTime = _messages.StringField(3)
+
+
 class GetDatabaseDdlResponse(_messages.Message):
   r"""The response for GetDatabaseDdl.
 
   Fields:
+    protoDescriptors: Proto descriptors stored in the database. Contains a
+      protobuf-serialized [google.protobuf.FileDescriptorSet](https://github.c
+      om/protocolbuffers/protobuf/blob/main/src/google/protobuf/descriptor.pro
+      to). For more details, see protobuffer [self
+      description](https://developers.google.com/protocol-
+      buffers/docs/techniques#self-description).
     statements: A list of formatted DDL statements defining the schema of the
       database specified in the request.
   """
 
-  statements = _messages.StringField(1, repeated=True)
+  protoDescriptors = _messages.BytesField(1)
+  statements = _messages.StringField(2, repeated=True)
 
 
 class GetIamPolicyRequest(_messages.Message):
@@ -1245,6 +1308,7 @@ class Instance(_messages.Message):
   hosted.
 
   Enums:
+    InstanceTypeValueValuesEnum: The `InstanceType` of the current instance.
     StateValueValuesEnum: Output only. The current instance state. For
       CreateInstance, the state must be either omitted or set to `CREATING`.
       For UpdateInstance, the state must be either omitted or set to `READY`.
@@ -1278,6 +1342,9 @@ class Instance(_messages.Message):
       appears in UIs. Must be unique per project and between 4 and 30
       characters in length.
     endpointUris: Deprecated. This field is not populated.
+    freeInstanceMetadata: Free instance metadata. Only populated for free
+      instances.
+    instanceType: The `InstanceType` of the current instance.
     labels: Cloud Labels are a flexible and lightweight mechanism for
       organizing cloud resources into groups that reflect a customer's
       organizational needs and deployment strategies. Cloud Labels can be used
@@ -1318,6 +1385,21 @@ class Instance(_messages.Message):
     updateTime: Output only. The time at which the instance was most recently
       updated.
   """
+
+  class InstanceTypeValueValuesEnum(_messages.Enum):
+    r"""The `InstanceType` of the current instance.
+
+    Values:
+      INSTANCE_TYPE_UNSPECIFIED: Not specified.
+      PROVISIONED: Provisioned instances have dedicated resources, standard
+        usage limits and support.
+      FREE_INSTANCE: Free instances provide no guarantee for dedicated
+        resources, [node_count, processing_units] should be 0. They come with
+        stricter usage limits and limited support.
+    """
+    INSTANCE_TYPE_UNSPECIFIED = 0
+    PROVISIONED = 1
+    FREE_INSTANCE = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current instance state. For CreateInstance, the state
@@ -1379,12 +1461,14 @@ class Instance(_messages.Message):
   createTime = _messages.StringField(2)
   displayName = _messages.StringField(3)
   endpointUris = _messages.StringField(4, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  nodeCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  processingUnits = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
-  updateTime = _messages.StringField(10)
+  freeInstanceMetadata = _messages.MessageField('FreeInstanceMetadata', 5)
+  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  name = _messages.StringField(8)
+  nodeCount = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  processingUnits = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  updateTime = _messages.StringField(12)
 
 
 class InstanceConfig(_messages.Message):
@@ -1394,6 +1478,8 @@ class InstanceConfig(_messages.Message):
   Enums:
     ConfigTypeValueValuesEnum: Output only. Whether this instance config is a
       Google or User Managed Configuration.
+    FreeInstanceAvailabilityValueValuesEnum: Output only. Describes whether
+      free instances are available to be created in this instance config.
     StateValueValuesEnum: Output only. The current instance config state.
 
   Messages:
@@ -1434,6 +1520,8 @@ class InstanceConfig(_messages.Message):
       be applied to the same version of the instance config. If no etag is
       provided in the call to update instance config, then the existing
       instance config is overwritten blindly.
+    freeInstanceAvailability: Output only. Describes whether free instances
+      are available to be created in this instance config.
     labels: Cloud Labels are a flexible and lightweight mechanism for
       organizing cloud resources into groups that reflect a customer's
       organizational needs and deployment strategies. Cloud Labels can be used
@@ -1479,6 +1567,28 @@ class InstanceConfig(_messages.Message):
     TYPE_UNSPECIFIED = 0
     GOOGLE_MANAGED = 1
     USER_MANAGED = 2
+
+  class FreeInstanceAvailabilityValueValuesEnum(_messages.Enum):
+    r"""Output only. Describes whether free instances are available to be
+    created in this instance config.
+
+    Values:
+      FREE_INSTANCE_AVAILABILITY_UNSPECIFIED: Not specified.
+      AVAILABLE: Indicates that free instances are available to be created in
+        this instance config.
+      UNSUPPORTED: Indicates that free instances are not supported in this
+        instance config.
+      DISABLED: Indicates that free instances are currently not available to
+        be created in this instance config.
+      QUOTA_EXCEEDED: Indicates that additional free instances cannot be
+        created in this instance config because the project has reached its
+        limit of free instances.
+    """
+    FREE_INSTANCE_AVAILABILITY_UNSPECIFIED = 0
+    AVAILABLE = 1
+    UNSUPPORTED = 2
+    DISABLED = 3
+    QUOTA_EXCEEDED = 4
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current instance config state.
@@ -1537,13 +1647,14 @@ class InstanceConfig(_messages.Message):
   configType = _messages.EnumField('ConfigTypeValueValuesEnum', 2)
   displayName = _messages.StringField(3)
   etag = _messages.StringField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  leaderOptions = _messages.StringField(6, repeated=True)
-  name = _messages.StringField(7)
-  optionalReplicas = _messages.MessageField('ReplicaInfo', 8, repeated=True)
-  reconciling = _messages.BooleanField(9)
-  replicas = _messages.MessageField('ReplicaInfo', 10, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
+  freeInstanceAvailability = _messages.EnumField('FreeInstanceAvailabilityValueValuesEnum', 5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  leaderOptions = _messages.StringField(7, repeated=True)
+  name = _messages.StringField(8)
+  optionalReplicas = _messages.MessageField('ReplicaInfo', 9, repeated=True)
+  reconciling = _messages.BooleanField(10)
+  replicas = _messages.MessageField('ReplicaInfo', 11, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
 
 
 class KeyRange(_messages.Message):
@@ -2256,11 +2367,15 @@ class PartialResultSet(_messages.Message):
       yielding a result set whose rows contain a single string field. The
       following `PartialResultSet`s might be yielded: { "metadata": { ... }
       "values": ["Hello", "W"] "chunked_value": true "resume_token": "Af65..."
-      } { "values": ["orl"] "chunked_value": true "resume_token": "Bqp2..." }
-      { "values": ["d"] "resume_token": "Zx1B..." } This sequence of
-      `PartialResultSet`s encodes two rows, one containing the field value
-      `"Hello"`, and a second containing the field value `"World" = "W" +
-      "orl" + "d"`.
+      } { "values": ["orl"] "chunked_value": true } { "values": ["d"]
+      "resume_token": "Zx1B..." } This sequence of `PartialResultSet`s encodes
+      two rows, one containing the field value `"Hello"`, and a second
+      containing the field value `"World" = "W" + "orl" + "d"`. Not all
+      `PartialResultSet`s contain a `resume_token`. Execution can only be
+      resumed from a previously yielded `resume_token`. For the above sequence
+      of `PartialResultSet`s, resuming the query with `"resume_token":
+      "Af65..."` will yield results from the `PartialResultSet` with value
+      `["orl"]`.
   """
 
   chunkedValue = _messages.BooleanField(1)
@@ -3940,7 +4055,7 @@ class SpannerProjectsInstancesDatabasesDatabaseRolesListRequest(_messages.Messag
     pageToken: If non-empty, `page_token` should contain a next_page_token
       from a previous ListDatabaseRolesResponse.
     parent: Required. The database whose roles should be listed. Values are of
-      the form `projects//instances//databases//databaseRoles`.
+      the form `projects//instances//databases/`.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -5282,11 +5397,24 @@ class UpdateDatabaseDdlRequest(_messages.Message):
       must be a valid identifier: `a-z*`. Note that automatically-generated
       operation IDs always begin with an underscore. If the named operation
       already exists, UpdateDatabaseDdl returns `ALREADY_EXISTS`.
+    protoDescriptors: Optional. Proto descriptors used by CREATE/ALTER PROTO
+      BUNDLE statements. Contains a protobuf-serialized [google.protobuf.FileD
+      escriptorSet](https://github.com/protocolbuffers/protobuf/blob/main/src/
+      google/protobuf/descriptor.proto). To generate it,
+      [install](https://grpc.io/docs/protoc-installation/) and run `protoc`
+      with --include_imports and --descriptor_set_out. For example, to
+      generate for moon/shot/app.proto, run " " " $protoc
+      --proto_path=/app_path --proto_path=/lib_path \ --include_imports \
+      --descriptor_set_out=descriptors.data \ moon/shot/app.proto " " " For
+      more details, see protobuffer [self
+      description](https://developers.google.com/protocol-
+      buffers/docs/techniques#self-description).
     statements: Required. DDL statements to be applied to the database.
   """
 
   operationId = _messages.StringField(1)
-  statements = _messages.StringField(2, repeated=True)
+  protoDescriptors = _messages.BytesField(2)
+  statements = _messages.StringField(3, repeated=True)
 
 
 class UpdateDatabaseMetadata(_messages.Message):

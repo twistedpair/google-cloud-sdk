@@ -201,6 +201,13 @@ class ApigeeOrganizationsApiproductsListRequest(_messages.Message):
       The limit is 1000.
     expand: Flag that specifies whether to expand the results. Set to `true`
       to get expanded details about each API.
+    filter: The filter expression to be used to get the list of API products,
+      where filtering can be done on name and createdAt. Example: filter =
+      "name = foobar"
+    pageSize: Count of API products a single page can have in the response. If
+      unspecified, at most 100 API products will be returned. The maximum
+      value is 100; values above 100 will be coerced to 100.
+    pageToken: The starting index record for listing the developers.
     parent: Required. Name of the organization. Use the following structure in
       your request: `organizations/{org}`
     startKey: Gets a list of API products starting with a specific API product
@@ -214,8 +221,11 @@ class ApigeeOrganizationsApiproductsListRequest(_messages.Message):
   attributevalue = _messages.StringField(2)
   count = _messages.IntegerField(3)
   expand = _messages.BooleanField(4)
-  parent = _messages.StringField(5, required=True)
-  startKey = _messages.StringField(6)
+  filter = _messages.StringField(5)
+  pageSize = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(7)
+  parent = _messages.StringField(8, required=True)
+  startKey = _messages.StringField(9)
 
 
 class ApigeeOrganizationsApiproductsRateplansCreateRequest(_messages.Message):
@@ -572,11 +582,19 @@ class ApigeeOrganizationsAppsListRequest(_messages.Message):
       `company` or `developer`. Defaults to `developer`.
     expand: Optional. Flag that specifies whether to return an expanded list
       of apps for the organization. Defaults to `false`.
+    filter: Optional. The filter expression to be used to get the list of
+      apps, where filtering can be done on developerEmail, apiProduct,
+      consumerKey, status, appId createdAt and appFamily. Example: filter =
+      "developerEmail = foo@bar.com"
     ids: Optional. Comma-separated list of app IDs on which to filter.
     includeCred: Optional. Flag that specifies whether to include credentials
       in the response.
     keyStatus: Optional. Key status of the app. Valid values include
       `approved` or `revoked`. Defaults to `approved`.
+    pageSize: Optional. Count of apps a single page can have in the response.
+      If unspecified, at most 100 apps will be returned. The maximum value is
+      100; values above 100 will be coerced to 100.
+    pageToken: Optional. The starting index record for listing the developers.
     parent: Required. Resource path of the parent in the following format:
       `organizations/{org}`
     rows: Optional. Maximum number of app IDs to return. Defaults to 10000.
@@ -588,13 +606,16 @@ class ApigeeOrganizationsAppsListRequest(_messages.Message):
   apiProduct = _messages.StringField(1)
   apptype = _messages.StringField(2)
   expand = _messages.BooleanField(3)
-  ids = _messages.StringField(4)
-  includeCred = _messages.BooleanField(5)
-  keyStatus = _messages.StringField(6)
-  parent = _messages.StringField(7, required=True)
-  rows = _messages.IntegerField(8)
-  startKey = _messages.StringField(9)
-  status = _messages.StringField(10)
+  filter = _messages.StringField(4)
+  ids = _messages.StringField(5)
+  includeCred = _messages.BooleanField(6)
+  keyStatus = _messages.StringField(7)
+  pageSize = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(9)
+  parent = _messages.StringField(10, required=True)
+  rows = _messages.IntegerField(11)
+  startKey = _messages.StringField(12)
+  status = _messages.StringField(13)
 
 
 class ApigeeOrganizationsCreateRequest(_messages.Message):
@@ -1166,9 +1187,16 @@ class ApigeeOrganizationsDevelopersListRequest(_messages.Message):
     expand: Specifies whether to expand the results. Set to `true` to expand
       the results. This query parameter is not valid if you use the `count` or
       `startKey` query parameters.
+    filter: Optional. The filter expression to be used to get the list of
+      developers, where filtering can be done on email. Example: filter =
+      "email = foo@bar.com"
     ids: Optional. List of IDs to include, separated by commas.
     includeCompany: Flag that specifies whether to include company details in
       the response.
+    pageSize: Optional. Count of developers a single page can have in the
+      response. If unspecified, at most 100 developers will be returned. The
+      maximum value is 100; values above 100 will be coerced to 100.
+    pageToken: Optional. The starting index record for listing the developers.
     parent: Required. Name of the Apigee organization. Use the following
       structure in your request: `organizations/{org}`.
     startKey: **Note**: Must be used in conjunction with the `count`
@@ -1182,10 +1210,13 @@ class ApigeeOrganizationsDevelopersListRequest(_messages.Message):
   app = _messages.StringField(1)
   count = _messages.IntegerField(2)
   expand = _messages.BooleanField(3)
-  ids = _messages.StringField(4)
-  includeCompany = _messages.BooleanField(5)
-  parent = _messages.StringField(6, required=True)
-  startKey = _messages.StringField(7)
+  filter = _messages.StringField(4)
+  ids = _messages.StringField(5)
+  includeCompany = _messages.BooleanField(6)
+  pageSize = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(8)
+  parent = _messages.StringField(9, required=True)
+  startKey = _messages.StringField(10)
 
 
 class ApigeeOrganizationsDevelopersSetDeveloperStatusRequest(_messages.Message):
@@ -4900,6 +4931,7 @@ class GoogleCloudApigeeV1App(_messages.Message):
     createdAt: Output only. Unix time when the app was created.
     credentials: Output only. Set of credentials for the app. Credentials are
       API key/secret pairs associated with API products.
+    developerEmail: Email of the developer.
     developerId: ID of the developer.
     keyExpiresIn: Duration, in milliseconds, of the consumer key that will be
       generated for the app. The default value, -1, indicates an infinite
@@ -4920,12 +4952,13 @@ class GoogleCloudApigeeV1App(_messages.Message):
   companyName = _messages.StringField(5)
   createdAt = _messages.IntegerField(6)
   credentials = _messages.MessageField('GoogleCloudApigeeV1Credential', 7, repeated=True)
-  developerId = _messages.StringField(8)
-  keyExpiresIn = _messages.IntegerField(9)
-  lastModifiedAt = _messages.IntegerField(10)
-  name = _messages.StringField(11)
-  scopes = _messages.StringField(12, repeated=True)
-  status = _messages.StringField(13)
+  developerEmail = _messages.StringField(8)
+  developerId = _messages.StringField(9)
+  keyExpiresIn = _messages.IntegerField(10)
+  lastModifiedAt = _messages.IntegerField(11)
+  name = _messages.StringField(12)
+  scopes = _messages.StringField(13, repeated=True)
+  status = _messages.StringField(14)
 
 
 class GoogleCloudApigeeV1ArchiveDeployment(_messages.Message):
@@ -7149,7 +7182,7 @@ class GoogleCloudApigeeV1Keystore(_messages.Message):
   Fields:
     aliases: Output only. Aliases in this keystore.
     name: Required. Resource ID for this keystore. Values must match the
-      regular expression `[\w[:space:]-.]{1,255}`.
+      regular expression `[\w[:space:].-]{1,255}`.
   """
 
   aliases = _messages.StringField(1, repeated=True)
@@ -7192,9 +7225,14 @@ class GoogleCloudApigeeV1ListApiProductsResponse(_messages.Message):
 
   Fields:
     apiProduct: Lists all API product names defined for an organization.
+    nextPageToken: Token that can be sent as `next_page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    totalSize: Total count of API products for this org.
   """
 
   apiProduct = _messages.MessageField('GoogleCloudApigeeV1ApiProduct', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  totalSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudApigeeV1ListApiProxiesResponse(_messages.Message):
@@ -7213,9 +7251,14 @@ class GoogleCloudApigeeV1ListAppsResponse(_messages.Message):
 
   Fields:
     app: A GoogleCloudApigeeV1App attribute.
+    nextPageToken: Token that can be sent as `next_page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    totalSize: Total count of Apps.
   """
 
   app = _messages.MessageField('GoogleCloudApigeeV1App', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  totalSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudApigeeV1ListArchiveDeploymentsResponse(_messages.Message):
@@ -7459,9 +7502,14 @@ class GoogleCloudApigeeV1ListOfDevelopersResponse(_messages.Message):
 
   Fields:
     developer: List of developers.
+    nextPageToken: Token that can be sent as `next_page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    totalSize: Total count of Developers.
   """
 
   developer = _messages.MessageField('GoogleCloudApigeeV1Developer', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  totalSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudApigeeV1ListOrganizationsResponse(_messages.Message):

@@ -137,3 +137,26 @@ class CustomDomainTypeKit(base.TypeKit):
       selectors.append({'type': 'service', 'name': add_service_name})
 
     return selectors
+
+  def GetRefServices(self, name, resource_config, all_resources):
+    """Returns list of cloud run service that is binded to this resource.
+
+    Args:
+      name: str, name of the resource.
+      resource_config: dict, config of the resource.
+      all_resources: dict, all the resources in the application.
+
+    Returns:
+      list cloud run service names
+    """
+    services = []
+    if resource_config.get('default-route', {}).get('ref'):
+      services.append(resource_config['default-route']['ref'].replace(
+          'service/', ''))
+
+    if resource_config.get('routes'):
+      for route in resource_config['routes']:
+        if route.get('ref'):
+          services.append(route['ref'].replace('service/', ''))
+
+    return services

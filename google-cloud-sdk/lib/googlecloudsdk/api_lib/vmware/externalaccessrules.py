@@ -115,9 +115,9 @@ class ExternalAccessRulesClient(util.VmwareClientBase):
 
     if action is not None:
       if action.strip().upper() == 'ALLOW':
-        external_access_rule.action = self.messages.ExternalAccessRuleActionValueValuesEnum.ALLOW
+        external_access_rule.action = self.messages.ExternalAccessRule.ActionValueValuesEnum.ALLOW
       elif action.strip().upper() == 'DENY':
-        external_access_rule.action = self.messages.ExternalAccessRuleActionValueValuesEnum.DENY
+        external_access_rule.action = self.messages.ExternalAccessRule.ActionValueValuesEnum.DENY
       update_mask.append('action')
 
     if source_ranges is not None and source_ranges:

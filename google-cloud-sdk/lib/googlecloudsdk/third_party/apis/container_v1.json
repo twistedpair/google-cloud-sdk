@@ -3154,10 +3154,7 @@
         },
         "resourceLabels": {
           "description": "The resource labels for the node pool to use to annotate any related Google Compute Engine resources.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
+          "$ref": "ResourceLabels"
         }
       }
     },
@@ -3178,6 +3175,20 @@
     "NodeLabels": {
       "id": "NodeLabels",
       "description": "Collection of node-level [Kubernetes labels](https:\/\/kubernetes.io\/docs\/concepts\/overview\/working-with-objects\/labels).",
+      "type": "object",
+      "properties": {
+        "labels": {
+          "description": "Map of node label keys and node label values.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ResourceLabels": {
+      "id": "ResourceLabels",
+      "description": "Collection of [GCP labels](https:\/\/cloud.google.com\/resource-manager\/docs\/creating-managing-labels).",
       "type": "object",
       "properties": {
         "labels": {

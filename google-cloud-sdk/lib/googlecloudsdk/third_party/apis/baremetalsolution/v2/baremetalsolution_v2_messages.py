@@ -116,6 +116,23 @@ class BaremetalsolutionProjectsLocationsInstanceProvisioningSettingsFetchRequest
   location = _messages.StringField(1, required=True)
 
 
+class BaremetalsolutionProjectsLocationsInstanceQuotasListRequest(_messages.Message):
+  r"""A BaremetalsolutionProjectsLocationsInstanceQuotasListRequest object.
+
+  Fields:
+    pageSize: Requested page size. The server might return fewer items than
+      requested. If unspecified, server will pick an appropriate default.
+      Notice that page_size field is not supported and won't be respected in
+      the API request for now, will be updated when pagination is supported.
+    pageToken: A token identifying a page of results from the server.
+    parent: Required. Parent value for ListProvisioningQuotasRequest.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class BaremetalsolutionProjectsLocationsInstancesAttachVolumeRequest(_messages.Message):
   r"""A BaremetalsolutionProjectsLocationsInstancesAttachVolumeRequest object.
 
@@ -299,6 +316,23 @@ class BaremetalsolutionProjectsLocationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class BaremetalsolutionProjectsLocationsNetworkQuotasListRequest(_messages.Message):
+  r"""A BaremetalsolutionProjectsLocationsNetworkQuotasListRequest object.
+
+  Fields:
+    pageSize: Requested page size. The server might return fewer items than
+      requested. If unspecified, server will pick an appropriate default.
+      Notice that page_size field is not supported and won't be respected in
+      the API request for now, will be updated when pagination is supported.
+    pageToken: A token identifying a page of results from the server.
+    parent: Required. Parent value for ListProvisioningQuotasRequest.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class BaremetalsolutionProjectsLocationsNetworksGetRequest(_messages.Message):
@@ -490,57 +524,6 @@ class BaremetalsolutionProjectsLocationsProvisioningQuotasListRequest(_messages.
   parent = _messages.StringField(3, required=True)
 
 
-class BaremetalsolutionProjectsLocationsQuotasInstancesListRequest(_messages.Message):
-  r"""A BaremetalsolutionProjectsLocationsQuotasInstancesListRequest object.
-
-  Fields:
-    pageSize: Requested page size. The server might return fewer items than
-      requested. If unspecified, server will pick an appropriate default.
-      Notice that page_size field is not supported and won't be respected in
-      the API request for now, will be updated when pagination is supported.
-    pageToken: A token identifying a page of results from the server.
-    parent: Required. Parent value for ListProvisioningQuotasRequest.
-  """
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-
-
-class BaremetalsolutionProjectsLocationsQuotasNetworksListRequest(_messages.Message):
-  r"""A BaremetalsolutionProjectsLocationsQuotasNetworksListRequest object.
-
-  Fields:
-    pageSize: Requested page size. The server might return fewer items than
-      requested. If unspecified, server will pick an appropriate default.
-      Notice that page_size field is not supported and won't be respected in
-      the API request for now, will be updated when pagination is supported.
-    pageToken: A token identifying a page of results from the server.
-    parent: Required. Parent value for ListProvisioningQuotasRequest.
-  """
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-
-
-class BaremetalsolutionProjectsLocationsQuotasStorageListRequest(_messages.Message):
-  r"""A BaremetalsolutionProjectsLocationsQuotasStorageListRequest object.
-
-  Fields:
-    pageSize: Requested page size. The server might return fewer items than
-      requested. If unspecified, server will pick an appropriate default.
-      Notice that page_size field is not supported and won't be respected in
-      the API request for now, will be updated when pagination is supported.
-    pageToken: A token identifying a page of results from the server.
-    parent: Required. Parent value for ListProvisioningQuotasRequest.
-  """
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-
-
 class BaremetalsolutionProjectsLocationsSnapshotSchedulePoliciesCreateRequest(_messages.Message):
   r"""A
   BaremetalsolutionProjectsLocationsSnapshotSchedulePoliciesCreateRequest
@@ -653,6 +636,23 @@ class BaremetalsolutionProjectsLocationsSshKeysListRequest(_messages.Message):
       request, if any.
     parent: Required. The parent containing the SSH keys. Currently, the only
       valid value for the location is "global".
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class BaremetalsolutionProjectsLocationsStorageQuotasListRequest(_messages.Message):
+  r"""A BaremetalsolutionProjectsLocationsStorageQuotasListRequest object.
+
+  Fields:
+    pageSize: Requested page size. The server might return fewer items than
+      requested. If unspecified, server will pick an appropriate default.
+      Notice that page_size field is not supported and won't be respected in
+      the API request for now, will be updated when pagination is supported.
+    pageToken: A token identifying a page of results from the server.
+    parent: Required. Parent value for ListProvisioningQuotasRequest.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -780,9 +780,7 @@ class BaremetalsolutionProjectsLocationsVolumesPatchRequest(_messages.Message):
       https://cloud.google.com/apis/design/resource_names. Format:
       `projects/{project}/locations/{location}/volumes/{volume}`
     updateMask: The list of fields to update. The only currently supported
-      fields are: `snapshot_auto_delete_behavior`
-      `snapshot_schedule_policy_name` 'labels' 'snapshot_enabled'
-      'snapshot_reservation_detail.reserved_space_percent'
+      fields are: 'labels'
     volume: A Volume resource to be passed as the request body.
   """
 
@@ -833,7 +831,7 @@ class BaremetalsolutionProjectsLocationsVolumesSnapshotsGetRequest(_messages.Mes
   r"""A BaremetalsolutionProjectsLocationsVolumesSnapshotsGetRequest object.
 
   Fields:
-    name: Required. Name of the resource.
+    name: Required. The name of the snapshot.
   """
 
   name = _messages.StringField(1, required=True)
@@ -861,7 +859,8 @@ class BaremetalsolutionProjectsLocationsVolumesSnapshotsRestoreVolumeSnapshotReq
   Fields:
     restoreVolumeSnapshotRequest: A RestoreVolumeSnapshotRequest resource to
       be passed as the request body.
-    volumeSnapshot: Required. Name of the resource.
+    volumeSnapshot: Required. Name of the snapshot which will be used to
+      restore its parent volume.
   """
 
   restoreVolumeSnapshotRequest = _messages.MessageField('RestoreVolumeSnapshotRequest', 1)
@@ -1351,12 +1350,12 @@ class ListStorageQuotasResponse(_messages.Message):
 
 
 class ListVolumeSnapshotsResponse(_messages.Message):
-  r"""Response message containing the list of storage volume snapshots.
+  r"""Response message containing the list of volume snapshots.
 
   Fields:
     nextPageToken: A token identifying a page of results from the server.
     unreachable: Locations that could not be reached.
-    volumeSnapshots: The list of storage volumes.
+    volumeSnapshots: The list of snapshots.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -2585,6 +2584,8 @@ class Volume(_messages.Message):
     autoGrownSizeGib: The size, in GiB, that this storage volume has expanded
       as a result of an auto grow policy. In the absence of auto-grow, the
       value is 0.
+    bootVolume: Output only. Whether this volume is a boot volume. A boot
+      volume is one which contains a boot LUN.
     currentSizeGib: The current size of this storage volume, in GiB, including
       space reserved for snapshots. This size might be different than the
       requested size if the storage volume has been configured with auto grow
@@ -2695,23 +2696,24 @@ class Volume(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   autoGrownSizeGib = _messages.IntegerField(1)
-  currentSizeGib = _messages.IntegerField(2)
-  emergencySizeGib = _messages.IntegerField(3)
-  id = _messages.StringField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  maxSizeGib = _messages.IntegerField(6)
-  name = _messages.StringField(7)
-  originallyRequestedSizeGib = _messages.IntegerField(8)
-  pod = _messages.StringField(9)
-  protocol = _messages.EnumField('ProtocolValueValuesEnum', 10)
-  remainingSpaceGib = _messages.IntegerField(11)
-  requestedSizeGib = _messages.IntegerField(12)
-  snapshotAutoDeleteBehavior = _messages.EnumField('SnapshotAutoDeleteBehaviorValueValuesEnum', 13)
-  snapshotEnabled = _messages.BooleanField(14)
-  snapshotReservationDetail = _messages.MessageField('SnapshotReservationDetail', 15)
-  snapshotSchedulePolicy = _messages.StringField(16)
-  state = _messages.EnumField('StateValueValuesEnum', 17)
-  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 18)
+  bootVolume = _messages.BooleanField(2)
+  currentSizeGib = _messages.IntegerField(3)
+  emergencySizeGib = _messages.IntegerField(4)
+  id = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  maxSizeGib = _messages.IntegerField(7)
+  name = _messages.StringField(8)
+  originallyRequestedSizeGib = _messages.IntegerField(9)
+  pod = _messages.StringField(10)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 11)
+  remainingSpaceGib = _messages.IntegerField(12)
+  requestedSizeGib = _messages.IntegerField(13)
+  snapshotAutoDeleteBehavior = _messages.EnumField('SnapshotAutoDeleteBehaviorValueValuesEnum', 14)
+  snapshotEnabled = _messages.BooleanField(15)
+  snapshotReservationDetail = _messages.MessageField('SnapshotReservationDetail', 16)
+  snapshotSchedulePolicy = _messages.StringField(17)
+  state = _messages.EnumField('StateValueValuesEnum', 18)
+  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 19)
 
 
 class VolumeConfig(_messages.Message):
@@ -2790,15 +2792,16 @@ class VolumeLunRange(_messages.Message):
 
 
 class VolumeSnapshot(_messages.Message):
-  r"""Snapshot registered for a given storage volume.
+  r"""A snapshot of a volume. Only boot volumes can have snapshots.
 
   Fields:
-    createTime: Output only. The creation time of the storage volume snapshot.
-    description: The description of the storage volume snapshot.
-    id: An identifier for the snapshot, generated by the backend.
-    name: Output only. The name of the storage volume snapshot.
-    sizeBytes: The size of the storage volume snapshot, in bytes.
-    storageVolume: The storage volume this snapshot belongs to.
+    createTime: Output only. The creation time of the snapshot.
+    description: The description of the snapshot.
+    id: Output only. An identifier for the snapshot, generated by the backend.
+    name: The name of the snapshot.
+    sizeBytes: Output only. The size of the snapshot, in bytes.
+    storageVolume: Output only. The name of the volume which this snapshot
+      belongs to.
   """
 
   createTime = _messages.StringField(1)

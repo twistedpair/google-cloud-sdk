@@ -217,8 +217,7 @@ class ConstraintRef(_messages.Message):
 
 
 class ConstraintTemplateRef(_messages.Message):
-  r"""ConstraintTemplateRef represents a single constraint template. Base
-  identifying resource.
+  r"""ConstraintTemplateRef identifies a constraint template.
 
   Fields:
     name: The constraint template name.
@@ -243,14 +242,16 @@ class FleetConstraint(_messages.Message):
 
 
 class FleetConstraintTemplate(_messages.Message):
-  r"""The fleet-wide info for a constraint template. Includes the number of
-  constraints to avoid clients making serial round trips.
+  r"""FleetConstraintTemplate contains aggregate status for a single
+  constraint template. The aggregation is across all member clusters in a
+  fleet.
 
   Fields:
     numConstraints: The number of unique constraints using this constraint
-      template.
-    numMemberships: The number of memberships where this constraint template
-      was found.
+      template. This is included so avoid clients don't have to make serial
+      round trips.
+    numMemberships: The number of member clusters on which this constraint
+      template was found.
     ref: The constraint template this data refers to.
   """
 
@@ -407,11 +408,13 @@ class ListMembershipsResponse(_messages.Message):
 
 class Membership(_messages.Message):
   r"""Membership contains aggregate information about policy controller
-  resources in a membership.
+  resources on a member cluster.
 
   Fields:
     ref: The membership this data refers to.
     runtimeStatus: The status of the policy controller runtime configuration.
+      If runtime_status is empty, then the server could not find any existing
+      constraint or templates to report status.
   """
 
   ref = _messages.MessageField('MembershipRef', 1)
@@ -439,8 +442,8 @@ class MembershipConstraint(_messages.Message):
 
 
 class MembershipConstraintAuditViolation(_messages.Message):
-  r"""MembershipConstraintAuditViolation contains violation information from
-  constraint status.
+  r"""MembershipConstraintAuditViolation encodes info relevant to a violation
+  of a single constraint on a single member cluster.
 
   Enums:
     EnforcementActionValueValuesEnum: The enforcement_action of the violation.
@@ -584,7 +587,8 @@ class MembershipConstraintStatus(_messages.Message):
 
 
 class MembershipConstraintTemplate(_messages.Message):
-  r"""Membership specific constraint template data.
+  r"""MembershipConstraintTemplate contains runtime status relevant to a
+  single constraint template on a single member cluster.
 
   Fields:
     constraintTemplateRef: The constraint template this data refers to.
@@ -661,8 +665,8 @@ class MembershipConstraintTemplateSpec(_messages.Message):
 
 
 class MembershipConstraintTemplateStatus(_messages.Message):
-  r"""MembershipConstratinTemplateStatus contains a field to indicate whether
-  the template was created.
+  r"""MembershipConstratinTemplateStatus contains status information, e.g.
+  whether the template has been created on the member cluster.
 
   Fields:
     created: status.created from the constraint template.
@@ -672,7 +676,7 @@ class MembershipConstraintTemplateStatus(_messages.Message):
 
 
 class MembershipRef(_messages.Message):
-  r"""Reference to a hub membership.
+  r"""Reference to a GKE Hub membership.
 
   Fields:
     id: The id of the membership, for identity purposes.
@@ -685,14 +689,14 @@ class MembershipRef(_messages.Message):
 
 class MembershipRuntimeStatus(_messages.Message):
   r"""MembershipRuntimeStatus contains aggregate data about policy controller
-  resources in a membership.
+  resources on a cluster that is a member of a fleet.
 
   Fields:
-    numConstraintTemplates: The number of constraint templates on the
-      membership.
-    numConstraintViolations: The number of constraint violations on the
-      membership.
-    numConstraints: The number of constraints on the membership.
+    numConstraintTemplates: The number of constraint templates on the member
+      cluster.
+    numConstraintViolations: The number of constraint violations on the member
+      cluster.
+    numConstraints: The number of constraints on the member cluster.
   """
 
   numConstraintTemplates = _messages.IntegerField(1)

@@ -164,18 +164,20 @@ class Validator:
     for exclusive_groups in self.integration.get('update_exclusive_groups', []):
       found = 0
       group_params = set(exclusive_groups.get('params'))
+      # Generate a stable order list of the param for output.
+      params_list_str = ', '.join(sorted(group_params))
       for param_name in group_params:
         if param_name in user_provided_params:
           found += 1
       if found > 1:
         raise exceptions.ArgumentError(
             ('At most one of these parameters can be specified: {}')
-            .format(', '.join(group_params))
+            .format(params_list_str)
         )
       if exclusive_groups.get('required') and found == 0:
         raise exceptions.ArgumentError(
             ('At least one of these parameters must be specified: {}')
-            .format(', '.join(group_params))
+            .format(params_list_str)
         )
 
   def _CheckServiceFlag(self, service, required=False):

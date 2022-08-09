@@ -927,6 +927,11 @@
             "GOOGLE_STANDARD_SQL",
             "POSTGRESQL"
           ]
+        },
+        "protoDescriptors": {
+          "description": "Optional. Proto descriptors used by CREATE\/ALTER PROTO BUNDLE statements in 'extra_statements' above. Contains a protobuf-serialized [google.protobuf.FileDescriptorSet](https:\/\/github.com\/protocolbuffers\/protobuf\/blob\/main\/src\/google\/protobuf\/descriptor.proto). To generate it, [install](https:\/\/grpc.io\/docs\/protoc-installation\/) and run `protoc` with --include_imports and --descriptor_set_out. For example, to generate for moon\/shot\/app.proto, run \"\"\" $protoc --proto_path=\/app_path --proto_path=\/lib_path \\ --include_imports \\ --descriptor_set_out=descriptors.data \\ moon\/shot\/app.proto \"\"\" For more details, see protobuffer [self description](https:\/\/developers.google.com\/protocol-buffers\/docs\/techniques#self-description).",
+          "type": "string",
+          "format": "byte"
         }
       }
     },
@@ -945,6 +950,11 @@
         "operationId": {
           "description": "If empty, the new update request is assigned an automatically-generated operation ID. Otherwise, `operation_id` is used to construct the name of the resulting Operation. Specifying an explicit operation ID simplifies determining whether the statements were executed in the event that the UpdateDatabaseDdl call is replayed, or the return value is otherwise lost: the database and `operation_id` fields can be combined to form the name of the resulting longrunning.Operation: `\/operations\/`. `operation_id` should be unique within the database, and must be a valid identifier: `a-z*`. Note that automatically-generated operation IDs always begin with an underscore. If the named operation already exists, UpdateDatabaseDdl returns `ALREADY_EXISTS`.",
           "type": "string"
+        },
+        "protoDescriptors": {
+          "description": "Optional. Proto descriptors used by CREATE\/ALTER PROTO BUNDLE statements. Contains a protobuf-serialized [google.protobuf.FileDescriptorSet](https:\/\/github.com\/protocolbuffers\/protobuf\/blob\/main\/src\/google\/protobuf\/descriptor.proto). To generate it, [install](https:\/\/grpc.io\/docs\/protoc-installation\/) and run `protoc` with --include_imports and --descriptor_set_out. For example, to generate for moon\/shot\/app.proto, run \"\"\" $protoc --proto_path=\/app_path --proto_path=\/lib_path \\ --include_imports \\ --descriptor_set_out=descriptors.data \\ moon\/shot\/app.proto \"\"\" For more details, see protobuffer [self description](https:\/\/developers.google.com\/protocol-buffers\/docs\/techniques#self-description).",
+          "type": "string",
+          "format": "byte"
         }
       }
     },
@@ -959,6 +969,11 @@
           "items": {
             "type": "string"
           }
+        },
+        "protoDescriptors": {
+          "description": "Proto descriptors stored in the database. Contains a protobuf-serialized [google.protobuf.FileDescriptorSet](https:\/\/github.com\/protocolbuffers\/protobuf\/blob\/main\/src\/google\/protobuf\/descriptor.proto). For more details, see protobuffer [self description](https:\/\/developers.google.com\/protocol-buffers\/docs\/techniques#self-description).",
+          "type": "string",
+          "format": "byte"
         }
       }
     },
@@ -1469,6 +1484,25 @@
             "CREATING",
             "READY"
           ]
+        },
+        "freeInstanceAvailability": {
+          "description": "Output only. Describes whether free instances are available to be created in this instance config.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Not specified.",
+            "Indicates that free instances are available to be created in this instance config.",
+            "Indicates that free instances are not supported in this instance config.",
+            "Indicates that free instances are currently not available to be created in this instance config.",
+            "Indicates that additional free instances cannot be created in this instance config because the project has reached its limit of free instances."
+          ],
+          "enum": [
+            "FREE_INSTANCE_AVAILABILITY_UNSPECIFIED",
+            "AVAILABLE",
+            "UNSUPPORTED",
+            "DISABLED",
+            "QUOTA_EXCEEDED"
+          ]
         }
       }
     },
@@ -1633,6 +1667,20 @@
             "type": "string"
           }
         },
+        "instanceType": {
+          "description": "The `InstanceType` of the current instance.",
+          "type": "string",
+          "enumDescriptions": [
+            "Not specified.",
+            "Provisioned instances have dedicated resources, standard usage limits and support.",
+            "Free instances provide no guarantee for dedicated resources, [node_count, processing_units] should be 0. They come with stricter usage limits and limited support."
+          ],
+          "enum": [
+            "INSTANCE_TYPE_UNSPECIFIED",
+            "PROVISIONED",
+            "FREE_INSTANCE"
+          ]
+        },
         "endpointUris": {
           "description": "Deprecated. This field is not populated.",
           "type": "array",
@@ -1651,6 +1699,43 @@
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
+        },
+        "freeInstanceMetadata": {
+          "description": "Free instance metadata. Only populated for free instances.",
+          "$ref": "FreeInstanceMetadata"
+        }
+      }
+    },
+    "FreeInstanceMetadata": {
+      "id": "FreeInstanceMetadata",
+      "description": "Free instance specific metadata that is kept even after an instance has been upgraded for tracking purposes.",
+      "type": "object",
+      "properties": {
+        "expireTime": {
+          "description": "Output only. Timestamp after which the instance will either be upgraded or scheduled for deletion after a grace period. ExpireBehavior is used to choose between upgrading or scheduling the free instance for deletion. This timestamp is set during the creation of a free instance.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "upgradeTime": {
+          "description": "Output only. If present, the timestamp at which the free instance was upgraded to a provisioned instance.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "expireBehavior": {
+          "description": "Specifies the expiration behavior of a free instance. The default of ExpireBehavior is `REMOVE_AFTER_GRACE_PERIOD`. This can be modified during or after creation, and before expiration.",
+          "type": "string",
+          "enumDescriptions": [
+            "Not specified.",
+            "When the free instance expires, upgrade the instance to a provisioned instance.",
+            "When the free instance expires, disable the instance, and delete it after the grace period passes if it has not been upgraded."
+          ],
+          "enum": [
+            "EXPIRE_BEHAVIOR_UNSPECIFIED",
+            "FREE_TO_PROVISIONED",
+            "REMOVE_AFTER_GRACE_PERIOD"
+          ]
         }
       }
     },
@@ -2278,7 +2363,7 @@
           "$ref": "ResultSetMetadata"
         },
         "values": {
-          "description": "A streamed result set consists of a stream of values, which might be split into many `PartialResultSet` messages to accommodate large rows and\/or large values. Every N complete values defines a row, where N is equal to the number of entries in metadata.row_type.fields. Most values are encoded based on type as described here. It is possible that the last value in values is \"chunked\", meaning that the rest of the value is sent in subsequent `PartialResultSet`(s). This is denoted by the chunked_value field. Two or more chunked values can be merged to form a complete value as follows: * `bool\/number\/null`: cannot be chunked * `string`: concatenate the strings * `list`: concatenate the lists. If the last element in a list is a `string`, `list`, or `object`, merge it with the first element in the next list by applying these rules recursively. * `object`: concatenate the (field name, field value) pairs. If a field name is duplicated, then apply these rules recursively to merge the field values. Some examples of merging: # Strings are concatenated. \"foo\", \"bar\" => \"foobar\" # Lists of non-strings are concatenated. [2, 3], [4] => [2, 3, 4] # Lists are concatenated, but the last and first elements are merged # because they are strings. [\"a\", \"b\"], [\"c\", \"d\"] => [\"a\", \"bc\", \"d\"] # Lists are concatenated, but the last and first elements are merged # because they are lists. Recursively, the last and first elements # of the inner lists are merged because they are strings. [\"a\", [\"b\", \"c\"]], [[\"d\"], \"e\"] => [\"a\", [\"b\", \"cd\"], \"e\"] # Non-overlapping object fields are combined. {\"a\": \"1\"}, {\"b\": \"2\"} => {\"a\": \"1\", \"b\": 2\"} # Overlapping object fields are merged. {\"a\": \"1\"}, {\"a\": \"2\"} => {\"a\": \"12\"} # Examples of merging objects containing lists of strings. {\"a\": [\"1\"]}, {\"a\": [\"2\"]} => {\"a\": [\"12\"]} For a more complete example, suppose a streaming SQL query is yielding a result set whose rows contain a single string field. The following `PartialResultSet`s might be yielded: { \"metadata\": { ... } \"values\": [\"Hello\", \"W\"] \"chunked_value\": true \"resume_token\": \"Af65...\" } { \"values\": [\"orl\"] \"chunked_value\": true \"resume_token\": \"Bqp2...\" } { \"values\": [\"d\"] \"resume_token\": \"Zx1B...\" } This sequence of `PartialResultSet`s encodes two rows, one containing the field value `\"Hello\"`, and a second containing the field value `\"World\" = \"W\" + \"orl\" + \"d\"`.",
+          "description": "A streamed result set consists of a stream of values, which might be split into many `PartialResultSet` messages to accommodate large rows and\/or large values. Every N complete values defines a row, where N is equal to the number of entries in metadata.row_type.fields. Most values are encoded based on type as described here. It is possible that the last value in values is \"chunked\", meaning that the rest of the value is sent in subsequent `PartialResultSet`(s). This is denoted by the chunked_value field. Two or more chunked values can be merged to form a complete value as follows: * `bool\/number\/null`: cannot be chunked * `string`: concatenate the strings * `list`: concatenate the lists. If the last element in a list is a `string`, `list`, or `object`, merge it with the first element in the next list by applying these rules recursively. * `object`: concatenate the (field name, field value) pairs. If a field name is duplicated, then apply these rules recursively to merge the field values. Some examples of merging: # Strings are concatenated. \"foo\", \"bar\" => \"foobar\" # Lists of non-strings are concatenated. [2, 3], [4] => [2, 3, 4] # Lists are concatenated, but the last and first elements are merged # because they are strings. [\"a\", \"b\"], [\"c\", \"d\"] => [\"a\", \"bc\", \"d\"] # Lists are concatenated, but the last and first elements are merged # because they are lists. Recursively, the last and first elements # of the inner lists are merged because they are strings. [\"a\", [\"b\", \"c\"]], [[\"d\"], \"e\"] => [\"a\", [\"b\", \"cd\"], \"e\"] # Non-overlapping object fields are combined. {\"a\": \"1\"}, {\"b\": \"2\"} => {\"a\": \"1\", \"b\": 2\"} # Overlapping object fields are merged. {\"a\": \"1\"}, {\"a\": \"2\"} => {\"a\": \"12\"} # Examples of merging objects containing lists of strings. {\"a\": [\"1\"]}, {\"a\": [\"2\"]} => {\"a\": [\"12\"]} For a more complete example, suppose a streaming SQL query is yielding a result set whose rows contain a single string field. The following `PartialResultSet`s might be yielded: { \"metadata\": { ... } \"values\": [\"Hello\", \"W\"] \"chunked_value\": true \"resume_token\": \"Af65...\" } { \"values\": [\"orl\"] \"chunked_value\": true } { \"values\": [\"d\"] \"resume_token\": \"Zx1B...\" } This sequence of `PartialResultSet`s encodes two rows, one containing the field value `\"Hello\"`, and a second containing the field value `\"World\" = \"W\" + \"orl\" + \"d\"`. Not all `PartialResultSet`s contain a `resume_token`. Execution can only be resumed from a previously yielded `resume_token`. For the above sequence of `PartialResultSet`s, resuming the query with `\"resume_token\": \"Af65...\"` will yield results from the `PartialResultSet` with value `[\"orl\"]`.",
           "type": "array",
           "items": {
             "type": "any"
@@ -4254,7 +4339,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The database whose roles should be listed. Values are of the form `projects\/\/instances\/\/databases\/\/databaseRoles`.",
+                          "description": "Required. The database whose roles should be listed. Values are of the form `projects\/\/instances\/\/databases\/`.",
                           "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/databases\/[^\/]+$",
                           "location": "path",
                           "required": true,

@@ -1526,7 +1526,8 @@ class Version(_messages.Message):
     Values:
       TYPE_UNSPECIFIED: Version does not have availability yet
       TYPE_PREVIEW: Version is under development and not considered stable
-      TYPE_GENERAL_AVAILABILITY: Version is available for public use
+      TYPE_GENERAL_AVAILABILITY: Version is available for public use Version
+        is under development and not considered stable
     """
     TYPE_UNSPECIFIED = 0
     TYPE_PREVIEW = 1

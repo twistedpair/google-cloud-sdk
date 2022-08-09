@@ -521,7 +521,7 @@ class DisplayableObjectData(DisplayableResourceData):
     url_string (str): The url string representing the object.
     acl (dict|str|None): ACLs for the objects.
       If the API call to fetch the data failed, this can be an error string.
-    additional_properties (dict|None): Additional metadata.
+    additional_properties (dict|list|None): Additional metadata.
     cache_control (str|None): Cache control value for the object.
     component_count (int|None): Number of components, if any.
     content_disposition (str|None): Content Disposition value for the object.

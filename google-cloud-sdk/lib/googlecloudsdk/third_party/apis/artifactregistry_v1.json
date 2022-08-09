@@ -458,6 +458,35 @@
         }
       }
     },
+    "ImportGoogetArtifactsRequest": {
+      "id": "ImportGoogetArtifactsRequest",
+      "description": "The request to import new googet artifacts.",
+      "type": "object",
+      "properties": {
+        "gcsSource": {
+          "description": "Google Cloud Storage location where input content is located.",
+          "$ref": "ImportGoogetArtifactsGcsSource"
+        }
+      }
+    },
+    "ImportGoogetArtifactsGcsSource": {
+      "id": "ImportGoogetArtifactsGcsSource",
+      "description": "Google Cloud Storage location where the artifacts currently reside.",
+      "type": "object",
+      "properties": {
+        "uris": {
+          "description": "Cloud Storage paths URI (e.g., gs:\/\/my_bucket\/my_object).",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "useWildcards": {
+          "description": "Supports URI wildcards for matching multiple objects from a single URI.",
+          "type": "boolean"
+        }
+      }
+    },
     "UploadAptArtifactRequest": {
       "id": "UploadAptArtifactRequest",
       "description": "The request to upload an artifact.",
@@ -530,6 +559,24 @@
         }
       }
     },
+    "UploadGoogetArtifactRequest": {
+      "id": "UploadGoogetArtifactRequest",
+      "description": "The request to upload an artifact.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "UploadGoogetArtifactMediaResponse": {
+      "id": "UploadGoogetArtifactMediaResponse",
+      "description": "The response to upload an artifact.",
+      "type": "object",
+      "properties": {
+        "operation": {
+          "description": "Operation to be returned to the user.",
+          "$ref": "Operation"
+        }
+      }
+    },
     "ListRepositoriesResponse": {
       "id": "ListRepositoriesResponse",
       "description": "The response from listing repositories.",
@@ -579,6 +626,7 @@
             "NPM package format.",
             "APT package format.",
             "YUM package format.",
+            "GooGet package format.",
             "Python package format.",
             "Kubeflow Pipelines package format.",
             "GO package format.",
@@ -591,6 +639,7 @@
             "NPM",
             "APT",
             "YUM",
+            "GOOGET",
             "PYTHON",
             "KFP",
             "GO",
@@ -2351,6 +2400,78 @@
                     }
                   }
                 },
+                "googetArtifacts": {
+                  "methods": {
+                    "import": {
+                      "id": "artifactregistry.projects.locations.repositories.googetArtifacts.import",
+                      "path": "v1/{+parent}/googetArtifacts:import",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/googetArtifacts:import",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "The name of the parent resource where the artifacts will be imported.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "ImportGoogetArtifactsRequest"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Imports GooGet artifacts. The returned Operation will complete once the resources are imported. Package, Version, and File resources are created based on the imported artifacts. Imported artifacts that conflict with existing resources are ignored."
+                    },
+                    "upload": {
+                      "id": "artifactregistry.projects.locations.repositories.googetArtifacts.upload",
+                      "path": "v1/{+parent}/googetArtifacts:create",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/googetArtifacts:create",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "The name of the parent resource where the artifacts will be uploaded.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "supportsMediaUpload": true,
+                      "mediaUpload": {
+                        "accept": [
+                          "*/*"
+                        ],
+                        "protocols": {
+                          "simple": {
+                            "multipart": true,
+                            "path": "/upload/v1/{+parent}/googetArtifacts:create"
+                          }
+                        }
+                      },
+                      "request": {
+                        "$ref": "UploadGoogetArtifactRequest"
+                      },
+                      "response": {
+                        "$ref": "UploadGoogetArtifactMediaResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Directly uploads a GooGet artifact. The returned Operation will complete once the resources are uploaded. Package, Version, and File resources are created based on the imported artifact. Imported artifacts that conflict with existing resources are ignored."
+                    }
+                  }
+                },
                 "genericArtifacts": {
                   "methods": {
                     "upload": {
@@ -2359,6 +2480,13 @@
                       "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/genericArtifacts:create",
                       "httpMethod": "POST",
                       "parameters": {
+                        "name": {
+                          "description": "The resource name of the generic artifact.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+\/genericArtifacts\/[^\/]+\/[^\/]+\/[^\/]$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
                         "parent": {
                           "description": "The resource name of the repository where the generic artifact will be uploaded.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
@@ -2368,7 +2496,7 @@
                         }
                       },
                       "parameterOrder": [
-                        "parent"
+                        "name", "parent"
                       ],
                       "supportsMediaUpload": true,
                       "mediaUpload": {
@@ -2397,6 +2525,46 @@
                 },
                 "goModules": {
                   "methods": {
+                    "upload": {
+                      "id": "artifactregistry.projects.locations.repositories.goModules.upload",
+                      "path": "v1/{+parent}/goModules:create",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/goModules:create",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "The resource name of the repository where the Go module will be uploaded.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "supportsMediaUpload": true,
+                      "mediaUpload": {
+                        "accept": [
+                          "*/*"
+                        ],
+                        "protocols": {
+                          "simple": {
+                            "multipart": true,
+                            "path": "/upload/v1/{+parent}/goModules:create"
+                          }
+                        }
+                      },
+                      "request": {
+                        "$ref": "UploadGoModuleRequest"
+                      },
+                      "response": {
+                        "$ref": "UploadGoModuleMediaResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Directly uploads a Go module. The returned Operation will complete once the Go module is uploaded. Package, Version, and File resources are created based on the uploaded Go module."
+                    },
                     "upload": {
                       "id": "artifactregistry.projects.locations.repositories.goModules.upload",
                       "path": "v1/{+parent}/goArtifacts:create",

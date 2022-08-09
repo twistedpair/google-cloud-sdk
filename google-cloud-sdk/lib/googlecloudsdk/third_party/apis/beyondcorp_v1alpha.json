@@ -5161,7 +5161,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Gets the value for a selected particular insight with default configuration. The default aggregation level is 'DAILY' and no grouping will be applied or default grouping if applicable. The data will be returned for recent 7 days. Use the organization level path for fetching at org level and project level path for fetching the insight value specific to a particular project. Setting the `view` to `BASIC` will only return the metadata for the insight."
+                  "description": "Gets the value for a selected particular insight with default configuration. The default aggregation level is 'DAILY' and no grouping will be applied or default grouping if applicable. The data will be returned for recent 7 days starting the day before. The insight data size will be limited to 50 rows. Use the organization level path for fetching at org level and project level path for fetching the insight value specific to a particular project. Setting the `view` to `BASIC` will only return the metadata for the insight."
                 },
                 "configuredInsight": {
                   "id": "beyondcorp.projects.locations.insights.configuredInsight",
@@ -5210,7 +5210,7 @@
                       "format": "google-datetime"
                     },
                     "aggregation": {
-                      "description": "Optional. Aggregation type. Available aggregation could be fetched by calling insight list and get APIs in `BASIC` view.",
+                      "description": "Required. Aggregation type. Available aggregation could be fetched by calling insight list and get APIs in `BASIC` view.",
                       "location": "query",
                       "type": "string",
                       "enumDescriptions": [
@@ -5455,7 +5455,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Gets the value for a selected particular insight with default configuration. The default aggregation level is 'DAILY' and no grouping will be applied or default grouping if applicable. The data will be returned for recent 7 days. Use the organization level path for fetching at org level and project level path for fetching the insight value specific to a particular project. Setting the `view` to `BASIC` will only return the metadata for the insight."
+                  "description": "Gets the value for a selected particular insight with default configuration. The default aggregation level is 'DAILY' and no grouping will be applied or default grouping if applicable. The data will be returned for recent 7 days starting the day before. The insight data size will be limited to 50 rows. Use the organization level path for fetching at org level and project level path for fetching the insight value specific to a particular project. Setting the `view` to `BASIC` will only return the metadata for the insight."
                 },
                 "configuredInsight": {
                   "id": "beyondcorp.organizations.locations.insights.configuredInsight",
@@ -5504,7 +5504,7 @@
                       "format": "google-datetime"
                     },
                     "aggregation": {
-                      "description": "Optional. Aggregation type. Available aggregation could be fetched by calling insight list and get APIs in `BASIC` view.",
+                      "description": "Required. Aggregation type. Available aggregation could be fetched by calling insight list and get APIs in `BASIC` view.",
                       "location": "query",
                       "type": "string",
                       "enumDescriptions": [

@@ -58,7 +58,7 @@ class AnthospolicycontrollerstatusPaV1alpha(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""GetFleetConstraintTemplate returns fleet-wide constraint template info.
+      r"""Retrieves status for a single constraint template. The status is aggregated across all member clusters in a fleet.
 
       Args:
         request: (AnthospolicycontrollerstatusPaProjectsFleetConstraintTemplatesGetRequest) input message
@@ -85,7 +85,7 @@ class AnthospolicycontrollerstatusPaV1alpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""ListFleetConstraintTemplates returns fleet-wide constraint template info.
+      r"""Lists aggregate status for constraint templates within a fleet. Each entry in the response contains status for a particular template aggregated across all clusters within a single fleet, in pseudocode the response's shape is: [FleetWideStatusForConstraintTemplate1, FleetWideStatusForConstraintTemplate2, FleetWideStatusForConstraintTemplate3, ...].
 
       Args:
         request: (AnthospolicycontrollerstatusPaProjectsFleetConstraintTemplatesListRequest) input message
@@ -122,7 +122,7 @@ class AnthospolicycontrollerstatusPaV1alpha(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""GetFleetConstraint returns fleet-wide constraint info.
+      r"""Retrieves fleet-wide constraint info.
 
       Args:
         request: (AnthospolicycontrollerstatusPaProjectsFleetConstraintsGetRequest) input message
@@ -223,7 +223,7 @@ class AnthospolicycontrollerstatusPaV1alpha(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""GetMembershipConstraintTemplate returns membership constraint template info.
+      r"""Retrieves status for a single membership constraint template on a single member cluster.
 
       Args:
         request: (AnthospolicycontrollerstatusPaProjectsMembershipConstraintTemplatesGetRequest) input message
@@ -250,7 +250,7 @@ class AnthospolicycontrollerstatusPaV1alpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""ListMembershipConstraintTemplates returns membership-specific constraint template info.
+      r"""Lists status for constraint templates. Each entry in the response has a ConstraintTemplateRef and MembershipRef, corresponding to status aggregated across all resources within a single member cluster, in pseudocode the response's shape is: [StatusForConstraintTemplate1OnMemberClusterA, StatusForConstraintTemplate2OnMemberClusterA, StatusForConstraintTemplate1OnMemberClusterB, StatusForConstraintTemplate3OnMemberClusterC, ...].
 
       Args:
         request: (AnthospolicycontrollerstatusPaProjectsMembershipConstraintTemplatesListRequest) input message
@@ -287,7 +287,7 @@ class AnthospolicycontrollerstatusPaV1alpha(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""GetMembershipConstraint returns membership constraint info.
+      r"""Retrieves status for a single constraints a a single member cluster.
 
       Args:
         request: (AnthospolicycontrollerstatusPaProjectsMembershipConstraintsGetRequest) input message
@@ -314,7 +314,7 @@ class AnthospolicycontrollerstatusPaV1alpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""ListMembershipConstraints returns membership-specific constraint info.
+      r"""ListMembershipConstraints returns per-membership runtime status for constraints. The response contains a list of MembershipConstraints. Each MembershipConstraint contains a MembershipRef indicating which member cluster the constraint status corresponds to. Note that if the request is ListMembershipConstraints(parent=project1) and clusterA is registered to project2 via a Membership in project1, then clusterA's info will appear in the response.
 
       Args:
         request: (AnthospolicycontrollerstatusPaProjectsMembershipConstraintsListRequest) input message

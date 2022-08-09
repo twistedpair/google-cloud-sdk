@@ -471,7 +471,7 @@ def ConvertFirewallPolicyRulesToEffectiveFwRules(
     client,
     firewall_policy,
     support_network_firewall_policy,
-    support_region_network_firewall_policy=False):
+    support_region_network_firewall_policy=True):
   """Convert organization firewall policy rules to effective firewall rules."""
   result = []
   for rule in firewall_policy.rules:

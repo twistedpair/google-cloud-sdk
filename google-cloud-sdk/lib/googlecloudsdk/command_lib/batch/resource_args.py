@@ -94,10 +94,10 @@ def AddLocationResourceArgs(parser):
   """
   arg_specs = [
       presentation_specs.ResourcePresentationSpec(
-          'LOCATION',
+          '--location',
           GetLocationResourceSpec(),
           'The Batch location resource.',
-          required=True,
+          required=False,
           ),
   ]
 

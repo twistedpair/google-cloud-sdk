@@ -346,6 +346,14 @@ class RunAppsOperations(object):
     resources_map[name] = {resource_type: resource_config}
 
     match_type_names = typekit.GetCreateSelectors(name, service)
+    if typekit.is_ingress_service:
+      # For ingress resource, expand the check list and selector to include all
+      # binded services.
+      services = typekit.GetRefServices(name, resource_config, resources_map)
+      for ref_service in services:
+        if ref_service != service:
+          match_type_names.append({'type': _SERVICE_TYPE, 'name': ref_service})
+
     if service:
       typekit.BindServiceToIntegration(
           name, resource_config, service,
@@ -353,8 +361,9 @@ class RunAppsOperations(object):
           parameters)
       services = [service]
     else:
-      services = self._GetRefServices(name, resource_type, resource_config,
-                                      resources_map)
+      services = typekit.GetRefServices(name, resource_config, resources_map)
+
+    self.EnsureCloudRunServices(services, resources_map)
     self.CheckCloudRunServices(services)
 
     resource_stages = typekit.GetCreateComponentTypes(
@@ -437,18 +446,22 @@ class RunAppsOperations(object):
                                    {}).setdefault(_SERVICE_TYPE, {}),
           parameters)
 
-    if remove_service and remove_service in resources_map:
-      typekit.UnbindServiceFromIntegration(
-          name, resource_config, remove_service,
-          resources_map[remove_service].setdefault(_SERVICE_TYPE,
-                                                   {}), parameters)
+    if remove_service:
+      if remove_service in resources_map:
+        typekit.UnbindServiceFromIntegration(
+            name, resource_config, remove_service,
+            resources_map[remove_service].setdefault(_SERVICE_TYPE,
+                                                     {}), parameters)
+      else:
+        raise exceptions.ServiceNotFoundError(
+            'Service [{}] is not found among integrations'.format(
+                remove_service))
 
     services = []
-    if self._IsIngressResource(resource_type):
+    if typekit.is_ingress_service:
       # For ingress resource, expand the check list and selector to include all
       # binded services.
-      services = self._GetRefServices(name, resource_type, existing_resource,
-                                      resources_map)
+      services = typekit.GetRefServices(name, resource_config, resources_map)
       for service in services:
         if service != add_service:
           match_type_names.append({'type': _SERVICE_TYPE, 'name': service})
@@ -456,12 +469,12 @@ class RunAppsOperations(object):
       services.append(add_service)
     elif self._IsBackingResource(resource_type) and remove_service is None:
       services.extend(
-          self._GetRefServices(name, resource_type, existing_resource,
-                               resources_map))
+          typekit.GetRefServices(name, resource_config, resources_map))
       for service in services:
         match_type_names.append({'type': _SERVICE_TYPE, 'name': service})
 
     if services:
+      self.EnsureCloudRunServices(services, resources_map)
       self.CheckCloudRunServices(services)
 
     deploy_message = messages_util.GetDeployMessage(resource_type)
@@ -515,10 +528,10 @@ class RunAppsOperations(object):
 
     # TODO(b/222748706): revisit whether this apply to future ingress services.
     services = []
-    if not self._IsIngressResource(resource_type):
+    if typekit.is_backing_service:
       # Unbind services
-      services = self._GetRefServices(name, resource_type, resource,
-                                      resources_map)
+      services = typekit.GetRefServices(name, resource.get(resource_type),
+                                        resources_map)
     service_match_type_names = []
     if services:
       for service in services:
@@ -648,12 +661,14 @@ class RunAppsOperations(object):
     # Filter by type and/or service.
     output = []
     for name, resource in app_resources.items():
-      type_def = types_utils.GetIntegrationFromResource(resource)
-      if type_def is None:
+      try:
+        typekit = typekits_util.GetTypeKitByResource(resource)
+      except exceptions.ArgumentError:
+        # If no matching typekit, like service, skip over.
         continue
 
-      resource_type = type_def[types_utils.RESOURCE_TYPE]
-      integration_type = type_def[types_utils.INTEGRATION_TYPE]
+      resource_type = typekit.resource_type
+      integration_type = typekit.integration_type
 
       # TODO(b/217744072): Support Cloud SDK topic filtering.
       # Optionally filter by type.
@@ -662,8 +677,8 @@ class RunAppsOperations(object):
         continue
 
       # Optionally filter by service.
-      services = self._GetRefServices(name, resource_type, resource,
-                                      app_resources)
+      services = typekit.GetRefServices(name, resource.get(resource_type),
+                                        app_resources)
       if service_name_filter and service_name_filter not in services:
         continue
 
@@ -674,47 +689,6 @@ class RunAppsOperations(object):
           'services': ','.join(services)
       }
       output.append(resource)
-
-    return output
-
-  def _GetRefServices(self, name, resource_type, resource, all_resources):
-    """Returns list of services referenced by integration.
-
-    Args:
-      name: str, name of integration.
-      resource_type: str, type of resource.
-      resource: dict, internal representation of resource.
-      all_resources: dict, of all resource with in appconfig default.
-
-    Returns:
-      list(str), of all service names referenced.
-    """
-    output = []
-
-    # TODO(b/219606516) Ideally add bidirectional references to API. If not
-    # feasible optimize code block create reverse reference table once and reuse
-    # it.
-    # For redis look for service to integration refs.
-    if resource_type == 'redis':
-      for resource_name, resource in all_resources.items():
-        ref_name = '{}/{}'.format(resource_type, name)
-        if resource.get(_SERVICE_TYPE, {}).get('resources'):
-          if any([
-              ref['ref'] == ref_name
-              for ref in resource[_SERVICE_TYPE]['resources']
-          ]):
-            output.append(resource_name)
-
-    # For custom-domain/router look for integration to service refs.
-    elif resource_type == 'router':
-      if resource.get('router', {}).get('default-route', {}).get('ref'):
-        output.append(resource['router']['default-route']['ref'].replace(
-            'service/', ''))
-
-      if resource.get('router', {}).get('routes'):
-        for route in resource['router']['routes']:
-          if route.get('ref'):
-            output.append(route['ref'].replace('service/', ''))
 
     return output
 
@@ -770,6 +744,16 @@ class RunAppsOperations(object):
         },
         collection='run.namespaces.services')
     return service_ref
+
+  def EnsureCloudRunServices(self, service_names, resources_map):
+    """Make sure resources block for the Cloud Run services exists.
+
+    Args:
+      service_names: array, list of service to check.
+      resources_map: the resources map of the application
+    """
+    for service in service_names:
+      resources_map.setdefault(service, {}).setdefault(_SERVICE_TYPE, {})
 
   def CheckCloudRunServices(self, service_names):
     """Check for existence of Cloud Run services.

@@ -569,6 +569,85 @@ class EdgenetworkProjectsLocationsZonesRoutersPatchRequest(_messages.Message):
   updateMask = _messages.StringField(4)
 
 
+class EdgenetworkProjectsLocationsZonesRoutesCreateRequest(_messages.Message):
+  r"""A EdgenetworkProjectsLocationsZonesRoutesCreateRequest object.
+
+  Fields:
+    parent: Required. Value for parent.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and t he request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    route: A Route resource to be passed as the request body.
+    routeId: Required. Id of the requesting object If auto-generating Id
+      server-side, remove this field and network_id from the method_signature
+      of Create RPC
+  """
+
+  parent = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  route = _messages.MessageField('Route', 3)
+  routeId = _messages.StringField(4)
+
+
+class EdgenetworkProjectsLocationsZonesRoutesDeleteRequest(_messages.Message):
+  r"""A EdgenetworkProjectsLocationsZonesRoutesDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and t he request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class EdgenetworkProjectsLocationsZonesRoutesGetRequest(_messages.Message):
+  r"""A EdgenetworkProjectsLocationsZonesRoutesGetRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class EdgenetworkProjectsLocationsZonesRoutesListRequest(_messages.Message):
+  r"""A EdgenetworkProjectsLocationsZonesRoutesListRequest object.
+
+  Fields:
+    filter: Filtering results
+    orderBy: Hint for how to order the results
+    pageSize: Requested page size. Server may return fewer items than
+      requested. If unspecified, server will pick an appropriate default.
+    pageToken: A token identifying a page of results the server should return.
+    parent: Required. Parent value for ListRoutesRequest
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
 class EdgenetworkProjectsLocationsZonesSubnetsCreateRequest(_messages.Message):
   r"""A EdgenetworkProjectsLocationsZonesSubnetsCreateRequest object.
 
@@ -1072,6 +1151,21 @@ class ListRoutersResponse(_messages.Message):
   unreachable = _messages.StringField(3, repeated=True)
 
 
+class ListRoutesResponse(_messages.Message):
+  r"""Message for response to listing Routes
+
+  Fields:
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    routes: The list of routes
+    unreachable: Locations that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  routes = _messages.MessageField('Route', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
 class ListSubnetsResponse(_messages.Message):
   r"""Message for response to listing Subnets
 
@@ -1421,6 +1515,62 @@ class PrefixCounter(_messages.Message):
   sent = _messages.IntegerField(4)
   suppressed = _messages.IntegerField(5)
   withdrawn = _messages.IntegerField(6)
+
+
+class Route(_messages.Message):
+  r"""Message describing a Route object
+
+  Messages:
+    LabelsValue: Optional. Labels associated with this resource.
+
+  Fields:
+    createTime: Output only. The time when the route was created.
+    description: Optional. A free-text description of the resource. Max length
+      1024 characters.
+    destinationCidr: Required. A subnet in CIDR format.
+    labels: Optional. Labels associated with this resource.
+    name: Required. The canonical resource name of the route.
+    network: Required. The network that this route belongs to.
+    nextHopAddress: Required. An IP address to use as the next hop for this
+      route. Must use the same protocol as |destination_cidr|.
+    updateTime: Output only. The time when the route was last updated.
+    withdrawOnFailure: Optional. If true, when the route becomes disconnected
+      it should be automatically withdrawn.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels associated with this resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  destinationCidr = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  network = _messages.StringField(6)
+  nextHopAddress = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
+  withdrawOnFailure = _messages.BooleanField(9)
 
 
 class Router(_messages.Message):

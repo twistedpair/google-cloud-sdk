@@ -1682,6 +1682,11 @@ class AttachedDiskInitializeParams(_messages.Message):
     LabelsValue: Labels to apply to this disk. These can be later modified by
       the disks.setLabels method. This field is only applicable for persistent
       disks.
+    ResourceManagerTagsValue: Resource manager tags to be bound to the disk.
+      Tag keys and values have the same definition as resource manager tags.
+      Keys must be in the format `tagKeys/{tag_key_id}`, and values are in the
+      format `tagValues/456`. The field is ignored (both PUT & PATCH) when
+      empty.
 
   Fields:
     architecture: The architecture of the attached disk. Valid values are
@@ -1717,6 +1722,11 @@ class AttachedDiskInitializeParams(_messages.Message):
       sets the number of I/O operations per second that the disk can handle.
       Values must be between 10,000 and 120,000. For more details, see the
       Extreme persistent disk documentation.
+    resourceManagerTags: Resource manager tags to be bound to the disk. Tag
+      keys and values have the same definition as resource manager tags. Keys
+      must be in the format `tagKeys/{tag_key_id}`, and values are in the
+      format `tagValues/456`. The field is ignored (both PUT & PATCH) when
+      empty.
     resourcePolicies: Resource policies applied to this disk for automatic
       snapshot creations. Specified using the full or partial URL. For
       instance template, specify only the resource policy name.
@@ -1805,6 +1815,35 @@ class AttachedDiskInitializeParams(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ResourceManagerTagsValue(_messages.Message):
+    r"""Resource manager tags to be bound to the disk. Tag keys and values
+    have the same definition as resource manager tags. Keys must be in the
+    format `tagKeys/{tag_key_id}`, and values are in the format
+    `tagValues/456`. The field is ignored (both PUT & PATCH) when empty.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        ResourceManagerTagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        ResourceManagerTagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ResourceManagerTagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   architecture = _messages.EnumField('ArchitectureValueValuesEnum', 1)
   description = _messages.StringField(2)
   diskName = _messages.StringField(3)
@@ -1814,11 +1853,12 @@ class AttachedDiskInitializeParams(_messages.Message):
   licenses = _messages.StringField(7, repeated=True)
   onUpdateAction = _messages.EnumField('OnUpdateActionValueValuesEnum', 8)
   provisionedIops = _messages.IntegerField(9)
-  resourcePolicies = _messages.StringField(10, repeated=True)
-  sourceImage = _messages.StringField(11)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 12)
-  sourceSnapshot = _messages.StringField(13)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 14)
+  resourceManagerTags = _messages.MessageField('ResourceManagerTagsValue', 10)
+  resourcePolicies = _messages.StringField(11, repeated=True)
+  sourceImage = _messages.StringField(12)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 13)
+  sourceSnapshot = _messages.StringField(14)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 15)
 
 
 class AuditConfig(_messages.Message):
@@ -27719,6 +27759,8 @@ class Disk(_messages.Message):
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
     options: Internal use only.
+    params: Input only. [Input Only] Additional params passed with the
+      request, but not persisted as part of resource payload.
     physicalBlockSizeBytes: Physical block size of the persistent disk, in
       bytes. If not present in a request, a default value is used. The
       currently supported size is 4096, other sizes may be added in the
@@ -27891,27 +27933,28 @@ class Disk(_messages.Message):
   locationHint = _messages.StringField(14)
   name = _messages.StringField(15)
   options = _messages.StringField(16)
-  physicalBlockSizeBytes = _messages.IntegerField(17)
-  provisionedIops = _messages.IntegerField(18)
-  region = _messages.StringField(19)
-  replicaZones = _messages.StringField(20, repeated=True)
-  resourcePolicies = _messages.StringField(21, repeated=True)
-  satisfiesPzs = _messages.BooleanField(22)
-  selfLink = _messages.StringField(23)
-  sizeGb = _messages.IntegerField(24)
-  sourceDisk = _messages.StringField(25)
-  sourceDiskId = _messages.StringField(26)
-  sourceImage = _messages.StringField(27)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 28)
-  sourceImageId = _messages.StringField(29)
-  sourceSnapshot = _messages.StringField(30)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 31)
-  sourceSnapshotId = _messages.StringField(32)
-  sourceStorageObject = _messages.StringField(33)
-  status = _messages.EnumField('StatusValueValuesEnum', 34)
-  type = _messages.StringField(35)
-  users = _messages.StringField(36, repeated=True)
-  zone = _messages.StringField(37)
+  params = _messages.MessageField('DiskParams', 17)
+  physicalBlockSizeBytes = _messages.IntegerField(18)
+  provisionedIops = _messages.IntegerField(19)
+  region = _messages.StringField(20)
+  replicaZones = _messages.StringField(21, repeated=True)
+  resourcePolicies = _messages.StringField(22, repeated=True)
+  satisfiesPzs = _messages.BooleanField(23)
+  selfLink = _messages.StringField(24)
+  sizeGb = _messages.IntegerField(25)
+  sourceDisk = _messages.StringField(26)
+  sourceDiskId = _messages.StringField(27)
+  sourceImage = _messages.StringField(28)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 29)
+  sourceImageId = _messages.StringField(30)
+  sourceSnapshot = _messages.StringField(31)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 32)
+  sourceSnapshotId = _messages.StringField(33)
+  sourceStorageObject = _messages.StringField(34)
+  status = _messages.EnumField('StatusValueValuesEnum', 35)
+  type = _messages.StringField(36)
+  users = _messages.StringField(37, repeated=True)
+  zone = _messages.StringField(38)
 
 
 class DiskAggregatedList(_messages.Message):
@@ -28368,6 +28411,56 @@ class DiskMoveRequest(_messages.Message):
 
   destinationZone = _messages.StringField(1)
   targetDisk = _messages.StringField(2)
+
+
+class DiskParams(_messages.Message):
+  r"""Additional disk params.
+
+  Messages:
+    ResourceManagerTagsValue: Resource manager tags to be bound to the disk.
+      Tag keys and values have the same definition as resource manager tags.
+      Keys must be in the format `tagKeys/{tag_key_id}`, and values are in the
+      format `tagValues/456`. The field is ignored (both PUT & PATCH) when
+      empty.
+
+  Fields:
+    resourceManagerTags: Resource manager tags to be bound to the disk. Tag
+      keys and values have the same definition as resource manager tags. Keys
+      must be in the format `tagKeys/{tag_key_id}`, and values are in the
+      format `tagValues/456`. The field is ignored (both PUT & PATCH) when
+      empty.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ResourceManagerTagsValue(_messages.Message):
+    r"""Resource manager tags to be bound to the disk. Tag keys and values
+    have the same definition as resource manager tags. Keys must be in the
+    format `tagKeys/{tag_key_id}`, and values are in the format
+    `tagValues/456`. The field is ignored (both PUT & PATCH) when empty.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        ResourceManagerTagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        ResourceManagerTagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ResourceManagerTagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  resourceManagerTags = _messages.MessageField('ResourceManagerTagsValue', 1)
 
 
 class DiskType(_messages.Message):
@@ -34962,6 +35055,37 @@ class InstanceAggregatedList(_messages.Message):
   selfLink = _messages.StringField(5)
   unreachables = _messages.StringField(6, repeated=True)
   warning = _messages.MessageField('WarningValue', 7)
+
+
+class InstanceConsumptionData(_messages.Message):
+  r"""A InstanceConsumptionData object.
+
+  Fields:
+    consumptionInfo: Resources consumed by the instance.
+    instance: Server-defined URL for the instance.
+  """
+
+  consumptionInfo = _messages.MessageField('InstanceConsumptionInfo', 1)
+  instance = _messages.StringField(2)
+
+
+class InstanceConsumptionInfo(_messages.Message):
+  r"""A InstanceConsumptionInfo object.
+
+  Fields:
+    guestCpus: The number of virtual CPUs that are available to the instance.
+    localSsdGb: The amount of local SSD storage available to the instance,
+      defined in GiB.
+    memoryMb: The amount of physical memory available to the instance, defined
+      in MiB.
+    minNodeCpus: The minimal guaranteed number of virtual CPUs that are
+      reserved.
+  """
+
+  guestCpus = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  localSsdGb = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  memoryMb = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  minNodeCpus = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
 class InstanceGroup(_messages.Message):
@@ -44201,6 +44325,7 @@ class NodeGroup(_messages.Message):
       character, which cannot be a dash.
     nodeTemplate: URL of the node template to create the node group from.
     selfLink: [Output Only] Server-defined URL for the resource.
+    shareSettings: Share-settings for the node group
     size: [Output Only] The total number of nodes in the node group.
     status: A StatusValueValuesEnum attribute.
     zone: [Output Only] The name of the zone where the node group resides,
@@ -44258,9 +44383,10 @@ class NodeGroup(_messages.Message):
   name = _messages.StringField(10)
   nodeTemplate = _messages.StringField(11)
   selfLink = _messages.StringField(12)
-  size = _messages.IntegerField(13, variant=_messages.Variant.INT32)
-  status = _messages.EnumField('StatusValueValuesEnum', 14)
-  zone = _messages.StringField(15)
+  shareSettings = _messages.MessageField('ShareSettings', 13)
+  size = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  status = _messages.EnumField('StatusValueValuesEnum', 15)
+  zone = _messages.StringField(16)
 
 
 class NodeGroupAggregatedList(_messages.Message):
@@ -44671,8 +44797,11 @@ class NodeGroupNode(_messages.Message):
 
   Fields:
     accelerators: Accelerators for this node.
+    consumedResources: Node resources that are reserved by all instances.
     cpuOvercommitType: CPU overcommit.
     disks: Local disk configurations.
+    instanceConsumptionData: Instance data that shows consumed resources on
+      the node.
     instances: Instances scheduled on this node.
     name: The name of the node.
     nodeType: The type of this node.
@@ -44680,6 +44809,7 @@ class NodeGroupNode(_messages.Message):
     serverBinding: Binding properties for the physical server.
     serverId: Server ID associated with this node.
     status: A StatusValueValuesEnum attribute.
+    totalResources: Total amount of available resources on the node.
   """
 
   class CpuOvercommitTypeValueValuesEnum(_messages.Enum):
@@ -44711,15 +44841,18 @@ class NodeGroupNode(_messages.Message):
     REPAIRING = 4
 
   accelerators = _messages.MessageField('AcceleratorConfig', 1, repeated=True)
-  cpuOvercommitType = _messages.EnumField('CpuOvercommitTypeValueValuesEnum', 2)
-  disks = _messages.MessageField('LocalDisk', 3, repeated=True)
-  instances = _messages.StringField(4, repeated=True)
-  name = _messages.StringField(5)
-  nodeType = _messages.StringField(6)
-  satisfiesPzs = _messages.BooleanField(7)
-  serverBinding = _messages.MessageField('ServerBinding', 8)
-  serverId = _messages.StringField(9)
-  status = _messages.EnumField('StatusValueValuesEnum', 10)
+  consumedResources = _messages.MessageField('InstanceConsumptionInfo', 2)
+  cpuOvercommitType = _messages.EnumField('CpuOvercommitTypeValueValuesEnum', 3)
+  disks = _messages.MessageField('LocalDisk', 4, repeated=True)
+  instanceConsumptionData = _messages.MessageField('InstanceConsumptionData', 5, repeated=True)
+  instances = _messages.StringField(6, repeated=True)
+  name = _messages.StringField(7)
+  nodeType = _messages.StringField(8)
+  satisfiesPzs = _messages.BooleanField(9)
+  serverBinding = _messages.MessageField('ServerBinding', 10)
+  serverId = _messages.StringField(11)
+  status = _messages.EnumField('StatusValueValuesEnum', 12)
+  totalResources = _messages.MessageField('InstanceConsumptionInfo', 13)
 
 
 class NodeGroupsAddNodesRequest(_messages.Message):
@@ -57088,12 +57221,14 @@ class ShareSettings(_messages.Message):
 
     Values:
       LOCAL: Default value.
+      ORGANIZATION: Shared-reservation is open to entire Organization
       SHARE_TYPE_UNSPECIFIED: Default value. This value is unused.
       SPECIFIC_PROJECTS: Shared-reservation is open to specific projects
     """
     LOCAL = 0
-    SHARE_TYPE_UNSPECIFIED = 1
-    SPECIFIC_PROJECTS = 2
+    ORGANIZATION = 1
+    SHARE_TYPE_UNSPECIFIED = 2
+    SPECIFIC_PROJECTS = 3
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ProjectMapValue(_messages.Message):

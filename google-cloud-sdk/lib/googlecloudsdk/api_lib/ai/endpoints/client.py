@@ -22,6 +22,7 @@ from apitools.base.py import encoding
 from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import extra_types
 from apitools.base.py import list_pager
+from googlecloudsdk.api_lib.ai import util as api_util
 from googlecloudsdk.api_lib.ai.models import client as model_client
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.command_lib.ai import constants
@@ -97,7 +98,9 @@ class EndpointsClient(object):
              labels,
              description=None,
              network=None,
-             endpoint_id=None):
+             endpoint_id=None,
+             request_response_logging_table=None,
+             request_response_logging_rate=None):
     """Creates a new endpoint using v1 API.
 
     Args:
@@ -107,19 +110,32 @@ class EndpointsClient(object):
       description: str or None, the description of the new endpoint.
       network: str, the full name of the Google Compute Engine network.
       endpoint_id: str or None, the id of the new endpoint.
+      request_response_logging_table: str or None, the BigQuery table uri for
+        request-response logging.
+      request_response_logging_rate: float or None, the sampling rate for
+        request-response logging.
 
     Returns:
       A long-running operation for Create.
     """
+    endpoint = api_util.GetMessage('Endpoint', constants.GA_VERSION)(
+        displayName=display_name,
+        description=description,
+        labels=labels,
+        network=network)
+    if request_response_logging_table is not None:
+      endpoint.predictRequestResponseLoggingConfig = api_util.GetMessage(
+          'PredictRequestResponseLoggingConfig', constants.GA_VERSION)(
+              enabled=True,
+              samplingRate=request_response_logging_rate
+              if request_response_logging_rate else 0.0,
+              bigqueryDestination=api_util.GetMessage(
+                  'BigQueryDestination', constants.GA_VERSION)(
+                      outputUri=request_response_logging_table))
     req = self.messages.AiplatformProjectsLocationsEndpointsCreateRequest(
         parent=location_ref.RelativeName(),
         endpointId=endpoint_id,
-        googleCloudAiplatformV1Endpoint=self.messages
-        .GoogleCloudAiplatformV1Endpoint(
-            displayName=display_name,
-            description=description,
-            labels=labels,
-            network=network))
+        googleCloudAiplatformV1Endpoint=endpoint)
     return self.client.projects_locations_endpoints.Create(req)
 
   def CreateBeta(self,
@@ -128,7 +144,9 @@ class EndpointsClient(object):
                  labels,
                  description=None,
                  network=None,
-                 endpoint_id=None):
+                 endpoint_id=None,
+                 request_response_logging_table=None,
+                 request_response_logging_rate=None):
     """Creates a new endpoint using v1beta1 API.
 
     Args:
@@ -138,19 +156,32 @@ class EndpointsClient(object):
       description: str or None, the description of the new endpoint.
       network: str, the full name of the Google Compute Engine network.
       endpoint_id: str or None, the id of the new endpoint.
+      request_response_logging_table: str or None, the BigQuery table uri for
+        request-response logging.
+      request_response_logging_rate: float or None, the sampling rate for
+        request-response logging.
 
     Returns:
       A long-running operation for Create.
     """
+    endpoint = api_util.GetMessage('Endpoint', constants.BETA_VERSION)(
+        displayName=display_name,
+        description=description,
+        labels=labels,
+        network=network)
+    if request_response_logging_table is not None:
+      endpoint.predictRequestResponseLoggingConfig = api_util.GetMessage(
+          'PredictRequestResponseLoggingConfig', constants.BETA_VERSION)(
+              enabled=True,
+              samplingRate=request_response_logging_rate
+              if request_response_logging_rate else 0.0,
+              bigqueryDestination=api_util.GetMessage(
+                  'BigQueryDestination', constants.BETA_VERSION)(
+                      outputUri=request_response_logging_table))
     req = self.messages.AiplatformProjectsLocationsEndpointsCreateRequest(
         parent=location_ref.RelativeName(),
         endpointId=endpoint_id,
-        googleCloudAiplatformV1beta1Endpoint=self.messages
-        .GoogleCloudAiplatformV1beta1Endpoint(
-            displayName=display_name,
-            description=description,
-            labels=labels,
-            network=network))
+        googleCloudAiplatformV1beta1Endpoint=endpoint)
     return self.client.projects_locations_endpoints.Create(req)
 
   def Delete(self, endpoint_ref):
@@ -181,7 +212,10 @@ class EndpointsClient(object):
             display_name=None,
             description=None,
             traffic_split=None,
-            clear_traffic_split=False):
+            clear_traffic_split=False,
+            request_response_logging_table=None,
+            request_response_logging_rate=None,
+            disable_request_response_logging=False):
     """Updates an endpoint using v1 API.
 
     Args:
@@ -193,6 +227,12 @@ class EndpointsClient(object):
       traffic_split: dict or None, the new traffic split of the endpoint.
       clear_traffic_split: bool, whether or not clear traffic split of the
         endpoint.
+      request_response_logging_table: str or None, the BigQuery table uri for
+        request-response logging.
+      request_response_logging_rate: float or None, the sampling rate for
+        request-response logging.
+      disable_request_response_logging: bool, whether or not disable
+        request-response logging of the endpoint.
 
     Returns:
       The response message of Patch.
@@ -200,7 +240,7 @@ class EndpointsClient(object):
     Raises:
       NoFieldsSpecifiedError: An error if no updates requested.
     """
-    endpoint = self.messages.GoogleCloudAiplatformV1Endpoint()
+    endpoint = api_util.GetMessage('Endpoint', constants.GA_VERSION)()
     update_mask = []
 
     if labels_update.needs_update:
@@ -229,6 +269,30 @@ class EndpointsClient(object):
       endpoint.description = description
       update_mask.append('description')
 
+    if request_response_logging_table is not None or request_response_logging_rate is not None:
+      request_response_logging_config = self.Get(
+          endpoint_ref).predictRequestResponseLoggingConfig
+      if not request_response_logging_config:
+        request_response_logging_config = api_util.GetMessage(
+            'PredictRequestResponseLoggingConfig', constants.GA_VERSION)()
+      request_response_logging_config.enabled = True
+      if request_response_logging_table is not None:
+        request_response_logging_config.bigqueryDestination = api_util.GetMessage(
+            'BigQueryDestination', constants.GA_VERSION)(
+                outputUri=request_response_logging_table)
+      if request_response_logging_rate is not None:
+        request_response_logging_config.samplingRate = request_response_logging_rate
+      endpoint.predictRequestResponseLoggingConfig = request_response_logging_config
+      update_mask.append('predict_request_response_logging_config')
+
+    if disable_request_response_logging:
+      request_response_logging_config = self.Get(
+          endpoint_ref).predictRequestResponseLoggingConfig
+      if request_response_logging_config:
+        request_response_logging_config.enabled = False
+      endpoint.predictRequestResponseLoggingConfig = request_response_logging_config
+      update_mask.append('predict_request_response_logging_config')
+
     if not update_mask:
       raise errors.NoFieldsSpecifiedError('No updates requested.')
 
@@ -244,7 +308,10 @@ class EndpointsClient(object):
                 display_name=None,
                 description=None,
                 traffic_split=None,
-                clear_traffic_split=False):
+                clear_traffic_split=False,
+                request_response_logging_table=None,
+                request_response_logging_rate=None,
+                disable_request_response_logging=False):
     """Updates an endpoint using v1beta1 API.
 
     Args:
@@ -256,6 +323,12 @@ class EndpointsClient(object):
       traffic_split: dict or None, the new traffic split of the endpoint.
       clear_traffic_split: bool, whether or not clear traffic split of the
         endpoint.
+      request_response_logging_table: str or None, the BigQuery table uri for
+        request-response logging.
+      request_response_logging_rate: float or None, the sampling rate for
+        request-response logging.
+      disable_request_response_logging: bool, whether or not disable
+        request-response logging of the endpoint.
 
     Returns:
       The response message of Patch.
@@ -291,6 +364,30 @@ class EndpointsClient(object):
     if description is not None:
       endpoint.description = description
       update_mask.append('description')
+
+    if request_response_logging_table is not None or request_response_logging_rate is not None:
+      request_response_logging_config = self.Get(
+          endpoint_ref).predictRequestResponseLoggingConfig
+      if not request_response_logging_config:
+        request_response_logging_config = api_util.GetMessage(
+            'PredictRequestResponseLoggingConfig', constants.BETA_VERSION)()
+      request_response_logging_config.enabled = True
+      if request_response_logging_table is not None:
+        request_response_logging_config.bigqueryDestination = api_util.GetMessage(
+            'BigQueryDestination', constants.BETA_VERSION)(
+                outputUri=request_response_logging_table)
+      if request_response_logging_rate is not None:
+        request_response_logging_config.samplingRate = request_response_logging_rate
+      endpoint.predictRequestResponseLoggingConfig = request_response_logging_config
+      update_mask.append('predict_request_response_logging_config')
+
+    if disable_request_response_logging:
+      request_response_logging_config = self.Get(
+          endpoint_ref).predictRequestResponseLoggingConfig
+      if request_response_logging_config:
+        request_response_logging_config.enabled = False
+      endpoint.predictRequestResponseLoggingConfig = request_response_logging_config
+      update_mask.append('predict_request_response_logging_config')
 
     if not update_mask:
       raise errors.NoFieldsSpecifiedError('No updates requested.')

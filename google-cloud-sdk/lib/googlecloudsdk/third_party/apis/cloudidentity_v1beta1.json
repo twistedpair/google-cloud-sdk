@@ -3727,9 +3727,6 @@
               "response": {
                 "$ref": "ListOrgMembershipsResponse"
               },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-identity"
-              ],
               "description": "List OrgMembership resources in an OrgUnit treated as 'parent'. Parent format: orgUnits\/{$orgUnitId} where `$orgUnitId` is the `orgUnitId` from the [Admin SDK `OrgUnit` resource](https:\/\/developers.google.com\/admin-sdk\/directory\/reference\/rest\/v1\/orgunits)"
             },
             "move": {
@@ -3755,9 +3752,6 @@
               "response": {
                 "$ref": "Operation"
               },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-identity"
-              ],
               "description": "Move an OrgMembership to a new OrgUnit. NOTE: This is an atomic copy-and-delete. The resource will have a new copy under the destination OrgUnit and be deleted from the source OrgUnit. The resource can only be searched under the destination OrgUnit afterwards."
             }
           }
@@ -3789,7 +3783,6 @@
                 "$ref": "UserInvitation"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-identity",
                 "https://www.googleapis.com/auth/cloud-identity.userinvitations",
                 "https://www.googleapis.com/auth/cloud-identity.userinvitations.readonly"
               ],
@@ -3837,7 +3830,6 @@
                 "$ref": "ListUserInvitationsResponse"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-identity",
                 "https://www.googleapis.com/auth/cloud-identity.userinvitations",
                 "https://www.googleapis.com/auth/cloud-identity.userinvitations.readonly"
               ],
@@ -3867,7 +3859,6 @@
                 "$ref": "Operation"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-identity",
                 "https://www.googleapis.com/auth/cloud-identity.userinvitations"
               ],
               "description": "Sends a UserInvitation to email. If the `UserInvitation` does not exist for this request and it is a valid request, the request creates a `UserInvitation`. **Note:** The `get` and `list` methods have a 48-hour delay where newly-created consumer accounts will not appear in the results. You can still send a `UserInvitation` to those accounts if you know the unmanaged email address and IsInvitableUser==True."
@@ -3896,7 +3887,6 @@
                 "$ref": "Operation"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-identity",
                 "https://www.googleapis.com/auth/cloud-identity.userinvitations"
               ],
               "description": "Cancels a UserInvitation that was already sent."
@@ -3922,7 +3912,6 @@
                 "$ref": "IsInvitableUserResponse"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-identity",
                 "https://www.googleapis.com/auth/cloud-identity.userinvitations",
                 "https://www.googleapis.com/auth/cloud-identity.userinvitations.readonly"
               ],

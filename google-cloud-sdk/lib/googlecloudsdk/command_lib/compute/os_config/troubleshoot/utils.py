@@ -18,7 +18,11 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import logging
+import traceback
+
 from googlecloudsdk.calliope import base
+from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 
 
@@ -38,11 +42,15 @@ def GetCommandString(args, release_track):
 
 
 def UnknownMessage(exception):
-  return (
+  debug_verbosity = log.GetVerbosity() == logging.DEBUG
+  message = (
       'Unknown\n'
       'The troubleshooter encountered ' + type(exception).__name__ + ' while '
       'checking your instance.'
   )
+  if debug_verbosity:
+    message += '\n{}\n'.format(traceback.format_exc(limit=0))
+  return message
 
 
 def GetProject(client, project):

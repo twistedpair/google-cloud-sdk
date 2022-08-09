@@ -396,7 +396,7 @@
       "type": "object",
       "properties": {
         "readConsistency": {
-          "description": "The non-transactional read consistency to use. Cannot be set to `STRONG` for global queries.",
+          "description": "The non-transactional read consistency to use.",
           "type": "string",
           "enumDescriptions": [
             "Unspecified. This value must not be used.",

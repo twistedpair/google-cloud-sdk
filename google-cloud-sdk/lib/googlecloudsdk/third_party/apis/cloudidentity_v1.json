@@ -3104,7 +3104,6 @@
                 "$ref": "UserInvitation"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-identity",
                 "https://www.googleapis.com/auth/cloud-identity.userinvitations",
                 "https://www.googleapis.com/auth/cloud-identity.userinvitations.readonly"
               ],
@@ -3152,7 +3151,6 @@
                 "$ref": "ListUserInvitationsResponse"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-identity",
                 "https://www.googleapis.com/auth/cloud-identity.userinvitations",
                 "https://www.googleapis.com/auth/cloud-identity.userinvitations.readonly"
               ],
@@ -3182,7 +3180,6 @@
                 "$ref": "Operation"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-identity",
                 "https://www.googleapis.com/auth/cloud-identity.userinvitations"
               ],
               "description": "Sends a UserInvitation to email. If the `UserInvitation` does not exist for this request and it is a valid request, the request creates a `UserInvitation`. **Note:** The `get` and `list` methods have a 48-hour delay where newly-created consumer accounts will not appear in the results. You can still send a `UserInvitation` to those accounts if you know the unmanaged email address and IsInvitableUser==True."
@@ -3211,7 +3208,6 @@
                 "$ref": "Operation"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-identity",
                 "https://www.googleapis.com/auth/cloud-identity.userinvitations"
               ],
               "description": "Cancels a UserInvitation that was already sent."
@@ -3237,7 +3233,6 @@
                 "$ref": "IsInvitableUserResponse"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-identity",
                 "https://www.googleapis.com/auth/cloud-identity.userinvitations",
                 "https://www.googleapis.com/auth/cloud-identity.userinvitations.readonly"
               ],

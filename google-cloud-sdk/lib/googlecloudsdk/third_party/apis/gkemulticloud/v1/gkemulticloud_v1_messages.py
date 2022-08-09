@@ -20,6 +20,122 @@ from apitools.base.py import extra_types
 package = 'gkemulticloud'
 
 
+class GkemulticloudProjectsLocationsAttachedClustersCreateRequest(_messages.Message):
+  r"""A GkemulticloudProjectsLocationsAttachedClustersCreateRequest object.
+
+  Fields:
+    attachedClusterId: Required. A client provided ID the resource. Must be
+      unique within the parent resource. The provided ID will be part of the
+      AttachedCluster resource name formatted as
+      `projects//locations//attachedClusters/`. Valid characters are `/a-z-/`.
+      Cannot be longer than 63 characters.
+    googleCloudGkemulticloudV1AttachedCluster: A
+      GoogleCloudGkemulticloudV1AttachedCluster resource to be passed as the
+      request body.
+    parent: Required. The parent location where this AttachedCluster resource
+      will be created. Location names are formatted as `projects//locations/`.
+      See [Resource
+      Names](https://cloud.google.com/apis/design/resource_names) for more
+      details on Google Cloud resource names.
+    validateOnly: If set, only validate the request, but do not actually
+      create the cluster.
+  """
+
+  attachedClusterId = _messages.StringField(1)
+  googleCloudGkemulticloudV1AttachedCluster = _messages.MessageField('GoogleCloudGkemulticloudV1AttachedCluster', 2)
+  parent = _messages.StringField(3, required=True)
+  validateOnly = _messages.BooleanField(4)
+
+
+class GkemulticloudProjectsLocationsAttachedClustersDeleteRequest(_messages.Message):
+  r"""A GkemulticloudProjectsLocationsAttachedClustersDeleteRequest object.
+
+  Fields:
+    allowMissing: If set to true, and the AttachedCluster resource is not
+      found, the request will succeed but no action will be taken on the
+      server and a completed Operation will be returned. Useful for idempotent
+      deletion.
+    etag: The current etag of the AttachedCluster. Allows clients to perform
+      deletions through optimistic concurrency control. If the provided etag
+      does not match the current etag of the cluster, the request will fail
+      and an ABORTED error will be returned.
+    name: Required. The resource name the AttachedCluster to delete.
+      `AttachedCluster` names are formatted as
+      `projects//locations//attachedClusters/`. See [Resource
+      Names](https://cloud.google.com/apis/design/resource_names) for more
+      details on GCP resource names.
+    validateOnly: If set, only validate the request, but do not actually
+      delete the resource.
+  """
+
+  allowMissing = _messages.BooleanField(1)
+  etag = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  validateOnly = _messages.BooleanField(4)
+
+
+class GkemulticloudProjectsLocationsAttachedClustersGetRequest(_messages.Message):
+  r"""A GkemulticloudProjectsLocationsAttachedClustersGetRequest object.
+
+  Fields:
+    name: Required. The name of the AttachedCluster resource to describe.
+      `AttachedCluster` names are formatted as
+      `projects//locations//attachedClusters/`. See [Resource
+      Names](https://cloud.google.com/apis/design/resource_names) for more
+      details on GCP resource names.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class GkemulticloudProjectsLocationsAttachedClustersListRequest(_messages.Message):
+  r"""A GkemulticloudProjectsLocationsAttachedClustersListRequest object.
+
+  Fields:
+    pageSize: The maximum number of items to return. If not specified, a
+      default value of 50 will be used by the service. Regardless of the
+      pageSize value, the response can include a partial list and a caller
+      should only rely on response's nextPageToken to determine if there are
+      more instances left to be queried.
+    pageToken: The `nextPageToken` value returned from a previous
+      attachedClusters.list request, if any.
+    parent: Required. The parent location which owns this collection of
+      AttachedCluster resources. Location names are formatted as
+      `projects//locations/`. See [Resource
+      Names](https://cloud.google.com/apis/design/resource_names) for more
+      details on GCP resource names.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class GkemulticloudProjectsLocationsAttachedClustersPatchRequest(_messages.Message):
+  r"""A GkemulticloudProjectsLocationsAttachedClustersPatchRequest object.
+
+  Fields:
+    googleCloudGkemulticloudV1AttachedCluster: A
+      GoogleCloudGkemulticloudV1AttachedCluster resource to be passed as the
+      request body.
+    name: The name of this resource. Cluster names are formatted as
+      `projects//locations//attachedClusters/`. See [Resource
+      Names](https://cloud.google.com/apis/design/resource_names) for more
+      details on GCP resource names.
+    updateMask: Required. Mask of fields to update. At least one path must be
+      supplied in this field. The elements of the repeated paths field can
+      only include these fields from AttachedCluster: * `description`. *
+      `annotations`.
+    validateOnly: If set, only validate the request, but do not actually
+      update the cluster.
+  """
+
+  googleCloudGkemulticloudV1AttachedCluster = _messages.MessageField('GoogleCloudGkemulticloudV1AttachedCluster', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+  validateOnly = _messages.BooleanField(4)
+
+
 class GkemulticloudProjectsLocationsAwsClustersAwsNodePoolsCreateRequest(_messages.Message):
   r"""A GkemulticloudProjectsLocationsAwsClustersAwsNodePoolsCreateRequest
   object.
@@ -749,6 +865,145 @@ class GkemulticloudProjectsLocationsOperationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class GoogleCloudGkemulticloudV1AttachedCluster(_messages.Message):
+  r"""An Anthos cluster running on customer own infrastructure.
+
+  Enums:
+    StateValueValuesEnum: Output only. The current state of the cluster.
+
+  Messages:
+    AnnotationsValue: Optional. Annotations on the cluster. This field has the
+      same restrictions as Kubernetes annotations. The total size of all keys
+      and values combined is limited to 256k. Key can have 2 segments: prefix
+      (optional) and name (required), separated by a slash (/). Prefix must be
+      a DNS subdomain. Name must be 63 characters or less, begin and end with
+      alphanumerics, with dashes (-), underscores (_), dots (.), and
+      alphanumerics between.
+
+  Fields:
+    annotations: Optional. Annotations on the cluster. This field has the same
+      restrictions as Kubernetes annotations. The total size of all keys and
+      values combined is limited to 256k. Key can have 2 segments: prefix
+      (optional) and name (required), separated by a slash (/). Prefix must be
+      a DNS subdomain. Name must be 63 characters or less, begin and end with
+      alphanumerics, with dashes (-), underscores (_), dots (.), and
+      alphanumerics between.
+    authority: Authority configuration.
+    createTime: Output only. The time at which this cluster was registered.
+    description: Optional. A human readable description of this cluster.
+      Cannot be longer than 255 UTF-8 encoded bytes.
+    etag: Allows clients to perform consistent read-modify-writes through
+      optimistic concurrency control. Can be sent on update and delete
+      requests to ensure the client has an up-to-date value before proceeding.
+    fleet: Optional. Fleet configuration.
+    kubernetesVersion: Output only. The Kubernetes version of the cluster.
+    loggingConfig: Optional. Logging configuration for this cluster.
+    name: The name of this resource. Cluster names are formatted as
+      `projects//locations//attachedClusters/`. See [Resource
+      Names](https://cloud.google.com/apis/design/resource_names) for more
+      details on GCP resource names.
+    platformVersion: Required. The platform version for the cluster (e.g.
+      `1.19.0-gke.1000`). You can list all supported versions on a given
+      Google Cloud region by calling GetAttachedServerConfig.
+    reconciling: Output only. If set, there are currently changes in flight to
+      the cluster.
+    state: Output only. The current state of the cluster.
+    uid: Output only. A globally unique identifier for the cluster.
+    updateTime: Output only. The time at which this cluster was last updated.
+    workloadIdentityConfig: Output only. Workload Identity settings.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of the cluster.
+
+    Values:
+      STATE_UNSPECIFIED: Not set.
+      PROVISIONING: The PROVISIONING state indicates the cluster is being
+        registered.
+      RUNNING: The RUNNING state indicates the cluster has been register and
+        is fully usable.
+      RECONCILING: The RECONCILING state indicates that some work is actively
+        being done on the cluster, such as upgrading software components.
+      STOPPING: The STOPPING state indicates the cluster is being de-
+        registered.
+      ERROR: The ERROR state indicates the cluster is in a broken
+        unrecoverable state.
+      DEGRADED: The DEGRADED state indicates the cluster requires user action
+        to restore full functionality.
+    """
+    STATE_UNSPECIFIED = 0
+    PROVISIONING = 1
+    RUNNING = 2
+    RECONCILING = 3
+    STOPPING = 4
+    ERROR = 5
+    DEGRADED = 6
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""Optional. Annotations on the cluster. This field has the same
+    restrictions as Kubernetes annotations. The total size of all keys and
+    values combined is limited to 256k. Key can have 2 segments: prefix
+    (optional) and name (required), separated by a slash (/). Prefix must be a
+    DNS subdomain. Name must be 63 characters or less, begin and end with
+    alphanumerics, with dashes (-), underscores (_), dots (.), and
+    alphanumerics between.
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  authority = _messages.MessageField('GoogleCloudGkemulticloudV1Authority', 2)
+  createTime = _messages.StringField(3)
+  description = _messages.StringField(4)
+  etag = _messages.StringField(5)
+  fleet = _messages.MessageField('GoogleCloudGkemulticloudV1Fleet', 6)
+  kubernetesVersion = _messages.StringField(7)
+  loggingConfig = _messages.MessageField('GoogleCloudGkemulticloudV1LoggingConfig', 8)
+  name = _messages.StringField(9)
+  platformVersion = _messages.StringField(10)
+  reconciling = _messages.BooleanField(11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  uid = _messages.StringField(13)
+  updateTime = _messages.StringField(14)
+  workloadIdentityConfig = _messages.MessageField('GoogleCloudGkemulticloudV1WorkloadIdentityConfig', 15)
+
+
+class GoogleCloudGkemulticloudV1Authority(_messages.Message):
+  r"""OIDC discovery information of the target cluster.
+
+  Fields:
+    issuerUrl: A JSON Web Token (JWT) issuer URI. `issuer` must start with
+      `https://`.
+    oidcJwks: OIDC verification keys in JWKS format (RFC 7517). It contains a
+      list of OIDC verification keys that can be used to verify OIDC JWTs.
+      This is useful for cluster that doesn't have a publicly available
+      discovery endpoint. When provided, it will be directly used to verify
+      the OIDC JWT asserted by the IDP.
+  """
+
+  issuerUrl = _messages.StringField(1)
+  oidcJwks = _messages.BytesField(2)
 
 
 class GoogleCloudGkemulticloudV1AwsAuthorization(_messages.Message):
@@ -2334,6 +2589,20 @@ class GoogleCloudGkemulticloudV1Jwk(_messages.Message):
   use = _messages.StringField(7)
   x = _messages.StringField(8)
   y = _messages.StringField(9)
+
+
+class GoogleCloudGkemulticloudV1ListAttachedClustersResponse(_messages.Message):
+  r"""Response message for `AttachedClusters.ListAttachedClusters` method.
+
+  Fields:
+    attachedClusters: A list of AttachedCluster resources in the specified GCP
+      project and region region.
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+  """
+
+  attachedClusters = _messages.MessageField('GoogleCloudGkemulticloudV1AttachedCluster', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
 class GoogleCloudGkemulticloudV1ListAwsClustersResponse(_messages.Message):

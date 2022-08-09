@@ -836,7 +836,7 @@
           "$ref": "GoogleCloudAiplatformV1alpha1ExplanationParameters"
         },
         "metadata": {
-          "description": "Required. Metadata describing the Model's input and output for explanation.",
+          "description": "Optional. Metadata describing the Model's input and output for explanation.",
           "$ref": "GoogleCloudAiplatformV1alpha1ExplanationMetadata"
         }
       }
@@ -3190,7 +3190,7 @@
     },
     "GoogleCloudAiplatformV1alpha1ModelMonitoringConfig": {
       "id": "GoogleCloudAiplatformV1alpha1ModelMonitoringConfig",
-      "description": "Next ID: 5",
+      "description": "Next ID: 6",
       "type": "object",
       "properties": {
         "objectiveConfigs": {
@@ -7640,7 +7640,7 @@
           "$ref": "GoogleCloudAiplatformInternalExplanationParameters"
         },
         "metadata": {
-          "description": "Required. Metadata describing the Model's input and output for explanation.",
+          "description": "Optional. Metadata describing the Model's input and output for explanation.",
           "$ref": "GoogleCloudAiplatformInternalExplanationMetadata"
         }
       }
@@ -7672,7 +7672,7 @@
           "format": "int32"
         },
         "outputIndices": {
-          "description": "If populated, only returns attributions that have output_index contained in output_indices. It must be an ndarray of integers, with the same shape of the output it's explaining. If not populated, returns attributions for top_k indices of outputs. If neither top_k nor output_indeices is populated, returns the argmax index of the outputs. Only applicable to Models that predict multiple outputs (e,g, multi-class Models that predict multiple classes).",
+          "description": "If populated, only returns attributions that have output_index contained in output_indices. It must be an ndarray of integers, with the same shape of the output it's explaining. If not populated, returns attributions for top_k indices of outputs. If neither top_k nor output_indices is populated, returns the argmax index of the outputs. Only applicable to Models that predict multiple outputs (e,g, multi-class Models that predict multiple classes).",
           "type": "array",
           "items": {
             "type": "any"
@@ -10771,7 +10771,7 @@
           "$ref": "GoogleCloudAiplatformUiExplanationParameters"
         },
         "metadata": {
-          "description": "Required. Metadata describing the Model's input and output for explanation.",
+          "description": "Optional. Metadata describing the Model's input and output for explanation.",
           "$ref": "GoogleCloudAiplatformUiExplanationMetadata"
         }
       }
@@ -10803,7 +10803,7 @@
           "format": "int32"
         },
         "outputIndices": {
-          "description": "If populated, only returns attributions that have output_index contained in output_indices. It must be an ndarray of integers, with the same shape of the output it's explaining. If not populated, returns attributions for top_k indices of outputs. If neither top_k nor output_indeices is populated, returns the argmax index of the outputs. Only applicable to Models that predict multiple outputs (e,g, multi-class Models that predict multiple classes).",
+          "description": "If populated, only returns attributions that have output_index contained in output_indices. It must be an ndarray of integers, with the same shape of the output it's explaining. If not populated, returns attributions for top_k indices of outputs. If neither top_k nor output_indices is populated, returns the argmax index of the outputs. Only applicable to Models that predict multiple outputs (e,g, multi-class Models that predict multiple classes).",
           "type": "array",
           "items": {
             "type": "any"
@@ -15557,7 +15557,7 @@
           "$ref": "GoogleCloudAiplatformV1beta1ExplanationParameters"
         },
         "metadata": {
-          "description": "Required. Metadata describing the Model's input and output for explanation.",
+          "description": "Optional. Metadata describing the Model's input and output for explanation.",
           "$ref": "GoogleCloudAiplatformV1beta1ExplanationMetadata"
         }
       }
@@ -15589,7 +15589,7 @@
           "format": "int32"
         },
         "outputIndices": {
-          "description": "If populated, only returns attributions that have output_index contained in output_indices. It must be an ndarray of integers, with the same shape of the output it's explaining. If not populated, returns attributions for top_k indices of outputs. If neither top_k nor output_indeices is populated, returns the argmax index of the outputs. Only applicable to Models that predict multiple outputs (e,g, multi-class Models that predict multiple classes).",
+          "description": "If populated, only returns attributions that have output_index contained in output_indices. It must be an ndarray of integers, with the same shape of the output it's explaining. If not populated, returns attributions for top_k indices of outputs. If neither top_k nor output_indices is populated, returns the argmax index of the outputs. Only applicable to Models that predict multiple outputs (e,g, multi-class Models that predict multiple classes).",
           "type": "array",
           "items": {
             "type": "any"
@@ -20981,7 +20981,7 @@
           "$ref": "GoogleCloudAiplatformV1ExplanationParameters"
         },
         "metadata": {
-          "description": "Required. Metadata describing the Model's input and output for explanation.",
+          "description": "Optional. Metadata describing the Model's input and output for explanation.",
           "$ref": "GoogleCloudAiplatformV1ExplanationMetadata"
         }
       }
@@ -21009,7 +21009,7 @@
           "format": "int32"
         },
         "outputIndices": {
-          "description": "If populated, only returns attributions that have output_index contained in output_indices. It must be an ndarray of integers, with the same shape of the output it's explaining. If not populated, returns attributions for top_k indices of outputs. If neither top_k nor output_indeices is populated, returns the argmax index of the outputs. Only applicable to Models that predict multiple outputs (e,g, multi-class Models that predict multiple classes).",
+          "description": "If populated, only returns attributions that have output_index contained in output_indices. It must be an ndarray of integers, with the same shape of the output it's explaining. If not populated, returns attributions for top_k indices of outputs. If neither top_k nor output_indices is populated, returns the argmax index of the outputs. Only applicable to Models that predict multiple outputs (e,g, multi-class Models that predict multiple classes).",
           "type": "array",
           "items": {
             "type": "any"

@@ -83,17 +83,17 @@ class AuthorizationAttemptInfo(_messages.Message):
   Enums:
     FailureReasonValueValuesEnum: Output only. Reason for failure of the
       authorization attempt for the domain.
-    StateValueValuesEnum: State of the domain for managed certificate
-      issuance.
+    StateValueValuesEnum: Output only. State of the domain for managed
+      certificate issuance.
 
   Fields:
-    details: Human readable explanation for reaching the state. Provided to
-      help address the configuration issues. Not guaranteed to be stable. For
-      programmatic access use Reason enum.
+    details: Output only. Human readable explanation for reaching the state.
+      Provided to help address the configuration issues. Not guaranteed to be
+      stable. For programmatic access use FailureReason enum.
     domain: Domain name of the authorization attempt.
     failureReason: Output only. Reason for failure of the authorization
       attempt for the domain.
-    state: State of the domain for managed certificate issuance.
+    state: Output only. State of the domain for managed certificate issuance.
   """
 
   class FailureReasonValueValuesEnum(_messages.Enum):
@@ -115,7 +115,7 @@ class AuthorizationAttemptInfo(_messages.Message):
     RATE_LIMITED = 3
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""State of the domain for managed certificate issuance.
+    r"""Output only. State of the domain for managed certificate issuance.
 
     Values:
       STATE_UNSPECIFIED: <no description>
@@ -1022,11 +1022,12 @@ class GclbTarget(_messages.Message):
   Fields:
     ipConfigs: IP configurations for this Target Proxy where the Certificate
       Map is serving.
-    targetHttpsProxy: This field returns the resource name in the following
-      format:
+    targetHttpsProxy: Output only. This field returns the resource name in the
+      following format:
       `//compute.googleapis.com/projects/*/global/targetHttpsProxies/*`.
-    targetSslProxy: This field returns the resource name in the following
-      format: `//compute.googleapis.com/projects/*/global/targetSslProxies/*`.
+    targetSslProxy: Output only. This field returns the resource name in the
+      following format:
+      `//compute.googleapis.com/projects/*/global/targetSslProxies/*`.
   """
 
   ipConfigs = _messages.MessageField('IpConfig', 1, repeated=True)
@@ -1038,8 +1039,8 @@ class IpConfig(_messages.Message):
   r"""Defines IP configuration where this Certificate Map is serving.
 
   Fields:
-    ipAddress: An external IP address.
-    ports: Ports.
+    ipAddress: Output only. An external IP address.
+    ports: Output only. Ports.
   """
 
   ipAddress = _messages.StringField(1)
@@ -1239,8 +1240,8 @@ class ManagedCertificate(_messages.Message):
     domains: Immutable. The domains for which a managed SSL certificate will
       be generated. Wildcard domains are only supported with DNS challenge
       resolution.
-    provisioningIssue: Information about issues with provisioning a Managed
-      Certificate.
+    provisioningIssue: Output only. Information about issues with provisioning
+      a Managed Certificate.
     state: Output only. State of the managed certificate resource.
   """
 
@@ -1486,17 +1487,17 @@ class ProvisioningIssue(_messages.Message):
   r"""Information about issues with provisioning a Managed Certificate.
 
   Enums:
-    ReasonValueValuesEnum: Reason for provisioning failures.
+    ReasonValueValuesEnum: Output only. Reason for provisioning failures.
 
   Fields:
-    details: Human readable explanation about the issue. Provided to help
-      address the configuration issues. Not guaranteed to be stable. For
-      programmatic access use Reason enum.
-    reason: Reason for provisioning failures.
+    details: Output only. Human readable explanation about the issue. Provided
+      to help address the configuration issues. Not guaranteed to be stable.
+      For programmatic access use Reason enum.
+    reason: Output only. Reason for provisioning failures.
   """
 
   class ReasonValueValuesEnum(_messages.Enum):
-    r"""Reason for provisioning failures.
+    r"""Output only. Reason for provisioning failures.
 
     Values:
       REASON_UNSPECIFIED: <no description>

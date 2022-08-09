@@ -1770,6 +1770,11 @@ class AttachedDiskInitializeParams(_messages.Message):
     LabelsValue: Labels to apply to this disk. These can be later modified by
       the disks.setLabels method. This field is only applicable for persistent
       disks.
+    ResourceManagerTagsValue: Resource manager tags to be bound to the disk.
+      Tag keys and values have the same definition as resource manager tags.
+      Keys must be in the format `tagKeys/{tag_key_id}`, and values are in the
+      format `tagValues/456`. The field is ignored (both PUT & PATCH) when
+      empty.
 
   Fields:
     architecture: The architecture of the attached disk. Valid values are
@@ -1812,6 +1817,11 @@ class AttachedDiskInitializeParams(_messages.Message):
       sets the number of I/O operations per second that the disk can handle.
       Values must be between 10,000 and 120,000. For more details, see the
       Extreme persistent disk documentation.
+    resourceManagerTags: Resource manager tags to be bound to the disk. Tag
+      keys and values have the same definition as resource manager tags. Keys
+      must be in the format `tagKeys/{tag_key_id}`, and values are in the
+      format `tagValues/456`. The field is ignored (both PUT & PATCH) when
+      empty.
     resourcePolicies: Resource policies applied to this disk for automatic
       snapshot creations. Specified using the full or partial URL. For
       instance template, specify only the resource policy name.
@@ -1900,6 +1910,35 @@ class AttachedDiskInitializeParams(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ResourceManagerTagsValue(_messages.Message):
+    r"""Resource manager tags to be bound to the disk. Tag keys and values
+    have the same definition as resource manager tags. Keys must be in the
+    format `tagKeys/{tag_key_id}`, and values are in the format
+    `tagValues/456`. The field is ignored (both PUT & PATCH) when empty.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        ResourceManagerTagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        ResourceManagerTagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ResourceManagerTagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   architecture = _messages.EnumField('ArchitectureValueValuesEnum', 1)
   description = _messages.StringField(2)
   diskName = _messages.StringField(3)
@@ -1911,11 +1950,12 @@ class AttachedDiskInitializeParams(_messages.Message):
   multiWriter = _messages.BooleanField(9)
   onUpdateAction = _messages.EnumField('OnUpdateActionValueValuesEnum', 10)
   provisionedIops = _messages.IntegerField(11)
-  resourcePolicies = _messages.StringField(12, repeated=True)
-  sourceImage = _messages.StringField(13)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 14)
-  sourceSnapshot = _messages.StringField(15)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 16)
+  resourceManagerTags = _messages.MessageField('ResourceManagerTagsValue', 12)
+  resourcePolicies = _messages.StringField(13, repeated=True)
+  sourceImage = _messages.StringField(14)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 15)
+  sourceSnapshot = _messages.StringField(16)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 17)
 
 
 class AuditConfig(_messages.Message):
@@ -30103,6 +30143,8 @@ class Disk(_messages.Message):
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
     options: Internal use only.
+    params: Input only. [Input Only] Additional params passed with the
+      request, but not persisted as part of resource payload.
     physicalBlockSizeBytes: Physical block size of the persistent disk, in
       bytes. If not present in a request, a default value is used. The
       currently supported size is 4096, other sizes may be added in the
@@ -30309,29 +30351,30 @@ class Disk(_messages.Message):
   multiWriter = _messages.BooleanField(18)
   name = _messages.StringField(19)
   options = _messages.StringField(20)
-  physicalBlockSizeBytes = _messages.IntegerField(21)
-  provisionedIops = _messages.IntegerField(22)
-  region = _messages.StringField(23)
-  replicaZones = _messages.StringField(24, repeated=True)
-  resourcePolicies = _messages.StringField(25, repeated=True)
-  satisfiesPzs = _messages.BooleanField(26)
-  selfLink = _messages.StringField(27)
-  sizeGb = _messages.IntegerField(28)
-  sourceDisk = _messages.StringField(29)
-  sourceDiskId = _messages.StringField(30)
-  sourceImage = _messages.StringField(31)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 32)
-  sourceImageId = _messages.StringField(33)
-  sourceSnapshot = _messages.StringField(34)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 35)
-  sourceSnapshotId = _messages.StringField(36)
-  sourceStorageObject = _messages.StringField(37)
-  status = _messages.EnumField('StatusValueValuesEnum', 38)
-  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 39)
-  type = _messages.StringField(40)
-  userLicenses = _messages.StringField(41, repeated=True)
-  users = _messages.StringField(42, repeated=True)
-  zone = _messages.StringField(43)
+  params = _messages.MessageField('DiskParams', 21)
+  physicalBlockSizeBytes = _messages.IntegerField(22)
+  provisionedIops = _messages.IntegerField(23)
+  region = _messages.StringField(24)
+  replicaZones = _messages.StringField(25, repeated=True)
+  resourcePolicies = _messages.StringField(26, repeated=True)
+  satisfiesPzs = _messages.BooleanField(27)
+  selfLink = _messages.StringField(28)
+  sizeGb = _messages.IntegerField(29)
+  sourceDisk = _messages.StringField(30)
+  sourceDiskId = _messages.StringField(31)
+  sourceImage = _messages.StringField(32)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 33)
+  sourceImageId = _messages.StringField(34)
+  sourceSnapshot = _messages.StringField(35)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 36)
+  sourceSnapshotId = _messages.StringField(37)
+  sourceStorageObject = _messages.StringField(38)
+  status = _messages.EnumField('StatusValueValuesEnum', 39)
+  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 40)
+  type = _messages.StringField(41)
+  userLicenses = _messages.StringField(42, repeated=True)
+  users = _messages.StringField(43, repeated=True)
+  zone = _messages.StringField(44)
 
 
 class DiskAggregatedList(_messages.Message):
@@ -30788,6 +30831,56 @@ class DiskMoveRequest(_messages.Message):
 
   destinationZone = _messages.StringField(1)
   targetDisk = _messages.StringField(2)
+
+
+class DiskParams(_messages.Message):
+  r"""Additional disk params.
+
+  Messages:
+    ResourceManagerTagsValue: Resource manager tags to be bound to the disk.
+      Tag keys and values have the same definition as resource manager tags.
+      Keys must be in the format `tagKeys/{tag_key_id}`, and values are in the
+      format `tagValues/456`. The field is ignored (both PUT & PATCH) when
+      empty.
+
+  Fields:
+    resourceManagerTags: Resource manager tags to be bound to the disk. Tag
+      keys and values have the same definition as resource manager tags. Keys
+      must be in the format `tagKeys/{tag_key_id}`, and values are in the
+      format `tagValues/456`. The field is ignored (both PUT & PATCH) when
+      empty.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ResourceManagerTagsValue(_messages.Message):
+    r"""Resource manager tags to be bound to the disk. Tag keys and values
+    have the same definition as resource manager tags. Keys must be in the
+    format `tagKeys/{tag_key_id}`, and values are in the format
+    `tagValues/456`. The field is ignored (both PUT & PATCH) when empty.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        ResourceManagerTagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        ResourceManagerTagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ResourceManagerTagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  resourceManagerTags = _messages.MessageField('ResourceManagerTagsValue', 1)
 
 
 class DiskType(_messages.Message):
@@ -54714,6 +54807,11 @@ class Reservation(_messages.Message):
   Enums:
     StatusValueValuesEnum: [Output Only] The status of the reservation.
 
+  Messages:
+    ResourcePoliciesValue: Resource policies to be added to this reservation.
+      The key is defined by user, and the value is resource policy url. This
+      is to define placement policy with reservation.
+
   Fields:
     commitment: [Output Only] Full or partial URL to a parent commitment. This
       field displays for reservations that are tied to a commitment.
@@ -54732,6 +54830,9 @@ class Reservation(_messages.Message):
       means the first character must be a lowercase letter, and all following
       characters must be a dash, lowercase letter, or digit, except the last
       character, which cannot be a dash.
+    resourcePolicies: Resource policies to be added to this reservation. The
+      key is defined by user, and the value is resource policy url. This is to
+      define placement policy with reservation.
     satisfiesPzs: [Output Only] Reserved for future use.
     selfLink: [Output Only] Server-defined fully-qualified URL for this
       resource.
@@ -54763,19 +54864,48 @@ class Reservation(_messages.Message):
     READY = 3
     UPDATING = 4
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ResourcePoliciesValue(_messages.Message):
+    r"""Resource policies to be added to this reservation. The key is defined
+    by user, and the value is resource policy url. This is to define placement
+    policy with reservation.
+
+    Messages:
+      AdditionalProperty: An additional property for a ResourcePoliciesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        ResourcePoliciesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ResourcePoliciesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   commitment = _messages.StringField(1)
   creationTimestamp = _messages.StringField(2)
   description = _messages.StringField(3)
   id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
   kind = _messages.StringField(5, default='compute#reservation')
   name = _messages.StringField(6)
-  satisfiesPzs = _messages.BooleanField(7)
-  selfLink = _messages.StringField(8)
-  shareSettings = _messages.MessageField('ShareSettings', 9)
-  specificReservation = _messages.MessageField('AllocationSpecificSKUReservation', 10)
-  specificReservationRequired = _messages.BooleanField(11)
-  status = _messages.EnumField('StatusValueValuesEnum', 12)
-  zone = _messages.StringField(13)
+  resourcePolicies = _messages.MessageField('ResourcePoliciesValue', 7)
+  satisfiesPzs = _messages.BooleanField(8)
+  selfLink = _messages.StringField(9)
+  shareSettings = _messages.MessageField('ShareSettings', 10)
+  specificReservation = _messages.MessageField('AllocationSpecificSKUReservation', 11)
+  specificReservationRequired = _messages.BooleanField(12)
+  status = _messages.EnumField('StatusValueValuesEnum', 13)
+  zone = _messages.StringField(14)
 
 
 class ReservationAffinity(_messages.Message):
@@ -59582,6 +59712,10 @@ class SecurityPolicyRule(_messages.Message):
       compute#securityPolicyRule for security policy rules
     match: A match condition that incoming traffic is evaluated against. If it
       evaluates to true, the corresponding 'action' is enforced.
+    preconfiguredWafConfig: Preconfigured WAF configuration to be applied for
+      the rule. If the rule does not evaluate preconfigured WAF rules, i.e.,
+      if evaluatePreconfiguredWaf() is not used, this field will have no
+      effect.
     preview: If set to true, the specified action is not enforced.
     priority: An integer indicating the priority of a rule in the list. The
       priority must be a positive value between 0 and 2147483647. Rules are
@@ -59623,14 +59757,15 @@ class SecurityPolicyRule(_messages.Message):
   headerAction = _messages.MessageField('SecurityPolicyRuleHttpHeaderAction', 5)
   kind = _messages.StringField(6, default='compute#securityPolicyRule')
   match = _messages.MessageField('SecurityPolicyRuleMatcher', 7)
-  preview = _messages.BooleanField(8)
-  priority = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  rateLimitOptions = _messages.MessageField('SecurityPolicyRuleRateLimitOptions', 10)
-  redirectOptions = _messages.MessageField('SecurityPolicyRuleRedirectOptions', 11)
-  ruleNumber = _messages.IntegerField(12)
-  ruleTupleCount = _messages.IntegerField(13, variant=_messages.Variant.INT32)
-  targetResources = _messages.StringField(14, repeated=True)
-  targetServiceAccounts = _messages.StringField(15, repeated=True)
+  preconfiguredWafConfig = _messages.MessageField('SecurityPolicyRulePreconfiguredWafConfig', 8)
+  preview = _messages.BooleanField(9)
+  priority = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  rateLimitOptions = _messages.MessageField('SecurityPolicyRuleRateLimitOptions', 11)
+  redirectOptions = _messages.MessageField('SecurityPolicyRuleRedirectOptions', 12)
+  ruleNumber = _messages.IntegerField(13)
+  ruleTupleCount = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  targetResources = _messages.StringField(15, repeated=True)
+  targetServiceAccounts = _messages.StringField(16, repeated=True)
 
 
 class SecurityPolicyRuleHttpHeaderAction(_messages.Message):
@@ -59733,6 +59868,82 @@ class SecurityPolicyRuleMatcherConfigLayer4Config(_messages.Message):
 
   ipProtocol = _messages.StringField(1)
   ports = _messages.StringField(2, repeated=True)
+
+
+class SecurityPolicyRulePreconfiguredWafConfig(_messages.Message):
+  r"""A SecurityPolicyRulePreconfiguredWafConfig object.
+
+  Fields:
+    exclusions: A list of exclusions to apply during preconfigured WAF
+      evaluation.
+  """
+
+  exclusions = _messages.MessageField('SecurityPolicyRulePreconfiguredWafConfigExclusion', 1, repeated=True)
+
+
+class SecurityPolicyRulePreconfiguredWafConfigExclusion(_messages.Message):
+  r"""A SecurityPolicyRulePreconfiguredWafConfigExclusion object.
+
+  Fields:
+    requestCookiesToExclude: A list of request cookie names whose value will
+      be excluded from inspection during preconfigured WAF evaluation.
+    requestHeadersToExclude: A list of request header names whose value will
+      be excluded from inspection during preconfigured WAF evaluation.
+    requestQueryParamsToExclude: A list of request query parameter names whose
+      value will be excluded from inspection during preconfigured WAF
+      evaluation. Note that the parameter can be in the query string or in the
+      POST body.
+    requestUrisToExclude: A list of request URIs from the request line to be
+      excluded from inspection during preconfigured WAF evaluation. When
+      specifying this field, the query or fragment part should be excluded.
+    targetRuleIds: A list of target rule IDs under the WAF rule set to apply
+      the preconfigured WAF exclusion. If omitted, it refers to all the rule
+      IDs under the WAF rule set.
+    targetRuleSet: Target WAF rule set to apply the preconfigured WAF
+      exclusion.
+  """
+
+  requestCookiesToExclude = _messages.MessageField('SecurityPolicyRulePreconfiguredWafConfigExclusionFieldParams', 1, repeated=True)
+  requestHeadersToExclude = _messages.MessageField('SecurityPolicyRulePreconfiguredWafConfigExclusionFieldParams', 2, repeated=True)
+  requestQueryParamsToExclude = _messages.MessageField('SecurityPolicyRulePreconfiguredWafConfigExclusionFieldParams', 3, repeated=True)
+  requestUrisToExclude = _messages.MessageField('SecurityPolicyRulePreconfiguredWafConfigExclusionFieldParams', 4, repeated=True)
+  targetRuleIds = _messages.StringField(5, repeated=True)
+  targetRuleSet = _messages.StringField(6)
+
+
+class SecurityPolicyRulePreconfiguredWafConfigExclusionFieldParams(_messages.Message):
+  r"""A SecurityPolicyRulePreconfiguredWafConfigExclusionFieldParams object.
+
+  Enums:
+    OpValueValuesEnum: The match operator for the field.
+
+  Fields:
+    op: The match operator for the field.
+    val: The value of the field.
+  """
+
+  class OpValueValuesEnum(_messages.Enum):
+    r"""The match operator for the field.
+
+    Values:
+      CONTAINS: The operator matches if the field value contains the specified
+        value.
+      ENDS_WITH: The operator matches if the field value ends with the
+        specified value.
+      EQUALS: The operator matches if the field value equals the specified
+        value.
+      EQUALS_ANY: The operator matches if the field value is any value.
+      STARTS_WITH: The operator matches if the field value starts with the
+        specified value.
+    """
+    CONTAINS = 0
+    ENDS_WITH = 1
+    EQUALS = 2
+    EQUALS_ANY = 3
+    STARTS_WITH = 4
+
+  op = _messages.EnumField('OpValueValuesEnum', 1)
+  val = _messages.StringField(2)
 
 
 class SecurityPolicyRuleRateLimitOptions(_messages.Message):

@@ -3173,7 +3173,7 @@
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "The list of fields to update. A mask specifying which fields (e.g. `change_stream_config`) in the `table` field should be updated. This mask is relative to the `table` field, not to the request message. If an update mask is not provided, it is treated as an implied mask equivalent to all fields that are set on the `table`. Currently UpdateTable is only supported for the following fields: * `change_stream_config` * `change_stream_config.retention_period` If other fields in `update_mask` are set, it will return an INVALID_ARGUMENT error. Fields set on the `table` but not in `update_mask` will be ignored.",
+                      "description": "Required. The list of fields to update. A mask specifying which fields (e.g. `change_stream_config`) in the `table` field should be updated. This mask is relative to the `table` field, not to the request message. The wildcard (*) path is currently not supported. Currently UpdateTable is only supported for the following fields: * `change_stream_config` * `change_stream_config.retention_period` If `column_families` is set in `update_mask`, it will return an UNIMPLEMENTED error.",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"

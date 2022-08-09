@@ -942,7 +942,7 @@ SKIP_AIRFLOW_OVERRIDES_SETTING = base.Argument(
     """)
 
 SKIP_COPYING_GCS_DATA = base.Argument(
-    '--skip-gcs_data-copying',
+    '--skip-gcs-data-copying',
     default=None,
     hidden=True,
     action='store_true',

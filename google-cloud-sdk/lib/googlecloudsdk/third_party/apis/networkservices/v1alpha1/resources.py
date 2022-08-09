@@ -217,6 +217,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_WASMACTIONS = (
+      'projects.locations.wasmActions',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/wasmActions/'
+              '{wasmActionsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_WASMPLUGINS = (
       'projects.locations.wasmPlugins',
       '{+name}',

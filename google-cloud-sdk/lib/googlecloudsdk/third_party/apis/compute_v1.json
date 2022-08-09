@@ -4,7 +4,7 @@
   "id": "compute:v1",
   "name": "compute",
   "version": "v1",
-  "revision": "20220722",
+  "revision": "20220802",
   "title": "Compute Engine API",
   "description": "Creates and runs virtual machines on Google Cloud Platform. ",
   "ownerDomain": "google.com",
@@ -4108,6 +4108,13 @@
             "ARM64",
             "X86_64"
           ]
+        },
+        "resourceManagerTags": {
+          "description": "Resource manager tags to be bound to the disk. Tag keys and values have the same definition as resource manager tags. Keys must be in the format `tagKeys\/{tag_key_id}`, and values are in the format `tagValues\/456`. The field is ignored (both PUT & PATCH) when empty.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },
@@ -5695,11 +5702,13 @@
           "type": "string",
           "enumDescriptions": [
             "Default value.",
+            "Shared-reservation is open to entire Organization",
             "Default value. This value is unused.",
             "Shared-reservation is open to specific projects"
           ],
           "enum": [
             "LOCAL",
+            "ORGANIZATION",
             "SHARE_TYPE_UNSPECIFIED",
             "SPECIFIC_PROJECTS"
           ]
@@ -13928,6 +13937,24 @@
             "ARM64",
             "X86_64"
           ]
+        },
+        "params": {
+          "description": "Input only. [Input Only] Additional params passed with the request, but not persisted as part of resource payload.",
+          "$ref": "DiskParams"
+        }
+      }
+    },
+    "DiskParams": {
+      "id": "DiskParams",
+      "description": "Additional disk params.",
+      "type": "object",
+      "properties": {
+        "resourceManagerTags": {
+          "description": "Resource manager tags to be bound to the disk. Tag keys and values have the same definition as resource manager tags. Keys must be in the format `tagKeys\/{tag_key_id}`, and values are in the format `tagValues\/456`. The field is ignored (both PUT & PATCH) when empty.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },
@@ -20946,6 +20973,10 @@
         },
         "maintenanceWindow": {
           "$ref": "NodeGroupMaintenanceWindow"
+        },
+        "shareSettings": {
+          "description": "Share-settings for the node group",
+          "$ref": "ShareSettings"
         }
       }
     },
@@ -21426,6 +21457,21 @@
             "type": "string"
           }
         },
+        "instanceConsumptionData": {
+          "description": "Instance data that shows consumed resources on the node.",
+          "type": "array",
+          "items": {
+            "$ref": "InstanceConsumptionData"
+          }
+        },
+        "consumedResources": {
+          "description": "Node resources that are reserved by all instances.",
+          "$ref": "InstanceConsumptionInfo"
+        },
+        "totalResources": {
+          "description": "Total amount of available resources on the node.",
+          "$ref": "InstanceConsumptionInfo"
+        },
         "cpuOvercommitType": {
           "description": "CPU overcommit.",
           "type": "string",
@@ -21480,6 +21526,46 @@
         },
         "diskCount": {
           "description": "Specifies the number of such disks.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "InstanceConsumptionData": {
+      "id": "InstanceConsumptionData",
+      "type": "object",
+      "properties": {
+        "instance": {
+          "description": "Server-defined URL for the instance.",
+          "type": "string"
+        },
+        "consumptionInfo": {
+          "description": "Resources consumed by the instance.",
+          "$ref": "InstanceConsumptionInfo"
+        }
+      }
+    },
+    "InstanceConsumptionInfo": {
+      "id": "InstanceConsumptionInfo",
+      "type": "object",
+      "properties": {
+        "minNodeCpus": {
+          "description": "The minimal guaranteed number of virtual CPUs that are reserved.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "guestCpus": {
+          "description": "The number of virtual CPUs that are available to the instance.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "memoryMb": {
+          "description": "The amount of physical memory available to the instance, defined in MiB.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "localSsdGb": {
+          "description": "The amount of local SSD storage available to the instance, defined in GiB.",
           "type": "integer",
           "format": "int32"
         }

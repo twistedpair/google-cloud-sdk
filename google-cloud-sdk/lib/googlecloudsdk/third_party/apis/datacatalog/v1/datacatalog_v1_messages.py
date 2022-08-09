@@ -1407,10 +1407,12 @@ class GoogleCloudDatacatalogV1DataSource(_messages.Message):
 
 class GoogleCloudDatacatalogV1DataSourceConnectionSpec(_messages.Message):
   r"""Specification that applies to a data source connection. Valid only for
-  entries with the `DATA_SOURCE_CONNECTION` type.
+  entries with the `DATA_SOURCE_CONNECTION` type. Only one of internal specs
+  can be set at the time, and cannot be changed later.
 
   Fields:
-    bigqueryConnectionSpec: Fields specific to BigQuery connections.
+    bigqueryConnectionSpec: Output only. Fields specific to BigQuery
+      connections.
   """
 
   bigqueryConnectionSpec = _messages.MessageField('GoogleCloudDatacatalogV1BigQueryConnectionSpec', 1)

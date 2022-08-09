@@ -5798,7 +5798,7 @@ class GoogleCloudAiplatformInternalExplanationParameters(_messages.Message):
       output_index contained in output_indices. It must be an ndarray of
       integers, with the same shape of the output it's explaining. If not
       populated, returns attributions for top_k indices of outputs. If neither
-      top_k nor output_indeices is populated, returns the argmax index of the
+      top_k nor output_indices is populated, returns the argmax index of the
       outputs. Only applicable to Models that predict multiple outputs (e,g,
       multi-class Models that predict multiple classes).
     sampledShapleyAttribution: An attribution method that approximates Shapley
@@ -5832,7 +5832,7 @@ class GoogleCloudAiplatformInternalExplanationSpec(_messages.Message):
   r"""Specification of Model explanation.
 
   Fields:
-    metadata: Required. Metadata describing the Model's input and output for
+    metadata: Optional. Metadata describing the Model's input and output for
       explanation.
     parameters: Required. Parameters that configure explaining of the Model's
       predictions.
@@ -8623,7 +8623,7 @@ class GoogleCloudAiplatformUiExplanationParameters(_messages.Message):
       output_index contained in output_indices. It must be an ndarray of
       integers, with the same shape of the output it's explaining. If not
       populated, returns attributions for top_k indices of outputs. If neither
-      top_k nor output_indeices is populated, returns the argmax index of the
+      top_k nor output_indices is populated, returns the argmax index of the
       outputs. Only applicable to Models that predict multiple outputs (e,g,
       multi-class Models that predict multiple classes).
     sampledShapleyAttribution: An attribution method that approximates Shapley
@@ -8657,7 +8657,7 @@ class GoogleCloudAiplatformUiExplanationSpec(_messages.Message):
   r"""Specification of Model explanation.
 
   Fields:
-    metadata: Required. Metadata describing the Model's input and output for
+    metadata: Optional. Metadata describing the Model's input and output for
       explanation.
     parameters: Required. Parameters that configure explaining of the Model's
       predictions.
@@ -12622,7 +12622,7 @@ class GoogleCloudAiplatformV1ExplanationParameters(_messages.Message):
       output_index contained in output_indices. It must be an ndarray of
       integers, with the same shape of the output it's explaining. If not
       populated, returns attributions for top_k indices of outputs. If neither
-      top_k nor output_indeices is populated, returns the argmax index of the
+      top_k nor output_indices is populated, returns the argmax index of the
       outputs. Only applicable to Models that predict multiple outputs (e,g,
       multi-class Models that predict multiple classes).
     sampledShapleyAttribution: An attribution method that approximates Shapley
@@ -12655,7 +12655,7 @@ class GoogleCloudAiplatformV1ExplanationSpec(_messages.Message):
   r"""Specification of Model explanation.
 
   Fields:
-    metadata: Required. Metadata describing the Model's input and output for
+    metadata: Optional. Metadata describing the Model's input and output for
       explanation.
     parameters: Required. Parameters that configure explaining of the Model's
       predictions.
@@ -20174,7 +20174,7 @@ class GoogleCloudAiplatformV1alpha1ExplanationSpec(_messages.Message):
   r"""Specification of Model explanation.
 
   Fields:
-    metadata: Required. Metadata describing the Model's input and output for
+    metadata: Optional. Metadata describing the Model's input and output for
       explanation.
     parameters: Required. Parameters that configure explaining of the Model's
       predictions.
@@ -22661,7 +22661,7 @@ class GoogleCloudAiplatformV1alpha1ModelMonitoringAlertConfigEmailAlertConfig(_m
 
 
 class GoogleCloudAiplatformV1alpha1ModelMonitoringConfig(_messages.Message):
-  r"""Next ID: 5
+  r"""Next ID: 6
 
   Fields:
     alertConfig: Model monitoring alert config.
@@ -27457,7 +27457,7 @@ class GoogleCloudAiplatformV1beta1ExplanationParameters(_messages.Message):
       output_index contained in output_indices. It must be an ndarray of
       integers, with the same shape of the output it's explaining. If not
       populated, returns attributions for top_k indices of outputs. If neither
-      top_k nor output_indeices is populated, returns the argmax index of the
+      top_k nor output_indices is populated, returns the argmax index of the
       outputs. Only applicable to Models that predict multiple outputs (e,g,
       multi-class Models that predict multiple classes).
     sampledShapleyAttribution: An attribution method that approximates Shapley
@@ -27491,7 +27491,7 @@ class GoogleCloudAiplatformV1beta1ExplanationSpec(_messages.Message):
   r"""Specification of Model explanation.
 
   Fields:
-    metadata: Required. Metadata describing the Model's input and output for
+    metadata: Optional. Metadata describing the Model's input and output for
       explanation.
     parameters: Required. Parameters that configure explaining of the Model's
       predictions.

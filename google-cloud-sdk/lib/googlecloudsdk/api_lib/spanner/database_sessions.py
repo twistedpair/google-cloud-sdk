@@ -19,10 +19,19 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from apitools.base.py import encoding
+from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import extra_types
+from apitools.base.py import http_wrapper
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.command_lib.spanner.sql import QueryHasDml
+
+
+def CheckResponse(response):
+  """Wrap http_wrapper.CheckResponse to skip retry on 501."""
+  if response.status_code == 501:
+    raise apitools_exceptions.HttpError.FromResponse(response)
+  return http_wrapper.CheckResponse(response)
 
 
 def Create(database_ref):
@@ -61,6 +70,7 @@ def Delete(session_ref):
 
 def _GetClientInstance(api_name, api_version, http_timeout_sec=None):
   client = apis.GetClientInstance(api_name, api_version)
+  client.check_response_func = CheckResponse
   if http_timeout_sec is not None:
     client.http.timeout = http_timeout_sec
   return client

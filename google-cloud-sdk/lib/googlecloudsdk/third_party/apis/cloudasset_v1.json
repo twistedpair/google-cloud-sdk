@@ -1836,7 +1836,7 @@
     },
     "ResourceSearchResult": {
       "id": "ResourceSearchResult",
-      "description": "A result of Resource Search, containing information of a cloud resource. Next ID: 28",
+      "description": "A result of Resource Search, containing information of a cloud resource. Next ID: 29",
       "type": "object",
       "properties": {
         "name": {
@@ -2674,6 +2674,49 @@
           "description": "Optional. Specifies the maximum amount of time that the client is willing to wait for the query to complete. By default, this limit is 5 min for the first query, and 1 minute for the following queries. If the query is complete, the `done` field in the `QueryAssetsResponse` is true, otherwise false. Like BigQuery [jobs.query API](https:\/\/cloud.google.com\/bigquery\/docs\/reference\/rest\/v2\/jobs\/query#queryrequest) The call is not guaranteed to wait for the specified timeout; it typically returns after around 200 seconds (200,000 milliseconds), even if the query is not complete. The field will be ignored when [output_config] is specified.",
           "type": "string",
           "format": "google-duration"
+        },
+        "readTimeWindow": {
+          "description": "Optional. [start_time] is required. [start_time] must be less than [end_time] Defaults [end_time] to now if [start_time] is set and [end_time] isn't. Maximum permitted time range is 7 days.",
+          "$ref": "TimeWindow"
+        },
+        "readTime": {
+          "description": "Optional. Queries cloud assets as they appeared at the specified point in time.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "outputConfig": {
+          "description": "Optional. Destination where the query results will be saved. When this field is specified, the query results won't be saved in the [QueryAssetsResponse.query_result]. Instead [QueryAssetsResponse.output_config] will be set. Meanwhile, [QueryAssetsResponse.job_reference] will be set and can be used to check the status of the query job when passed to a following [QueryAssets] API call.",
+          "$ref": "QueryAssetsOutputConfig"
+        }
+      }
+    },
+    "QueryAssetsOutputConfig": {
+      "id": "QueryAssetsOutputConfig",
+      "description": "Output configuration query assets.",
+      "type": "object",
+      "properties": {
+        "bigqueryDestination": {
+          "description": "BigQuery destination where the query results will be saved.",
+          "$ref": "GoogleCloudAssetV1QueryAssetsOutputConfigBigQueryDestination"
+        }
+      }
+    },
+    "GoogleCloudAssetV1QueryAssetsOutputConfigBigQueryDestination": {
+      "id": "GoogleCloudAssetV1QueryAssetsOutputConfigBigQueryDestination",
+      "description": "BigQuery destination.",
+      "type": "object",
+      "properties": {
+        "dataset": {
+          "description": "Required. The BigQuery dataset where the query results will be saved. It has the format of \"projects\/{projectId}\/datasets\/{datasetId}\".",
+          "type": "string"
+        },
+        "table": {
+          "description": "Required. The BigQuery table where the query results will be saved. If this table does not exist, a new table with the given name will be created.",
+          "type": "string"
+        },
+        "writeDisposition": {
+          "description": "Specifies the action that occurs if the destination table or partition already exists. The following values are supported: * WRITE_TRUNCATE: If the table or partition already exists, BigQuery overwrites the entire table or all the partitions data. * WRITE_APPEND: If the table or partition already exists, BigQuery appends the data to the table or the latest partition. * WRITE_EMPTY: If the table already exists and contains data, an error is returned.",
+          "type": "string"
         }
       }
     },
@@ -2697,6 +2740,10 @@
         "queryResult": {
           "description": "Result of the query.",
           "$ref": "QueryResult"
+        },
+        "outputConfig": {
+          "description": "Output configuration which indicates instead of being returned in API response on the fly, the query result will be saved in a specific output.",
+          "$ref": "QueryAssetsOutputConfig"
         }
       }
     },

@@ -1251,7 +1251,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Required. Resource ID for this keystore. Values must match the regular expression `[\\w[:space:]-.]{1,255}`.",
+          "description": "Required. Resource ID for this keystore. Values must match the regular expression `[\\w[:space:].-]{1,255}`.",
           "type": "string"
         },
         "aliases": {
@@ -4063,6 +4063,15 @@
           "items": {
             "$ref": "GoogleCloudApigeeV1ApiProduct"
           }
+        },
+        "nextPageToken": {
+          "description": "Token that can be sent as `next_page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "type": "string"
+        },
+        "totalSize": {
+          "description": "Total count of API products for this org.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -4152,6 +4161,10 @@
           "description": "Duration, in milliseconds, of the consumer key that will be generated for the app. The default value, -1, indicates an infinite validity period. Once set, the expiration can't be updated. json key: keyExpiresIn",
           "type": "string",
           "format": "int64"
+        },
+        "developerEmail": {
+          "description": "Email of the developer.",
+          "type": "string"
         }
       }
     },
@@ -4227,6 +4240,15 @@
           "items": {
             "$ref": "GoogleCloudApigeeV1App"
           }
+        },
+        "nextPageToken": {
+          "description": "Token that can be sent as `next_page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "type": "string"
+        },
+        "totalSize": {
+          "description": "Total count of Apps.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -5114,6 +5136,15 @@
           "items": {
             "$ref": "GoogleCloudApigeeV1Developer"
           }
+        },
+        "nextPageToken": {
+          "description": "Token that can be sent as `next_page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "type": "string"
+        },
+        "totalSize": {
+          "description": "Total count of Developers.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -12788,6 +12819,22 @@
                   "location": "query",
                   "type": "string",
                   "format": "int64"
+                },
+                "filter": {
+                  "description": "The filter expression to be used to get the list of API products, where filtering can be done on name and createdAt. Example: filter = \"name = foobar\"",
+                  "location": "query",
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "Count of API products a single page can have in the response. If unspecified, at most 100 API products will be returned. The maximum value is 100; values above 100 will be coerced to 100.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "The starting index record for listing the developers.",
+                  "location": "query",
+                  "type": "string"
                 }
               },
               "parameterOrder": [
@@ -13223,6 +13270,22 @@
                 },
                 "apiProduct": {
                   "description": "API product.",
+                  "location": "query",
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "Optional. Count of apps a single page can have in the response. If unspecified, at most 100 apps will be returned. The maximum value is 100; values above 100 will be coerced to 100.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "Optional. The starting index record for listing the developers.",
+                  "location": "query",
+                  "type": "string"
+                },
+                "filter": {
+                  "description": "Optional. The filter expression to be used to get the list of apps, where filtering can be done on developerEmail, apiProduct, consumerKey, status, appId createdAt and appFamily. Example: filter = \"developerEmail = foo@bar.com\"",
                   "location": "query",
                   "type": "string"
                 }
@@ -13873,6 +13936,22 @@
                 },
                 "app": {
                   "description": "Optional. List only Developers that are associated with the app. Note that start_key, count are not applicable for this filter criteria.",
+                  "location": "query",
+                  "type": "string"
+                },
+                "filter": {
+                  "description": "Optional. The filter expression to be used to get the list of developers, where filtering can be done on email. Example: filter = \"email = foo@bar.com\"",
+                  "location": "query",
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "Optional. Count of developers a single page can have in the response. If unspecified, at most 100 developers will be returned. The maximum value is 100; values above 100 will be coerced to 100.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "Optional. The starting index record for listing the developers.",
                   "location": "query",
                   "type": "string"
                 }

@@ -71,19 +71,24 @@ def convert_to_json_parsable_type(value):
   return value
 
 
-def get_formatted_timestamp_in_utc(datetime_object):
-  """Converts datetime to UTC and returns formatted string representation."""
-  if not datetime_object:
-    return 'None'
+def convert_datetime_object_to_utc(datetime_object):
+  """Converts datetime object to UTC and returns it."""
   # Can't use CloudSDK core.util.times.FormatDateTime because of:
   # https://bugs.python.org/issue29097.
   # Also cannot use datetime.astimezone because the function doesn't alter
   # datetimes that have different offsets if they have the same timezone.
   offset = datetime_object.utcoffset()
   if offset:
-    datetime_object = (datetime_object -
-                       offset).replace(tzinfo=datetime.timezone.utc)
-  return datetime_object.strftime('%Y-%m-%dT%H:%M:%SZ')
+    return (datetime_object - offset).replace(tzinfo=datetime.timezone.utc)
+  return datetime_object
+
+
+def get_formatted_timestamp_in_utc(datetime_object):
+  """Converts datetime to UTC and returns formatted string representation."""
+  if not datetime_object:
+    return 'None'
+  return convert_datetime_object_to_utc(datetime_object).strftime(
+      '%Y-%m-%dT%H:%M:%SZ')
 
 
 def get_metadata_json_section_string(key_string, value_to_convert_to_json,):
@@ -103,15 +108,16 @@ def get_metadata_json_section_string(key_string, value_to_convert_to_json,):
       indent=METADATA_LINE_INDENT_STRING, key=key_string, json=json_string)
 
 
-def get_padded_metadata_key_value_line(key_string, value_string):
+def get_padded_metadata_key_value_line(key_string,
+                                       value_string,
+                                       extra_indent=0):
   """Returns metadata line with correct padding."""
   # Align all values to the right.
-  spaces_left_of_value = (
-      LONGEST_METADATA_KEY_LENGTH - len(key_string) +
-      METADATA_LINE_INDENT_LENGTH)
+  spaces_left_of_value = max(1, (LONGEST_METADATA_KEY_LENGTH - len(key_string) +
+                                 METADATA_LINE_INDENT_LENGTH - extra_indent))
   return '{indent}{key}:{_:>{left_spacing}}{value}'.format(
       _='',
-      indent=METADATA_LINE_INDENT_STRING,
+      indent=' ' * (METADATA_LINE_INDENT_LENGTH + extra_indent),
       key=key_string,
       left_spacing=spaces_left_of_value,
       value=value_string)

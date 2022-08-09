@@ -363,7 +363,8 @@
           ]
         },
         "provisioningIssue": {
-          "description": "Information about issues with provisioning a Managed Certificate.",
+          "description": "Output only. Information about issues with provisioning a Managed Certificate.",
+          "readOnly": true,
           "$ref": "ProvisioningIssue"
         },
         "authorizationAttemptInfo": {
@@ -382,7 +383,8 @@
       "type": "object",
       "properties": {
         "reason": {
-          "description": "Reason for provisioning failures.",
+          "description": "Output only. Reason for provisioning failures.",
+          "readOnly": true,
           "type": "string",
           "enumDescriptions": [
             "",
@@ -396,7 +398,8 @@
           ]
         },
         "details": {
-          "description": "Human readable explanation about the issue. Provided to help address the configuration issues. Not guaranteed to be stable. For programmatic access use Reason enum.",
+          "description": "Output only. Human readable explanation about the issue. Provided to help address the configuration issues. Not guaranteed to be stable. For programmatic access use Reason enum.",
+          "readOnly": true,
           "type": "string"
         }
       }
@@ -411,7 +414,8 @@
           "type": "string"
         },
         "state": {
-          "description": "State of the domain for managed certificate issuance.",
+          "description": "Output only. State of the domain for managed certificate issuance.",
+          "readOnly": true,
           "type": "string",
           "enumDescriptions": [
             "",
@@ -444,7 +448,8 @@
           ]
         },
         "details": {
-          "description": "Human readable explanation for reaching the state. Provided to help address the configuration issues. Not guaranteed to be stable. For programmatic access use Reason enum.",
+          "description": "Output only. Human readable explanation for reaching the state. Provided to help address the configuration issues. Not guaranteed to be stable. For programmatic access use FailureReason enum.",
+          "readOnly": true,
           "type": "string"
         }
       }
@@ -533,15 +538,18 @@
       "type": "object",
       "properties": {
         "targetHttpsProxy": {
-          "description": "This field returns the resource name in the following format: `\/\/compute.googleapis.com\/projects\/*\/global\/targetHttpsProxies\/*`.",
+          "description": "Output only. This field returns the resource name in the following format: `\/\/compute.googleapis.com\/projects\/*\/global\/targetHttpsProxies\/*`.",
+          "readOnly": true,
           "type": "string"
         },
         "targetSslProxy": {
-          "description": "This field returns the resource name in the following format: `\/\/compute.googleapis.com\/projects\/*\/global\/targetSslProxies\/*`.",
+          "description": "Output only. This field returns the resource name in the following format: `\/\/compute.googleapis.com\/projects\/*\/global\/targetSslProxies\/*`.",
+          "readOnly": true,
           "type": "string"
         },
         "ipConfigs": {
-          "description": "IP configurations for this Target Proxy where the Certificate Map is serving.",
+          "description": "Output only. IP configurations for this Target Proxy where the Certificate Map is serving.",
+          "readOnly": true,
           "type": "array",
           "items": {
             "$ref": "IpConfig"
@@ -555,11 +563,13 @@
       "type": "object",
       "properties": {
         "ipAddress": {
-          "description": "An external IP address.",
+          "description": "Output only. An external IP address.",
+          "readOnly": true,
           "type": "string"
         },
         "ports": {
-          "description": "Ports.",
+          "description": "Output only. Ports.",
+          "readOnly": true,
           "type": "array",
           "items": {
             "type": "integer",

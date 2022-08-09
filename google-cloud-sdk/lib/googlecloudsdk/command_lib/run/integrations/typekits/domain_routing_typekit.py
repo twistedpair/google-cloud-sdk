@@ -152,6 +152,29 @@ class DomainRoutingTypeKit(base.TypeKit):
 
     return selectors
 
+  def GetRefServices(self, name, resource_config, all_resources):
+    """Returns list of cloud run service that is binded to this resource.
+
+    Args:
+      name: str, name of the resource.
+      resource_config: dict, the resource config object of the integration
+      all_resources: dict, all the resources in the application.
+
+    Returns:
+      list cloud run service names
+    """
+    return self._GetAllServices(resource_config)
+
+  def _GetAllServices(self, resource_config):
+    services = []
+    for domain_config in resource_config.get('domains', []):
+      for route in domain_config.get('routes', []):
+        ref = route.get('ref')
+        if ref:
+          services.append(ref.replace('service/', ''))
+
+    return services
+
   def _FindDomainConfig(self, domains, domain):
     for domain_config in domains:
       if domain_config['domain'] == domain:

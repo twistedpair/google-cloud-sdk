@@ -142,11 +142,15 @@ def add_encryption_flags(parser, allow_patch=False, hidden=False):
       '--encryption-key',
       hidden=hidden,
       help=(
-          'A customer-supplied encryption key (An RFC 4648 section'
-          ' 4 base64-encoded AES256 string), or customer-managed encryption key'
-          ' of the form `projects/{project}/locations/{location}/keyRings/'
-          '{key-ring}/cryptoKeys/{crypto-key}`. This key will be'
-          ' used for all data written to Google Cloud Storage.'))
+          'The encryption key to use for encrypting target objects. The'
+          ' specified encryption key can be a customer-supplied encryption key'
+          ' (An RFC 4648 section 4 base64-encoded AES256 string), or a'
+          ' customer-managed encryption key of the form `projects/{project}/'
+          'locations/{location}/keyRings/ {key-ring}/cryptoKeys/{crypto-key}`.'
+          ' The specified key also acts as a decryption key, which is useful'
+          ' when copying or moving encryted data to a new location. Using this'
+          ' flag in an `objects update` command triggers a rewrite of target'
+          ' objects.'))
   parser.add_argument(
       '--decryption-keys',
       type=arg_parsers.ArgList(),
@@ -162,7 +166,10 @@ def add_encryption_flags(parser, allow_patch=False, hidden=False):
         '--clear-encryption-key',
         action='store_true',
         hidden=hidden,
-        help='Clears encryption key associated with an object.')
+        help='Clears the encryption key associated with an object. Using this'
+             ' flag triggers a rewrite of affected objects, which are then'
+             ' encrypted using the default encryption key set on the bucket,'
+             ' if one exists, or else with a Google-managed encryption key.')
 
 
 def add_continue_on_error_flag(parser):

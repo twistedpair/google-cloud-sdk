@@ -640,7 +640,7 @@
       "type": "object",
       "properties": {
         "savedQueries": {
-          "description": "A list of SavedQueries that matches the specified filter in the request.",
+          "description": "A list of SavedQueries that match the specified filter in the request.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudAiplatformV1beta1SavedQuery"
@@ -688,7 +688,7 @@
           "type": "string"
         },
         "problemType": {
-          "description": "Required. Problem type of the SavedQuery. Allowed values: * IMAGE_CLASSIFICATION_SINGLE_LABEL * IMAGE_CLASSIFICATION_MULTI_LABEL * IMAGE_BOUNDING_POLY * IMAGE_BOUNDING_BOX * IMAGE_POLYLINE * IMAGE_SEGMENTATION * TEXT_CLASSIFICATION_SINGLE_LABEL * TEXT_CLASSIFICATION_MULTI_LABEL * TEXT_EXTRACTION * TEXT_SENTIMENT * VIDEO_CLASSIFICATION * VIDEO_OBJECT_TRACKING * VIDEO_ACTION_RECOGNITION",
+          "description": "Required. Problem type of the SavedQuery. Allowed values: * IMAGE_CLASSIFICATION_SINGLE_LABEL * IMAGE_CLASSIFICATION_MULTI_LABEL * IMAGE_BOUNDING_POLY * IMAGE_BOUNDING_BOX * TEXT_CLASSIFICATION_SINGLE_LABEL * TEXT_CLASSIFICATION_MULTI_LABEL * TEXT_EXTRACTION * TEXT_SENTIMENT * VIDEO_CLASSIFICATION * VIDEO_OBJECT_TRACKING",
           "type": "string"
         },
         "annotationSpecCount": {
@@ -698,7 +698,7 @@
           "format": "int32"
         },
         "etag": {
-          "description": "Used to perform consistent read-modify-write updates. If not set, a blind \"overwrite\" update happens.",
+          "description": "Used to perform a consistent read-modify-write update. If not set, a blind \"overwrite\" update happens.",
           "type": "string"
         },
         "supportAutomlTraining": {
@@ -1081,7 +1081,7 @@
           "$ref": "GoogleCloudAiplatformV1beta1ExplanationParameters"
         },
         "metadata": {
-          "description": "Required. Metadata describing the Model's input and output for explanation.",
+          "description": "Optional. Metadata describing the Model's input and output for explanation.",
           "$ref": "GoogleCloudAiplatformV1beta1ExplanationMetadata"
         }
       }
@@ -1113,7 +1113,7 @@
           "format": "int32"
         },
         "outputIndices": {
-          "description": "If populated, only returns attributions that have output_index contained in output_indices. It must be an ndarray of integers, with the same shape of the output it's explaining. If not populated, returns attributions for top_k indices of outputs. If neither top_k nor output_indeices is populated, returns the argmax index of the outputs. Only applicable to Models that predict multiple outputs (e,g, multi-class Models that predict multiple classes).",
+          "description": "If populated, only returns attributions that have output_index contained in output_indices. It must be an ndarray of integers, with the same shape of the output it's explaining. If not populated, returns attributions for top_k indices of outputs. If neither top_k nor output_indices is populated, returns the argmax index of the outputs. Only applicable to Models that predict multiple outputs (e,g, multi-class Models that predict multiple classes).",
           "type": "array",
           "items": {
             "type": "any"
@@ -2015,6 +2015,45 @@
           "description": "Required. Selector choosing Features of the target EntityType. Feature IDs will be deduplicated.",
           "$ref": "GoogleCloudAiplatformV1beta1FeatureSelector"
         }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1WriteFeatureValuesRequest": {
+      "id": "GoogleCloudAiplatformV1beta1WriteFeatureValuesRequest",
+      "description": "Request message for FeaturestoreOnlineServingService.WriteFeatureValues.",
+      "type": "object",
+      "properties": {
+        "payloads": {
+          "description": "Required. The entities to be written. Up to 100,000 feature values can be written across all `payloads`.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1WriteFeatureValuesPayload"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1WriteFeatureValuesPayload": {
+      "id": "GoogleCloudAiplatformV1beta1WriteFeatureValuesPayload",
+      "description": "Contains Feature values to be written for a specific entity.",
+      "type": "object",
+      "properties": {
+        "entityId": {
+          "description": "Required. The ID of the entity.",
+          "type": "string"
+        },
+        "featureValues": {
+          "description": "Required. Feature values to be written, mapping from Feature ID to value. Up to 100,000 `feature_values` entries may be written across all payloads. The feature generation time, aligned by days, must be no older than (1825 days) and no later than one year (366 days) in the future.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "GoogleCloudAiplatformV1beta1FeatureValue"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1WriteFeatureValuesResponse": {
+      "id": "GoogleCloudAiplatformV1beta1WriteFeatureValuesResponse",
+      "description": "Response message for FeaturestoreOnlineServingService.WriteFeatureValues.",
+      "type": "object",
+      "properties": {
       }
     },
     "GoogleCloudAiplatformV1beta1Featurestore": {
@@ -4876,7 +4915,7 @@
     },
     "GoogleCloudAiplatformV1beta1ModelMonitoringConfig": {
       "id": "GoogleCloudAiplatformV1beta1ModelMonitoringConfig",
-      "description": "Next ID: 5",
+      "description": "Next ID: 6",
       "type": "object",
       "properties": {
         "objectiveConfigs": {
@@ -9769,7 +9808,7 @@
           "$ref": "GoogleCloudAiplatformInternalExplanationParameters"
         },
         "metadata": {
-          "description": "Required. Metadata describing the Model's input and output for explanation.",
+          "description": "Optional. Metadata describing the Model's input and output for explanation.",
           "$ref": "GoogleCloudAiplatformInternalExplanationMetadata"
         }
       }
@@ -9801,7 +9840,7 @@
           "format": "int32"
         },
         "outputIndices": {
-          "description": "If populated, only returns attributions that have output_index contained in output_indices. It must be an ndarray of integers, with the same shape of the output it's explaining. If not populated, returns attributions for top_k indices of outputs. If neither top_k nor output_indeices is populated, returns the argmax index of the outputs. Only applicable to Models that predict multiple outputs (e,g, multi-class Models that predict multiple classes).",
+          "description": "If populated, only returns attributions that have output_index contained in output_indices. It must be an ndarray of integers, with the same shape of the output it's explaining. If not populated, returns attributions for top_k indices of outputs. If neither top_k nor output_indices is populated, returns the argmax index of the outputs. Only applicable to Models that predict multiple outputs (e,g, multi-class Models that predict multiple classes).",
           "type": "array",
           "items": {
             "type": "any"
@@ -12900,7 +12939,7 @@
           "$ref": "GoogleCloudAiplatformUiExplanationParameters"
         },
         "metadata": {
-          "description": "Required. Metadata describing the Model's input and output for explanation.",
+          "description": "Optional. Metadata describing the Model's input and output for explanation.",
           "$ref": "GoogleCloudAiplatformUiExplanationMetadata"
         }
       }
@@ -12932,7 +12971,7 @@
           "format": "int32"
         },
         "outputIndices": {
-          "description": "If populated, only returns attributions that have output_index contained in output_indices. It must be an ndarray of integers, with the same shape of the output it's explaining. If not populated, returns attributions for top_k indices of outputs. If neither top_k nor output_indeices is populated, returns the argmax index of the outputs. Only applicable to Models that predict multiple outputs (e,g, multi-class Models that predict multiple classes).",
+          "description": "If populated, only returns attributions that have output_index contained in output_indices. It must be an ndarray of integers, with the same shape of the output it's explaining. If not populated, returns attributions for top_k indices of outputs. If neither top_k nor output_indices is populated, returns the argmax index of the outputs. Only applicable to Models that predict multiple outputs (e,g, multi-class Models that predict multiple classes).",
           "type": "array",
           "items": {
             "type": "any"
@@ -16041,7 +16080,7 @@
           "$ref": "GoogleCloudAiplatformV1alpha1ExplanationParameters"
         },
         "metadata": {
-          "description": "Required. Metadata describing the Model's input and output for explanation.",
+          "description": "Optional. Metadata describing the Model's input and output for explanation.",
           "$ref": "GoogleCloudAiplatformV1alpha1ExplanationMetadata"
         }
       }
@@ -21793,7 +21832,7 @@
           "$ref": "GoogleCloudAiplatformV1ExplanationParameters"
         },
         "metadata": {
-          "description": "Required. Metadata describing the Model's input and output for explanation.",
+          "description": "Optional. Metadata describing the Model's input and output for explanation.",
           "$ref": "GoogleCloudAiplatformV1ExplanationMetadata"
         }
       }
@@ -21821,7 +21860,7 @@
           "format": "int32"
         },
         "outputIndices": {
-          "description": "If populated, only returns attributions that have output_index contained in output_indices. It must be an ndarray of integers, with the same shape of the output it's explaining. If not populated, returns attributions for top_k indices of outputs. If neither top_k nor output_indeices is populated, returns the argmax index of the outputs. Only applicable to Models that predict multiple outputs (e,g, multi-class Models that predict multiple classes).",
+          "description": "If populated, only returns attributions that have output_index contained in output_indices. It must be an ndarray of integers, with the same shape of the output it's explaining. If not populated, returns attributions for top_k indices of outputs. If neither top_k nor output_indices is populated, returns the argmax index of the outputs. Only applicable to Models that predict multiple outputs (e,g, multi-class Models that predict multiple classes).",
           "type": "array",
           "items": {
             "type": "any"
@@ -26691,6 +26730,34 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Reads Feature values for multiple entities. Depending on their size, data for different entities may be broken up across multiple responses."
+                    },
+                    "writeFeatureValues": {
+                      "id": "aiplatform.projects.locations.featurestores.entityTypes.writeFeatureValues",
+                      "path": "v1beta1/{+entityType}:writeFeatureValues",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/featurestores/{featurestoresId}/entityTypes/{entityTypesId}:writeFeatureValues",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "entityType": {
+                          "description": "Required. The resource name of the EntityType for the entities being written. Value format: `projects\/{project}\/locations\/{location}\/featurestores\/ {featurestore}\/entityTypes\/{entityType}`. For example, for a machine learning model predicting user clicks on a website, an EntityType ID could be `user`.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/featurestores\/[^\/]+\/entityTypes\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "entityType"
+                      ],
+                      "request": {
+                        "$ref": "GoogleCloudAiplatformV1beta1WriteFeatureValuesRequest"
+                      },
+                      "response": {
+                        "$ref": "GoogleCloudAiplatformV1beta1WriteFeatureValuesResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Writes Feature values of one or more entities of an EntityType. The Feature values are merged into existing entities if any. The Feature values to be written must have timestamp within the online storage retention."
                     },
                     "create": {
                       "id": "aiplatform.projects.locations.featurestores.entityTypes.create",

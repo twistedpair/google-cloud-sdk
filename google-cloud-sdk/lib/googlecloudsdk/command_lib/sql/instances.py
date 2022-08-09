@@ -423,6 +423,9 @@ class _BaseInstances(object):
       if args.deletion_protection is not None:
         settings.deletionProtectionEnabled = args.deletion_protection
 
+      if args.time_zone is not None:
+        settings.timeZone = args.time_zone
+
     return settings
 
   @classmethod

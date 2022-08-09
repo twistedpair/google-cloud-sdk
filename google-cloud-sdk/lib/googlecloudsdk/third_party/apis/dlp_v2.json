@@ -959,7 +959,7 @@
       "type": "object",
       "properties": {
         "containerName": {
-          "description": "Name of the container where the finding is located. The top level name is the source file name or table name. Names of some common storage containers are formatted as follows: * BigQuery tables: `{project_id}:{dataset_id}.{table_id}` * Cloud Storage files: `gs:\/\/{bucket}\/{path}` * Datastore namespace: {namespace} Nested names could be absent if the embedded object has no string identifier (for example an image contained within a document).",
+          "description": "Name of the container where the finding is located. The top level name is the source file name or table name. Names of some common storage containers are formatted as follows: * BigQuery tables: `{project_id}:{dataset_id}.{table_id}` * Cloud Storage files: `gs:\/\/{bucket}\/{path}` * Datastore namespace: {namespace} Nested names could be absent if the embedded object has no string identifier (for example, an image contained within a document).",
           "type": "string"
         },
         "recordLocation": {
@@ -979,12 +979,12 @@
           "$ref": "GooglePrivacyDlpV2MetadataLocation"
         },
         "containerTimestamp": {
-          "description": "Finding container modification timestamp, if applicable. For Google Cloud Storage contains the last file modification timestamp. For BigQuery table contains the last_modified_time property. For Datastore - not populated.",
+          "description": "Finding container modification timestamp, if applicable. For Cloud Storage, this field contains the last file modification timestamp. For a BigQuery table, this field contains the last_modified_time property. For Datastore, this field isn't populated.",
           "type": "string",
           "format": "google-datetime"
         },
         "containerVersion": {
-          "description": "Finding container version, if available (\"generation\" for Google Cloud Storage).",
+          "description": "Finding container version, if available (\"generation\" for Cloud Storage).",
           "type": "string"
         }
       }
@@ -1231,7 +1231,7 @@
       "type": "object",
       "properties": {
         "type": {
-          "description": "Container type, for example BigQuery or Google Cloud Storage.",
+          "description": "Container type, for example BigQuery or Cloud Storage.",
           "type": "string"
         },
         "projectId": {
@@ -1239,24 +1239,24 @@
           "type": "string"
         },
         "fullPath": {
-          "description": "A string representation of the full container name. Examples: - BigQuery: 'Project:DataSetId.TableId' - Google Cloud Storage: 'gs:\/\/Bucket\/folders\/filename.txt'",
+          "description": "A string representation of the full container name. Examples: - BigQuery: 'Project:DataSetId.TableId' - Cloud Storage: 'gs:\/\/Bucket\/folders\/filename.txt'",
           "type": "string"
         },
         "rootPath": {
-          "description": "The root of the container. Examples: - For BigQuery table `project_id:dataset_id.table_id`, the root is `dataset_id` - For Google Cloud Storage file `gs:\/\/bucket\/folder\/filename.txt`, the root is `gs:\/\/bucket`",
+          "description": "The root of the container. Examples: - For BigQuery table `project_id:dataset_id.table_id`, the root is `dataset_id` - For Cloud Storage file `gs:\/\/bucket\/folder\/filename.txt`, the root is `gs:\/\/bucket`",
           "type": "string"
         },
         "relativePath": {
-          "description": "The rest of the path after the root. Examples: - For BigQuery table `project_id:dataset_id.table_id`, the relative path is `table_id` - Google Cloud Storage file `gs:\/\/bucket\/folder\/filename.txt`, the relative path is `folder\/filename.txt`",
+          "description": "The rest of the path after the root. Examples: - For BigQuery table `project_id:dataset_id.table_id`, the relative path is `table_id` - For Cloud Storage file `gs:\/\/bucket\/folder\/filename.txt`, the relative path is `folder\/filename.txt`",
           "type": "string"
         },
         "updateTime": {
-          "description": "Findings container modification timestamp, if applicable. For Google Cloud Storage contains last file modification timestamp. For BigQuery table contains last_modified_time property. For Datastore - not populated.",
+          "description": "Findings container modification timestamp, if applicable. For Cloud Storage, this field contains the last file modification timestamp. For a BigQuery table, this field contains the last_modified_time property. For Datastore, this field isn't populated.",
           "type": "string",
           "format": "google-datetime"
         },
         "version": {
-          "description": "Findings container version, if available (\"generation\" for Google Cloud Storage).",
+          "description": "Findings container version, if available (\"generation\" for Cloud Storage).",
           "type": "string"
         }
       }
@@ -1903,7 +1903,7 @@
           }
         },
         "recordSuppressions": {
-          "description": "Configuration defining which records get suppressed entirely. Records that match any suppression rule is omitted from the output.",
+          "description": "Configuration defining which records get suppressed entirely. Records that match any suppression rule are omitted from the output.",
           "type": "array",
           "items": {
             "$ref": "GooglePrivacyDlpV2RecordSuppression"
@@ -2744,7 +2744,7 @@
           "$ref": "GooglePrivacyDlpV2DatastoreOptions"
         },
         "cloudStorageOptions": {
-          "description": "Google Cloud Storage options.",
+          "description": "Cloud Storage options.",
           "$ref": "GooglePrivacyDlpV2CloudStorageOptions"
         },
         "bigQueryOptions": {
@@ -2788,7 +2788,7 @@
     },
     "GooglePrivacyDlpV2CloudStorageOptions": {
       "id": "GooglePrivacyDlpV2CloudStorageOptions",
-      "description": "Options defining a file or a set of files within a Google Cloud Storage bucket.",
+      "description": "Options defining a file or a set of files within a Cloud Storage bucket.",
       "type": "object",
       "properties": {
         "fileSet": {
@@ -2998,7 +2998,7 @@
     },
     "GooglePrivacyDlpV2TimespanConfig": {
       "id": "GooglePrivacyDlpV2TimespanConfig",
-      "description": "Configuration of the timespan of the items to include in scanning. Currently only supported when inspecting Google Cloud Storage and BigQuery.",
+      "description": "Configuration of the timespan of the items to include in scanning. Currently only supported when inspecting Cloud Storage and BigQuery.",
       "type": "object",
       "properties": {
         "startTime": {
@@ -3012,7 +3012,7 @@
           "format": "google-datetime"
         },
         "timestampField": {
-          "description": "Specification of the field containing the timestamp of scanned items. Used for data sources like Datastore and BigQuery. For BigQuery: If this value is not specified and the table was modified between the given start and end times, the entire table will be scanned. If this value is specified, then rows are filtered based on the given start and end times. Rows with a `NULL` value in the provided BigQuery column are skipped. Valid data types of the provided BigQuery column are: `INTEGER`, `DATE`, `TIMESTAMP`, and `DATETIME`. For Datastore: If this value is specified, then entities are filtered based on the given start and end times. If an entity does not contain the provided timestamp property or contains empty or invalid values, then it is included. Valid data types of the provided timestamp property are: `TIMESTAMP`. See the [known issue](https:\/\/cloud.google.com\/dlp\/docs\/known-issues#bq-timespan) related to this operation.",
+          "description": "Specification of the field containing the timestamp of scanned items. Used for data sources like Datastore and BigQuery. *For BigQuery* If this value is not specified and the table was modified between the given start and end times, the entire table will be scanned. If this value is specified, then rows are filtered based on the given start and end times. Rows with a `NULL` value in the provided BigQuery column are skipped. Valid data types of the provided BigQuery column are: `INTEGER`, `DATE`, `TIMESTAMP`, and `DATETIME`. If your BigQuery table is [partitioned at ingestion time](https:\/\/cloud.google.com\/bigquery\/docs\/partitioned-tables#ingestion_time), you can use any of the following pseudo-columns as your timestamp field. When used with Cloud DLP, these pseudo-column names are case sensitive. - _PARTITIONTIME - _PARTITIONDATE - _PARTITION_LOAD_TIME *For Datastore* If this value is specified, then entities are filtered based on the given start and end times. If an entity does not contain the provided timestamp property or contains empty or invalid values, then it is included. Valid data types of the provided timestamp property are: `TIMESTAMP`. See the [known issue](https:\/\/cloud.google.com\/dlp\/docs\/known-issues#bq-timespan) related to this operation.",
           "$ref": "GooglePrivacyDlpV2FieldId"
         },
         "enableAutoPopulationOfTimespanConfig": {
@@ -3041,6 +3041,10 @@
         "publishFindingsToCloudDataCatalog": {
           "description": "Publish findings to Cloud Datahub.",
           "$ref": "GooglePrivacyDlpV2PublishFindingsToCloudDataCatalog"
+        },
+        "deidentify": {
+          "description": "Create a de-identified copy of the input data. Applicable for non-image data only. The de-identified copy is in the same location as the original data.",
+          "$ref": "GooglePrivacyDlpV2Deidentify"
         },
         "jobNotificationEmails": {
           "description": "Enable email notification for project owners and editors on job's completion\/failure.",
@@ -3078,7 +3082,7 @@
           "enumDescriptions": [
             "Unused.",
             "Basic schema including only `info_type`, `quote`, `certainty`, and `timestamp`.",
-            "Schema tailored to findings from scanning Google Cloud Storage.",
+            "Schema tailored to findings from scanning Cloud Storage.",
             "Schema tailored to findings from scanning Google Datastore.",
             "Schema tailored to findings from scanning Google BigQuery.",
             "Schema containing all columns."
@@ -3117,6 +3121,88 @@
       "description": "Publish findings of a DlpJob to Data Catalog. Labels summarizing the results of the DlpJob will be applied to the entry for the resource scanned in Data Catalog. Any labels previously written by another DlpJob will be deleted. InfoType naming patterns are strictly enforced when using this feature. Note that the findings will be persisted in Data Catalog storage and are governed by Data Catalog service-specific policy, see https:\/\/cloud.google.com\/terms\/service-terms Only a single instance of this action can be specified and only allowed if all resources being scanned are BigQuery tables. Compatible with: Inspect",
       "type": "object",
       "properties": {
+      }
+    },
+    "GooglePrivacyDlpV2Deidentify": {
+      "id": "GooglePrivacyDlpV2Deidentify",
+      "description": "Create a de-identified copy of the requested table or files. . A TransformationDetail will be created for each transformation. If any rows in BigQuery are skipped during de-identification (transformation errors or row size exceeds BigQuery insert API limits) they are placed in the failure output table. If the original row exceeds the BigQuery insert API limit it will be truncated when written to the failure output table. The failure output table can be set in the action.deidentify.output.big_query_output.deidentified_failure_output_table field, if no table is set, a table will be automatically created in the same project and dataset as the original table. Compatible with: Inspect",
+      "type": "object",
+      "properties": {
+        "transformationConfig": {
+          "description": "User specified deidentify templates and configs for structured, unstructured, and image files.",
+          "$ref": "GooglePrivacyDlpV2TransformationConfig"
+        },
+        "transformationDetailsStorageConfig": {
+          "description": "Config for storing transformation details. This is separate from the de-identified content, and contains metadata about the successful transformations and\/or failures that occurred while de-identifying. This needs to be set in order for users to access information about the status of each transformation (see TransformationDetails message for more information about what is noted).",
+          "$ref": "GooglePrivacyDlpV2TransformationDetailsStorageConfig"
+        },
+        "cloudStorageOutput": {
+          "description": "Required. User settable GCS bucket and folders to store de-identified files. This field must be set for cloud storage deidentification. The output GCS bucket must be different from the input bucket. De-identified files will overwrite files in the output path. Form of: gs:\/\/bucket\/folder\/ or gs:\/\/bucket",
+          "type": "string"
+        },
+        "fileTypesToTransform": {
+          "description": "List of user-specified file type groups to transform. If specified, only the files with these filetypes will be transformed. If empty, all supported files will be transformed. Supported types may be automatically added over time. If a file type is set in this field that isn't supported by the Deidentify action then the job will fail and will not be successfully created\/started. Currently the only filetypes supported are: IMAGES, TEXT_FILES, CSV, TSV.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enumDescriptions": [
+              "Includes all files.",
+              "Includes all file extensions not covered by another entry. Binary scanning attempts to convert the content of the file to utf_8 to scan the file. If you wish to avoid this fall back, specify one or more of the other FileType's in your storage scan.",
+              "Included file extensions: asc,asp, aspx, brf, c, cc,cfm, cgi, cpp, csv, cxx, c++, cs, css, dart, dat, dot, eml,, epbub, ged, go, h, hh, hpp, hxx, h++, hs, html, htm, mkd, markdown, m, ml, mli, perl, pl, plist, pm, php, phtml, pht, properties, py, pyw, rb, rbw, rs, rss, rc, scala, sh, sql, swift, tex, shtml, shtm, xhtml, lhs, ics, ini, java, js, json, kix, kml, ocaml, md, txt, text, tsv, vb, vcard, vcs, wml, xcodeproj, xml, xsl, xsd, yml, yaml.",
+              "Included file extensions: bmp, gif, jpg, jpeg, jpe, png. bytes_limit_per_file has no effect on image files. Image inspection is restricted to 'global', 'us', 'asia', and 'europe'.",
+              "Word files >30 MB will be scanned as binary files. Included file extensions: docx, dotx, docm, dotm",
+              "PDF files >30 MB will be scanned as binary files. Included file extensions: pdf",
+              "Included file extensions: avro",
+              "Included file extensions: csv",
+              "Included file extensions: tsv",
+              "Powerpoint files >30 MB will be scanned as binary files. Included file extensions: pptx, pptm, potx, potm, pot",
+              "Excel files >30 MB will be scanned as binary files. Included file extensions: xlsx, xlsm, xltx, xltm"
+            ],
+            "enum": [
+              "FILE_TYPE_UNSPECIFIED",
+              "BINARY_FILE",
+              "TEXT_FILE",
+              "IMAGE",
+              "WORD",
+              "PDF",
+              "AVRO",
+              "CSV",
+              "TSV",
+              "POWERPOINT",
+              "EXCEL"
+            ]
+          }
+        }
+      }
+    },
+    "GooglePrivacyDlpV2TransformationConfig": {
+      "id": "GooglePrivacyDlpV2TransformationConfig",
+      "description": "User specified templates and configs for how to deidentify structured, unstructures, and image files. User must provide either a unstructured deidentify template or at least one redact image config.",
+      "type": "object",
+      "properties": {
+        "deidentifyTemplate": {
+          "description": "De-identify template. If this template is specified, it will serve as the default de-identify template. This template cannot contain `record_transformations` since it can be used for unstructured content such as free-form text files. If this template is not set, a default `ReplaceWithInfoTypeConfig` will be used to de-identify unstructured content.",
+          "type": "string"
+        },
+        "structuredDeidentifyTemplate": {
+          "description": "Structured de-identify template. If this template is specified, it will serve as the de-identify template for structured content such as delimited files and tables. If this template is not set but the `deidentify_template` is set, then `deidentify_template` will also apply to the structured content. If neither template is set, a default `ReplaceWithInfoTypeConfig` will be used to de-identify structured content.",
+          "type": "string"
+        },
+        "imageRedactTemplate": {
+          "description": "Image redact template. If this template is specified, it will serve as the de-identify template for images. If this template is not set, all findings in the image will be redacted with a black box.",
+          "type": "string"
+        }
+      }
+    },
+    "GooglePrivacyDlpV2TransformationDetailsStorageConfig": {
+      "id": "GooglePrivacyDlpV2TransformationDetailsStorageConfig",
+      "description": "Config for storing transformation details.",
+      "type": "object",
+      "properties": {
+        "table": {
+          "description": "The BigQuery table in which to store the output. This may be an existing table or in a new table in an existing dataset. If table_id is not set a new one will be generated for you with the following format: dlp_googleapis_transformation_details_yyyy_mm_dd_[dlp_job_id]. Pacific time zone will be used for generating the date details.",
+          "$ref": "GooglePrivacyDlpV2BigQueryTable"
+        }
       }
     },
     "GooglePrivacyDlpV2JobNotificationEmails": {
@@ -3770,7 +3856,7 @@
           "format": "int64"
         },
         "bucketValues": {
-          "description": "Sample of value frequencies in this bucket. The total number of values returned per bucket are capped at 20.",
+          "description": "Sample of value frequencies in this bucket. The total number of values returned per bucket is capped at 20.",
           "type": "array",
           "items": {
             "$ref": "GooglePrivacyDlpV2ValueFrequency"
@@ -4073,7 +4159,7 @@
           }
         },
         "estimatedProbability": {
-          "description": "The estimated probability that a given individual sharing these quasi-identifier values are in the dataset. This value, typically called \u03B4, is the ratio between the number of records in the dataset with these quasi-identifier values, and the total number of individuals (inside *and* outside the dataset) with these quasi-identifier values. For example, if there are 15 individuals in the dataset who share the same quasi-identifier values, and an estimated 100 people in the entire population with these values, then \u03B4 is 0.15.",
+          "description": "The estimated probability that a given individual sharing these quasi-identifier values is in the dataset. This value, typically called \u03B4, is the ratio between the number of records in the dataset with these quasi-identifier values, and the total number of individuals (inside *and* outside the dataset) with these quasi-identifier values. For example, if there are 15 individuals in the dataset who share the same quasi-identifier values, and an estimated 100 people in the entire population with these values, then \u03B4 is 0.15.",
           "type": "number",
           "format": "double"
         }
@@ -4304,11 +4390,11 @@
     },
     "GooglePrivacyDlpV2LargeCustomDictionaryConfig": {
       "id": "GooglePrivacyDlpV2LargeCustomDictionaryConfig",
-      "description": "Configuration for a custom dictionary created from a data source of any size up to the maximum size defined in the [limits](https:\/\/cloud.google.com\/dlp\/limits) page. The artifacts of dictionary creation are stored in the specified Google Cloud Storage location. Consider using `CustomInfoType.Dictionary` for smaller dictionaries that satisfies the size requirements.",
+      "description": "Configuration for a custom dictionary created from a data source of any size up to the maximum size defined in the [limits](https:\/\/cloud.google.com\/dlp\/limits) page. The artifacts of dictionary creation are stored in the specified Cloud Storage location. Consider using `CustomInfoType.Dictionary` for smaller dictionaries that satisfy the size requirements.",
       "type": "object",
       "properties": {
         "outputPath": {
-          "description": "Location to store dictionary artifacts in Google Cloud Storage. These files will only be accessible by project owners and the DLP API. If any of these artifacts are modified, the dictionary is considered invalid and can no longer be used.",
+          "description": "Location to store dictionary artifacts in Cloud Storage. These files will only be accessible by project owners and the DLP API. If any of these artifacts are modified, the dictionary is considered invalid and can no longer be used.",
           "$ref": "GooglePrivacyDlpV2CloudStoragePath"
         },
         "cloudStorageFileSet": {
@@ -4391,7 +4477,7 @@
             "StoredInfoType version is being created.",
             "StoredInfoType version is ready for use.",
             "StoredInfoType creation failed. All relevant error messages are returned in the `StoredInfoTypeVersion` message.",
-            "StoredInfoType is no longer valid because artifacts stored in user-controlled storage was modified. To fix an invalid StoredInfoType, use the `UpdateStoredInfoType` method to create a new version."
+            "StoredInfoType is no longer valid because artifacts stored in user-controlled storage were modified. To fix an invalid StoredInfoType, use the `UpdateStoredInfoType` method to create a new version."
           ],
           "enum": [
             "STORED_INFO_TYPE_STATE_UNSPECIFIED",
@@ -4402,7 +4488,7 @@
           ]
         },
         "errors": {
-          "description": "Errors that occurred when creating this storedInfoType version, or anomalies detected in the storedInfoType data that render it unusable. Only the five most recent errors will be displayed, with the most recent error appearing first. For example, some of the data for stored custom dictionaries is put in the user's Google Cloud Storage bucket, and if this data is modified or deleted by the user or another system, the dictionary becomes invalid. If any errors occur, fix the problem indicated by the error message and use the UpdateStoredInfoType API method to create another version of the storedInfoType to continue using it, reusing the same `config` if it was not the source of the error.",
+          "description": "Errors that occurred when creating this storedInfoType version, or anomalies detected in the storedInfoType data that render it unusable. Only the five most recent errors will be displayed, with the most recent error appearing first. For example, some of the data for stored custom dictionaries is put in the user's Cloud Storage bucket, and if this data is modified or deleted by the user or another system, the dictionary becomes invalid. If any errors occur, fix the problem indicated by the error message and use the UpdateStoredInfoType API method to create another version of the storedInfoType to continue using it, reusing the same `config` if it was not the source of the error.",
           "type": "array",
           "items": {
             "$ref": "GooglePrivacyDlpV2Error"
@@ -5635,7 +5721,7 @@
                       "format": "int32"
                     },
                     "orderBy": {
-                      "description": "Comma separated list of triggeredJob fields to order by, followed by `asc` or `desc` postfix. This list is case-insensitive, default sorting order is ascending, redundant space characters are insignificant. Example: `name asc,update_time, create_time desc` Supported fields are: - `create_time`: corresponds to the time the JobTrigger was created. - `update_time`: corresponds to tge time the JobTrigger was last updated. - `last_run_time`: corresponds to the last time the JobTrigger ran. - `name`: corresponds to the JobTrigger's name. - `display_name`: corresponds to the JobTrigger's display name. - `status`: corresponds to JobTrigger's status.",
+                      "description": "Comma separated list of triggeredJob fields to order by, followed by `asc` or `desc` postfix. This list is case-insensitive, default sorting order is ascending, redundant space characters are insignificant. Example: `name asc,update_time, create_time desc` Supported fields are: - `create_time`: corresponds to the time the JobTrigger was created. - `update_time`: corresponds to the time the JobTrigger was last updated. - `last_run_time`: corresponds to the last time the JobTrigger ran. - `name`: corresponds to the JobTrigger's name. - `display_name`: corresponds to the JobTrigger's display name. - `status`: corresponds to JobTrigger's status.",
                       "location": "query",
                       "type": "string"
                     },
@@ -5806,7 +5892,7 @@
                       ]
                     },
                     "orderBy": {
-                      "description": "Comma separated list of fields to order by, followed by `asc` or `desc` postfix. This list is case-insensitive, default sorting order is ascending, redundant space characters are insignificant. Example: `name asc, end_time asc, create_time desc` Supported fields are: - `create_time`: corresponds to the time the job was created. - `end_time`: corresponds to tehe time the job ended. - `name`: corresponds to the job's name. - `state`: corresponds to `state`",
+                      "description": "Comma separated list of fields to order by, followed by `asc` or `desc` postfix. This list is case-insensitive, default sorting order is ascending, redundant space characters are insignificant. Example: `name asc, end_time asc, create_time desc` Supported fields are: - `create_time`: corresponds to the time the job was created. - `end_time`: corresponds to the time the job ended. - `name`: corresponds to the job's name. - `state`: corresponds to `state`",
                       "location": "query",
                       "type": "string"
                     },
@@ -6573,7 +6659,7 @@
                   "format": "int32"
                 },
                 "orderBy": {
-                  "description": "Comma separated list of triggeredJob fields to order by, followed by `asc` or `desc` postfix. This list is case-insensitive, default sorting order is ascending, redundant space characters are insignificant. Example: `name asc,update_time, create_time desc` Supported fields are: - `create_time`: corresponds to the time the JobTrigger was created. - `update_time`: corresponds to tge time the JobTrigger was last updated. - `last_run_time`: corresponds to the last time the JobTrigger ran. - `name`: corresponds to the JobTrigger's name. - `display_name`: corresponds to the JobTrigger's display name. - `status`: corresponds to JobTrigger's status.",
+                  "description": "Comma separated list of triggeredJob fields to order by, followed by `asc` or `desc` postfix. This list is case-insensitive, default sorting order is ascending, redundant space characters are insignificant. Example: `name asc,update_time, create_time desc` Supported fields are: - `create_time`: corresponds to the time the JobTrigger was created. - `update_time`: corresponds to the time the JobTrigger was last updated. - `last_run_time`: corresponds to the last time the JobTrigger ran. - `name`: corresponds to the JobTrigger's name. - `display_name`: corresponds to the JobTrigger's display name. - `status`: corresponds to JobTrigger's status.",
                   "location": "query",
                   "type": "string"
                 },
@@ -6744,7 +6830,7 @@
                   ]
                 },
                 "orderBy": {
-                  "description": "Comma separated list of fields to order by, followed by `asc` or `desc` postfix. This list is case-insensitive, default sorting order is ascending, redundant space characters are insignificant. Example: `name asc, end_time asc, create_time desc` Supported fields are: - `create_time`: corresponds to the time the job was created. - `end_time`: corresponds to tehe time the job ended. - `name`: corresponds to the job's name. - `state`: corresponds to `state`",
+                  "description": "Comma separated list of fields to order by, followed by `asc` or `desc` postfix. This list is case-insensitive, default sorting order is ascending, redundant space characters are insignificant. Example: `name asc, end_time asc, create_time desc` Supported fields are: - `create_time`: corresponds to the time the job was created. - `end_time`: corresponds to the time the job ended. - `name`: corresponds to the job's name. - `state`: corresponds to `state`",
                   "location": "query",
                   "type": "string"
                 },
@@ -7672,7 +7758,7 @@
                       "format": "int32"
                     },
                     "orderBy": {
-                      "description": "Comma separated list of triggeredJob fields to order by, followed by `asc` or `desc` postfix. This list is case-insensitive, default sorting order is ascending, redundant space characters are insignificant. Example: `name asc,update_time, create_time desc` Supported fields are: - `create_time`: corresponds to the time the JobTrigger was created. - `update_time`: corresponds to tge time the JobTrigger was last updated. - `last_run_time`: corresponds to the last time the JobTrigger ran. - `name`: corresponds to the JobTrigger's name. - `display_name`: corresponds to the JobTrigger's display name. - `status`: corresponds to JobTrigger's status.",
+                      "description": "Comma separated list of triggeredJob fields to order by, followed by `asc` or `desc` postfix. This list is case-insensitive, default sorting order is ascending, redundant space characters are insignificant. Example: `name asc,update_time, create_time desc` Supported fields are: - `create_time`: corresponds to the time the JobTrigger was created. - `update_time`: corresponds to the time the JobTrigger was last updated. - `last_run_time`: corresponds to the last time the JobTrigger ran. - `name`: corresponds to the JobTrigger's name. - `display_name`: corresponds to the JobTrigger's display name. - `status`: corresponds to JobTrigger's status.",
                       "location": "query",
                       "type": "string"
                     },
@@ -7787,7 +7873,7 @@
                       ]
                     },
                     "orderBy": {
-                      "description": "Comma separated list of fields to order by, followed by `asc` or `desc` postfix. This list is case-insensitive, default sorting order is ascending, redundant space characters are insignificant. Example: `name asc, end_time asc, create_time desc` Supported fields are: - `create_time`: corresponds to the time the job was created. - `end_time`: corresponds to tehe time the job ended. - `name`: corresponds to the job's name. - `state`: corresponds to `state`",
+                      "description": "Comma separated list of fields to order by, followed by `asc` or `desc` postfix. This list is case-insensitive, default sorting order is ascending, redundant space characters are insignificant. Example: `name asc, end_time asc, create_time desc` Supported fields are: - `create_time`: corresponds to the time the job was created. - `end_time`: corresponds to the time the job ended. - `name`: corresponds to the job's name. - `state`: corresponds to `state`",
                       "location": "query",
                       "type": "string"
                     },

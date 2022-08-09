@@ -2982,6 +2982,12 @@ class _SectionStorage(_Section):
         help_text=self._CHECK_HASHES_HELP_TEXT,
         choices=([setting.value for setting in CheckHashes]))
 
+    self.check_mv_early_deletion_fee = self._AddBool(
+        'check_mv_early_deletion_fee',
+        default=True,
+        help_text='Block mv commands that may incur an early deletion fee'
+        ' (the source object in a mv is deleted).')
+
     self.convert_incompatible_windows_path_characters = self._AddBool(
         'convert_incompatible_windows_path_characters',
         default=True,

@@ -4663,6 +4663,44 @@ class ReservationAffinity(_messages.Message):
   values = _messages.StringField(3, repeated=True)
 
 
+class ResourceLabels(_messages.Message):
+  r"""Collection of [GCP labels](https://cloud.google.com/resource-
+  manager/docs/creating-managing-labels).
+
+  Messages:
+    LabelsValue: Map of node label keys and node label values.
+
+  Fields:
+    labels: Map of node label keys and node label values.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Map of node label keys and node label values.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  labels = _messages.MessageField('LabelsValue', 1)
+
+
 class ResourceLimit(_messages.Message):
   r"""Contains information about amount of some resource in the cluster. For
   memory, value should be in GB.
@@ -5718,10 +5756,6 @@ class UpdateMasterRequest(_messages.Message):
 class UpdateNodePoolRequest(_messages.Message):
   r"""SetNodePoolVersionRequest updates the version of a node pool.
 
-  Messages:
-    ResourceLabelsValue: The resource labels for the node pool to use to
-      annotate any related Google Compute Engine resources.
-
   Fields:
     clusterId: Deprecated. The name of the cluster to upgrade. This field has
       been deprecated and replaced by the name field.
@@ -5790,32 +5824,6 @@ class UpdateNodePoolRequest(_messages.Message):
       field has been deprecated and replaced by the name field.
   """
 
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class ResourceLabelsValue(_messages.Message):
-    r"""The resource labels for the node pool to use to annotate any related
-    Google Compute Engine resources.
-
-    Messages:
-      AdditionalProperty: An additional property for a ResourceLabelsValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type ResourceLabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a ResourceLabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
   clusterId = _messages.StringField(1)
   confidentialNodes = _messages.MessageField('ConfidentialNodes', 2)
   etag = _messages.StringField(3)
@@ -5835,7 +5843,7 @@ class UpdateNodePoolRequest(_messages.Message):
   nodePoolId = _messages.StringField(17)
   nodeVersion = _messages.StringField(18)
   projectId = _messages.StringField(19)
-  resourceLabels = _messages.MessageField('ResourceLabelsValue', 20)
+  resourceLabels = _messages.MessageField('ResourceLabels', 20)
   tags = _messages.MessageField('NetworkTags', 21)
   taints = _messages.MessageField('NodeTaints', 22)
   updatedNodePool = _messages.MessageField('NodePool', 23)

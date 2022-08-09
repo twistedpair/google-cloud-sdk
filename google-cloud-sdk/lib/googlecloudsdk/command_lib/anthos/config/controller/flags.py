@@ -134,14 +134,12 @@ def AddFullManagement(parser):
   """Adds --full-management flag."""
   parser.add_argument(
       "--full-management",
-      hidden=True,
       # Use store_const so that gcloud doesn't generate a hidden
       # --no-full-management flag. See yaqs/4400496223010684928 for more
       # details.
       action="store_const",
       const=True,
-      help=("Enable full cluster management type. The project must be "
-            "allowlisted to use this flag."))
+      help=("Enable full cluster management type. This is a preview feature."))
 
 
 def AddUsePrivateEndpoint(parser):

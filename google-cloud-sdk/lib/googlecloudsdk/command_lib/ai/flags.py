@@ -257,8 +257,8 @@ def AddPredictionResourcesArgs(parser, version):
       '--min-replica-count',
       type=arg_parsers.BoundedInt(1, sys.maxsize, unlimited=True),
       help=("""\
-Minimum number of machine replicas the deployed model will be always deployed
-on. If specified, the value must be equal to or larger than 1.
+Minimum number of machine replicas for the deployment resources the model will be
+deployed on. If specified, the value must be equal to or larger than 1.
 
 If not specified and the uploaded models use dedicated resources, the default
 value is 1.
@@ -267,8 +267,10 @@ value is 1.
   base.Argument(
       '--max-replica-count',
       type=int,
-      help=('Maximum number of machine replicas the deployed model will be '
-            'always deployed on.')).AddToParser(parser)
+      help=("""\
+Maximum number of machine replicas for the deployment resources the model will be
+deployed on.
+""")).AddToParser(parser)
 
   base.Argument(
       '--machine-type',
@@ -298,7 +300,7 @@ be selected.
 For example:
 `--accelerator=type=nvidia-tesla-k80,count=1`""".format(', '.join([
     "'{}'".format(c) for c in GetAcceleratorTypeMapper(version).choices
-  ]))).AddToParser(parser)
+    ]))).AddToParser(parser)
 
 
 def GetAutoscalingMetricSpecsArg():
@@ -384,6 +386,47 @@ pricing](https://cloud.google.com/stackdriver/pricing).
 
 User can disable container logging by setting this flag to true.
 """)
+
+
+def GetRequestResponseLoggingTableArg():
+  return base.Argument(
+      '--request-response-logging-table',
+      required=False,
+      default=None,
+      help="""BigQuery table uri for prediction request & response logging.""")
+
+
+def GetRequestResponseLoggingRateArg():
+  return base.Argument(
+      '--request-response-logging-rate',
+      required=False,
+      default=None,
+      type=float,
+      help="""Prediction request & response sampling rate for logging to BigQuery table."""
+  )
+
+
+def GetDisableRequestResponseLoggingArg():
+  return base.Argument(
+      '--disable-request-response-logging',
+      action='store_true',
+      required=False,
+      default=False,
+      help="""Disable prediction request & response logging.""")
+
+
+def AddRequestResponseLoggingConfigGroupArgs(parser):
+  """Adds arguments for request-response logging configuration."""
+  logging_config_group = parser.add_group(required=False)
+  GetRequestResponseLoggingTableArg().AddToParser(logging_config_group)
+  GetRequestResponseLoggingRateArg().AddToParser(logging_config_group)
+
+
+def AddRequestResponseLoggingConfigUpdateGroupArgs(parser):
+  """Adds arguments for update request-response logging configuration."""
+  logging_update_group = parser.add_mutually_exclusive_group(required=False)
+  GetDisableRequestResponseLoggingArg().AddToParser(logging_update_group)
+  AddRequestResponseLoggingConfigGroupArgs(logging_update_group)
 
 
 def GetServiceAccountArg():

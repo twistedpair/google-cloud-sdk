@@ -80,6 +80,33 @@ def PromptForOpRegion():
        'Please specify `--region` to select a region.'))
 
 
+def PromptForDeploymentResourcePoolSupportedRegion():
+  """Prompt for region from list of deployment resource pool available regions.
+
+  This method is referenced by the declaritive iam commands as a fallthrough
+  for getting the region.
+
+  Returns:
+    The region specified by the user, str
+
+  Raises:
+    RequiredArgumentException: If can not prompt a console for region.
+  """
+
+  if console_io.CanPrompt():
+    all_regions = list(constants.SUPPORTED_DEPLOYMENT_RESOURCE_POOL_REGIONS)
+    idx = console_io.PromptChoice(
+        all_regions, message='Please specify a region:\n', cancel_option=True)
+    region = all_regions[idx]
+    log.status.Print('To make this the default region, run '
+                     '`gcloud config set ai/region {}`.\n'.format(region))
+    return region
+  raise exceptions.RequiredArgumentException(
+      '--region',
+      ('Cannot prompt a console for region. Region is required. '
+       'Please specify `--region` to select a region.'))
+
+
 def GetRegion(args, prompt_func=PromptForRegion):
   """Gets the region and prompt for region if not provided.
 

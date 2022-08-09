@@ -5,6 +5,98 @@ Copyright 2014-2022 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 397.0.0 (2022-08-09)
+
+### Breaking Changes
+
+*   **(Cloud Datastore)** Deprecated `gcloud datastore database create`. Use `gcloud alpha firestore
+    database update --type=datastore-mode` instead.
+*   **(Cloud Firestore)** The `gcloud firestore database create` will be required to administer your
+    database. Please enable the API and ensure you have the required
+    permissions. See
+    <https://cloud.google.com/firestore/docs/app-engine-requirement>.
+*   **(Cloud Firestore)** `gcloud firestore database create` will no longer support App Engine regions
+    (us-central, europe-west). See
+    <https://cloud.google.com/firestore/docs/locations> for available regions.
+
+
+### AI
+
+* Added `--request-response-logging-table` and `--request-response-logging-rate` flags to `gcloud ai endpoints create|update` to allow config prediction endpoint request-response logging.
+
+### Artifact Registry
+
+*   Added `gcloud artifacts versions describe` command.
+*   Added `gcloud artifacts settings` to describe/modify project settings.
+
+### Batch
+
+* Modified `gcloud batch jobs list` to use `--location` as an optional flag.
+
+### Cloud DNS
+
+* Update record-sets create and update methods for health checked routing policies.
+
+### Cloud Datastore Emulator
+
+* Release Cloud Datastore emulator v2.2.2
+  * Fixed bug which caused failures when attempting to Export.
+
+### Cloud Identity-Aware Proxy
+
+*  Promoted host based flags to GA for surfaces`gcloud compute ssh`,`gcloud compute scp` and `gcloud compute start-iap-tunnel`.
+
+### Cloud Run
+
+* Added `Startup Probe` and `Liveness Probe` fields to the output of
+  `gcloud run services describe [SERVICE]`.
+
+### Compute Engine
+
+* Added 'network-firewall-policy` and 'network-regional-firewall-policy` to TYPE column of 'compute instances network-interfaces get-effective-firewalls` output.
+
+### Config Connector
+
+* Updated Google Cloud Config Connector to version 1.91.0.
+  See Config Connector Overview for more details [https://cloud.google.com/config-connector/docs/overview](https://cloud.google.com/config-connector/docs/overview).
+
+### Terraform
+
+*   Added support for the following resources in CAI-based policies:
+    *   `google_artifact_registry_repository_iam_binding`
+    *   `google_artifact_registry_repository_iam_member`
+    *   `google_artifact_registry_repository_iam_policy`
+    *   `google_bigquery_connection_iam_binding`
+    *   `google_bigquery_connection_iam_member`
+    *   `google_bigquery_connection_iam_policy`
+    *   `google_cloud_tasks_queue_iam_binding`
+    *   `google_cloud_tasks_queue_iam_member`
+    *   `google_cloud_tasks_queue_iam_policy`
+    *   `google_cloudiot_registry_iam_binding`
+    *   `google_cloudiot_registry_iam_member`
+    *   `google_cloudiot_registry_iam_policy`
+    *   `google_compute_backend_bucket_iam_binding`
+    *   `google_compute_backend_bucket_iam_member`
+    *   `google_compute_backend_bucket_iam_policy`
+    *   `google_compute_snapshot_iam_binding`
+    *   `google_compute_snapshot_iam_member`
+    *   `google_compute_snapshot_iam_policy`
+    *   `google_dataproc_autoscaling_policy_iam_binding`
+    *   `google_dataproc_autoscaling_policy_iam_member`
+    *   `google_dataproc_autoscaling_policy_iam_policy`
+    *   `google_dataproc_metastore_service_iam_binding`
+    *   `google_dataproc_metastore_service_iam_member`
+    *   `google_dataproc_metastore_service_iam_policy`
+*   TF -> CAI resource conversion compiled against google provider version
+    [4.30.0](https://github.com/hashicorp/terraform-provider-google/releases/tag/v4.30.0).
+*   Resources without a known project, folder, or organization will have their
+    ancestry set to `organizations/unknown` instead of throwing a 403 error that
+    halts validation.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 396.0.0 (2022-08-02)
 
 ### AI
@@ -573,7 +665,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 *  Add support for `partitioning_type` with `--time_partitioning_type` flag in Scheduled Queries when a schedule is specified by `--schedule` in `bq query`.
 *  Added support for showing table clone info in `bq show`.
-*  Added support for External Support Credentials.
+*  Added support for both Workload and Workforce identity federation.
 *  Added `--max_time_travel_hours` flag to `bq mk`.
 *  Added `--autodetect_schema` flag to `bq update`.
 *  Added flag `--preserve_ascii_control_characters` to `bq load` to allow ASCII Control chars.

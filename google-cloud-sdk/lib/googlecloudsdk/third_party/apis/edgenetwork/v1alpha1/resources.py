@@ -106,6 +106,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_ZONES_ROUTES = (
+      'projects.locations.zones.routes',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/zones/{zonesId}/'
+              'routes/{routesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_ZONES_SUBNETS = (
       'projects.locations.zones.subnets',
       '{+name}',

@@ -10854,6 +10854,32 @@ class ComputeAlpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def SimulateMaintenanceEvent(self, request, global_params=None):
+      r"""Simulates maintenance event on specified nodes from the node group.
+
+      Args:
+        request: (ComputeNodeGroupsSimulateMaintenanceEventRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SimulateMaintenanceEvent')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SimulateMaintenanceEvent.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.nodeGroups.simulateMaintenanceEvent',
+        ordered_params=['project', 'zone', 'nodeGroup'],
+        path_params=['nodeGroup', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/nodeGroups/{nodeGroup}/simulateMaintenanceEvent',
+        request_field='nodeGroupsSimulateMaintenanceEventRequest',
+        request_type_name='ComputeNodeGroupsSimulateMaintenanceEventRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def TestIamPermissions(self, request, global_params=None):
       r"""Returns permissions that a caller has on the specified resource.
 

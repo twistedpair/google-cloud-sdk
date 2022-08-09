@@ -98,6 +98,17 @@ SUPPORTED_OP_REGIONS = (
     'us-west4',
 )
 
+# Available regions specifically for deployment resource pools
+SUPPORTED_DEPLOYMENT_RESOURCE_POOL_REGIONS = (
+    'us-central1',
+    'us-east1',
+    'us-east4',
+    'us-west1',
+    'europe-west1',
+    'asia-northeast1',
+    'asia-southeast1',
+)
+
 OPERATION_CREATION_DISPLAY_MESSAGE = """\
 The {verb} operation [{name}] was submitted successfully.
 

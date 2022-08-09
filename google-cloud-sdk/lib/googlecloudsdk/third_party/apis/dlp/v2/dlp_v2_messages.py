@@ -417,8 +417,8 @@ class DlpOrganizationsLocationsDlpJobsListRequest(_messages.Message):
       ascending, redundant space characters are insignificant. Example: `name
       asc, end_time asc, create_time desc` Supported fields are: -
       `create_time`: corresponds to the time the job was created. -
-      `end_time`: corresponds to tehe time the job ended. - `name`:
-      corresponds to the job's name. - `state`: corresponds to `state`
+      `end_time`: corresponds to the time the job ended. - `name`: corresponds
+      to the job's name. - `state`: corresponds to `state`
     pageSize: The standard list page size.
     pageToken: The standard list page token.
     parent: Required. Parent resource name. The format of this value varies
@@ -639,7 +639,7 @@ class DlpOrganizationsLocationsJobTriggersListRequest(_messages.Message):
       sorting order is ascending, redundant space characters are
       insignificant. Example: `name asc,update_time, create_time desc`
       Supported fields are: - `create_time`: corresponds to the time the
-      JobTrigger was created. - `update_time`: corresponds to tge time the
+      JobTrigger was created. - `update_time`: corresponds to the time the
       JobTrigger was last updated. - `last_run_time`: corresponds to the last
       time the JobTrigger ran. - `name`: corresponds to the JobTrigger's name.
       - `display_name`: corresponds to the JobTrigger's display name. -
@@ -1177,8 +1177,8 @@ class DlpProjectsDlpJobsListRequest(_messages.Message):
       ascending, redundant space characters are insignificant. Example: `name
       asc, end_time asc, create_time desc` Supported fields are: -
       `create_time`: corresponds to the time the job was created. -
-      `end_time`: corresponds to tehe time the job ended. - `name`:
-      corresponds to the job's name. - `state`: corresponds to `state`
+      `end_time`: corresponds to the time the job ended. - `name`: corresponds
+      to the job's name. - `state`: corresponds to `state`
     pageSize: The standard list page size.
     pageToken: The standard list page token.
     parent: Required. Parent resource name. The format of this value varies
@@ -1437,7 +1437,7 @@ class DlpProjectsJobTriggersListRequest(_messages.Message):
       sorting order is ascending, redundant space characters are
       insignificant. Example: `name asc,update_time, create_time desc`
       Supported fields are: - `create_time`: corresponds to the time the
-      JobTrigger was created. - `update_time`: corresponds to tge time the
+      JobTrigger was created. - `update_time`: corresponds to the time the
       JobTrigger was last updated. - `last_run_time`: corresponds to the last
       time the JobTrigger ran. - `name`: corresponds to the JobTrigger's name.
       - `display_name`: corresponds to the JobTrigger's display name. -
@@ -1790,8 +1790,8 @@ class DlpProjectsLocationsDlpJobsListRequest(_messages.Message):
       ascending, redundant space characters are insignificant. Example: `name
       asc, end_time asc, create_time desc` Supported fields are: -
       `create_time`: corresponds to the time the job was created. -
-      `end_time`: corresponds to tehe time the job ended. - `name`:
-      corresponds to the job's name. - `state`: corresponds to `state`
+      `end_time`: corresponds to the time the job ended. - `name`: corresponds
+      to the job's name. - `state`: corresponds to `state`
     pageSize: The standard list page size.
     pageToken: The standard list page token.
     parent: Required. Parent resource name. The format of this value varies
@@ -2065,7 +2065,7 @@ class DlpProjectsLocationsJobTriggersListRequest(_messages.Message):
       sorting order is ascending, redundant space characters are
       insignificant. Example: `name asc,update_time, create_time desc`
       Supported fields are: - `create_time`: corresponds to the time the
-      JobTrigger was created. - `update_time`: corresponds to tge time the
+      JobTrigger was created. - `update_time`: corresponds to the time the
       JobTrigger was last updated. - `last_run_time`: corresponds to the last
       time the JobTrigger ran. - `name`: corresponds to the JobTrigger's name.
       - `display_name`: corresponds to the JobTrigger's display name. -
@@ -2341,6 +2341,9 @@ class GooglePrivacyDlpV2Action(_messages.Message):
   https://cloud.google.com/dlp/docs/concepts-actions to learn more.
 
   Fields:
+    deidentify: Create a de-identified copy of the input data. Applicable for
+      non-image data only. The de-identified copy is in the same location as
+      the original data.
     jobNotificationEmails: Enable email notification for project owners and
       editors on job's completion/failure.
     pubSub: Publish a notification to a pubsub topic.
@@ -2352,12 +2355,13 @@ class GooglePrivacyDlpV2Action(_messages.Message):
     saveFindings: Save resulting findings in a provided location.
   """
 
-  jobNotificationEmails = _messages.MessageField('GooglePrivacyDlpV2JobNotificationEmails', 1)
-  pubSub = _messages.MessageField('GooglePrivacyDlpV2PublishToPubSub', 2)
-  publishFindingsToCloudDataCatalog = _messages.MessageField('GooglePrivacyDlpV2PublishFindingsToCloudDataCatalog', 3)
-  publishSummaryToCscc = _messages.MessageField('GooglePrivacyDlpV2PublishSummaryToCscc', 4)
-  publishToStackdriver = _messages.MessageField('GooglePrivacyDlpV2PublishToStackdriver', 5)
-  saveFindings = _messages.MessageField('GooglePrivacyDlpV2SaveFindings', 6)
+  deidentify = _messages.MessageField('GooglePrivacyDlpV2Deidentify', 1)
+  jobNotificationEmails = _messages.MessageField('GooglePrivacyDlpV2JobNotificationEmails', 2)
+  pubSub = _messages.MessageField('GooglePrivacyDlpV2PublishToPubSub', 3)
+  publishFindingsToCloudDataCatalog = _messages.MessageField('GooglePrivacyDlpV2PublishFindingsToCloudDataCatalog', 4)
+  publishSummaryToCscc = _messages.MessageField('GooglePrivacyDlpV2PublishSummaryToCscc', 5)
+  publishToStackdriver = _messages.MessageField('GooglePrivacyDlpV2PublishToStackdriver', 6)
+  saveFindings = _messages.MessageField('GooglePrivacyDlpV2SaveFindings', 7)
 
 
 class GooglePrivacyDlpV2ActivateJobTriggerRequest(_messages.Message):
@@ -2634,7 +2638,7 @@ class GooglePrivacyDlpV2CategoricalStatsHistogramBucket(_messages.Message):
     bucketSize: Total number of values in this bucket.
     bucketValueCount: Total number of distinct values in this bucket.
     bucketValues: Sample of value frequencies in this bucket. The total number
-      of values returned per bucket are capped at 20.
+      of values returned per bucket is capped at 20.
     valueFrequencyLowerBound: Lower bound on the value frequency of the values
       in this bucket.
     valueFrequencyUpperBound: Upper bound on the value frequency of the values
@@ -2750,8 +2754,7 @@ class GooglePrivacyDlpV2CloudStorageFileSet(_messages.Message):
 
 
 class GooglePrivacyDlpV2CloudStorageOptions(_messages.Message):
-  r"""Options defining a file or a set of files within a Google Cloud Storage
-  bucket.
+  r"""Options defining a file or a set of files within a Cloud Storage bucket.
 
   Enums:
     FileTypesValueListEntryValuesEnum:
@@ -2985,26 +2988,25 @@ class GooglePrivacyDlpV2Container(_messages.Message):
 
   Fields:
     fullPath: A string representation of the full container name. Examples: -
-      BigQuery: 'Project:DataSetId.TableId' - Google Cloud Storage:
+      BigQuery: 'Project:DataSetId.TableId' - Cloud Storage:
       'gs://Bucket/folders/filename.txt'
     projectId: Project where the finding was found. Can be different from the
       project that owns the finding.
     relativePath: The rest of the path after the root. Examples: - For
       BigQuery table `project_id:dataset_id.table_id`, the relative path is
-      `table_id` - Google Cloud Storage file
-      `gs://bucket/folder/filename.txt`, the relative path is
-      `folder/filename.txt`
+      `table_id` - For Cloud Storage file `gs://bucket/folder/filename.txt`,
+      the relative path is `folder/filename.txt`
     rootPath: The root of the container. Examples: - For BigQuery table
-      `project_id:dataset_id.table_id`, the root is `dataset_id` - For Google
-      Cloud Storage file `gs://bucket/folder/filename.txt`, the root is
+      `project_id:dataset_id.table_id`, the root is `dataset_id` - For Cloud
+      Storage file `gs://bucket/folder/filename.txt`, the root is
       `gs://bucket`
-    type: Container type, for example BigQuery or Google Cloud Storage.
+    type: Container type, for example BigQuery or Cloud Storage.
     updateTime: Findings container modification timestamp, if applicable. For
-      Google Cloud Storage contains last file modification timestamp. For
-      BigQuery table contains last_modified_time property. For Datastore - not
-      populated.
-    version: Findings container version, if available ("generation" for Google
-      Cloud Storage).
+      Cloud Storage, this field contains the last file modification timestamp.
+      For a BigQuery table, this field contains the last_modified_time
+      property. For Datastore, this field isn't populated.
+    version: Findings container version, if available ("generation" for Cloud
+      Storage).
   """
 
   fullPath = _messages.StringField(1)
@@ -3043,13 +3045,13 @@ class GooglePrivacyDlpV2ContentLocation(_messages.Message):
       `{project_id}:{dataset_id}.{table_id}` * Cloud Storage files:
       `gs://{bucket}/{path}` * Datastore namespace: {namespace} Nested names
       could be absent if the embedded object has no string identifier (for
-      example an image contained within a document).
+      example, an image contained within a document).
     containerTimestamp: Finding container modification timestamp, if
-      applicable. For Google Cloud Storage contains the last file modification
-      timestamp. For BigQuery table contains the last_modified_time property.
-      For Datastore - not populated.
+      applicable. For Cloud Storage, this field contains the last file
+      modification timestamp. For a BigQuery table, this field contains the
+      last_modified_time property. For Datastore, this field isn't populated.
     containerVersion: Finding container version, if available ("generation"
-      for Google Cloud Storage).
+      for Cloud Storage).
     documentLocation: Location data for document files.
     imageLocation: Location within an image's pixels.
     metadataLocation: Location within the metadata for inspected content.
@@ -3654,6 +3656,93 @@ class GooglePrivacyDlpV2DateTime(_messages.Message):
   timeZone = _messages.MessageField('GooglePrivacyDlpV2TimeZone', 4)
 
 
+class GooglePrivacyDlpV2Deidentify(_messages.Message):
+  r"""Create a de-identified copy of the requested table or files. . A
+  TransformationDetail will be created for each transformation. If any rows in
+  BigQuery are skipped during de-identification (transformation errors or row
+  size exceeds BigQuery insert API limits) they are placed in the failure
+  output table. If the original row exceeds the BigQuery insert API limit it
+  will be truncated when written to the failure output table. The failure
+  output table can be set in the
+  action.deidentify.output.big_query_output.deidentified_failure_output_table
+  field, if no table is set, a table will be automatically created in the same
+  project and dataset as the original table. Compatible with: Inspect
+
+  Enums:
+    FileTypesToTransformValueListEntryValuesEnum:
+
+  Fields:
+    cloudStorageOutput: Required. User settable GCS bucket and folders to
+      store de-identified files. This field must be set for cloud storage
+      deidentification. The output GCS bucket must be different from the input
+      bucket. De-identified files will overwrite files in the output path.
+      Form of: gs://bucket/folder/ or gs://bucket
+    fileTypesToTransform: List of user-specified file type groups to
+      transform. If specified, only the files with these filetypes will be
+      transformed. If empty, all supported files will be transformed.
+      Supported types may be automatically added over time. If a file type is
+      set in this field that isn't supported by the Deidentify action then the
+      job will fail and will not be successfully created/started. Currently
+      the only filetypes supported are: IMAGES, TEXT_FILES, CSV, TSV.
+    transformationConfig: User specified deidentify templates and configs for
+      structured, unstructured, and image files.
+    transformationDetailsStorageConfig: Config for storing transformation
+      details. This is separate from the de-identified content, and contains
+      metadata about the successful transformations and/or failures that
+      occurred while de-identifying. This needs to be set in order for users
+      to access information about the status of each transformation (see
+      TransformationDetails message for more information about what is noted).
+  """
+
+  class FileTypesToTransformValueListEntryValuesEnum(_messages.Enum):
+    r"""FileTypesToTransformValueListEntryValuesEnum enum type.
+
+    Values:
+      FILE_TYPE_UNSPECIFIED: Includes all files.
+      BINARY_FILE: Includes all file extensions not covered by another entry.
+        Binary scanning attempts to convert the content of the file to utf_8
+        to scan the file. If you wish to avoid this fall back, specify one or
+        more of the other FileType's in your storage scan.
+      TEXT_FILE: Included file extensions: asc,asp, aspx, brf, c, cc,cfm, cgi,
+        cpp, csv, cxx, c++, cs, css, dart, dat, dot, eml,, epbub, ged, go, h,
+        hh, hpp, hxx, h++, hs, html, htm, mkd, markdown, m, ml, mli, perl, pl,
+        plist, pm, php, phtml, pht, properties, py, pyw, rb, rbw, rs, rss, rc,
+        scala, sh, sql, swift, tex, shtml, shtm, xhtml, lhs, ics, ini, java,
+        js, json, kix, kml, ocaml, md, txt, text, tsv, vb, vcard, vcs, wml,
+        xcodeproj, xml, xsl, xsd, yml, yaml.
+      IMAGE: Included file extensions: bmp, gif, jpg, jpeg, jpe, png.
+        bytes_limit_per_file has no effect on image files. Image inspection is
+        restricted to 'global', 'us', 'asia', and 'europe'.
+      WORD: Word files >30 MB will be scanned as binary files. Included file
+        extensions: docx, dotx, docm, dotm
+      PDF: PDF files >30 MB will be scanned as binary files. Included file
+        extensions: pdf
+      AVRO: Included file extensions: avro
+      CSV: Included file extensions: csv
+      TSV: Included file extensions: tsv
+      POWERPOINT: Powerpoint files >30 MB will be scanned as binary files.
+        Included file extensions: pptx, pptm, potx, potm, pot
+      EXCEL: Excel files >30 MB will be scanned as binary files. Included file
+        extensions: xlsx, xlsm, xltx, xltm
+    """
+    FILE_TYPE_UNSPECIFIED = 0
+    BINARY_FILE = 1
+    TEXT_FILE = 2
+    IMAGE = 3
+    WORD = 4
+    PDF = 5
+    AVRO = 6
+    CSV = 7
+    TSV = 8
+    POWERPOINT = 9
+    EXCEL = 10
+
+  cloudStorageOutput = _messages.StringField(1)
+  fileTypesToTransform = _messages.EnumField('FileTypesToTransformValueListEntryValuesEnum', 2, repeated=True)
+  transformationConfig = _messages.MessageField('GooglePrivacyDlpV2TransformationConfig', 3)
+  transformationDetailsStorageConfig = _messages.MessageField('GooglePrivacyDlpV2TransformationDetailsStorageConfig', 4)
+
+
 class GooglePrivacyDlpV2DeidentifyConfig(_messages.Message):
   r"""The configuration that controls how the data will change.
 
@@ -3791,7 +3880,7 @@ class GooglePrivacyDlpV2DeltaPresenceEstimationQuasiIdValues(_messages.Message):
 
   Fields:
     estimatedProbability: The estimated probability that a given individual
-      sharing these quasi-identifier values are in the dataset. This value,
+      sharing these quasi-identifier values is in the dataset. This value,
       typically called \u03b4, is the ratio between the number of records in
       the dataset with these quasi-identifier values, and the total number of
       individuals (inside *and* outside the dataset) with these quasi-
@@ -5402,19 +5491,19 @@ class GooglePrivacyDlpV2LargeCustomDictionaryConfig(_messages.Message):
   r"""Configuration for a custom dictionary created from a data source of any
   size up to the maximum size defined in the
   [limits](https://cloud.google.com/dlp/limits) page. The artifacts of
-  dictionary creation are stored in the specified Google Cloud Storage
-  location. Consider using `CustomInfoType.Dictionary` for smaller
-  dictionaries that satisfies the size requirements.
+  dictionary creation are stored in the specified Cloud Storage location.
+  Consider using `CustomInfoType.Dictionary` for smaller dictionaries that
+  satisfy the size requirements.
 
   Fields:
     bigQueryField: Field in a BigQuery table where each cell represents a
       dictionary phrase.
     cloudStorageFileSet: Set of files containing newline-delimited lists of
       dictionary phrases.
-    outputPath: Location to store dictionary artifacts in Google Cloud
-      Storage. These files will only be accessible by project owners and the
-      DLP API. If any of these artifacts are modified, the dictionary is
-      considered invalid and can no longer be used.
+    outputPath: Location to store dictionary artifacts in Cloud Storage. These
+      files will only be accessible by project owners and the DLP API. If any
+      of these artifacts are modified, the dictionary is considered invalid
+      and can no longer be used.
   """
 
   bigQueryField = _messages.MessageField('GooglePrivacyDlpV2BigQueryField', 1)
@@ -5707,8 +5796,7 @@ class GooglePrivacyDlpV2OutputStorageConfig(_messages.Message):
       OUTPUT_SCHEMA_UNSPECIFIED: Unused.
       BASIC_COLUMNS: Basic schema including only `info_type`, `quote`,
         `certainty`, and `timestamp`.
-      GCS_COLUMNS: Schema tailored to findings from scanning Google Cloud
-        Storage.
+      GCS_COLUMNS: Schema tailored to findings from scanning Cloud Storage.
       DATASTORE_COLUMNS: Schema tailored to findings from scanning Google
         Datastore.
       BIG_QUERY_COLUMNS: Schema tailored to findings from scanning Google
@@ -6169,7 +6257,7 @@ class GooglePrivacyDlpV2RecordTransformations(_messages.Message):
     fieldTransformations: Transform the record by applying various field
       transformations.
     recordSuppressions: Configuration defining which records get suppressed
-      entirely. Records that match any suppression rule is omitted from the
+      entirely. Records that match any suppression rule are omitted from the
       output.
   """
 
@@ -6466,7 +6554,7 @@ class GooglePrivacyDlpV2StorageConfig(_messages.Message):
 
   Fields:
     bigQueryOptions: BigQuery options.
-    cloudStorageOptions: Google Cloud Storage options.
+    cloudStorageOptions: Cloud Storage options.
     datastoreOptions: Google Cloud Datastore options.
     hybridOptions: Hybrid inspection options.
     timespanConfig: A GooglePrivacyDlpV2TimespanConfig attribute.
@@ -6554,12 +6642,12 @@ class GooglePrivacyDlpV2StoredInfoTypeVersion(_messages.Message):
       anomalies detected in the storedInfoType data that render it unusable.
       Only the five most recent errors will be displayed, with the most recent
       error appearing first. For example, some of the data for stored custom
-      dictionaries is put in the user's Google Cloud Storage bucket, and if
-      this data is modified or deleted by the user or another system, the
-      dictionary becomes invalid. If any errors occur, fix the problem
-      indicated by the error message and use the UpdateStoredInfoType API
-      method to create another version of the storedInfoType to continue using
-      it, reusing the same `config` if it was not the source of the error.
+      dictionaries is put in the user's Cloud Storage bucket, and if this data
+      is modified or deleted by the user or another system, the dictionary
+      becomes invalid. If any errors occur, fix the problem indicated by the
+      error message and use the UpdateStoredInfoType API method to create
+      another version of the storedInfoType to continue using it, reusing the
+      same `config` if it was not the source of the error.
     state: Stored info type version state. Read-only, updated by the system
       during dictionary creation.
     stats: Statistics about this storedInfoType version.
@@ -6576,7 +6664,7 @@ class GooglePrivacyDlpV2StoredInfoTypeVersion(_messages.Message):
       FAILED: StoredInfoType creation failed. All relevant error messages are
         returned in the `StoredInfoTypeVersion` message.
       INVALID: StoredInfoType is no longer valid because artifacts stored in
-        user-controlled storage was modified. To fix an invalid
+        user-controlled storage were modified. To fix an invalid
         StoredInfoType, use the `UpdateStoredInfoType` method to create a new
         version.
     """
@@ -6911,7 +6999,7 @@ class GooglePrivacyDlpV2TimeZone(_messages.Message):
 
 class GooglePrivacyDlpV2TimespanConfig(_messages.Message):
   r"""Configuration of the timespan of the items to include in scanning.
-  Currently only supported when inspecting Google Cloud Storage and BigQuery.
+  Currently only supported when inspecting Cloud Storage and BigQuery.
 
   Fields:
     enableAutoPopulationOfTimespanConfig: When the job is started by a
@@ -6924,18 +7012,23 @@ class GooglePrivacyDlpV2TimespanConfig(_messages.Message):
     startTime: Exclude files, tables, or rows older than this value. If not
       set, no lower time limit is applied.
     timestampField: Specification of the field containing the timestamp of
-      scanned items. Used for data sources like Datastore and BigQuery. For
-      BigQuery: If this value is not specified and the table was modified
+      scanned items. Used for data sources like Datastore and BigQuery. *For
+      BigQuery* If this value is not specified and the table was modified
       between the given start and end times, the entire table will be scanned.
       If this value is specified, then rows are filtered based on the given
       start and end times. Rows with a `NULL` value in the provided BigQuery
       column are skipped. Valid data types of the provided BigQuery column
-      are: `INTEGER`, `DATE`, `TIMESTAMP`, and `DATETIME`. For Datastore: If
-      this value is specified, then entities are filtered based on the given
-      start and end times. If an entity does not contain the provided
-      timestamp property or contains empty or invalid values, then it is
-      included. Valid data types of the provided timestamp property are:
-      `TIMESTAMP`. See the [known
+      are: `INTEGER`, `DATE`, `TIMESTAMP`, and `DATETIME`. If your BigQuery
+      table is [partitioned at ingestion
+      time](https://cloud.google.com/bigquery/docs/partitioned-
+      tables#ingestion_time), you can use any of the following pseudo-columns
+      as your timestamp field. When used with Cloud DLP, these pseudo-column
+      names are case sensitive. - _PARTITIONTIME - _PARTITIONDATE -
+      _PARTITION_LOAD_TIME *For Datastore* If this value is specified, then
+      entities are filtered based on the given start and end times. If an
+      entity does not contain the provided timestamp property or contains
+      empty or invalid values, then it is included. Valid data types of the
+      provided timestamp property are: `TIMESTAMP`. See the [known
       issue](https://cloud.google.com/dlp/docs/known-issues#bq-timespan)
       related to this operation.
   """
@@ -6944,6 +7037,49 @@ class GooglePrivacyDlpV2TimespanConfig(_messages.Message):
   endTime = _messages.StringField(2)
   startTime = _messages.StringField(3)
   timestampField = _messages.MessageField('GooglePrivacyDlpV2FieldId', 4)
+
+
+class GooglePrivacyDlpV2TransformationConfig(_messages.Message):
+  r"""User specified templates and configs for how to deidentify structured,
+  unstructures, and image files. User must provide either a unstructured
+  deidentify template or at least one redact image config.
+
+  Fields:
+    deidentifyTemplate: De-identify template. If this template is specified,
+      it will serve as the default de-identify template. This template cannot
+      contain `record_transformations` since it can be used for unstructured
+      content such as free-form text files. If this template is not set, a
+      default `ReplaceWithInfoTypeConfig` will be used to de-identify
+      unstructured content.
+    imageRedactTemplate: Image redact template. If this template is specified,
+      it will serve as the de-identify template for images. If this template
+      is not set, all findings in the image will be redacted with a black box.
+    structuredDeidentifyTemplate: Structured de-identify template. If this
+      template is specified, it will serve as the de-identify template for
+      structured content such as delimited files and tables. If this template
+      is not set but the `deidentify_template` is set, then
+      `deidentify_template` will also apply to the structured content. If
+      neither template is set, a default `ReplaceWithInfoTypeConfig` will be
+      used to de-identify structured content.
+  """
+
+  deidentifyTemplate = _messages.StringField(1)
+  imageRedactTemplate = _messages.StringField(2)
+  structuredDeidentifyTemplate = _messages.StringField(3)
+
+
+class GooglePrivacyDlpV2TransformationDetailsStorageConfig(_messages.Message):
+  r"""Config for storing transformation details.
+
+  Fields:
+    table: The BigQuery table in which to store the output. This may be an
+      existing table or in a new table in an existing dataset. If table_id is
+      not set a new one will be generated for you with the following format:
+      dlp_googleapis_transformation_details_yyyy_mm_dd_[dlp_job_id]. Pacific
+      time zone will be used for generating the date details.
+  """
+
+  table = _messages.MessageField('GooglePrivacyDlpV2BigQueryTable', 1)
 
 
 class GooglePrivacyDlpV2TransformationErrorHandling(_messages.Message):

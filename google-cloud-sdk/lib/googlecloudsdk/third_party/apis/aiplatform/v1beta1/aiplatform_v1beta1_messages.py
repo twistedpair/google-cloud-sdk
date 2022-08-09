@@ -1966,6 +1966,27 @@ class AiplatformProjectsLocationsFeaturestoresEntityTypesTestIamPermissionsReque
   resource = _messages.StringField(2, required=True)
 
 
+class AiplatformProjectsLocationsFeaturestoresEntityTypesWriteFeatureValuesRequest(_messages.Message):
+  r"""A
+  AiplatformProjectsLocationsFeaturestoresEntityTypesWriteFeatureValuesRequest
+  object.
+
+  Fields:
+    entityType: Required. The resource name of the EntityType for the entities
+      being written. Value format:
+      `projects/{project}/locations/{location}/featurestores/
+      {featurestore}/entityTypes/{entityType}`. For example, for a machine
+      learning model predicting user clicks on a website, an EntityType ID
+      could be `user`.
+    googleCloudAiplatformV1beta1WriteFeatureValuesRequest: A
+      GoogleCloudAiplatformV1beta1WriteFeatureValuesRequest resource to be
+      passed as the request body.
+  """
+
+  entityType = _messages.StringField(1, required=True)
+  googleCloudAiplatformV1beta1WriteFeatureValuesRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1WriteFeatureValuesRequest', 2)
+
+
 class AiplatformProjectsLocationsFeaturestoresGetIamPolicyRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsFeaturestoresGetIamPolicyRequest object.
 
@@ -6977,7 +6998,7 @@ class GoogleCloudAiplatformInternalExplanationParameters(_messages.Message):
       output_index contained in output_indices. It must be an ndarray of
       integers, with the same shape of the output it's explaining. If not
       populated, returns attributions for top_k indices of outputs. If neither
-      top_k nor output_indeices is populated, returns the argmax index of the
+      top_k nor output_indices is populated, returns the argmax index of the
       outputs. Only applicable to Models that predict multiple outputs (e,g,
       multi-class Models that predict multiple classes).
     sampledShapleyAttribution: An attribution method that approximates Shapley
@@ -7011,7 +7032,7 @@ class GoogleCloudAiplatformInternalExplanationSpec(_messages.Message):
   r"""Specification of Model explanation.
 
   Fields:
-    metadata: Required. Metadata describing the Model's input and output for
+    metadata: Optional. Metadata describing the Model's input and output for
       explanation.
     parameters: Required. Parameters that configure explaining of the Model's
       predictions.
@@ -9802,7 +9823,7 @@ class GoogleCloudAiplatformUiExplanationParameters(_messages.Message):
       output_index contained in output_indices. It must be an ndarray of
       integers, with the same shape of the output it's explaining. If not
       populated, returns attributions for top_k indices of outputs. If neither
-      top_k nor output_indeices is populated, returns the argmax index of the
+      top_k nor output_indices is populated, returns the argmax index of the
       outputs. Only applicable to Models that predict multiple outputs (e,g,
       multi-class Models that predict multiple classes).
     sampledShapleyAttribution: An attribution method that approximates Shapley
@@ -9836,7 +9857,7 @@ class GoogleCloudAiplatformUiExplanationSpec(_messages.Message):
   r"""Specification of Model explanation.
 
   Fields:
-    metadata: Required. Metadata describing the Model's input and output for
+    metadata: Optional. Metadata describing the Model's input and output for
       explanation.
     parameters: Required. Parameters that configure explaining of the Model's
       predictions.
@@ -13801,7 +13822,7 @@ class GoogleCloudAiplatformV1ExplanationParameters(_messages.Message):
       output_index contained in output_indices. It must be an ndarray of
       integers, with the same shape of the output it's explaining. If not
       populated, returns attributions for top_k indices of outputs. If neither
-      top_k nor output_indeices is populated, returns the argmax index of the
+      top_k nor output_indices is populated, returns the argmax index of the
       outputs. Only applicable to Models that predict multiple outputs (e,g,
       multi-class Models that predict multiple classes).
     sampledShapleyAttribution: An attribution method that approximates Shapley
@@ -13834,7 +13855,7 @@ class GoogleCloudAiplatformV1ExplanationSpec(_messages.Message):
   r"""Specification of Model explanation.
 
   Fields:
-    metadata: Required. Metadata describing the Model's input and output for
+    metadata: Optional. Metadata describing the Model's input and output for
       explanation.
     parameters: Required. Parameters that configure explaining of the Model's
       predictions.
@@ -18978,7 +18999,7 @@ class GoogleCloudAiplatformV1alpha1ExplanationSpec(_messages.Message):
   r"""Specification of Model explanation.
 
   Fields:
-    metadata: Required. Metadata describing the Model's input and output for
+    metadata: Optional. Metadata describing the Model's input and output for
       explanation.
     parameters: Required. Parameters that configure explaining of the Model's
       predictions.
@@ -24127,7 +24148,7 @@ class GoogleCloudAiplatformV1beta1ExplanationParameters(_messages.Message):
       output_index contained in output_indices. It must be an ndarray of
       integers, with the same shape of the output it's explaining. If not
       populated, returns attributions for top_k indices of outputs. If neither
-      top_k nor output_indeices is populated, returns the argmax index of the
+      top_k nor output_indices is populated, returns the argmax index of the
       outputs. Only applicable to Models that predict multiple outputs (e,g,
       multi-class Models that predict multiple classes).
     sampledShapleyAttribution: An attribution method that approximates Shapley
@@ -24161,7 +24182,7 @@ class GoogleCloudAiplatformV1beta1ExplanationSpec(_messages.Message):
   r"""Specification of Model explanation.
 
   Fields:
-    metadata: Required. Metadata describing the Model's input and output for
+    metadata: Optional. Metadata describing the Model's input and output for
       explanation.
     parameters: Required. Parameters that configure explaining of the Model's
       predictions.
@@ -26264,7 +26285,7 @@ class GoogleCloudAiplatformV1beta1ListSavedQueriesResponse(_messages.Message):
 
   Fields:
     nextPageToken: The standard List next-page token.
-    savedQueries: A list of SavedQueries that matches the specified filter in
+    savedQueries: A list of SavedQueries that match the specified filter in
       the request.
   """
 
@@ -27664,7 +27685,7 @@ class GoogleCloudAiplatformV1beta1ModelMonitoringAlertConfigEmailAlertConfig(_me
 
 
 class GoogleCloudAiplatformV1beta1ModelMonitoringConfig(_messages.Message):
-  r"""Next ID: 5
+  r"""Next ID: 6
 
   Fields:
     alertConfig: Model monitoring alert config.
@@ -29317,16 +29338,16 @@ class GoogleCloudAiplatformV1beta1SavedQuery(_messages.Message):
     displayName: Required. The user-defined name of the SavedQuery. The name
       can be up to 128 characters long and can consist of any UTF-8
       characters.
-    etag: Used to perform consistent read-modify-write updates. If not set, a
+    etag: Used to perform a consistent read-modify-write update. If not set, a
       blind "overwrite" update happens.
     metadata: Some additional information about the SavedQuery.
     name: Output only. Resource name of the SavedQuery.
     problemType: Required. Problem type of the SavedQuery. Allowed values: *
       IMAGE_CLASSIFICATION_SINGLE_LABEL * IMAGE_CLASSIFICATION_MULTI_LABEL *
-      IMAGE_BOUNDING_POLY * IMAGE_BOUNDING_BOX * IMAGE_POLYLINE *
-      IMAGE_SEGMENTATION * TEXT_CLASSIFICATION_SINGLE_LABEL *
-      TEXT_CLASSIFICATION_MULTI_LABEL * TEXT_EXTRACTION * TEXT_SENTIMENT *
-      VIDEO_CLASSIFICATION * VIDEO_OBJECT_TRACKING * VIDEO_ACTION_RECOGNITION
+      IMAGE_BOUNDING_POLY * IMAGE_BOUNDING_BOX *
+      TEXT_CLASSIFICATION_SINGLE_LABEL * TEXT_CLASSIFICATION_MULTI_LABEL *
+      TEXT_EXTRACTION * TEXT_SENTIMENT * VIDEO_CLASSIFICATION *
+      VIDEO_OBJECT_TRACKING
     supportAutomlTraining: Output only. If the Annotations belonging to the
       SavedQuery can be used for AutoML training.
     updateTime: Output only. Timestamp when SavedQuery was last updated.
@@ -34024,6 +34045,75 @@ class GoogleCloudAiplatformV1beta1WorkerPoolSpec(_messages.Message):
   nfsMounts = _messages.MessageField('GoogleCloudAiplatformV1beta1NfsMount', 4, repeated=True)
   pythonPackageSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1PythonPackageSpec', 5)
   replicaCount = _messages.IntegerField(6)
+
+
+class GoogleCloudAiplatformV1beta1WriteFeatureValuesPayload(_messages.Message):
+  r"""Contains Feature values to be written for a specific entity.
+
+  Messages:
+    FeatureValuesValue: Required. Feature values to be written, mapping from
+      Feature ID to value. Up to 100,000 `feature_values` entries may be
+      written across all payloads. The feature generation time, aligned by
+      days, must be no older than (1825 days) and no later than one year (366
+      days) in the future.
+
+  Fields:
+    entityId: Required. The ID of the entity.
+    featureValues: Required. Feature values to be written, mapping from
+      Feature ID to value. Up to 100,000 `feature_values` entries may be
+      written across all payloads. The feature generation time, aligned by
+      days, must be no older than (1825 days) and no later than one year (366
+      days) in the future.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class FeatureValuesValue(_messages.Message):
+    r"""Required. Feature values to be written, mapping from Feature ID to
+    value. Up to 100,000 `feature_values` entries may be written across all
+    payloads. The feature generation time, aligned by days, must be no older
+    than (1825 days) and no later than one year (366 days) in the future.
+
+    Messages:
+      AdditionalProperty: An additional property for a FeatureValuesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type FeatureValuesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a FeatureValuesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A GoogleCloudAiplatformV1beta1FeatureValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('GoogleCloudAiplatformV1beta1FeatureValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  entityId = _messages.StringField(1)
+  featureValues = _messages.MessageField('FeatureValuesValue', 2)
+
+
+class GoogleCloudAiplatformV1beta1WriteFeatureValuesRequest(_messages.Message):
+  r"""Request message for FeaturestoreOnlineServingService.WriteFeatureValues.
+
+  Fields:
+    payloads: Required. The entities to be written. Up to 100,000 feature
+      values can be written across all `payloads`.
+  """
+
+  payloads = _messages.MessageField('GoogleCloudAiplatformV1beta1WriteFeatureValuesPayload', 1, repeated=True)
+
+
+class GoogleCloudAiplatformV1beta1WriteFeatureValuesResponse(_messages.Message):
+  r"""Response message for
+  FeaturestoreOnlineServingService.WriteFeatureValues.
+  """
+
 
 
 class GoogleCloudAiplatformV1beta1WriteTensorboardExperimentDataRequest(_messages.Message):

@@ -1419,7 +1419,7 @@
           }
         },
         "annotations": {
-          "description": "Optional. Unstructured key-value map holding arbitrary metadata. Introduced to satisfy https:\/\/google.aip.dev\/128.",
+          "description": "Optional. Unstructured key-value map holding arbitrary metadata.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -1442,6 +1442,69 @@
         "wasmPlugin": {
           "description": "Required. The relative resource name of the WasmPlugin resource to execute in format: projects\/{project}\/locations\/{location}\/wasmPlugins\/{wasm_plugin}.",
           "type": "string"
+        }
+      }
+    },
+    "ListWasmActionsResponse": {
+      "id": "ListWasmActionsResponse",
+      "description": "Response returned by the ListWasmActions method.",
+      "type": "object",
+      "properties": {
+        "wasmActions": {
+          "description": "List of WasmAction resources.",
+          "type": "array",
+          "items": {
+            "$ref": "WasmAction"
+          }
+        },
+        "nextPageToken": {
+          "description": "If there might be more results than those appearing in this response, then `next_page_token` is included. To get the next set of results, call this method again using the value of `next_page_token` as `page_token`.",
+          "type": "string"
+        }
+      }
+    },
+    "WasmAction": {
+      "id": "WasmAction",
+      "description": "WasmAction is a resource representing a connection between a WasmPlugin and a WasmPlugin consumer (for example an EdgeCacheService resource). Once created, a WasmAction cannot change its reference to a WasmPlugin.",
+      "type": "object",
+      "properties": {
+        "wasmPlugin": {
+          "description": "Required. The relative resource name of the WasmPlugin resource to execute in format: projects\/{project}\/locations\/{location}\/wasmPlugins\/{wasm_plugin}.",
+          "type": "string"
+        },
+        "name": {
+          "description": "Required. Name of the WasmAction resource. It matches pattern `projects\/{project}\/locations\/{location}\/wasmActions\/{wasm_action}`.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. The timestamp when the resource was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The timestamp when the resource was updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "description": {
+          "description": "Optional. A human-readable description of the resource.",
+          "type": "string"
+        },
+        "labels": {
+          "description": "Optional. Set of label tags associated with the WasmAction resource.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "annotations": {
+          "description": "Optional. Unstructured key-value map holding arbitrary metadata.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },
@@ -1496,7 +1559,7 @@
           }
         },
         "annotations": {
-          "description": "Optional. Unstructured key-value map holding arbitrary metadata. Introduced to satisfy https:\/\/google.aip.dev\/128.",
+          "description": "Optional. Unstructured key-value map holding arbitrary metadata.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -1602,7 +1665,7 @@
           }
         },
         "annotations": {
-          "description": "Optional. Unstructured key-value map holding arbitrary metadata. Introduced to satisfy https:\/\/google.aip.dev\/128.",
+          "description": "Optional. Unstructured key-value map holding arbitrary metadata.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -4977,6 +5040,129 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Deletes a single ExtensionChain."
+                }
+              }
+            },
+            "wasmActions": {
+              "methods": {
+                "list": {
+                  "id": "networkservices.projects.locations.wasmActions.list",
+                  "path": "v1alpha1/{+parent}/wasmActions",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/wasmActions",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The project and location from which the WasmActions should be listed, specified in the format `projects\/*\/locations\/global`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Maximum number of WasmAction to return per call. If unspecified, at most 50 WasmActions will be returned. The maximum value is 1000; values above 1000 will be coerced to 1000.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "The value returned by the last `ListWasmActionsResponse` Indicates that this is a continuation of a prior `ListWasmActions` call, and that the system should return the next page of data.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListWasmActionsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists WasmActions in a given project and location."
+                },
+                "get": {
+                  "id": "networkservices.projects.locations.wasmActions.get",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/wasmActions/{wasmActionsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. A name of the WasmAction to get. Must be in the format `projects\/*\/locations\/global\/wasmActions\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/wasmActions\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "WasmAction"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets details of a single WasmAction."
+                },
+                "create": {
+                  "id": "networkservices.projects.locations.wasmActions.create",
+                  "path": "v1alpha1/{+parent}/wasmActions",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/wasmActions",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent resource of the WasmAction. Must be in the format `projects\/*\/locations\/global`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "wasmActionId": {
+                      "description": "Required. User-provided ID of the WasmAction resource to be created.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "WasmAction"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a new WasmAction in a given project and location."
+                },
+                "delete": {
+                  "id": "networkservices.projects.locations.wasmActions.delete",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/wasmActions/{wasmActionsId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. A name of the WasmAction to delete. Must be in the format `projects\/*\/locations\/global\/wasmActions\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/wasmActions\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a single WasmAction."
                 }
               }
             },

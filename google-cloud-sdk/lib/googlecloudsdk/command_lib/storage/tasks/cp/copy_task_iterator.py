@@ -31,6 +31,7 @@ from googlecloudsdk.command_lib.storage import wildcard_iterator
 from googlecloudsdk.command_lib.storage.resources import resource_reference
 from googlecloudsdk.command_lib.storage.resources import resource_util
 from googlecloudsdk.command_lib.storage.tasks.cp import copy_task_factory
+from googlecloudsdk.command_lib.storage.tasks.cp import copy_util
 from googlecloudsdk.core import log
 
 
@@ -195,6 +196,7 @@ class CopyTaskIterator:
                source_name_iterator,
                destination_string,
                custom_md5_digest=None,
+               delete_source=False,
                do_not_decompress=False,
                force_daisy_chain=False,
                print_created_message=False,
@@ -210,6 +212,8 @@ class CopyTaskIterator:
       destination_string (str): The copy destination path or url.
       custom_md5_digest (str|None): User-added MD5 hash output to send to server
         for validating a single resource upload.
+      delete_source (bool): If copy completes successfully, delete the source
+        object afterwards.
       do_not_decompress (bool): Prevents automatically decompressing
         downloaded gzips.
       force_daisy_chain (bool): If True, yields daisy chain copy tasks in place
@@ -232,6 +236,7 @@ class CopyTaskIterator:
     self._multiple_sources = self._source_name_iterator.is_plural()
 
     self._custom_md5_digest = custom_md5_digest
+    self._delete_source = delete_source
     self._do_not_decompress = do_not_decompress
     self._force_daisy_chain = force_daisy_chain
     self._print_created_message = print_created_message
@@ -303,6 +308,9 @@ class CopyTaskIterator:
     self._raise_error_if_source_matches_destination()
 
     for source in self._source_name_iterator:
+      if self._delete_source:
+        copy_util.raise_if_mv_early_deletion_fee_applies(source.resource)
+
       if self._skip_unsupported:
         unsupported_type = resource_util.get_unsupported_object_type(
             source.resource)
@@ -367,6 +375,7 @@ class CopyTaskIterator:
           source.resource,
           destination_resource,
           do_not_decompress=self._do_not_decompress,
+          delete_source=self._delete_source,
           force_daisy_chain=self._force_daisy_chain,
           print_created_message=self._print_created_message,
           shared_stream=self._shared_stream,

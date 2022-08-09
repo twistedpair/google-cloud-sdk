@@ -12,7 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Common flags for some of the DNS commands."""
 
 from __future__ import absolute_import
@@ -25,6 +24,17 @@ from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.util import completers
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
+
+import ipaddr
+
+
+def IsIPv4(ip):
+  """Returns True if ip is an IPv4."""
+  try:
+    ipaddr.IPv4Address(ip)
+    return True
+  except ValueError:
+    return False
 
 
 class BetaKeyCompleter(completers.ListCommandCompleter):
@@ -70,15 +80,15 @@ def GetKeyArg(help_text='The DNS key identifier.', is_beta=False):
 
 def GetDnsZoneArg(help_text):
   return base.Argument(
-      'dns_zone', metavar='ZONE_NAME',
+      'dns_zone',
+      metavar='ZONE_NAME',
       completer=ManagedZoneCompleter,
       help=help_text)
 
 
 def ZoneAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='zone',
-      help_text='The Cloud DNS zone for the {resource}.')
+      name='zone', help_text='The Cloud DNS zone for the {resource}.')
 
 
 def GetZoneResourceSpec():
@@ -100,16 +110,15 @@ def GetZoneResourceArg(help_text, positional=True, plural=False):
       required=True)
 
 
-def GetZoneArg(help_text=(
-    'Name of the managed zone whose record sets you want to manage.'),
-               hide_short_zone_flag=False):
+def GetZoneArg(
+    help_text=(
+        'Name of the managed zone whose record sets you want to manage.'),
+    hide_short_zone_flag=False):
+  """Returns the managed zone arg."""
   if hide_short_zone_flag:
     zone_group = base.ArgumentGroup(required=True)
     zone_group.AddArgument(
-        base.Argument(
-            '--zone',
-            completer=ManagedZoneCompleter,
-            help=help_text))
+        base.Argument('--zone', completer=ManagedZoneCompleter, help=help_text))
     zone_group.AddArgument(
         base.Argument(
             '-z',
@@ -157,7 +166,8 @@ def GetManagedZonesDescriptionArg(required=False):
 
 def GetDnsSecStateFlagMapper(messages):
   return arg_utils.ChoiceEnumMapper(
-      '--dnssec-state', messages.ManagedZoneDnsSecConfig.StateValueValuesEnum,
+      '--dnssec-state',
+      messages.ManagedZoneDnsSecConfig.StateValueValuesEnum,
       custom_mappings={
           'off': ('off', 'Disable DNSSEC for the managed zone.'),
           'on': ('on', 'Enable DNSSEC for the managed zone.'),
@@ -180,7 +190,7 @@ def GetKeyAlgorithmFlag(key_type, messages):
       '--{}-algorithm'.format(key_type),
       messages.DnsKeySpec.AlgorithmValueValuesEnum,
       help_str='String mnemonic specifying the DNSSEC algorithm of the '
-               'key-signing key. Requires DNSSEC enabled')
+      'key-signing key. Requires DNSSEC enabled')
 
 
 def AddCommonManagedZonesDnssecArgs(parser, messages):
@@ -238,14 +248,10 @@ def GetDnsPeeringArgs():
       ' queries to.')
   peering_group.AddArgument(
       base.Argument(
-          '--target-network',
-          required=True,
-          help=target_network_help_text))
+          '--target-network', required=True, help=target_network_help_text))
   peering_group.AddArgument(
       base.Argument(
-          '--target-project',
-          required=True,
-          help=target_project_help_text))
+          '--target-project', required=True, help=target_project_help_text))
   return peering_group
 
 
@@ -346,9 +352,7 @@ def GetPolicyPrivateAltNameServersArg():
 ## ResourceRecordSets flags.
 def GetResourceRecordSetsNameArg():
   return base.Argument(
-      'name',
-      metavar='DNS_NAME',
-      help='DNS or domain name of the record-set.')
+      'name', metavar='DNS_NAME', help='DNS or domain name of the record-set.')
 
 
 def GetResourceRecordSetsTypeArg(required=False):
@@ -382,14 +386,33 @@ def GetResourceRecordSetsRrdatasArgGroup(use_deprecated_names=False):
 
   Args:
     use_deprecated_names: If true, uses snake_case names for flags
-        --routing-policy-type and --routing-policy-data, --routing_policy_type
-        and --routing_policy_data.
-
-  This group is defined with required=True and mutex=True, meaning that exactly
-  one of these two arg configurations must be specified:
-    --rrdatas
-    --routing-policy-type AND --routing-policy-data
+      --routing-policy-type and --routing-policy-data, --routing_policy_type and
+      --routing_policy_data.  This group is defined with required=True and
+      mutex=True, meaning that exactly one of these two arg configurations must
+      be specified: --rrdatas --routing-policy-type AND --routing-policy-data
   """
+  # Group containing the primary backup config
+  primary_backup_data_group = base.ArgumentGroup(
+      help='Configuration for primary backup routing policy')
+  primary_backup_data_group.AddArgument(
+      GetResourceRecordSetsRoutingPolicyPrimaryDataArg(required=True))
+  primary_backup_data_group.AddArgument(
+      GetResourceRecordSetsRoutingPolicyBackupDataArg(required=True))
+  primary_backup_data_group.AddArgument(
+      GetResourceRecordSetsRoutingPolicyBackupDataTypeArg(required=True))
+  primary_backup_data_group.AddArgument(
+      GetResourceRecordSetsBackupDataTrickleRatio(required=False))
+  # This group dictates that we should either have a primary backup config,
+  # or, a wrr or geo config
+  policy_data_group = base.ArgumentGroup(
+      required=True,
+      mutex=True,
+      help='Routing policy data arguments. Combines routing-policy-data, routing-policy-primary-data, routing-policy-backup-data.'
+  )
+  policy_data_group.AddArgument(
+      GetResourceRecordSetsRoutingPolicyDataArg(
+          deprecated_name=use_deprecated_names))
+  policy_data_group.AddArgument(primary_backup_data_group)
   # Declare optional routing policy group. If group specified, must contain
   # both routing-policy-type and routing-policy-data args.
   policy_group = base.ArgumentGroup(
@@ -400,8 +423,10 @@ def GetResourceRecordSetsRrdatasArgGroup(use_deprecated_names=False):
       GetResourceRecordSetsRoutingPolicyTypeArg(
           required=True, deprecated_name=use_deprecated_names))
   policy_group.AddArgument(
-      GetResourceRecordSetsRoutingPolicyDataArg(
-          required=True, deprecated_name=use_deprecated_names))
+      GetResourceRecordSetsEnableFencingArg(required=False))
+  policy_group.AddArgument(
+      GetResourceRecordSetsEnableHealthChecking(required=False))
+  policy_group.AddArgument(policy_data_group)
 
   rrdatas_group = base.ArgumentGroup(
       required=True,
@@ -422,12 +447,159 @@ def GetResourceRecordSetsRoutingPolicyTypeArg(required=False,
       flag_name,
       metavar='ROUTING_POLICY_TYPE',
       required=required,
-      choices=['GEO', 'WRR'],
+      choices=['GEO', 'WRR', 'FAILOVER'],
       help='Indicates what type of routing policy is being specified. As of '
       'this time, this field can take on either "WRR" for weighted round '
-      'robin, or "GEO" for geo location. This field cannot be modified - once '
-      'a policy has chosen a type, the only way to change it is to delete the '
+      'robin, "GEO" for geo location, or "FAILOVER" for a primary-backup '
+      'configuration. This field cannot be modified - once '
+      'a policy has a chosen type, the only way to change it is to delete the '
       'policy and add a new one with the different type.')
+
+
+def GetResourceRecordSetsEnableFencingArg(required=False):
+  """Returns --enable-geo-fencing command line arg value."""
+  return base.Argument(
+      '--enable-geo-fencing',
+      action='store_true',
+      required=required,
+      help='Specifies whether to enable fencing for geo queries.')
+
+
+def GetResourceRecordSetsBackupDataTrickleRatio(required=False):
+  """Returns --backup-data-trickle-ratio command line arg value."""
+  return base.Argument(
+      '--backup-data-trickle-ratio',
+      type=float,
+      required=required,
+      help='Specifies the percentage of traffic to send to the backup targets even when the primary targets are healthy.'
+  )
+
+
+def GetResourceRecordSetsRoutingPolicyBackupDataTypeArg(required=True):
+  """Returns --routing_policy_backup_data_type command line arg value."""
+  return base.Argument(
+      '--routing-policy-backup-data-type',
+      metavar='ROUTING_POLICY_BACKUP_DATA_TYPE',
+      required=required,
+      choices=['GEO'],
+      help='For FAILOVER routing policies, the type of routing policy the backup data uses. Currently, this must be GEO'
+  )
+
+
+def GetResourceRecordSetsEnableHealthChecking(required=False):
+  """Returns --enable-health-checking command line arg value."""
+  return base.Argument(
+      '--enable-health-checking',
+      action='store_true',
+      required=required,
+      help='Required if specifying forwarding rule names for rrdata.')
+
+
+def GetResourceRecordSetsRoutingPolicyPrimaryDataArg(required=False):
+  """Returns --routing-policy-primary-data command line arg value."""
+
+  def RoutingPolicyPrimaryDataArg(routing_policy_primary_data):
+    """Converts --routing-policy-primary-data flag value to a list of policy data items.
+
+    Args:
+      routing_policy_primary_data: String value specified in the
+        --routing-policy-primary-data flag.
+
+    Returns:
+      A list of forwarding configs in the following format:
+
+    [ 'config1@region1', 'config2@region2',
+    'config3' ]
+    """
+
+    # Grab each policy data item by splitting on ','
+    return routing_policy_primary_data.split(',')
+
+  return base.Argument(
+      '--routing-policy-primary-data',
+      metavar='ROUTING_POLICY_PRIMARY_DATA',
+      required=required,
+      type=RoutingPolicyPrimaryDataArg,
+      help='The primary config for a primary backup routing policy. This is '
+      'just a list of forwarding configs of the format "config_name" or "config_name@scope"'
+  )
+
+
+def GetResourceRecordSetsRoutingPolicyBackupDataArg(required=False):
+  """Returns --routing-policy-backup-data command line arg value."""
+
+  def RoutingPolicyBackupDataArg(routing_policy_backup_data):
+    """Converts --routing-policy-backup-data flag value to a list of policy data items.
+
+    Args:
+      routing_policy_backup_data: String value specified in the
+        --routing-policy-backup-data flag.
+
+    Returns:
+      A list of policy data items in the format below:
+
+    [
+        {
+          'key': <location1>,
+          'rrdatas': <IP address list>,
+          'forwarding_configs': <List of configs to be health checked>
+        },
+        {
+          'key': <location2>,
+          'rrdatas': <IP address list>,
+          'forwarding_configs': <List of configs to be health checked>
+        },
+        ...
+    ]
+    """
+
+    backup_data = []
+
+    # Grab each policy data item, split by ';'
+    policy_items = routing_policy_backup_data.split(';')
+    for policy_item in policy_items:
+      # Grab key and value from policy_item, split by ':'
+      key_value_split = policy_item.split('=')
+
+      # Ensure that there is only one key and value from the string split on ':'
+      if len(key_value_split) != 2:
+        raise arg_parsers.ArgumentTypeError(
+            'Must specify exactly one "=" inside each policy data item')
+      key = key_value_split[0]
+      value = key_value_split[1]
+
+      ips = []
+      forwarding_configs = []
+      for val in value.split(','):
+        if GetResourceRecordSetsTypeArg() == 'A':
+          if len(val.split('@')) == 2:
+            forwarding_configs.append(val)
+          elif len(val.split('@')) == 1 and IsIPv4(val):
+            ips.append(val)
+          elif len(val.split('@')) == 1:
+            forwarding_configs.append(val)
+          else:
+            raise arg_parsers.ArgumentTypeError(
+                'Each policy rdata item should either be an ip address or a forwarding rule name optionally followed by its scope.'
+            )
+        else:
+          ips.append(val)
+      backup_data.append({
+          'key': key,
+          'rrdatas': ips,
+          'forwarding_configs': forwarding_configs
+      })
+
+    return backup_data
+
+  return base.Argument(
+      '--routing-policy-backup-data',
+      metavar='ROUTING_POLICY_BACKUP_DATA',
+      required=required,
+      type=RoutingPolicyBackupDataArg,
+      help='The backup config for a primary backup routing policy. This is '
+      'the same format as the routing-policy-data arg as this is just '
+      'another geo policy.')
 
 
 def GetResourceRecordSetsRoutingPolicyDataArg(required=False,
@@ -445,8 +617,16 @@ def GetResourceRecordSetsRoutingPolicyDataArg(required=False,
       A list of policy data items in the format below:
 
     [
-        { 'key': <routing_policy_data_key1>, 'rrdatas': <IP address list> },
-        { 'key': <routing_policy_data_key2>, 'rrdatas': <IP address list> },
+        {
+          'key': <routing_policy_data_key1>,
+          'rrdatas': <IP address list>,
+          'forwarding_configs': <List of configs to be health checked>
+        },
+        {
+          'key': <routing_policy_data_key2>,
+          'rrdatas': <IP address list>,
+          'forwarding_configs': <List of configs to be health checked>
+        },
         ...
     ]
 
@@ -472,9 +652,27 @@ def GetResourceRecordSetsRoutingPolicyDataArg(required=False,
       key = key_value_split[0]
       value = key_value_split[1]
 
-      # Grab list of IPs from value, split by ','
-      ip_list = value.split(',')
-      routing_policy_data.append({'key': key, 'rrdatas': ip_list})
+      ips = []
+      forwarding_configs = []
+      for val in value.split(','):
+        if GetResourceRecordSetsTypeArg() == 'A':
+          if len(val.split('@')) == 2:
+            forwarding_configs.append(val)
+          elif len(val.split('@')) == 1 and IsIPv4(val):
+            ips.append(val)
+          elif len(val.split('@')) == 1:
+            forwarding_configs.append(val)
+          else:
+            raise arg_parsers.ArgumentTypeError(
+                'Each policy rdata item should either be an ip address or a forwarding rule name optionally followed by its scope.'
+            )
+        else:
+          ips.append(val)
+      routing_policy_data.append({
+          'key': key,
+          'rrdatas': ips,
+          'forwarding_configs': forwarding_configs
+      })
 
     return routing_policy_data
 
@@ -494,13 +692,15 @@ def GetResourceRecordSetsRoutingPolicyDataArg(required=False,
       'over the total across all weights.\n\n'
       'For --routing-policy-type = "GEO" this flag indicates the geo-locations '
       'policy data. The field accepts a semicolon-delimited list of the format '
-      '"${region}:${rrdata},${rrdata}".')
+      '"${region}:${rrdata},${rrdata}". Each individual rrdata can either be '
+      'an ip address or a string of the format forwarding_config_name@region.')
 
 
 # Response Policy Flags
 def GetResponsePolicyDescriptionArg(required=False):
   return base.Argument(
-      '--description', required=required,
+      '--description',
+      required=required,
       help='A description of the response policy.')
 
 
@@ -511,24 +711,63 @@ def GetResponsePolicyNetworksArg(required=False):
       required=required,
       metavar='NETWORKS',
       help='The comma-separated list of network names to associate with '
-            'the response policy.')
+      'the response policy.')
+
+
 CHANGES_FORMAT = 'table(id, startTime, status)'
+
+
+def _FormatHealthCheckTarget(health_check_target):
+  fields = ('ipAddress', 'port', 'ipProtocol', 'networkUrl', 'project',
+            'region', 'loadBalancerType')
+  return ', '.join(health_check_target[f] for f in fields)
 
 
 def _FormatResourceRecordSet(rrdatas_or_routing_policy):
   """Format rrset based on rrdatas or routing policy type."""
   if 'wrr' in rrdatas_or_routing_policy:
-    return '; '.join([
-        '{}: {}'.format(item['weight'], ','.join(item['rrdatas']))
-        for item in rrdatas_or_routing_policy['wrr']['items']
-    ])
+    items = []
+    for item in rrdatas_or_routing_policy['wrr']['items']:
+      if 'healthCheckedTargets' in item:
+        items.append('{}: {}'.format(
+            item['weight'], ','.join(item['rrdatas']) +
+            ','.join(item['healthCheckedTargets']['internalLoadBalancers'])))
+      else:
+        items.append('{}: {}'.format(item['weight'], ','.join(item['rrdatas'])))
+    return '; '.join(items)
   elif 'geo' in rrdatas_or_routing_policy:
-    return '; '.join([
-        '{}: {}'.format(item['location'], ','.join(item['rrdatas']))
-        for item in rrdatas_or_routing_policy['geo']['items']
-    ])
+    items = []
+    for item in rrdatas_or_routing_policy['geo']['items']:
+      if 'healthCheckedTargets' in item:
+        items.append('{}: {}'.format(
+            item['location'], ','.join(item['rrdatas']) + ','.join(
+                _FormatHealthCheckTarget(target) for target in
+                item['healthCheckedTargets']['internalLoadBalancers'])))
+      else:
+        items.append('{}: {}'.format(item['location'],
+                                     ','.join(item['rrdatas'])))
+    return '; '.join(items)
+  elif 'primaryBackup' in rrdatas_or_routing_policy:
+    items = []
+    for item in rrdatas_or_routing_policy['primaryBackup']['backupGeoTargets'][
+        'items']:
+      if 'healthCheckedTargets' in item:
+        items.append('{}: {}'.format(
+            item['location'], ','.join(item['rrdatas']) + ','.join(
+                _FormatHealthCheckTarget(target) for target in
+                item['healthCheckedTargets']['internalLoadBalancers'])))
+      else:
+        items.append('{}: {}'.format(item['location'],
+                                     ','.join(item['rrdatas'])))
+    backup = ';'.join(items)
+    primary = ','.join(
+        _FormatHealthCheckTarget(target)
+        for target in rrdatas_or_routing_policy['primaryBackup']
+        ['primaryTargets']['internalLoadBalancers'])
+    return 'Primary: {} Backup: {}'.format(primary, backup)
   else:
     return ','.join(rrdatas_or_routing_policy)
+
 
 RESOURCERECORDSETS_TRANSFORMS = {
     'formatrrset': _FormatResourceRecordSet,
@@ -549,7 +788,7 @@ def GetResponsePolicyGkeClustersArg(required=False):
       required=required,
       metavar='GKECLUSTERS',
       help='The comma-separated list of GKE cluster names to associate with '
-            'the response policy.')
+      'the response policy.')
 
 
 # Response Policy Rule Flags

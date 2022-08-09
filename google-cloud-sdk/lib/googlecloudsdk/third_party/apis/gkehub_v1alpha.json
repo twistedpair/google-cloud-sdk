@@ -1765,13 +1765,13 @@
             "Spec is unknown.",
             "Request to uninstall Policy Controller.",
             "Request to install and enable Policy Controller.",
-            "Request to disable Policy Controller. If Policy Controller is not installed, it will be installed but disabled."
+            "Request to suspend Policy Controller i.e. its webhooks. If Policy Controller is not installed, it will be installed but suspended."
           ],
           "enum": [
             "INSTALL_SPEC_UNSPECIFIED",
             "INSTALL_SPEC_NOT_INSTALLED",
             "INSTALL_SPEC_ENABLED",
-            "INSTALL_SPEC_DISABLED"
+            "INSTALL_SPEC_SUSPENDED"
           ]
         },
         "auditIntervalSeconds": {
@@ -3750,6 +3750,14 @@
       "description": "RBACRoleBinding represents a rbacrolebinding across the Fleet",
       "type": "object",
       "properties": {
+        "user": {
+          "description": "user is the name of the user as seen by the kubernetes cluster, example \"alice\" or \"alice@domain.tld\"",
+          "type": "string"
+        },
+        "group": {
+          "description": "group is the group, as seen by the kubernetes cluster.",
+          "type": "string"
+        },
         "name": {
           "description": "The resource name for the rbacrolebinding `projects\/{project}\/locations\/{location}\/namespaces\/{namespace}\/rbacrolebindings\/{rbacrolebinding}`",
           "type": "string"
@@ -3781,6 +3789,10 @@
           "description": "Output only. State of the rbacrolebinding resource.",
           "readOnly": true,
           "$ref": "RBACRoleBindingLifecycleState"
+        },
+        "role": {
+          "description": "Required. Role to bind to the principal",
+          "$ref": "Role"
         }
       }
     },
@@ -3806,6 +3818,29 @@
             "READY",
             "DELETING",
             "UPDATING"
+          ]
+        }
+      }
+    },
+    "Role": {
+      "id": "Role",
+      "description": "Role is the type for Kubernetes roles",
+      "type": "object",
+      "properties": {
+        "predefinedRole": {
+          "description": "predefined_role is the Kubernetes default role to use",
+          "type": "string",
+          "enumDescriptions": [
+            "UNKNOWN",
+            "ADMIN has EDIT and RBAC permissions",
+            "EDIT can edit all resources except RBAC",
+            "VIEW can only read resources"
+          ],
+          "enum": [
+            "UNKNOWN",
+            "ADMIN",
+            "EDIT",
+            "VIEW"
           ]
         }
       }

@@ -315,14 +315,13 @@ class ComposerProjectsLocationsEnvironmentsPatchRequest(_messages.Message):
       `config.softwareConfig.airflowConfigOverrides` mask. *
       `config.softwareConfig.envVariables` * Replace all environment
       variables. If a replacement environment variable map is not included in
-      `environment`, all custom environment variables are cleared. It is an
-      error to provide both this mask and a mask specifying one or more
-      individual environment variables. * `config.softwareConfig.imageVersion`
-      * Upgrade the version of the environment in-place. Refer to
-      `SoftwareConfig.image_version` for information on how to format the new
-      image version. Additionally, the new image version cannot effect a
-      version downgrade, and must match the current image version's Composer
-      and Airflow major versions. Consult the [Cloud Composer version
+      `environment`, all custom environment variables are cleared. *
+      `config.softwareConfig.imageVersion` * Upgrade the version of the
+      environment in-place. Refer to `SoftwareConfig.image_version` for
+      information on how to format the new image version. Additionally, the
+      new image version cannot effect a version downgrade, and must match the
+      current image version's Composer and Airflow major versions. Consult the
+      [Cloud Composer version
       list](/composer/docs/concepts/versioning/composer-versions) for valid
       values. * `config.softwareConfig.schedulerCount` * Horizontally scale
       the number of schedulers in Airflow. A positive integer not greater than

@@ -71,6 +71,27 @@ class AwsAccessKey(_messages.Message):
   secretAccessKey = _messages.StringField(2)
 
 
+class AwsS3CompatibleData(_messages.Message):
+  r"""An AwsS3CompatibleData resource.
+
+  Fields:
+    bucketName: Required. Specifies the name of the bucket.
+    endpoint: Required. Specifies the endpoint of the storage service.
+    path: Specifies the root path to transfer objects. Must be an empty string
+      or full path name that ends with a '/'. This field is treated as an
+      object prefix. As such, it should generally not begin with a '/'.
+    region: Specifies the region to sign requests with. This can be left blank
+      if requests should be signed with an empty region.
+    s3Metadata: A S3 compatible metadata.
+  """
+
+  bucketName = _messages.StringField(1)
+  endpoint = _messages.StringField(2)
+  path = _messages.StringField(3)
+  region = _messages.StringField(4)
+  s3Metadata = _messages.MessageField('S3CompatibleMetadata', 5)
+
+
 class AwsS3Data(_messages.Message):
   r"""An AwsS3Data resource can be a data source, but not a data sink. In an
   AwsS3Data resource, an object's name is the S3 object's key name.
@@ -1009,6 +1030,103 @@ class RunTransferJobRequest(_messages.Message):
   projectId = _messages.StringField(1)
 
 
+class S3CompatibleMetadata(_messages.Message):
+  r"""S3CompatibleMetadata contains the metadata fields that apply to the
+  basic types of S3-compatible data providers.
+
+  Enums:
+    AuthMethodValueValuesEnum: Specifies the authentication and authorization
+      method used by the storage service. When not specified, Transfer Service
+      will attempt to determine right auth method to use.
+    ListApiValueValuesEnum: The Listing API to use for discovering objects.
+      When not specified, Transfer Service will attempt to determine the right
+      API to use.
+    ProtocolValueValuesEnum: Specifies the network protocol of the agent. When
+      not specified, the default value of NetworkProtocol
+      NETWORK_PROTOCOL_HTTPS is used.
+    RequestModelValueValuesEnum: Specifies the API request model used to call
+      the storage service. When not specified, the default value of
+      RequestModel REQUEST_MODEL_VIRTUAL_HOSTED_STYLE is used.
+
+  Fields:
+    authMethod: Specifies the authentication and authorization method used by
+      the storage service. When not specified, Transfer Service will attempt
+      to determine right auth method to use.
+    listApi: The Listing API to use for discovering objects. When not
+      specified, Transfer Service will attempt to determine the right API to
+      use.
+    protocol: Specifies the network protocol of the agent. When not specified,
+      the default value of NetworkProtocol NETWORK_PROTOCOL_HTTPS is used.
+    requestModel: Specifies the API request model used to call the storage
+      service. When not specified, the default value of RequestModel
+      REQUEST_MODEL_VIRTUAL_HOSTED_STYLE is used.
+  """
+
+  class AuthMethodValueValuesEnum(_messages.Enum):
+    r"""Specifies the authentication and authorization method used by the
+    storage service. When not specified, Transfer Service will attempt to
+    determine right auth method to use.
+
+    Values:
+      AUTH_METHOD_UNSPECIFIED: AuthMethod is not specified.
+      AUTH_METHOD_AWS_SIGNATURE_V4: Auth requests with AWS SigV4.
+      AUTH_METHOD_AWS_SIGNATURE_V2: Auth requests with AWS SigV2.
+    """
+    AUTH_METHOD_UNSPECIFIED = 0
+    AUTH_METHOD_AWS_SIGNATURE_V4 = 1
+    AUTH_METHOD_AWS_SIGNATURE_V2 = 2
+
+  class ListApiValueValuesEnum(_messages.Enum):
+    r"""The Listing API to use for discovering objects. When not specified,
+    Transfer Service will attempt to determine the right API to use.
+
+    Values:
+      LIST_API_UNSPECIFIED: ListApi is not specified.
+      LIST_OBJECTS_V2: Perform listing using ListObjectsV2 API.
+      LIST_OBJECTS: Legacy ListObjects API.
+    """
+    LIST_API_UNSPECIFIED = 0
+    LIST_OBJECTS_V2 = 1
+    LIST_OBJECTS = 2
+
+  class ProtocolValueValuesEnum(_messages.Enum):
+    r"""Specifies the network protocol of the agent. When not specified, the
+    default value of NetworkProtocol NETWORK_PROTOCOL_HTTPS is used.
+
+    Values:
+      NETWORK_PROTOCOL_UNSPECIFIED: NetworkProtocol is not specified.
+      NETWORK_PROTOCOL_HTTPS: Perform requests using HTTPS.
+      NETWORK_PROTOCOL_HTTP: Not recommended: This sends data in clear-text.
+        This is only appropriate within a closed network or for publicly
+        available data. Perform requests using HTTP.
+    """
+    NETWORK_PROTOCOL_UNSPECIFIED = 0
+    NETWORK_PROTOCOL_HTTPS = 1
+    NETWORK_PROTOCOL_HTTP = 2
+
+  class RequestModelValueValuesEnum(_messages.Enum):
+    r"""Specifies the API request model used to call the storage service. When
+    not specified, the default value of RequestModel
+    REQUEST_MODEL_VIRTUAL_HOSTED_STYLE is used.
+
+    Values:
+      REQUEST_MODEL_UNSPECIFIED: RequestModel is not specified.
+      REQUEST_MODEL_VIRTUAL_HOSTED_STYLE: Perform requests using Virtual
+        Hosted Style. Example: https://bucket-
+        name.s3.region.amazonaws.com/key-name
+      REQUEST_MODEL_PATH_STYLE: Perform requests using Path Style. Example:
+        https://s3.region.amazonaws.com/bucket-name/key-name
+    """
+    REQUEST_MODEL_UNSPECIFIED = 0
+    REQUEST_MODEL_VIRTUAL_HOSTED_STYLE = 1
+    REQUEST_MODEL_PATH_STYLE = 2
+
+  authMethod = _messages.EnumField('AuthMethodValueValuesEnum', 1)
+  listApi = _messages.EnumField('ListApiValueValuesEnum', 2)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 3)
+  requestModel = _messages.EnumField('RequestModelValueValuesEnum', 4)
+
+
 class Schedule(_messages.Message):
   r"""Transfers can be scheduled to recur or to run just once.
 
@@ -1667,7 +1785,7 @@ class TransferOptions(_messages.Message):
       should be deleted. **Note:** This option and
       delete_objects_from_source_after_transfer are mutually exclusive.
     metadataOptions: Represents the selected metadata options for a transfer
-      job. This feature is in Preview.
+      job.
     overwriteObjectsAlreadyExistingInSink: When to overwrite objects that
       already exist in the sink. The default is that only objects that are
       different from the source are ovewritten. If true, all objects in the
@@ -1709,6 +1827,7 @@ class TransferSpec(_messages.Message):
   r"""Configuration for running a transfer.
 
   Fields:
+    awsS3CompatibleDataSource: An AWS S3 compatible data source.
     awsS3DataSource: An AWS S3 data source.
     azureBlobStorageDataSource: An Azure Blob Storage data source.
     gcsDataSink: A Cloud Storage data sink.
@@ -1734,19 +1853,20 @@ class TransferSpec(_messages.Message):
       specified, the request fails with an INVALID_ARGUMENT error.
   """
 
-  awsS3DataSource = _messages.MessageField('AwsS3Data', 1)
-  azureBlobStorageDataSource = _messages.MessageField('AzureBlobStorageData', 2)
-  gcsDataSink = _messages.MessageField('GcsData', 3)
-  gcsDataSource = _messages.MessageField('GcsData', 4)
-  gcsIntermediateDataLocation = _messages.MessageField('GcsData', 5)
-  httpDataSource = _messages.MessageField('HttpData', 6)
-  objectConditions = _messages.MessageField('ObjectConditions', 7)
-  posixDataSink = _messages.MessageField('PosixFilesystem', 8)
-  posixDataSource = _messages.MessageField('PosixFilesystem', 9)
-  sinkAgentPoolName = _messages.StringField(10)
-  sourceAgentPoolName = _messages.StringField(11)
-  transferManifest = _messages.MessageField('TransferManifest', 12)
-  transferOptions = _messages.MessageField('TransferOptions', 13)
+  awsS3CompatibleDataSource = _messages.MessageField('AwsS3CompatibleData', 1)
+  awsS3DataSource = _messages.MessageField('AwsS3Data', 2)
+  azureBlobStorageDataSource = _messages.MessageField('AzureBlobStorageData', 3)
+  gcsDataSink = _messages.MessageField('GcsData', 4)
+  gcsDataSource = _messages.MessageField('GcsData', 5)
+  gcsIntermediateDataLocation = _messages.MessageField('GcsData', 6)
+  httpDataSource = _messages.MessageField('HttpData', 7)
+  objectConditions = _messages.MessageField('ObjectConditions', 8)
+  posixDataSink = _messages.MessageField('PosixFilesystem', 9)
+  posixDataSource = _messages.MessageField('PosixFilesystem', 10)
+  sinkAgentPoolName = _messages.StringField(11)
+  sourceAgentPoolName = _messages.StringField(12)
+  transferManifest = _messages.MessageField('TransferManifest', 13)
+  transferOptions = _messages.MessageField('TransferOptions', 14)
 
 
 class UpdateTransferJobRequest(_messages.Message):

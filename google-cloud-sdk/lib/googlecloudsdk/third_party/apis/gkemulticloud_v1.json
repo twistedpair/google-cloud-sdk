@@ -204,6 +204,207 @@
       "properties": {
       }
     },
+    "GoogleCloudGkemulticloudV1AttachedCluster": {
+      "id": "GoogleCloudGkemulticloudV1AttachedCluster",
+      "description": "An Anthos cluster running on customer own infrastructure.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The name of this resource. Cluster names are formatted as `projects\/\/locations\/\/attachedClusters\/`. See [Resource Names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for more details on GCP resource names.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Optional. A human readable description of this cluster. Cannot be longer than 255 UTF-8 encoded bytes.",
+          "type": "string"
+        },
+        "authority": {
+          "description": "Authority configuration.",
+          "$ref": "GoogleCloudGkemulticloudV1Authority"
+        },
+        "platformVersion": {
+          "description": "Required. The platform version for the cluster (e.g. `1.19.0-gke.1000`). You can list all supported versions on a given Google Cloud region by calling GetAttachedServerConfig.",
+          "type": "string"
+        },
+        "fleet": {
+          "description": "Optional. Fleet configuration.",
+          "$ref": "GoogleCloudGkemulticloudV1Fleet"
+        },
+        "state": {
+          "description": "Output only. The current state of the cluster.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Not set.",
+            "The PROVISIONING state indicates the cluster is being registered.",
+            "The RUNNING state indicates the cluster has been register and is fully usable.",
+            "The RECONCILING state indicates that some work is actively being done on the cluster, such as upgrading software components.",
+            "The STOPPING state indicates the cluster is being de-registered.",
+            "The ERROR state indicates the cluster is in a broken unrecoverable state.",
+            "The DEGRADED state indicates the cluster requires user action to restore full functionality."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "PROVISIONING",
+            "RUNNING",
+            "RECONCILING",
+            "STOPPING",
+            "ERROR",
+            "DEGRADED"
+          ]
+        },
+        "uid": {
+          "description": "Output only. A globally unique identifier for the cluster.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "reconciling": {
+          "description": "Output only. If set, there are currently changes in flight to the cluster.",
+          "readOnly": true,
+          "type": "boolean"
+        },
+        "createTime": {
+          "description": "Output only. The time at which this cluster was registered.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The time at which this cluster was last updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "etag": {
+          "description": "Allows clients to perform consistent read-modify-writes through optimistic concurrency control. Can be sent on update and delete requests to ensure the client has an up-to-date value before proceeding.",
+          "type": "string"
+        },
+        "kubernetesVersion": {
+          "description": "Output only. The Kubernetes version of the cluster.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "annotations": {
+          "description": "Optional. Annotations on the cluster. This field has the same restrictions as Kubernetes annotations. The total size of all keys and values combined is limited to 256k. Key can have 2 segments: prefix (optional) and name (required), separated by a slash (\/). Prefix must be a DNS subdomain. Name must be 63 characters or less, begin and end with alphanumerics, with dashes (-), underscores (_), dots (.), and alphanumerics between.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "workloadIdentityConfig": {
+          "description": "Output only. Workload Identity settings.",
+          "readOnly": true,
+          "$ref": "GoogleCloudGkemulticloudV1WorkloadIdentityConfig"
+        },
+        "loggingConfig": {
+          "description": "Optional. Logging configuration for this cluster.",
+          "$ref": "GoogleCloudGkemulticloudV1LoggingConfig"
+        }
+      }
+    },
+    "GoogleCloudGkemulticloudV1Authority": {
+      "id": "GoogleCloudGkemulticloudV1Authority",
+      "description": "OIDC discovery information of the target cluster.",
+      "type": "object",
+      "properties": {
+        "issuerUrl": {
+          "description": "A JSON Web Token (JWT) issuer URI. `issuer` must start with `https:\/\/`.",
+          "type": "string"
+        },
+        "oidcJwks": {
+          "description": "OIDC verification keys in JWKS format (RFC 7517). It contains a list of OIDC verification keys that can be used to verify OIDC JWTs. This is useful for cluster that doesn't have a publicly available discovery endpoint. When provided, it will be directly used to verify the OIDC JWT asserted by the IDP.",
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "GoogleCloudGkemulticloudV1Fleet": {
+      "id": "GoogleCloudGkemulticloudV1Fleet",
+      "description": "Fleet related configuration. Fleets are a Google Cloud concept for logically organizing clusters, letting you use and manage multi-cluster capabilities and apply consistent policies across your systems. See [Anthos Fleets](https:\/\/cloud.google.com\/anthos\/multicluster-management\/fleets) for more details on Anthos multi-cluster capabilities using Fleets.",
+      "type": "object",
+      "properties": {
+        "project": {
+          "description": "Required. The name of the Fleet host project where this cluster will be registered. Project names are formatted as `projects\/`.",
+          "type": "string"
+        },
+        "membership": {
+          "description": "Output only. The name of the managed Hub Membership resource associated to this cluster. Membership names are formatted as `projects\/\/locations\/global\/membership\/`.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudGkemulticloudV1WorkloadIdentityConfig": {
+      "id": "GoogleCloudGkemulticloudV1WorkloadIdentityConfig",
+      "description": "Workload Identity settings.",
+      "type": "object",
+      "properties": {
+        "issuerUri": {
+          "description": "The OIDC issuer URL for this cluster.",
+          "type": "string"
+        },
+        "workloadPool": {
+          "description": "The Workload Identity Pool associated to the cluster.",
+          "type": "string"
+        },
+        "identityProvider": {
+          "description": "The ID of the OIDC Identity Provider (IdP) associated to the Workload Identity Pool.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudGkemulticloudV1LoggingConfig": {
+      "id": "GoogleCloudGkemulticloudV1LoggingConfig",
+      "description": "Parameters that describe the Logging configuration in a cluster.",
+      "type": "object",
+      "properties": {
+        "componentConfig": {
+          "description": "The configuration of the logging components;",
+          "$ref": "GoogleCloudGkemulticloudV1LoggingComponentConfig"
+        }
+      }
+    },
+    "GoogleCloudGkemulticloudV1LoggingComponentConfig": {
+      "id": "GoogleCloudGkemulticloudV1LoggingComponentConfig",
+      "description": "Parameters that describe the Logging component configuration in a cluster.",
+      "type": "object",
+      "properties": {
+        "enableComponents": {
+          "description": "The components to be enabled.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enumDescriptions": [
+              "No component is specified",
+              "This indicates that system logging components is enabled.",
+              "This indicates that user workload logging component is enabled."
+            ],
+            "enum": [
+              "COMPONENT_UNSPECIFIED",
+              "SYSTEM_COMPONENTS",
+              "WORKLOADS"
+            ]
+          }
+        }
+      }
+    },
+    "GoogleCloudGkemulticloudV1ListAttachedClustersResponse": {
+      "id": "GoogleCloudGkemulticloudV1ListAttachedClustersResponse",
+      "description": "Response message for `AttachedClusters.ListAttachedClusters` method.",
+      "type": "object",
+      "properties": {
+        "attachedClusters": {
+          "description": "A list of AttachedCluster resources in the specified GCP project and region region.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudGkemulticloudV1AttachedCluster"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results, or empty if there are no more results in the list.",
+          "type": "string"
+        }
+      }
+    },
     "GoogleCloudGkemulticloudV1AwsCluster": {
       "id": "GoogleCloudGkemulticloudV1AwsCluster",
       "description": "An Anthos cluster running on AWS.",
@@ -562,76 +763,6 @@
         "username": {
           "description": "Required. The name of the user, e.g. `my-gcp-id@gmail.com`.",
           "type": "string"
-        }
-      }
-    },
-    "GoogleCloudGkemulticloudV1WorkloadIdentityConfig": {
-      "id": "GoogleCloudGkemulticloudV1WorkloadIdentityConfig",
-      "description": "Workload Identity settings.",
-      "type": "object",
-      "properties": {
-        "issuerUri": {
-          "description": "The OIDC issuer URL for this cluster.",
-          "type": "string"
-        },
-        "workloadPool": {
-          "description": "The Workload Identity Pool associated to the cluster.",
-          "type": "string"
-        },
-        "identityProvider": {
-          "description": "The ID of the OIDC Identity Provider (IdP) associated to the Workload Identity Pool.",
-          "type": "string"
-        }
-      }
-    },
-    "GoogleCloudGkemulticloudV1Fleet": {
-      "id": "GoogleCloudGkemulticloudV1Fleet",
-      "description": "Fleet related configuration. Fleets are a Google Cloud concept for logically organizing clusters, letting you use and manage multi-cluster capabilities and apply consistent policies across your systems. See [Anthos Fleets](https:\/\/cloud.google.com\/anthos\/multicluster-management\/fleets) for more details on Anthos multi-cluster capabilities using Fleets.",
-      "type": "object",
-      "properties": {
-        "project": {
-          "description": "Required. The name of the Fleet host project where this cluster will be registered. Project names are formatted as `projects\/`.",
-          "type": "string"
-        },
-        "membership": {
-          "description": "Output only. The name of the managed Hub Membership resource associated to this cluster. Membership names are formatted as `projects\/\/locations\/global\/membership\/`.",
-          "readOnly": true,
-          "type": "string"
-        }
-      }
-    },
-    "GoogleCloudGkemulticloudV1LoggingConfig": {
-      "id": "GoogleCloudGkemulticloudV1LoggingConfig",
-      "description": "Parameters that describe the Logging configuration in a cluster.",
-      "type": "object",
-      "properties": {
-        "componentConfig": {
-          "description": "The configuration of the logging components;",
-          "$ref": "GoogleCloudGkemulticloudV1LoggingComponentConfig"
-        }
-      }
-    },
-    "GoogleCloudGkemulticloudV1LoggingComponentConfig": {
-      "id": "GoogleCloudGkemulticloudV1LoggingComponentConfig",
-      "description": "Parameters that describe the Logging component configuration in a cluster.",
-      "type": "object",
-      "properties": {
-        "enableComponents": {
-          "description": "The components to be enabled.",
-          "type": "array",
-          "items": {
-            "type": "string",
-            "enumDescriptions": [
-              "No component is specified",
-              "This indicates that system logging components is enabled.",
-              "This indicates that user workload logging component is enabled."
-            ],
-            "enum": [
-              "COMPONENT_UNSPECIFIED",
-              "SYSTEM_COMPONENTS",
-              "WORKLOADS"
-            ]
-          }
         }
       }
     },
@@ -2035,6 +2166,188 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`."
+                }
+              }
+            },
+            "attachedClusters": {
+              "methods": {
+                "create": {
+                  "id": "gkemulticloud.projects.locations.attachedClusters.create",
+                  "path": "v1/{+parent}/attachedClusters",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/attachedClusters",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent location where this AttachedCluster resource will be created. Location names are formatted as `projects\/\/locations\/`. See [Resource Names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for more details on Google Cloud resource names.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "attachedClusterId": {
+                      "description": "Required. A client provided ID the resource. Must be unique within the parent resource. The provided ID will be part of the AttachedCluster resource name formatted as `projects\/\/locations\/\/attachedClusters\/`. Valid characters are `\/a-z-\/`. Cannot be longer than 63 characters.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "validateOnly": {
+                      "description": "If set, only validate the request, but do not actually create the cluster.",
+                      "location": "query",
+                      "type": "boolean"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "GoogleCloudGkemulticloudV1AttachedCluster"
+                  },
+                  "response": {
+                    "$ref": "GoogleLongrunningOperation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a new AttachedCluster resource on a given GCP project and region. If successful, the response contains a newly created Operation resource that can be described to track the status of the operation."
+                },
+                "patch": {
+                  "id": "gkemulticloud.projects.locations.attachedClusters.patch",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/attachedClusters/{attachedClustersId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of this resource. Cluster names are formatted as `projects\/\/locations\/\/attachedClusters\/`. See [Resource Names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for more details on GCP resource names.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/attachedClusters\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "validateOnly": {
+                      "description": "If set, only validate the request, but do not actually update the cluster.",
+                      "location": "query",
+                      "type": "boolean"
+                    },
+                    "updateMask": {
+                      "description": "Required. Mask of fields to update. At least one path must be supplied in this field. The elements of the repeated paths field can only include these fields from AttachedCluster: * `description`. * `annotations`.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "GoogleCloudGkemulticloudV1AttachedCluster"
+                  },
+                  "response": {
+                    "$ref": "GoogleLongrunningOperation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Updates an AttachedCluster."
+                },
+                "get": {
+                  "id": "gkemulticloud.projects.locations.attachedClusters.get",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/attachedClusters/{attachedClustersId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the AttachedCluster resource to describe. `AttachedCluster` names are formatted as `projects\/\/locations\/\/attachedClusters\/`. See [Resource Names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for more details on GCP resource names.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/attachedClusters\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "GoogleCloudGkemulticloudV1AttachedCluster"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Describes a specific AttachedCluster resource."
+                },
+                "list": {
+                  "id": "gkemulticloud.projects.locations.attachedClusters.list",
+                  "path": "v1/{+parent}/attachedClusters",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/attachedClusters",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent location which owns this collection of AttachedCluster resources. Location names are formatted as `projects\/\/locations\/`. See [Resource Names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for more details on GCP resource names.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The maximum number of items to return. If not specified, a default value of 50 will be used by the service. Regardless of the pageSize value, the response can include a partial list and a caller should only rely on response's nextPageToken to determine if there are more instances left to be queried.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "The `nextPageToken` value returned from a previous attachedClusters.list request, if any.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "GoogleCloudGkemulticloudV1ListAttachedClustersResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists all AttachedCluster resources on a given Google Cloud project and region."
+                },
+                "delete": {
+                  "id": "gkemulticloud.projects.locations.attachedClusters.delete",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/attachedClusters/{attachedClustersId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The resource name the AttachedCluster to delete. `AttachedCluster` names are formatted as `projects\/\/locations\/\/attachedClusters\/`. See [Resource Names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for more details on GCP resource names.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/attachedClusters\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "validateOnly": {
+                      "description": "If set, only validate the request, but do not actually delete the resource.",
+                      "location": "query",
+                      "type": "boolean"
+                    },
+                    "allowMissing": {
+                      "description": "If set to true, and the AttachedCluster resource is not found, the request will succeed but no action will be taken on the server and a completed Operation will be returned. Useful for idempotent deletion.",
+                      "location": "query",
+                      "type": "boolean"
+                    },
+                    "etag": {
+                      "description": "The current etag of the AttachedCluster. Allows clients to perform deletions through optimistic concurrency control. If the provided etag does not match the current etag of the cluster, the request will fail and an ABORTED error will be returned.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "GoogleLongrunningOperation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a specific AttachedCluster resource. If successful, the response contains a newly created Operation resource that can be described to track the status of the operation."
                 }
               }
             },

@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.command_lib.compute.os_config.troubleshoot import agent_freshness
+from googlecloudsdk.command_lib.compute.os_config.troubleshoot import log_analysis
 from googlecloudsdk.command_lib.compute.os_config.troubleshoot import metadata_setup
 from googlecloudsdk.command_lib.compute.os_config.troubleshoot import network_config
 from googlecloudsdk.command_lib.compute.os_config.troubleshoot import service_account
@@ -28,7 +29,7 @@ from googlecloudsdk.command_lib.compute.os_config.troubleshoot import utils
 from googlecloudsdk.core import log
 
 
-def Troubleshoot(client, instance_ref, release_track):
+def Troubleshoot(client, instance_ref, release_track, analyze_logs=False):
   """Main troubleshoot function for testing prerequisites."""
   log.Print((
       'OS Config troubleshooter tool is checking if there are '
@@ -85,3 +86,14 @@ def Troubleshoot(client, instance_ref, release_track):
   # Network configuration check.
   network_config_response = network_config.Check(client, instance)
   log.Print(network_config_response.response_message)
+
+  if not network_config_response.continue_flag:
+    return
+
+  # Cloud logging check.
+  if analyze_logs:
+    log.status.Print()  # New line separation.
+    log_analysis.CheckCloudLogs(project, instance)
+    log_analysis.CheckSerialLogOutput(client, project, instance,
+                                      instance_ref.zone)
+    log.Print('\nLog analysis finished.')

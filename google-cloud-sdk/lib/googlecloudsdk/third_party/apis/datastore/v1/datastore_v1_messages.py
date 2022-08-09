@@ -1920,11 +1920,10 @@ class ReadOptions(_messages.Message):
 
   Enums:
     ReadConsistencyValueValuesEnum: The non-transactional read consistency to
-      use. Cannot be set to `STRONG` for global queries.
+      use.
 
   Fields:
-    readConsistency: The non-transactional read consistency to use. Cannot be
-      set to `STRONG` for global queries.
+    readConsistency: The non-transactional read consistency to use.
     readTime: Reads entities as they were at the given time. This may not be
       older than 270 seconds. This value is only supported for Cloud Firestore
       in Datastore mode.
@@ -1934,8 +1933,7 @@ class ReadOptions(_messages.Message):
   """
 
   class ReadConsistencyValueValuesEnum(_messages.Enum):
-    r"""The non-transactional read consistency to use. Cannot be set to
-    `STRONG` for global queries.
+    r"""The non-transactional read consistency to use.
 
     Values:
       READ_CONSISTENCY_UNSPECIFIED: Unspecified. This value must not be used.

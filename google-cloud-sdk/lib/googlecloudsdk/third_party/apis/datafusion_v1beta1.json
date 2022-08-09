@@ -248,7 +248,7 @@
           "enumDescriptions": [
             "Version does not have availability yet",
             "Version is under development and not considered stable",
-            "Version is available for public use"
+            "Version is available for public use Version is under development and not considered stable"
           ],
           "enum": [
             "TYPE_UNSPECIFIED",

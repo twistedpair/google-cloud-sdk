@@ -652,6 +652,9 @@ class CertificateExtensionConstraints(_messages.Message):
         Information Access extension, as described in [RFC 5280 section
         4.2.2.1](https://tools.ietf.org/html/rfc5280#section-4.2.2.1), This
         corresponds to the X509Parameters.aia_ocsp_servers field.
+      NAME_CONSTRAINTS: Refers to Name Constraints extension as described in
+        [RFC 5280 section
+        4.2.1.10](https://tools.ietf.org/html/rfc5280#section-4.2.1.10)
     """
     KNOWN_CERTIFICATE_EXTENSION_UNSPECIFIED = 0
     BASE_KEY_USAGE = 1
@@ -659,6 +662,7 @@ class CertificateExtensionConstraints(_messages.Message):
     CA_OPTIONS = 3
     POLICY_IDS = 4
     AIA_OCSP_SERVERS = 5
+    NAME_CONSTRAINTS = 6
 
   additionalExtensions = _messages.MessageField('ObjectId', 1, repeated=True)
   knownExtensions = _messages.EnumField('KnownExtensionsValueListEntryValuesEnum', 2, repeated=True)
@@ -1404,6 +1408,58 @@ class Location(_messages.Message):
   locationId = _messages.StringField(3)
   metadata = _messages.MessageField('MetadataValue', 4)
   name = _messages.StringField(5)
+
+
+class NameConstraints(_messages.Message):
+  r"""Describes the X.509 name constraints extension, per
+  https://tools.ietf.org/html/rfc5280#section-4.2.1.10
+
+  Fields:
+    critical: Indicates whether or not the name constraints are marked
+      critical.
+    excludedDnsNames: Contains excluded DNS names. Any DNS name that can be
+      constructed by simply adding zero or more labels to the left-hand side
+      of the name satisfies the name constraint. For example, `example.com`,
+      `www.example.com`, `www.sub.example.com` would satisfy `example.com`
+      while `example1.com` does not.
+    excludedEmailAddresses: Contains the excluded email addresses. The value
+      can be a particular email address, a hostname to indicate all email
+      addresses on that host or a domain with a leading period (e.g.
+      `.example.com`) to indicate all email addresses in that domain.
+    excludedIpRanges: Contains the excluded IP ranges. For IPv4 addresses, the
+      ranges are expressed using CIDR notation as specified in RFC 4632. For
+      IPv6 addresses, the ranges are expressed in similar encoding as IPv4
+      addresses.
+    excludedUris: Contains the excluded URIs that apply to the host part of
+      the name. The value can be a hostname or a domain with a leading period
+      (like `.example.com`)
+    permittedDnsNames: Contains permitted DNS names. Any DNS name that can be
+      constructed by simply adding zero or more labels to the left-hand side
+      of the name satisfies the name constraint. For example, `example.com`,
+      `www.example.com`, `www.sub.example.com` would satisfy `example.com`
+      while `example1.com` does not.
+    permittedEmailAddresses: Contains the permitted email addresses. The value
+      can be a particular email address, a hostname to indicate all email
+      addresses on that host or a domain with a leading period (e.g.
+      `.example.com`) to indicate all email addresses in that domain.
+    permittedIpRanges: Contains the permitted IP ranges. For IPv4 addresses,
+      the ranges are expressed using CIDR notation as specified in RFC 4632.
+      For IPv6 addresses, the ranges are expressed in similar encoding as IPv4
+      addresses.
+    permittedUris: Contains the permitted URIs that apply to the host part of
+      the name. The value can be a hostname or a domain with a leading period
+      (like `.example.com`)
+  """
+
+  critical = _messages.BooleanField(1)
+  excludedDnsNames = _messages.StringField(2, repeated=True)
+  excludedEmailAddresses = _messages.StringField(3, repeated=True)
+  excludedIpRanges = _messages.StringField(4, repeated=True)
+  excludedUris = _messages.StringField(5, repeated=True)
+  permittedDnsNames = _messages.StringField(6, repeated=True)
+  permittedEmailAddresses = _messages.StringField(7, repeated=True)
+  permittedIpRanges = _messages.StringField(8, repeated=True)
+  permittedUris = _messages.StringField(9, repeated=True)
 
 
 class ObjectId(_messages.Message):
@@ -3146,6 +3202,7 @@ class X509Parameters(_messages.Message):
       relevant in a CA certificate.
     keyUsage: Optional. Indicates the intended use for keys that correspond to
       a certificate.
+    nameConstraints: Optional. Describes the X.509 name constraints extension.
     policyIds: Optional. Describes the X.509 certificate policy object
       identifiers, per https://tools.ietf.org/html/rfc5280#section-4.2.1.4.
   """
@@ -3154,7 +3211,8 @@ class X509Parameters(_messages.Message):
   aiaOcspServers = _messages.StringField(2, repeated=True)
   caOptions = _messages.MessageField('CaOptions', 3)
   keyUsage = _messages.MessageField('KeyUsage', 4)
-  policyIds = _messages.MessageField('ObjectId', 5, repeated=True)
+  nameConstraints = _messages.MessageField('NameConstraints', 5)
+  policyIds = _messages.MessageField('ObjectId', 6, repeated=True)
 
 
 encoding.AddCustomJsonFieldMapping(

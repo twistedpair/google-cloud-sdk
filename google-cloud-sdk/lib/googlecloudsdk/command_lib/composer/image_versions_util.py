@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import collections
 import re
 
 from googlecloudsdk.api_lib.composer import environments_util as environments_api_util
@@ -28,6 +29,9 @@ from googlecloudsdk.core.util import semver
 
 # Envs must be running at least this version of Composer to be upgradeable.
 MIN_UPGRADEABLE_COMPOSER_VER = '1.0.0'
+
+UpgradeValidator = collections.namedtuple('UpgradeValidator',
+                                          ['upgrade_valid', 'error'])
 
 
 class InvalidImageVersionError(command_util.Error):
@@ -157,8 +161,8 @@ def _BuildUpgradeCandidateList(location_ref,
                       image_version_item.composer_ver) <= 0):
     # If so, builds list of eligible upgrades.
     for version in image_version_service.List(location_ref):
-      if (_ValidateCandidateImageVersionId(image_version_id,
-                                           version.imageVersionId) and
+      if (_ValidateCandidateImageVersionId(
+          image_version_id, version.imageVersionId).upgrade_valid and
           python_version in version.supportedPythonVersions):
         available_upgrades.append(version)
   else:
@@ -170,27 +174,41 @@ def _BuildUpgradeCandidateList(location_ref,
 
 def _ValidateCandidateImageVersionId(current_image_version_id,
                                      candidate_image_version_id):
-  """Determines if candidate version is a valid upgrade from current version."""
+  """Determines if candidate version is a valid upgrade from current version.
+
+  Args:
+    current_image_version_id: current image version
+    candidate_image_version_id: image version requested for upgrade
+
+  Returns:
+    UpgradeValidator namedtuple containing True and None error message if
+    given version upgrade between given versions is valid, otherwise False and
+    error message with problems description.
+  """
+  upgrade_validator = UpgradeValidator(True, None)
   if current_image_version_id == candidate_image_version_id:
-    return False
+    error_message = ('Existing and requested image versions are equal ({}). '
+                     'Select image version newer than current to perform '
+                     'upgrade.').format(current_image_version_id)
+    upgrade_validator = UpgradeValidator(False, error_message)
 
   parsed_curr = _ImageVersionItem(image_ver=current_image_version_id)
   parsed_cand = _ImageVersionItem(image_ver=candidate_image_version_id)
 
   # Checks Composer versions.
-  if (not parsed_cand.composer_contains_alias and
-      not _IsComposerVersionUpgradeCompatible(parsed_curr.composer_ver,
-                                              parsed_cand.composer_ver)):
-    return False
+  if upgrade_validator.upgrade_valid and not parsed_cand.composer_contains_alias:
+    upgrade_validator = _IsVersionUpgradeCompatible(parsed_curr.composer_ver,
+                                                    parsed_cand.composer_ver,
+                                                    'Composer')
 
   # Checks Airflow versions.
-  if (not parsed_cand.airflow_contains_alias and
-      not _IsAirflowVersionUpgradeCompatible(parsed_curr.airflow_ver,
-                                             parsed_cand.airflow_ver)):
-    return False
+  if upgrade_validator.upgrade_valid and not parsed_cand.airflow_contains_alias:
+    upgrade_validator = _IsVersionUpgradeCompatible(parsed_curr.airflow_ver,
+                                                    parsed_cand.airflow_ver,
+                                                    'Airflow')
 
   # Leaves the validity check to the Composer backend request validation.
-  return True
+  return upgrade_validator
 
 
 def _VersionStrToSemanticVersion(version_str):
@@ -198,39 +216,46 @@ def _VersionStrToSemanticVersion(version_str):
   return semver.SemVer(version_str)
 
 
-def _IsAirflowVersionUpgradeCompatible(cur_version, candidate_version):
-  """Validates Airflow version candidate is greater than or equal to current.
+def _IsVersionUpgradeCompatible(cur_version, candidate_version,
+                                image_version_part):
+  """Validates whether version candidate is greater than or equal to current.
 
-  Composer supports Airflow MINOR and PATCH-level upgrades.
+  Applicable both for Airflow and Composer version upgrades. Composer supports
+  both Airflow and self MINOR and PATCH-level upgrades.
 
   Args:
-    cur_version: current 'a.b.c' Airflow version
-    candidate_version: candidate 'x.y.z' Airflow version
+    cur_version: current 'a.b.c' version
+    candidate_version: candidate 'x.y.z' version
+    image_version_part: part of image to be validated. Must be either 'Airflow'
+      or 'Composer'
 
   Returns:
-    boolean value whether Airflow candidate is valid
+    UpgradeValidator namedtuple containing boolean value whether selected image
+    version component is valid for upgrade and eventual error message if it is
+    not.
   """
+  assert image_version_part in ['Airflow', 'Composer']
   curr_semantic_version = _VersionStrToSemanticVersion(cur_version)
   cand_semantic_version = _VersionStrToSemanticVersion(candidate_version)
 
-  return (curr_semantic_version.major == cand_semantic_version.major and
-          curr_semantic_version <= cand_semantic_version)
+  if curr_semantic_version > cand_semantic_version:
+    error_message = ('Upgrade cannot decrease {composer_or_airflow1}\'s '
+                     'version. Current {composer_or_airflow2} version: '
+                     '{cur_version}, requested {composer_or_airflow3} version: '
+                     '{req_version}.').format(
+                         composer_or_airflow1=image_version_part,
+                         composer_or_airflow2=image_version_part,
+                         cur_version=cur_version,
+                         composer_or_airflow3=image_version_part,
+                         req_version=candidate_version)
+    return UpgradeValidator(False, error_message)
 
+  if curr_semantic_version.major != cand_semantic_version.major:
+    error_message = ('Upgrades between different {}\'s major versions are not'
+                     ' supported. Current major version {}, requested major '
+                     'version {}.').format(image_version_part,
+                                           curr_semantic_version.major,
+                                           cand_semantic_version.major)
+    return UpgradeValidator(False, error_message)
 
-def _IsComposerVersionUpgradeCompatible(cur_version, candidate_version):
-  """Validates Composer version candidate is greater than or equal to current.
-
-  Composer upgrades support MINOR and PATCH-level upgrades.
-
-  Args:
-    cur_version: current 'a.b.c' Composer version
-    candidate_version: candidate 'a.y.z' Composer version
-
-  Returns:
-    boolean value whether Composer candidate is valid
-  """
-  curr_semantic_version = _VersionStrToSemanticVersion(cur_version)
-  cand_semantic_version = _VersionStrToSemanticVersion(candidate_version)
-
-  return (curr_semantic_version.major == cand_semantic_version.major and
-          curr_semantic_version <= cand_semantic_version)
+  return UpgradeValidator(True, None)

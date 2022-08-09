@@ -18,6 +18,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
+from googlecloudsdk.command_lib.container.fleet import resources
 from googlecloudsdk.command_lib.container.fleet.features import base
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core.console import console_io
@@ -25,6 +26,9 @@ from googlecloudsdk.core.console import console_io
 
 def ParseMemberships(args):
   """Returns a list of memberships to which to apply the command, given the arguments.
+
+  When membership regionalization is complete, this will be deleted and replaced
+  with ParseMembershipsFull.
 
   Args:
     args: object containing arguments passed as flags with the command
@@ -63,5 +67,51 @@ def ParseMemberships(args):
     if membership not in all_memberships:
       raise exceptions.Error(
           'Membership {} does not exist in the fleet.'.format(membership))
+
+  return memberships
+
+
+def ParseMembershipsFull(args):
+  """Returns a list of memberships to which to apply the command, given the arguments.
+
+  Args:
+    args: object containing arguments passed as flags with the command
+
+  Returns:
+    memberships: A list of membership resource name strings
+  """
+  memberships = []
+  all_memberships, _ = base.ListMembershipsFull()
+
+  if not all_memberships:
+    raise exceptions.Error('No Memberships available in the fleet.')
+
+  if hasattr(args, 'membership') and args.membership:
+    memberships.append(resources.MembershipResourceName(args.membership))
+  elif args.memberships:
+    memberships = resources.PluralMembershipsResourceNames(args)
+  else:
+    membership = resources.PromptForMembership()
+    if membership:
+      memberships.append(membership)
+    else:
+      raise calliope_exceptions.RequiredArgumentException(
+          '--membership',
+          ('Cannot prompt a console for membership. Membership is required. '
+           'Please specify `--memberships` to select at least one membership.'))
+
+  if not memberships:
+    raise exceptions.Error(
+        'At least one membership is required for this command.')
+
+  for membership in memberships:
+    if membership not in all_memberships:
+      raise exceptions.Error(
+          'Membership {} does not exist in the fleet.'.format(membership))
+
+  if len(resources.GetMembershipProjects(memberships)) > 1:
+    raise exceptions.Error(
+        'Memberships for this command must belong to the same project and cannot mix project number and project ID ({}).'
+        .format(resources.GetMembershipProjects(memberships)))
 
   return memberships

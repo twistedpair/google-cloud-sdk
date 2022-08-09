@@ -1918,6 +1918,9 @@ class AttachedDiskInitializeParams(_messages.Message):
       sets the number of I/O operations per second that the disk can handle.
       Values must be between 10,000 and 120,000. For more details, see the
       Extreme persistent disk documentation.
+    provisionedThroughput: Indicates how much throughput to provision for the
+      disk. This sets the number of throughput mb per second that the disk can
+      handle. Values must be between 1 and 7,124.
     replicaZones: URLs of the zones where the disk should be replicated to.
       Only applicable for regional resources.
     resourceManagerTags: Resource manager tags to be bound to the disk. Tag
@@ -2075,14 +2078,15 @@ class AttachedDiskInitializeParams(_messages.Message):
   multiWriter = _messages.BooleanField(11)
   onUpdateAction = _messages.EnumField('OnUpdateActionValueValuesEnum', 12)
   provisionedIops = _messages.IntegerField(13)
-  replicaZones = _messages.StringField(14, repeated=True)
-  resourceManagerTags = _messages.MessageField('ResourceManagerTagsValue', 15)
-  resourcePolicies = _messages.StringField(16, repeated=True)
-  sourceImage = _messages.StringField(17)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 18)
-  sourceInstantSnapshot = _messages.StringField(19)
-  sourceSnapshot = _messages.StringField(20)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 21)
+  provisionedThroughput = _messages.IntegerField(14)
+  replicaZones = _messages.StringField(15, repeated=True)
+  resourceManagerTags = _messages.MessageField('ResourceManagerTagsValue', 16)
+  resourcePolicies = _messages.StringField(17, repeated=True)
+  sourceImage = _messages.StringField(18)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 19)
+  sourceInstantSnapshot = _messages.StringField(20)
+  sourceSnapshot = _messages.StringField(21)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 22)
 
 
 class AuditConfig(_messages.Message):
@@ -18911,6 +18915,36 @@ class ComputeNodeGroupsSetNodeTemplateRequest(_messages.Message):
   zone = _messages.StringField(5, required=True)
 
 
+class ComputeNodeGroupsSimulateMaintenanceEventRequest(_messages.Message):
+  r"""A ComputeNodeGroupsSimulateMaintenanceEventRequest object.
+
+  Fields:
+    nodeGroup: Name of the NodeGroup resource whose nodes will go under
+      maintenance simulation.
+    nodeGroupsSimulateMaintenanceEventRequest: A
+      NodeGroupsSimulateMaintenanceEventRequest resource to be passed as the
+      request body.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    zone: The name of the zone for this request.
+  """
+
+  nodeGroup = _messages.StringField(1, required=True)
+  nodeGroupsSimulateMaintenanceEventRequest = _messages.MessageField('NodeGroupsSimulateMaintenanceEventRequest', 2)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
+
+
 class ComputeNodeGroupsTestIamPermissionsRequest(_messages.Message):
   r"""A ComputeNodeGroupsTestIamPermissionsRequest object.
 
@@ -33315,6 +33349,9 @@ class Disk(_messages.Message):
       sets the number of I/O operations per second that the disk can handle.
       Values must be between 10,000 and 120,000. For more details, see the
       Extreme persistent disk documentation.
+    provisionedThroughput: Indicates how much throughput to provision for the
+      disk. This sets the number of throughput mb per second that the disk can
+      handle. Values must be between 1 and 7,124.
     region: [Output Only] URL of the region where the disk resides. Only
       applicable for regional resources. You must specify this field as part
       of the HTTP request URL. It is not settable as a field in the request
@@ -33567,33 +33604,34 @@ class Disk(_messages.Message):
   params = _messages.MessageField('DiskParams', 23)
   physicalBlockSizeBytes = _messages.IntegerField(24)
   provisionedIops = _messages.IntegerField(25)
-  region = _messages.StringField(26)
-  replicaZones = _messages.StringField(27, repeated=True)
-  resourcePolicies = _messages.StringField(28, repeated=True)
-  resourceStatus = _messages.MessageField('DiskResourceStatus', 29)
-  satisfiesPzs = _messages.BooleanField(30)
-  selfLink = _messages.StringField(31)
-  selfLinkWithId = _messages.StringField(32)
-  sizeGb = _messages.IntegerField(33)
-  sourceConsistencyGroupPolicy = _messages.StringField(34)
-  sourceConsistencyGroupPolicyId = _messages.StringField(35)
-  sourceDisk = _messages.StringField(36)
-  sourceDiskId = _messages.StringField(37)
-  sourceImage = _messages.StringField(38)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 39)
-  sourceImageId = _messages.StringField(40)
-  sourceInstantSnapshot = _messages.StringField(41)
-  sourceInstantSnapshotId = _messages.StringField(42)
-  sourceSnapshot = _messages.StringField(43)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 44)
-  sourceSnapshotId = _messages.StringField(45)
-  sourceStorageObject = _messages.StringField(46)
-  status = _messages.EnumField('StatusValueValuesEnum', 47)
-  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 48)
-  type = _messages.StringField(49)
-  userLicenses = _messages.StringField(50, repeated=True)
-  users = _messages.StringField(51, repeated=True)
-  zone = _messages.StringField(52)
+  provisionedThroughput = _messages.IntegerField(26)
+  region = _messages.StringField(27)
+  replicaZones = _messages.StringField(28, repeated=True)
+  resourcePolicies = _messages.StringField(29, repeated=True)
+  resourceStatus = _messages.MessageField('DiskResourceStatus', 30)
+  satisfiesPzs = _messages.BooleanField(31)
+  selfLink = _messages.StringField(32)
+  selfLinkWithId = _messages.StringField(33)
+  sizeGb = _messages.IntegerField(34)
+  sourceConsistencyGroupPolicy = _messages.StringField(35)
+  sourceConsistencyGroupPolicyId = _messages.StringField(36)
+  sourceDisk = _messages.StringField(37)
+  sourceDiskId = _messages.StringField(38)
+  sourceImage = _messages.StringField(39)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 40)
+  sourceImageId = _messages.StringField(41)
+  sourceInstantSnapshot = _messages.StringField(42)
+  sourceInstantSnapshotId = _messages.StringField(43)
+  sourceSnapshot = _messages.StringField(44)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 45)
+  sourceSnapshotId = _messages.StringField(46)
+  sourceStorageObject = _messages.StringField(47)
+  status = _messages.EnumField('StatusValueValuesEnum', 48)
+  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 49)
+  type = _messages.StringField(50)
+  userLicenses = _messages.StringField(51, repeated=True)
+  users = _messages.StringField(52, repeated=True)
+  zone = _messages.StringField(53)
 
 
 class DiskAggregatedList(_messages.Message):
@@ -55468,6 +55506,16 @@ class NodeGroupsSetNodeTemplateRequest(_messages.Message):
   nodeTemplate = _messages.StringField(1)
 
 
+class NodeGroupsSimulateMaintenanceEventRequest(_messages.Message):
+  r"""A NodeGroupsSimulateMaintenanceEventRequest object.
+
+  Fields:
+    nodes: Names of the nodes to go under maintenance simulation.
+  """
+
+  nodes = _messages.StringField(1, repeated=True)
+
+
 class NodeTemplate(_messages.Message):
   r"""Represent a sole-tenant Node Template resource. You can use a template
   to define properties for nodes in a node group. For more information, read
@@ -68517,6 +68565,10 @@ class SecurityPolicyRule(_messages.Message):
       compute#securityPolicyRule for security policy rules
     match: A match condition that incoming traffic is evaluated against. If it
       evaluates to true, the corresponding 'action' is enforced.
+    preconfiguredWafConfig: Preconfigured WAF configuration to be applied for
+      the rule. If the rule does not evaluate preconfigured WAF rules, i.e.,
+      if evaluatePreconfiguredWaf() is not used, this field will have no
+      effect.
     preview: If set to true, the specified action is not enforced.
     priority: An integer indicating the priority of a rule in the list. The
       priority must be a positive value between 0 and 2147483647. Rules are
@@ -68575,16 +68627,17 @@ class SecurityPolicyRule(_messages.Message):
   headerAction = _messages.MessageField('SecurityPolicyRuleHttpHeaderAction', 5)
   kind = _messages.StringField(6, default='compute#securityPolicyRule')
   match = _messages.MessageField('SecurityPolicyRuleMatcher', 7)
-  preview = _messages.BooleanField(8)
-  priority = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  rateLimitOptions = _messages.MessageField('SecurityPolicyRuleRateLimitOptions', 10)
-  redirectOptions = _messages.MessageField('SecurityPolicyRuleRedirectOptions', 11)
-  redirectTarget = _messages.StringField(12)
-  ruleManagedProtectionTier = _messages.EnumField('RuleManagedProtectionTierValueValuesEnum', 13)
-  ruleNumber = _messages.IntegerField(14)
-  ruleTupleCount = _messages.IntegerField(15, variant=_messages.Variant.INT32)
-  targetResources = _messages.StringField(16, repeated=True)
-  targetServiceAccounts = _messages.StringField(17, repeated=True)
+  preconfiguredWafConfig = _messages.MessageField('SecurityPolicyRulePreconfiguredWafConfig', 8)
+  preview = _messages.BooleanField(9)
+  priority = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  rateLimitOptions = _messages.MessageField('SecurityPolicyRuleRateLimitOptions', 11)
+  redirectOptions = _messages.MessageField('SecurityPolicyRuleRedirectOptions', 12)
+  redirectTarget = _messages.StringField(13)
+  ruleManagedProtectionTier = _messages.EnumField('RuleManagedProtectionTierValueValuesEnum', 14)
+  ruleNumber = _messages.IntegerField(15)
+  ruleTupleCount = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+  targetResources = _messages.StringField(17, repeated=True)
+  targetServiceAccounts = _messages.StringField(18, repeated=True)
 
 
 class SecurityPolicyRuleHttpHeaderAction(_messages.Message):
@@ -68710,6 +68763,82 @@ class SecurityPolicyRuleMatcherConfigLayer4Config(_messages.Message):
 
   ipProtocol = _messages.StringField(1)
   ports = _messages.StringField(2, repeated=True)
+
+
+class SecurityPolicyRulePreconfiguredWafConfig(_messages.Message):
+  r"""A SecurityPolicyRulePreconfiguredWafConfig object.
+
+  Fields:
+    exclusions: A list of exclusions to apply during preconfigured WAF
+      evaluation.
+  """
+
+  exclusions = _messages.MessageField('SecurityPolicyRulePreconfiguredWafConfigExclusion', 1, repeated=True)
+
+
+class SecurityPolicyRulePreconfiguredWafConfigExclusion(_messages.Message):
+  r"""A SecurityPolicyRulePreconfiguredWafConfigExclusion object.
+
+  Fields:
+    requestCookiesToExclude: A list of request cookie names whose value will
+      be excluded from inspection during preconfigured WAF evaluation.
+    requestHeadersToExclude: A list of request header names whose value will
+      be excluded from inspection during preconfigured WAF evaluation.
+    requestQueryParamsToExclude: A list of request query parameter names whose
+      value will be excluded from inspection during preconfigured WAF
+      evaluation. Note that the parameter can be in the query string or in the
+      POST body.
+    requestUrisToExclude: A list of request URIs from the request line to be
+      excluded from inspection during preconfigured WAF evaluation. When
+      specifying this field, the query or fragment part should be excluded.
+    targetRuleIds: A list of target rule IDs under the WAF rule set to apply
+      the preconfigured WAF exclusion. If omitted, it refers to all the rule
+      IDs under the WAF rule set.
+    targetRuleSet: Target WAF rule set to apply the preconfigured WAF
+      exclusion.
+  """
+
+  requestCookiesToExclude = _messages.MessageField('SecurityPolicyRulePreconfiguredWafConfigExclusionFieldParams', 1, repeated=True)
+  requestHeadersToExclude = _messages.MessageField('SecurityPolicyRulePreconfiguredWafConfigExclusionFieldParams', 2, repeated=True)
+  requestQueryParamsToExclude = _messages.MessageField('SecurityPolicyRulePreconfiguredWafConfigExclusionFieldParams', 3, repeated=True)
+  requestUrisToExclude = _messages.MessageField('SecurityPolicyRulePreconfiguredWafConfigExclusionFieldParams', 4, repeated=True)
+  targetRuleIds = _messages.StringField(5, repeated=True)
+  targetRuleSet = _messages.StringField(6)
+
+
+class SecurityPolicyRulePreconfiguredWafConfigExclusionFieldParams(_messages.Message):
+  r"""A SecurityPolicyRulePreconfiguredWafConfigExclusionFieldParams object.
+
+  Enums:
+    OpValueValuesEnum: The match operator for the field.
+
+  Fields:
+    op: The match operator for the field.
+    val: The value of the field.
+  """
+
+  class OpValueValuesEnum(_messages.Enum):
+    r"""The match operator for the field.
+
+    Values:
+      CONTAINS: The operator matches if the field value contains the specified
+        value.
+      ENDS_WITH: The operator matches if the field value ends with the
+        specified value.
+      EQUALS: The operator matches if the field value equals the specified
+        value.
+      EQUALS_ANY: The operator matches if the field value is any value.
+      STARTS_WITH: The operator matches if the field value starts with the
+        specified value.
+    """
+    CONTAINS = 0
+    ENDS_WITH = 1
+    EQUALS = 2
+    EQUALS_ANY = 3
+    STARTS_WITH = 4
+
+  op = _messages.EnumField('OpValueValuesEnum', 1)
+  val = _messages.StringField(2)
 
 
 class SecurityPolicyRuleRateLimitOptions(_messages.Message):

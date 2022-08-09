@@ -1158,6 +1158,81 @@
         }
       }
     },
+    "Route": {
+      "id": "Route",
+      "description": "Message describing a Route object",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. The canonical resource name of the route.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. The time when the route was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The time when the route was last updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "labels": {
+          "description": "Optional. Labels associated with this resource.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "description": {
+          "description": "Optional. A free-text description of the resource. Max length 1024 characters.",
+          "type": "string"
+        },
+        "network": {
+          "description": "Required. The network that this route belongs to.",
+          "type": "string"
+        },
+        "destinationCidr": {
+          "description": "Required. A subnet in CIDR format.",
+          "type": "string"
+        },
+        "nextHopAddress": {
+          "description": "Required. An IP address to use as the next hop for this route. Must use the same protocol as |destination_cidr|.",
+          "type": "string"
+        },
+        "withdrawOnFailure": {
+          "description": "Optional. If true, when the route becomes disconnected it should be automatically withdrawn.",
+          "type": "boolean"
+        }
+      }
+    },
+    "ListRoutesResponse": {
+      "id": "ListRoutesResponse",
+      "description": "Message for response to listing Routes",
+      "type": "object",
+      "properties": {
+        "routes": {
+          "description": "The list of routes",
+          "type": "array",
+          "items": {
+            "$ref": "Route"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token identifying a page of results the server should return.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "ListLocationsResponse": {
       "id": "ListLocationsResponse",
       "description": "The response message for Locations.ListLocations.",
@@ -2325,6 +2400,149 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Deletes a single Router."
+                    }
+                  }
+                },
+                "routes": {
+                  "methods": {
+                    "create": {
+                      "id": "edgenetwork.projects.locations.zones.routes.create",
+                      "path": "v1alpha1/{+parent}/routes",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/zones/{zonesId}/routes",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. Value for parent.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/zones\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "routeId": {
+                          "description": "Required. Id of the requesting object If auto-generating Id server-side, remove this field and network_id from the method_signature of Create RPC",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "requestId": {
+                          "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and t he request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "Route"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Creates a new Route, in a given project and location."
+                    },
+                    "list": {
+                      "id": "edgenetwork.projects.locations.zones.routes.list",
+                      "path": "v1alpha1/{+parent}/routes",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/zones/{zonesId}/routes",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. Parent value for ListRoutesRequest",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/zones\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "Requested page size. Server may return fewer items than requested. If unspecified, server will pick an appropriate default.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "A token identifying a page of results the server should return.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "filter": {
+                          "description": "Filtering results",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "orderBy": {
+                          "description": "Hint for how to order the results",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListRoutesResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Lists Routes in a given project and location."
+                    },
+                    "delete": {
+                      "id": "edgenetwork.projects.locations.zones.routes.delete",
+                      "path": "v1alpha1/{+name}",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/zones/{zonesId}/routes/{routesId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. Name of the resource",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/zones\/[^\/]+\/routes\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "requestId": {
+                          "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes after the first request. For example, consider a situation where you make an initial request and t he request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Deletes a single Route."
+                    },
+                    "get": {
+                      "id": "edgenetwork.projects.locations.zones.routes.get",
+                      "path": "v1alpha1/{+name}",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/zones/{zonesId}/routes/{routesId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. Name of the resource",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/zones\/[^\/]+\/routes\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Route"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets details of a single Route."
                     }
                   }
                 }

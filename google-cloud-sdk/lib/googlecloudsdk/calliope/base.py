@@ -79,6 +79,7 @@ UNCATEGORIZED_CATEGORY = 'Other'
 IDENTITY_CATEGORY = 'Identity'
 COMMERCE_CATEGORY = 'Commerce'
 DECLARATIVE_CONFIGURATION_CATEGORY = 'Declarative Resource Management'
+MICROSERVICES_CATEGORY = 'Microservices'
 
 
 # Common markdown.

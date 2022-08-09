@@ -186,6 +186,32 @@ def _create_or_modify_creds(transfer_spec, args, messages):
         messages.AzureCredentials(sasToken=sas_token))
 
 
+def _get_s3_compatible_metadata(args, messages):
+  """Generates advanced settings for S3-compatible providers."""
+  if not (args.source_auth_method or args.source_list_api or
+          args.source_network_protocol or args.source_request_model):
+    return None
+  s3_compatible_metadata = messages.S3CompatibleMetadata()
+  if args.source_auth_method:
+    s3_compatible_metadata.authMethod = getattr(
+        messages.S3CompatibleMetadata.AuthMethodValueValuesEnum,
+        'AUTH_METHOD_' + args.source_auth_method)
+  if args.source_list_api:
+    s3_compatible_metadata.listApi = getattr(
+        messages.S3CompatibleMetadata.ListApiValueValuesEnum,
+        args.source_list_api)
+  if args.source_network_protocol:
+    s3_compatible_metadata.protocol = getattr(
+        messages.S3CompatibleMetadata.ProtocolValueValuesEnum,
+        'NETWORK_PROTOCOL_' + args.source_network_protocol)
+  if args.source_request_model:
+    s3_compatible_metadata.requestModel = getattr(
+        messages.S3CompatibleMetadata.RequestModelValueValuesEnum,
+        'REQUEST_MODEL_' + args.source_request_model)
+
+  return s3_compatible_metadata
+
+
 def _create_or_modify_transfer_spec(job, args, messages):
   """Creates or modifies TransferSpec based on args."""
   if not job.transferSpec:
@@ -196,6 +222,7 @@ def _create_or_modify_transfer_spec(job, args, messages):
     job.transferSpec.httpDataSource = None
     job.transferSpec.posixDataSource = None
     job.transferSpec.gcsDataSource = None
+    job.transferSpec.awsS3CompatibleDataSource = None
     job.transferSpec.awsS3DataSource = None
     job.transferSpec.azureBlobStorageDataSource = None
 
@@ -220,10 +247,19 @@ def _create_or_modify_transfer_spec(job, args, messages):
             path=source_url.object_name,
         )
       elif source_url.scheme is storage_url.ProviderPrefix.S3:
-        job.transferSpec.awsS3DataSource = messages.AwsS3Data(
-            bucketName=source_url.bucket_name,
-            path=source_url.object_name,
-        )
+        if args.source_endpoint:
+          job.transferSpec.awsS3CompatibleDataSource = (
+              messages.AwsS3CompatibleData(
+                  bucketName=source_url.bucket_name,
+                  endpoint=args.source_endpoint,
+                  path=source_url.object_name,
+                  region=args.source_signing_region,
+                  s3Metadata=_get_s3_compatible_metadata(args, messages)))
+        else:
+          job.transferSpec.awsS3DataSource = messages.AwsS3Data(
+              bucketName=source_url.bucket_name,
+              path=source_url.object_name,
+          )
       elif isinstance(source_url, storage_url.AzureUrl):
         job.transferSpec.azureBlobStorageDataSource = (
             messages.AzureBlobStorageData(

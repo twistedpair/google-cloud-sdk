@@ -45,6 +45,14 @@ class TypeKit(object):
   def singleton_name(self):
     return self._type_metadata.get('singleton_name')
 
+  @property
+  def is_backing_service(self):
+    return self._type_metadata.get('backing_service', False)
+
+  @property
+  def is_ingress_service(self):
+    return not self._type_metadata.get('backing_service', False)
+
   @abc.abstractmethod
   def GetAllReferences(self, resource_config):
     return []
@@ -155,6 +163,30 @@ class TypeKit(object):
       list of dict typed names.
     """
     return [{'type': self.resource_type, 'name': integration_name}]
+
+  def GetRefServices(self, name, resource_config, all_resources):
+    """Returns list of cloud run service that is binded to this resource.
+
+    Args:
+      name: str, name of the resource.
+      resource_config: dict, the resource config object of the integration.
+      all_resources: dict, all the resources in the application.
+
+    Returns:
+      list cloud run service names
+    """
+    del resource_config  # Not used here.
+    services = []
+    if self.is_backing_service:
+      for resource_name, resource in all_resources.items():
+        ref_name = '{}/{}'.format(self.resource_type, name)
+        if resource.get('service', {}).get('resources'):
+          if any([
+              ref['ref'] == ref_name
+              for ref in resource['service']['resources']
+          ]):
+            services.append(resource_name)
+    return services
 
   def GetCreateComponentTypes(self, selectors, app_dict):
     """Returns a list of component types included in a create/update deployment.

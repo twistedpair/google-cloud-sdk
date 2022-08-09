@@ -110,3 +110,42 @@ def GetDescription(record):
 
 def GetExecutionEnvironment(record):
   return record.annotations.get(k8s_object.EXECUTION_ENVIRONMENT_ANNOTATION, '')
+
+
+def GetStartupProbe(record):
+  return _GetProbe(record.container.startupProbe)
+
+
+def GetLivenessProbe(record):
+  return _GetProbe(record.container.livenessProbe)
+
+
+def _GetProbe(probe):
+  """Returns the information message for the given probe."""
+  if not probe:
+    return ''
+  probe_type = 'TCP'
+  port = ''
+  path = ''
+  if probe.httpGet:
+    probe_type = 'HTTP'
+    path = probe.httpGet.path
+  if probe.tcpSocket:
+    probe_type = 'TCP'
+    port = probe.tcpSocket.port
+  if probe.grpc:
+    probe_type = 'GRPC'
+    port = probe.grpc.port
+  return cp.Lines([
+      '{probe_type} every {period}s'.format(
+          probe_type=probe_type, period=probe.periodSeconds),
+      cp.Labeled([
+          ('Path', path),
+          ('Port', port),
+          ('Initial delay', '{initial_delay}s'.format(
+              initial_delay=probe.initialDelaySeconds or '0')),
+          ('Timeout', '{timeout}s'.format(timeout=probe.timeoutSeconds)),
+          ('Failure threshold',
+           '{failures}'.format(failures=probe.failureThreshold)),
+      ])
+  ])

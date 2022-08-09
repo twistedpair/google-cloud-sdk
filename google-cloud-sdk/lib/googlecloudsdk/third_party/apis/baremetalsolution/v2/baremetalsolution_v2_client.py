@@ -40,18 +40,17 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.projects_locations_instanceProvisioningSettings = self.ProjectsLocationsInstanceProvisioningSettingsService(self)
+    self.projects_locations_instanceQuotas = self.ProjectsLocationsInstanceQuotasService(self)
     self.projects_locations_instances = self.ProjectsLocationsInstancesService(self)
+    self.projects_locations_networkQuotas = self.ProjectsLocationsNetworkQuotasService(self)
     self.projects_locations_networks = self.ProjectsLocationsNetworksService(self)
     self.projects_locations_nfsShares = self.ProjectsLocationsNfsSharesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_provisioningConfigs = self.ProjectsLocationsProvisioningConfigsService(self)
     self.projects_locations_provisioningQuotas = self.ProjectsLocationsProvisioningQuotasService(self)
-    self.projects_locations_quotas_instances = self.ProjectsLocationsQuotasInstancesService(self)
-    self.projects_locations_quotas_networks = self.ProjectsLocationsQuotasNetworksService(self)
-    self.projects_locations_quotas_storage = self.ProjectsLocationsQuotasStorageService(self)
-    self.projects_locations_quotas = self.ProjectsLocationsQuotasService(self)
     self.projects_locations_snapshotSchedulePolicies = self.ProjectsLocationsSnapshotSchedulePoliciesService(self)
     self.projects_locations_sshKeys = self.ProjectsLocationsSshKeysService(self)
+    self.projects_locations_storageQuotas = self.ProjectsLocationsStorageQuotasService(self)
     self.projects_locations_volumes_luns = self.ProjectsLocationsVolumesLunsService(self)
     self.projects_locations_volumes_snapshots = self.ProjectsLocationsVolumesSnapshotsService(self)
     self.projects_locations_volumes = self.ProjectsLocationsVolumesService(self)
@@ -92,6 +91,43 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
         request_field='',
         request_type_name='BaremetalsolutionProjectsLocationsInstanceProvisioningSettingsFetchRequest',
         response_type_name='FetchInstanceProvisioningSettingsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsInstanceQuotasService(base_api.BaseApiService):
+    """Service class for the projects_locations_instanceQuotas resource."""
+
+    _NAME = 'projects_locations_instanceQuotas'
+
+    def __init__(self, client):
+      super(BaremetalsolutionV2.ProjectsLocationsInstanceQuotasService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""List Instance provisioning quotas.
+
+      Args:
+        request: (BaremetalsolutionProjectsLocationsInstanceQuotasListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListInstanceQuotasResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/instanceQuotas',
+        http_method='GET',
+        method_id='baremetalsolution.projects.locations.instanceQuotas.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/instanceQuotas',
+        request_field='',
+        request_type_name='BaremetalsolutionProjectsLocationsInstanceQuotasListRequest',
+        response_type_name='ListInstanceQuotasResponse',
         supports_download=False,
     )
 
@@ -426,6 +462,43 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
         request_field='stopInstanceRequest',
         request_type_name='BaremetalsolutionProjectsLocationsInstancesStopRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsNetworkQuotasService(base_api.BaseApiService):
+    """Service class for the projects_locations_networkQuotas resource."""
+
+    _NAME = 'projects_locations_networkQuotas'
+
+    def __init__(self, client):
+      super(BaremetalsolutionV2.ProjectsLocationsNetworkQuotasService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""List Network provisioning quotas.
+
+      Args:
+        request: (BaremetalsolutionProjectsLocationsNetworkQuotasListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListNetworkQuotasResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/networkQuotas',
+        http_method='GET',
+        method_id='baremetalsolution.projects.locations.networkQuotas.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/networkQuotas',
+        request_field='',
+        request_type_name='BaremetalsolutionProjectsLocationsNetworkQuotasListRequest',
+        response_type_name='ListNetworkQuotasResponse',
         supports_download=False,
     )
 
@@ -830,127 +903,6 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
-  class ProjectsLocationsQuotasInstancesService(base_api.BaseApiService):
-    """Service class for the projects_locations_quotas_instances resource."""
-
-    _NAME = 'projects_locations_quotas_instances'
-
-    def __init__(self, client):
-      super(BaremetalsolutionV2.ProjectsLocationsQuotasInstancesService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def List(self, request, global_params=None):
-      r"""List Instance provisioning quotas.
-
-      Args:
-        request: (BaremetalsolutionProjectsLocationsQuotasInstancesListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListInstanceQuotasResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/projects/{projectsId}/locations/{locationsId}/quotas/instances',
-        http_method='GET',
-        method_id='baremetalsolution.projects.locations.quotas.instances.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
-        relative_path='v2/{+parent}/quotas/instances',
-        request_field='',
-        request_type_name='BaremetalsolutionProjectsLocationsQuotasInstancesListRequest',
-        response_type_name='ListInstanceQuotasResponse',
-        supports_download=False,
-    )
-
-  class ProjectsLocationsQuotasNetworksService(base_api.BaseApiService):
-    """Service class for the projects_locations_quotas_networks resource."""
-
-    _NAME = 'projects_locations_quotas_networks'
-
-    def __init__(self, client):
-      super(BaremetalsolutionV2.ProjectsLocationsQuotasNetworksService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def List(self, request, global_params=None):
-      r"""List Network provisioning quotas.
-
-      Args:
-        request: (BaremetalsolutionProjectsLocationsQuotasNetworksListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListNetworkQuotasResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/projects/{projectsId}/locations/{locationsId}/quotas/networks',
-        http_method='GET',
-        method_id='baremetalsolution.projects.locations.quotas.networks.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
-        relative_path='v2/{+parent}/quotas/networks',
-        request_field='',
-        request_type_name='BaremetalsolutionProjectsLocationsQuotasNetworksListRequest',
-        response_type_name='ListNetworkQuotasResponse',
-        supports_download=False,
-    )
-
-  class ProjectsLocationsQuotasStorageService(base_api.BaseApiService):
-    """Service class for the projects_locations_quotas_storage resource."""
-
-    _NAME = 'projects_locations_quotas_storage'
-
-    def __init__(self, client):
-      super(BaremetalsolutionV2.ProjectsLocationsQuotasStorageService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def List(self, request, global_params=None):
-      r"""List Storage provisioning quotas.
-
-      Args:
-        request: (BaremetalsolutionProjectsLocationsQuotasStorageListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListStorageQuotasResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/projects/{projectsId}/locations/{locationsId}/quotas/storage',
-        http_method='GET',
-        method_id='baremetalsolution.projects.locations.quotas.storage.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
-        relative_path='v2/{+parent}/quotas/storage',
-        request_field='',
-        request_type_name='BaremetalsolutionProjectsLocationsQuotasStorageListRequest',
-        response_type_name='ListStorageQuotasResponse',
-        supports_download=False,
-    )
-
-  class ProjectsLocationsQuotasService(base_api.BaseApiService):
-    """Service class for the projects_locations_quotas resource."""
-
-    _NAME = 'projects_locations_quotas'
-
-    def __init__(self, client):
-      super(BaremetalsolutionV2.ProjectsLocationsQuotasService, self).__init__(client)
-      self._upload_configs = {
-          }
-
   class ProjectsLocationsSnapshotSchedulePoliciesService(base_api.BaseApiService):
     """Service class for the projects_locations_snapshotSchedulePolicies resource."""
 
@@ -1187,6 +1139,43 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsStorageQuotasService(base_api.BaseApiService):
+    """Service class for the projects_locations_storageQuotas resource."""
+
+    _NAME = 'projects_locations_storageQuotas'
+
+    def __init__(self, client):
+      super(BaremetalsolutionV2.ProjectsLocationsStorageQuotasService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""List Storage provisioning quotas.
+
+      Args:
+        request: (BaremetalsolutionProjectsLocationsStorageQuotasListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListStorageQuotasResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/storageQuotas',
+        http_method='GET',
+        method_id='baremetalsolution.projects.locations.storageQuotas.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/storageQuotas',
+        request_field='',
+        request_type_name='BaremetalsolutionProjectsLocationsStorageQuotasListRequest',
+        response_type_name='ListStorageQuotasResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsVolumesLunsService(base_api.BaseApiService):
     """Service class for the projects_locations_volumes_luns resource."""
 
@@ -1289,7 +1278,7 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Create a storage volume snapshot in a containing volume.
+      r"""Takes a snapshot of a boot volume. Returns INVALID_ARGUMENT if called for a non-boot volume.
 
       Args:
         request: (BaremetalsolutionProjectsLocationsVolumesSnapshotsCreateRequest) input message
@@ -1316,7 +1305,7 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a storage volume snapshot for a given volume.
+      r"""Deletes a volume snapshot. Returns INVALID_ARGUMENT if called for a non-boot volume.
 
       Args:
         request: (BaremetalsolutionProjectsLocationsVolumesSnapshotsDeleteRequest) input message
@@ -1343,7 +1332,7 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Get details of a single storage volume snapshot.
+      r"""Returns the specified snapshot resource. Returns INVALID_ARGUMENT if called for a non-boot volume.
 
       Args:
         request: (BaremetalsolutionProjectsLocationsVolumesSnapshotsGetRequest) input message
@@ -1370,7 +1359,7 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""List storage volume snapshots for given storage volume.
+      r"""Retrieves the list of snapshots for the specified volume. Returns a response with an empty list of snapshots if called for a non-boot volume.
 
       Args:
         request: (BaremetalsolutionProjectsLocationsVolumesSnapshotsListRequest) input message
@@ -1397,7 +1386,7 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
     )
 
     def RestoreVolumeSnapshot(self, request, global_params=None):
-      r"""Restore a storage volume snapshot to its containing volume.
+      r"""Uses the specified snapshot to restore its parent volume. Returns INVALID_ARGUMENT if called for a non-boot volume.
 
       Args:
         request: (BaremetalsolutionProjectsLocationsVolumesSnapshotsRestoreVolumeSnapshotRequest) input message

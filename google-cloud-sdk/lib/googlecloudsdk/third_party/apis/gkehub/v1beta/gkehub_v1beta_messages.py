@@ -2273,13 +2273,14 @@ class PolicyControllerHubConfig(_messages.Message):
       INSTALL_SPEC_UNSPECIFIED: Spec is unknown.
       INSTALL_SPEC_NOT_INSTALLED: Request to uninstall Policy Controller.
       INSTALL_SPEC_ENABLED: Request to install and enable Policy Controller.
-      INSTALL_SPEC_DISABLED: Request to disable Policy Controller. If Policy
-        Controller is not installed, it will be installed but disabled.
+      INSTALL_SPEC_SUSPENDED: Request to suspend Policy Controller i.e. its
+        webhooks. If Policy Controller is not installed, it will be installed
+        but suspended.
     """
     INSTALL_SPEC_UNSPECIFIED = 0
     INSTALL_SPEC_NOT_INSTALLED = 1
     INSTALL_SPEC_ENABLED = 2
-    INSTALL_SPEC_DISABLED = 3
+    INSTALL_SPEC_SUSPENDED = 3
 
   auditIntervalSeconds = _messages.IntegerField(1)
   exemptableNamespaces = _messages.StringField(2, repeated=True)
